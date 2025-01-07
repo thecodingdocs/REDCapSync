@@ -130,7 +130,6 @@ articles:
       - REDCap
   - title: API and Tokens
     contents:
-      - API
       - Tokens
   - title: Setup
     contents:

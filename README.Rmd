@@ -2,8 +2,6 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -13,7 +11,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# REDCapDB <img src="inst/app/www/logo.png" align="right" height="150" />
+# REDCapDB <img src="man/figures/logo.png" align="right" height="150" />
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
@@ -76,4 +74,4 @@ Follow us on Twitter [twitter.com/TheCodingDocs](https://twitter.com/TheCodingDo
 
 Follow me on Twitter [twitter.com/BRoseMDMPH](https://twitter.com/BRoseMDMPH "BRoseMDMPH Twitter")
 
-[![TheCodingDocs.com](inst/app/www/TCD.png)](http://www.thecodingdocs.com)
+[![TheCodingDocs.com](man/figures/TCD.png)](http://www.thecodingdocs.com)

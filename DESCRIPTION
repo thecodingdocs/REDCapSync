@@ -13,8 +13,7 @@ Authors@R: c(
 Description: Uses the REDCap API to build a standardized R list object
     (DB), designed to be used downstream for data pipelines and the R
     shiny app RosyREDCap.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: MIT + file LICENSE
 URL: https://github.com/thecodingdocs/REDCapDB,
     https://thecodingdocs.github.io/REDCapDB/
 BugReports: https://github.com/thecodingdocs/REDCapDB/issues
@@ -45,6 +44,8 @@ Suggests:
     RosyREDCap,
     testthat (>= 3.0.0),
     withr
+VignetteBuilder: 
+    knitr
 Remotes: 
     github::brandonerose/RosyApp,
     github::brandonerose/RosyREDCap

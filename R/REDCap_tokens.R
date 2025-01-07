@@ -13,7 +13,7 @@
 #' @return Invisible. A message is printed to confirm the token is successfully set.
 #' @seealso
 #' For the function to work you need to have a valid DB object from \code{\link{setup_DB}()}.
-#' See our \href{https://brandonerose.github.io/REDCapDB/articles/Tokens.html}{REDCap Tokens Article}
+#' See our \href{https://thecodingdocs.github.io/REDCapDB/articles/Tokens.html}{REDCap Tokens Article}
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
@@ -79,7 +79,7 @@ view_REDCap_token <- function(DB){
 #' @return Logical. Returns `TRUE` if the API token is valid, otherwise `FALSE`.
 #' @seealso
 #' \href{../articles/Tokens.html}{pkgdown article on tokens}
-#' \href{https://brandonerose.github.io/REDCapDB/articles/Tokens.html}{pkgdown article on tokens}
+#' \href{https://thecodingdocs.github.io/REDCapDB/articles/Tokens.html}{pkgdown article on tokens}
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export

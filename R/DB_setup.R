@@ -352,8 +352,8 @@ internal_blank_DB <- list(
     redcap_records_dashboard = NULL,
     redcap_api = NULL,
     redcap_api_playground = NULL,
-    pkgdown = "https://brandonerose.github.io/REDCapDB/",
-    github = "https://github.com/brandonerose/REDCapDB/",
+    pkgdown = "https://thecodingdocs.github.io/REDCapDB/",
+    github = "https://github.com/thecodingdocs/REDCapDB/",
     thecodingdocs = "https://www.thecodingdocs.com/"
   )
 )

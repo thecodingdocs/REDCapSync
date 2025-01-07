@@ -41,14 +41,14 @@ Imports:
 Suggests: 
     knitr,
     mockery,
-    RosyREDCap,
+    RosyREDCap (>= 1.0.0.9038),
     testthat (>= 3.0.0),
     withr
 VignetteBuilder: 
     knitr
 Remotes: 
     github::brandonerose/RosyApp,
-    github::brandonerose/RosyREDCap
+    github::thecodingdocs/RosyREDCap
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true

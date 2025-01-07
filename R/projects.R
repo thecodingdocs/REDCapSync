@@ -32,7 +32,7 @@ get_projects <- function(){
 #'
 #' @details
 #' This function checks a folder (and optionally validates its setup) for `.RData` files that correspond to REDCapDB projects.
-#' It identifies files with the extension `.RData` and names ending in `_RosyREDCap`, filtering out any unrelated files.
+#' It identifies files with the extension `.RData` and names ending in `_REDCapDB`, filtering out any unrelated files.
 #'
 #' @seealso
 #' \link{setup_DB} for setting up valid directories.
@@ -53,7 +53,7 @@ check_folder_for_projects <- function(file_path,validate = T){
     file_name = file_name,
     file_ext = file_ext
   )
-  df <- df[which((df$file_ext == "rdata")&(endsWith(df$file_name,"_RosyREDCap"))),]
+  df <- df[which((df$file_ext == "rdata")&(endsWith(df$file_name,"_REDCapDB"))),]
   if(nrow(df)==0)return(character(0))
   return(df$file_path)
 }
@@ -195,7 +195,7 @@ add_project <- function(DB,silent = T){
   projects <- projects[which(projects$short_name!=DB$short_name),]
   OUT <- extract_project_details(DB = DB)
   OUT$R_object_size <- size(DB)
-  OUT$file_size <- file.path(DB$dir_path,"R_objects",paste0(DB$short_name,"_RosyREDCap.rdata")) %>% file_size_mb()
+  OUT$file_size <- file.path(DB$dir_path,"R_objects",paste0(DB$short_name,"_REDCapDB.rdata")) %>% file_size_mb()
   projects <- projects %>% dplyr::bind_rows(OUT)
   save_projects_to_cache(projects,silent = silent)
 }

@@ -16,7 +16,7 @@ delete_DB(DB)
 Message
 }
 \description{
-This will save/delete the "<short_name>_RosyREDCap.rdata" file in the given DB directories R_objects folder. These are optional functions given that \code{save_DB} is a also handled by a default parameter in \code{update_DB.}
+This will save/delete the "<short_name>_REDCapDB.rdata" file in the given DB directories R_objects folder. These are optional functions given that \code{save_DB} is a also handled by a default parameter in \code{update_DB.}
 }
 \details{
 delete_DB will not delete any other files from that directory. The user must delete any other files manually.

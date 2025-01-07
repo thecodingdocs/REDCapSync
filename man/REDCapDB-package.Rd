@@ -10,6 +10,14 @@
 
 What the package does (one paragraph).
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/thecodingdocs/REDCapDB}
+  \item Report bugs at \url{https://github.com/thecodingdocs/REDCapDB/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: First Last \email{first.last@example.com}
 

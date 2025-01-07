@@ -451,11 +451,11 @@ generate_summary_save_list <- function(
   return(to_save_list)
 }
 #' @noRd
-save_RosyREDCap_list <- function(
+save_REDCapDB_list <- function(
     DB,
     to_save_list,
     dir_other = file.path(DB$dir_path,"output"),
-    file_name = paste0(DB$short_name,"_RosyREDCap"),
+    file_name = paste0(DB$short_name,"_REDCapDB"),
     separate = F,
     with_links = T
 ){
@@ -602,7 +602,7 @@ summarize_DB <- function(
       include_users = include_users,
       include_log = include_log
     )
-    DB %>% save_RosyREDCap_list(
+    DB %>% save_REDCapDB_list(
       to_save_list = to_save_list,
       separate = separate,
       with_links = with_links
@@ -627,7 +627,7 @@ summarize_DB <- function(
         include_users = include_users,
         include_log = include_log
       )
-      DB %>% save_RosyREDCap_list(
+      DB %>% save_REDCapDB_list(
         to_save_list = to_save_list,
         dir_other = subset_list$dir_other,
         file_name = subset_list$file_name,

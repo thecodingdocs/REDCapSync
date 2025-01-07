@@ -20,7 +20,7 @@ Optionally validates the folder to ensure it was previously set up using \code{s
 }
 \details{
 This function checks a folder (and optionally validates its setup) for \code{.RData} files that correspond to REDCapDB projects.
-It identifies files with the extension \code{.RData} and names ending in \verb{_RosyREDCap}, filtering out any unrelated files.
+It identifies files with the extension \code{.RData} and names ending in \verb{_REDCapDB}, filtering out any unrelated files.
 }
 \seealso{
 \link{setup_DB} for setting up valid directories.

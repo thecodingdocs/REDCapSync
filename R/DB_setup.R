@@ -21,7 +21,7 @@
 #' @param merge_form_name A character string representing the name of the merged form. Default is "merged".
 #' @param use_csv Logical (TRUE/FALSE). If TRUE, uses CSV files for data storage. Default is `FALSE`.
 #' @param auto_check_token Logical (TRUE/FALSE). If TRUE, automatically checks the validity of the REDCap API token. Default is `TRUE`.
-#' @param DB_path A character string representing the file path of the exact `<short_name>_RosyREDCap.rdata` file to be loaded.
+#' @param DB_path A character string representing the file path of the exact `<short_name>_REDCapDB.rdata` file to be loaded.
 #' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test DB object with data as if user ran `update_DB`. Default is `FALSE`.
 #' @return REDCapDB `DB` list object.
 #' @seealso
@@ -51,7 +51,7 @@ setup_DB <- function (
   if(length(short_name)!=1)stop(em)
   projects <- get_projects() # add short_name conflict check if id and base url differs
   short_name <- validate_env_name(short_name)
-  token_name <- paste0(internal_RosyREDCap_token_prefix,short_name) %>% validate_env_name()
+  token_name <- paste0(internal_REDCapDB_token_prefix,short_name) %>% validate_env_name()
   in_proj_cache <- short_name %in% projects$short_name
   missing_dir_path <- missing(dir_path)
   is_a_test <- is_test_short_name(short_name = short_name)
@@ -110,7 +110,7 @@ load_DB <- function(short_name,validate = T){
   if(!short_name%in%projects$short_name)stop("No project named ",short_name," in cache. Did you use `setup_DB()` and `update_DB()`?")
   dir_path <- projects$dir_path[which(projects$short_name==short_name)]
   if(!file.exists(dir_path))stop("`dir_path` doesn't exist: '",dir_path,"'")
-  DB_path <- file.path(dir_path,"R_objects",paste0(short_name,"_RosyREDCap.rdata"))
+  DB_path <- file.path(dir_path,"R_objects",paste0(short_name,"_REDCapDB.rdata"))
   load_DB_from_path(
     DB_path = DB_path,
     validate = validate
@@ -160,7 +160,7 @@ is_test_DB <- function(DB){
 #' @title Save or Delete DB file from the directory
 #' @param DB A validated `DB` object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}
 #' @description
-#' This will save/delete the "<short_name>_RosyREDCap.rdata" file in the given DB directories R_objects folder. These are optional functions given that `save_DB` is a also handled by a default parameter in `update_DB.`
+#' This will save/delete the "<short_name>_REDCapDB.rdata" file in the given DB directories R_objects folder. These are optional functions given that `save_DB` is a also handled by a default parameter in `update_DB.`
 #'
 #' @details delete_DB will not delete any other files from that directory. The user must delete any other files manually.
 #' @return Message
@@ -176,7 +176,7 @@ save_DB <- function(DB){
     return(invisible())
   }
   # DB <- reverse_clean_DB(DB) # # problematic because setting numeric would delete missing codes
-  save_file_path <- file.path(DB$dir_path,"R_objects",paste0(DB$short_name,"_RosyREDCap.rdata"))
+  save_file_path <- file.path(DB$dir_path,"R_objects",paste0(DB$short_name,"_REDCapDB.rdata"))
   DB %>% saveRDS(file=save_file_path)
   add_project(DB)
   # save_xls_wrapper(DB)
@@ -189,7 +189,7 @@ delete_DB <- function(DB){
   DB <- validate_DB(DB)
   dir_path <- DB$dir_path
   dir_path  <- validate_dir(dir_path,silent = F)
-  delete_this <- file.path(dir_path,"R_objects",paste0(DB$short_name,"_RosyREDCap.rdata"))
+  delete_this <- file.path(dir_path,"R_objects",paste0(DB$short_name,"_REDCapDB.rdata"))
   if(file.exists(delete_this)){
     unlink(delete_this)
     bullet_in_console("Deleted saved DB",bullet_type = "v")

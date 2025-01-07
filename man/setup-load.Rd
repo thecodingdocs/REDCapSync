@@ -40,7 +40,7 @@ load_test_DB(short_name = "TEST_repeating", with_data = F)
 
 \item{validate}{Logical (TRUE/FALSE). If TRUE, validates DB object based on current rules. Default is \code{TRUE}.}
 
-\item{DB_path}{A character string representing the file path of the exact \verb{<short_name>_RosyREDCap.rdata} file to be loaded.}
+\item{DB_path}{A character string representing the file path of the exact \verb{<short_name>_REDCapDB.rdata} file to be loaded.}
 
 \item{with_data}{Logical (TRUE/FALSE). If TRUE, loads the test DB object with data as if user ran \code{update_DB}. Default is \code{FALSE}.}
 }

@@ -1,4 +1,3 @@
-#' @import RosyApp
 #' @title Drop REDCap Data to Directory
 #' @description
 #' Exports specified records from the REDCap database (`DB` object) to the specified directory.

@@ -1,4 +1,3 @@
-#' @import RosyApp
 #' @title Set a REDCap API Token to Your Current R Session
 #' @description
 #' Prompts the user to input a valid REDCap API token and stores it as an environment variable for the current R session.

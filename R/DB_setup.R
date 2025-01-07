@@ -1,4 +1,3 @@
-#' @import RosyApp
 #' @rdname setup-load
 #' @title Setup or Load REDCapDB Project
 #' @description

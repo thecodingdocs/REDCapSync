@@ -1,4 +1,3 @@
-#' @import RosyApp
 #' @title add REDCap ID to any dataframe using a ref_id
 #' @description
 #'  add REDCap ID to any dataframe using a ref_id

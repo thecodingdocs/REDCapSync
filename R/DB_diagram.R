@@ -1,4 +1,3 @@
-#' @import RosyApp
 #' @title Generate REDCap Project Diagram
 #' @description
 #' Generates a diagram of the REDCap project structure based on the `DB` object.

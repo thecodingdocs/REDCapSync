@@ -1,4 +1,3 @@
-#' @import RosyApp
 #' @title Horizontal Transform
 #' @description
 #' This function performs a horizontal transformation on the data in the `DB` object, transforming the data format so that each record is represented in a horizontal layout. It is useful when you want to reshape or pivot the data for further analysis or presentation.

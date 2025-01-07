@@ -1,4 +1,3 @@
-#' @import RosyApp
 #' @title Update REDCap Database
 #' @description
 #' Updates the REDCap database (`DB` object) by fetching the latest data from the REDCap server.

@@ -1,4 +1,3 @@
-#' @import RosyApp
 #' @title Clean DB columns for plotting using the metadata
 #' @description
 #' This function cleans the columns of a `DB` object, transforming choice fields into factors and ensuring numeric columns are set correctly for table processing or plotting (e.g., using `table1`). It handles the transformation of missing values and optional removal of certain codes based on user input.

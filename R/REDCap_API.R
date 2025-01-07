@@ -1,4 +1,3 @@
-#' @import RosyApp
 #' @title Get REDCap Report
 #' @inheritParams save_DB
 #' @param report_id character or integer of REDCap report ID. This can be found at the end of the URL of the report.

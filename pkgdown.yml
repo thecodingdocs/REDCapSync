@@ -3,7 +3,6 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   Advanced: Advanced.html
-  API: API.html
   Basic: Basic.html
   DB_object: DB_object.html
   Download: Download.html
@@ -16,7 +15,7 @@ articles:
   Shiny: Shiny.html
   Tokens: Tokens.html
   Upload: Upload.html
-last_built: 2025-01-07T18:50Z
+last_built: 2025-01-07T19:39Z
 urls:
   reference: https://thecodingdocs.github.io/REDCapDB/reference
   article: https://thecodingdocs.github.io/REDCapDB/articles

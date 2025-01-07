@@ -1,0 +1,17 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^data-raw$
+dev_history.R
+^dev$
+^pkgdown$
+$run_dev.*
+^LICENSE\.md$
+^README\.Rmd$
+^CODE_OF_CONDUCT\.md$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
+^doc$
+^Meta$
+^codecov\.yml$

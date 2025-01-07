@@ -1,6 +1,6 @@
-url: https://brandonerose.github.io/RosyREDCap/
+url: https://brandonerose.github.io/REDCapDB/
 home:
-  title: RosyREDCap
+  title: REDCapDB
   description: Unleash R and REDCap
 deploy:
   install_metadata: true
@@ -23,11 +23,6 @@ template:
       card: summary_large_image
 
 reference:
-  - title: Shiny Application ✨
-    desc: For very basic users simply launch the app and explore!
-    contents:
-      - run_RosyREDCap
-
   - title: Core Pipeline Functions (Basic)
     desc: For basic users use these core functions to maintain REDCap data pipelines. Setup or Load your project. Update from REDCap using what is already saved. Save the outputs to a directory.
     contents:
@@ -42,7 +37,7 @@ reference:
   - title: Everything by Topic (Intermediate/Advanced)
     desc: Expands on functionality and breaksdown core feautures into more customizable parts
   - subtitle: Project Cache
-    desc: RosyREDCap cahces user-level project metadata (name, directory, links, last update and other details). Tokens and data are NOT stored here.
+    desc: REDCapDB cahces user-level project metadata (name, directory, links, last update and other details). Tokens and data are NOT stored here.
     contents:
       - get_projects
       - cache_clear
@@ -56,7 +51,7 @@ reference:
       - view_REDCap_token
       - test_REDCap_token
   - subtitle: Setup/Load/Save/Delete DB Object
-    desc: DB objects are R lists meant to store all metadata and data for a single REDCap project. They utilize the REDCap log to only fetch recent updates. The can be "mirrored" to a local/cloud directory to maintain file pipelines and/or used for an exploratory data analysis shiny app via `run_RosyREDCap`.
+    desc: DB objects are R lists meant to store all metadata and data for a single REDCap project. They utilize the REDCap log to only fetch recent updates. The can be "mirrored" to a local/cloud directory to maintain file pipelines and/or used for an exploratory data analysis shiny app via `RosyREDCap::run_RosyREDCap`.
     contents:
       - setup_DB
       - load_DB
@@ -89,7 +84,7 @@ reference:
       - delete_REDCap_records
       - delete_file_from_REDCap
   - subtitle: DB Object Modifications
-    desc: One of the core internal motivations for RosyREDCap development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
+    desc: One of the core internal motivations for REDCapDB development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
     contents:
       - clean_DB
       - deidentify_DB
@@ -107,7 +102,6 @@ reference:
       - generate_horizontal_transform
       - generate_summary_from_subset_name
       - summarize_DB
-      - run_RosyREDCap
   - subtitle: Experimental/Dev Functions
     desc: These functions are still in development and is subject to changes.
     contents:
@@ -125,37 +119,6 @@ reference:
       - link_REDCap_project
       - link_REDCap_record
 
-articles:
-  - title: Feautures by R User Level
-    navbar: ~
-    contents:
-      - Basic
-      - Intermediate
-      - Advanced
-  - title: Using RosyREDCap
-    contents:
-      - REDCap
-  - title: API and Tokens
-    contents:
-      - API
-      - Tokens
-  - title: Setup
-    contents:
-      - project_cache
-      - DB_object
-      - multiple_projects
-  - title: File Management
-    contents:
-      - Download
-      - Upload
-  - title: Shiny Application
-    contents:
-      - Shiny
-    topics:
-      - Shiny
-  - title: Security
-    contents:
-      - Security
 authors:
   Brandon Rose:
     href: https://github.com/brandonerose

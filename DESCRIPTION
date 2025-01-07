@@ -6,7 +6,8 @@ Authors@R:
 Description: What the package does (one paragraph).
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
-URL: https://github.com/thecodingdocs/REDCapDB
+URL: https://github.com/thecodingdocs/REDCapDB,
+    https://thecodingdocs.github.io/REDCapDB/
 BugReports: https://github.com/thecodingdocs/REDCapDB/issues
 Imports: 
     cli,

@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-What the package does (one paragraph).
+Uses the REDCap API to build a standardized R list object (DB), designed to be used downstream for data pipelines and the R shiny app RosyREDCap.
 }
 \seealso{
 Useful links:
@@ -20,7 +20,19 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com}
+\strong{Maintainer}: Brandon Rose \email{thecodingdocs@gmail.com} (\href{https://orcid.org/0009-0009-7813-1960}{ORCID})
+
+Authors:
+\itemize{
+  \item Natalie Goulett
+  \item Chris Hilsinger-Pate
+  \item Nikola Susic
+}
+
+Other contributors:
+\itemize{
+  \item Sydney Stern (\href{https://orcid.org/0000-0002-1479-605X}{ORCID}) [contributor]
+}
 
 }
 \keyword{internal}

@@ -118,6 +118,37 @@ reference:
       - link_REDCap_home
       - link_REDCap_project
       - link_REDCap_record
+articles:
+  - title: Feautures by R User Level
+    navbar: ~
+    contents:
+      - Basic
+      - Intermediate
+      - Advanced
+  - title: Using RosyREDCap
+    contents:
+      - REDCap
+  - title: API and Tokens
+    contents:
+      - API
+      - Tokens
+  - title: Setup
+    contents:
+      - project_cache
+      - DB_object
+      - multiple_projects
+  - title: File Management
+    contents:
+      - Download
+      - Upload
+  - title: Shiny Application
+    contents:
+      - Shiny
+    topics:
+      - Shiny
+  - title: Security
+    contents:
+      - Security
 
 authors:
   Brandon Rose:

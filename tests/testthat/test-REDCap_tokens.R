@@ -1,5 +1,5 @@
 test_that("internal constants are correct", {
-  expect_equal(internal_REDCapDB_token_prefix, "REDCapDB_token_")
+  expect_equal(internal_REDCapDB_prefix, "REDCapDB_")
   expect_equal(internal_TEST_classic_token, "FAKE32TESTTOKENCLASSIC1111111111")
   expect_equal(internal_TEST_repeating_token, "FAKE32TESTTOKENREPEATING22222222")
   expect_equal(internal_TEST_longitudinal_token, "FAKE32TESTTOKENLONGITUDINAL33333")
@@ -34,21 +34,21 @@ test_that("validate_REDCap_token checks_env", {
   DB <- mock_DB()
   token_name <- get_REDCap_token_name(DB)
   token <- generate_hex(32)
-  withr::with_envvar(c(REDCapDB_token_TEST_PROJECT=token),{
+  withr::with_envvar(c(REDCapDB_TEST_PROJECT=token),{
     expect_equal(validate_REDCap_token(DB),token)
     expect_no_error(validate_REDCap_token(DB))
   })
   token <- generate_hex(2)
-  withr::with_envvar(c(REDCapDB_token_TEST_PROJECT=token),{
+  withr::with_envvar(c(REDCapDB_TEST_PROJECT=token),{
     expect_equal(validate_REDCap_token(DB),token)
   })
-  withr::with_envvar(c(REDCapDB_token_TEST_PROJECT=NULL),{
+  withr::with_envvar(c(REDCapDB_TEST_PROJECT=NULL),{
     expect_equal(validate_REDCap_token(DB),"")
   })
 })
 test_that("get_REDCap_token_name works", {
   DB <- mock_DB()
-  expect_equal(get_REDCap_token_name(DB),"REDCapDB_token_TEST_PROJECT")
+  expect_equal(get_REDCap_token_name(DB),"REDCapDB_TEST_PROJECT")
 })
 # test_that("set_REDCap_token sets a new token", {
 #   DB <- mock_DB()
@@ -61,7 +61,7 @@ test_that("get_REDCap_token_name works", {
 #   DB <- mock_DB("TEST_classic")
 #
 #   # Set an existing valid token
-#   Sys.setenv(REDCapDB_token_TEST_classic = internal_TEST_classic_token)
+#   Sys.setenv(REDCapDB_TEST_classic = internal_TEST_classic_token)
 #
 #   # Mock user input to not change the token
 #   stub(set_REDCap_token, "utils::menu", 2)
@@ -74,7 +74,7 @@ test_that("get_REDCap_token_name works", {
 #   DB <- mock_DB("TEST_classic")
 #
 #   # Set an existing valid token
-#   Sys.setenv(REDCapDB_token_TEST_classic = internal_TEST_classic_token)
+#   Sys.setenv(REDCapDB_TEST_classic = internal_TEST_classic_token)
 #
 #   # Mock user input to change the token
 #   stub(set_REDCap_token, "utils::menu", 1)

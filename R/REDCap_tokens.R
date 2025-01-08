@@ -187,7 +187,7 @@ check_saved_REDCapDB_tokens <- function(){
   return(invisible())
 }
 #' @noRd
-internal_REDCapDB_token_prefix <- "REDCapDB_token_"
+internal_REDCapDB_token_prefix <- "REDCapDB_"
 #' @noRd
 internal_TEST_classic_token <- "FAKE32TESTTOKENCLASSIC1111111111"
 #' @noRd

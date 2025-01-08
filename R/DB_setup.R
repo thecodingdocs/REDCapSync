@@ -39,6 +39,7 @@ setup_DB <- function (
     short_name,
     dir_path,
     redcap_base,
+    token_name = Sys.getenv(paste0("REDCapDB_",short_name)),
     force = F,
     merge_form_name = "merged",
     use_csv = F,
@@ -50,7 +51,9 @@ setup_DB <- function (
   if(length(short_name)!=1)stop(em)
   projects <- get_projects() # add short_name conflict check if id and base url differs
   short_name <- validate_env_name(short_name)
-  token_name <- paste0(internal_REDCapDB_token_prefix,short_name) %>% validate_env_name()
+  if(paste0(internal_REDCapDB_token_prefix,short_name)!=token_name){
+  }# maybe a message
+  token_name <- validate_env_name(token_name)
   in_proj_cache <- short_name %in% projects$short_name
   missing_dir_path <- missing(dir_path)
   is_a_test <- is_test_short_name(short_name = short_name)

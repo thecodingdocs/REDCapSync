@@ -1,5 +1,5 @@
 test_that("internal constants are correct", {
-  expect_equal(internal_REDCapDB_prefix, "REDCapDB_")
+  expect_equal(internal_REDCapDB_token_prefix, "REDCapDB_")
   expect_equal(internal_TEST_classic_token, "FAKE32TESTTOKENCLASSIC1111111111")
   expect_equal(internal_TEST_repeating_token, "FAKE32TESTTOKENREPEATING22222222")
   expect_equal(internal_TEST_longitudinal_token, "FAKE32TESTTOKENLONGITUDINAL33333")

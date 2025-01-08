@@ -1,8 +1,8 @@
 ---
-title: "RosyREDCap for the Advanced R User"
+title: "REDCapDB for the Advanced R User"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{RosyREDCap for the Advanced R User}
+  %\VignetteIndexEntry{REDCapDB for the Advanced R User}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,5 +15,5 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(RosyREDCap)
+library(REDCapDB)
 ```

@@ -15,5 +15,5 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, eval=FALSE}
-library(RosyREDCap)
+library(REDCapDB)
 ```

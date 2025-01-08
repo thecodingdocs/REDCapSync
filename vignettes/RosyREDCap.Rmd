@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 This is how you get REDCap turned into an R database...
 
 ```{r example, eval=FALSE}
-library("RosyREDCap")
+library("REDCapDB")
 
 projects <- get_projects() # get list of cached projects
 
@@ -40,15 +40,15 @@ You can set your REDCap token in three ways! If you need more help setting your 
 
 ```{r example2, eval=FALSE}
 #1. set each time in your session (not recommended in saved/shared scripts!)
-Sys.setenv(RosyREDCap_token_TEST = "YoUrNevErShaReToken")
+Sys.setenv(REDCapDB_TEST = "YoUrNevErShaReToken")
 
 #2. set to your private R sessions!
 usethis::edit_r_environ() #finds your file
-# Then you add --> RosyREDCap_token_TEST = 'YoUrNevErShaReToken'
+# Then you add --> REDCapDB_TEST = 'YoUrNevErShaReToken'
 # then save file and restart R
 
 # If it worked you will see your token when you run...
-Sys.getenv("RosyREDCap_token_TEST")
+Sys.getenv("REDCapDB_TEST")
 #And if your DB object is setup properly...
 #3. Using the REDCap console
 DB<-load_DB("TEST")
@@ -72,7 +72,7 @@ DB <- transform_DB(DB) # transform to most basic forms, can be modified
 DB <- drop_redcap_dir(DB)
 
 #run shiny app!
-run_RosyREDCap()
+run_REDCapDB()
 
 # dev functions not ready for public yet
 DB <- clean_DB(DB)

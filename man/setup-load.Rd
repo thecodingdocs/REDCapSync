@@ -11,7 +11,7 @@ setup_DB(
   short_name,
   dir_path,
   redcap_base,
-  token_name = Sys.getenv(paste0("REDCapDB_", short_name)),
+  token_name = paste0("REDCapDB_", short_name),
   force = F,
   merge_form_name = "merged",
   use_csv = F,

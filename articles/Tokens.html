@@ -39,11 +39,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/Advanced.html">RosyREDCap for the Advanced R User</a></li>
-    <li><a class="dropdown-item" href="../articles/Basic.html">RosyREDCap for the Basic R User</a></li>
+<li><a class="dropdown-item" href="../articles/Advanced.html">REDCapDB for the Advanced R User</a></li>
+    <li><a class="dropdown-item" href="../articles/Basic.html">REDCapDB for the Basic R User</a></li>
     <li><a class="dropdown-item" href="../articles/DB_object.html">The DB Object</a></li>
     <li><a class="dropdown-item" href="../articles/Download.html">Downloading REDCap Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Intermediate.html">RosyREDCap for the Intermediate R User</a></li>
+    <li><a class="dropdown-item" href="../articles/Intermediate.html">REDCapDB for the Intermediate R User</a></li>
     <li><a class="dropdown-item" href="../articles/multiple_projects.html">Managing Multiple REDCap Projects</a></li>
     <li><a class="dropdown-item" href="../articles/project_cache.html">The Project Cache</a></li>
     <li><a class="dropdown-item" href="../articles/REDCap.html">REDCap Project Structure</a></li>
@@ -94,32 +94,31 @@ ever any doubt in your mind you should quickly regenerate your token on
 the REDCap website. If you are working on a <em>real</em> REDCap project
 it’s good practice to regenerate your token periodically, such as once a
 week, just to be safe.</p>
-<p>Precisely because tokens are sensitive, RosyREDCap is designed to
-only reference the name of your token, such as “RosyREDCap_token_TEST”.
-If RosyREDCap ever wants to use the token to make an API call to REDCap,
-it will check <code>Sys.getenv("RosyREDCap_token_TEST")</code>. By
-default are token names start with “RosyREDCap_token_”, followed by the
-<code>short_name</code> you chose in <code><a href="../reference/setup-load.html">setup_DB()</a></code>.Below
-demonstrates how to set and check your tokens…</p>
+<p>Precisely because tokens are sensitive, REDCapDB is designed to only
+reference the name of your token, such as “REDCapDB_TEST”. If REDCapDB
+ever wants to use the token to make an API call to REDCap, it will check
+<code>Sys.getenv("REDCapDB_TEST")</code>. By default are token names
+start with “REDCapDB_”, followed by the <code>short_name</code> you
+chose in <code><a href="../reference/setup-load.html">setup_DB()</a></code>.Below demonstrates how to set and check
+your tokens…</p>
 <div class="section level3">
 <h3 id="setting-your-token-for-one-session">Setting Your Token for One Session<a class="anchor" aria-label="anchor" href="#setting-your-token-for-one-session"></a>
 </h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/thecodingdocs/RosyREDCap" class="external-link">"RosyREDCap"</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"RosyREDCap_token_TEST"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thecodingdocs/REDCapDB" class="external-link">REDCapDB</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCapDB_TEST"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;[1] ""</span></span>
 <span><span class="co"># Assuming you already setup or loaded a DB object you can set the token like this...</span></span>
 <span><span class="va">DB</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">load_DB</a></span><span class="op">(</span><span class="st">"TEST"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/set_REDCap_token.html">set_REDCap_token</a></span><span class="op">(</span><span class="va">DB</span><span class="op">)</span></span></code></pre></div>
 <p>You can also set manually with base R. Unless you specifically set
-the token <code>Sys.getenv("RosyREDCap_token_TEST")</code> will be
-blank.</p>
+the token <code>Sys.getenv("REDCapDB_TEST")</code> will be blank.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set your token manually</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>RosyREDCap_token_TEST<span class="op">=</span><span class="st">"a_FaKe_TOkEn"</span><span class="op">)</span> <span class="co"># again having this in a script is not advised but possible</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>REDCapDB_TEST<span class="op">=</span><span class="st">"a_FaKe_TOkEn"</span><span class="op">)</span> <span class="co"># again having this in a script is not advised but possible</span></span>
 <span></span>
 <span><span class="co"># Get your token</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"RosyREDCap_token_TEST"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCapDB_TEST"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;[1] "a_FaKe_TOkEn"</span></span></code></pre></div>
 <p>Now the token is set for this R session only. If you restarted R, it
 would be blank again.</p>
@@ -135,17 +134,17 @@ not a part of any cloud storage or git or GitHub. You can use
 <code>usethis::edit_r_environ()</code> to semi-permanently save your
 token. Each time you launch an R session this file will run and your
 token will be visible to you if specifically called with
-<code>Sys.getenv("RosyREDCap_token_TEST")</code>.</p>
+<code>Sys.getenv("REDCapDB_TEST")</code>.</p>
 <ol style="list-style-type: decimal">
 <li>Open the .Renviron file with
 <code>usethis::edit_r_environ()</code>
 </li>
 <li>Add the token like this…
-<code>RosyREDCap_token_TEST = "faKeTokeN"</code>
+<code>REDCapDB_TEST = "faKeTokeN"</code>
 </li>
 <li>Save the file and Close</li>
 <li>Restart R Session (Session tab or <code>.rs.restartR()</code>).</li>
-<li>Confirm with <code>Sys.getenv("RosyREDCap_token_TEST")</code>
+<li>Confirm with <code>Sys.getenv("REDCapDB_TEST")</code>
 </li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -153,15 +152,15 @@ token will be visible to you if specifically called with
 <span><span class="co">#install.packages("usethis") </span></span>
 <span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_r_environ</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># Now save your token.... (without the comment symbol '#')</span></span>
-<span><span class="co"># RosyREDCap_token_TEST = "faKeTokeN"</span></span>
+<span><span class="co"># REDCapDB_TEST = "faKeTokeN"</span></span>
 <span><span class="co"># Save the file and Close</span></span>
 <span><span class="co"># Restart R Session (session tab)</span></span>
 <span><span class="co"># .rs.restartR() # this will also restart R session for you.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"RosyREDCap_token_TEST"</span><span class="op">)</span> <span class="co"># now should contain your token</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCapDB_TEST"</span><span class="op">)</span> <span class="co"># now should contain your token</span></span></code></pre></div>
 <p>The only reference to your token that is ever made or saved in
-RosyREDCap is with its name. For example, any RosyREDCap DB object will
-have the token name at <code>DB$token_name</code>. In the future, we may
-set our token in a different way.</p>
+REDCapDB is with its name. For example, any REDCap DB object will have
+the token name at <code>DB$token_name</code>. In the future, we may set
+our token in a different way.</p>
 </div>
 <div class="section level3">
 <h3 id="testing-your-token-optional">Testing Your Token (optional)<a class="anchor" aria-label="anchor" href="#testing-your-token-optional"></a>

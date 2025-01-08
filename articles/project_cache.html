@@ -39,11 +39,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/Advanced.html">RosyREDCap for the Advanced R User</a></li>
-    <li><a class="dropdown-item" href="../articles/Basic.html">RosyREDCap for the Basic R User</a></li>
+<li><a class="dropdown-item" href="../articles/Advanced.html">REDCapDB for the Advanced R User</a></li>
+    <li><a class="dropdown-item" href="../articles/Basic.html">REDCapDB for the Basic R User</a></li>
     <li><a class="dropdown-item" href="../articles/DB_object.html">The DB Object</a></li>
     <li><a class="dropdown-item" href="../articles/Download.html">Downloading REDCap Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Intermediate.html">RosyREDCap for the Intermediate R User</a></li>
+    <li><a class="dropdown-item" href="../articles/Intermediate.html">REDCapDB for the Intermediate R User</a></li>
     <li><a class="dropdown-item" href="../articles/multiple_projects.html">Managing Multiple REDCap Projects</a></li>
     <li><a class="dropdown-item" href="../articles/project_cache.html">The Project Cache</a></li>
     <li><a class="dropdown-item" href="../articles/REDCap.html">REDCap Project Structure</a></li>
@@ -82,25 +82,25 @@
 
     
     
-<p>The RosyREDCap package benefits from storing/caching key information
+<p>The REDCapDB package benefits from storing/caching key information
 about your different projects. The two most important pieces of
 information is the <code>short_name</code> and <code>directory</code>
 where it’s stored. This is enough information to be able to find where
 you have chosen to securely store your files, load what has already been
 collected, and then communicate with R to fetch any new updates.
-RosyREDCap’s ability to store your projects in a standardized directory
-is what allows for powerful pipeline tasks.</p>
+REDCapDB’s ability to store your projects in a standardized directory is
+what allows for powerful pipeline tasks.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/thecodingdocs/RosyREDCap" class="external-link">"RosyREDCap"</a></span><span class="op">)</span> <span class="co"># don't forget to load the package</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thecodingdocs/REDCapDB" class="external-link">REDCapDB</a></span><span class="op">)</span> <span class="co"># don't forget to load the package</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="the-cache">The Cache<a class="anchor" aria-label="anchor" href="#the-cache"></a>
 </h2>
 <p>Using the <code>hoadr</code> package, R finds the standard location
 where R typically stores cahced package data. For example, on Mac the
 location might look like,
-“/Users/yourmacname/Library/Caches/R/RosyREDCap”. Your exact path can be
+“/Users/yourmacname/Library/Caches/R/REDCapDB”. Your exact path can be
 found with <code><a href="../reference/cache_path.html">cache_path()</a></code> At the time writing this article,
-the only thing that RosyREDCap stores in this cache is the projects
+the only thing that REDCapDB stores in this cache is the projects
 data.frame, which can be loaded with
 <code>projects &lt;- get_projects()</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">

@@ -43,7 +43,7 @@ Imports:
 Suggests: 
     knitr,
     mockery,
-    RosyREDCap (>= 1.0.0.9038),
+    RosyREDCap,
     testthat (>= 3.0.0),
     withr
 VignetteBuilder: 

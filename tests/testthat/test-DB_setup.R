@@ -36,8 +36,8 @@ test_that("setup_DB creates a valid DB object and valid directory", {
     short_name = short_name,
     dir_path = test_dir,
     redcap_base = redcap_base,
-    force = T,
-    auto_check_token = F
+    force = TRUE,
+    auto_check_token = FALSE
   )
   expect_no_error(validate_dir(dir_path = test_dir))
   expect_no_error(validate_DB(DB = DB))
@@ -79,12 +79,12 @@ test_that("save_DB doesn't save if it's blank but will save and cache if valid, 
     short_name = short_name,
     dir_path = test_dir,
     redcap_base = redcap_base,
-    auto_check_token = F
+    auto_check_token = FALSE
   )
   save_DB(DB)
   expect_false(file.exists(file.path(DB$dir_path,"R_objects",paste0(short_name,"_REDCapDB.rdata"))))
   #fakeDB
-  DB$internals$ever_connected <- T
+  DB$internals$ever_connected <- TRUE
   fake_time <- Sys.time()
   DB$internals$last_data_dir_save <- fake_time
   DB$internals$last_metadata_update <- fake_time
@@ -94,9 +94,9 @@ test_that("save_DB doesn't save if it's blank but will save and cache if valid, 
   DB$redcap$project_id <- "01234"
   DB$redcap$project_title <- "A Fake Project"
   DB$redcap$id_col <- "record_id"
-  DB$redcap$is_longitudinal <- F
-  DB$redcap$has_repeating_forms_or_events <- F
-  DB$redcap$has_multiple_arms <- F
+  DB$redcap$is_longitudinal <- FALSE
+  DB$redcap$has_repeating_forms_or_events <- FALSE
+  DB$redcap$has_multiple_arms <- FALSE
   DB$links$redcap_home <- DB$links$redcap_base
   DB$links$redcap_API_playground <- DB$links$redcap_base
   #saving

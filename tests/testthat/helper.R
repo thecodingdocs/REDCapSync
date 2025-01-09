@@ -4,9 +4,9 @@ mock_DB <- function(){
   DB <- setup_DB(
     short_name = short_name,
     redcap_base = redcap_base,
-    auto_check_token = F
+    auto_check_token = FALSE
   )
-  DB$internals$ever_connected <- T
+  DB$internals$ever_connected <- TRUE
   fake_time <- Sys.time()
   DB$internals$last_data_dir_save <- fake_time
   DB$internals$last_metadata_update <- fake_time
@@ -16,9 +16,9 @@ mock_DB <- function(){
   DB$redcap$project_id <- "01234"
   DB$redcap$project_title <- "A Fake Project"
   DB$redcap$id_col <- "record_id"
-  DB$redcap$is_longitudinal <- F
-  DB$redcap$has_repeating_forms_or_events <- F
-  DB$redcap$has_multiple_arms <- F
+  DB$redcap$is_longitudinal <- FALSE
+  DB$redcap$has_repeating_forms_or_events <- FALSE
+  DB$redcap$has_multiple_arms <- FALSE
   DB$links$redcap_home <- DB$links$redcap_base
   DB$links$redcap_API_playground <- DB$links$redcap_base
   return(DB)

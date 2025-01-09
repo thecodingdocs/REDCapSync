@@ -23,13 +23,13 @@ test_that("check_folder_for_projects works",{
     validate_dir = function(...) test_dir
   )
   #check without validation
-  expect_false(test_file1%in%check_folder_for_projects(file_path = test_dir,validate = F))
-  expect_contains(check_folder_for_projects(file_path = test_dir,validate = F),test_file2)
-  expect_contains(check_folder_for_projects(file_path = test_dir,validate = F),test_file3)
-  expect_false(test_file4%in%check_folder_for_projects(file_path = test_dir,validate = F))
+  expect_false(test_file1%in%check_folder_for_projects(file_path = test_dir,validate = FALSE))
+  expect_contains(check_folder_for_projects(file_path = test_dir,validate = FALSE),test_file2)
+  expect_contains(check_folder_for_projects(file_path = test_dir,validate = FALSE),test_file3)
+  expect_false(test_file4%in%check_folder_for_projects(file_path = test_dir,validate = FALSE))
   #check validation
-  expect_false(test_file1%in%check_folder_for_projects(file_path = test_dir,validate = T))
-  expect_contains(check_folder_for_projects(file_path = test_dir,validate = T),test_file2)
-  expect_false(test_file3%in%check_folder_for_projects(file_path = test_dir,validate = T))
-  expect_false(test_file4%in%check_folder_for_projects(file_path = test_dir,validate = T))
+  expect_false(test_file1%in%check_folder_for_projects(file_path = test_dir,validate = TRUE))
+  expect_contains(check_folder_for_projects(file_path = test_dir,validate = TRUE),test_file2)
+  expect_false(test_file3%in%check_folder_for_projects(file_path = test_dir,validate = TRUE))
+  expect_false(test_file4%in%check_folder_for_projects(file_path = test_dir,validate = TRUE))
 })

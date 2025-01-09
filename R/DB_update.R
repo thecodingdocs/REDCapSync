@@ -81,8 +81,8 @@ update_DB <- function(
         head_of_log <- DB$redcap$log
       }
       df1 <- ilog %>% rbind(head_of_log) %>% unique()
-      #dup <- df1[which(duplicated(rbind(df1, head_of_log),fromLast = T)[1:nrow(df1)]), ]
-      ilog <- df1[which(!duplicated(rbind(df1, head_of_log),fromLast = T)[1:nrow(df1)]), ]
+      #dup <- df1[which(duplicated(rbind(df1, head_of_log),fromLast = T)[seq_len(nrow(df1)]), ]
+      ilog <- df1[which(!duplicated(rbind(df1, head_of_log),fromLast = T)[seq_len(nrow(df1))]), ]
       if(nrow(ilog)>0){
         DB$redcap$log <- ilog %>% dplyr::bind_rows(DB$redcap$log) %>% unique()
         ilog$timestamp <- NULL

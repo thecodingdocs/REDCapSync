@@ -32,7 +32,7 @@ generate_horizontal_transform <- function(DB,records){
       )
     )
   }
-  col_names$number <-1:nrow(col_names)
+  col_names$number <-seq_len(nrow(col_names))
   form_list <- forms %>% sapply(function(IN){col_names$number[which(col_names$form_name==IN)]})
   for(form in forms){# form <- forms %>% sample(1)
     the_cols <- form_list[[form]]
@@ -69,7 +69,7 @@ generate_horizontal_transform <- function(DB,records){
 #' @export
 upload_transform_to_DB <- function(DB){
   if(is_something(DB$transformation$data_updates)){
-    for(i in 1:length(DB$transformation$data_updates)){
+    for(i in seq_along(DB$transformation$data_updates)){
       DB$transformation$data_updates[[i]] %>% labelled_to_raw_form(DB) %>% upload_form_to_REDCap(DB)
     }
     bullet_in_console("Successfully uploaded to REDCap!",bullet_type = "v")
@@ -88,7 +88,7 @@ extract_form_from_merged <- function(DB,form_name){
     if(!form_name%in%DB$metadata$forms$form_name)stop("form_name must be included in set of DB$metadata$forms$form_name")
     #form_name <-  DB$metadata$forms$form_name %>% sample(1)
     is_repeating_form <- form_name%in%DB$metadata$forms$form_name[which(DB$metadata$forms$repeating)]
-    rows  <- 1:nrow(merged)
+    rows  <- seq_len(nrow(merged))
     if(is_repeating_form){
       # rows <- which(merged$redcap_repeat_form==form_name)
     }
@@ -497,7 +497,7 @@ transform_DB <- function(DB,ask = T){
   if(is_something(process_df_list(DB$data,silent = T)))DB <- run_fields_transformation(DB,ask = ask)
   named_df_list <- DB$data
   OUT <- NULL
-  for(i in (1:nrow(forms_transformation))){
+  for(i in (seq_len(nrow(forms_transformation)))){
     TABLE <- forms_transformation$form_name[i]
     ref <- named_df_list[[TABLE]]
     if(!is.null(ref)){
@@ -547,7 +547,7 @@ transform_DB <- function(DB,ask = T){
           # new_name <- by.x %>% vec1_not_in_vec2(by.y)
           del_names <- mer_names %>% vec1_in_vec2(ref_names) %>% vec1_not_in_vec2(by.y)
           mer[,del_names] <- NULL
-          ref$sort_me_ftlog <- 1:nrow(ref)
+          ref$sort_me_ftlog <- seq_len(nrow(ref))
           if(is.null(mer)){
             a <- ref
           }else{

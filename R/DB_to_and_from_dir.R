@@ -82,7 +82,7 @@ drop_REDCap_to_directory <- function(
         "event_mapping",
         "missing_codes"
       )
-      for (i in 1:length(names_generic)){ #,"log" #taking too long
+      for (i in seq_along(names_generic)){ #,"log" #taking too long
         z<- DB$metadata[names_generic[i]]
         if(is_something(z[[1]])){
           tn <- names_redcap[i]
@@ -105,7 +105,7 @@ drop_REDCap_to_directory <- function(
       }
     }
     if(include_other){
-      for (i in 1:length(names_generic)){ #,"log" #taking too long
+      for (i in seq_along(names_generic)){ #,"log" #taking too long
         z<- DB$metadata[names_generic[i]]
         if(is_something(z[[1]])){
           tn <- names_redcap[i]
@@ -215,7 +215,7 @@ read_from_REDCap_upload <- function(DB,allow_all=T,drop_nonredcap_vars=T,drop_no
   }
   if(DB$data_update %>% is_something())stop("Already files in DB$data_update, clear that first")
   DB[["data_update"]] <- list()
-  for(i in 1:nrow(df)){#not done yet
+  for(i in seq_len(nrow(df))){#not done yet
     the_file <- readxl::read_xlsx(file.path(redcap_upload_dir,df$file_name[i]),col_types = "text") %>% all_character_cols() # would
     drop_cols <- NULL
     if(drop_nonredcap_vars){

@@ -186,7 +186,7 @@ get_REDCap_metadata <- function(DB,include_users = T){
       DB$metadata$events$repeating <- DB$metadata$events$unique_event_name%in%repeatingFormsEvents$event_name[which(is.na(repeatingFormsEvents$form_name))]
       repeatingFormsEvents_ind <- repeatingFormsEvents[which(!is.na(repeatingFormsEvents$event_name)&!is.na(repeatingFormsEvents$form_name)),]
       if(nrow(repeatingFormsEvents_ind)>0){
-        rows_event_mapping <- 1:nrow(repeatingFormsEvents_ind) %>% sapply(function(i){ which(DB$metadata$event_mapping$unique_event_name == repeatingFormsEvents_ind$event_name[i] & DB$metadata$event_mapping$form == repeatingFormsEvents_ind$form_name[i])})
+        rows_event_mapping <- seq_len(nrow(repeatingFormsEvents_ind)) %>% sapply(function(i){ which(DB$metadata$event_mapping$unique_event_name == repeatingFormsEvents_ind$event_name[i] & DB$metadata$event_mapping$form == repeatingFormsEvents_ind$form_name[i])})
         DB$metadata$event_mapping$repeating[rows_event_mapping] <- T
       }
     }
@@ -275,8 +275,8 @@ get_REDCap_files <- function(DB,original_file_names = F,overwrite = F){
       for(i in rows_to_save){
         file_name  <- form[[field_name]][i]
         record_id <- form[[DB$redcap$id_col]][i]
-        repeat_instance = form[["redcap_repeat_instance"]][i]
-        redcap_event_name = form[["redcap_event_name"]][i]
+        repeat_instance <- form[["redcap_repeat_instance"]][i]
+        redcap_event_name <- form[["redcap_event_name"]][i]
         if(!original_file_names){
           if(anyDuplicated(file_name)>0){
             warning(paste0("You have duplicate file names in ",form_name,", ",field_name,". Therefore will use system generated names"),immediate. = T)

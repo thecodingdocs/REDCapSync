@@ -166,7 +166,7 @@ check_field <- function(DB,DF, field_name,autofill_new=T){
     if(nrow(z)>0){
       # message("fix these in REDCap --> ",paste0(out,collapse = " | "))
       choices <- c("upload new","keep old","manual entry","launch redcap link only")
-      for ( i in 1:nrow(z)){
+      for ( i in seq_len(nrow(z))){
         OUT <- z[i,]
         IN<-z_old[i,]
         new_answer <- IN[[field_name]]
@@ -279,7 +279,7 @@ edit_REDCap_while_viewing <- function(DB,optional_DF,records, field_name_to_chan
       }
       if(choice1 == 2){
         if(nrow(CHANGE)==0)CHANGE <- blank_row
-        for(j in 1:nrow(CHANGE)){
+        for(j in seq_len(nrow(CHANGE))){
           message("Old answer (",field_name_to_change, "): ",CHANGE[j,field_name_to_change])
           choice2 <- utils::menu(choices2,title=paste0("What would you like to do?"))
           choice <- choices2[choice2]

@@ -259,7 +259,7 @@ create_node_edge_REDCap <- function(
     }
   }
   # final nodes-------------------
-  node_df$id <- 1:nrow(node_df)
+  node_df$id <- seq_len(nrow(node_df))
   node_df$fixedsize <- F
   # node_df$color.highlight <- "gold"
   node_df$label<-node_df$entity_label %>% sapply(function(text){
@@ -390,7 +390,7 @@ create_node_edge_REDCap <- function(
     }
   }
   # final edges -------------------
-  edge_df$id <- 1:nrow(edge_df)
+  edge_df$id <- seq_len(nrow(edge_df))
   OUT <- list(
     node_df = node_df,
     edge_df = edge_df

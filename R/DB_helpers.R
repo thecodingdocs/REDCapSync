@@ -149,7 +149,7 @@ construct_key_col_list <- function(DB){
 #' @noRd
 get_key_col_list <- function(DB){
   if(!is_something(DB$metadata$forms))stop("Empty --> `DB$metadata$forms`")
-  out_list <- 1:nrow(DB$metadata$forms) %>% lapply(function(i){
+  out_list <- seq_len(nrow(DB$metadata$forms)) %>% lapply(function(i){
     out <- DB$redcap$id_col
     if(DB$redcap$is_longitudinal)out <- append(out,"redcap_event_name")
     if(DB$metadata$forms$repeating[i]){
@@ -176,7 +176,7 @@ raw_process_redcap <- function(raw,DB, labelled){
     raw  <- raw %>% all_character_cols()
     add_ons <- c(DB$redcap$id_col,"arm_num","event_name","redcap_event_name","redcap_repeat_instrument","redcap_repeat_instance")
     if(DB$redcap$is_longitudinal){
-      raw$id_temp <- 1:nrow(raw)
+      raw$id_temp <- seq_len(nrow(raw))
       raw <-  merge(raw,DB$metadata$events[,c("arm_num","event_name","unique_event_name")],by.x="redcap_event_name",by.y="unique_event_name",sort = F,all.x = T)
       add_ons  <- add_ons[which(add_ons%in%colnames(raw))]
       cols <- c(add_ons, colnames(raw)) %>% unique()
@@ -193,7 +193,7 @@ raw_process_redcap <- function(raw,DB, labelled){
       #form_name <-  forms$form_name %>% sample(1)
       is_repeating_form <- form_name%in%forms$form_name[which(forms$repeating)]
       is_longitudinal <- DB$redcap$is_longitudinal
-      rows  <- 1:nrow(raw)
+      rows  <- seq_len(nrow(raw))
       if(is_repeating_form){
         if(!"redcap_repeat_instrument"%in%colnames(raw))stop("redcap_repeat_instrument not in colnames(raw)")
         if(is_longitudinal){

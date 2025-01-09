@@ -72,7 +72,7 @@ project_health_check <- function(){
   # projects$test_RC <- F
   # if(nrow(projects)>0){
   #   # DROPS<- projects[which(is.na(projects$project_id)),]
-  #   for(i in 1:nrow(projects_old)){#i <- 1:nrow(projects)%>%  sample1()
+  #   for(i in seq_len(nrow(projects_old))){#i <- seq_len(nrow(projects))%>%  sample1()
   #     OUT <- NULL
   #     OUT <- projects_old[i,]
   #     if(file.exists(OUT$dir_path)){

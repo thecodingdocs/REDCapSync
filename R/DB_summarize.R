@@ -37,7 +37,7 @@ fields_to_choices <- function(fields){
   # fields$field_name[which(fields$field_type=="checkbox_choice")] <- fields$field_name[which(fields$field_type=="checkbox_choice")] %>% strsplit("___") %>% sapply(function(X){X[[1]]})
   fields <- fields[which(!is.na(fields$select_choices_or_calculations)),]
   choices <- NULL
-  for(i in 1:nrow(fields)){
+  for(i in seq_len(nrow(fields))){
     field_name <- fields$field_name[i]
     form_name <- fields$form_name[i]
     # form_label <- fields$form_label[i]
@@ -155,14 +155,14 @@ annotate_choices <- function(DB,summarize_data = T){
   #     DB$metadata$fields$field_label[which(fields$field_name==X)] %>% unique()
   #   })
   if(summarize_data){
-    choices$n <- 1:nrow(choices) %>% lapply(function(i){
+    choices$n <- seq_len(nrow(choices)) %>% lapply(function(i){
       DF <- DB$data[[choices$form_name[i]]]
       if(is.null(DF))return(0)
       if(nrow(DF)==0)return(0)
       sum(DF[,choices$field_name[i]]==choices$name[i],na.rm = T)
       # print(i)
     }) %>% unlist()
-    choices$n_total <- 1:nrow(choices) %>% lapply(function(i){
+    choices$n_total <- seq_len(nrow(choices)) %>% lapply(function(i){
       DF <- DB$data[[choices$form_name[i]]]
       if(is.null(DF))return(0)
       if(nrow(DF)==0)return(0)
@@ -315,15 +315,15 @@ clean_column_for_table <- function(col,class,label,units,levels){
 #   all_combinations <- all_combinations %>% merge(cross_codebook1,by.x="variable1",by.y = "label1")
 #   all_combinations <- all_combinations %>% merge(cross_codebook2,by.x="variable2",by.y = "label2")
 #   rownames(all_combinations) <- NULL
-#   i <- 1:nrow(all_combinations) %>% sample1()
-#   all_combinations$n <- 1:nrow(all_combinations) %>% lapply(function(i){
+#   i <- seq_len(nrow(all_combinations)) %>% sample1()
+#   all_combinations$n <- seq_len(nrow(all_combinations)) %>% lapply(function(i){
 #     x<-DB$data[[all_combinations$form_name1[i]]]
 #     x<-DB$data[[all_combinations$form_name1[i]]]
 #     x[which(x[[all_combinations[i]]])]
 #
 #     ==codebook$name[i],na.rm = T)
 #   }) %>% unlist()
-#   codebook$n_total <- 1:nrow(codebook) %>% lapply(function(i){
+#   codebook$n_total <- seq_len(nrow(codebook)) %>% lapply(function(i){
 #     sum(!is.na(DB$data[[codebook$form_name[i]]][,codebook$field_name[i]]),na.rm = T)
 #   }) %>% unlist()
 #   codebook$perc <-  (codebook$n/codebook$n_total) %>% round(4)
@@ -859,7 +859,7 @@ rmarkdown_DB <- function (DB,dir_other){
 labelled_to_raw_form <- function(FORM,DB){
   use_missing_codes <- is.data.frame(DB$metadata$missing_codes)
   fields <- filter_fields_from_form(FORM = FORM,DB = DB)
-  for(i in 1:nrow(fields)){ # i <-  1:nrow(fields) %>% sample(1)
+  for(i in seq_len(nrow(fields))){ # i <-  seq_len(nrow(fields) %>% sample(1)
     COL_NAME <- fields$field_name[i]
     has_choices <- fields$has_choices[i]
     if(has_choices){
@@ -911,7 +911,7 @@ raw_to_labelled_form <- function(FORM,DB){
   if(nrow(FORM)>0){
     use_missing_codes <- is.data.frame(DB$metadata$missing_codes)
     metadata <- filter_fields_from_form(FORM = FORM,DB = DB)
-    for(i in 1:nrow(metadata)){ # i <-  1:nrow(metadata) %>% sample(1)
+    for(i in seq_len(nrow(metadata))){ # i <-  seq_len(nrow(metadata)) %>% sample(1)
       COL_NAME <- metadata$field_name[i]
       has_choices <- metadata$has_choices[i]
       if(has_choices){
@@ -1152,7 +1152,7 @@ DF_list_to_text <- function(DF_list, DB,drop_nas = T,clean_names= T){
     df_name <- paste0("----- ",the_name, " Table -----")
     output_list <- c(output_list, paste0("&nbsp;&nbsp;<strong>", df_name, "</strong><br>"))
     key_col_names <- DB$metadata$form_key_cols[[the_raw_name]]
-    for (j in 1:nrow(DF)) {
+    for (j in seq_len(nrow(DF))) {
       for (col_name in colnames(DF)) {
         entry <- DF[j, col_name]
         if (!col_name %in% key_col_names) {

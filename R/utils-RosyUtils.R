@@ -91,9 +91,9 @@ bullet_in_console <- function(text = "",url = NULL,bullet_type = "i",collapse = 
       "'))}"
     )
   }
-  for(i in 1:length(url_if))text[i] <- paste0(text[i],url_if[i])
-  for(i in 1:length(file_if))text[i] <- paste0(text[i],file_if[i])
-  names(text)[1:length(text)]<- bullet_type
+  for(i in seq_along(url_if))text[i] <- paste0(text[i],url_if[i])
+  for(i in seq_along(file_if))text[i] <- paste0(text[i],file_if[i])
+  names(text)[seq_along(text)]<- bullet_type
   return(cli::cli_bullets(text))
   # * = • = bullet
   # > = → = arrow
@@ -332,7 +332,7 @@ excel_to_list <- function(path){
   sheets <- readxl::excel_sheets(path)
   clean_sheets <- clean_env_names(sheets)
   out <- list()
-  for (i in 1:length(sheets)){
+  for (i in seq_along(sheets)){
     out[[i]]<- rio::import(path,col_types="text",sheet = i)
   }
   names(out) <- clean_sheets
@@ -342,7 +342,7 @@ csv_to_list <- function(paths){
   paths <- sanitize_path(paths)
   OUT <- list()
   clean_names <- paths %>% basename() %>% tools::file_path_sans_ext() %>% clean_env_names()
-  for (i in 1:length(paths)){
+  for (i in seq_along(paths)){
     OUT[[i]]<- utils::read.csv(paths[i],stringsAsFactors = F,na.strings = c("","NA"))
   }
   names(OUT) <- clean_names
@@ -379,7 +379,7 @@ wb_to_list <- function(wb){
   sheets <- openxlsx::sheets(wb)
   clean_sheets <- clean_env_names(sheets)
   out <- list()
-  for (i in 1:length(sheets)){
+  for (i in seq_along(sheets)){
     col_row <- 1
     x <- openxlsx::getTables(wb,sheet = i)
     if(length(x)>0){
@@ -739,7 +739,7 @@ remove_html_tags <- function(text_vector) {
 }
 matches <- function(x,ref,count_only=F){
   final_match <- list()
-  final_match[1:length(x)] <- NA
+  final_match[seq_along(x)] <- NA
   next_match <- match(x,ref)
   next_match_index <- which(!is.na(next_match))
   while(length(next_match_index)>0){
@@ -764,7 +764,7 @@ matches <- function(x,ref,count_only=F){
 }
 choice_vector_string <- function(vec){
   if(!is_something(vec))return(NA)
-  return(paste0(paste0(1:length(vec),", ",vec),collapse = " | "))
+  return(paste0(paste0(seq_along(vec),", ",vec),collapse = " | "))
 }
 function_to_string <- function(func) {
   # Deparse the function and collapse into a single string using "\n"

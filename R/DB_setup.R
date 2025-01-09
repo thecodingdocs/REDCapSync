@@ -15,6 +15,7 @@
 #' @param short_name A character string with no spaces or symbols representing the unique short name for the REDCap project.
 #' @param dir_path Optional character string representing the directory path where you want the REDCap project data to be stored. If missing, DB object will only be in current R session.
 #' @param redcap_base A character string representing the base URL of the REDCap server.
+#' @param token_name An optional character string for setting your token name. Default is `REDCapDB_<short_name>`
 #' @param force Logical (TRUE/FALSE). If TRUE, forces the setup even if the `DB` object already exists. Default is `FALSE`.
 #' @param validate Logical (TRUE/FALSE). If TRUE, validates DB object based on current rules. Default is `TRUE`.
 #' @param merge_form_name A character string representing the name of the merged form. Default is "merged".

@@ -31,6 +31,8 @@ load_test_DB(short_name = "TEST_repeating", with_data = F)
 
 \item{redcap_base}{A character string representing the base URL of the REDCap server.}
 
+\item{token_name}{An optional character string for setting your token name. Default is \verb{REDCapDB_<short_name>}}
+
 \item{force}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the \code{DB} object already exists. Default is \code{FALSE}.}
 
 \item{merge_form_name}{A character string representing the name of the merged form. Default is "merged".}

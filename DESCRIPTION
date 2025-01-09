@@ -33,7 +33,6 @@ Imports:
     REDCapR,
     rio,
     rmarkdown,
-    RosyApp,
     skimr,
     stats,
     stringr,
@@ -49,7 +48,6 @@ Suggests:
 VignetteBuilder: 
     knitr
 Remotes: 
-    github::brandonerose/RosyApp,
     github::thecodingdocs/RosyREDCap
 Config/testthat/edition: 3
 Encoding: UTF-8

@@ -186,13 +186,13 @@ get_REDCap_metadata <- function(DB,include_users = T){
       DB$metadata$events$repeating <- DB$metadata$events$unique_event_name%in%repeatingFormsEvents$event_name[which(is.na(repeatingFormsEvents$form_name))]
       repeatingFormsEvents_ind <- repeatingFormsEvents[which(!is.na(repeatingFormsEvents$event_name)&!is.na(repeatingFormsEvents$form_name)),]
       if(nrow(repeatingFormsEvents_ind)>0){
-        rows_event_mapping <- seq_len(nrow(repeatingFormsEvents_ind)) %>% sapply(function(i){ which(DB$metadata$event_mapping$unique_event_name == repeatingFormsEvents_ind$event_name[i] & DB$metadata$event_mapping$form == repeatingFormsEvents_ind$form_name[i])})
+        rows_event_mapping <- seq_len(nrow(repeatingFormsEvents_ind)) %>% lapply(function(i){ which(DB$metadata$event_mapping$unique_event_name == repeatingFormsEvents_ind$event_name[i] & DB$metadata$event_mapping$form == repeatingFormsEvents_ind$form_name[i])}) %>% unlist()
         DB$metadata$event_mapping$repeating[rows_event_mapping] <- T
       }
     }
-    DB$metadata$events$forms <- DB$metadata$events$unique_event_name %>% sapply(function(events){
+    DB$metadata$events$forms <- DB$metadata$events$unique_event_name %>% lapply(function(events){
       DB$metadata$event_mapping$form[which(DB$metadata$event_mapping$unique_event_name==events)] %>% unique() %>% paste0(collapse = " | ")
-    })
+    }) %>% unlist()
     if(DB$redcap$has_arms_that_matter){
       DB$redcap$has_arms_that_matter<- DB$metadata$arms$arm_num %>% lapply(function(arm){
         DB$metadata$event_mapping$form[which(DB$metadata$event_mapping$arm_num==arm)]
@@ -201,7 +201,7 @@ get_REDCap_metadata <- function(DB,include_users = T){
     # if(is.data.frame(DB$unique_events)){
     #   DB$metadata$events <- data.frame(
     #     event_name = unique(DB$unique_events$event_name),
-    #     arms = unique(DB$unique_events$event_name) %>% sapply(function(event_name){
+    #     arms = unique(DB$unique_events$event_name) %>% lapply(function(event_name){
     #       DB$unique_events$arm_num[which(DB$unique_events$event_name==event_name)] %>% unique() %>% paste0(collapse = " | ")
     #     })
     #   )
@@ -209,10 +209,10 @@ get_REDCap_metadata <- function(DB,include_users = T){
     DB$metadata$forms$repeating_via_events <- F
     DB$metadata$forms$repeating_via_events[
       which(
-        DB$metadata$forms$form_name %>% sapply(function(form_name){
+        DB$metadata$forms$form_name %>% lapply(function(form_name){
           # form_name <- forms$form_name %>% sample(1)
           anyDuplicated(DB$metadata$event_mapping$arm_num[which(DB$metadata$event_mapping$form==form_name)])>0
-        })
+        }) %>% unlist()
       )
     ] <- T
   }else{

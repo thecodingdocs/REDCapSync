@@ -65,7 +65,7 @@ REDCap_diagram <- function(DB,static = F,render = T,duplicate_forms = T, clean_n
     #   if(include_choices) groups <- groups %>% append("choice")
     #   rendered_graph <- rendered_graph %>% visNetwork::visClusteringByGroup(groups = groups)
     # }
-    rendered_graph$x$options$groups <- rendered_graph$x$groups %>% sapply(function(group){
+    rendered_graph$x$options$groups <- rendered_graph$x$groups %>% lapply(function(group){
       list(
         shape=OUT$node_df$shape[which(OUT$node_df$group==group)[[1]]],
         font = list(
@@ -76,7 +76,7 @@ REDCap_diagram <- function(DB,static = F,render = T,duplicate_forms = T, clean_n
           border = OUT$node_df$color.border[which(OUT$node_df$group==group)[[1]]]
         )
       )
-    },simplify = F)
+    }) %>% unlist()
   }
   if(render) return(rendered_graph)
   return(graph)
@@ -188,9 +188,9 @@ create_node_edge_REDCap <- function(
         entity_label = forms$form_label[match(event_mapping$form,forms$form_name)],# turn to function
         level = level,
         # label = forms$form_label %>% stringr::str_replace_all( "[^[:alnum:]]", ""),
-        title = event_mapping$form %>% sapply(function(x){
+        title = event_mapping$form %>% lapply(function(x){
           paste0("<p><b>",x,"</b><br>",paste0(form_names_to_field_names(x,DB),collapse = "<br>"),"</p>")
-        }),
+        }) %>% unlist(),
         shape = "box", # entity
         style = "filled",
         color.background = form_color,
@@ -208,9 +208,9 @@ create_node_edge_REDCap <- function(
         entity_label = forms$form_label,
         level = level,
         # label = forms$form_label %>% stringr::str_replace_all( "[^[:alnum:]]", ""),
-        title = forms$form_name %>% sapply(function(x){
+        title = forms$form_name %>% lapply(function(x){
           paste0("<p><b>",x,"</b><br>",paste0(form_names_to_field_names(x,DB),collapse = "<br>"),"</p>")
-        }),
+        }) %>% unlist(),
         shape = "box", # entity
         style = "filled",
         color.background = form_color,
@@ -262,9 +262,9 @@ create_node_edge_REDCap <- function(
   node_df$id <- seq_len(nrow(node_df))
   node_df$fixedsize <- F
   # node_df$color.highlight <- "gold"
-  node_df$label<-node_df$entity_label %>% sapply(function(text){
+  node_df$label<-node_df$entity_label %>% lapply(function(text){
     wrap_text(text,25)
-  })
+  }) %>% unlist()
   rownames(node_df) <- NULL
   # edges ======================
   # edges not longitudinal ---------------
@@ -317,8 +317,8 @@ create_node_edge_REDCap <- function(
     edge_df <- edge_df %>% dplyr::bind_rows(
       data.frame(
         id = NA,
-        from = events$arm_num %>% sapply(function(x){node_df$id[which(node_df$group=="arm"&node_df$entity_name==x)]}),
-        to = events$unique_event_name %>% sapply(function(x){node_df$id[which(node_df$group=="event"&node_df$entity_name==x)]}),
+        from = events$arm_num %>% lapply(function(x){node_df$id[which(node_df$group=="arm"&node_df$entity_name==x)]}) %>% unlist(),
+        to = events$unique_event_name %>% lapply(function(x){node_df$id[which(node_df$group=="event"&node_df$entity_name==x)]}) %>% unlist(),
         rel = NA,#"Belongs to",
         style = "filled",
         color = font.color,
@@ -333,7 +333,7 @@ create_node_edge_REDCap <- function(
       edge_df <- edge_df %>% dplyr::bind_rows(
         data.frame(
           id = NA,
-          from = event_mapping$unique_event_name %>% sapply(function(x){node_df$id[which(node_df$group=="event"&node_df$entity_name==x)]}),
+          from = event_mapping$unique_event_name %>% lapply(function(x){node_df$id[which(node_df$group=="event"&node_df$entity_name==x)]}) %>% unlist(),
           to = sub_node_df$id,
           rel = NA,#"Belongs to",
           style = "filled",
@@ -346,8 +346,8 @@ create_node_edge_REDCap <- function(
       edge_df <- edge_df %>% dplyr::bind_rows(
         data.frame(
           id = NA,
-          from = event_mapping$unique_event_name %>% sapply(function(x){node_df$id[which(node_df$group=="event"&node_df$entity_name==x)]}),
-          to = event_mapping$form %>% sapply(function(x){node_df$id[which(node_df$group=="form"&node_df$entity_name==x)]}),
+          from = event_mapping$unique_event_name %>% lapply(function(x){node_df$id[which(node_df$group=="event"&node_df$entity_name==x)]}) %>% unlist(),
+          to = event_mapping$form %>% lapply(function(x){node_df$id[which(node_df$group=="form"&node_df$entity_name==x)]}) %>% unlist(),
           rel = NA,#"Belongs to",
           style = "filled",
           color = font.color,

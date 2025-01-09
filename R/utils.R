@@ -50,7 +50,7 @@ add_redcap_links_table<-function(DF,DB){
 }
 #' @noRd
 clean_RC_col_names <- function(DF, DB){
-  colnames(DF)<-colnames(DF) %>% sapply(function(COL){
+  colnames(DF)<-colnames(DF) %>% lapply(function(COL){
     x<-DB$metadata$fields$field_label[which(DB$metadata$fields$field_name==COL)]
     if(length(x)>1){
       x<-x[[1]]
@@ -73,9 +73,9 @@ remove_records_from_list <- function(DB,records,silent=F){
   forms <- names(data_list)[
     which(
       names(data_list) %>%
-        sapply(function(form){
+        lapply(function(form){
           nrow(data_list[[form]])>0
-        })
+        }) %>% unlist()
     )]
   for(TABLE in forms){
     data_list[[TABLE]] <- data_list[[TABLE]][which(!data_list[[TABLE]][[DB$redcap$id_col]]%in%records),]
@@ -150,8 +150,8 @@ split_choices <- function(x){
   # name <- x %>% stringr::str_extract("(?<=, ).*$")
   result <- x %>% stringr::str_match("([^,]+), (.*)")
   # x <- data.frame(
-  #   code=x %>% strsplit(", ") %>% sapply(`[`, 1),
-  #   name=x %>% strsplit(", ")%>% sapply(`[`, -1) %>% sapply(function(y){paste0(y,collapse = ", ")})
+  #   code=x %>% strsplit(", ") %>% lapply(`[`, 1),
+  #   name=x %>% strsplit(", ")%>% lapply(`[`, -1) %>% lapply(function(y){paste0(y,collapse = ", ")})
   # )
   x <- data.frame(
     code=result[,2],

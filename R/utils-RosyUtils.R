@@ -2,14 +2,14 @@ process_df_list <- function(list,drop_empty = T,silent = F){
   if(is_something(list)){
     if(!is_df_list(list))stop("list must be ...... a list :)")
     if(drop_empty){
-      is_a_df_with_rows <- list %>% sapply(function(IN){
+      is_a_df_with_rows <- list %>% lapply(function(IN){
         is_df <- is.data.frame(IN)
         if(is_df){
           return(nrow(IN)>0)
         }else{
           return(F)
         }
-      })
+      }) %>% unlist()
       keeps <- which(is_a_df_with_rows)
       drops <-which(!is_a_df_with_rows)
       if(length(drops)>0){
@@ -326,7 +326,7 @@ wl <- function(x){
   length(which(x))
 }
 drop_nas <- function(x) {
-  x[!sapply(x, is.na)]
+  x[!unlist(lapply(x, is.na))]
 }
 excel_to_list <- function(path){
   sheets <- readxl::excel_sheets(path)
@@ -416,7 +416,7 @@ DF_to_wb <- function(
     if(length(freeze_key_cols)>0){
       if(!is_consecutive_srt_1(freeze_key_cols)){
         warning("please keep your key cols on the left consecutively. Fixing ",DF_name,": ",paste0(key_cols,collapse = ", "),".",immediate. = T)
-        non_key_cols <- 1:ncol(DF)
+        non_key_cols <- seq_len(ncol(DF))
         non_key_cols <- non_key_cols[which(!non_key_cols%in%freeze_key_cols)]
         new_col_order <- c(freeze_key_cols,non_key_cols)
         if(is_something(header_df)){
@@ -557,7 +557,7 @@ unique_trimmed_strings <- function(strings,max_length) {
   trim_string <- function(s, max_length) {
     substr(s, 1, max_length)
   }
-  trimmed_strings <- sapply(strings, trim_string, max_length = max_length)
+  trimmed_strings <- lapply(strings, trim_string, max_length = max_length) %>% unlist()
   # Initialize a vector to store unique strings
   unique_strings <- character(length(trimmed_strings))
   # Initialize a counter to keep track of occurrences
@@ -755,10 +755,10 @@ matches <- function(x,ref,count_only=F){
     next_match_index <- which(!is.na(next_match))
   }
   if(count_only){
-    final_match <- final_match %>% sapply(function(IN){
+    final_match <- final_match %>% lapply(function(IN){
       if(is.na(IN[1]))return(NA)
       return(length(IN))
-    })
+    }) %>% unlist()
   }
   return(final_match)
 }
@@ -834,13 +834,13 @@ is_df_list <- function(x,strict=F){
   if (!is.list(x)) return(FALSE)
   if (length(x)==0) return(FALSE)
   if (is_nested_list(x)) return(FALSE)
-  out <- sapply(x,is.data.frame)
+  out <- unlist(lapply(x,is.data.frame))
   if(strict)return(all(out))
   return(any(out))
 }
 check_match <- function(vec_list) {
   sorted_vecs <- lapply(vec_list, sort)
-  all(sapply(sorted_vecs[-1], function(x) identical(sorted_vecs[[1]], x)))
+  all(unlist(lapply(sorted_vecs[-1], function(x) identical(sorted_vecs[[1]], x))))
 }
 is_env_name <- function(env_name,silent=FALSE) {
   result <- tryCatch({

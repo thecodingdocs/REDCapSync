@@ -144,16 +144,16 @@ check_field <- function(DB,DF, field_name,autofill_new=T){
   new <- new[,cols]
   included_records <- records[which(records %in% old[[DB$redcap$id_col]])]
   if(length(missing_structure_cols)>0){
-    included_records_many_rows <- included_records[which(included_records %>% sapply(function(ID){
+    included_records_many_rows <- included_records[which(included_records %>% lapply(function(ID){
       length(which(old[[DB$redcap$id_col]]==ID))>1
-    }))]
+    }) %>% unlist())]
     if(length(included_records_many_rows)>0)stop("DF is missing structural columns (",missing_structure_cols %>% paste0(collapse = ", "),") and has ",form," rows with multiple entries... remove them or add the intended columns: ",included_records_many_rows %>% paste0(collapse = ", "))
     if("redcap_repeat_instrument"%in%missing_structure_cols)new$redcap_repeat_instrument<- form
     if("redcap_repeat_instance"%in%missing_structure_cols){
-      new$redcap_repeat_instance<- new[[DB$redcap$id_col]] %>% sapply(function(ID){
+      new$redcap_repeat_instance<- new[[DB$redcap$id_col]] %>% lapply(function(ID){
         if(ID %in% included_records)return(old$redcap_repeat_instance[which(old[[DB$redcap$id_col]]==ID)])
         return("1")
-      })
+      }) %>% unlist()
     }
     #add event?
   }

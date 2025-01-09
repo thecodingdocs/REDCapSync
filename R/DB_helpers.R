@@ -14,9 +14,9 @@ add_ID_to_DF <- function(DF,DB,ref_id){
   #     form <- DB$internals$merge_form_name
   #   }
   # }
-  id_col <- DF[[ref_id]] %>% sapply(function(ID){
+  id_col <- DF[[ref_id]] %>% lapply(function(ID){
     DB$data[[form]][[DB$redcap$id_col]][which(DB$data[[form]][[ref_id]]==ID)]
-  }) %>% as.data.frame()
+  }) %>% unlist() %>% as.data.frame()
   colnames(id_col) <- DB$redcap$id_col
   DF <- cbind(id_col,DF)
   DF
@@ -60,7 +60,7 @@ deidentify_DB <- function(DB,identifiers,drop_free_text = F){
   }
   if(is_something(DB$data)){
     drop_list <- Map(function(NAME, COLS) {identifiers[which(identifiers %in% COLS)]},names(DB$data), lapply(DB$data, colnames))
-    drop_list <- drop_list[sapply(drop_list, length) > 0]
+    drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0]
     if(length(drop_list)==0){
       bullet_in_console(paste0("Nothing to deidentify from --> ",identifiers %>% paste0(collapse = ", ")),bullet_type = "x")
     }else{
@@ -180,7 +180,7 @@ raw_process_redcap <- function(raw,DB, labelled){
       raw <-  merge(raw,DB$metadata$events[,c("arm_num","event_name","unique_event_name")],by.x="redcap_event_name",by.y="unique_event_name",sort = F,all.x = T)
       add_ons  <- add_ons[which(add_ons%in%colnames(raw))]
       cols <- c(add_ons, colnames(raw)) %>% unique()
-      raw <- raw[order(raw$id_temp),cols%>% sapply(function(c){which(colnames(raw)==c)}) %>% as.integer()]
+      raw <- raw[order(raw$id_temp),cols%>% lapply(function(c){which(colnames(raw)==c)}) %>% unlist() %>% as.integer()]
       raw$id_temp <- NULL
     }
     add_ons  <- add_ons[which(add_ons%in%colnames(raw))]
@@ -228,8 +228,8 @@ sort_redcap_log <- function(log){
 }
 #' @noRd
 clean_redcap_log <- function(log,purge_api=T){
-  log$record_id <- log$action %>% sapply(function(A){ifelse(grepl("Update record |Delete record |Create record ",A),gsub("Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation| |[:):]|[:(:]","",A),NA)})
-  log$action_type <- log$action %>% sapply(function(A){ifelse(grepl("Update record |Delete record |Create record ",A),(A %>% strsplit(" ") %>% unlist())[1],NA)})
+  log$record_id <- log$action %>% lapply(function(A){ifelse(grepl("Update record |Delete record |Create record ",A),gsub("Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation| |[:):]|[:(:]","",A),NA)}) %>% unlist()
+  log$action_type <- log$action %>% lapply(function(A){ifelse(grepl("Update record |Delete record |Create record ",A),(A %>% strsplit(" ") %>% unlist())[1],NA)}) %>% unlist()
   comments <- which(log$action=="Manage/Design"&grepl("Add field comment|Edit field comment|Delete field comment",log$details))
   if(length(comments)>0){
     log$record_id[comments] <- stringr::str_extract(log$details[comments], "(?<=Record: )[^,]+")

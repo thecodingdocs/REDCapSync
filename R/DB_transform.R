@@ -21,7 +21,7 @@ generate_horizontal_transform <- function(DB,records){
   ID_col <- DB$redcap$id_col
   max_by_record <- data.frame(
     record = records,
-    max = records %>% sapply(function(record){forms %>% sapply(function(form){length(which(data[[form]][[ID_col]]==record))}) %>% max()})
+    max = records %>% lapply(function(record){forms %>% lapply(function(form){length(which(data[[form]][[ID_col]]==record))}) %>% unlist() %>% max()}) %>% unlist()
   )
   for(form in forms){# form <- forms %>% sample(1)
     col_names <- col_names %>% dplyr::bind_rows(
@@ -33,7 +33,7 @@ generate_horizontal_transform <- function(DB,records){
     )
   }
   col_names$number <-seq_len(nrow(col_names))
-  form_list <- forms %>% sapply(function(IN){col_names$number[which(col_names$form_name==IN)]})
+  form_list <- forms %>% lapply(function(IN){col_names$number[which(col_names$form_name==IN)]}) %>% unlist()
   for(form in forms){# form <- forms %>% sample(1)
     the_cols <- form_list[[form]]
     out <- NULL
@@ -186,7 +186,7 @@ add_default_forms_transformation <- function(DB){
   }
   forms_transformation$form_label_remap[which(!forms_transformation$repeating)] <- merge_form_name_label
   forms_transformation$merge_to <- merge_form_name
-  forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to %>% sapply(function(form_name){
+  forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to %>% lapply(function(form_name){
     if(form_name %in% names(DB$metadata$form_key_cols)){
       DB$metadata$form_key_cols[[form_name]] %>% paste0(collapse = "+") %>% return()
     }else{
@@ -195,7 +195,7 @@ add_default_forms_transformation <- function(DB){
       form_name <- forms_transformation$form_name[rows[[1]]]
       DB$metadata$form_key_cols[[form_name]] %>% paste0(collapse = "+") %>% return()
     }
-  })
+  }) %>% unlist()
   forms_transformation$x_first <- F
   forms_transformation$x_first[which(forms_transformation$repeating)] <- T
   return(forms_transformation)
@@ -578,14 +578,14 @@ transform_DB <- function(DB,ask = T){
   DB$data <- OUT
   # forms_transformation <- annotate_forms(DB,summarize_data = F)
   if(!is.null(DB$metadata$form_key_cols)){
-    forms_transformation$key_cols <- forms_transformation$form_name %>% sapply(function(IN){
+    forms_transformation$key_cols <- forms_transformation$form_name %>% lapply(function(IN){
       DB$metadata$form_key_cols[[IN]] %>% paste0(collapse = "+")
-    })
-    forms_transformation$key_names <- forms_transformation$form_name %>% sapply(function(IN){
+    }) %>% unlist()
+    forms_transformation$key_names <- forms_transformation$form_name %>% lapply(function(IN){
       row_match <- which(forms_transformation$form_name==IN)
       if(!forms_transformation$repeating[row_match])return(DB$metadata$form_key_cols[[IN]])
       return(paste0(forms_transformation$form_name[row_match],"_key"))
-    })
+    }) %>% unlist()
   }
   DB$internals$is_transformed <- T
   bullet_in_console(paste0(DB$short_name," transformed according to `DB$transformation`"),bullet_type = "v")
@@ -597,9 +597,9 @@ transform_DB <- function(DB,ask = T){
   DB$metadata$forms <- forms_transformation[,cols_to_keep] %>% unique()
   colnames(DB$metadata$forms)[which(colnames(DB$metadata$forms)=="form_name_remap")] <-"form_name"
   colnames(DB$metadata$forms)[which(colnames(DB$metadata$forms)=="form_label_remap")] <-"form_label"
-  DB$metadata$forms$original_form_name <- DB$metadata$forms$form_name %>% sapply(function(form_name){
+  DB$metadata$forms$original_form_name <- DB$metadata$forms$form_name %>% lapply(function(form_name){
     forms_transformation$form_name[which(forms_transformation$form_name_remap==form_name)] %>% paste0(collapse = " | ")
-  }) %>% as.character()
+  }) %>% unlist() %>% as.character()
   # fields------------
   DB$transformation$original_fields <- DB$metadata$fields
   fields <- combine_original_transformed_fields(DB)

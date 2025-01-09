@@ -208,7 +208,7 @@ read_from_REDCap_upload <- function(DB,allow_all=T,drop_nonredcap_vars=T,drop_no
     file_name_no_ext = gsub("\\.xlsx|\\.xls","",x),
     match = NA
   )
-  df$match <- strsplit(df$file_name_no_ext,"_") %>% sapply(function(IN){IN[length(IN)]})
+  df$match <- strsplit(df$file_name_no_ext,"_") %>% lapply(function(IN){IN[length(IN)]}) %>% unlist()
   df$match[which(!df$match%in%c(DB$internals$merge_form_name,DB$metadata$forms$form_name))] <- NA
   if(!allow_all){
     df <- df[which(!is.na(df$match)),]

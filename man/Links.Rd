@@ -16,7 +16,7 @@ link_REDCap_home(DB)
 
 link_REDCap_project(DB)
 
-link_REDCap_record(DB, record, page, instance, text_only = F)
+link_REDCap_record(DB, record, page, instance, text_only = FALSE)
 }
 \arguments{
 \item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \code{DB <- \link{load_DB}("PROJ")} or \link{setup_DB}()}

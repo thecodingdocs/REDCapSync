@@ -4,7 +4,7 @@
 \alias{set_REDCap_token}
 \title{Set a REDCap API Token to Your Current R Session}
 \usage{
-set_REDCap_token(DB, ask = T)
+set_REDCap_token(DB, ask = TRUE)
 }
 \arguments{
 \item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}

@@ -19,12 +19,12 @@
 #' \link{setup_DB} for initializing the `DB` object.
 #' @family Visuals
 #' @export
-REDCap_diagram <- function(DB,static = F,render = T,duplicate_forms = T, clean_names = T,include_fields = F,include_choices = F,hierarchical = F,direction = "LR"){
-  if(is.null(DB$redcap))DB <- update_DB(DB, metadata_only = T,save_to_dir = F)
+REDCap_diagram <- function(DB,static = FALSE,render = TRUE,duplicate_forms = TRUE, clean_names = TRUE,include_fields = FALSE,include_choices = FALSE,hierarchical = FALSE,direction = "LR"){
+  if(is.null(DB$redcap))DB <- update_DB(DB, metadata_only = TRUE,save_to_dir = FALSE)
   OUT <- create_node_edge_REDCap(DB,duplicate_forms = duplicate_forms,include_fields = include_fields,include_choices = include_choices)
   if(!clean_names){OUT$node_df$label <- OUT$node_df$entity_name}
-  OUT$node_df$physics <- T
-  OUT$node_df$physics[which(OUT$node_df$group =="project")] <- F
+  OUT$node_df$physics <- TRUE
+  OUT$node_df$physics[which(OUT$node_df$group =="project")] <- FALSE
   if(static){
     OUT$node_df$shape[which(OUT$node_df$shape=="box")] <- "rectangle"
     OUT$node_df$shape[which(OUT$node_df$shape=="ellipse")] <- "circle"
@@ -84,9 +84,9 @@ REDCap_diagram <- function(DB,static = F,render = T,duplicate_forms = T, clean_n
 #' @noRd
 create_node_edge_REDCap <- function(
     DB,
-    duplicate_forms = T,
-    include_fields = F,
-    include_choices = F
+    duplicate_forms = TRUE,
+    include_fields = FALSE,
+    include_choices = FALSE
 ){
   # setup ==========================
   node_df <- NULL
@@ -260,7 +260,7 @@ create_node_edge_REDCap <- function(
   }
   # final nodes-------------------
   node_df$id <- seq_len(nrow(node_df))
-  node_df$fixedsize <- F
+  node_df$fixedsize <- FALSE
   # node_df$color.highlight <- "gold"
   node_df$label<-node_df$entity_label %>% lapply(function(text){
     wrap_text(text,25)

@@ -4,7 +4,7 @@
 \alias{find_upload_diff}
 \title{Find the DB_import and DB differences}
 \usage{
-find_upload_diff(DB, view_old = F, n_row_view = 20)
+find_upload_diff(DB, view_old = FALSE, n_row_view = 20)
 }
 \arguments{
 \item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}

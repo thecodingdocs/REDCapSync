@@ -4,7 +4,7 @@
 \alias{test_REDCap_token}
 \title{Test REDCap API Token linked to a DB Object}
 \usage{
-test_REDCap_token(DB, set_if_fails = T, launch_browser = T)
+test_REDCap_token(DB, set_if_fails = TRUE, launch_browser = TRUE)
 }
 \arguments{
 \item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}

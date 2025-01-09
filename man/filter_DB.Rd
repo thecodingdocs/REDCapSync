@@ -10,8 +10,8 @@ filter_DB(
   filter_choices,
   form_names,
   field_names,
-  warn_only = F,
-  no_duplicate_cols = F
+  warn_only = FALSE,
+  no_duplicate_cols = FALSE
 )
 }
 \arguments{

@@ -16,7 +16,7 @@
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
-set_REDCap_token <- function(DB,ask = T){
+set_REDCap_token <- function(DB,ask = TRUE){
   DB  <- validate_DB(DB)
   token_name <- get_REDCap_token_name(DB)
   is_a_test <- is_test_DB(DB)
@@ -29,7 +29,7 @@ set_REDCap_token <- function(DB,ask = T){
     }
   }
   if(answer == 1){
-    has_valid_REDCap_token <- F
+    has_valid_REDCap_token <- FALSE
     if(is_something(DB$links$redcap_API)){
       if(!ask){
         bullet_in_console(paste0("You can request/regenerate/delete with `link_API_token(DB)` or go here: "),url = DB$links$redcap_API)
@@ -41,11 +41,11 @@ set_REDCap_token <- function(DB,ask = T){
     prompt <- paste0("What is your ",DB$short_name," REDCap API token: ")
     while (!has_valid_REDCap_token) {
       token <- readline(prompt)
-      has_valid_REDCap_token <- is_valid_REDCap_token(token,silent = F,is_a_test = is_a_test)
+      has_valid_REDCap_token <- is_valid_REDCap_token(token,silent = FALSE,is_a_test = is_a_test)
     }
     do.call(Sys.setenv, stats::setNames(list(token), token_name))
   }
-  validate_REDCap_token(DB,silent = F)
+  validate_REDCap_token(DB,silent = FALSE)
   return(invisible())
 }
 #' @title View the REDCap API Token Stored in the Session
@@ -62,7 +62,7 @@ set_REDCap_token <- function(DB,ask = T){
 #' @export
 view_REDCap_token <- function(DB){
   DB  <- validate_DB(DB)
-  token <- validate_REDCap_token(DB,silent = F)
+  token <- validate_REDCap_token(DB,silent = FALSE)
   bullet_in_console(paste0("Never share your token: ",token),bullet_type = "!")
   return(invisible())
 }
@@ -82,9 +82,9 @@ view_REDCap_token <- function(DB){
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
-test_REDCap_token <- function(DB, set_if_fails = T, launch_browser = T){
-  token <- validate_REDCap_token(DB, silent = F)
-  version <- get_REDCap_version(DB,show_method_help = F) %>% suppressWarnings()
+test_REDCap_token <- function(DB, set_if_fails = TRUE, launch_browser = TRUE){
+  token <- validate_REDCap_token(DB, silent = FALSE)
+  version <- get_REDCap_version(DB,show_method_help = FALSE) %>% suppressWarnings()
   DB$internals$last_test_connection_attempt <- Sys.time()
   DB$internals$last_test_connection_outcome <- ERROR <- is.na(version)
   if(!set_if_fails) return(DB)
@@ -95,37 +95,37 @@ test_REDCap_token <- function(DB, set_if_fails = T, launch_browser = T){
   while(ERROR){
     bullet_in_console('Your REDCap API token check failed. Invalid token or API privileges. Contact Admin!`',bullet_type = "x")
     if(set_if_fails){
-      set_REDCap_token(DB,ask = F)
-      version <- get_REDCap_version(DB,show_method_help = F) %>% suppressWarnings()
+      set_REDCap_token(DB,ask = FALSE)
+      version <- get_REDCap_version(DB,show_method_help = FALSE) %>% suppressWarnings()
       DB$internals$last_test_connection_attempt <- Sys.time()
       DB$internals$last_test_connection_outcome <- ERROR <- is.na(version)
     }
   }
   bullet_in_console("Connected to REDCap!",bullet_type = "v")
   DB$redcap$version <- version
-  DB$internals$ever_connected <- T
+  DB$internals$ever_connected <- TRUE
   return(DB)
 }
 #' @noRd
-is_valid_REDCap_token <- function(token, silent = T,is_a_test = F){
+is_valid_REDCap_token <- function(token, silent = TRUE,is_a_test = FALSE){
   pattern <- "^([0-9A-Fa-f]{32})(?:\\n)?$"
   trimmed_token <-  sub(pattern,"\\1", token, perl = TRUE) %>% trimws(whitespace = "[\\h\\v]")
   end_message <- "not a valid 32-character hexademical value."
   if(is.null(token)){
     if(!silent)bullet_in_console(paste0("The token is `NULL`, ",end_message),bullet_type = "x")
-    return(F)
+    return(FALSE)
   }
   if (is.na(token)) {
     if(!silent)bullet_in_console(paste0("The token is `NA`, ",end_message),bullet_type = "x")
-    return(F)
+    return(FALSE)
   }
   if (nchar(token) == 0L) {
     if(!silent)bullet_in_console(paste0("The token is `` (empty), ",end_message),bullet_type = "x")
-    return(F)
+    return(FALSE)
   }
   if(token != trimmed_token){
     if(!silent)bullet_in_console(paste0("The token contains whitespace (extra lines) and is therefore ",end_message),bullet_type = "x")
-    return(F)
+    return(FALSE)
   }
   if(is_a_test){
     allowed <- c(
@@ -138,15 +138,15 @@ is_valid_REDCap_token <- function(token, silent = T,is_a_test = F){
     end_message <- "not a valid test token."
     if (!token %in% allowed) {
       if(!silent)bullet_in_console(paste0("The token is ",end_message),bullet_type = "x")
-      return(F)
+      return(FALSE)
     }
   }else{
     if(!grepl(pattern, token, perl = TRUE)){
       if(!silent)bullet_in_console(paste0("The token is ",end_message),bullet_type = "x")
-      return(F)
+      return(FALSE)
     }
   }
-  return(T)
+  return(TRUE)
 }
 #' @noRd
 get_REDCap_token_name <- function(DB){
@@ -154,7 +154,7 @@ get_REDCap_token_name <- function(DB){
   return(token_name)
 }
 #' @noRd
-validate_REDCap_token <- function(DB,silent=T){
+validate_REDCap_token <- function(DB,silent=TRUE){
   token_name <- DB %>% get_REDCap_token_name()
   token <- DB %>% get_REDCap_token_name() %>% Sys.getenv()
   is_a_test <- is_test_DB(DB)

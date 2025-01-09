@@ -9,7 +9,7 @@
 #' @export
 get_projects <- function(){
   does_exist <- cache_projects_exists()
-  is_ok <- F
+  is_ok <- FALSE
   if(does_exist){
     projects <- cache_path() %>% file.path("projects.rds") %>% readRDS()
     if( ! does_exist) message("You have no projects cached. Try `setup_DB()`")
@@ -38,13 +38,13 @@ get_projects <- function(){
 #' \link{setup_DB} for setting up valid directories.
 #'
 #' @export
-check_folder_for_projects <- function(file_path,validate = T){
+check_folder_for_projects <- function(file_path,validate = TRUE){
   check_path <- file_path
   if(validate){
     file_path <- validate_dir(file_path)
     check_path <- file.path(file_path,"R_objects")
   }
-  files <- list.files.real(check_path,full.names = T,recursive = T)
+  files <- list.files.real(check_path,full.names = TRUE,recursive = TRUE)
   if(length(file)==0)return(character(0))
   file_name <- tools::file_path_sans_ext(basename(files))
   file_ext <- tools::file_ext(files) %>% tolower()
@@ -67,16 +67,16 @@ check_folder_for_projects <- function(file_path,validate = T){
 project_health_check <- function(){
   # projects <- projects_old <- get_projects()
   # DROPS <- NULL
-  # projects_old$test_dir <- F
-  # projects$test_DB <- F
-  # projects$test_RC <- F
+  # projects_old$test_dir <- FALSE
+  # projects$test_DB <- FALSE
+  # projects$test_RC <- FALSE
   # if(nrow(projects)>0){
   #   # DROPS<- projects[which(is.na(projects$project_id)),]
   #   for(i in seq_len(nrow(projects_old))){#i <- seq_len(nrow(projects))%>%  sample1()
   #     OUT <- NULL
   #     OUT <- projects_old[i,]
   #     if(file.exists(OUT$dir_path)){
-  #       OUT$test_dir <- T
+  #       OUT$test_dir <- TRUE
   #       DB <- tryCatch({
   #         load_DB(OUT$dir_path)
   #       },error = function(e) {NULL})
@@ -88,7 +88,7 @@ project_health_check <- function(){
   #             dir_path = OUT$dir_path,
   #             token_name = OUT$token_name,
   #             redcap_base = "https://redcap.miami.edu/",
-  #             force = T,
+  #             force = TRUE,
   #             merge_form_name = "merged"
   #           )
   #         },error = function(e) {NULL})
@@ -111,7 +111,7 @@ project_health_check <- function(){
   #       projects <- projects %>% dplyr::bind_rows(OUT)
   #     }
   #   }
-  #   save_projects_to_cache(projects,silent = F)
+  #   save_projects_to_cache(projects,silent = FALSE)
   # }
 }
 #' @noRd
@@ -146,7 +146,7 @@ blank_project <- function(){
   return(x)
 }
 #' @noRd
-save_projects_to_cache <- function(projects,silent=T){
+save_projects_to_cache <- function(projects,silent=TRUE){
   projects <- projects[order(projects$short_name),]
   # projects$test_dir <- projects$test_dir %>% as.logical()
   # projects$test_DB <- projects$test_DB %>% as.logical()
@@ -190,7 +190,7 @@ extract_project_details <- function(DB){
   return(OUT)
 }
 #' @noRd
-add_project <- function(DB,silent = T){
+add_project <- function(DB,silent = TRUE){
   projects <- get_projects()
   projects <- projects[which(projects$short_name!=DB$short_name),]
   OUT <- extract_project_details(DB = DB)

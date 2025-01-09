@@ -10,7 +10,7 @@ edit_REDCap_while_viewing(
   records,
   field_name_to_change,
   field_names_to_view = NULL,
-  upload_individually = T
+  upload_individually = TRUE
 )
 }
 \arguments{

@@ -196,8 +196,8 @@ add_default_forms_transformation <- function(DB){
       DB$metadata$form_key_cols[[form_name]] %>% paste0(collapse = "+") %>% return()
     }
   }) %>% unlist()
-  forms_transformation$x_first <- F
-  forms_transformation$x_first[which(forms_transformation$repeating)] <- T
+  forms_transformation$x_first <- FALSE
+  forms_transformation$x_first[which(forms_transformation$repeating)] <- TRUE
   return(forms_transformation)
 }
 #' @noRd
@@ -231,7 +231,7 @@ add_default_fields_transformation <- function(DB){
         data_func = function(DB,field_name,form_name){
           form <- gsub("n_forms_","",field_name)
           id_col <- DB$metadata$form_key_cols[[form_name]]
-          DB$data[[form_name]][[id_col]] %>% matches(DB$data[[form]][[id_col]],count_only = T) %>% as.character() %>% return()
+          DB$data[[form_name]][[id_col]] %>% matches(DB$data[[form]][[id_col]],count_only = TRUE) %>% as.character() %>% return()
         }
       )
     }
@@ -262,7 +262,7 @@ add_default_fields_transformation <- function(DB){
   return(DB)
 }
 #' @noRd
-add_forms_transformation <- function(DB,forms_transformation,ask=T){
+add_forms_transformation <- function(DB,forms_transformation,ask=TRUE){
   if(missing(forms_transformation))forms_transformation <- add_default_forms_transformation(DB)
   forms_tranformation_cols <-c(
     "form_name",
@@ -282,7 +282,7 @@ add_forms_transformation <- function(DB,forms_transformation,ask=T){
     bullet_in_console("Use `add_default_forms_transformation(DB)` is an example!")
     stop("forms_transformation needs the following colnames... ", forms_tranformation_cols %>% as_comma_string())
   }
-  choice <- T
+  choice <- TRUE
   if(!is.null(DB$transformation)){
     if(!identical(DB$transformation$forms,forms_transformation)){
       if(ask){
@@ -353,7 +353,7 @@ add_field_transformation <- function(
     if(is.na(field_note))field_note <- original_fields_row$field_note
     if(identifier=="")identifier <- original_fields_row$identifier
   }
-  if(!is_something(data_func))warning("if no `data_func` is provided, the column is only added to the metadata",immediate. = T)
+  if(!is_something(data_func))warning("if no `data_func` is provided, the column is only added to the metadata",immediate. = TRUE)
   if(is_something(data_func)){
     func_template <- "data_func = function(DB,field_name){YOUR FUNCTION}"
     if(!is.function(data_func))stop("`data_func` must be a function ... ",func_template)
@@ -421,7 +421,7 @@ combine_original_transformed_fields <- function(DB){
   return(fields)
 }
 #' @noRd
-run_fields_transformation <- function(DB,ask = T){
+run_fields_transformation <- function(DB,ask = TRUE){
   the_names <- DB$transformation$fields$field_name
   if(is.null(the_names)){
     bullet_in_console("Nothing to run. Use `add_field_transformation()`",bullet_type = "x")
@@ -483,7 +483,7 @@ run_fields_transformation <- function(DB,ask = T){
 #' \code{\link[REDCapDB]{untransform_DB}} for reverting the transformation.
 #' @family db_functions
 #' @export
-transform_DB <- function(DB,ask = T){
+transform_DB <- function(DB,ask = TRUE){
   if(DB$internals$is_transformed){
     bullet_in_console("Already transformed... nothing to do!",bullet_type = "x")
     return(DB)
@@ -494,7 +494,7 @@ transform_DB <- function(DB,ask = T){
   })
   names(DB$transformation$original_col_names) <- DB$data %>% names()
   # if(any(!names(transformation)%in%names(DB$data)))stop("must have all DB$data names in transformation")
-  if(is_something(process_df_list(DB$data,silent = T)))DB <- run_fields_transformation(DB,ask = ask)
+  if(is_something(process_df_list(DB$data,silent = TRUE)))DB <- run_fields_transformation(DB,ask = ask)
   named_df_list <- DB$data
   OUT <- NULL
   for(i in (seq_len(nrow(forms_transformation)))){
@@ -556,8 +556,8 @@ transform_DB <- function(DB,ask = T){
               y = mer,
               by.x = by.x,
               by.y = by.y,
-              all.x = T,
-              sort = F
+              all.x = TRUE,
+              sort = FALSE
             )
           }
           a <- a[order(a$sort_me_ftlog),]
@@ -576,7 +576,7 @@ transform_DB <- function(DB,ask = T){
   }
   if(any(!names(OUT)%in%unique(forms_transformation$form_name_remap)))stop("not all names in OUT objext. Something wrong with transform_DB()")
   DB$data <- OUT
-  # forms_transformation <- annotate_forms(DB,summarize_data = F)
+  # forms_transformation <- annotate_forms(DB,summarize_data = FALSE)
   if(!is.null(DB$metadata$form_key_cols)){
     forms_transformation$key_cols <- forms_transformation$form_name %>% lapply(function(IN){
       DB$metadata$form_key_cols[[IN]] %>% paste0(collapse = "+")
@@ -587,7 +587,7 @@ transform_DB <- function(DB,ask = T){
       return(paste0(forms_transformation$form_name[row_match],"_key"))
     }) %>% unlist()
   }
-  DB$internals$is_transformed <- T
+  DB$internals$is_transformed <- TRUE
   bullet_in_console(paste0(DB$short_name," transformed according to `DB$transformation`"),bullet_type = "v")
   # forms ---------
   DB$transformation$original_forms <- DB$metadata$forms
@@ -629,7 +629,7 @@ transform_DB <- function(DB,ask = T){
 #' @return The original, untransformed DB object.
 #'
 #' @export
-untransform_DB <- function(DB,allow_partial = F){
+untransform_DB <- function(DB,allow_partial = FALSE){
   if(!DB$internals$is_transformed){
     bullet_in_console("Already not transformed... nothing to do!",bullet_type = "x")
     return(DB)
@@ -665,7 +665,7 @@ untransform_DB <- function(DB,allow_partial = F){
     }
   }
   DB$data <- OUT
-  DB$internals$is_transformed <- F
+  DB$internals$is_transformed <- FALSE
   DB$metadata$forms <- DB$transformation$original_forms
   DB$metadata$fields <- DB$transformation$original_fields
   bullet_in_console(paste0(DB$short_name," untransformed according to `DB$transformation`"),bullet_type = "v")

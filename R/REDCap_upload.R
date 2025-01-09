@@ -39,8 +39,8 @@ upload_form_to_REDCap <- function(to_be_uploaded,DB,batch_size=500){
 #' It will not delete any data from REDCap, and it is intended to only upload new or modified records.
 #' This function is not fully ready for production use and should be used with caution. Any issues during the upload will be logged in the REDCap system log.
 #' @export
-upload_DB_to_REDCap <- function(DB,batch_size = 500, ask = T, view_old = T, n_row_view = 20){
-  warning("This function is not ready for primetime yet! Use at your own risk!",immediate. = T)
+upload_DB_to_REDCap <- function(DB,batch_size = 500, ask = TRUE, view_old = TRUE, n_row_view = 20){
+  warning("This function is not ready for primetime yet! Use at your own risk!",immediate. = TRUE)
   DB <- validate_DB(DB)
   # if(ask){
   #   if(count_DB_upload_cells(DB)>5000){
@@ -48,9 +48,9 @@ upload_DB_to_REDCap <- function(DB,batch_size = 500, ask = T, view_old = T, n_ro
   #     if(choice!=1)stop("Double check DB object prior to upload")
   #   }
   # }
-  warning("Right now this function only updates repeating forms. It WILL NOT clear repeating form instances past number 1. SO, you will have to delete manually on REDCap.",immediate. = T)
+  warning("Right now this function only updates repeating forms. It WILL NOT clear repeating form instances past number 1. SO, you will have to delete manually on REDCap.",immediate. = TRUE)
   if(!is_something(DB$data_update))stop("`DB$data_update` is empty")
-  any_updates <- F
+  any_updates <- FALSE
   entire_list <- DB$data_update
   for(TABLE in names(entire_list)){
     to_be_uploaded <- entire_list[[TABLE]]
@@ -70,7 +70,7 @@ upload_DB_to_REDCap <- function(DB,batch_size = 500, ask = T, view_old = T, n_ro
         if(do_it==1){
           upload_form_to_REDCap(to_be_uploaded=to_be_uploaded,DB=DB,batch_size=batch_size)
           DB$data_update[[TABLE]] <- NULL
-          any_updates <- T
+          any_updates <- TRUE
           DB$internals$last_data_update <- Sys.time()
         }
       }
@@ -96,11 +96,11 @@ upload_DB_to_REDCap <- function(DB,batch_size = 500, ask = T, view_old = T, n_ro
 #'
 #' The `compare` and `to` parameters allow users to specify specific data choices to compare, though their exact usage will depend on how the function is fully implemented.
 #' @export
-find_upload_diff <- function(DB, view_old = F, n_row_view = 20){
+find_upload_diff <- function(DB, view_old = FALSE, n_row_view = 20){
   DB <- validate_DB(DB)
   new_list <- DB$data_update
   old_list <- list()
-  if(any(!names(new_list)%in%DB$metadata$forms$form_name))warning("All upload names should ideally match the DB form names, `DB$metadata$forms$form_name`",immediate. = T)
+  if(any(!names(new_list)%in%DB$metadata$forms$form_name))warning("All upload names should ideally match the DB form names, `DB$metadata$forms$form_name`",immediate. = TRUE)
   already_used <- NULL
   for(TABLE in names(new_list)){#TABLE <- names(new_list) %>% sample(1)
     new <-  new_list[[TABLE]]
@@ -109,7 +109,7 @@ find_upload_diff <- function(DB, view_old = F, n_row_view = 20){
     data_cols <- colnames(new)[which(!colnames(new)%in%ref_cols)]
     form_names <- field_names_to_form_names(DB,data_cols)
     if(any(form_names%in%already_used))stop("REDCapDB will not allow you to upload items from same form multiple times in one loop without refreshing.")
-    # old <- merge_forms(forms = form_names, DB = DB,data_choice = "data",exact = T)
+    # old <- merge_forms(forms = form_names, DB = DB,data_choice = "data",exact = TRUE)
     drop <- data_cols %>% vec1_not_in_vec2(form_names_to_field_names(form_names=form_names,DB=DB))
     if(length(drop)>0){
       message("Dropping field_names that aren't part of REDCap metadata: ",paste0(drop, collapse = ", "))
@@ -128,7 +128,7 @@ find_upload_diff <- function(DB, view_old = F, n_row_view = 20){
   return(DB)
 }
 #' @noRd
-check_field <- function(DB,DF, field_name,autofill_new=T){
+check_field <- function(DB,DF, field_name,autofill_new=TRUE){
   form <- field_names_to_form_names(DB,field_name)
   records <- DF[[DB$redcap$id_col]] %>% unique()
   BAD<-records[which(!records%in%DB$summary$all_records[[DB$redcap$id_col]])]
@@ -171,10 +171,10 @@ check_field <- function(DB,DF, field_name,autofill_new=T){
         IN<-z_old[i,]
         new_answer <- IN[[field_name]]
         old_answer <- IN[[paste0(field_name,"_old")]]
-        ask <- T
+        ask <- TRUE
         if(autofill_new){
           if(is.na(old_answer)&&!is.na(new_answer)){
-            ask <- F
+            ask <- FALSE
           }
         }
         if(ask){
@@ -224,7 +224,7 @@ check_field <- function(DB,DF, field_name,autofill_new=T){
 #' \code{\link{save_DB}} for saving the modified database.
 #'
 #' @export
-edit_REDCap_while_viewing <- function(DB,optional_DF,records, field_name_to_change, field_names_to_view=NULL,upload_individually = T){
+edit_REDCap_while_viewing <- function(DB,optional_DF,records, field_name_to_change, field_names_to_view=NULL,upload_individually = TRUE){
   change_form <- field_names_to_form_names(DB,field_name_to_change)
   view_forms <- field_names_to_form_names(DB,field_names_to_view)
   field_names_to_view <- c(field_name_to_change,field_names_to_view) %>% unique()
@@ -251,7 +251,7 @@ edit_REDCap_while_viewing <- function(DB,optional_DF,records, field_name_to_chan
     is_repeating_form <- change_form %in% DB$metadata$forms$form_name[which(DB$metadata$forms$repeating)]
     OUT <- NULL
     for (record in records){ # record <- records%>% sample(1)
-      record_was_updated <- F
+      record_was_updated <- FALSE
       VIEW <- optional_DF[which(optional_DF[[DB$redcap$id_col]]==record),]
       VIEW_simp <- VIEW[,unique(c(DB$redcap$id_col,field_names_to_view))] %>% unique()
       row.names(VIEW_simp) <- NULL
@@ -293,7 +293,7 @@ edit_REDCap_while_viewing <- function(DB,optional_DF,records, field_name_to_chan
               if(upload_individually){
                 OUT_sub %>% labelled_to_raw_form(DB) %>% upload_form_to_REDCap(DB)
                 message("Uploaded: ",OUT_sub %>% paste0(collapse = " | "))
-                record_was_updated <- T
+                record_was_updated <- TRUE
               }else{
                 OUT <- OUT %>% dplyr::bind_rows(OUT_sub)
               }
@@ -306,7 +306,7 @@ edit_REDCap_while_viewing <- function(DB,optional_DF,records, field_name_to_chan
             if(upload_individually){
               OUT_sub %>% labelled_to_raw_form(DB) %>% upload_form_to_REDCap(DB)
               message("Uploaded: ",OUT_sub %>% paste0(collapse = " | "))
-              record_was_updated <- T
+              record_was_updated <- TRUE
             }else{
               OUT <- OUT %>% dplyr::bind_rows(OUT_sub)
             }
@@ -336,7 +336,7 @@ edit_REDCap_while_viewing <- function(DB,optional_DF,records, field_name_to_chan
                   if(upload_individually){
                     OUT_sub %>% labelled_to_raw_form(DB) %>% upload_form_to_REDCap(DB)
                     message("Uploaded: ",OUT_sub %>% paste0(collapse = " | "))
-                    record_was_updated <- T
+                    record_was_updated <- TRUE
                   }else{
                     OUT <- OUT %>% dplyr::bind_rows(OUT_sub)
                   }
@@ -350,7 +350,7 @@ edit_REDCap_while_viewing <- function(DB,optional_DF,records, field_name_to_chan
                 if(upload_individually){
                   OUT_sub %>% labelled_to_raw_form(DB) %>% upload_form_to_REDCap(DB)
                   message("Uploaded: ",OUT_sub %>% paste0(collapse = " | "))
-                  record_was_updated <- T
+                  record_was_updated <- TRUE
                 }else{
                   OUT <- OUT %>% dplyr::bind_rows(OUT_sub)
                 }

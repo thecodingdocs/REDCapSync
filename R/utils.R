@@ -66,7 +66,7 @@ clean_RC_df_for_DT <- function(DF, DB){
     clean_RC_col_names(DB) %>% return()
 }
 #' @noRd
-remove_records_from_list <- function(DB,records,silent=F){
+remove_records_from_list <- function(DB,records,silent=FALSE){
   data_list <- DB$data
   if(!is_df_list(data_list))stop("data_list is not a list of data.frames as expected.")
   if(length(records)==0)stop("no records supplied to remove_records_from_list, but it's used in update which depends on records.")
@@ -84,7 +84,7 @@ remove_records_from_list <- function(DB,records,silent=F){
   return(data_list)
 }
 #' @noRd
-other_drops <- function(ignore = F){
+other_drops <- function(ignore = FALSE){
   if(ignore)return(NULL)
   c(
     "Not applicable",
@@ -98,7 +98,7 @@ other_drops <- function(ignore = F){
   ) %>% return()
 }
 #' @noRd
-ignore_redcap_log <- function(collapse = T){
+ignore_redcap_log <- function(collapse = TRUE){
   ignores <- c(
     'export',
     'download ',

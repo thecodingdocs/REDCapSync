@@ -6,16 +6,16 @@
 \usage{
 update_DB(
   DB,
-  set_token_if_fails = T,
-  force = F,
+  set_token_if_fails = TRUE,
+  force = FALSE,
   day_of_log = 10,
-  labelled = T,
-  get_files = F,
-  original_file_names = F,
-  entire_log = F,
-  metadata_only = F,
-  ask_about_overwrites = T,
-  save_to_dir = T,
+  labelled = TRUE,
+  get_files = FALSE,
+  original_file_names = FALSE,
+  entire_log = FALSE,
+  metadata_only = FALSE,
+  ask_about_overwrites = TRUE,
+  save_to_dir = TRUE,
   batch_size = 2000
 )
 }

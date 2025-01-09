@@ -4,7 +4,7 @@
 \alias{clean_DB}
 \title{Clean DB columns for plotting using the metadata}
 \usage{
-clean_DB(DB, drop_blanks = F, other_drops = NULL)
+clean_DB(DB, drop_blanks = FALSE, other_drops = NULL)
 }
 \arguments{
 \item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}

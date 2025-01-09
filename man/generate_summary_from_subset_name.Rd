@@ -7,13 +7,13 @@
 generate_summary_from_subset_name(
   DB,
   subset_name,
-  clean = T,
-  drop_blanks = T,
-  include_metadata = T,
-  annotate_metadata = T,
-  include_record_summary = T,
-  include_users = T,
-  include_log = T
+  clean = TRUE,
+  drop_blanks = TRUE,
+  include_metadata = TRUE,
+  annotate_metadata = TRUE,
+  include_record_summary = TRUE,
+  include_users = TRUE,
+  include_log = TRUE
 )
 }
 \arguments{

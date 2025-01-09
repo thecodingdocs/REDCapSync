@@ -13,8 +13,8 @@ add_DB_subset(
   file_name = paste0(DB$short_name, "_", subset_name),
   form_names = NULL,
   field_names = NULL,
-  deidentify = T,
-  force = F
+  deidentify = TRUE,
+  force = FALSE
 )
 }
 \arguments{

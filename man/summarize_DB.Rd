@@ -6,17 +6,17 @@
 \usage{
 summarize_DB(
   DB,
-  with_links = T,
-  deidentify = T,
-  clean = T,
-  drop_blanks = T,
-  include_metadata = T,
-  annotate_metadata = T,
-  include_record_summary = T,
-  include_users = T,
-  include_log = T,
-  separate = F,
-  force = F
+  with_links = TRUE,
+  deidentify = TRUE,
+  clean = TRUE,
+  drop_blanks = TRUE,
+  include_metadata = TRUE,
+  annotate_metadata = TRUE,
+  include_record_summary = TRUE,
+  include_users = TRUE,
+  include_log = TRUE,
+  separate = FALSE,
+  force = FALSE
 )
 }
 \arguments{

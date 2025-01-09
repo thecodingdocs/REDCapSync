@@ -6,9 +6,9 @@
 \usage{
 read_from_REDCap_upload(
   DB,
-  allow_all = T,
-  drop_nonredcap_vars = T,
-  drop_non_form_vars = T,
+  allow_all = TRUE,
+  drop_nonredcap_vars = TRUE,
+  drop_non_form_vars = TRUE,
   stop_or_warn = "warn"
 )
 }

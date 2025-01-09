@@ -12,17 +12,17 @@ setup_DB(
   dir_path,
   redcap_base,
   token_name = paste0("REDCapDB_", short_name),
-  force = F,
+  force = FALSE,
   merge_form_name = "merged",
-  use_csv = F,
-  auto_check_token = T
+  use_csv = FALSE,
+  auto_check_token = TRUE
 )
 
-load_DB(short_name, validate = T)
+load_DB(short_name, validate = TRUE)
 
-load_DB_from_path(DB_path, validate = T)
+load_DB_from_path(DB_path, validate = TRUE)
 
-load_test_DB(short_name = "TEST_repeating", with_data = F)
+load_test_DB(short_name = "TEST_repeating", with_data = FALSE)
 }
 \arguments{
 \item{short_name}{A character string with no spaces or symbols representing the unique short name for the REDCap project.}

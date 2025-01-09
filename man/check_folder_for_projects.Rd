@@ -4,7 +4,7 @@
 \alias{check_folder_for_projects}
 \title{List File Paths of REDCapDB Projects in a Folder}
 \usage{
-check_folder_for_projects(file_path, validate = T)
+check_folder_for_projects(file_path, validate = TRUE)
 }
 \arguments{
 \item{file_path}{Character. The path to the folder to search.}

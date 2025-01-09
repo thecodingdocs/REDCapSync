@@ -4,7 +4,7 @@
 \alias{transform_DB}
 \title{transform_DB}
 \usage{
-transform_DB(DB, ask = T)
+transform_DB(DB, ask = TRUE)
 }
 \arguments{
 \item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}

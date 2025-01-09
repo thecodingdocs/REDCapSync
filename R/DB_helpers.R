@@ -39,7 +39,7 @@ add_ID_to_DF <- function(DF,DB,ref_id){
 #' \code{\link{save_DB}} for saving the modified database.
 #'
 #' @export
-deidentify_DB <- function(DB,identifiers,drop_free_text = F){
+deidentify_DB <- function(DB,identifiers,drop_free_text = FALSE){
   DB <- validate_DB(DB)
   missing_identifiers <- missing(identifiers)
   if(!missing_identifiers){
@@ -50,7 +50,7 @@ deidentify_DB <- function(DB,identifiers,drop_free_text = F){
   }
   if(missing_identifiers){
     identifiers <-  DB$metadata$fields$field_name[which(DB$metadata$fields$identifier=="y")]
-    if(length(identifiers)==0)warning("You have no identifiers marked in `DB$metadata$fields$identifier`. You can set it in REDCap Project Setup and update DB OR define your idenitifiers in this functions `identifiers` argument." ,immediate. = T)
+    if(length(identifiers)==0)warning("You have no identifiers marked in `DB$metadata$fields$identifier`. You can set it in REDCap Project Setup and update DB OR define your idenitifiers in this functions `identifiers` argument." ,immediate. = TRUE)
   }
   if(drop_free_text){ # placeholder
     identifiers <- identifiers %>%
@@ -113,7 +113,7 @@ link_REDCap_project <- function(DB){
 #' @param text_only logical for only returning text
 #' @rdname Links
 #' @export
-link_REDCap_record <- function(DB,record,page,instance,text_only = F){
+link_REDCap_record <- function(DB,record,page,instance,text_only = FALSE){
   link <- paste0(DB$links$redcap_base,"redcap_v",DB$redcap$version,"/DataEntry/record_home.php?pid=",DB$redcap$project_id)
   if(!missing(record)){
     if(!record%in%DB$summary$all_records[[DB$redcap$id_col]])stop(record," is not one of the records inside DB")
@@ -177,7 +177,7 @@ raw_process_redcap <- function(raw,DB, labelled){
     add_ons <- c(DB$redcap$id_col,"arm_num","event_name","redcap_event_name","redcap_repeat_instrument","redcap_repeat_instance")
     if(DB$redcap$is_longitudinal){
       raw$id_temp <- seq_len(nrow(raw))
-      raw <-  merge(raw,DB$metadata$events[,c("arm_num","event_name","unique_event_name")],by.x="redcap_event_name",by.y="unique_event_name",sort = F,all.x = T)
+      raw <-  merge(raw,DB$metadata$events[,c("arm_num","event_name","unique_event_name")],by.x="redcap_event_name",by.y="unique_event_name",sort = FALSE,all.x = TRUE)
       add_ons  <- add_ons[which(add_ons%in%colnames(raw))]
       cols <- c(add_ons, colnames(raw)) %>% unique()
       raw <- raw[order(raw$id_temp),cols%>% lapply(function(c){which(colnames(raw)==c)}) %>% unlist() %>% as.integer()]
@@ -224,10 +224,10 @@ raw_process_redcap <- function(raw,DB, labelled){
 }
 #' @noRd
 sort_redcap_log <- function(log){
-  log[order(log$timestamp,decreasing = T),]
+  log[order(log$timestamp,decreasing = TRUE),]
 }
 #' @noRd
-clean_redcap_log <- function(log,purge_api=T){
+clean_redcap_log <- function(log,purge_api=TRUE){
   log$record_id <- log$action %>% lapply(function(A){ifelse(grepl("Update record |Delete record |Create record ",A),gsub("Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation| |[:):]|[:(:]","",A),NA)}) %>% unlist()
   log$action_type <- log$action %>% lapply(function(A){ifelse(grepl("Update record |Delete record |Create record ",A),(A %>% strsplit(" ") %>% unlist())[1],NA)}) %>% unlist()
   comments <- which(log$action=="Manage/Design"&grepl("Add field comment|Edit field comment|Delete field comment",log$details))

@@ -7,8 +7,8 @@
 upload_DB_to_REDCap(
   DB,
   batch_size = 500,
-  ask = T,
-  view_old = T,
+  ask = TRUE,
+  view_old = TRUE,
   n_row_view = 20
 )
 }

@@ -6,13 +6,13 @@
 \usage{
 REDCap_diagram(
   DB,
-  static = F,
-  render = T,
-  duplicate_forms = T,
-  clean_names = T,
-  include_fields = F,
-  include_choices = F,
-  hierarchical = F,
+  static = FALSE,
+  render = TRUE,
+  duplicate_forms = TRUE,
+  clean_names = TRUE,
+  include_fields = FALSE,
+  include_choices = FALSE,
+  hierarchical = FALSE,
   direction = "LR"
 )
 }

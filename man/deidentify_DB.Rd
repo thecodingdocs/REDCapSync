@@ -4,7 +4,7 @@
 \alias{deidentify_DB}
 \title{Deidentify the REDCap Database}
 \usage{
-deidentify_DB(DB, identifiers, drop_free_text = F)
+deidentify_DB(DB, identifiers, drop_free_text = FALSE)
 }
 \arguments{
 \item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}

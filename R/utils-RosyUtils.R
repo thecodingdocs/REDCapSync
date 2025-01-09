@@ -1,4 +1,4 @@
-process_df_list <- function(list,drop_empty = T,silent = F){
+process_df_list <- function(list,drop_empty = TRUE,silent = FALSE){
   if(is_something(list)){
     if(!is_df_list(list))stop("list must be ...... a list :)")
     if(drop_empty){
@@ -7,7 +7,7 @@ process_df_list <- function(list,drop_empty = T,silent = F){
         if(is_df){
           return(nrow(IN)>0)
         }else{
-          return(F)
+          return(FALSE)
         }
       }) %>% unlist()
       keeps <- which(is_a_df_with_rows)
@@ -27,7 +27,7 @@ process_df_list <- function(list,drop_empty = T,silent = F){
 }
 is_something <- function(thing,row=0){
   out <- FALSE
-  if(is.function(thing))return(T)
+  if(is.function(thing))return(TRUE)
   if(!is.null(thing)){
     if(is.data.frame(thing)){
       if(nrow(thing)>row){
@@ -57,7 +57,7 @@ is_something <- function(thing,row=0){
   }
   return(out)
 }
-bullet_in_console <- function(text = "",url = NULL,bullet_type = "i",collapse = T, file = NULL,silent=F){
+bullet_in_console <- function(text = "",url = NULL,bullet_type = "i",collapse = TRUE, file = NULL,silent=FALSE){
   if(silent)return(invisible())
   url_if <- ""
   file_if <- ""
@@ -134,7 +134,7 @@ find_df_diff <- function (new, old,ref_cols=NULL,message_pass=""){
   }
   new_keys <- integer(0)
   if(any(!new$key %in% old$key)){
-    # warning("You have at least one new key compared to old DF therefore all columns will be included by default",immediate. = T)
+    # warning("You have at least one new key compared to old DF therefore all columns will be included by default",immediate. = TRUE)
     new_keys <- which(!new$key %in% old$key)
   }
   indices <- data.frame(
@@ -175,7 +175,7 @@ find_df_diff <- function (new, old,ref_cols=NULL,message_pass=""){
   }
   OUT
 }
-find_df_diff2 <- function (new, old,ref_cols=NULL,message_pass="",view_old = T, n_row_view = 20){
+find_df_diff2 <- function (new, old,ref_cols=NULL,message_pass="",view_old = TRUE, n_row_view = 20){
   new <- all_character_cols(new)
   old <- all_character_cols(old)
   if (!all(colnames(new) %in% colnames(old))) {
@@ -199,7 +199,7 @@ find_df_diff2 <- function (new, old,ref_cols=NULL,message_pass="",view_old = T, 
   }
   appended_old_col_suffix <- "__old"
   if(any(endsWith(unique(colnames(old),colnames(new)),appended_old_col_suffix)))stop("colnames cant end with '",appended_old_col_suffix,"'")
-  merged_df <- merge(new, old, by = ref_cols, suffixes = c("",appended_old_col_suffix ),all.x = T)
+  merged_df <- merge(new, old, by = ref_cols, suffixes = c("",appended_old_col_suffix ),all.x = TRUE)
   placeholder <- "NA_placeholder"
   rows_to_keep <- NULL
   cols_to_view <- cols_to_keep <- which(colnames(merged_df) %in% ref_cols)
@@ -226,18 +226,18 @@ find_df_diff2 <- function (new, old,ref_cols=NULL,message_pass="",view_old = T, 
     cols_to_keep <- cols_to_keep %>% unique()
     if(view_old){
       rows_to_keep2 <- rows_to_keep
-      done <- F
+      done <- FALSE
       while ( ! done) {
         length_of_rows_to_keep <- length(rows_to_keep2)
         if(length_of_rows_to_keep==0){
-          done <- T
+          done <- TRUE
         }else{
           indices <- 1:ifelse(length_of_rows_to_keep<n_row_view,length_of_rows_to_keep,n_row_view)
           rows_to_keep3 <- rows_to_keep2[indices]
           print.data.frame(merged_df[rows_to_keep3,unique(cols_to_view)])
           choice <- utils::menu(choices = c("Check more rows","Proceed with no more checking", "Stop the function"),title = "What would you like to do?")
           if(choice==3)stop("Stopped as requested!")
-          if(choice==2)done <- T
+          if(choice==2)done <- TRUE
           if(choice==1)rows_to_keep2 <- rows_to_keep2[-indices]
         }
       }
@@ -249,7 +249,7 @@ find_df_diff2 <- function (new, old,ref_cols=NULL,message_pass="",view_old = T, 
     return(NULL)
   }
 }
-find_df_list_diff <- function(new_list, old_list,ref_col_list,view_old = T, n_row_view = 20){
+find_df_list_diff <- function(new_list, old_list,ref_col_list,view_old = TRUE, n_row_view = 20){
   if(!is_something(new_list)){
     message("new_list is empty")
     return(list())
@@ -343,7 +343,7 @@ csv_to_list <- function(paths){
   OUT <- list()
   clean_names <- paths %>% basename() %>% tools::file_path_sans_ext() %>% clean_env_names()
   for (i in seq_along(paths)){
-    OUT[[i]]<- utils::read.csv(paths[i],stringsAsFactors = F,na.strings = c("","NA"))
+    OUT[[i]]<- utils::read.csv(paths[i],stringsAsFactors = FALSE,na.strings = c("","NA"))
   }
   names(OUT) <- clean_names
   return(OUT)
@@ -355,10 +355,10 @@ csv_folder_to_list <- function(folder){
   paths <- paths[which(paths %>% endsWith(".csv"))]
   return(csv_to_list(paths = paths))
 }
-is_named_df_list <- function(x,strict = F){
+is_named_df_list <- function(x,strict = FALSE){
   is_named_list(x) && is_df_list(x,strict = strict)
 }
-is_named_list <- function(x,silent =T,recursive = F) {
+is_named_list <- function(x,silent =TRUE,recursive = FALSE) {
   if (!is.list(x))return(FALSE)
   if (is.null(names(x)))return(FALSE)
   named_all <- TRUE
@@ -400,10 +400,10 @@ DF_to_wb <- function(
     tableStyle = "none",
     header_style = default_header_style,
     body_style = default_body_style,
-    freeze_header = T,
+    freeze_header = TRUE,
     pad_rows = 0,
     pad_cols = 0,
-    freeze_keys = T,
+    freeze_keys = TRUE,
     key_cols = NULL
 ) {
   if(nchar(DF_name)>31)stop(DF_name, " is longer than 31 char")
@@ -415,7 +415,7 @@ DF_to_wb <- function(
     freeze_key_cols <- which(all_cols%in%key_cols)
     if(length(freeze_key_cols)>0){
       if(!is_consecutive_srt_1(freeze_key_cols)){
-        warning("please keep your key cols on the left consecutively. Fixing ",DF_name,": ",paste0(key_cols,collapse = ", "),".",immediate. = T)
+        warning("please keep your key cols on the left consecutively. Fixing ",DF_name,": ",paste0(key_cols,collapse = ", "),".",immediate. = TRUE)
         non_key_cols <- seq_len(ncol(DF))
         non_key_cols <- non_key_cols[which(!non_key_cols%in%freeze_key_cols)]
         new_col_order <- c(freeze_key_cols,non_key_cols)
@@ -432,7 +432,7 @@ DF_to_wb <- function(
     startRow_table <- startRow_header
     startCol <-pad_cols + 1
     if(is_something(header_df)){
-      openxlsx::writeData(wb, sheet = DF_name, x = header_df,startRow = startRow_header,startCol = startCol,colNames = F)
+      openxlsx::writeData(wb, sheet = DF_name, x = header_df,startRow = startRow_header,startCol = startCol,colNames = FALSE)
       startRow_table <- startRow_header + nrow(header_df)
     }
     if(length(link_col_list)>0){
@@ -441,7 +441,7 @@ DF_to_wb <- function(
         if(link_col_list[[i]]%in%colnames(DF)){
           class (DF[[link_col_list[[i]]]]) <- "hyperlink"
         }else{
-          # warning("",immediate. = T)
+          # warning("",immediate. = TRUE)
         }
         if(has_names){
           if(names(link_col_list)[i]%in%colnames(DF)){
@@ -449,7 +449,7 @@ DF_to_wb <- function(
             openxlsx::writeData(wb, sheet = DF_name, x = DF[[link_col_list[[i]]]],startRow = startRow_table+1,startCol = hyperlink_col + pad_cols)
             DF[[link_col_list[[i]]]] <- NULL
           }else{
-            # warning("",immediate. = T)
+            # warning("",immediate. = TRUE)
           }
         }
       }
@@ -462,8 +462,8 @@ DF_to_wb <- function(
       style = header_style,
       rows = seq(from=startRow_header,to=startRow_table),
       cols = style_cols,
-      gridExpand = T,
-      stack = T
+      gridExpand = TRUE,
+      stack = TRUE
     )
     openxlsx::addStyle(
       wb,
@@ -471,8 +471,8 @@ DF_to_wb <- function(
       style = body_style,
       rows = seq(nrow(DF))+startRow_table,
       cols = style_cols,
-      gridExpand = T,
-      stack = T
+      gridExpand = TRUE,
+      stack = TRUE
     )
     if(freeze_header||freeze_keys){
       firstActiveRow <- NULL
@@ -487,7 +487,7 @@ DF_to_wb <- function(
           if (is_consecutive_srt_1(freeze_key_cols)){
             firstActiveCol <- firstActiveCol + freeze_key_cols[length(freeze_key_cols)]
           }else{
-            warning("key_cols must be consecutive and start from the left most column.",immediate. = T)
+            warning("key_cols must be consecutive and start from the left most column.",immediate. = TRUE)
           }
         }
         openxlsx::freezePane(wb, DF_name, firstActiveRow = firstActiveRow, firstActiveCol = firstActiveCol)
@@ -504,12 +504,12 @@ list_to_wb <- function(
     tableStyle = "none",
     header_style = default_header_style,
     body_style = default_body_style,
-    freeze_header = T,
+    freeze_header = TRUE,
     pad_rows = 0,
     pad_cols = 0,
-    freeze_keys = T,
+    freeze_keys = TRUE,
     key_cols_list = NULL,
-    drop_empty = T
+    drop_empty = TRUE
 ){
   wb <- openxlsx::createWorkbook()
   list <- process_df_list(list,drop_empty = drop_empty)
@@ -527,7 +527,7 @@ list_to_wb <- function(
   list_names_rename <- stringr::str_trunc(list_names,width = 31,side = "right",ellipsis = "")
   BAD <- dw(list_names_rename)
   if(length(BAD)>0){
-    warning("Duplicated names when trimmed from right 31 max in Excel: ",list_names[BAD] %>% paste0(collapse = ", "),immediate. = T)
+    warning("Duplicated names when trimmed from right 31 max in Excel: ",list_names[BAD] %>% paste0(collapse = ", "),immediate. = TRUE)
     message("Use CSV or shorten the names and make sure they are unique if they are trimmed to 31 char. For now will make unique by adding number.")
     list_names_rename <- unique_trimmed_strings(list_names_rename, max_length = 31)
   }
@@ -588,17 +588,17 @@ list_to_excel <- function(
     tableStyle = "none",
     header_style = default_header_style,
     body_style = default_body_style,
-    freeze_header = T,
+    freeze_header = TRUE,
     pad_rows = 0,
     pad_cols = 0,
-    freeze_keys = T,
+    freeze_keys = TRUE,
     key_cols_list = NULL,
-    drop_empty = T
+    drop_empty = TRUE
 ) {
   wb <- openxlsx::createWorkbook()
   list <- process_df_list(list,drop_empty = drop_empty)
   list_names <- names(list)
-  if(length(list)==0)return(warning("empty list cannot be saved",immediate. = T))
+  if(length(list)==0)return(warning("empty list cannot be saved",immediate. = TRUE))
   if(separate){
     for(i in seq_along(list)){
       sub_list <- list[i]
@@ -650,7 +650,7 @@ list_to_excel <- function(
     )
   }
 }
-list_to_csv <- function(list,dir,file_name=NULL,overwrite = TRUE, drop_empty = T){
+list_to_csv <- function(list,dir,file_name=NULL,overwrite = TRUE, drop_empty = TRUE){
   list <- process_df_list(list,drop_empty = drop_empty)
   list_names <- names(list)
   for(i in seq_along(list)){
@@ -680,10 +680,10 @@ save_wb <- function(wb,dir,file_name,overwrite =TRUE){
 save_csv <- function(DF,dir,file_name,overwrite =TRUE){
   if(!dir.exists(dir))stop("dir doesn't exist")
   path <- file.path(dir,paste0(file_name,".csv")) %>% sanitize_path()
-  write_it <- T
+  write_it <- TRUE
   if(!overwrite){
     if(file.exists(path)){
-      write_it <- F
+      write_it <- FALSE
       bullet_in_console(paste0("Already a file!"),file = path)
     }
   }
@@ -737,7 +737,7 @@ remove_html_tags <- function(text_vector) {
   cleaned_vector <- gsub(html_pattern, "", text_vector)
   return(cleaned_vector)
 }
-matches <- function(x,ref,count_only=F){
+matches <- function(x,ref,count_only=FALSE){
   final_match <- list()
   final_match[seq_along(x)] <- NA
   next_match <- match(x,ref)
@@ -789,7 +789,7 @@ drop_if <- function(x,drops) {
 sample1 <- function(x){
   sample(x,1)
 }
-list.files.real <- function(path,full.names = T, recursive = F){
+list.files.real <- function(path,full.names = TRUE, recursive = FALSE){
   grep('~$', sanitize_path(list.files(path,full.names = full.names,recursive = recursive)), fixed = TRUE, value = TRUE, invert = TRUE)
 }
 wrap_text <- function(text, max_length = 40, spacer = "\n") {
@@ -811,7 +811,7 @@ wrap_text <- function(text, max_length = 40, spacer = "\n") {
   result <- paste0(result, current_line)
   return(result)
 }
-clean_env_names <- function(env_names,silent = F,lowercase=T){
+clean_env_names <- function(env_names,silent = FALSE,lowercase=TRUE){
   cleaned_names <- character(length(env_names))
   for (i in seq_along(env_names)) {
     name <- env_names[i]
@@ -830,7 +830,7 @@ clean_env_names <- function(env_names,silent = F,lowercase=T){
   }
   return(cleaned_names)
 }
-is_df_list <- function(x,strict=F){
+is_df_list <- function(x,strict=FALSE){
   if (!is.list(x)) return(FALSE)
   if (length(x)==0) return(FALSE)
   if (is_nested_list(x)) return(FALSE)

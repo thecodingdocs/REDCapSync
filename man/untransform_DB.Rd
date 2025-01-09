@@ -4,7 +4,7 @@
 \alias{untransform_DB}
 \title{Untransform DB}
 \usage{
-untransform_DB(DB, allow_partial = F)
+untransform_DB(DB, allow_partial = FALSE)
 }
 \arguments{
 \item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}

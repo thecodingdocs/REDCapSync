@@ -26,14 +26,14 @@
 drop_REDCap_to_directory <- function(
     DB,
     records,
-    smart = T,
-    deidentify = F,
-    include_metadata = T,
-    include_other = T,
-    with_links = T,
+    smart = TRUE,
+    deidentify = FALSE,
+    include_metadata = TRUE,
+    include_other = TRUE,
+    with_links = TRUE,
     forms,
-    merge_non_repeating = T,
-    separate = F,
+    merge_non_repeating = TRUE,
+    separate = FALSE,
     str_trunc_length = 32000,
     file_name,
     dir_other
@@ -52,15 +52,15 @@ drop_REDCap_to_directory <- function(
   }
   redcap_metadata_dir <- file.path(redcap_dir,"metadata")
   redcap_other_dir <- file.path(redcap_dir,"other")
-  due_for_save_metadata <- T
-  due_for_save_data <- T
+  due_for_save_metadata <- TRUE
+  due_for_save_data <- TRUE
   if(smart){
     if(!is.null(DB$internals$last_metadata_dir_save)) due_for_save_metadata <- DB$internals$last_metadata_update > DB$internals$last_metadata_dir_save
     if(!is.null(DB$internals$last_data_dir_save)) due_for_save_data <- DB$internals$last_data_update > DB$internals$last_data_dir_save
   }
-  redcap_dir %>% dir.create(showWarnings = F)
-  redcap_metadata_dir %>% dir.create(showWarnings = F)
-  redcap_other_dir %>% dir.create(showWarnings = F)
+  redcap_dir %>% dir.create(showWarnings = FALSE)
+  redcap_metadata_dir %>% dir.create(showWarnings = FALSE)
+  redcap_other_dir %>% dir.create(showWarnings = FALSE)
   if(due_for_save_metadata){
     if(include_metadata){
       DB$internals$last_metadata_dir_save <- DB$internals$last_metadata_update
@@ -192,7 +192,7 @@ drop_REDCap_to_directory <- function(
 #' @param stop_or_warn character string of whether to stop, warn, or do nothing when forbidden cols are present
 #' @return messages for confirmation
 #' @export
-read_from_REDCap_upload <- function(DB,allow_all=T,drop_nonredcap_vars=T,drop_non_form_vars=T,stop_or_warn="warn"){
+read_from_REDCap_upload <- function(DB,allow_all=TRUE,drop_nonredcap_vars=TRUE,drop_non_form_vars=TRUE,stop_or_warn="warn"){
   DB <- validate_DB(DB)
   root_dir <- get_dir(DB)
   output_dir <- file.path(root_dir,"output")
@@ -235,7 +235,7 @@ read_from_REDCap_upload <- function(DB,allow_all=T,drop_nonredcap_vars=T,drop_no
     message1 <- paste0("forbidden cols name: ",df$file_name[i],"; ",x %>% paste0(collapse = ", "))
     if(length(x)>0){
       if(stop_or_warn=="stop") stop(message1)
-      if(stop_or_warn=="warn") warning(message1,immediate. = T)
+      if(stop_or_warn=="warn") warning(message1,immediate. = TRUE)
     }
     the_file <- the_file[,which(!colnames(the_file)%in%drop_cols)]
     DB[["data_update"]][[df$match[i]]] <- the_file

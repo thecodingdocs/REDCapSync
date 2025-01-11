@@ -65,10 +65,11 @@ setup_DB <- function (
   if(!force){
     has_expected_file <- FALSE
     if(!missing_dir_path){
-      has_expected_file <- file.path(dir_path,"R_objects",paste0(short_name,"_REDCapDB.Rdata")) %>% file.exists()
+      expected_file <- file.path(dir_path,"R_objects",paste0(short_name,"_REDCapDB.Rdata"))
+      has_expected_file <- file.exists(expected_file)
     }
     if(in_proj_cache || has_expected_file){ # if its seen in cache the load from there
-      DB <- load_DB(short_name)
+      DB <- load_DB_from_path(expected_file)
     }
     if(!(in_proj_cache || has_expected_file)){ # if it's not in the cache start from blank
       if(is_a_test){

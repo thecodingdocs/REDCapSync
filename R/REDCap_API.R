@@ -336,7 +336,7 @@ get_REDCap_log <- function(DB,last=24,user = "",units="hours",begin_time="",clea
   if(is.data.frame(log)){
     log <- log %>% clean_redcap_log(purge_api=clean)
   }
-  log # deal with if NA if user does not have log privelages.
+  log # deal with if NA if user does not have log privileges.
 }
 #' @noRd
 get_REDCap_raw_data <- function(DB,labelled=FALSE,records=NULL,batch_size = 1000){

@@ -234,80 +234,229 @@ clean_redcap_log <- function(log,purge_api=TRUE){
   design_test <- log$action == "Manage/Design"
   design_rows <- which(design_test)
   not_design_rows <- which(!design_test)
-  comment_rows <- design_rows[
-    startsWith(log$details[design_rows], "Add field comment") |
-      startsWith(log$details[design_rows], "Edit field comment") |
-      startsWith(log$details[design_rows], "Delete field comment")
-  ]
-  record_rows <- which(
-    startsWith(log$action, "Update record ") |
-      startsWith(log$action, "Delete record ") |
-      startsWith(log$action, "Lock/Unlock Record ") |
-      startsWith(log$action, "Create record ")
-  )
-  users <- which(
-    startsWith(log$action,"User assigned to role ") |
-      startsWith(log$action,"Add user ") |
-      startsWith(log$action,"Delete user ") |
-      startsWith(log$action,"Edit user ") |
-      startsWith(log$action,"Rename user role") |
-      startsWith(log$action,"User removed from user role") |
-      startsWith(log$action,"Create user role")
-  )
-  exports <-  which(startsWith(log$action,"Data export"))
-  exports2 <- not_design_rows[which(startsWith(log$action[not_design_rows],"Download uploaded "))]
-  exports3 <- design_rows[
-    startsWith(log$details[design_rows], "Export ") |
-      startsWith(log$details[design_rows], "Download ")
-  ]
-  repository <- design_rows[which(startsWith(log$details[design_rows],"Upload file to File Repository"))]
-  modules <- not_design_rows[grep(" external module ",log$action[not_design_rows])]
-  tokens <- design_rows[grepl("API token",log$details[design_rows])]
+  # notdesign action -----
+  record_rows <- not_design_rows[dplyr::starts_with(match = internal_log_action_records,vars = log$action[not_design_rows])]
   log$record_id[record_rows]  <- gsub("Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation|Lock/Unlock Record | |[:):]|[:(:]","",log$action[record_rows])
-  log$action_type[record_rows] <- log$action[record_rows] %>% strsplit(" ") %>% purrr::map(1) %>% unlist()
-  log$record_id[comments] <- stringr::str_extract(log$details[comments], "(?<=Record: )[^,]+")
-  log$action_type[comments] <- "Comment"
-  log$action_type[users] <- "Users"
-  log$action_type[exports] <- "Exports"
-  log$action_type[exports2] <- "Exports"
-  log$action_type[exports3] <- "Exports"
-  log$action_type[tokens] <- "Tokens"
-  log$action_type[modules] <- "Modules"
-  log$action_type[repository] <- "Repository"
-  log$action_type[metadata_no_change] <- "Metadata"
-  log$action_type[metadata_change] <- "Metadata"
-  x <- log[which(is.na(log$action_type)),]
-  x$action %>% table() %>% sort(decreasing = T)
+  log$action_type[record_rows] <- log$action[record_rows] %>% strsplit(" ") %>% lapply(function(A){A[[1]]}) %>% unlist()
+  # record_rows2 <- not_design_rows[which(!is.na(log$record[not_design_rows]))]
+  # record_rows %>% vec1_not_in_vec2(record_rows2)
+  # log$record[record_rows2 %>% vec1_not_in_vec2(record_rows)]# users
+  log$action_type[
+    not_design_rows[
+      dplyr::starts_with(
+        match = internal_log_action_exports,
+        vars = log$action[not_design_rows]
+      )
+    ]
+  ] <- "Exports"
+
+  log$action_type[
+    not_design_rows[
+      dplyr::starts_with(
+        match = internal_log_action_users,
+        vars = log$action[not_design_rows]
+      )
+    ]
+  ] <- "Users"
+
+  log$action_type[
+    not_design_rows[
+      dplyr::starts_with(
+        match = internal_log_action_no_changes,
+        vars = log$action[not_design_rows]
+      )
+    ]
+  ] <- "No Changes"
+  # x <- log[not_design_rows,]
+  # x <- x[which(is.na(x$action_type)),]
+  # x$action %>% table() %>% sort(decreasing = T)
+  # design details  -------------------
+  comment_rows <- design_rows[
+    dplyr::starts_with(
+      match = internal_log_details_comments,
+      vars = log$details[design_rows]
+    )
+  ]
+  log$record_id[comment_rows] <- stringr::str_extract(log$details[comment_rows], "(?<=Record: )[^,]+")
+  log$action_type[comment_rows] <- "Comment"
+
+  log$action_type[
+    design_rows[
+      dplyr::starts_with(
+        match = internal_log_details_exports,
+        vars = log$details[design_rows]
+      )
+    ]
+  ] <- "Exports"
+
+  log$action_type[
+    design_rows[
+      dplyr::starts_with(
+        match = internal_log_details_metadata_major,
+        vars = log$details[design_rows]
+      )
+    ]
+  ] <- "Metadata Change Major"
+
+  log$action_type[
+    design_rows[
+      dplyr::starts_with(
+        match = internal_log_details_metadata_minor,
+        vars = log$details[design_rows]
+      )
+    ]
+  ] <- "Metadata Change Minor"
+
+  log$action_type[
+    design_rows[
+      dplyr::starts_with(
+        match = internal_log_details_no_changes,
+        vars = log$details[design_rows]
+      )
+    ]
+  ] <- "No Changes"
+
+  log$action_type[
+    design_rows[
+      dplyr::starts_with(
+        match = internal_log_details_tokens,
+        vars = log$details[design_rows]
+      )
+    ]
+  ] <- "Tokens"
+
+  log$action_type[
+    design_rows[
+      dplyr::starts_with(
+        match = internal_log_details_repository,
+        vars = log$details[design_rows]
+      )
+    ]
+  ] <- "Repository"
+  # end ------------
   rows <- which(is.na(log$record)&!is.na(log$record_id))
   log$record[rows] <- log$record_id[rows]
   rows <- which(!is.na(log$record)&is.na(log$record_id))
   log$action_type[rows] <- "Users"
   log$record_id <- NULL
-  # rows <- which(!is.na(log$record)&is.na(log$record_id))
-  # log$record_id[rows] <- log$record[rows]
-  log$details <- gsub("[[:cntrl:]]", "", log$details)
-  if(purge_api){
-    log <- log[which(!log$details%in%c("Export Logging (API)","Export REDCap version (API)","export_format: CSV, rawOrLabel: raw", "Download data dictionary (API)")),]
-    log <- log[which(!startsWith(log$details,"Export ")),]
-    log <- log[which(!startsWith(log$details,"Delete file from ")),]
-    log <- log[which(!startsWith(log$details,"Upload file to ")),]
-    log <- log[which(!startsWith(log$details,"export_format")),]
-    log <- log[which(!startsWith(log$details,"Switch DAG ")),]
-    log <- log[which(!startsWith(log$details,"Reorder project fields")),]
-    log <- log[which(!startsWith(log$details,"Download ")),]
-  }
-  # start <- Sys.time()
-  # design_rows <- which(log$action == "Manage/Design")
-  # comment_rows <- design_rows[
-  #   startsWith(log$details[design_rows], "Add field comment") |
-  #     startsWith(log$details[design_rows], "Edit field comment") |
-  #     startsWith(log$details[design_rows], "Delete field comment")
-  # ]
-  # end <- Sys.time()
-  # (end-start)
   log <- sort_redcap_log(log)
   return(log)
 }
+#' @noRd
+internal_log_action_exports <- c(
+  "Data export",
+  "Download uploaded "
+)
+#' @noRd
+internal_log_details_exports <- c(
+  "Export ",
+  "Download "
+)
+#' @noRd
+internal_log_action_users <- c(
+  "User assigned to role ",
+  "Add user ",
+  "Edit user ",
+  "Delete user ",
+  "Rename user role",
+  "User removed from user role",
+  "Create user role"
+)
+#' @noRd
+internal_log_details_comments <- c(
+  "Add field comment ",
+  "Edit field comment ",
+  "Delete field comment "
+)
+#' @noRd
+internal_log_action_records <- c(
+  "Update record ",
+  "Delete record ",
+  "Lock/Unlock Record ",
+  "Create record "
+)
+#' @noRd
+internal_log_action_no_changes <- c(
+  "Enable external module ",
+  "Disable external module ",
+  "Modify configuration for external module "
+)
+#' @noRd
+internal_log_details_no_changes <- c(
+  "Switch DAG ",
+  "Modify custom record dashboard",
+  "Delete custom record dashboard",
+  "Create custom record dashboard",
+  "Create project dashboard",
+  "Edit project dashboard",
+  "Delete project dashboard",
+  "Create project bookmark",
+  "Click project bookmark",
+  "Edit project bookmark",
+  "Delete project bookmark",
+  "Edit settings for Form Render Skip Logic",
+  "Enter draft mode",
+  "Reorder project bookmarks",
+  "Multi-Language Management",
+  "Edit report",
+  "Create report",
+  "Reorder report",
+  "Copy report",
+  "Delete report",
+  "Approve production project modifications",
+  "Cancel draft mode",
+  "Enable auto variable",
+  "Disable auto variable",
+  "Request approval for",
+  "Delete data access group",
+  "Create data access group",
+  "Send email ",
+  "Checked off item in project checklist",
+  "Reject production proj",
+  "Execute data quality rule",
+  "Send request to copy project"
+)
+#' @noRd
+internal_log_details_tokens <- c(
+  "Create API token",
+  "User regenerate own API token"
+)
+#' @noRd
+internal_log_details_repository <- c(
+  "Upload file to File Repository",
+  "Delete file from File Repository",
+  "Delete folder from File Repository",
+  "Create folder in File Repository",
+  "Upload document to file repository"
+)
+#' @noRd
+internal_log_details_metadata_minor <- c(
+  "Tag new identifier fields",
+  "Add/edit branching logic",
+  "Reorder project fields",
+  "Move project field",
+  "Delete section header",
+  "Reorder data collection instruments"
+)
+#' @noRd
+internal_log_details_metadata_major <- c(
+  "Edit project field",
+  "Delete project field",
+  "Create project field",
+  "Make project customizations",
+  "Delete data collection instrument",
+  "Download instrument from Shared Library",
+  "Create data collection instrument",
+  "Copy data collection instrument",
+  "Copy project field",
+  "Rename data collection instrument",
+  "Upload data dictionary",
+  "Set up repeating instruments",
+  "Modify project settings",
+  "Move project ",
+  "Copy project as",
+  "Create project "
+)
 #' @noRd
 all_missing_codes <- function(){
   data.frame(

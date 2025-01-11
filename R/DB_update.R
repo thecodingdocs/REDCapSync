@@ -87,7 +87,7 @@ update_DB <- function(
         DB$redcap$log <- ilog %>% dplyr::bind_rows(DB$redcap$log) %>% unique()
         ilog$timestamp <- NULL
         ilog_metadata <- ilog[which(is.na(ilog$record)),]
-        ilog_metadata <- ilog_metadata[which(ilog_metadata$details%in%log_details_that_trigger_refresh()),] #inclusion
+        ilog_metadata <- ilog_metadata[which(ilog_metadata$details%in%internal_log_details_metadata_major),] #inclusion
         # ilog_metadata <- ilog_metadata[grep(ignore_redcap_log(),ilog_metadata$details,ignore.case = TRUE,invert = TRUE) %>% unique(),]
         if(nrow(ilog_metadata)>0){
           force <- TRUE

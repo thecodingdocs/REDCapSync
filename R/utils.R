@@ -116,19 +116,6 @@ ignore_redcap_log <- function(collapse = TRUE){
   return(ignores)
 }
 #' @noRd
-log_details_that_trigger_refresh <- function(){
-  c(
-    "Edit project field",
-    "Delete project field",
-    "Create project field",
-    "Make project customizations",
-    "Delete data collection instrument",
-    "Download instrument from Shared Library",
-    "Create data collection instrument",
-    "Tag new identifier fields"
-  )
-}
-#' @noRd
 sidebar_choices <- function(DB,n_threshold=1){
   choices <- annotate_choices(DB)
   choices <- choices[which(choices$n>=n_threshold),]

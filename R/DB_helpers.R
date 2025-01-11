@@ -276,8 +276,6 @@ clean_redcap_log <- function(log,purge_api=TRUE){
   log$action_type[repository] <- "Repository"
   log$action_type[metadata_no_change] <- "Metadata"
   log$action_type[metadata_change] <- "Metadata"
-
-
   x <- log[which(is.na(log$action_type)),]
   x$action %>% table() %>% sort(decreasing = T)
   rows <- which(is.na(log$record)&!is.na(log$record_id))
@@ -285,7 +283,6 @@ clean_redcap_log <- function(log,purge_api=TRUE){
   rows <- which(!is.na(log$record)&is.na(log$record_id))
   log$action_type[rows] <- "Users"
   log$record_id <- NULL
-
   # rows <- which(!is.na(log$record)&is.na(log$record_id))
   # log$record_id[rows] <- log$record[rows]
   log$details <- gsub("[[:cntrl:]]", "", log$details)

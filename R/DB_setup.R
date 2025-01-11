@@ -56,6 +56,7 @@ setup_DB <- function (
   }# maybe a message
   token_name <- validate_env_name(token_name)
   in_proj_cache <- short_name %in% projects$short_name
+  has_expected_file <- file.path(dir_path,"R_objects",paste0(short_name,"_REDCap.Rdata")) %>% file.exists()
   missing_dir_path <- missing(dir_path)
   is_a_test <- is_test_short_name(short_name = short_name)
   if(force){ # load blank if force = TRUE
@@ -63,16 +64,16 @@ setup_DB <- function (
     bullet_in_console(paste0("Setup blank DB object because `force = TRUE`"))
   }
   if(!force){
-    if(in_proj_cache){ # if its seen in cache the load from there
+    if(in_proj_cache || has_expected_file){ # if its seen in cache the load from there
       DB <- load_DB(short_name)
     }
-    if(!in_proj_cache){ # if it's not in the cache start from blank
+    if(!(in_proj_cache || has_expected_file)){ # if it's not in the cache start from blank
       if(is_a_test){
         DB <- load_test_DB(short_name = short_name, with_data = FALSE)
       }else{
         DB <- internal_blank_DB
       }
-      bullet_in_console("Setup blank DB object because nothing found in cache.",bullet_type = "!")
+      bullet_in_console("Setup blank DB object because nothing found in cache or directory.",bullet_type = "!")
     }
   }
   if(missing_dir_path){ # if missing the directory path from setup or load then let user know nothing will be stored

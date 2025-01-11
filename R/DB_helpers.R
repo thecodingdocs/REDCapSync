@@ -228,18 +228,64 @@ sort_redcap_log <- function(log){
 }
 #' @noRd
 clean_redcap_log <- function(log,purge_api=TRUE){
-  log$record_id <- log$action %>% lapply(function(A){ifelse(grepl("Update record |Delete record |Create record ",A),gsub("Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation| |[:):]|[:(:]","",A),NA)}) %>% unlist()
-  log$action_type <- log$action %>% lapply(function(A){ifelse(grepl("Update record |Delete record |Create record ",A),(A %>% strsplit(" ") %>% unlist())[1],NA)}) %>% unlist()
-  comments <- which(log$action=="Manage/Design"&grepl("Add field comment|Edit field comment|Delete field comment",log$details))
-  if(length(comments)>0){
-    log$record_id[comments] <- stringr::str_extract(log$details[comments], "(?<=Record: )[^,]+")
-    log$action_type[comments] <- "Comment"
-  }
+  log <- unique(log)
+  log$record_id <- NA
+  log$action_type <- NA
+  design_test <- log$action == "Manage/Design"
+  design_rows <- which(design_test)
+  not_design_rows <- which(!design_test)
+  comment_rows <- design_rows[
+    startsWith(log$details[design_rows], "Add field comment") |
+      startsWith(log$details[design_rows], "Edit field comment") |
+      startsWith(log$details[design_rows], "Delete field comment")
+  ]
+  record_rows <- which(
+    startsWith(log$action, "Update record ") |
+      startsWith(log$action, "Delete record ") |
+      startsWith(log$action, "Lock/Unlock Record ") |
+      startsWith(log$action, "Create record ")
+  )
+  users <- which(
+    startsWith(log$action,"User assigned to role ") |
+      startsWith(log$action,"Add user ") |
+      startsWith(log$action,"Delete user ") |
+      startsWith(log$action,"Edit user ") |
+      startsWith(log$action,"Rename user role") |
+      startsWith(log$action,"User removed from user role") |
+      startsWith(log$action,"Create user role")
+  )
+  exports <-  which(startsWith(log$action,"Data export"))
+  exports2 <- not_design_rows[which(startsWith(log$action[not_design_rows],"Download uploaded "))]
+  exports3 <- design_rows[
+    startsWith(log$details[design_rows], "Export ") |
+      startsWith(log$details[design_rows], "Download ")
+  ]
+  repository <- design_rows[which(startsWith(log$details[design_rows],"Upload file to File Repository"))]
+  modules <- not_design_rows[grep(" external module ",log$action[not_design_rows])]
+  tokens <- design_rows[grepl("API token",log$details[design_rows])]
+  log$record_id[record_rows]  <- gsub("Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation|Lock/Unlock Record | |[:):]|[:(:]","",log$action[record_rows])
+  log$action_type[record_rows] <- log$action[record_rows] %>% strsplit(" ") %>% purrr::map(1) %>% unlist()
+  log$record_id[comments] <- stringr::str_extract(log$details[comments], "(?<=Record: )[^,]+")
+  log$action_type[comments] <- "Comment"
+  log$action_type[users] <- "Users"
+  log$action_type[exports] <- "Exports"
+  log$action_type[exports2] <- "Exports"
+  log$action_type[exports3] <- "Exports"
+  log$action_type[tokens] <- "Tokens"
+  log$action_type[modules] <- "Modules"
+  log$action_type[repository] <- "Repository"
+  log$action_type[metadata_no_change] <- "Metadata"
+  log$action_type[metadata_change] <- "Metadata"
+
+
+  x <- log[which(is.na(log$action_type)),]
+  x$action %>% table() %>% sort(decreasing = T)
   rows <- which(is.na(log$record)&!is.na(log$record_id))
   log$record[rows] <- log$record_id[rows]
   rows <- which(!is.na(log$record)&is.na(log$record_id))
   log$action_type[rows] <- "Users"
   log$record_id <- NULL
+
   # rows <- which(!is.na(log$record)&is.na(log$record_id))
   # log$record_id[rows] <- log$record[rows]
   log$details <- gsub("[[:cntrl:]]", "", log$details)
@@ -253,6 +299,15 @@ clean_redcap_log <- function(log,purge_api=TRUE){
     log <- log[which(!startsWith(log$details,"Reorder project fields")),]
     log <- log[which(!startsWith(log$details,"Download ")),]
   }
+  # start <- Sys.time()
+  # design_rows <- which(log$action == "Manage/Design")
+  # comment_rows <- design_rows[
+  #   startsWith(log$details[design_rows], "Add field comment") |
+  #     startsWith(log$details[design_rows], "Edit field comment") |
+  #     startsWith(log$details[design_rows], "Delete field comment")
+  # ]
+  # end <- Sys.time()
+  # (end-start)
   log <- sort_redcap_log(log)
   return(log)
 }

@@ -29,6 +29,7 @@ Imports:
     lubridate,
     magrittr,
     openxlsx,
+    purrr,
     readxl,
     REDCapR,
     rio,

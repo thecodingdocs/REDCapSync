@@ -185,7 +185,7 @@ raw_process_redcap <- function(raw, DB, labelled) {
     add_ons <- c(DB$redcap$id_col, "arm_num", "event_name", "redcap_event_name", "redcap_repeat_instrument", "redcap_repeat_instance")
     if (DB$redcap$is_longitudinal) {
       raw$id_temp <- seq_len(nrow(raw))
-      raw <- merge(raw, DB$metadata$events[, c("arm_num", "event_name", "unique_event_name")], by.x = "redcap_event_name", by.y = "unique_event_name", sort = FALSE, all.x = TRUE)
+      raw <- merge(raw, events[, c("arm_num", "event_name", "unique_event_name")], by.x = "redcap_event_name", by.y = "unique_event_name", sort = FALSE, all.x = TRUE)
       add_ons <- add_ons[which(add_ons %in% colnames(raw))]
       cols <- c(add_ons, colnames(raw)) %>% unique()
       raw <- raw[order(raw$id_temp), cols %>% lapply(function(c) {

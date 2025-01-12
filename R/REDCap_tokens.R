@@ -83,7 +83,7 @@ view_REDCap_token <- function(DB) {
 #' @keywords Token Functions
 #' @export
 test_REDCap_token <- function(DB, set_if_fails = TRUE, launch_browser = TRUE) {
-  token <- validate_REDCap_token(DB, silent = FALSE)
+  # token <- validate_REDCap_token(DB, silent = FALSE)
   version <- get_REDCap_version(DB, show_method_help = FALSE) %>% suppressWarnings()
   DB$internals$last_test_connection_attempt <- Sys.time()
   DB$internals$last_test_connection_outcome <- ERROR <- is.na(version)

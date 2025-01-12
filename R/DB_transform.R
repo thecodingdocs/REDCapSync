@@ -232,7 +232,7 @@ add_default_fields_transformation <- function(DB) {
   #   # original_fields = NULL,
   #   data_updates = NULL
   # )
-  fields_transformation <- NULL
+  # fields_transformation <- NULL
   DB$metadata$form_key_cols %>%
     names() %>%
     lapply(function(form_name) {
@@ -241,7 +241,7 @@ add_default_fields_transformation <- function(DB) {
   forms <- get_original_forms(DB)
   last_non_rep <- forms$form_name[which(!forms$repeating)] %>% dplyr::last()
   form_names <- forms$form_name[which(forms$repeating)]
-  id_col <- DB$metadata$form_key_cols[[last_non_rep]]
+  # id_col <- DB$metadata$form_key_cols[[last_non_rep]]
   has_non_rep <- length(last_non_rep) > 0
   if (has_non_rep) {
     for (form_name in form_names) {
@@ -459,7 +459,7 @@ run_fields_transformation <- function(DB, ask = TRUE) {
   original_fields <- get_original_fields(DB)
   the_names_existing <- the_names[which(the_names %in% original_fields$field_name)]
   the_names_new <- the_names[which(!the_names %in% original_fields$field_name)]
-  fields_to_update <- NULL
+  # fields_to_update <- NULL
   for (field_name in c(the_names_existing, the_names_new)) {
     OUT <- NA
     row_of_interest <- DB$transformation$fields[which(DB$transformation$fields$field_name == field_name), ]
@@ -686,7 +686,7 @@ untransform_DB <- function(DB, allow_partial = FALSE) {
   forms_transformation <- DB$transformation$forms
   original_form_names <- DB$transformation$original_forms$form_name
   original_fields <- DB$metadata$fields
-  keys <- DB$metadata$form_key_cols
+  # keys <- DB$metadata$form_key_cols
   OUT <- NULL
   if (!allow_partial) {
     if (any(!original_form_names %in% forms_transformation$form_name)) stop("Must have all original form names in transformation!")
@@ -714,8 +714,8 @@ untransform_DB <- function(DB, allow_partial = FALSE) {
   }
   DB$data <- OUT
   DB$internals$is_transformed <- FALSE
-  DB$metadata$forms <- DB$transformation$original_forms
-  DB$metadata$fields <- DB$transformation$original_fields
+  DB$metadata$forms <- original_forms
+  DB$metadata$fields <- original_fields
   bullet_in_console(paste0(DB$short_name, " untransformed according to `DB$transformation`"), bullet_type = "v")
   return(DB)
 }
@@ -727,18 +727,18 @@ missing_form_names <- function(DB) {
 }
 #' @noRd
 missing_field_names <- function(DB) {
-  md <- data.frame(
-    field_name = DB$metadata$fields$field_name,
-    form_name = DB$metadata$fields$form_name
-  )
-  d <- DB$data %>%
-    names() %>%
-    lapply(function(form_name) {
-      data.frame(
-        form_name = form_name,
-        field_name = colnames(DB$data[[form_name]])
-      )
-    }) %>%
-    dplyr::bind_rows()
-  # return(form_names)
+  # md <- data.frame(
+  #   field_name = DB$metadata$fields$field_name,
+  #   form_name = DB$metadata$fields$form_name
+  # )
+  # d <- DB$data %>%
+  #   names() %>%
+  #   lapply(function(form_name) {
+  #     data.frame(
+  #       form_name = form_name,
+  #       field_name = colnames(DB$data[[form_name]])
+  #     )
+  #   }) %>%
+  #   dplyr::bind_rows()
+  # # return(form_names)
 }

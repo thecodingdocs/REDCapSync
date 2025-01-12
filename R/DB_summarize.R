@@ -162,8 +162,8 @@ annotate_forms <- function(DB, summarize_data = TRUE) {
 }
 #' @noRd
 annotate_choices <- function(DB, summarize_data = TRUE) {
-  forms <- DB$metadata$forms
-  fields <- DB$metadata$fields
+  # forms <- DB$metadata$forms
+  # fields <- DB$metadata$fields
   choices <- DB$metadata$choices
   # choices$field_name_raw <- choices$field_name
   # choices$field_name_raw[which(choices$field_type=="checkbox_choice")] <- choices$field_name[which(choices$field_type=="checkbox_choice")] %>%
@@ -624,7 +624,7 @@ summarize_DB <- function(
   if (!do_it) {
     do_it <- DB$internals$last_summary < last_data_update
   }
-  if (force | do_it) {
+  if (force || do_it) {
     to_save_list <- DB %>% generate_summary_save_list(
       deidentify = deidentify,
       clean = clean,
@@ -808,7 +808,7 @@ get_subset_records <- function(DB, subset_name) {
   } else {
     filter_choices <- subset_list$filter_choices
     form_name <- field_names_to_form_names(DB, field_names = subset_list$filter_field)
-    records <- DB$data[[form_name]][[DB$redcap$id_col]][which(DB$data[[form_name]][[subset_list$filter_field]] %in% subset_list$filter_choices)] %>% unique()
+    records <- DB$data[[form_name]][[DB$redcap$id_col]][which(DB$data[[form_name]][[subset_list$filter_field]] %in% filter_choices)] %>% unique()
   }
   subset_records <- DB$summary$all_records[which(DB$summary$all_records[[DB$redcap$id_col]] %in% records), ]
   return(subset_records)
@@ -1246,7 +1246,7 @@ DF_list_to_text <- function(DF_list, DB, drop_nas = TRUE, clean_names = TRUE) {
       for (col_name in colnames(DF)) {
         entry <- DF[j, col_name]
         if (!col_name %in% key_col_names) {
-          if (!is.na(entry) | !drop_nas) {
+          if (!is.na(entry) || !drop_nas) {
             entry <- gsub("\\n", "<br>", entry)
             col_name_clean <- col_name
             if (clean_names) col_name_clean <- DB$metadata$fields$field_label[which(DB$metadata$fields$field_name == col_name)]

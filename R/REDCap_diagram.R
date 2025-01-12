@@ -102,7 +102,7 @@ create_node_edge_REDCap <- function(
   event_color <- "orange"
   form_color <- "#FF474C"
   field_color <- "yellow"
-  attribute_color <- "green"
+  # attribute_color <- "green"
   choice_color <- "lightblue"
   arrow_type <- "to"
   arms <- DB$metadata$arms

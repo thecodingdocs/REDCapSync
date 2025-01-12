@@ -49,6 +49,10 @@ update_DB <- function(
   }
   DB <- test_REDCap_token(DB, set_if_fails = set_token_if_fails)
   connected <- DB$internals$last_test_connection_outcome
+  if(!connected){
+    bullet_in_console("Could not connect to REDCap",bullet_type = "x")
+    return(DB)
+  }
   if (metadata_only) force <- TRUE
   # DB$internals$last_metadata_update <- Sys.time()-lubridate::days(1)
   # DB$internals$last_data_update <- Sys.time()-lubridate::days(1)

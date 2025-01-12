@@ -1,5 +1,5 @@
 .onLoad <- function(libname, pkgname) {
-  cache <- get_cache()
+  get_cache()
 }
 .onAttach <- function(libname, pkgname) {
   if (interactive()) {

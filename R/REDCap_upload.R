@@ -240,7 +240,7 @@ edit_REDCap_while_viewing <- function(DB, optional_DF, records, field_name_to_ch
   field_names_to_view <- c(field_name_to_change, field_names_to_view) %>% unique()
   # if(length(view_forms)>1)stop("only one form combinations are allowed.")
   if (missing(records)) records <- DB$data[[view_forms]][[DB$redcap$id_col]] %>% unique()
-  all_forms <- c(change_form, view_forms) %>% unique()
+  # all_forms <- c(change_form, view_forms) %>% unique()
   ref_cols_change <- DB$metadata$form_key_cols[[change_form]]
   # ref_cols_view <- DB$metadata$form_key_cols[[view_forms]]
   if (missing(optional_DF)) {

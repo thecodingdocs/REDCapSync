@@ -69,8 +69,8 @@ update_DB <- function(
   if (!force) { # check log interim
     if (
       is.null(DB$internals$last_metadata_update) ||
-        is.null(DB$internals$last_data_update) ||
-        is.null(DB$internals$last_full_update)
+      is.null(DB$internals$last_data_update) ||
+      is.null(DB$internals$last_full_update)
     ) {
       force <- TRUE
     } else {

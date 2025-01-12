@@ -1268,16 +1268,16 @@ check_DB_for_IDs <- function(DB, required_percent_filled = 0.7) {
       DF <- DB$data[[DB$metadata$forms$form_name[which(!DB$metadata$forms$repeating)][[1]]]]
       IN_length <- DF %>% nrow()
       cols <- colnames(DF)[DF %>%
-        lapply(function(IN) {
-          OUT <- FALSE
-          x <- IN %>% drop_nas()
-          if ((length(x) / IN_length) > required_percent_filled) {
-            OUT <- anyDuplicated(x) == 0
-          }
-          return(OUT)
-        }) %>%
-        unlist() %>%
-        which()]
+                             lapply(function(IN) {
+                               OUT <- FALSE
+                               x <- IN %>% drop_nas()
+                               if ((length(x) / IN_length) > required_percent_filled) {
+                                 OUT <- anyDuplicated(x) == 0
+                               }
+                               return(OUT)
+                             }) %>%
+                             unlist() %>%
+                             which()]
     }
   }
   return(cols)

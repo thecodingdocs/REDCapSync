@@ -686,6 +686,7 @@ untransform_DB <- function(DB, allow_partial = FALSE) {
   forms_transformation <- DB$transformation$forms
   original_form_names <- DB$transformation$original_forms$form_name
   original_fields <- DB$metadata$fields
+  original_forms <- DB$metadata$forms
   # keys <- DB$metadata$form_key_cols
   OUT <- NULL
   if (!allow_partial) {

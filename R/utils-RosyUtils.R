@@ -122,7 +122,7 @@ find_df_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
   if (!all(colnames(new) %in% colnames(old))) {
     stop("All new DF columns must be included in old DF")
   }
-  if (!all(ref_cols %in% colnames(new)) | !all(ref_cols %in% colnames(old))) {
+  if (!all(ref_cols %in% colnames(new)) || !all(ref_cols %in% colnames(old))) {
     stop("ref_cols must be included in both dfs")
   }
   if (length(ref_cols) > 1) {
@@ -189,7 +189,7 @@ find_df_diff2 <- function(new, old, ref_cols = NULL, message_pass = "", view_old
   if (!all(colnames(new) %in% colnames(old))) {
     stop("All new DF columns must be included in old DF")
   }
-  if (!all(ref_cols %in% colnames(new)) | !all(ref_cols %in% colnames(old))) {
+  if (!all(ref_cols %in% colnames(new)) || !all(ref_cols %in% colnames(old))) {
     stop("ref_cols must be included in both dfs")
   }
   if (length(ref_cols) > 1) {
@@ -473,7 +473,7 @@ DF_to_wb <- function(
       }
     }
     openxlsx::writeDataTable(wb, sheet = DF_name, x = DF, startRow = startRow_table, startCol = startCol, tableStyle = tableStyle)
-    style_cols <- seq(ncol(DF)) + pad_cols
+    style_cols <- seq_len(ncol(DF)) + pad_cols
     openxlsx::addStyle(
       wb,
       sheet = DF_name,
@@ -487,7 +487,7 @@ DF_to_wb <- function(
       wb,
       sheet = DF_name,
       style = body_style,
-      rows = seq(nrow(DF)) + startRow_table,
+      rows = seq_len(nrow(DF)) + startRow_table,
       cols = style_cols,
       gridExpand = TRUE,
       stack = TRUE
@@ -670,7 +670,7 @@ list_to_excel <- function(
 }
 list_to_csv <- function(list, dir, file_name = NULL, overwrite = TRUE, drop_empty = TRUE) {
   list <- process_df_list(list, drop_empty = drop_empty)
-  list_names <- names(list)
+  # list_names <- names(list)
   for (i in seq_along(list)) {
     sub_list <- list[i]
     file_name2 <- names(sub_list)

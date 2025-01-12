@@ -261,7 +261,6 @@ get_REDCap_metadata <- function(DB, include_users = TRUE) {
 }
 #' @noRd
 get_REDCap_data <- function(DB, labelled = TRUE, records = NULL, batch_size = 2000) {
-  forms <- get_original_forms(DB)
   data_list <- list()
   raw <- get_REDCap_raw_data(
     DB = DB,

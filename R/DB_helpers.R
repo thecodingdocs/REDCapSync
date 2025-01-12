@@ -3,20 +3,22 @@
 #'  add REDCap ID to any dataframe using a ref_id
 #' @inheritParams save_DB
 #' @param DF dataframe
-#' @param ref_id column name that matches a REDCap variable name that could be an ALT id such as MRN
+#' @param ref_id column name that matches a REDCap variable name that could be
+#' an ALT id such as MRN
 #' @return original dataframe with REDCap id_col added as the first column
 #' @export
 add_ID_to_DF <- function(DF, DB, ref_id) {
-  if (!ref_id %in% DB$metadata$fields$field_name) stop("The ref_id not valid. Must be a REDCap raw colname")
-  form <- DB$metadata$fields$form_name[which(DB$metadata$fields$field_name == ref_id)]
-  # if(DB$internals$data_extract_merged){
-  #   if(form %in% DB$metadata$forms$form_name[which(!DB$metadata$forms$repeating)]){
-  #     form <- DB$internals$merge_form_name
-  #   }
-  # }
+  if (!ref_id %in% DB$metadata$fields$field_name){
+    stop("The ref_id not valid. Must be a REDCap raw colname")
+  }
+  form <- DB$metadata$fields$form_name[
+    which(DB$metadata$fields$field_name == ref_id)
+  ]
   id_col <- DF[[ref_id]] %>%
     lapply(function(ID) {
-      DB$data[[form]][[DB$redcap$id_col]][which(DB$data[[form]][[ref_id]] == ID)]
+      DB$data[[form]][[DB$redcap$id_col]][
+        which(DB$data[[form]][[ref_id]] == ID)
+      ]
     }) %>%
     unlist() %>%
     as.data.frame()
@@ -26,17 +28,25 @@ add_ID_to_DF <- function(DF, DB, ref_id) {
 }
 #' @title Deidentify the REDCap Database
 #' @description
-#' Removes or masks identifying information from the REDCap database (`DB`). This can be done either based on the `identifier` field in the metadata or by specifying custom identifiers.
+#' Removes or masks identifying information from the REDCap database (`DB`).
+#' This can be done either based on the `identifier` field in the metadata or
+#' by specifying custom identifiers.
 #'
 #' @inheritParams save_DB
-#' @param identifiers Optional character vector of column names that should be excluded from the `DB`. If not provided, fields where `DB$metadata$fields$identifier == "y"` will be used as the default.
-#' @param drop_free_text Logical. If `TRUE`, columns containing free text will also be excluded from the `DB`. Default is `FALSE`.
+#' @param identifiers Optional character vector of column names that should be
+#' excluded from the `DB`. If not provided, fields where
+#' `DB$metadata$fields$identifier == "y"` will be used as the default.
+#' @param drop_free_text Logical. If `TRUE`, columns containing free text
+#' will also be excluded from the `DB`. Default is `FALSE`.
 #'
 #' @return
 #' A `DB` object with deidentified forms.
 #'
 #' @details
-#' This function modifies the `DB` object to exclude specified identifiers or any columns flagged as identifiers in the metadata. Free-text fields can also be optionally removed, ensuring the resulting dataset complies with deidentification standards.
+#' This function modifies the `DB` object to exclude specified identifiers or
+#' any columns flagged as identifiers in the metadata. Free-text fields can
+#' also be optionally removed, ensuring the resulting dataset complies with
+#' deidentification standards.
 #'
 #' @seealso
 #' \code{\link{save_DB}} for saving the modified database.
@@ -47,7 +57,11 @@ deidentify_DB <- function(DB, identifiers, drop_free_text = FALSE) {
   missing_identifiers <- missing(identifiers)
   if (!missing_identifiers) {
     identifiers <- identifiers %>% unique()
-    bad_identifiers <- identifiers[which(!identifiers %in% DB$metadata$fields$field_name)]
+    bad_identifiers <- identifiers[
+      which(
+        !identifiers %in% DB$metadata$fields$field_name
+      )
+    ]
     if (length(bad_identifiers) > 0) stop("You have an identifier that is not included in the set of `DB$metadata$fields$field_name` --> ", bad_identifiers %>% paste0(collapse = ", "))
     if (DB$redcap$id_col %in% identifiers) stop("Your REDCap ID, ", DB$redcap$id_col, ", should not be deidentified.") # If you want to pass a new set of random IDs to make this data use `scramble_ID_DB(DB)`.")
   }

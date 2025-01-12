@@ -1,10 +1,13 @@
 #' @title Get your Get Cache Path
 #' @description
-#' Included for transparency and confirmation/testing. This is where the basic information about your projects is cached when you use the REDCapDB package.
+#' Included for transparency and confirmation/testing. This is where the basic
+#' information about your projects is cached when you use the REDCapDB package.
 #' @details
-#' This function checks the location of the cache established by \code{\link[hoardr]{hoard}}.
+#' This function checks the location of the cache established
+#' by \code{\link[hoardr]{hoard}}.
 #' \emph{No project data is stored here. Tokens are not stored here either.}
-#' Key information stored here is `short_name` (primary key for REDCapDB projects) and other details about project information.
+#' Key information stored here is `short_name` (primary key for REDCapDB
+#' projects) and other details about project information.
 #' @return The file path of your REDCapDB cache
 #' @seealso
 #' For more details, see \code{\link[hoardr]{hoard}}.
@@ -25,7 +28,8 @@ cache_path <- function() {
 #' @description
 #' Included for transparency and confirmation/testing.
 #' @details
-#' This function checks the location of the cache established by \code{\link[hoardr]{hoard}} and deletes it!
+#' This function checks the location of the cache established by
+#' \code{\link[hoardr]{hoard}} and deletes it!
 #' This will not delete project data, just the packages stored "memory" of it.
 #' @return messages confirming deleted cache
 #' @family Project Cache Functions
@@ -34,8 +38,15 @@ cache_path <- function() {
 cache_clear <- function() {
   cache <- get_cache()
   cache$delete_all()
-  bullet_in_console("If you intend to delete any/all files, that must be done manually from the directory/directories.", bullet_type = "!")
-  bullet_in_console("REDCapDB cache cleared!", file = cache$cache_path_get(), bullet_type = "v")
+  bullet_in_console(
+    "You must delete any/all other files manually from the directory.",
+    bullet_type = "!"
+  )
+  bullet_in_console(
+    "REDCapDB cache cleared!",
+    file = cache$cache_path_get(),
+    bullet_type = "v"
+  )
 }
 #' @noRd
 cache_exists <- function() {

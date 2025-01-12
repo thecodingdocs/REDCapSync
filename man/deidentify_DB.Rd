@@ -9,18 +9,26 @@ deidentify_DB(DB, identifiers, drop_free_text = FALSE)
 \arguments{
 \item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
 
-\item{identifiers}{Optional character vector of column names that should be excluded from the \code{DB}. If not provided, fields where \code{DB$metadata$fields$identifier == "y"} will be used as the default.}
+\item{identifiers}{Optional character vector of column names that should be
+excluded from the \code{DB}. If not provided, fields where
+\code{DB$metadata$fields$identifier == "y"} will be used as the default.}
 
-\item{drop_free_text}{Logical. If \code{TRUE}, columns containing free text will also be excluded from the \code{DB}. Default is \code{FALSE}.}
+\item{drop_free_text}{Logical. If \code{TRUE}, columns containing free text
+will also be excluded from the \code{DB}. Default is \code{FALSE}.}
 }
 \value{
 A \code{DB} object with deidentified forms.
 }
 \description{
-Removes or masks identifying information from the REDCap database (\code{DB}). This can be done either based on the \code{identifier} field in the metadata or by specifying custom identifiers.
+Removes or masks identifying information from the REDCap database (\code{DB}).
+This can be done either based on the \code{identifier} field in the metadata or
+by specifying custom identifiers.
 }
 \details{
-This function modifies the \code{DB} object to exclude specified identifiers or any columns flagged as identifiers in the metadata. Free-text fields can also be optionally removed, ensuring the resulting dataset complies with deidentification standards.
+This function modifies the \code{DB} object to exclude specified identifiers or
+any columns flagged as identifiers in the metadata. Free-text fields can
+also be optionally removed, ensuring the resulting dataset complies with
+deidentification standards.
 }
 \seealso{
 \code{\link{save_DB}} for saving the modified database.

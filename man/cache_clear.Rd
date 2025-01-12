@@ -13,7 +13,8 @@ messages confirming deleted cache
 Included for transparency and confirmation/testing.
 }
 \details{
-This function checks the location of the cache established by \code{\link[hoardr]{hoard}} and deletes it!
+This function checks the location of the cache established by
+\code{\link[hoardr]{hoard}} and deletes it!
 This will not delete project data, just the packages stored "memory" of it.
 }
 \seealso{

@@ -9,7 +9,6 @@
 #' @seealso
 #' For more details, see \code{\link[hoardr]{hoard}}.
 #' @examples
-#'
 #' \dontrun{
 #' path <- cache_path()
 #' print(path)
@@ -17,7 +16,7 @@
 #' @family Project Cache Functions
 #' @keywords Project Cache Functions
 #' @export
-cache_path <- function(){
+cache_path <- function() {
   cache <- get_cache()
   path <- sanitize_path(cache$cache_path_get())
   return(path)
@@ -32,30 +31,33 @@ cache_path <- function(){
 #' @family Project Cache Functions
 #' @keywords Project Cache Functions
 #' @export
-cache_clear <-  function(){
+cache_clear <- function() {
   cache <- get_cache()
   cache$delete_all()
-  bullet_in_console("If you intend to delete any/all files, that must be done manually from the directory/directories.",bullet_type = "!")
-  bullet_in_console("REDCapDB cache cleared!",file = cache$cache_path_get(),bullet_type = "v")
+  bullet_in_console("If you intend to delete any/all files, that must be done manually from the directory/directories.", bullet_type = "!")
+  bullet_in_console("REDCapDB cache cleared!", file = cache$cache_path_get(), bullet_type = "v")
 }
 #' @noRd
-cache_exists <-  function(){
+cache_exists <- function() {
   cache <- get_cache()
   return(file.exists(cache$cache_path_get()))
 }
 #' @noRd
-cache_projects_exists <-  function(){
-  if(cache_exists()){
-    cache_path() %>% file.path("projects.rds") %>% file.exists() %>% return()
-  }else{
-    bullet_in_console("Cache doesn't exist",bullet_type = "x")
+cache_projects_exists <- function() {
+  if (cache_exists()) {
+    cache_path() %>%
+      file.path("projects.rds") %>%
+      file.exists() %>%
+      return()
+  } else {
+    bullet_in_console("Cache doesn't exist", bullet_type = "x")
     return(FALSE)
   }
 }
 #' @noRd
-get_cache <- function(){
+get_cache <- function() {
   cache <- hoardr::hoard()
-  cache$cache_path_set(path="REDCapDB",type="user_cache_dir")
+  cache$cache_path_set(path = "REDCapDB", type = "user_cache_dir")
   cache$mkdir()
   return(cache)
 }

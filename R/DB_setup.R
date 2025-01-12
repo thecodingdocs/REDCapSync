@@ -36,89 +36,87 @@
 #' DB <- load_DB("TEST")
 #' @family DB object
 #' @export
-setup_DB <- function (
+setup_DB <- function(
     short_name,
     dir_path,
     redcap_base,
-    token_name = paste0("REDCapDB_",short_name),
+    token_name = paste0("REDCapDB_", short_name),
     force = FALSE,
     merge_form_name = "merged",
     use_csv = FALSE,
-    auto_check_token = TRUE
-)
-{
-  em <- '`short_name` must be character string of length 1'
-  if(!is.character(short_name))stop(em)
-  if(length(short_name)!=1)stop(em)
+    auto_check_token = TRUE) {
+  em <- "`short_name` must be character string of length 1"
+  if (!is.character(short_name)) stop(em)
+  if (length(short_name) != 1) stop(em)
   projects <- get_projects() # add short_name conflict check if id and base url differs
   short_name <- validate_env_name(short_name)
-  if(paste0(internal_REDCapDB_token_prefix,short_name)!=token_name){
-  }# maybe a message
+  if (paste0(internal_REDCapDB_token_prefix, short_name) != token_name) {
+  } # maybe a message
   token_name <- validate_env_name(token_name)
   in_proj_cache <- short_name %in% projects$short_name
   missing_dir_path <- missing(dir_path)
   is_a_test <- is_test_short_name(short_name = short_name)
-  if(force){ # load blank if force = TRUE
+  if (force) { # load blank if force = TRUE
     DB <- internal_blank_DB
     bullet_in_console(paste0("Setup blank DB object because `force = TRUE`"))
   }
-  if(!force){
+  if (!force) {
     has_expected_file <- FALSE
-    if(!missing_dir_path){
-      expected_file <- file.path(dir_path,"R_objects",paste0(short_name,"_REDCapDB.Rdata"))
+    if (!missing_dir_path) {
+      expected_file <- file.path(dir_path, "R_objects", paste0(short_name, "_REDCapDB.Rdata"))
       has_expected_file <- file.exists(expected_file)
     }
-    if(in_proj_cache || has_expected_file){ # if its seen in cache the load from there
+    if (in_proj_cache || has_expected_file) { # if its seen in cache the load from there
       DB <- load_DB_from_path(expected_file)
     }
-    if(!(in_proj_cache || has_expected_file)){ # if it's not in the cache start from blank
-      if(is_a_test){
+    if (!(in_proj_cache || has_expected_file)) { # if it's not in the cache start from blank
+      if (is_a_test) {
         DB <- load_test_DB(short_name = short_name, with_data = FALSE)
-      }else{
+      } else {
         DB <- internal_blank_DB
       }
-      bullet_in_console("Setup blank DB object because nothing found in cache or directory.",bullet_type = "!")
+      bullet_in_console("Setup blank DB object because nothing found in cache or directory.", bullet_type = "!")
     }
   }
-  if(missing_dir_path){ # if missing the directory path from setup or load then let user know nothing will be stored
-    if(!is_something(DB$dir_path)){ # only show message if load_DB wasn't used internally (that has a directory)
-      bullet_in_console("If you don't supply a directory, REDCapDB will only run in R session. Package is best with a directory.",bullet_type = "!")
+  if (missing_dir_path) { # if missing the directory path from setup or load then let user know nothing will be stored
+    if (!is_something(DB$dir_path)) { # only show message if load_DB wasn't used internally (that has a directory)
+      bullet_in_console("If you don't supply a directory, REDCapDB will only run in R session. Package is best with a directory.", bullet_type = "!")
     }
   }
-  if(!missing_dir_path){
+  if (!missing_dir_path) {
     DB$dir_path <- set_dir(dir_path) # will also ask user if provided dir is new or different (will load from original but start using new dir)
   }
   DB$short_name <- short_name
   DB$internals$use_csv <- use_csv
   DB$redcap$token_name <- token_name
-  if(!is_a_test){
+  if (!is_a_test) {
     DB$links$redcap_base <- validate_web_link(redcap_base)
     DB$links$redcap_uri <- DB$links$redcap_base %>% paste0("api/")
-  }else{
+  } else {
     bullet_in_console("Test objects ignore the `redcap_base` url argument and will not communicate with the REDCap API.")
   }
   DB$internals$merge_form_name <- validate_env_name(merge_form_name)
   DB$internals$use_csv <- use_csv
   DB$internals$is_blank <- FALSE
   DB$data <- DB$data %>% all_character_cols_list()
-  bullet_in_console(paste0("Token name: '",token_name,"'"))
-  if(auto_check_token){
-    if(!is_valid_REDCap_token(validate_REDCap_token(DB),is_a_test = is_a_test)){
-      set_REDCap_token(DB,ask = FALSE)
+  bullet_in_console(paste0("Token name: '", token_name, "'"))
+  if (auto_check_token) {
+    if (!is_valid_REDCap_token(validate_REDCap_token(DB), is_a_test = is_a_test)) {
+      set_REDCap_token(DB, ask = FALSE)
     }
   }
-  DB <- validate_DB(DB,silent = FALSE)
+  DB <- validate_DB(DB, silent = FALSE)
   return(DB)
 }
 #' @rdname setup-load
 #' @export
-load_DB <- function(short_name,validate = TRUE){
+load_DB <- function(short_name, validate = TRUE) {
   projects <- get_projects()
-  if(nrow(projects)==0)stop("No projects in cache")
-  if(!short_name%in%projects$short_name)stop("No project named ",short_name," in cache. Did you use `setup_DB()` and `update_DB()`?")
-  dir_path <- projects$dir_path[which(projects$short_name==short_name)]
-  if(!file.exists(dir_path))stop("`dir_path` doesn't exist: '",dir_path,"'")
-  DB_path <- file.path(dir_path,"R_objects",paste0(short_name,"_REDCapDB.rdata"))
+  if (nrow(projects) == 0) stop("No projects in cache")
+  if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_DB()` and `update_DB()`?")
+  dir_path <- projects$dir_path[which(projects$short_name == short_name)]
+  if (!file.exists(dir_path)) stop("`dir_path` doesn't exist: '", dir_path, "'")
+  DB_path <- file.path(dir_path, "R_objects", paste0(short_name, "_REDCapDB.rdata"))
   load_DB_from_path(
     DB_path = DB_path,
     validate = validate
@@ -126,43 +124,43 @@ load_DB <- function(short_name,validate = TRUE){
 }
 #' @rdname setup-load
 #' @export
-load_DB_from_path <- function(DB_path,validate = TRUE){
-  if(!file.exists(DB_path))stop("No file at path '",DB_path,"'. Did you use `setup_DB()` and `update_DB()`?")
-  DB <- readRDS(file=DB_path)
-  if(validate){
+load_DB_from_path <- function(DB_path, validate = TRUE) {
+  if (!file.exists(DB_path)) stop("No file at path '", DB_path, "'. Did you use `setup_DB()` and `update_DB()`?")
+  DB <- readRDS(file = DB_path)
+  if (validate) {
     DB <- DB %>% validate_DB(silent = FALSE)
   }
   return(DB)
 }
 #' @rdname setup-load
 #' @export
-load_test_DB <- function(short_name="TEST_repeating",with_data = FALSE){
-  em <- '`short_name` must be character string of length 1 equal to one of the following: ' %>% paste0(as_comma_string(internal_allowed_test_short_names))
-  if(!is.character(short_name))stop(em)
-  if(length(short_name)!=1)stop(em)
-  if(!is_test_short_name(short_name = short_name))stop(em)
+load_test_DB <- function(short_name = "TEST_repeating", with_data = FALSE) {
+  em <- "`short_name` must be character string of length 1 equal to one of the following: " %>% paste0(as_comma_string(internal_allowed_test_short_names))
+  if (!is.character(short_name)) stop(em)
+  if (length(short_name) != 1) stop(em)
+  if (!is_test_short_name(short_name = short_name)) stop(em)
   DB <- internal_blank_DB
   DB$short_name <- short_name
   DB$internals$is_test <- TRUE
-  if(with_data){
-    if(short_name == "TEST_classic"){
+  if (with_data) {
+    if (short_name == "TEST_classic") {
     }
-    if(short_name == "TEST_repeating"){
+    if (short_name == "TEST_repeating") {
     }
-    if(short_name == "TEST_longitudinal"){
+    if (short_name == "TEST_longitudinal") {
     }
-    if(short_name == "TEST_multiarm"){
+    if (short_name == "TEST_multiarm") {
     }
   }
   return(DB)
 }
 #' @noRd
-is_test_short_name <- function(short_name){
-  return(short_name%in%internal_allowed_test_short_names)
+is_test_short_name <- function(short_name) {
+  return(short_name %in% internal_allowed_test_short_names)
 }
 #' @noRd
-is_test_DB <- function(DB){
-  return((DB$short_name %in% internal_allowed_test_short_names)&&DB$internals$is_test)
+is_test_DB <- function(DB) {
+  return((DB$short_name %in% internal_allowed_test_short_names) && DB$internals$is_test)
 }
 #' @rdname save-deleteDB
 #' @title Save or Delete DB file from the directory
@@ -174,18 +172,18 @@ is_test_DB <- function(DB){
 #' @return Message
 #' @family DB object
 #' @export
-save_DB <- function(DB){
-  #param check
-  if( ! is.list(DB)) stop("DB must be a list")
-  #function
+save_DB <- function(DB) {
+  # param check
+  if (!is.list(DB)) stop("DB must be a list")
+  # function
   DB <- DB %>% validate_DB()
-  if(!DB$internals$ever_connected){
-    bullet_in_console(paste0("Did not save ",DB$short_name," because there has never been a REDCap connection! You must use `setup_DB()` and `update_DB()`"),bullet_type = "x")
+  if (!DB$internals$ever_connected) {
+    bullet_in_console(paste0("Did not save ", DB$short_name, " because there has never been a REDCap connection! You must use `setup_DB()` and `update_DB()`"), bullet_type = "x")
     return(invisible())
   }
   # DB <- reverse_clean_DB(DB) # # problematic because setting numeric would delete missing codes
-  save_file_path <- file.path(DB$dir_path,"R_objects",paste0(DB$short_name,"_REDCapDB.rdata"))
-  DB %>% saveRDS(file=save_file_path)
+  save_file_path <- file.path(DB$dir_path, "R_objects", paste0(DB$short_name, "_REDCapDB.rdata"))
+  DB %>% saveRDS(file = save_file_path)
   add_project(DB)
   # save_xls_wrapper(DB)
   # nav_to_dir(DB)
@@ -193,84 +191,84 @@ save_DB <- function(DB){
 }
 #' @rdname save-deleteDB
 #' @export
-delete_DB <- function(DB){
+delete_DB <- function(DB) {
   DB <- validate_DB(DB)
   dir_path <- DB$dir_path
-  dir_path  <- validate_dir(dir_path,silent = FALSE)
-  delete_this <- file.path(dir_path,"R_objects",paste0(DB$short_name,"_REDCapDB.rdata"))
-  if(file.exists(delete_this)){
+  dir_path <- validate_dir(dir_path, silent = FALSE)
+  delete_this <- file.path(dir_path, "R_objects", paste0(DB$short_name, "_REDCapDB.rdata"))
+  if (file.exists(delete_this)) {
     unlink(delete_this)
-    bullet_in_console("Deleted saved DB",bullet_type = "v")
-  }else{
-    warning("The DB object you wanted to is not there. Did you delete already? ",delete_this)
+    bullet_in_console("Deleted saved DB", bullet_type = "v")
+  } else {
+    warning("The DB object you wanted to is not there. Did you delete already? ", delete_this)
   }
 }
 #' @title get your directory
 #' @inheritParams save_DB
 #' @return file path of directory
 #' @export
-get_dir <- function(DB){
+get_dir <- function(DB) {
   dir_path <- DB$dir_path
   stop_mes <- "Did you use `set_dir()`?"
-  if ( ! file.exists(dir_path)) {
-    bullet_in_console("Searched for directory --> '",file = dir_path, bullet_type = "x")
+  if (!file.exists(dir_path)) {
+    bullet_in_console("Searched for directory --> '", file = dir_path, bullet_type = "x")
     stop(paste0("Does not exist. ", stop_mes))
   }
-  return(validate_dir(dir_path,silent=TRUE))
+  return(validate_dir(dir_path, silent = TRUE))
 }
 #' @title nav_to_dir
 #' @inheritParams save_DB
 #' @return opens browser link
 #' @export
-nav_to_dir <- function(DB){
+nav_to_dir <- function(DB) {
   utils::browseURL(DB$dir_path)
 }
 #' @noRd
-validate_DB <- function(DB,silent = TRUE,warn_only = FALSE){
-  #param check
-  if( ! is.list(DB)) stop("DB must be a list")
-  #function
+validate_DB <- function(DB, silent = TRUE, warn_only = FALSE) {
+  # param check
+  if (!is.list(DB)) stop("DB must be a list")
+  # function
   outcome_valid <- TRUE
   messages <- NULL
-  if( ! all(names(internal_blank_DB)%in%names(DB))){
+  if (!all(names(internal_blank_DB) %in% names(DB))) {
     outcome_valid <- FALSE
     messages <- messages %>% append("`DB` does not have the appropriate names. Did you use `load_DB()` or `setup_DB()` to generate it?")
   }
-  if(is.null(DB$short_name)){
+  if (is.null(DB$short_name)) {
     outcome_valid <- FALSE
     messages <- messages %>% append("`DB$short_name` is NULL!, Did you use `setup_DB()`?")
-  }else{
+  } else {
     DB$short_name %>% validate_env_name()
   }
-  if(!silent){
-    if((length(DB$data)==0)>0){
-      bullet_in_console("Valid DB object but no data yet!",bullet_type = "!")
+  if (!silent) {
+    if ((length(DB$data) == 0) > 0) {
+      bullet_in_console("Valid DB object but no data yet!", bullet_type = "!")
     }
-    if(is.null(DB$dir_path)){
-      bullet_in_console("`DB$dir_path` is NULL!, Did you use `setup_DB()`?",bullet_type = "!")
-    }else{
-      if( ! DB$dir_path %>% file.exists()) {
-        bullet_in_console(paste0("`DB$dir_path`, '",DB$dir_path,"', does not exist!, Did you use `setup_DB()`?\nThis can also happen with shared directories."),bullet_type = "!")
-      }else{
-        bullet_in_console(DB$short_name %>% paste0(" loaded from: "),url = DB$dir_path,bullet_type = "v")
+    if (is.null(DB$dir_path)) {
+      bullet_in_console("`DB$dir_path` is NULL!, Did you use `setup_DB()`?", bullet_type = "!")
+    } else {
+      if (!DB$dir_path %>% file.exists()) {
+        bullet_in_console(paste0("`DB$dir_path`, '", DB$dir_path, "', does not exist!, Did you use `setup_DB()`?\nThis can also happen with shared directories."), bullet_type = "!")
+      } else {
+        bullet_in_console(DB$short_name %>% paste0(" loaded from: "), url = DB$dir_path, bullet_type = "v")
       }
     }
-    if((DB$internals$is_test)){
-      bullet_in_console(DB$short_name %>% paste0(" is a test DB object that doesn't actually communicate with any REDCap API!"),bullet_type = "i")
+    if ((DB$internals$is_test)) {
+      bullet_in_console(DB$short_name %>% paste0(" is a test DB object that doesn't actually communicate with any REDCap API!"), bullet_type = "i")
     }
-    if(DB$internals$is_transformed){
-      bullet_in_console(DB$short_name %>% paste0(" is currently transformed! Can reverse with `untransform_DB(DB)`"),bullet_type = "i")
+    if (DB$internals$is_transformed) {
+      bullet_in_console(DB$short_name %>% paste0(" is currently transformed! Can reverse with `untransform_DB(DB)`"), bullet_type = "i")
     }
     bullet_in_console("To get data/updates from REDCap run `DB <- update_DB(DB)`")
   }
-  if(outcome_valid){
-    bullet_in_console(paste0(DB$short_name," is valid DB object!"),bullet_type = "v")
+  if (outcome_valid) {
+    bullet_in_console(paste0(DB$short_name, " is valid DB object!"), bullet_type = "v")
   }
-  if(!outcome_valid){
-    for(m in messages){
-      if(warn_only){
-        warning(m,immediate. = TRUE)
-      }else{
+  if (!outcome_valid) {
+    for (m in messages) {
+      if (warn_only) {
+        warning(m, immediate. = TRUE)
+      } else {
         stop(m)
       }
     }
@@ -278,22 +276,22 @@ validate_DB <- function(DB,silent = TRUE,warn_only = FALSE){
   return(DB)
 }
 #' @noRd
-internal_allowed_test_short_names <- c("TEST_classic","TEST_repeating","TEST_longitudinal","TEST_multiarm")
+internal_allowed_test_short_names <- c("TEST_classic", "TEST_repeating", "TEST_longitudinal", "TEST_multiarm")
 #' @noRd
 internal_blank_DB <- list(
-  short_name=NULL,
-  dir_path=NULL,
+  short_name = NULL,
+  dir_path = NULL,
   redcap = list(
-    token_name=NULL,
-    project_id=NULL,
-    project_title= NULL,
-    id_col=NULL,
-    version=NULL,
-    project_info=NULL,
-    log=NULL,
-    users=NULL,
-    current_user=NULL,
-    choices=NULL,
+    token_name = NULL,
+    project_id = NULL,
+    project_title = NULL,
+    id_col = NULL,
+    version = NULL,
+    project_info = NULL,
+    log = NULL,
+    users = NULL,
+    current_user = NULL,
+    choices = NULL,
     raw_structure_cols = NULL,
     is_longitudinal = NULL,
     has_arms = NULL,
@@ -303,17 +301,17 @@ internal_blank_DB <- list(
     has_repeating_forms = NULL,
     has_repeating_events = NULL
   ),
-  metadata = list(# model
-    forms=NULL,
-    fields=NULL,
-    choices=NULL,
+  metadata = list( # model
+    forms = NULL,
+    fields = NULL,
+    choices = NULL,
     form_key_cols = NULL,
-    arms=NULL,
-    events=NULL,
+    arms = NULL,
+    events = NULL,
     event_mapping = NULL,
-    missing_codes=NULL
+    missing_codes = NULL
   ),
-  data = NULL, #model
+  data = NULL, # model
   data_update = NULL,
   quality_checks = NULL,
   transformation = list(
@@ -325,21 +323,21 @@ internal_blank_DB <- list(
     data_updates = NULL
   ),
   summary = list(
-    subsets=NULL
+    subsets = NULL
   ),
   internals = list(
     last_test_connection_attempt = NULL,
     last_test_connection_outcome = NULL,
-    last_metadata_update=NULL,
-    last_metadata_dir_save=NULL,
-    last_full_update=NULL,
-    last_data_update=NULL,
+    last_metadata_update = NULL,
+    last_metadata_dir_save = NULL,
+    last_full_update = NULL,
+    last_data_update = NULL,
     last_data_dir_save = NULL,
     last_data_transformation = NULL,
     last_summary = NULL,
     last_quality_check = NULL,
     last_clean = NULL,
-    last_directory_save=NULL,
+    last_directory_save = NULL,
     data_extract_labelled = NULL,
     data_extract_merged = NULL,
     merge_form_name = "merged",
@@ -366,42 +364,44 @@ internal_blank_DB <- list(
   )
 )
 #' @noRd
-set_dir <- function(dir_path){
+set_dir <- function(dir_path) {
   dir_path <- clean_dir_path(dir_path)
-  if( ! file.exists(dir_path)){
-    if(utils::menu(choices = c("Yes","No"),title = paste0("No file path found for chosen directory, create? (",dir_path,")"))==1){
+  if (!file.exists(dir_path)) {
+    if (utils::menu(choices = c("Yes", "No"), title = paste0("No file path found for chosen directory, create? (", dir_path, ")")) == 1) {
       dir.create(file.path(dir_path))
     }
-    if ( ! file.exists(dir_path)) {
+    if (!file.exists(dir_path)) {
       stop("Path not found. Use absolute path or choose one within R project working directory.")
     }
   }
-  for(folder in internal_dir_folders){
-    if ( ! file.exists(file.path(dir_path,folder))) {
-      dir.create(file.path(dir_path,folder),showWarnings = FALSE)
+  for (folder in internal_dir_folders) {
+    if (!file.exists(file.path(dir_path, folder))) {
+      dir.create(file.path(dir_path, folder), showWarnings = FALSE)
     }
   }
-  return(validate_dir(dir_path,silent=FALSE))
+  return(validate_dir(dir_path, silent = FALSE))
 }
 #' @noRd
-internal_dir_folders <- c("R_objects","output","scripts","input","REDCap")
+internal_dir_folders <- c("R_objects", "output", "scripts", "input", "REDCap")
 #' @noRd
-validate_dir <- function(dir_path,silent=TRUE){
-  #param check
+validate_dir <- function(dir_path, silent = TRUE) {
+  # param check
   dir_path <- clean_dir_path(dir_path)
-  if ( ! file.exists(dir_path)) stop("dir_path does not exist")
-  if ( ! is.logical(silent)) stop("silent parameter must be TRUE/FALSE")
+  if (!file.exists(dir_path)) stop("dir_path does not exist")
+  if (!is.logical(silent)) stop("silent parameter must be TRUE/FALSE")
   stop_mes <- "Did you use `setup_DB()`?"
-  for(folder in internal_dir_folders){
-    if ( ! file.exists(file.path(dir_path,folder))) stop("'",dir_path,"/",folder,"' missing! ",stop_mes)
+  for (folder in internal_dir_folders) {
+    if (!file.exists(file.path(dir_path, folder))) stop("'", dir_path, "/", folder, "' missing! ", stop_mes)
   }
   # if ( ! file.exists(file.path(dir_path,"ref_tables"))) stop("'",dir_path,"/ref_tables' missing! ",stop_mes)
-  if( ! silent) bullet_in_console("Directory is Valid!",url=dir_path,bullet_type = "v")
+  if (!silent) bullet_in_console("Directory is Valid!", url = dir_path, bullet_type = "v")
   dir_path
 }
 #' @noRd
-clean_dir_path <- function(dir_path){
-  if ( ! is.character(dir_path)) stop("dir must be a character string")
-  dir_path <- dir_path %>% trimws(whitespace = "[\\h\\v]") %>% sanitize_path()
+clean_dir_path <- function(dir_path) {
+  if (!is.character(dir_path)) stop("dir must be a character string")
+  dir_path <- dir_path %>%
+    trimws(whitespace = "[\\h\\v]") %>%
+    sanitize_path()
   return(dir_path)
 }

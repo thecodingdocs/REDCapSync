@@ -36,33 +36,32 @@ drop_REDCap_to_directory <- function(
     separate = FALSE,
     str_trunc_length = 32000,
     file_name,
-    dir_other
-) {
+    dir_other) {
   DB <- validate_DB(DB)
-  if(deidentify){
-    DB <- deidentify_DB(DB)# will not drop free text
+  if (deidentify) {
+    DB <- deidentify_DB(DB) # will not drop free text
   }
-  if(missing(dir_other)){
+  if (missing(dir_other)) {
     root_dir <- get_dir(DB)
-    output_dir <- file.path(root_dir,"output")
-    redcap_dir <- file.path(root_dir,"REDCap",DB$short_name)
-  }else{
-    redcap_dir  <- dir_other
-    bullet_in_console("Be careful setting your own directories",file =redcap_dir,bullet_type = "!")
+    output_dir <- file.path(root_dir, "output")
+    redcap_dir <- file.path(root_dir, "REDCap", DB$short_name)
+  } else {
+    redcap_dir <- dir_other
+    bullet_in_console("Be careful setting your own directories", file = redcap_dir, bullet_type = "!")
   }
-  redcap_metadata_dir <- file.path(redcap_dir,"metadata")
-  redcap_other_dir <- file.path(redcap_dir,"other")
+  redcap_metadata_dir <- file.path(redcap_dir, "metadata")
+  redcap_other_dir <- file.path(redcap_dir, "other")
   due_for_save_metadata <- TRUE
   due_for_save_data <- TRUE
-  if(smart){
-    if(!is.null(DB$internals$last_metadata_dir_save)) due_for_save_metadata <- DB$internals$last_metadata_update > DB$internals$last_metadata_dir_save
-    if(!is.null(DB$internals$last_data_dir_save)) due_for_save_data <- DB$internals$last_data_update > DB$internals$last_data_dir_save
+  if (smart) {
+    if (!is.null(DB$internals$last_metadata_dir_save)) due_for_save_metadata <- DB$internals$last_metadata_update > DB$internals$last_metadata_dir_save
+    if (!is.null(DB$internals$last_data_dir_save)) due_for_save_data <- DB$internals$last_data_update > DB$internals$last_data_dir_save
   }
   redcap_dir %>% dir.create(showWarnings = FALSE)
   redcap_metadata_dir %>% dir.create(showWarnings = FALSE)
   redcap_other_dir %>% dir.create(showWarnings = FALSE)
-  if(due_for_save_metadata){
-    if(include_metadata){
+  if (due_for_save_metadata) {
+    if (include_metadata) {
       DB$internals$last_metadata_dir_save <- DB$internals$last_metadata_update
       names_generic <- c(
         "forms",
@@ -82,17 +81,17 @@ drop_REDCap_to_directory <- function(
         "event_mapping",
         "missing_codes"
       )
-      for (i in seq_along(names_generic)){ #,"log" #taking too long
-        z<- DB$metadata[names_generic[i]]
-        if(is_something(z[[1]])){
+      for (i in seq_along(names_generic)) { # ,"log" #taking too long
+        z <- DB$metadata[names_generic[i]]
+        if (is_something(z[[1]])) {
           tn <- names_redcap[i]
-          if(DB$internals$use_csv){
+          if (DB$internals$use_csv) {
             list_to_csv(
               list = z,
               dir = redcap_metadata_dir,
               file_name = tn
             )
-          }else{
+          } else {
             list_to_excel(
               list = z,
               dir = redcap_metadata_dir,
@@ -104,18 +103,18 @@ drop_REDCap_to_directory <- function(
         }
       }
     }
-    if(include_other){
-      for (i in seq_along(names_generic)){ #,"log" #taking too long
-        z<- DB$metadata[names_generic[i]]
-        if(is_something(z[[1]])){
+    if (include_other) {
+      for (i in seq_along(names_generic)) { # ,"log" #taking too long
+        z <- DB$metadata[names_generic[i]]
+        if (is_something(z[[1]])) {
           tn <- names_redcap[i]
-          if(DB$internals$use_csv){
+          if (DB$internals$use_csv) {
             list_to_csv(
               list = z,
               dir = redcap_metadata_dir,
               file_name = tn
             )
-          }else{
+          } else {
             list_to_excel(
               list = z,
               dir = redcap_metadata_dir,
@@ -126,16 +125,18 @@ drop_REDCap_to_directory <- function(
           }
         }
       }
-      for (x in c("project_info",
-                  #"log",
-                  "users")){ #,"log" #taking too long
-        if(DB$internals$use_csv){
+      for (x in c(
+        "project_info",
+        # "log",
+        "users"
+      )) { # ,"log" #taking too long
+        if (DB$internals$use_csv) {
           list_to_csv(
             list = DB$redcap[x],
             dir = redcap_other_dir,
             file_name = x
           )
-        }else{
+        } else {
           list_to_excel(
             list = DB$redcap[x],
             dir = redcap_other_dir,
@@ -147,27 +148,29 @@ drop_REDCap_to_directory <- function(
       }
     }
   }
-  if(due_for_save_data){
+  if (due_for_save_data) {
     DB$internals$last_data_dir_save <- DB$internals$last_data_update
     # if(merge_non_repeating) DB <- merge_non_repeating_DB(DB)
     to_save_list <- DB[["data"]]
-    if(!missing(records)) to_save_list<- filter_DB(DB,filter_field = DB$redcap$id_col,filter_choices = records) %>% process_df_list()
+    if (!missing(records)) to_save_list <- filter_DB(DB, filter_field = DB$redcap$id_col, filter_choices = records) %>% process_df_list()
     link_col_list <- list()
-    if(with_links){
-      to_save_list <-to_save_list %>% lapply(function(DF){add_redcap_links_to_DF(DF,DB)})
+    if (with_links) {
+      to_save_list <- to_save_list %>% lapply(function(DF) {
+        add_redcap_links_to_DF(DF, DB)
+      })
       link_col_list <- list(
         "redcap_link"
       )
       names(link_col_list) <- DB$redcap$id_col
     }
-    if(missing(file_name))file_name <- DB$short_name
-    if(DB$internals$use_csv){
+    if (missing(file_name)) file_name <- DB$short_name
+    if (DB$internals$use_csv) {
       list_to_csv(
         list = to_save_list,
         dir = redcap_dir,
         file_name = file_name
       )
-    }else{
+    } else {
       list_to_excel(
         list = to_save_list,
         dir = redcap_dir,
@@ -192,73 +195,81 @@ drop_REDCap_to_directory <- function(
 #' @param stop_or_warn character string of whether to stop, warn, or do nothing when forbidden cols are present
 #' @return messages for confirmation
 #' @export
-read_from_REDCap_upload <- function(DB,allow_all=TRUE,drop_nonredcap_vars=TRUE,drop_non_form_vars=TRUE,stop_or_warn="warn"){
+read_from_REDCap_upload <- function(DB, allow_all = TRUE, drop_nonredcap_vars = TRUE, drop_non_form_vars = TRUE, stop_or_warn = "warn") {
   DB <- validate_DB(DB)
   root_dir <- get_dir(DB)
-  output_dir <- file.path(root_dir,"output")
-  redcap_dir <- file.path(root_dir,"REDCap",DB$short_name)
-  redcap_upload_dir <- file.path(redcap_dir,"upload")
-  if(!file.exists(redcap_upload_dir))stop("Did you forget to run `setup_DB()`? No upload folder --> ",redcap_upload_dir)
+  output_dir <- file.path(root_dir, "output")
+  redcap_dir <- file.path(root_dir, "REDCap", DB$short_name)
+  redcap_upload_dir <- file.path(redcap_dir, "upload")
+  if (!file.exists(redcap_upload_dir)) stop("Did you forget to run `setup_DB()`? No upload folder --> ", redcap_upload_dir)
   x <- list.files.real(redcap_upload_dir) %>% basename()
-  if(length(x)==0){
-    stop("No files in folder --> ",redcap_upload_dir)
+  if (length(x) == 0) {
+    stop("No files in folder --> ", redcap_upload_dir)
   }
   df <- data.frame(
     file_name = basename(x),
-    file_name_no_ext = gsub("\\.xlsx|\\.xls","",x),
+    file_name_no_ext = gsub("\\.xlsx|\\.xls", "", x),
     match = NA
   )
-  df$match <- strsplit(df$file_name_no_ext,"_") %>% lapply(function(IN){IN[length(IN)]}) %>% unlist()
-  df$match[which(!df$match%in%c(DB$internals$merge_form_name,DB$metadata$forms$form_name))] <- NA
-  if(!allow_all){
-    df <- df[which(!is.na(df$match)),]
+  df$match <- strsplit(df$file_name_no_ext, "_") %>%
+    lapply(function(IN) {
+      IN[length(IN)]
+    }) %>%
+    unlist()
+  df$match[which(!df$match %in% c(DB$internals$merge_form_name, DB$metadata$forms$form_name))] <- NA
+  if (!allow_all) {
+    df <- df[which(!is.na(df$match)), ]
   }
-  if(DB$data_update %>% is_something())stop("Already files in DB$data_update, clear that first")
+  if (DB$data_update %>% is_something()) stop("Already files in DB$data_update, clear that first")
   DB[["data_update"]] <- list()
-  for(i in seq_len(nrow(df))){#not done yet
-    the_file <- readxl::read_xlsx(file.path(redcap_upload_dir,df$file_name[i]),col_types = "text") %>% all_character_cols() # would
+  for (i in seq_len(nrow(df))) { # not done yet
+    the_file <- readxl::read_xlsx(file.path(redcap_upload_dir, df$file_name[i]), col_types = "text") %>% all_character_cols() # would
     drop_cols <- NULL
-    if(drop_nonredcap_vars){
-      x <- colnames(the_file)[which(!colnames(the_file)%in%c(DB$redcap$raw_structure_cols,DB$metadata$fields$field_name))]
-      drop_cols<-drop_cols %>%
+    if (drop_nonredcap_vars) {
+      x <- colnames(the_file)[which(!colnames(the_file) %in% c(DB$redcap$raw_structure_cols, DB$metadata$fields$field_name))]
+      drop_cols <- drop_cols %>%
         append(x) %>%
         unique()
     }
-    if(drop_non_form_vars){
+    if (drop_non_form_vars) {
       form <- df$match[i]
-      if(form == DB$internals$merge_form_name)form <- DB$metadata$forms$form_name[which(!DB$metadata$forms$repeating)]
-      x<-colnames(the_file)[which(!colnames(the_file)%in%c(DB$redcap$raw_structure_cols,DB$metadata$fields$field_name[which(DB$metadata$fields$form_name%in%form)]))]
-      drop_cols<-drop_cols %>%
+      if (form == DB$internals$merge_form_name) form <- DB$metadata$forms$form_name[which(!DB$metadata$forms$repeating)]
+      x <- colnames(the_file)[which(!colnames(the_file) %in% c(DB$redcap$raw_structure_cols, DB$metadata$fields$field_name[which(DB$metadata$fields$form_name %in% form)]))]
+      drop_cols <- drop_cols %>%
         append(x) %>%
         unique()
     }
-    message1 <- paste0("forbidden cols name: ",df$file_name[i],"; ",x %>% paste0(collapse = ", "))
-    if(length(x)>0){
-      if(stop_or_warn=="stop") stop(message1)
-      if(stop_or_warn=="warn") warning(message1,immediate. = TRUE)
+    message1 <- paste0("forbidden cols name: ", df$file_name[i], "; ", x %>% paste0(collapse = ", "))
+    if (length(x) > 0) {
+      if (stop_or_warn == "stop") stop(message1)
+      if (stop_or_warn == "warn") warning(message1, immediate. = TRUE)
     }
-    the_file <- the_file[,which(!colnames(the_file)%in%drop_cols)]
+    the_file <- the_file[, which(!colnames(the_file) %in% drop_cols)]
     DB[["data_update"]][[df$match[i]]] <- the_file
   }
   DB
 }
 #' @noRd
-default_sheet_drops <- function(DB){
-  DB$summary  %>% process_df_list() %>% names()
+default_sheet_drops <- function(DB) {
+  DB$summary %>%
+    process_df_list() %>%
+    names()
 }
 #' @noRd
-read_xl_to_DB_for_upload <- function(DB,file_path,drop_sheets = default_sheet_drops(DB)){
-  #add data_update check
-  if(!endsWith(file_path,".xlsx"))stop("File type must be '.xlsx' --> ",file_path)
-  if(!file.exists(file_path))stop("Path does not exist --> ",file_path)
-  data_list <- file_path %>% openxlsx::loadWorkbook() %>% wb_to_list()
-  if(is_something(drop_sheets)){
-    message("dropping sheets from `drop_sheets` (Default is names from DB$summary)... ",paste0(drop_sheets, collapse = ", "))
-    for(drop_sheet in drop_sheets){
+read_xl_to_DB_for_upload <- function(DB, file_path, drop_sheets = default_sheet_drops(DB)) {
+  # add data_update check
+  if (!endsWith(file_path, ".xlsx")) stop("File type must be '.xlsx' --> ", file_path)
+  if (!file.exists(file_path)) stop("Path does not exist --> ", file_path)
+  data_list <- file_path %>%
+    openxlsx::loadWorkbook() %>%
+    wb_to_list()
+  if (is_something(drop_sheets)) {
+    message("dropping sheets from `drop_sheets` (Default is names from DB$summary)... ", paste0(drop_sheets, collapse = ", "))
+    for (drop_sheet in drop_sheets) {
       data_list[[drop_sheet]] <- NULL
     }
   }
-  if(length(data_list)==0) {
+  if (length(data_list) == 0) {
     message("nothing to return")
     return(DB)
   }

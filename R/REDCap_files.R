@@ -3,44 +3,44 @@
 #' @param file file location on your PC
 #' @return messages for confirmation
 #' @export
-upload_file_to_REDCap_file_repository <- function(DB,file){
+upload_file_to_REDCap_file_repository <- function(DB, file) {
   DB <- validate_DB(DB)
   file <- sanitize_path(file)
-  if(!file.exists(file)) stop("File does not exist! --> ",file)
+  if (!file.exists(file)) stop("File does not exist! --> ", file)
   response <- httr::POST(
     url = DB$links$redcap_uri,
     body = list(
-      "token"=validate_REDCap_token(DB),
-      action='import',
-      content='fileRepository',
-      returnFormat='json',
-      file=httr::upload_file(file)
+      "token" = validate_REDCap_token(DB),
+      action = "import",
+      content = "fileRepository",
+      returnFormat = "json",
+      file = httr::upload_file(file)
     ),
     encode = "multipart"
   )
-  if(httr::http_error(response))stop("File upload failed")
-  message("File Uploaded! --> ",file)
+  if (httr::http_error(response)) stop("File upload failed")
+  message("File Uploaded! --> ", file)
 }
 #' @title Checks REDCap for current files
 #' @inheritParams save_DB
 #' @return data.frame of files
 #' @keywords internal
 #' @noRd
-get_REDCap_file_repository <- function(DB){
+get_REDCap_file_repository <- function(DB) {
   DB <- validate_DB(DB)
   response <- httr::POST(
     url = DB$links$redcap_uri,
     body = list(
-      "token"=validate_REDCap_token(DB),
-      content='fileRepository',
-      action='list',
-      format='csv',
-      folder_id='',
-      returnFormat='json'
+      "token" = validate_REDCap_token(DB),
+      content = "fileRepository",
+      action = "list",
+      format = "csv",
+      folder_id = "",
+      returnFormat = "json"
     ),
     encode = "form"
   )
-  if(httr::http_error(response))stop("File check failed")
+  if (httr::http_error(response)) stop("File check failed")
   message("Files checked!")
   httr::content(response)
 }
@@ -49,22 +49,22 @@ get_REDCap_file_repository <- function(DB){
 #' @param name folder name
 #' @return messages for confirmation
 #' @export
-add_REDCap_folder <- function(DB,name){
+add_REDCap_folder <- function(DB, name) {
   DB <- validate_DB(DB)
   response <- httr::POST(
     url = DB$links$redcap_uri,
     body = list(
-      "token"=validate_REDCap_token(DB),
-      content='fileRepository',
-      action='createFolder',
-      format='csv',
-      name=name,
-      folder_id='',
-      returnFormat='json'
+      "token" = validate_REDCap_token(DB),
+      content = "fileRepository",
+      action = "createFolder",
+      format = "csv",
+      name = name,
+      folder_id = "",
+      returnFormat = "json"
     ),
     encode = "form"
   )
-  if(httr::http_error(response))stop("Folder add failed")
+  if (httr::http_error(response)) stop("Folder add failed")
   message("Folder added!")
   httr::content(response)
 }
@@ -73,19 +73,19 @@ add_REDCap_folder <- function(DB,name){
 #' @param doc_id from the file list `get_REDCap_file_repository(DB)`
 #' @return messages for confirmation
 #' @export
-delete_REDCap_file <- function(DB,doc_id){
+delete_REDCap_file <- function(DB, doc_id) {
   response <- httr::POST(
     url = DB$links$redcap_uri,
     body = list(
-      "token"=validate_REDCap_token(DB),
-      content='fileRepository',
-      action='delete',
-      doc_id=doc_id,
-      returnFormat='json'
+      "token" = validate_REDCap_token(DB),
+      content = "fileRepository",
+      action = "delete",
+      doc_id = doc_id,
+      returnFormat = "json"
     ),
     encode = "form"
   )
-  if(httr::http_error(response))stop("File delete failed")
+  if (httr::http_error(response)) stop("File delete failed")
   message("File deleted!")
 }
 #' @title Upload File to REDCap
@@ -104,23 +104,23 @@ delete_REDCap_file <- function(DB,doc_id){
 #' @details
 #' This function uploads a specified file to a particular record and field in a REDCap project using the REDCap API. The file is uploaded as multipart data, and the function will automatically handle file existence checks. If provided, the `event` and `repeat_instance` parameters will be used to specify the precise location for the upload.
 #' @export
-upload_file_to_REDCap <- function(DB,file,record, field,repeat_instance = NULL,event = NULL){
+upload_file_to_REDCap <- function(DB, file, record, field, repeat_instance = NULL, event = NULL) {
   # DB <- validate_DB(DB)
   file <- sanitize_path(file)
-  if(!file.exists(file)) stop("File does not exist! --> ",file)
+  if (!file.exists(file)) stop("File does not exist! --> ", file)
   body <- list(
-    "token"=validate_REDCap_token(DB),
-    action='import',
-    content='file',
-    record =record,
-    field =field,
-    returnFormat='csv',
-    file=httr::upload_file(file)
+    "token" = validate_REDCap_token(DB),
+    action = "import",
+    content = "file",
+    record = record,
+    field = field,
+    returnFormat = "csv",
+    file = httr::upload_file(file)
   )
-  if(!is.null(event)){
+  if (!is.null(event)) {
     body$event <- event
   }
-  if(!is.null(repeat_instance)){
+  if (!is.null(repeat_instance)) {
     body$repeat_instance <- repeat_instance
   }
   response <- httr::POST(
@@ -128,8 +128,8 @@ upload_file_to_REDCap <- function(DB,file,record, field,repeat_instance = NULL,e
     body = body,
     encode = "multipart"
   )
-  if(httr::http_error(response))stop("File upload failed")
-  bullet_in_console("File uploaded!",file= file,bullet_type = "v")
+  if (httr::http_error(response)) stop("File upload failed")
+  bullet_in_console("File uploaded!", file = file, bullet_type = "v")
 }
 #' @title Delete a File from REDCap
 #' @description
@@ -150,26 +150,26 @@ upload_file_to_REDCap <- function(DB,file,record, field,repeat_instance = NULL,e
 #' @seealso
 #' \code{\link{save_DB}} for managing database objects.
 #' @export
-delete_file_from_REDCap <- function(DB,record, field,repeat_instance = NULL, event = NULL){
+delete_file_from_REDCap <- function(DB, record, field, repeat_instance = NULL, event = NULL) {
   # DB <- validate_DB(DB)
   body <- list(
-    "token"=validate_REDCap_token(DB),
-    action='delete',
-    content='file',
-    record =record,
-    field =field,
-    returnFormat='csv'
+    "token" = validate_REDCap_token(DB),
+    action = "delete",
+    content = "file",
+    record = record,
+    field = field,
+    returnFormat = "csv"
   )
-  if(!is.null(event)){
+  if (!is.null(event)) {
     body$event <- event
   }
-  if(!is.null(repeat_instance)){
+  if (!is.null(repeat_instance)) {
     body$repeat_instance <- repeat_instance
   }
   response <- httr::POST(
     url = DB$links$redcap_uri,
     body = body
   )
-  if(httr::http_error(response))stop("File Delete failed")
+  if (httr::http_error(response)) stop("File Delete failed")
   message("File Deleted!")
 }

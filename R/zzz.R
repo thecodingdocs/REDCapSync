@@ -1,4 +1,4 @@
-.onLoad <- function(libname, pkgname){
+.onLoad <- function(libname, pkgname) {
   cache <- get_cache()
 }
 .onAttach <- function(libname, pkgname) {

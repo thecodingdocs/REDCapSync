@@ -34,99 +34,104 @@ update_DB <- function(
     metadata_only = FALSE,
     ask_about_overwrites = TRUE,
     save_to_dir = TRUE,
-    batch_size = 2000
-) {
+    batch_size = 2000) {
   IDs <- NULL
   will_update <- TRUE
   was_updated <- FALSE
   DB <- validate_DB(DB)
-  if(!is.null(DB$internals$data_extract_labelled)){
-    if(DB$internals$data_extract_labelled!=labelled){
-      if(!force){
+  if (!is.null(DB$internals$data_extract_labelled)) {
+    if (DB$internals$data_extract_labelled != labelled) {
+      if (!force) {
         force <- TRUE
-        warning("The DB that was loaded was ",ifelse(DB$internals$data_extract_labelled,"labelled","RAW"), " and you chose ",ifelse(labelled,"labelled","RAW"),". Therefore, we will set force to TRUE for a full update of data to avoid data conflicts",immediate. = TRUE)
+        warning("The DB that was loaded was ", ifelse(DB$internals$data_extract_labelled, "labelled", "RAW"), " and you chose ", ifelse(labelled, "labelled", "RAW"), ". Therefore, we will set force to TRUE for a full update of data to avoid data conflicts", immediate. = TRUE)
       }
     }
   }
-  DB <- test_REDCap_token(DB,set_if_fails = set_token_if_fails)
+  DB <- test_REDCap_token(DB, set_if_fails = set_token_if_fails)
   connected <- DB$internals$last_test_connection_outcome
-  if(metadata_only)force <- TRUE
+  if (metadata_only) force <- TRUE
   # DB$internals$last_metadata_update <- Sys.time()-lubridate::days(1)
   # DB$internals$last_data_update <- Sys.time()-lubridate::days(1)
-  if(!is.null(DB$transformation$data_updates)){
+  if (!is.null(DB$transformation$data_updates)) {
     do_it <- TRUE
     bullet_in_console("There is data in 'DB$transformation$data_updates' that has not been pushed to REDCap yet...")
     print(DB$transformation$data_updates)
-    if(ask_about_overwrites){
-      do_it <- utils::menu(choices = c("Yes", "No and stop the function!"),title = "Would you like to push these updates now?") == 1
+    if (ask_about_overwrites) {
+      do_it <- utils::menu(choices = c("Yes", "No and stop the function!"), title = "Would you like to push these updates now?") == 1
     }
-    if(!do_it)stop("Stopped as requested!")
+    if (!do_it) stop("Stopped as requested!")
     DB <- upload_transform_to_DB(DB)
   }
-  if(!force){ # check log interim
-    if(
-      is.null(DB$internals$last_metadata_update)||
-      is.null(DB$internals$last_data_update)||
-      is.null(DB$internals$last_full_update)
-    ){
+  if (!force) { # check log interim
+    if (
+      is.null(DB$internals$last_metadata_update) ||
+        is.null(DB$internals$last_data_update) ||
+        is.null(DB$internals$last_full_update)
+    ) {
       force <- TRUE
-    }else{
+    } else {
       ilog <- get_REDCap_log(
         DB,
-        begin_time = as.character(strptime(DB$redcap$log$timestamp[1],format = "%Y-%m-%d %H:%M") - lubridate::days(1))
-      ) %>% clean_redcap_log() %>% unique()
-      if(nrow(ilog)<=nrow(DB$redcap$log)){
+        begin_time = as.character(strptime(DB$redcap$log$timestamp[1], format = "%Y-%m-%d %H:%M") - lubridate::days(1))
+      ) %>%
+        clean_redcap_log() %>%
+        unique()
+      if (nrow(ilog) <= nrow(DB$redcap$log)) {
         head_of_log <- DB$redcap$log %>% utils::head(n = nrow(ilog))
-      }else{
+      } else {
         head_of_log <- DB$redcap$log
       }
-      df1 <- ilog %>% rbind(head_of_log) %>% unique()
-      #dup <- df1[which(duplicated(rbind(df1, head_of_log),fromLast = TRUE)[seq_len(nrow(df1)]), ]
-      ilog <- df1[which(!duplicated(rbind(df1, head_of_log),fromLast = TRUE)[seq_len(nrow(df1))]), ]
-      if(nrow(ilog)>0){
-        DB$redcap$log <- ilog %>% dplyr::bind_rows(DB$redcap$log) %>% unique()
+      df1 <- ilog %>%
+        rbind(head_of_log) %>%
+        unique()
+      # dup <- df1[which(duplicated(rbind(df1, head_of_log),fromLast = TRUE)[seq_len(nrow(df1)]), ]
+      ilog <- df1[which(!duplicated(rbind(df1, head_of_log), fromLast = TRUE)[seq_len(nrow(df1))]), ]
+      if (nrow(ilog) > 0) {
+        DB$redcap$log <- ilog %>%
+          dplyr::bind_rows(DB$redcap$log) %>%
+          unique()
         ilog$timestamp <- NULL
-        ilog_metadata <- ilog[which(is.na(ilog$record)),]
-        ilog_metadata <- ilog_metadata[which(ilog_metadata$details%in%internal_log_details_metadata_major),] #inclusion
+        ilog_metadata <- ilog[which(is.na(ilog$record)), ]
+        ilog_metadata <- ilog_metadata[which(ilog_metadata$details %in% internal_log_details_metadata_major), ] # inclusion
         # ilog_metadata <- ilog_metadata[grep(ignore_redcap_log(),ilog_metadata$details,ignore.case = TRUE,invert = TRUE) %>% unique(),]
-        if(nrow(ilog_metadata)>0){
+        if (nrow(ilog_metadata) > 0) {
           force <- TRUE
           message(paste0("Update because: Metadata was changed!"))
-        }else{
-          ilog_data <- ilog[which(!is.na(ilog$record)),]
-          ilog_data <- ilog_data[which(ilog_data$action_type!="Users"),]
-          deleted_records<-ilog_data$record[which(ilog_data$action_type%in%c("Delete"))]
-          if(length(deleted_records)>0){
-            warning("There were recent records deleted from redcap Consider running with 'force = TRUE'. Records: ",deleted_records %>% paste0(collapse = ", "),immediate. = TRUE)
+        } else {
+          ilog_data <- ilog[which(!is.na(ilog$record)), ]
+          ilog_data <- ilog_data[which(ilog_data$action_type != "Users"), ]
+          deleted_records <- ilog_data$record[which(ilog_data$action_type %in% c("Delete"))]
+          if (length(deleted_records) > 0) {
+            warning("There were recent records deleted from redcap Consider running with 'force = TRUE'. Records: ", deleted_records %>% paste0(collapse = ", "), immediate. = TRUE)
           }
           IDs <- ilog_data$record %>% unique()
-          if(length(IDs)==0){
+          if (length(IDs) == 0) {
             IDs <- NULL
             will_update <- FALSE
           }
         }
-      }else{
+      } else {
         will_update <- FALSE
       }
     }
   }
-  if(force){
+  if (force) {
     DB <- DB %>% get_REDCap_metadata(include_users = !metadata_only)
     DB$internals$is_transformed <- FALSE
-    if(!metadata_only){
+    if (!metadata_only) {
       DB$data <- list()
       DB$data_update <- list()
       DB$summary <- list()
-      DB$data <- DB %>% get_REDCap_data(labelled = labelled,batch_size=batch_size)
+      DB$data <- DB %>% get_REDCap_data(labelled = labelled, batch_size = batch_size)
       DB$internals$data_extract_labelled <- labelled
       log <- DB$redcap$log # in case there is a log already
-      if(entire_log){
+      if (entire_log) {
         DB$redcap$log <- log %>% dplyr::bind_rows(
           DB %>% get_REDCap_log(begin_time = DB$redcap$project_info$creation_time) %>% unique()
         )
-      }else{
+      } else {
         DB$redcap$log <- log %>% dplyr::bind_rows(
-          DB %>% get_REDCap_log(last = day_of_log,units = "days") %>% unique()
+          DB %>% get_REDCap_log(last = day_of_log, units = "days") %>% unique()
         )
       }
       # DB <- annotate_fields(DB)
@@ -136,58 +141,62 @@ update_DB <- function(
         DB$internals$last_full_update <-
         DB$internals$last_metadata_update <-
         DB$internals$last_data_update <- Sys.time()
-      bullet_in_console(paste0("Full ",DB$short_name," update!"),bullet_type = "v")
+      bullet_in_console(paste0("Full ", DB$short_name, " update!"), bullet_type = "v")
       was_updated <- TRUE
     }
-  }else{
-    if(will_update){
+  } else {
+    if (will_update) {
       DB$data <- DB$data %>% all_character_cols_list()
-      if(length(deleted_records)>0){
-        DB$summary$all_records <- DB$summary$all_records[which(!DB$summary$all_records[[DB$redcap$id_col]]%in%deleted_records),]
-        IDs <- IDs[which(!IDs%in%deleted_records)]
-        DB$data <- remove_records_from_list(DB = DB,records = deleted_records,silent = TRUE)
+      if (length(deleted_records) > 0) {
+        DB$summary$all_records <- DB$summary$all_records[which(!DB$summary$all_records[[DB$redcap$id_col]] %in% deleted_records), ]
+        IDs <- IDs[which(!IDs %in% deleted_records)]
+        DB$data <- remove_records_from_list(DB = DB, records = deleted_records, silent = TRUE)
       }
-      data_list <- DB %>% get_REDCap_data(labelled = labelled,records = IDs)
-      missing_from_summary <- IDs[which(!IDs%in%DB$summary$all_records[[DB$redcap$id_col]])]
-      if(length(missing_from_summary)>0){
+      data_list <- DB %>% get_REDCap_data(labelled = labelled, records = IDs)
+      missing_from_summary <- IDs[which(!IDs %in% DB$summary$all_records[[DB$redcap$id_col]])]
+      if (length(missing_from_summary) > 0) {
         x <- data.frame(
           record = missing_from_summary,
           last_api_call = NA
         )
         colnames(x)[1] <- DB$redcap$id_col
         DB$summary$all_records <- DB$summary$all_records %>% dplyr::bind_rows(x)
-        DB$summary$all_records <- DB$summary$all_records[order(DB$summary$all_records[[DB$redcap$id_col]],decreasing = TRUE),]
+        DB$summary$all_records <- DB$summary$all_records[order(DB$summary$all_records[[DB$redcap$id_col]], decreasing = TRUE), ]
       }
-      DB$summary$all_records$last_api_call[which(DB$summary$all_records[[DB$redcap$id_col]]%in%IDs)] <-
+      DB$summary$all_records$last_api_call[which(DB$summary$all_records[[DB$redcap$id_col]] %in% IDs)] <-
         DB$internals$last_data_update <-
         Sys.time()
-      DB$data <- remove_records_from_list(DB = DB,records = IDs,silent = TRUE)
-      if(DB$internals$is_transformed){
+      DB$data <- remove_records_from_list(DB = DB, records = IDs, silent = TRUE)
+      if (DB$internals$is_transformed) {
         DB2 <- stripped_DB(DB)
         DB2$internals$is_transformed <- FALSE
         DB2$metadata$forms <- DB2$transformation$original_forms
         DB2$metadata$fields <- DB2$transformation$original_fields
         DB2$data <- data_list
         DB2 <- transform_DB(DB2, ask = ask_about_overwrites)
-        if(!is.null(DB2$data_update$from_transform)){
+        if (!is.null(DB2$data_update$from_transform)) {
           DB2 <- upload_transform_to_DB(DB2)
         }
-        data_list <- DB2$data %>% process_df_list(silent = TRUE) %>% all_character_cols_list()
+        data_list <- DB2$data %>%
+          process_df_list(silent = TRUE) %>%
+          all_character_cols_list()
       }
-      if(any(!names(data_list)%in%names(DB$data)))stop("Imported data names doesn't match DB$data names. If this happens run `untransform_DB()` or `update_DB(DB, force = TRUE)`")
-      for(TABLE in names(data_list)){
-        DB$data[[TABLE]] <- DB$data[[TABLE]] %>% all_character_cols() %>% dplyr::bind_rows(data_list[[TABLE]])
+      if (any(!names(data_list) %in% names(DB$data))) stop("Imported data names doesn't match DB$data names. If this happens run `untransform_DB()` or `update_DB(DB, force = TRUE)`")
+      for (TABLE in names(data_list)) {
+        DB$data[[TABLE]] <- DB$data[[TABLE]] %>%
+          all_character_cols() %>%
+          dplyr::bind_rows(data_list[[TABLE]])
       }
-      message("Updated: ",paste0(IDs,collapse = ", "))
+      message("Updated: ", paste0(IDs, collapse = ", "))
       was_updated <- TRUE
-    }else{
+    } else {
       message("Up to date already!")
     }
   }
-  if(get_files){#test now
-    get_REDCap_files(DB,original_file_names=original_file_names)
+  if (get_files) { # test now
+    get_REDCap_files(DB, original_file_names = original_file_names)
   }
-  if(was_updated&&save_to_dir&&!is.null(DB$dir_path)){
+  if (was_updated && save_to_dir && !is.null(DB$dir_path)) {
     save_DB(DB)
   }
   DB

@@ -14,12 +14,16 @@
 #' @note
 #' The function will not proceed with cleaning if `DB$internals$is_clean` is already TRUE, signaling that the DB has already been cleaned.
 #' @export
-clean_DB <- function(DB,drop_blanks=FALSE,other_drops=NULL){ # problematic because setting numeric would delete missing codes
+clean_DB <- function(DB, drop_blanks = FALSE, other_drops = NULL) { # problematic because setting numeric would delete missing codes
   # DB <-  DB %>% annotate_fields(skim = FALSE)
-  if(!is_something(DB))return(DB)
-  if(!is_something(DB$data))return(DB)
-  if(DB$internals$is_clean){
-    bullet_in_console("Already Clean",bullet_type = "v")
+  if (!is_something(DB)) {
+    return(DB)
+  }
+  if (!is_something(DB$data)) {
+    return(DB)
+  }
+  if (DB$internals$is_clean) {
+    bullet_in_console("Already Clean", bullet_type = "v")
     return(DB)
   }
   DB$data <- clean_DF_list(
@@ -32,12 +36,12 @@ clean_DB <- function(DB,drop_blanks=FALSE,other_drops=NULL){ # problematic becau
   return(DB)
 }
 #' @noRd
-fields_to_choices <- function(fields){
-  fields <- fields[which(fields$field_type%in%c("radio","dropdown","checkbox_choice","yesno")),]
+fields_to_choices <- function(fields) {
+  fields <- fields[which(fields$field_type %in% c("radio", "dropdown", "checkbox_choice", "yesno")), ]
   # fields$field_name[which(fields$field_type=="checkbox_choice")] <- fields$field_name[which(fields$field_type=="checkbox_choice")] %>% strsplit("___") %>% lapply(function(X){X[[1]]})
-  fields <- fields[which(!is.na(fields$select_choices_or_calculations)),]
+  fields <- fields[which(!is.na(fields$select_choices_or_calculations)), ]
   choices <- NULL
-  for(i in seq_len(nrow(fields))){
+  for (i in seq_len(nrow(fields))) {
     field_name <- fields$field_name[i]
     form_name <- fields$form_name[i]
     # form_label <- fields$form_label[i]
@@ -50,72 +54,79 @@ fields_to_choices <- function(fields){
         # form_label = form_label,
         field_name = field_name,
         field_type = field_type,
-        field_label =  ifelse(!is.na(field_label),field_label,field_name),
+        field_label = ifelse(!is.na(field_label), field_label, field_name),
         code = selections$code,
-        name =selections$name
+        name = selections$name
       )
     )
   }
-  choices$label <- paste(choices$form_name,"-",choices$field_label,"-",choices$name)
+  choices$label <- paste(choices$form_name, "-", choices$field_label, "-", choices$name)
   # choices$label2 <- paste(choices$form_label,"-",choices$field_label,"-",choices$name)
   rownames(choices) <- NULL
   return(choices)
 }
 #' @noRd
-add_labels_to_checkbox <- function (fields){
-  rows <- which(fields$field_type=="checkbox_choice")
-  x <- fields$field_name[rows] %>% strsplit("___") %>% lapply(function(x){x[[1]]}) %>% unlist()
+add_labels_to_checkbox <- function(fields) {
+  rows <- which(fields$field_type == "checkbox_choice")
+  x <- fields$field_name[rows] %>%
+    strsplit("___") %>%
+    lapply(function(x) {
+      x[[1]]
+    }) %>%
+    unlist()
   y <- fields$field_label[rows]
-  z <- paste0(fields$field_label[match(x,fields$field_name)]," - ",y)
+  z <- paste0(fields$field_label[match(x, fields$field_name)], " - ", y)
   fields$field_label[rows] <- z
   return(fields)
 }
 #' @noRd
-annotate_fields <- function(DB,summarize_data = TRUE){
-  fields <- DB$metadata$fields#[,colnames(get_original_fields(DB))]
-  fields <- fields[which(fields$field_type!="descriptive"),]
+annotate_fields <- function(DB, summarize_data = TRUE) {
+  fields <- DB$metadata$fields # [,colnames(get_original_fields(DB))]
+  fields <- fields[which(fields$field_type != "descriptive"), ]
   fields <- add_labels_to_checkbox(fields)
-  fields <- fields[which(fields$field_type!="checkbox"),]
+  fields <- fields[which(fields$field_type != "checkbox"), ]
   fields$field_label[which(is.na(fields$field_label))] <- fields$field_name[which(is.na(fields$field_label))]
-  fields  <- unique(fields$form_name) %>%
-    lapply(function(IN){
-      fields[which(fields$form_name==IN),]
-    }) %>% dplyr::bind_rows()
-  if(!"field_type_R"%in%colnames(fields))fields$field_type_R <- "character"
-  fields$field_type_R[which(fields$field_type %in% c("radio","yesno","dropdown","checkbox_choice"))] <- "factor"
+  fields <- unique(fields$form_name) %>%
+    lapply(function(IN) {
+      fields[which(fields$form_name == IN), ]
+    }) %>%
+    dplyr::bind_rows()
+  if (!"field_type_R" %in% colnames(fields)) fields$field_type_R <- "character"
+  fields$field_type_R[which(fields$field_type %in% c("radio", "yesno", "dropdown", "checkbox_choice"))] <- "factor"
   fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "integer")] <- "integer"
   fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "date_mdy")] <- "date"
   fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "date_ymd")] <- "date"
   fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "datetime_dmy")] <- "datetime"
   fields$in_original_redcap <- TRUE
   fields$original_form_name <- fields$form_name
-  if(DB$internals$is_transformed){
+  if (DB$internals$is_transformed) {
     fields$in_original_redcap <- fields$field_name %in% DB$transformation$original_fields$field_name
-    fields$original_form_name <- DB$transformation$original_fields$form_name[match(fields$field_name,DB$transformation$original_fields$field_name)]
+    fields$original_form_name <- DB$transformation$original_fields$form_name[match(fields$field_name, DB$transformation$original_fields$field_name)]
   }
-  if(!"units" %in% colnames(fields))fields$units <- NA
-  if(!"field_label_short" %in% colnames(fields)) fields$field_label_short <- fields$field_label
+  if (!"units" %in% colnames(fields)) fields$units <- NA
+  if (!"field_label_short" %in% colnames(fields)) fields$field_label_short <- fields$field_label
   # if(!"field_label_short" %in% colnames(fields))fields$ <- fields$field_label
-  if(summarize_data){
+  if (summarize_data) {
     skimmed <- NULL
-    for (form in unique(fields$form_name)){
-      COLS <- fields$field_name[which(fields$form_name==form)]
+    for (form in unique(fields$form_name)) {
+      COLS <- fields$field_name[which(fields$form_name == form)]
       CHECK_THIS <- DB$data[[form]]
       COLS <- COLS[which(COLS %in% colnames(CHECK_THIS))]
-      skimmed <- skimmed %>% dplyr::bind_rows(CHECK_THIS[,COLS] %>% skimr::skim())
+      skimmed <- skimmed %>% dplyr::bind_rows(CHECK_THIS[, COLS] %>% skimr::skim())
     }
     FOR_ORDERING <- fields$field_name
-    fields <- fields %>% merge(skimmed,by.x = "field_name",by.y = "skim_variable",all = TRUE)
+    fields <- fields %>% merge(skimmed, by.x = "field_name", by.y = "skim_variable", all = TRUE)
     fields <- FOR_ORDERING %>%
-      lapply(function(IN){
-        fields[which(fields$field_name==IN),]
-      }) %>% dplyr::bind_rows()
+      lapply(function(IN) {
+        fields[which(fields$field_name == IN), ]
+      }) %>%
+      dplyr::bind_rows()
   }
   # bullet_in_console("Annotated `DB$metadata$fields`",bullet_type = "v")
   return(fields)
 }
 #' @noRd
-annotate_forms <- function(DB,summarize_data = TRUE){
+annotate_forms <- function(DB, summarize_data = TRUE) {
   forms <- DB$metadata$forms
   # forms <- get_original_forms(DB)
   # if(!is.null(DB$metadata$form_key_cols)){
@@ -128,20 +139,29 @@ annotate_forms <- function(DB,summarize_data = TRUE){
   #     return(paste0(forms$form_name[row_match],"_key"))
   #   })
   # }
-  #add metadata info like n fields
-  if(summarize_data){
-    for(status in c("Incomplete","Unverified","Complete")){
-      forms[[tolower(status)]] <- forms$form_name %>% lapply(function(form_name){
-        form_name %>% strsplit(" [:|:] ") %>% unlist() %>% lapply(function(form_name){
-          (DB$data[[form_name]][[paste0(form_name,"_complete")]]==status) %>% which() %>% length()
-        }) %>% unlist() %>% paste0(collapse = " | ")
-      }) %>% unlist()
+  # add metadata info like n fields
+  if (summarize_data) {
+    for (status in c("Incomplete", "Unverified", "Complete")) {
+      forms[[tolower(status)]] <- forms$form_name %>%
+        lapply(function(form_name) {
+          form_name %>%
+            strsplit(" [:|:] ") %>%
+            unlist() %>%
+            lapply(function(form_name) {
+              (DB$data[[form_name]][[paste0(form_name, "_complete")]] == status) %>%
+                which() %>%
+                length()
+            }) %>%
+            unlist() %>%
+            paste0(collapse = " | ")
+        }) %>%
+        unlist()
     }
   }
   return(forms)
 }
 #' @noRd
-annotate_choices <- function(DB,summarize_data = TRUE){
+annotate_choices <- function(DB, summarize_data = TRUE) {
   forms <- DB$metadata$forms
   fields <- DB$metadata$fields
   choices <- DB$metadata$choices
@@ -154,42 +174,57 @@ annotate_choices <- function(DB,summarize_data = TRUE){
   #   lapply(function(X){
   #     DB$metadata$fields$field_label[which(fields$field_name==X)] %>% unique()
   #   })
-  if(summarize_data){
-    choices$n <- seq_len(nrow(choices)) %>% lapply(function(i){
-      DF <- DB$data[[choices$form_name[i]]]
-      if(is.null(DF))return(0)
-      if(nrow(DF)==0)return(0)
-      sum(DF[,choices$field_name[i]]==choices$name[i],na.rm = TRUE)
-      # print(i)
-    }) %>% unlist()
-    choices$n_total <- seq_len(nrow(choices)) %>% lapply(function(i){
-      DF <- DB$data[[choices$form_name[i]]]
-      if(is.null(DF))return(0)
-      if(nrow(DF)==0)return(0)
-      sum(!is.na(DF[,choices$field_name[i]]),na.rm = TRUE)
-    }) %>% unlist()
-    choices$perc <-  (choices$n/choices$n_total) %>% round(4)
-    choices$perc_text <- choices$perc %>% magrittr::multiply_by(100) %>% round(1) %>% paste0("%")
+  if (summarize_data) {
+    choices$n <- seq_len(nrow(choices)) %>%
+      lapply(function(i) {
+        DF <- DB$data[[choices$form_name[i]]]
+        if (is.null(DF)) {
+          return(0)
+        }
+        if (nrow(DF) == 0) {
+          return(0)
+        }
+        sum(DF[, choices$field_name[i]] == choices$name[i], na.rm = TRUE)
+        # print(i)
+      }) %>%
+      unlist()
+    choices$n_total <- seq_len(nrow(choices)) %>%
+      lapply(function(i) {
+        DF <- DB$data[[choices$form_name[i]]]
+        if (is.null(DF)) {
+          return(0)
+        }
+        if (nrow(DF) == 0) {
+          return(0)
+        }
+        sum(!is.na(DF[, choices$field_name[i]]), na.rm = TRUE)
+      }) %>%
+      unlist()
+    choices$perc <- (choices$n / choices$n_total) %>% round(4)
+    choices$perc_text <- choices$perc %>%
+      magrittr::multiply_by(100) %>%
+      round(1) %>%
+      paste0("%")
     # DB$summary$choices <- choices
     # bullet_in_console("Annotated `DB$summary$choices`",bullet_type = "v")
   }
   return(choices)
 }
 #' @noRd
-fields_with_no_data <- function(DB){
-  DB$metadata$fields$field_name[which(is.na(DB$metadata$fields$complete_rate)&!DB$metadata$fields$field_type%in%c("checkbox","descriptive"))]
+fields_with_no_data <- function(DB) {
+  DB$metadata$fields$field_name[which(is.na(DB$metadata$fields$complete_rate) & !DB$metadata$fields$field_type %in% c("checkbox", "descriptive"))]
 }
 #' @noRd
-reverse_clean_DB <- function(DB){ # problematic because setting numeric would delete missing codes
+reverse_clean_DB <- function(DB) { # problematic because setting numeric would delete missing codes
   DB$data <- all_character_cols_list(DB$data)
-  DB$data_update <-DB$data_update %>% all_character_cols_list()
+  DB$data_update <- DB$data_update %>% all_character_cols_list()
   DB$internals$is_clean <- FALSE
   return(DB)
 }
 #' @noRd
-clean_DF_list <- function(DF_list,fields,drop_blanks = TRUE,other_drops = NULL){
-  #add check for DF_list#
-  for(TABLE in names(DF_list)){
+clean_DF_list <- function(DF_list, fields, drop_blanks = TRUE, other_drops = NULL) {
+  # add check for DF_list#
+  for (TABLE in names(DF_list)) {
     DF_list[[TABLE]] <- clean_DF(
       DF = DF_list[[TABLE]],
       fields = fields,
@@ -200,41 +235,43 @@ clean_DF_list <- function(DF_list,fields,drop_blanks = TRUE,other_drops = NULL){
   return(DF_list)
 }
 #' @noRd
-clean_DF <- function(DF,fields,drop_blanks = TRUE,other_drops = NULL){
-  for(COLUMN in colnames(DF)){
-    if(COLUMN %in% fields$field_name){
-      ROW <- which(fields$field_name==COLUMN)
+clean_DF <- function(DF, fields, drop_blanks = TRUE, other_drops = NULL) {
+  for (COLUMN in colnames(DF)) {
+    if (COLUMN %in% fields$field_name) {
+      ROW <- which(fields$field_name == COLUMN)
       units <- NULL
-      if(!is.na(fields$units[ROW])){
+      if (!is.na(fields$units[ROW])) {
         units <- fields$units[ROW]
       }
       class <- fields$field_type_R[ROW][[1]]
-      label <- ifelse(is.na(fields$field_label[ROW]),COLUMN,fields$field_label[ROW])[[1]]
+      label <- ifelse(is.na(fields$field_label[ROW]), COLUMN, fields$field_label[ROW])[[1]]
       levels <- NULL
-      if(!is.na(class)){
-        if(class == "factor"){
+      if (!is.na(class)) {
+        if (class == "factor") {
           select_choices <- fields$select_choices_or_calculations[ROW]
-          if(!is.na(select_choices)){
+          if (!is.na(select_choices)) {
             levels <- split_choices(select_choices)[[2]]
-          }else{
+          } else {
             levels <- unique(DF[[COLUMN]]) %>% drop_nas()
           }
-          if(any(duplicated(levels))){
-            DUPS <- levels %>% duplicated() %>% which()
-            warning("You have a variable (",COLUMN,") with dupplicate names (",levels[DUPS] %>% paste0(collapse = ", "),"). This is not great but for this proccess they will be merged and treated as identical responses.")
+          if (any(duplicated(levels))) {
+            DUPS <- levels %>%
+              duplicated() %>%
+              which()
+            warning("You have a variable (", COLUMN, ") with dupplicate names (", levels[DUPS] %>% paste0(collapse = ", "), "). This is not great but for this proccess they will be merged and treated as identical responses.")
             levels <- levels %>% unique()
           }
-          if(drop_blanks){
-            levels <- levels[which(levels%in%unique(DF[[COLUMN]]))]
+          if (drop_blanks) {
+            levels <- levels[which(levels %in% unique(DF[[COLUMN]]))]
           }
-          if(!is.null(other_drops)){
-            if(length(other_drops)>0)levels <- levels[which(!levels%in%other_drops)]
+          if (!is.null(other_drops)) {
+            if (length(other_drops) > 0) levels <- levels[which(!levels %in% other_drops)]
           }
         }
-        if(class == "integer"){
+        if (class == "integer") {
           DF[[COLUMN]] <- as.integer(DF[[COLUMN]])
         }
-        if(class == "numeric"){
+        if (class == "numeric") {
           DF[[COLUMN]] <- as.numeric(DF[[COLUMN]])
         }
         DF
@@ -250,32 +287,32 @@ clean_DF <- function(DF,fields,drop_blanks = TRUE,other_drops = NULL){
   return(DF)
 }
 #' @noRd
-clean_column_for_table <- function(col,class,label,units,levels){
-  if(!missing(class)){
-    if(!is.null(class)){
-      if(!is.na(class)){
-        if(class=="integer"){
-          col <-   col %>% as.integer()
+clean_column_for_table <- function(col, class, label, units, levels) {
+  if (!missing(class)) {
+    if (!is.null(class)) {
+      if (!is.na(class)) {
+        if (class == "integer") {
+          col <- col %>% as.integer()
         }
-        if(class=="factor"){
-          col <-   col %>% factor(levels = levels,ordered = TRUE)
+        if (class == "factor") {
+          col <- col %>% factor(levels = levels, ordered = TRUE)
         }
-        if(class=="numeric"){
-          col <-   col %>% as.numeric()
+        if (class == "numeric") {
+          col <- col %>% as.numeric()
         }
       }
     }
   }
-  if(!missing(label)){
+  if (!missing(label)) {
     if (!is.null(label)) {
-      if(!is.na(label)){
+      if (!is.na(label)) {
         attr(col, "label") <- label
       }
     }
   }
-  if(!missing(units)){
+  if (!missing(units)) {
     if (!is.null(units)) {
-      if(!is.na(units)){
+      if (!is.na(units)) {
         attr(col, "units") <- units
       }
     }
@@ -367,23 +404,22 @@ add_DB_subset <- function(
     subset_name,
     filter_field,
     filter_choices,
-    dir_other = file.path(DB$dir_path,"output"),
-    file_name = paste0(DB$short_name,"_",subset_name),
+    dir_other = file.path(DB$dir_path, "output"),
+    file_name = paste0(DB$short_name, "_", subset_name),
     form_names = NULL,
     field_names = NULL,
     deidentify = TRUE,
-    force = FALSE
-){
-  if(is.null(DB$summary$subsets[[subset_name]])||force){
+    force = FALSE) {
+  if (is.null(DB$summary$subsets[[subset_name]]) || force) {
     subset_records <- NULL
-    if(filter_field==DB$redcap$id_col){
+    if (filter_field == DB$redcap$id_col) {
       records <- unique(filter_choices)
       filter_choices <- NULL
-    }else{
-      form_name <- field_names_to_form_names(DB,field_names = filter_field)
-      records <- DB$data[[form_name]][[DB$redcap$id_col]][which(DB$data[[form_name]][[filter_field]]%in%filter_choices)] %>% unique()
+    } else {
+      form_name <- field_names_to_form_names(DB, field_names = filter_field)
+      records <- DB$data[[form_name]][[DB$redcap$id_col]][which(DB$data[[form_name]][[filter_field]] %in% filter_choices)] %>% unique()
     }
-    subset_records <- DB$summary$all_records[which(DB$summary$all_records[[DB$redcap$id_col]]%in% records),]
+    subset_records <- DB$summary$all_records[which(DB$summary$all_records[[DB$redcap$id_col]] %in% records), ]
     DB$summary$subsets[[subset_name]] <- list(
       subset_name = subset_name,
       filter_field = filter_field,
@@ -395,7 +431,7 @@ add_DB_subset <- function(
       file_name = file_name,
       last_save_time = NULL,
       deidentify = deidentify,
-      file_path = file.path(dir_other,paste0(file_name,".xlsx"))
+      file_path = file.path(dir_other, paste0(file_name, ".xlsx"))
     )
   }
   return(DB)
@@ -411,22 +447,21 @@ generate_summary_save_list <- function(
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
     include_users = TRUE,
-    include_log = TRUE
-){
+    include_log = TRUE) {
   records <- sum_records(DB)[[1]]
-  if(deidentify){
+  if (deidentify) {
     DB <- deidentify_DB(DB)
   }
-  if(clean){
-    DB <- DB %>% clean_DB(drop_blanks = drop_blanks,other_drops = other_drops)# problematic because setting numeric would delete missing codes
+  if (clean) {
+    DB <- DB %>% clean_DB(drop_blanks = drop_blanks, other_drops = other_drops) # problematic because setting numeric would delete missing codes
   }
   to_save_list <- DB$data
-  if(include_metadata){
-    if(annotate_metadata&&is_something(DB$data)){
+  if (include_metadata) {
+    if (annotate_metadata && is_something(DB$data)) {
       to_save_list$forms <- annotate_forms(DB)
       to_save_list$fields <- annotate_fields(DB)
       to_save_list$choices <- annotate_choices(DB)
-    }else{
+    } else {
       to_save_list$forms <- DB$metadata$forms
       to_save_list$fields <- DB$metadata$fields
       to_save_list$choices <- DB$metadata$choices
@@ -436,14 +471,14 @@ generate_summary_save_list <- function(
     #   to_save_list$original_fields <- DB$transformation$original_fields
     # }
   }
-  if(include_record_summary){
-    to_save_list$records <- summarize_records_from_log(DB,records= records)
+  if (include_record_summary) {
+    to_save_list$records <- summarize_records_from_log(DB, records = records)
   }
-  if(include_users){
-    to_save_list$users <- summarize_users_from_log(DB,records= records)
+  if (include_users) {
+    to_save_list$users <- summarize_users_from_log(DB, records = records)
   }
-  if(include_log){
-    to_save_list$log <- get_log(DB,records = records)
+  if (include_log) {
+    to_save_list$log <- get_log(DB, records = records)
   }
   # to_save_list$choices <- annotate_choices(DB)
   # to_save_list$choices <- annotate_choices(DB)
@@ -453,17 +488,18 @@ generate_summary_save_list <- function(
 save_REDCapDB_list <- function(
     DB,
     to_save_list,
-    dir_other = file.path(DB$dir_path,"output"),
-    file_name = paste0(DB$short_name,"_REDCapDB"),
+    dir_other = file.path(DB$dir_path, "output"),
+    file_name = paste0(DB$short_name, "_REDCapDB"),
     separate = FALSE,
-    with_links = TRUE
-){
+    with_links = TRUE) {
   link_col_list <- list()
-  if(with_links){
-    if(DB$internals$DB_type=="redcap"){
-      add_links <- which(names(to_save_list)%in%names(DB$data))
-      if(length(add_links)>0){
-        to_save_list[add_links] <- to_save_list[add_links] %>% lapply(function(DF){add_redcap_links_to_DF(DF,DB)})
+  if (with_links) {
+    if (DB$internals$DB_type == "redcap") {
+      add_links <- which(names(to_save_list) %in% names(DB$data))
+      if (length(add_links) > 0) {
+        to_save_list[add_links] <- to_save_list[add_links] %>% lapply(function(DF) {
+          add_redcap_links_to_DF(DF, DB)
+        })
         link_col_list <- list(
           "redcap_link"
         )
@@ -471,13 +507,13 @@ save_REDCapDB_list <- function(
       }
     }
   }
-  if(DB$internals$use_csv){
+  if (DB$internals$use_csv) {
     to_save_list %>% list_to_csv(
       dir = dir_other,
       file_name = file_name,
       overwrite = TRUE
     )
-  }else{
+  } else {
     to_save_list %>% list_to_excel(
       dir = dir_other,
       separate = separate,
@@ -519,10 +555,9 @@ generate_summary_from_subset_name <- function(
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
     include_users = TRUE,
-    include_log = TRUE
-){
+    include_log = TRUE) {
   subset_list <- DB$summary$subsets[[subset_name]]
-  if(subset_list$filter_field==DB$redcap$id_col){
+  if (subset_list$filter_field == DB$redcap$id_col) {
     subset_list$filter_choices <- subset_list$subset_records[[DB$redcap$id_col]]
   }
   DB$data <- filter_DB(
@@ -581,16 +616,15 @@ summarize_DB <- function(
     include_users = TRUE,
     include_log = TRUE,
     separate = FALSE,
-    force = FALSE
-){
+    force = FALSE) {
   DB <- DB %>% validate_DB()
   original_data <- DB$data
   do_it <- is.null(DB$internals$last_summary)
   last_data_update <- DB$internals$last_data_update
-  if(!do_it){
-    do_it <- DB$internals$last_summary<last_data_update
+  if (!do_it) {
+    do_it <- DB$internals$last_summary < last_data_update
   }
-  if(force | do_it){
+  if (force | do_it) {
     to_save_list <- DB %>% generate_summary_save_list(
       deidentify = deidentify,
       clean = clean,
@@ -609,12 +643,12 @@ summarize_DB <- function(
     DB$internals$last_summary <- last_data_update
   }
   subset_names <- check_subsets(DB)
-  if(force)subset_names <- DB$summary$subsets %>% names()
-  if(is_something(subset_names)){
-    for(subset_name in subset_names){
+  if (force) subset_names <- DB$summary$subsets %>% names()
+  if (is_something(subset_names)) {
+    for (subset_name in subset_names) {
       DB$data <- original_data
       subset_list <- DB$summary$subsets[[subset_name]]
-      DB$summary$subsets[[subset_name]]$subset_records <- get_subset_records(DB=DB,subset_name = subset_name)
+      DB$summary$subsets[[subset_name]]$subset_records <- get_subset_records(DB = DB, subset_name = subset_name)
       DB$summary$subsets[[subset_name]]$last_save_time <- Sys.time()
       to_save_list <- DB %>% generate_summary_from_subset_name(
         subset_name = subset_name,
@@ -642,12 +676,12 @@ summarize_DB <- function(
 #' @inheritParams save_DB
 #' @return DB object
 #' @export
-run_quality_checks <- function(DB){
+run_quality_checks <- function(DB) {
   DB <- validate_DB(DB)
-  if(is_something(DB$quality_checks)){
-    for (qual_check in names(DB$quality_checks)){
+  if (is_something(DB$quality_checks)) {
+    for (qual_check in names(DB$quality_checks)) {
       the_function <- DB$quality_checks[[qual_check]]
-      if(is.function(the_function)){
+      if (is.function(the_function)) {
         DB <- the_function(DB)
       }
     }
@@ -655,129 +689,154 @@ run_quality_checks <- function(DB){
   return(DB)
 }
 #' @noRd
-sum_records <- function(DB){
+sum_records <- function(DB) {
   records <- NULL
-  if(DB$data %>% is_something()){
+  if (DB$data %>% is_something()) {
     cols <- DB$redcap$id_col
-    if(is.data.frame(DB$metadata$arms)){
-      if(nrow(DB$metadata$arms)>1){
+    if (is.data.frame(DB$metadata$arms)) {
+      if (nrow(DB$metadata$arms) > 1) {
         cols <- DB$redcap$id_col %>% append("arm_num")
       }
     }
-    if(length(cols)==1){
+    if (length(cols) == 1) {
       records <- data.frame(
-        records =  names(DB$data) %>% lapply(function(IN){DB$data[[IN]][,cols]}) %>% unlist() %>% unique()
+        records = names(DB$data) %>% lapply(function(IN) {
+          DB$data[[IN]][, cols]
+        }) %>% unlist() %>% unique()
       )
       colnames(records) <- cols
     }
-    if(length(cols) == 2){
-      records <- names(DB$data) %>% lapply(function(IN){DB$data[[IN]][,cols]}) %>% dplyr::bind_rows() %>% unique()
+    if (length(cols) == 2) {
+      records <- names(DB$data) %>%
+        lapply(function(IN) {
+          DB$data[[IN]][, cols]
+        }) %>%
+        dplyr::bind_rows() %>%
+        unique()
       # records <- records[order(as.integer(records[[DB$redcap$id_col]])),]
     }
     rownames(records) <- NULL
-    if(records[[DB$redcap$id_col]]%>% duplicated() %>% any())stop("duplicate ",DB$redcap$id_col, " in sum_records() function")
+    if (records[[DB$redcap$id_col]] %>% duplicated() %>% any()) stop("duplicate ", DB$redcap$id_col, " in sum_records() function")
   }
   return(records)
 }
 #' @noRd
-get_log <- function(DB, records){
+get_log <- function(DB, records) {
   log <- DB$redcap$log
-  log <- log[which(!is.na(log$username)),]
-  log <- log[which(!is.na(log$record)),]
-  if(!missing(records)){
-    if(!is.null(records)){
-      log <- log[which(log$record%in%records),]
+  log <- log[which(!is.na(log$username)), ]
+  log <- log[which(!is.na(log$record)), ]
+  if (!missing(records)) {
+    if (!is.null(records)) {
+      log <- log[which(log$record %in% records), ]
     }
   }
   return(log)
 }
 #' @noRd
-summarize_users_from_log <- function(DB,records){
-  log <- get_log(DB,records)
-  summary_users <- DB$redcap$users %>% dplyr::select(c("username","role_label","email" ,"firstname","lastname"))
+summarize_users_from_log <- function(DB, records) {
+  log <- get_log(DB, records)
+  summary_users <- DB$redcap$users %>% dplyr::select(c("username", "role_label", "email", "firstname", "lastname"))
   user_groups <- log %>% split(log$username)
-  summary_users <- summary_users[which(summary_users$username%in%names(user_groups)),]
+  summary_users <- summary_users[which(summary_users$username %in% names(user_groups)), ]
   user_groups <- user_groups[drop_nas(match(summary_users$username, names(user_groups)))]
-  summary_users$last_timestamp <- user_groups %>% lapply(function(group) {
-    group$timestamp[[1]]
-  }) %>% unlist()
-  summary_users$first_timestamp <- user_groups %>% lapply(function(group) {
-    group$timestamp %>% dplyr::last()
-  }) %>% unlist()
+  summary_users$last_timestamp <- user_groups %>%
+    lapply(function(group) {
+      group$timestamp[[1]]
+    }) %>%
+    unlist()
+  summary_users$first_timestamp <- user_groups %>%
+    lapply(function(group) {
+      group$timestamp %>% dplyr::last()
+    }) %>%
+    unlist()
   summary_users$last_user <- user_groups %>% lapply(function(group) {
     group$username[[1]]
   })
-  summary_users$unique_records_n <- user_groups %>% lapply(function(group) {
-    ul(group$record)
-  }) %>% unlist()
+  summary_users$unique_records_n <- user_groups %>%
+    lapply(function(group) {
+      ul(group$record)
+    }) %>%
+    unlist()
   return(summary_users)
 }
 #' @noRd
-summarize_records_from_log <- function(DB,records){
+summarize_records_from_log <- function(DB, records) {
   log <- DB$redcap$log
-  log <- log[which(!is.na(log$username)),]
-  log <- log[which(!is.na(log$record)),]
-  if(!missing(records)){
-    if(!is.null(records)){
-      log <- log[which(log$record%in%records),]
+  log <- log[which(!is.na(log$username)), ]
+  log <- log[which(!is.na(log$record)), ]
+  if (!missing(records)) {
+    if (!is.null(records)) {
+      log <- log[which(log$record %in% records), ]
     }
   }
-  #records -------------
+  # records -------------
   # all_records <- unique(log$record)
   summary_records <- DB$summary$all_records
   record_groups <- log %>% split(log$record)
-  summary_records <- summary_records[which(summary_records[[DB$redcap$id_col]]%in%names(record_groups)),,drop = FALSE]
+  summary_records <- summary_records[which(summary_records[[DB$redcap$id_col]] %in% names(record_groups)), , drop = FALSE]
   # users_log_rows <- users %>% lapply(function(user){which(log$username==user)})
   # records_log_rows <- records %>% lapply(function(record){which(log$record==record)})
   record_groups <- record_groups[match(summary_records[[DB$redcap$id_col]], names(record_groups))]
-  summary_records$last_timestamp <- record_groups %>% lapply(function(group) {
-    group$timestamp[[1]]
-  }) %>% unlist()
-  summary_records$first_timestamp <- record_groups %>% lapply(function(group) {
-    group$timestamp %>% dplyr::last()
-  }) %>% unlist()
-  summary_records$last_user <- record_groups %>% lapply(function(group) {
-    group$username[[1]]
-  }) %>% unlist()
-  summary_records$unique_users_n <- record_groups %>% lapply(function(group) {
-    ul(group$username)
-  }) %>% unlist()
+  summary_records$last_timestamp <- record_groups %>%
+    lapply(function(group) {
+      group$timestamp[[1]]
+    }) %>%
+    unlist()
+  summary_records$first_timestamp <- record_groups %>%
+    lapply(function(group) {
+      group$timestamp %>% dplyr::last()
+    }) %>%
+    unlist()
+  summary_records$last_user <- record_groups %>%
+    lapply(function(group) {
+      group$username[[1]]
+    }) %>%
+    unlist()
+  summary_records$unique_users_n <- record_groups %>%
+    lapply(function(group) {
+      ul(group$username)
+    }) %>%
+    unlist()
   return(summary_records)
 }
 #' @noRd
-get_subset_records <-function(DB,subset_name){
+get_subset_records <- function(DB, subset_name) {
   subset_list <- DB$summary$subsets[[subset_name]]
   subset_records <- NULL
-  if(subset_list$filter_field==DB$redcap$id_col){
+  if (subset_list$filter_field == DB$redcap$id_col) {
     records <- unique(subset_list$subset_records[[DB$redcap$id_col]])
-  }else{
+  } else {
     filter_choices <- subset_list$filter_choices
-    form_name <- field_names_to_form_names(DB,field_names = subset_list$filter_field)
-    records <- DB$data[[form_name]][[DB$redcap$id_col]][which(DB$data[[form_name]][[subset_list$filter_field]]%in%subset_list$filter_choices)] %>% unique()
+    form_name <- field_names_to_form_names(DB, field_names = subset_list$filter_field)
+    records <- DB$data[[form_name]][[DB$redcap$id_col]][which(DB$data[[form_name]][[subset_list$filter_field]] %in% subset_list$filter_choices)] %>% unique()
   }
-  subset_records <- DB$summary$all_records[which(DB$summary$all_records[[DB$redcap$id_col]]%in% records),]
+  subset_records <- DB$summary$all_records[which(DB$summary$all_records[[DB$redcap$id_col]] %in% records), ]
   return(subset_records)
 }
 #' @noRd
-subset_records_due <- function(DB,subset_name){
+subset_records_due <- function(DB, subset_name) {
   subset_list <- DB$summary$subsets[[subset_name]]
-  if(is.null(subset_list$last_save_time))return(TRUE)
-  if(!file.exists(subset_list$file_path))return(TRUE)
+  if (is.null(subset_list$last_save_time)) {
+    return(TRUE)
+  }
+  if (!file.exists(subset_list$file_path)) {
+    return(TRUE)
+  }
   subset_records <- get_subset_records(
     DB = DB,
     subset_name = subset_name
   )
-  return(!identical(unname(subset_list$subset_records),unname(subset_records)))
+  return(!identical(unname(subset_list$subset_records), unname(subset_records)))
 }
 #' @noRd
-check_subsets <- function(DB,subset_names){
-  if(missing(subset_names))subset_names <- DB$summary$subsets %>% names()
+check_subsets <- function(DB, subset_names) {
+  if (missing(subset_names)) subset_names <- DB$summary$subsets %>% names()
   needs_refresh <- NULL
-  if(is.null(subset_names))bullet_in_console("There are no subsets at `DB$summary$subsets` which can be added with `add_DB_subset()`!")
-  for(subset_name in subset_names){
-    if(subset_records_due(DB = DB, subset_name=subset_name))needs_refresh <- needs_refresh %>% append(subset_name)
+  if (is.null(subset_names)) bullet_in_console("There are no subsets at `DB$summary$subsets` which can be added with `add_DB_subset()`!")
+  for (subset_name in subset_names) {
+    if (subset_records_due(DB = DB, subset_name = subset_name)) needs_refresh <- needs_refresh %>% append(subset_name)
   }
-  if(is.null(needs_refresh))bullet_in_console("Refresh of subsets not needed!",bullet_type = "v")
+  if (is.null(needs_refresh)) bullet_in_console("Refresh of subsets not needed!", bullet_type = "v")
   return(needs_refresh)
 }
 #' @title Select REDCap Records from DB
@@ -799,11 +858,11 @@ check_subsets <- function(DB,subset_names){
 #' The function uses the helper `filter_DF_list` to apply the filtering logic to the `DB$data` list.
 #'
 #' @export
-filter_DB <- function(DB, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE){#, ignore_incomplete=FALSE, ignore_unverified = FALSE
-  if(missing(field_names))field_names <- DB %>% get_all_field_names()
-  if(is.null(field_names))field_names <- DB %>% get_all_field_names()
-  if(missing(form_names))form_names <- names(DB$data)
-  if(is.null(form_names))form_names <- names(DB$data)
+filter_DB <- function(DB, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE) { # , ignore_incomplete=FALSE, ignore_unverified = FALSE
+  if (missing(field_names)) field_names <- DB %>% get_all_field_names()
+  if (is.null(field_names)) field_names <- DB %>% get_all_field_names()
+  if (missing(form_names)) form_names <- names(DB$data)
+  if (is.null(form_names)) form_names <- names(DB$data)
   return(
     filter_DF_list(
       DF_list = DB$data,
@@ -836,15 +895,15 @@ filter_DB <- function(DB, filter_field, filter_choices, form_names, field_names,
 #' \code{\link[REDCapDB]{save_DB}} for saving the `DB` object.
 #' @family db_functions
 #' @export
-rmarkdown_DB <- function (DB,dir_other){
-  if(missing(dir_other)){
+rmarkdown_DB <- function(DB, dir_other) {
+  if (missing(dir_other)) {
     dir <- get_dir(DB) %>% file.path("output")
-  }else{
-    dir  <- dir_other
+  } else {
+    dir <- dir_other
   }
-  filename <- paste0(DB$short_name,"_full_summary_",gsub("-","_",Sys.Date()),".pdf")
+  filename <- paste0(DB$short_name, "_full_summary_", gsub("-", "_", Sys.Date()), ".pdf")
   rmarkdown::render(
-    input = system.file("rmarkdown","pdf.Rmd",package = pkg_name),
+    input = system.file("rmarkdown", "pdf.Rmd", package = pkg_name),
     output_format = "pdf_document",
     output_file = dir %>% file.path(filename),
     output_dir = dir,
@@ -856,47 +915,53 @@ rmarkdown_DB <- function (DB,dir_other){
 #' @param FORM data.frame of labelled REDCap to be converted to raw REDCap (for uploads)
 #' @return DB object that has been filtered to only include the specified records
 #' @export
-labelled_to_raw_form <- function(FORM,DB){
+labelled_to_raw_form <- function(FORM, DB) {
   use_missing_codes <- is.data.frame(DB$metadata$missing_codes)
-  fields <- filter_fields_from_form(FORM = FORM,DB = DB)
-  for(i in seq_len(nrow(fields))){ # i <-  seq_len(nrow(fields) %>% sample(1)
+  fields <- filter_fields_from_form(FORM = FORM, DB = DB)
+  for (i in seq_len(nrow(fields))) { # i <-  seq_len(nrow(fields) %>% sample(1)
     COL_NAME <- fields$field_name[i]
     has_choices <- fields$has_choices[i]
-    if(has_choices){
+    if (has_choices) {
       z <- fields$select_choices_or_calculations[i] %>% split_choices()
-      FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>% lapply(function(C){
-        OUT <- NA
-        if(!is.na(C)){
-          coded_redcap <- which(z$name==C)
-          if(length(coded_redcap)>0){
-            OUT <- z$code[coded_redcap]
-          }else{
-            if(use_missing_codes){
-              coded_redcap2 <- which(DB$metadata$missing_codes$name==C)
-              if(length(coded_redcap2)>0){
-                OUT <- DB$metadata$missing_codes$code[coded_redcap2]
-              }else{
-                stop("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME,", Choice: ",C)
+      FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>%
+        lapply(function(C) {
+          OUT <- NA
+          if (!is.na(C)) {
+            coded_redcap <- which(z$name == C)
+            if (length(coded_redcap) > 0) {
+              OUT <- z$code[coded_redcap]
+            } else {
+              if (use_missing_codes) {
+                coded_redcap2 <- which(DB$metadata$missing_codes$name == C)
+                if (length(coded_redcap2) > 0) {
+                  OUT <- DB$metadata$missing_codes$code[coded_redcap2]
+                } else {
+                  stop("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME, ", Choice: ", C)
+                }
+              } else {
+                stop("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME, ", Choice: ", C, ". Also not a missing code.")
               }
-            }else{
-              stop("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME,", Choice: ",C,". Also not a missing code.")
-            }
-          }
-        }
-        OUT
-      }) %>% unlist() %>% as.character()
-    }else{
-      if(use_missing_codes){
-        FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>% lapply(function(C){
-          OUT <- C
-          if(!is.na(C)){
-            D <- which(DB$metadata$missing_codes$name==C)
-            if(length(D)>0){
-              OUT <- DB$metadata$missing_codes$code[D]
             }
           }
           OUT
-        }) %>% unlist() %>% as.character()
+        }) %>%
+        unlist() %>%
+        as.character()
+    } else {
+      if (use_missing_codes) {
+        FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>%
+          lapply(function(C) {
+            OUT <- C
+            if (!is.na(C)) {
+              D <- which(DB$metadata$missing_codes$name == C)
+              if (length(D) > 0) {
+                OUT <- DB$metadata$missing_codes$code[D]
+              }
+            }
+            OUT
+          }) %>%
+          unlist() %>%
+          as.character()
       }
     }
   }
@@ -907,49 +972,55 @@ labelled_to_raw_form <- function(FORM,DB){
 #' @inheritParams save_DB
 #' @return DB object
 #' @export
-raw_to_labelled_form <- function(FORM,DB){
-  if(nrow(FORM)>0){
+raw_to_labelled_form <- function(FORM, DB) {
+  if (nrow(FORM) > 0) {
     use_missing_codes <- is.data.frame(DB$metadata$missing_codes)
-    metadata <- filter_fields_from_form(FORM = FORM,DB = DB)
-    for(i in seq_len(nrow(metadata))){ # i <-  seq_len(nrow(metadata)) %>% sample(1)
+    metadata <- filter_fields_from_form(FORM = FORM, DB = DB)
+    for (i in seq_len(nrow(metadata))) { # i <-  seq_len(nrow(metadata)) %>% sample(1)
       COL_NAME <- metadata$field_name[i]
       has_choices <- metadata$has_choices[i]
-      if(has_choices){
+      if (has_choices) {
         z <- metadata$select_choices_or_calculations[i] %>% split_choices()
-        FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>% lapply(function(C){
-          OUT <- NA
-          if(!is.na(C)){
-            coded_redcap <- which(z$code==C)
-            if(length(coded_redcap)>0){
-              OUT <- z$name[coded_redcap]
-            }else{
-              if(use_missing_codes){
-                coded_redcap2 <- which(DB$metadata$missing_codes$code==C)
-                if(length(coded_redcap2)>0){
-                  OUT <- DB$metadata$missing_codes$name[coded_redcap2]
-                }else{
-                  warning("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME,", Choice: ",C,". Also not a missing code.")
+        FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>%
+          lapply(function(C) {
+            OUT <- NA
+            if (!is.na(C)) {
+              coded_redcap <- which(z$code == C)
+              if (length(coded_redcap) > 0) {
+                OUT <- z$name[coded_redcap]
+              } else {
+                if (use_missing_codes) {
+                  coded_redcap2 <- which(DB$metadata$missing_codes$code == C)
+                  if (length(coded_redcap2) > 0) {
+                    OUT <- DB$metadata$missing_codes$name[coded_redcap2]
+                  } else {
+                    warning("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME, ", Choice: ", C, ". Also not a missing code.")
+                  }
+                } else {
+                  warning("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME, ", Choice: ", C)
                 }
-              }else{
-                warning("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME,", Choice: ",C)
-              }
-            }
-          }
-          OUT
-        }) %>% unlist() %>% as.character()
-      }else{
-        if(use_missing_codes){
-          z <- DB$metadata$missing_codes
-          FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>% lapply(function(C){
-            OUT <- C
-            if(!is.na(C)){
-              D <- which(z$code==C)
-              if(length(D)>0){
-                OUT <- z$name[D]
               }
             }
             OUT
-          }) %>% unlist() %>% as.character()
+          }) %>%
+          unlist() %>%
+          as.character()
+      } else {
+        if (use_missing_codes) {
+          z <- DB$metadata$missing_codes
+          FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>%
+            lapply(function(C) {
+              OUT <- C
+              if (!is.na(C)) {
+                D <- which(z$code == C)
+                if (length(D) > 0) {
+                  OUT <- z$name[D]
+                }
+              }
+              OUT
+            }) %>%
+            unlist() %>%
+            as.character()
         }
       }
     }
@@ -957,61 +1028,74 @@ raw_to_labelled_form <- function(FORM,DB){
   FORM
 }
 #' @noRd
-stack_vars <- function(DB,vars,new_name,drop_na=TRUE){
+stack_vars <- function(DB, vars, new_name, drop_na = TRUE) {
   DB <- validate_DB(DB)
   fields <- DB$metadata$fields
-  if(!all(vars%in%fields$field_name))stop("all vars must be in metadata.")
+  if (!all(vars %in% fields$field_name)) stop("all vars must be in metadata.")
   the_stack <- NULL
-  for(var in vars){# var <- vars %>% sample1()
-    DF <- filter_DB(DB,field_names = var)[[1]]
-    colnames(DF)[which(colnames(DF)==var)] <- new_name
-    the_stack <-the_stack %>% dplyr::bind_rows(DF)
+  for (var in vars) { # var <- vars %>% sample1()
+    DF <- filter_DB(DB, field_names = var)[[1]]
+    colnames(DF)[which(colnames(DF) == var)] <- new_name
+    the_stack <- the_stack %>% dplyr::bind_rows(DF)
   }
-  if(drop_na){
-    the_stack <- the_stack[which(!is.na(the_stack[[new_name]])),]
+  if (drop_na) {
+    the_stack <- the_stack[which(!is.na(the_stack[[new_name]])), ]
   }
   return(the_stack)
 }
 #' @noRd
-get_original_field_names <- function(DB){
-  if(DB$internals$is_transformed)return(DB$transformation$original_fields$field_name)
+get_original_field_names <- function(DB) {
+  if (DB$internals$is_transformed) {
+    return(DB$transformation$original_fields$field_name)
+  }
   return(DB$metadata$fields$field_name)
 }
 #' @noRd
-get_all_field_names <- function(DB){
+get_all_field_names <- function(DB) {
   return(DB$data %>% lapply(colnames) %>% unlist() %>% unique())
 }
 #' @noRd
-field_names_to_form_names <- function(DB,field_names){
-  form_key_cols <- DB$metadata$form_key_cols %>% unlist() %>% unique()
-  field_names_keys <- field_names[which(field_names%in%form_key_cols)]
-  form_names_keys <- field_names_keys %>% lapply(function(field_name){
-    DB$metadata$form_key_cols%>% names()%>% lapply(function(FORM){
-      if(!field_name%in%DB$metadata$form_key_cols[[FORM]])return(NULL)
-      return(FORM)
-    }) %>% unlist()
-  }) %>% unlist() %>% as.character() %>% unique()
+field_names_to_form_names <- function(DB, field_names) {
+  form_key_cols <- DB$metadata$form_key_cols %>%
+    unlist() %>%
+    unique()
+  field_names_keys <- field_names[which(field_names %in% form_key_cols)]
+  form_names_keys <- field_names_keys %>%
+    lapply(function(field_name) {
+      DB$metadata$form_key_cols %>%
+        names() %>%
+        lapply(function(FORM) {
+          if (!field_name %in% DB$metadata$form_key_cols[[FORM]]) {
+            return(NULL)
+          }
+          return(FORM)
+        }) %>%
+        unlist()
+    }) %>%
+    unlist() %>%
+    as.character() %>%
+    unique()
   fields <- DB$metadata$fields
-  field_names_not_keys <- field_names[which(!field_names%in%form_key_cols)]
+  field_names_not_keys <- field_names[which(!field_names %in% form_key_cols)]
   form_names_not_keys <- fields$form_name[match(field_names_not_keys, fields$field_name)] %>% drop_nas()
-  form_names <- c(form_names_not_keys,form_names_keys) %>% unique()
+  form_names <- c(form_names_not_keys, form_names_keys) %>% unique()
   return(form_names)
 }
 #' @noRd
-form_names_to_field_names <- function(form_names,DB,original_only = FALSE){
+form_names_to_field_names <- function(form_names, DB, original_only = FALSE) {
   field_names <- NULL
-  if(original_only){
+  if (original_only) {
     fields <- get_original_fields(DB)
-  }else{
+  } else {
     fields <- DB$metadata$fields
   }
-  for(form_name in form_names){
-    field_names <- field_names %>% append(fields$field_name[which(fields$form_name==form_name)])
+  for (form_name in form_names) {
+    field_names <- field_names %>% append(fields$field_name[which(fields$form_name == form_name)])
   }
   return(unique(field_names))
 }
 #' @noRd
-form_names_to_form_labels <- function(form_names,DB){
+form_names_to_form_labels <- function(form_names, DB) {
   return(
     DB$metadata$forms$form_label[
       match(
@@ -1022,7 +1106,7 @@ form_names_to_form_labels <- function(form_names,DB){
   )
 }
 #' @noRd
-form_labels_to_form_names <- function(form_labels,DB){
+form_labels_to_form_names <- function(form_labels, DB) {
   return(
     DB$metadata$forms$form_name[
       match(
@@ -1033,7 +1117,7 @@ form_labels_to_form_names <- function(form_labels,DB){
   )
 }
 #' @noRd
-field_names_to_field_labels <- function(field_names,DB){
+field_names_to_field_labels <- function(field_names, DB) {
   return(
     DB$metadata$fields$field_label[
       match(
@@ -1044,123 +1128,129 @@ field_names_to_field_labels <- function(field_names,DB){
   )
 }
 #' @noRd
-construct_header_list <- function(DF_list,md_elements = c("form_name","field_type","field_label"),fields){
-  if(anyDuplicated(fields$field_name)>0)stop("dup names not allowed in fields")
+construct_header_list <- function(DF_list, md_elements = c("form_name", "field_type", "field_label"), fields) {
+  if (anyDuplicated(fields$field_name) > 0) stop("dup names not allowed in fields")
   df_col_list <- DF_list %>% lapply(colnames)
-  header_df_list <- df_col_list %>% lapply(function(field_names){
-    x<- field_names%>% lapply(function(field_name){
-      row <- which(fields$field_name==field_name)
-      if(length(row)>0){
-        return(as.character(fields[md_elements][row,]))
-      }else{
-        return(rep("",length(md_elements)))
-      }
-    }) %>% as.data.frame()
-    colnames(x)<-field_names
-    x<- x[which(apply(x, 1, function(row){any(row!="")})),]
+  header_df_list <- df_col_list %>% lapply(function(field_names) {
+    x <- field_names %>%
+      lapply(function(field_name) {
+        row <- which(fields$field_name == field_name)
+        if (length(row) > 0) {
+          return(as.character(fields[md_elements][row, ]))
+        } else {
+          return(rep("", length(md_elements)))
+        }
+      }) %>%
+      as.data.frame()
+    colnames(x) <- field_names
+    x <- x[which(apply(x, 1, function(row) {
+      any(row != "")
+    })), ]
     x
   })
   return(header_df_list)
 }
 #' @noRd
-stripped_DB <- function (DB) {
+stripped_DB <- function(DB) {
   DB$redcap$log <- list()
   DB$data <- list()
   DB$data_update <- list()
   return(DB)
 }
 #' @noRd
-filter_DF_list <- function(DF_list,DB,filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE){
-  if(missing(field_names))field_names <- DB %>% get_all_field_names()
-  if(is.null(field_names))field_names <- DB %>% get_all_field_names()
-  if(missing(form_names))form_names <- names(DF_list)
-  if(is.null(form_names))form_names <- names(DF_list)
+filter_DF_list <- function(DF_list, DB, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE) {
+  if (missing(field_names)) field_names <- DB %>% get_all_field_names()
+  if (is.null(field_names)) field_names <- DB %>% get_all_field_names()
+  if (missing(form_names)) form_names <- names(DF_list)
+  if (is.null(form_names)) form_names <- names(DF_list)
   out_list <- list()
-  form_key_cols <- DB$metadata$form_key_cols %>% unlist() %>% unique()
+  form_key_cols <- DB$metadata$form_key_cols %>%
+    unlist() %>%
+    unique()
   is_key <- filter_field %in% form_key_cols
-  if(!is_key){
-    form_name <- field_names_to_form_names(DB,field_names = filter_field)
-    is_repeating_filter <- DB$metadata$forms$repeating[which(DB$metadata$forms$form_name==form_name)]
+  if (!is_key) {
+    form_name <- field_names_to_form_names(DB, field_names = filter_field)
+    is_repeating_filter <- DB$metadata$forms$repeating[which(DB$metadata$forms$form_name == form_name)]
   }
-  for(FORM in form_names){
+  for (FORM in form_names) {
     DF <- DF_list[[FORM]]
-    is_repeating_form <- DB$metadata$forms$repeating[which(DB$metadata$forms$form_name==FORM)]
-    if(is_something(DF)){
+    is_repeating_form <- DB$metadata$forms$repeating[which(DB$metadata$forms$form_name == FORM)]
+    if (is_something(DF)) {
       filter_field_final <- filter_field
       filter_choices_final <- filter_choices
-      if(!is_key){
-        if(is_repeating_filter){
-          if(!is_repeating_form){
+      if (!is_key) {
+        if (is_repeating_filter) {
+          if (!is_repeating_form) {
             filter_field_final <- DB$metadata$form_key_cols[[FORM]]
-            filter_choices_final <- DF_list[[form_name]][[filter_field_final]][which(DF_list[[form_name]][[filter_field]]%in%filter_choices)] %>% unique()
+            filter_choices_final <- DF_list[[form_name]][[filter_field_final]][which(DF_list[[form_name]][[filter_field]] %in% filter_choices)] %>% unique()
           }
         }
       }
-      rows <-which(DF_list[[FORM]][[filter_field_final]]%in%filter_choices_final)
+      rows <- which(DF_list[[FORM]][[filter_field_final]] %in% filter_choices_final)
       field_names_adj <- field_names
-      if(no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(FORM,DB,original_only = FALSE))
-      cols <- colnames(DF)[which(colnames(DF)%in%field_names_adj)]
-      if(length(rows)>0&&length(cols)>0){
-        cols <- colnames(DF)[which(colnames(DF)%in%unique(c(DB$metadata$form_key_cols[[FORM]],field_names_adj)))]
-        out_list[[FORM]] <- DF[rows,cols]
+      if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(FORM, DB, original_only = FALSE))
+      cols <- colnames(DF)[which(colnames(DF) %in% field_names_adj)]
+      if (length(rows) > 0 && length(cols) > 0) {
+        cols <- colnames(DF)[which(colnames(DF) %in% unique(c(DB$metadata$form_key_cols[[FORM]], field_names_adj)))]
+        out_list[[FORM]] <- DF[rows, cols]
       }
     }
   }
   return(out_list)
 }
 #' @noRd
-field_names_metadata <- function(DB,field_names,col_names){
-  fields <- get_original_fields(DB) #DB$metadata$fields
+field_names_metadata <- function(DB, field_names, col_names) {
+  fields <- get_original_fields(DB) # DB$metadata$fields
   # if(!deparse(substitute(FORM))%in%DB$metadata$forms$form_name)stop("To avoid potential issues the form name should match one of the instrument names" )
-  BAD <- field_names[which(!field_names%in%c(DB$metadata$fields$field_name,DB$redcap$raw_structure_cols,"arm_num","event_name"))]
-  if(length(BAD)>0)stop("All column names in your form must match items in your metadata, `DB$metadata$fields$field_name`... ", paste0(BAD, collapse = ", "))
+  BAD <- field_names[which(!field_names %in% c(DB$metadata$fields$field_name, DB$redcap$raw_structure_cols, "arm_num", "event_name"))]
+  if (length(BAD) > 0) stop("All column names in your form must match items in your metadata, `DB$metadata$fields$field_name`... ", paste0(BAD, collapse = ", "))
   # metadata <- DB$metadata$fields[which(DB$metadata$fields$form_name%in%instruments),]
-  fields <- fields[which(fields$field_name%in%field_names),]
+  fields <- fields[which(fields$field_name %in% field_names), ]
   # metadata <- metadata[which(metadata$field_name%in%field_names),]
-  if( ! missing(col_names)){
-    if(is_something(col_names))fields <- fields[[col_names]]
+  if (!missing(col_names)) {
+    if (is_something(col_names)) fields <- fields[[col_names]]
   }
   return(fields)
 }
 #' @noRd
-filter_fields_from_form <- function(FORM,DB){
+filter_fields_from_form <- function(FORM, DB) {
   forms <- DB %>% field_names_to_form_names(field_names = colnames(FORM))
-  if(any(forms%in%get_original_forms(DB)$repeating))stop("All column names in your form must match only one form in your metadata, `DB$metadata$forms$form_name`, unless they are all non-repeating")
+  if (any(forms %in% get_original_forms(DB)$repeating)) stop("All column names in your form must match only one form in your metadata, `DB$metadata$forms$form_name`, unless they are all non-repeating")
   fields <- DB %>% field_names_metadata(field_names = colnames(FORM))
-  fields <- fields[which(fields$field_type!="descriptive"),]
+  fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
   return(fields)
 }
 #' @noRd
-labelled_to_raw_DB <- function(DB){
+labelled_to_raw_DB <- function(DB) {
   DB <- validate_DB(DB)
-  if(!DB$internals$data_extract_labelled)stop("DB is already raw/coded (not labelled values)")
-  for(TABLE in names(DB$data)){
-    DB$data[[TABLE]] <- labelled_to_raw_form(FORM = DB$data[[TABLE]],DB=DB)
+  if (!DB$internals$data_extract_labelled) stop("DB is already raw/coded (not labelled values)")
+  for (TABLE in names(DB$data)) {
+    DB$data[[TABLE]] <- labelled_to_raw_form(FORM = DB$data[[TABLE]], DB = DB)
   }
   DB$internals$data_extract_labelled <- FALSE
   DB
 }
 #' @noRd
-DF_list_to_text <- function(DF_list, DB,drop_nas = TRUE,clean_names= TRUE){
+DF_list_to_text <- function(DF_list, DB, drop_nas = TRUE, clean_names = TRUE) {
   output_list <- c()
   for (i in seq_along(DF_list)) {
     DF <- DF_list[[i]]
     the_raw_name <- names(DF_list)[[i]]
     the_name <- the_raw_name
-    if(clean_names)the_name <- DB$metadata$forms$form_label[which(DB$metadata$forms$form_name==the_raw_name)]
-    df_name <- paste0("----- ",the_name, " Table -----")
+    if (clean_names) the_name <- DB$metadata$forms$form_label[which(DB$metadata$forms$form_name == the_raw_name)]
+    df_name <- paste0("----- ", the_name, " Table -----")
     output_list <- c(output_list, paste0("&nbsp;&nbsp;<strong>", df_name, "</strong><br>"))
     key_col_names <- DB$metadata$form_key_cols[[the_raw_name]]
     for (j in seq_len(nrow(DF))) {
       for (col_name in colnames(DF)) {
         entry <- DF[j, col_name]
         if (!col_name %in% key_col_names) {
-          if(!is.na(entry)|!drop_nas){
-            entry <- gsub("\\n","<br>",entry)
+          if (!is.na(entry) | !drop_nas) {
+            entry <- gsub("\\n", "<br>", entry)
             col_name_clean <- col_name
-            if(clean_names)col_name_clean <- DB$metadata$fields$field_label[which(DB$metadata$fields$field_name==col_name)]
-            output_list <- c(output_list, paste0("&nbsp;&nbsp;<strong>", col_name_clean, ":</strong> <br>&nbsp;&nbsp;&nbsp;&nbsp;", entry,"<br>"))
+            if (clean_names) col_name_clean <- DB$metadata$fields$field_label[which(DB$metadata$fields$field_name == col_name)]
+            output_list <- c(output_list, paste0("&nbsp;&nbsp;<strong>", col_name_clean, ":</strong> <br>&nbsp;&nbsp;&nbsp;&nbsp;", entry, "<br>"))
           }
         }
       }
@@ -1171,20 +1261,23 @@ DF_list_to_text <- function(DF_list, DB,drop_nas = TRUE,clean_names= TRUE){
   return(output_list)
 }
 #' @noRd
-check_DB_for_IDs <- function(DB,required_percent_filled = 0.7){
+check_DB_for_IDs <- function(DB, required_percent_filled = 0.7) {
   cols <- NULL
-  if(is_something(DB)){
-    if(is_something(DB$data)){
+  if (is_something(DB)) {
+    if (is_something(DB$data)) {
       DF <- DB$data[[DB$metadata$forms$form_name[which(!DB$metadata$forms$repeating)][[1]]]]
       IN_length <- DF %>% nrow()
-      cols <- colnames(DF)[DF %>% lapply(function(IN){
-        OUT <- FALSE
-        x <- IN %>% drop_nas()
-        if((length(x)/IN_length)>required_percent_filled){
-          OUT <- anyDuplicated(x)==0
-        }
-        return(OUT)
-      }) %>% unlist() %>% which()]
+      cols <- colnames(DF)[DF %>%
+        lapply(function(IN) {
+          OUT <- FALSE
+          x <- IN %>% drop_nas()
+          if ((length(x) / IN_length) > required_percent_filled) {
+            OUT <- anyDuplicated(x) == 0
+          }
+          return(OUT)
+        }) %>%
+        unlist() %>%
+        which()]
     }
   }
   return(cols)

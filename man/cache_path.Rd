@@ -18,7 +18,6 @@ This function checks the location of the cache established by \code{\link[hoardr
 Key information stored here is \code{short_name} (primary key for REDCapDB projects) and other details about project information.
 }
 \examples{
-
 \dontrun{
 path <- cache_path()
 print(path)

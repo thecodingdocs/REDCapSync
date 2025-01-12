@@ -450,7 +450,14 @@ DF_to_wb <- function(
     startRow_table <- startRow_header
     startCol <- pad_cols + 1
     if (is_something(header_df)) {
-      openxlsx::writeData(wb, sheet = DF_name, x = header_df, startRow = startRow_header, startCol = startCol, colNames = FALSE)
+      openxlsx::writeData(
+        wb,
+        sheet = DF_name,
+        x = header_df,
+        startRow = startRow_header,
+        startCol = startCol,
+        colNames = FALSE
+      )
       startRow_table <- startRow_header + nrow(header_df)
     }
     if (length(link_col_list) > 0) {

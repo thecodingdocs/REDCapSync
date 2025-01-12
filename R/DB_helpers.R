@@ -225,34 +225,43 @@ raw_process_redcap <- function(raw, DB, labelled) {
     # form_name <- form_names %>% sample1()
     has_repeating_forms <- DB$redcap$has_repeating_forms
     for (form_name in form_names) {
-      add_ons_x <- add_ons
-      # form_name <-  forms$form_name %>% sample(1)
-      is_repeating_form <- form_name %in% forms$form_name[which(forms$repeating)]
-      is_longitudinal <- DB$redcap$is_longitudinal
-      rows <- seq_len(nrow(raw))
-      if (is_repeating_form) {
-        if (!"redcap_repeat_instrument" %in% colnames(raw)) stop("redcap_repeat_instrument not in colnames(raw)")
-        if (is_longitudinal) {
-          # rows <- which(raw$redcap_repeat_instrument==form_name)
-          rows <- which(raw$redcap_repeat_instrument == form_name | raw$redcap_event_name %in% event_mapping$unique_event_name[which(!event_mapping$repeating & event_mapping$form == form_name)])
-        } else {
-          rows <- which(raw$redcap_repeat_instrument == form_name)
-        }
-      } else {
-        add_ons_x <- add_ons_x[which(!add_ons_x %in% c("redcap_repeat_instrument", "redcap_repeat_instance"))]
-        if (is_longitudinal) {
-          rows <- which(raw$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)]))
-        } else {
-          if (has_repeating_forms) rows <- which(is.na(raw$redcap_repeat_instrument))
-        }
+      form_field_names <- fields$field_name[which(fields$form_name == form_name & fields$field_name %in% colnames(raw) & fields$field_name != DB$redcap$id_col)]
+      if(length(form_field_names) == 0){
+        bullet_in_console(paste0("You might not have access to ",form_name,". Unable to obtain."),bullet_type = "x")
       }
-      if (is_something(rows)) {
-        cols <- unique(c(add_ons_x, fields$field_name[which(fields$form_name == form_name & fields$field_name %in% colnames(raw))]))
-        raw_subset <- raw[rows, cols]
-        if (labelled) {
-          raw_subset <- raw_to_labelled_form(FORM = raw_subset, DB = DB)
+      if(length(form_field_names)>0){
+        add_ons_x <- add_ons
+        # form_name <-  forms$form_name %>% sample(1)
+        is_repeating_form <- form_name %in% forms$form_name[which(forms$repeating)]
+        is_longitudinal <- DB$redcap$is_longitudinal
+        rows <- seq_len(nrow(raw))
+        if (is_repeating_form) {
+          if (!"redcap_repeat_instrument" %in% colnames(raw)) stop("redcap_repeat_instrument not in colnames(raw)")
+          if (is_longitudinal) {
+            # rows <- which(raw$redcap_repeat_instrument==form_name)
+            rows <- which(raw$redcap_repeat_instrument == form_name | raw$redcap_event_name %in% event_mapping$unique_event_name[which(!event_mapping$repeating & event_mapping$form == form_name)])
+          }
+          if( ! is_longitudinal){
+            rows <- which(raw$redcap_repeat_instrument == form_name)
+          }
         }
-        data_list[[form_name]] <- raw_subset
+        if( ! is_repeating_form){
+          add_ons_x <- add_ons_x[which(!add_ons_x %in% c("redcap_repeat_instrument", "redcap_repeat_instance"))]
+          if (is_longitudinal) {
+            rows <- which(raw$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)]))
+          }
+          if( ! is_longitudinal){
+            if (has_repeating_forms) rows <- which(is.na(raw$redcap_repeat_instrument))
+          }
+        }
+        if (is_something(rows)) {
+          cols <- unique(c(add_ons_x, form_field_names))
+          raw_subset <- raw[rows, cols]
+          if (labelled) {
+            raw_subset <- raw_to_labelled_form(FORM = raw_subset, DB = DB)
+          }
+          data_list[[form_name]] <- raw_subset
+        }
       }
     }
   }

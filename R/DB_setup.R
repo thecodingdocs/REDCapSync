@@ -82,7 +82,10 @@ setup_DB <- function(
   }
   if (!force) {
     has_expected_file <- FALSE
-    if (!missing_dir_path) {
+    if (!missing_dir_path || in_proj_cache) {
+      if (missing_dir_path || in_proj_cache) {
+        dir_path <- projects$dir_path[which(projects$short_name == short_name)]
+      }
       expected_file <- file.path(
         dir_path,
         "R_objects",

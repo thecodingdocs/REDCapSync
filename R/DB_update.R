@@ -92,8 +92,7 @@ update_DB <- function(
         DB,
         begin_time = as.character(strptime(DB$redcap$log$timestamp[1], format = "%Y-%m-%d %H:%M") - lubridate::days(1))
       ) %>%
-        clean_redcap_log() %>%
-        unique()
+        clean_redcap_log()
       if (nrow(ilog) <= nrow(DB$redcap$log)) {
         head_of_log <- DB$redcap$log %>% utils::head(n = nrow(ilog))
       } else {
@@ -145,7 +144,7 @@ update_DB <- function(
       log <- DB$redcap$log # in case there is a log already
       if (entire_log) {
         DB$redcap$log <- log %>% dplyr::bind_rows(
-          DB %>% get_REDCap_log(begin_time = DB$redcap$project_info$creation_time) %>% unique()
+          DB %>% get_REDCap_log(begin_time = DB$redcap$project_info$creation_time) %>% unique()# should add - lubridate::days(2)
         )
       } else {
         DB$redcap$log <- log %>% dplyr::bind_rows(

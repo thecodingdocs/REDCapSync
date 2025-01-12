@@ -19,8 +19,8 @@ Searches a specified folder for files related to REDCapDB projects and returns t
 Optionally validates the folder to ensure it was previously set up using \code{setup_DB()}.
 }
 \details{
-This function checks a folder (and optionally validates its setup) for \code{.RData} files that correspond to REDCapDB projects.
-It identifies files with the extension \code{.RData} and names ending in \verb{_REDCapDB}, filtering out any unrelated files.
+This function checks a folder (and optionally validates its setup) for \code{.Rdata} files that correspond to REDCapDB projects.
+It identifies files with the extension \code{.Rdata} and names ending in \verb{_REDCapDB}, filtering out any unrelated files.
 }
 \seealso{
 \link{setup_DB} for setting up valid directories.

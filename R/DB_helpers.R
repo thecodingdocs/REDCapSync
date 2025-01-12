@@ -263,7 +263,7 @@ sort_redcap_log <- function(log) {
   log[order(log$timestamp, decreasing = TRUE), ]
 }
 #' @noRd
-clean_redcap_log <- function(log, purge_api = TRUE) {
+clean_redcap_log <- function(log) {
   log <- unique(log)
   log$record_id <- NA
   log$action_type <- NA

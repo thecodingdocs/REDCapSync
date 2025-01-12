@@ -17,7 +17,7 @@ settings. Generated using \link{load_DB} or \link{setup_DB}}
 Message
 }
 \description{
-This will save/delete the "<short_name>_REDCapDB.rdata" file in the given DB
+This will save/delete the "<short_name>_REDCapDB.Rdata" file in the given DB
 directories R_objects folder. These are optional functions given that
 \code{save_DB} is a also handled by a default parameter in \code{update_DB.}
 }

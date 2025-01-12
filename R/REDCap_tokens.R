@@ -195,6 +195,9 @@ is_hexadecimal <- function(string, length = NULL) {
 get_REDCap_token_name <- function(DB) {
   token_name <- paste0(internal_REDCapDB_token_prefix,
                        validate_env_name(DB$short_name))
+  if(is_something(DB$redcap$token_name)){
+    token_name <- DB$redcap$token_name
+  }
   return(token_name)
 }
 #' @noRd

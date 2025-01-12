@@ -118,6 +118,7 @@ reference:
       - link_REDCap_home
       - link_REDCap_project
       - link_REDCap_record
+
 articles:
   - title: Feautures by R User Level
     navbar: ~

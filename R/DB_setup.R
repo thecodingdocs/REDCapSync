@@ -39,7 +39,7 @@
 #' @param auto_check_token Logical (TRUE/FALSE). If TRUE, automatically
 #' checks the validity of the REDCap API token. Default is `TRUE`.
 #' @param DB_path A character string representing the file path of the exact
-#' `<short_name>_REDCapDB.Rdata` file to be loaded.
+#' `<short_name>_REDCapDB.RData` file to be loaded.
 #' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test DB object with
 #' data as if user ran `update_DB`. Default is `FALSE`.
 #' @return REDCapDB `DB` list object.
@@ -86,7 +86,7 @@ setup_DB <- function(
       expected_file <- file.path(
         dir_path,
         "R_objects",
-        paste0(short_name, "_REDCapDB.Rdata")
+        paste0(short_name, "_REDCapDB.RData")
       )
       has_expected_file <- file.exists(expected_file)
     }
@@ -143,7 +143,7 @@ load_DB <- function(short_name, validate = TRUE) {
   if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_DB()` and `update_DB()`?")
   dir_path <- projects$dir_path[which(projects$short_name == short_name)]
   if (!file.exists(dir_path)) stop("`dir_path` doesn't exist: '", dir_path, "'")
-  DB_path <- file.path(dir_path, "R_objects", paste0(short_name, "_REDCapDB.Rdata"))
+  DB_path <- file.path(dir_path, "R_objects", paste0(short_name, "_REDCapDB.RData"))
   load_DB_from_path(
     DB_path = DB_path,
     validate = validate
@@ -195,7 +195,7 @@ is_test_DB <- function(DB) {
 #' @param DB A validated `DB` object containing REDCap project data and
 #' settings. Generated using \link{load_DB} or \link{setup_DB}
 #' @description
-#' This will save/delete the "<short_name>_REDCapDB.Rdata" file in the given DB
+#' This will save/delete the "<short_name>_REDCapDB.RData" file in the given DB
 #' directories R_objects folder. These are optional functions given that
 #' `save_DB` is a also handled by a default parameter in `update_DB.`
 #'
@@ -217,7 +217,7 @@ save_DB <- function(DB) {
   save_file_path <- file.path(
     DB$dir_path,
     "R_objects",
-    paste0(DB$short_name, "_REDCapDB.Rdata")
+    paste0(DB$short_name, "_REDCapDB.RData")
   )
   saveRDS(
     object = DB,
@@ -234,7 +234,7 @@ delete_DB <- function(DB) {
   DB <- validate_DB(DB)
   dir_path <- DB$dir_path
   dir_path <- validate_dir(dir_path, silent = FALSE)
-  delete_this <- file.path(dir_path, "R_objects", paste0(DB$short_name, "_REDCapDB.Rdata"))
+  delete_this <- file.path(dir_path, "R_objects", paste0(DB$short_name, "_REDCapDB.RData"))
   if (file.exists(delete_this)) {
     unlink(delete_this)
     bullet_in_console("Deleted saved DB", bullet_type = "v")

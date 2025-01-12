@@ -17,7 +17,8 @@ REDCap_diagram(
 )
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{static}{Logical (TRUE/FALSE). If TRUE, generates a static diagram with \code{DiagrammeR}. If FALSE, generates an interactive diagram with \code{visnetwork}. Default is \code{FALSE}.}
 

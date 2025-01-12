@@ -7,7 +7,8 @@
 upload_file_to_REDCap_file_repository(DB, file)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{file}{file location on your PC}
 }

@@ -1,31 +1,51 @@
 #' @rdname setup-load
 #' @title Setup or Load REDCapDB Project
 #' @description
-#' Setup or Load the `DB` object with the necessary REDCap API token and other configurations.
+#' Setup or Load the `DB` object for pipeline.
 #'
 #' @details
-#' This function sets up the `DB` object by storing the REDCap API token and other configurations required for interacting with the REDCap server.
+#' This function sets up the `DB` object by storing the REDCap API token and
+#' other configurations required for interacting with the REDCap server.
 #' It ensures that the token is valid and ready for use in subsequent API calls.
 #' Neither function directly attempts communication with REDCap.
 #'
-#' `setup_DB` is used the first time you initialize/link a REDCap project. Mainly, it sets your unique `short_name` and your intended directory. Unless you run \code{force = TRUE} the default will first try load_DB. dir_path is technically optional but without it the user cannot save/load/update projects.
+#' `setup_DB` is used the first time you initialize/link a REDCap project.
+#' Mainly, it sets your unique `short_name` and your intended directory.
+#' Unless you run \code{force = TRUE} the default will first try load_DB.
+#' dir_path is technically optional but without it the user cannot
+#' save/load/update projects.
 #'
-#' `load_DB` can be used with just the `short_name` parameter after you have already run `setup_DB` in the past with an established directory. `dir_path` is optional for this function but can be used if you relocated the directory.
+#' `load_DB` can be used with just the `short_name` parameter after you have
+#' already run `setup_DB` in the past with an established directory. `dir_path`
+#' is optional for this function but can be used if you relocated the directory.
 #'
-#' @param short_name A character string with no spaces or symbols representing the unique short name for the REDCap project.
-#' @param dir_path Optional character string representing the directory path where you want the REDCap project data to be stored. If missing, DB object will only be in current R session.
-#' @param redcap_base A character string representing the base URL of the REDCap server.
-#' @param token_name An optional character string for setting your token name. Default is `REDCapDB_<short_name>`
-#' @param force Logical (TRUE/FALSE). If TRUE, forces the setup even if the `DB` object already exists. Default is `FALSE`.
-#' @param validate Logical (TRUE/FALSE). If TRUE, validates DB object based on current rules. Default is `TRUE`.
-#' @param merge_form_name A character string representing the name of the merged form. Default is "merged".
-#' @param use_csv Logical (TRUE/FALSE). If TRUE, uses CSV files for data storage. Default is `FALSE`.
-#' @param auto_check_token Logical (TRUE/FALSE). If TRUE, automatically checks the validity of the REDCap API token. Default is `TRUE`.
-#' @param DB_path A character string representing the file path of the exact `<short_name>_REDCapDB.rdata` file to be loaded.
-#' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test DB object with data as if user ran `update_DB`. Default is `FALSE`.
+#' @param short_name A character string with no spaces or symbols representing
+#' the unique short name for the REDCap project.
+#' @param dir_path Optional character string representing the directory path
+#' where you want the REDCap project data to be stored. If missing, DB object
+#' will only be in current R session.
+#' @param redcap_base A character string representing the base URL of the REDCap
+#' server.
+#' @param token_name An optional character string for setting your token name.
+#' Default is `REDCapDB_<short_name>`
+#' @param force Logical (TRUE/FALSE). If TRUE, forces the setup even if the `DB`
+#' object already exists. Default is `FALSE`.
+#' @param validate Logical (TRUE/FALSE). If TRUE, validates DB object based on
+#' current rules. Default is `TRUE`.
+#' @param merge_form_name A character string representing the name of the merged
+#' form. Default is "merged".
+#' @param use_csv Logical (TRUE/FALSE). If TRUE, uses CSV files for data
+#' storage. Default is `FALSE`.
+#' @param auto_check_token Logical (TRUE/FALSE). If TRUE, automatically
+#' checks the validity of the REDCap API token. Default is `TRUE`.
+#' @param DB_path A character string representing the file path of the exact
+#' `<short_name>_REDCapDB.rdata` file to be loaded.
+#' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test DB object with
+#' data as if user ran `update_DB`. Default is `FALSE`.
 #' @return REDCapDB `DB` list object.
 #' @seealso
-#' \code{\link[REDCapDB]{get_projects}} for retrieving a list of projects from the directory cache.
+#' \code{\link[REDCapDB]{get_projects}} for retrieving a list of projects from
+#' the directory cache.
 #' @examplesIf FALSE
 #' # Initialize the DB object with the REDCap API token and URL
 #' DB <- setup_DB(
@@ -48,7 +68,7 @@ setup_DB <- function(
   em <- "`short_name` must be character string of length 1"
   if (!is.character(short_name)) stop(em)
   if (length(short_name) != 1) stop(em)
-  projects <- get_projects() # add short_name conflict check if id and base url differs
+  projects <- get_projects() # add short_name conflict check id-base url differs
   short_name <- validate_env_name(short_name)
   if (paste0(internal_REDCapDB_token_prefix, short_name) != token_name) {
   } # maybe a message
@@ -63,19 +83,26 @@ setup_DB <- function(
   if (!force) {
     has_expected_file <- FALSE
     if (!missing_dir_path) {
-      expected_file <- file.path(dir_path, "R_objects", paste0(short_name, "_REDCapDB.Rdata"))
+      expected_file <- file.path(
+        dir_path,
+        "R_objects",
+        paste0(short_name, "_REDCapDB.Rdata")
+      )
       has_expected_file <- file.exists(expected_file)
     }
-    if (in_proj_cache || has_expected_file) { # if its seen in cache the load from there
+    if (in_proj_cache || has_expected_file) {
       DB <- load_DB_from_path(expected_file)
     }
-    if (!(in_proj_cache || has_expected_file)) { # if it's not in the cache start from blank
+    if (!(in_proj_cache || has_expected_file)) {
       if (is_a_test) {
         DB <- load_test_DB(short_name = short_name, with_data = FALSE)
       } else {
         DB <- internal_blank_DB
       }
-      bullet_in_console("Setup blank DB object because nothing found in cache or directory.", bullet_type = "!")
+      bullet_in_console(
+        "Setup blank DB object because nothing found in cache or directory.",
+        bullet_type = "!"
+      )
     }
   }
   if (missing_dir_path) { # if missing the directory path from setup or load then let user know nothing will be stored
@@ -164,11 +191,15 @@ is_test_DB <- function(DB) {
 }
 #' @rdname save-deleteDB
 #' @title Save or Delete DB file from the directory
-#' @param DB A validated `DB` object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}
+#' @param DB A validated `DB` object containing REDCap project data and
+#' settings. Generated using \link{load_DB} or \link{setup_DB}
 #' @description
-#' This will save/delete the "<short_name>_REDCapDB.rdata" file in the given DB directories R_objects folder. These are optional functions given that `save_DB` is a also handled by a default parameter in `update_DB.`
+#' This will save/delete the "<short_name>_REDCapDB.rdata" file in the given DB
+#' directories R_objects folder. These are optional functions given that
+#' `save_DB` is a also handled by a default parameter in `update_DB.`
 #'
-#' @details delete_DB will not delete any other files from that directory. The user must delete any other files manually.
+#' @details delete_DB will not delete any other files from that directory. The
+#' user must delete any other files manually.
 #' @return Message
 #' @family DB object
 #' @export
@@ -182,7 +213,11 @@ save_DB <- function(DB) {
     return(invisible())
   }
   # DB <- reverse_clean_DB(DB) # # problematic because setting numeric would delete missing codes
-  save_file_path <- file.path(DB$dir_path, "R_objects", paste0(DB$short_name, "_REDCapDB.rdata"))
+  save_file_path <- file.path(
+    DB$dir_path,
+    "R_objects",
+    paste0(DB$short_name, "_REDCapDB.rdata")
+  )
   DB %>% saveRDS(file = save_file_path)
   add_project(DB)
   # save_xls_wrapper(DB)

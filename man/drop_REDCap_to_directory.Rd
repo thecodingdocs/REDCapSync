@@ -21,7 +21,8 @@ drop_REDCap_to_directory(
 )
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{records}{Character vector of records you want dropped to your directory.}
 

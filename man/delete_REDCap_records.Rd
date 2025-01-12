@@ -7,7 +7,8 @@
 delete_REDCap_records(DB, records)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{records}{A character vector of record IDs to be deleted from the REDCap project.}
 }

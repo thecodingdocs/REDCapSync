@@ -7,7 +7,8 @@
 add_default_forms_transformation(DB)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 }
 \value{
 The updated \code{DB} object with default transformations applied to the specified forms.

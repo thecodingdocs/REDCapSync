@@ -7,7 +7,8 @@
 rmarkdown_DB(DB, dir_other)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{dir_other}{Character string specifying the directory where the RMarkdown report will be saved.
 If not provided, it defaults to the \code{output} directory inside the project's main directory.}

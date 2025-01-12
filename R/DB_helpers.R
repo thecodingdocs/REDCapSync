@@ -62,12 +62,24 @@ deidentify_DB <- function(DB, identifiers, drop_free_text = FALSE) {
         !identifiers %in% DB$metadata$fields$field_name
       )
     ]
-    if (length(bad_identifiers) > 0) stop("You have an identifier that is not included in the set of `DB$metadata$fields$field_name` --> ", bad_identifiers %>% paste0(collapse = ", "))
-    if (DB$redcap$id_col %in% identifiers) stop("Your REDCap ID, ", DB$redcap$id_col, ", should not be deidentified.") # If you want to pass a new set of random IDs to make this data use `scramble_ID_DB(DB)`.")
+    if (length(bad_identifiers) > 0) {
+      stop(
+        "There is a bad identifier... see `DB$metadata$fields$field_name`: ",
+        bad_identifiers %>% paste0(collapse = ", ")
+      )
+    }
+    if (DB$redcap$id_col %in% identifiers) {
+      # If you want to pass a new set of random IDs to make this data use `scramble_ID_DB(DB)`."
+      stop("Your REDCap ID, ",
+           DB$redcap$id_col,
+           ", should not be deidentified.")
+    }
   }
   if (missing_identifiers) {
     identifiers <- DB$metadata$fields$field_name[which(DB$metadata$fields$identifier == "y")]
-    if (length(identifiers) == 0) warning("You have no identifiers marked in `DB$metadata$fields$identifier`. You can set it in REDCap Project Setup and update DB OR define your idenitifiers in this functions `identifiers` argument.", immediate. = TRUE)
+    if (length(identifiers) == 0) {
+      warning("You have no identifiers marked in `DB$metadata$fields$identifier`. You can set it in REDCap Project Setup and update DB OR define your idenitifiers in this functions `identifiers` argument.", immediate. = TRUE)
+    }
   }
   if (drop_free_text) { # placeholder
     identifiers <- identifiers %>%

@@ -9,7 +9,8 @@ upload_form_to_REDCap(to_be_uploaded, DB, batch_size = 500)
 \arguments{
 \item{to_be_uploaded}{data.frame in raw coded form. If you worked with clean data pass your data to \code{labelled_to_raw_form(FORM,DB)} first.}
 
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{batch_size}{numeric of how big the REDCap batch upload is. Default 500.}
 }

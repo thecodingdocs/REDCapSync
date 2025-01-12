@@ -7,7 +7,8 @@
 set_REDCap_token(DB, ask = TRUE)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{ask}{Logical (TRUE/FALSE). If TRUE, asks the user for confirmation before overwriting an existing valid token. Default is \code{TRUE}.}
 }

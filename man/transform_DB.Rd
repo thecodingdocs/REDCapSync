@@ -7,7 +7,8 @@
 transform_DB(DB, ask = TRUE)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{ask}{Logical (TRUE/FALSE). If TRUE, prompts the user for confirmation before proceeding with the transformation. Default is \code{TRUE}.}
 }

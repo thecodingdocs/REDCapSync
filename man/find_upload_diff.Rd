@@ -7,7 +7,8 @@
 find_upload_diff(DB, view_old = FALSE, n_row_view = 20)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{view_old}{Logical. If TRUE, it will display a preview of the old data (default is FALSE).}
 

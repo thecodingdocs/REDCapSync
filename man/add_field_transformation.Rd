@@ -19,7 +19,8 @@ add_field_transformation(
 )
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{field_name}{Character. The name of the field to which the transformation will be applied.}
 

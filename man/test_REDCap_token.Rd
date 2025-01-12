@@ -7,7 +7,8 @@
 test_REDCap_token(DB, set_if_fails = TRUE, launch_browser = TRUE)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{set_if_fails}{Logical (TRUE/FALSE). If TRUE and test connection fails, asks user to paster token into consult using \code{set_REDCap_token(DB)} function. Default is \code{TRUE}.}
 

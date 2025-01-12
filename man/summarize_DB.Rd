@@ -20,7 +20,8 @@ summarize_DB(
 )
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{with_links}{Logical (TRUE/FALSE). If TRUE, includes links in the summary. Default is \code{TRUE}.}
 

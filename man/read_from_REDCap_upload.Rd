@@ -13,7 +13,8 @@ read_from_REDCap_upload(
 )
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{allow_all}{logical TF for allowing DB$data names that are not also form names}
 

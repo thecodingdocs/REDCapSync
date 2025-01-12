@@ -9,7 +9,8 @@ labelled_to_raw_form(FORM, DB)
 \arguments{
 \item{FORM}{data.frame of labelled REDCap to be converted to raw REDCap (for uploads)}
 
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 }
 \value{
 DB object that has been filtered to only include the specified records

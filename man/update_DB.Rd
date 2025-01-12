@@ -20,7 +20,8 @@ update_DB(
 )
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{set_token_if_fails}{Logical (TRUE/FALSE). If TRUE, prompts the user to set the REDCap API token if the update fails. Default is \code{TRUE}.}
 

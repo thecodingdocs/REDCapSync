@@ -15,7 +15,8 @@ filter_DB(
 )
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{filter_field}{A character string representing an extra variable name to be filtered by. This field must be present in the data frame.}
 

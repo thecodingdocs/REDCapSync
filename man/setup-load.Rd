@@ -25,42 +25,61 @@ load_DB_from_path(DB_path, validate = TRUE)
 load_test_DB(short_name = "TEST_repeating", with_data = FALSE)
 }
 \arguments{
-\item{short_name}{A character string with no spaces or symbols representing the unique short name for the REDCap project.}
+\item{short_name}{A character string with no spaces or symbols representing
+the unique short name for the REDCap project.}
 
-\item{dir_path}{Optional character string representing the directory path where you want the REDCap project data to be stored. If missing, DB object will only be in current R session.}
+\item{dir_path}{Optional character string representing the directory path
+where you want the REDCap project data to be stored. If missing, DB object
+will only be in current R session.}
 
-\item{redcap_base}{A character string representing the base URL of the REDCap server.}
+\item{redcap_base}{A character string representing the base URL of the REDCap
+server.}
 
-\item{token_name}{An optional character string for setting your token name. Default is \verb{REDCapDB_<short_name>}}
+\item{token_name}{An optional character string for setting your token name.
+Default is \verb{REDCapDB_<short_name>}}
 
-\item{force}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the \code{DB} object already exists. Default is \code{FALSE}.}
+\item{force}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the \code{DB}
+object already exists. Default is \code{FALSE}.}
 
-\item{merge_form_name}{A character string representing the name of the merged form. Default is "merged".}
+\item{merge_form_name}{A character string representing the name of the merged
+form. Default is "merged".}
 
-\item{use_csv}{Logical (TRUE/FALSE). If TRUE, uses CSV files for data storage. Default is \code{FALSE}.}
+\item{use_csv}{Logical (TRUE/FALSE). If TRUE, uses CSV files for data
+storage. Default is \code{FALSE}.}
 
-\item{auto_check_token}{Logical (TRUE/FALSE). If TRUE, automatically checks the validity of the REDCap API token. Default is \code{TRUE}.}
+\item{auto_check_token}{Logical (TRUE/FALSE). If TRUE, automatically
+checks the validity of the REDCap API token. Default is \code{TRUE}.}
 
-\item{validate}{Logical (TRUE/FALSE). If TRUE, validates DB object based on current rules. Default is \code{TRUE}.}
+\item{validate}{Logical (TRUE/FALSE). If TRUE, validates DB object based on
+current rules. Default is \code{TRUE}.}
 
-\item{DB_path}{A character string representing the file path of the exact \verb{<short_name>_REDCapDB.rdata} file to be loaded.}
+\item{DB_path}{A character string representing the file path of the exact
+\verb{<short_name>_REDCapDB.rdata} file to be loaded.}
 
-\item{with_data}{Logical (TRUE/FALSE). If TRUE, loads the test DB object with data as if user ran \code{update_DB}. Default is \code{FALSE}.}
+\item{with_data}{Logical (TRUE/FALSE). If TRUE, loads the test DB object with
+data as if user ran \code{update_DB}. Default is \code{FALSE}.}
 }
 \value{
 REDCapDB \code{DB} list object.
 }
 \description{
-Setup or Load the \code{DB} object with the necessary REDCap API token and other configurations.
+Setup or Load the \code{DB} object for pipeline.
 }
 \details{
-This function sets up the \code{DB} object by storing the REDCap API token and other configurations required for interacting with the REDCap server.
+This function sets up the \code{DB} object by storing the REDCap API token and
+other configurations required for interacting with the REDCap server.
 It ensures that the token is valid and ready for use in subsequent API calls.
 Neither function directly attempts communication with REDCap.
 
-\code{setup_DB} is used the first time you initialize/link a REDCap project. Mainly, it sets your unique \code{short_name} and your intended directory. Unless you run \code{force = TRUE} the default will first try load_DB. dir_path is technically optional but without it the user cannot save/load/update projects.
+\code{setup_DB} is used the first time you initialize/link a REDCap project.
+Mainly, it sets your unique \code{short_name} and your intended directory.
+Unless you run \code{force = TRUE} the default will first try load_DB.
+dir_path is technically optional but without it the user cannot
+save/load/update projects.
 
-\code{load_DB} can be used with just the \code{short_name} parameter after you have already run \code{setup_DB} in the past with an established directory. \code{dir_path} is optional for this function but can be used if you relocated the directory.
+\code{load_DB} can be used with just the \code{short_name} parameter after you have
+already run \code{setup_DB} in the past with an established directory. \code{dir_path}
+is optional for this function but can be used if you relocated the directory.
 }
 \examples{
 \dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
@@ -74,7 +93,8 @@ DB <- load_DB("TEST")
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[REDCapDB]{get_projects}} for retrieving a list of projects from the directory cache.
+\code{\link[REDCapDB]{get_projects}} for retrieving a list of projects from
+the directory cache.
 
 Other DB object: 
 \code{\link{save_DB}()}

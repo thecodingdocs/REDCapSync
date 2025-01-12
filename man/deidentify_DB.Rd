@@ -7,7 +7,8 @@
 deidentify_DB(DB, identifiers, drop_free_text = FALSE)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{identifiers}{Optional character vector of column names that should be
 excluded from the \code{DB}. If not provided, fields where

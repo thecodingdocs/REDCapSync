@@ -10,16 +10,20 @@ save_DB(DB)
 delete_DB(DB)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 }
 \value{
 Message
 }
 \description{
-This will save/delete the "<short_name>_REDCapDB.rdata" file in the given DB directories R_objects folder. These are optional functions given that \code{save_DB} is a also handled by a default parameter in \code{update_DB.}
+This will save/delete the "<short_name>_REDCapDB.rdata" file in the given DB
+directories R_objects folder. These are optional functions given that
+\code{save_DB} is a also handled by a default parameter in \code{update_DB.}
 }
 \details{
-delete_DB will not delete any other files from that directory. The user must delete any other files manually.
+delete_DB will not delete any other files from that directory. The
+user must delete any other files manually.
 }
 \seealso{
 Other DB object: 

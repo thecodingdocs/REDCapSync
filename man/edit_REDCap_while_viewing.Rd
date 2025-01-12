@@ -14,7 +14,8 @@ edit_REDCap_while_viewing(
 )
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{optional_DF}{Optional data frame. A data frame containing the data to be edited. If not provided, the function will pull the data from the REDCap database using the specified \code{field_name_to_change}.}
 

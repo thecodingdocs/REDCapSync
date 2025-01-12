@@ -7,7 +7,8 @@
 generate_horizontal_transform(DB, records)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{DB}{A validated \code{DB} object containing REDCap project data and
+settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{records}{A vector of records to be transformed. The transformation applies only to the specified records from the \code{DB} object.}
 }

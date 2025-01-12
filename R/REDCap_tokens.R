@@ -166,7 +166,7 @@ is_valid_REDCap_token <- function(token, silent = TRUE, is_a_test = FALSE) {
     return(FALSE)
   }
   if ( ! is_a_test) {
-    if ( ! is_hexadecimal) {
+    if ( ! is_hexadecimal(token,length = 32)) {
       bullet_in_console(
         text = paste0(start_text, token_text, end_text),
         bullet_type = "x", silent = silent

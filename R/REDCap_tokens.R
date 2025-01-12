@@ -87,9 +87,11 @@ view_REDCap_token <- function(DB) {
 #' @export
 test_REDCap_token <- function(DB, set_if_fails = TRUE, launch_browser = TRUE) {
   # token <- validate_REDCap_token(DB, silent = FALSE)
-  version <- get_REDCap_version(DB, show_method_help = FALSE) %>% suppressWarnings()
+  version <- get_REDCap_version(DB, show_method_help = FALSE) %>%
+    suppressWarnings()
   DB$internals$last_test_connection_attempt <- Sys.time()
-  DB$internals$last_test_connection_outcome <- ERROR <- ! is.na(version)
+  ERROR <- is.na(version)
+  DB$internals$last_test_connection_outcome <- ! ERROR
   if (!set_if_fails) {
     return(DB)
   }
@@ -101,9 +103,10 @@ test_REDCap_token <- function(DB, set_if_fails = TRUE, launch_browser = TRUE) {
     bullet_in_console("Your REDCap API token check failed. Invalid token or API privileges. Contact Admin!`", bullet_type = "x")
     if (set_if_fails) {
       set_REDCap_token(DB, ask = FALSE)
-      version <- get_REDCap_version(DB, show_method_help = FALSE) %>% suppressWarnings()
-      DB$internals$last_test_connection_attempt <- Sys.time()
-      DB$internals$last_test_connection_outcome <- ERROR <- is.na(version)
+      version <- get_REDCap_version(DB, show_method_help = FALSE) %>%
+        suppressWarnings()
+      ERROR <- is.na(version)
+      DB$internals$last_test_connection_outcome <- ! ERROR
     }
   }
   bullet_in_console("Connected to REDCap!", bullet_type = "v")

@@ -360,7 +360,7 @@ add_field_transformation <- function(
     identifier = "",
     units = NA,
     data_func = NA) {
-  DB <- validate_DB(DB)
+  DB <- validate_DB(DB,silent = TRUE)
   if (wl(DB$transformation$fields$field_name == field_name) > 0) {
     DB$transformation$fields <- DB$transformation$fields[which(DB$transformation$fields$field_name != field_name), ]
   }

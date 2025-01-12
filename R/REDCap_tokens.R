@@ -1,9 +1,12 @@
 #' @title Set a REDCap API Token to Your Current R Session
 #' @description
-#' Prompts the user to input a valid REDCap API token and stores it as an environment variable for the current R session.
-#' Instead of using this function you should consider setting your token within your REnviron file which can be edited with \code{\link[usethis]{edit_r_environ}}.
+#' Prompts the user to input a valid REDCap API token and stores it as an
+#' environment variable for the current R session.
+#' Instead of using this function you should consider setting your token within
+#' your REnviron file which can be edited with \code{\link[usethis]{edit_r_environ}}.
 #' @details
-#' If a valid token already exists in the R session, the function notifies the user and asks whether they want to replace it.
+#' If a valid token already exists in the R session, the function notifies the
+#' user and asks whether they want to replace it.
 #' The user is guided to provide a new token through the console.
 #' It is strongly discouraged to include API tokens directly within R scripts.
 #' The token is validated internally and stored using `Sys.setenv()`.
@@ -86,7 +89,7 @@ test_REDCap_token <- function(DB, set_if_fails = TRUE, launch_browser = TRUE) {
   # token <- validate_REDCap_token(DB, silent = FALSE)
   version <- get_REDCap_version(DB, show_method_help = FALSE) %>% suppressWarnings()
   DB$internals$last_test_connection_attempt <- Sys.time()
-  DB$internals$last_test_connection_outcome <- ERROR <- is.na(version)
+  DB$internals$last_test_connection_outcome <- ERROR <- ! is.na(version)
   if (!set_if_fails) {
     return(DB)
   }
@@ -110,25 +113,10 @@ test_REDCap_token <- function(DB, set_if_fails = TRUE, launch_browser = TRUE) {
 }
 #' @noRd
 is_valid_REDCap_token <- function(token, silent = TRUE, is_a_test = FALSE) {
-  pattern <- "^([0-9A-Fa-f]{32})(?:\\n)?$"
-  trimmed_token <- sub(pattern, "\\1", token, perl = TRUE) %>% trimws(whitespace = "[\\h\\v]")
-  end_message <- "not a valid 32-character hexademical value."
-  if (is.null(token)) {
-    if (!silent) bullet_in_console(paste0("The token is `NULL`, ", end_message), bullet_type = "x")
-    return(FALSE)
-  }
-  if (is.na(token)) {
-    if (!silent) bullet_in_console(paste0("The token is `NA`, ", end_message), bullet_type = "x")
-    return(FALSE)
-  }
-  if (nchar(token) == 0L) {
-    if (!silent) bullet_in_console(paste0("The token is `` (empty), ", end_message), bullet_type = "x")
-    return(FALSE)
-  }
-  if (token != trimmed_token) {
-    if (!silent) bullet_in_console(paste0("The token contains whitespace (extra lines) and is therefore ", end_message), bullet_type = "x")
-    return(FALSE)
-  }
+  start_text <- "The token "
+  token_text <- NULL
+  end_text <- "is not a valid 32-character hexademical value."
+  trimmed_token <- token %>% trimws(whitespace = "[\\h\\v]")
   if (is_a_test) {
     allowed <- c(
       internal_TEST_classic_token,
@@ -136,23 +124,74 @@ is_valid_REDCap_token <- function(token, silent = TRUE, is_a_test = FALSE) {
       internal_TEST_longitudinal_token,
       internal_TEST_multiarm_token
     )
-    trimmed_token <- token %>% trimws(whitespace = "[\\h\\v]")
-    end_message <- "not a valid test token."
+    end_text <- "not a valid test token."
     if (!token %in% allowed) {
-      if (!silent) bullet_in_console(paste0("The token is ", end_message), bullet_type = "x")
+      bullet_in_console(
+        text = paste0(start_text, token_text, end_text),
+        bullet_type = "x", silent = silent
+      )
       return(FALSE)
     }
-  } else {
-    if (!grepl(pattern, token, perl = TRUE)) {
-      if (!silent) bullet_in_console(paste0("The token is ", end_message), bullet_type = "x")
+  }
+  if (is.null(token)) {
+    token_text <- "is `NULL`,"
+    bullet_in_console(
+      text = paste0(start_text, token_text, end_text),
+      bullet_type = "x", silent = silent
+    )
+    return(FALSE)
+  }
+  if (is.na(token)) {
+    token_text <- "is `NA`,"
+    bullet_in_console(
+      text = paste0(start_text, token_text, end_text),
+      bullet_type = "x", silent = silent
+    )
+    return(FALSE)
+  }
+  if (nchar(token) == 0L) {
+    token_text <- "`` (empty),"
+    bullet_in_console(
+      text = paste0(start_text, token_text, end_text),
+      bullet_type = "x", silent = silent
+    )
+    return(FALSE)
+  }
+  if (token != trimmed_token) {
+    token_text <- "contains whitespace (extra lines) and is therefore"
+    bullet_in_console(
+      text = paste0(start_text, token_text, end_text),
+      bullet_type = "x", silent = silent
+    )
+    return(FALSE)
+  }
+  if ( ! is_a_test) {
+    if ( ! is_hexadecimal) {
+      bullet_in_console(
+        text = paste0(start_text, token_text, end_text),
+        bullet_type = "x", silent = silent
+      )
       return(FALSE)
     }
   }
   return(TRUE)
 }
 #' @noRd
+is_hexadecimal <- function(string, length = NULL) {
+  if ( ! is_something(string)){
+    return(FALSE)
+  }
+  pattern <- if (is.null(length)) {
+    "^[0-9A-Fa-f]+$"  # Any length
+  } else {
+    paste0("^[0-9A-Fa-f]{", length, "}$")  # Exact length
+  }
+  return(grepl(pattern, string))
+}
+#' @noRd
 get_REDCap_token_name <- function(DB) {
-  token_name <- paste0(internal_REDCapDB_token_prefix, validate_env_name(DB$short_name))
+  token_name <- paste0(internal_REDCapDB_token_prefix,
+                       validate_env_name(DB$short_name))
   return(token_name)
 }
 #' @noRd
@@ -163,16 +202,44 @@ validate_REDCap_token <- function(DB, silent = TRUE) {
     Sys.getenv()
   is_a_test <- is_test_DB(DB)
   valid <- token %>% is_valid_REDCap_token(silent = silent, is_a_test = is_a_test)
-  message_about_token <- ifelse(is_a_test, get_test_token(DB$short_name), "YoUrNevErShaReToKeNfRoMREDCapWebsiTe")
+  message_about_token <- ifelse(is_a_test,
+                                get_test_token(DB$short_name),
+                                "YoUrNevErShaReToKeNfRoMREDCapWebsiTe")
   if (!silent) {
-    bullet_in_console(paste0("You can set REDCap tokens each session with `set_REDCap_token(DB)` or `Sys.setenv(", token_name, "='", message_about_token, "')`... or for higher security run `edit_r_environ()` from `usethis` package and add
-        `", token_name, " = '", message_about_token, "'` to that file...(then restart R under session tab after saving file)... The way to tell it worked is to run the
-        code, `Sys.getenv('", token_name, "')`"))
+    bullet_in_console(
+      paste0(
+        "You can set REDCap tokens each session with `set_REDCap_token(DB)` or `Sys.setenv(",
+        token_name,
+        "='",
+        message_about_token,
+        "')`... or for higher security run `edit_r_environ()` from `usethis` package and add
+        `",
+        token_name,
+        " = '",
+        message_about_token,
+        "'` to that file...(then restart R under session tab after saving file)... The way to tell it worked is to run the
+        code, `Sys.getenv('",
+        token_name,
+        "')`"
+      )
+    )
     if (is_something(DB$links$redcap_API)) {
-      bullet_in_console(paste0("You can request/regenerate/delete with `link_API_token(DB)` or go here: "), url = DB$links$redcap_API)
+      bullet_in_console(
+        paste0(
+          "You can request/regenerate/delete with `link_API_token(DB)` or go here: "
+        ),
+        url = DB$links$redcap_API
+      )
     }
     if (valid) {
-      bullet_in_console(paste0("Valid token for ", DB$short_name, " is set in your R session (pending connection)!"), bullet_type = "v")
+      bullet_in_console(
+        paste0(
+          "Valid token for ",
+          DB$short_name,
+          " is set in your R session (pending connection)!"
+        ),
+        bullet_type = "v"
+      )
     }
   }
   return(token)
@@ -180,14 +247,26 @@ validate_REDCap_token <- function(DB, silent = TRUE) {
 #' @noRd
 check_saved_REDCapDB_tokens <- function() {
   the_names <- Sys.getenv() %>% names()
-  the_names <- the_names[which(startsWith(the_names, internal_REDCapDB_token_prefix))]
+  the_names <- the_names[
+    which(startsWith(the_names, internal_REDCapDB_token_prefix)
+    )
+  ]
   if (length(the_names) == 0) {
-    bullet_in_console("No known REDCap tokens saved in session...", bullet_type = "x")
+    bullet_in_console(
+      "No known REDCap tokens saved in session...",
+      bullet_type = "x"
+    )
     return(invisible())
   }
   the_names <- gsub(internal_REDCapDB_token_prefix, "", the_names)
   ltn <- length(the_names)
-  bullet_in_console(paste0("There are ", ltn, " known REDCap tokens saved in the session: ", as_comma_string(the_names)), bullet_type = "x")
+  bullet_in_console(
+    paste0(
+      "There are ", ltn,
+      " known REDCap tokens saved in the session: ",
+      as_comma_string(the_names)),
+    bullet_type = "x"
+  )
   return(invisible())
 }
 #' @noRd
@@ -202,7 +281,8 @@ internal_TEST_longitudinal_token <- "FAKE32TESTTOKENLONGITUDINAL33333"
 internal_TEST_multiarm_token <- "FAKE32TESTTOKENMULTIARM444444444"
 #' @noRd
 get_test_token <- function(short_name) {
-  em <- "`short_name` must be character string of length 1 equal to one of the following: " %>% paste0(as_comma_string(internal_allowed_test_short_names))
+  em <- "`short_name` must be character of length 1 equal ..." %>%
+    paste0(as_comma_string(internal_allowed_test_short_names))
   if (!is.character(short_name)) stop(em)
   if (length(short_name) != 1) stop(em)
   if (!is_test_short_name(short_name = short_name)) stop(em)

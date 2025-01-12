@@ -23,11 +23,13 @@ update_DB(
 \item{DB}{A validated \code{DB} object containing REDCap project data and
 settings. Generated using \link{load_DB} or \link{setup_DB}}
 
-\item{set_token_if_fails}{Logical (TRUE/FALSE). If TRUE, prompts the user to set the REDCap API token if the update fails. Default is \code{TRUE}.}
+\item{set_token_if_fails}{Logical (TRUE/FALSE). If TRUE, prompts the user to
+set the REDCap API token if the update fails. Default is \code{TRUE}.}
 
-\item{force}{Logical (TRUE/FALSE). If TRUE, forces a fresh update. Default is \code{FALSE}.}
+\item{force}{Logical that forces a fresh update if TRUE. Default is \code{FALSE}.}
 
-\item{day_of_log}{Integer. Number of days to be checked in the log. Default is \code{10}.}
+\item{day_of_log}{Integer. Number of days to be checked in the log. Default
+is \code{10}.}
 
 \item{labelled}{Logical (TRUE/FALSE). If TRUE, returns labelled REDCap data. If FALSE, returns raw data. Default is \code{TRUE}.}
 
@@ -49,10 +51,15 @@ settings. Generated using \link{load_DB} or \link{setup_DB}}
 Messages for confirmation.
 }
 \description{
-Updates the REDCap database (\code{DB} object) by fetching the latest data from the REDCap server.
+Updates the REDCap database (\code{DB} object) by fetching the latest data from
+the REDCap server.
 }
 \details{
-This function updates the REDCap database by fetching the latest data from the REDCap server. It supports various options such as forcing a fresh update, checking logs for a specified number of days, and retrieving files from REDCap. The function can also handle metadata-only updates and batch processing.
+This function updates the REDCap database by fetching the latest data from
+the REDCap server. It supports various options such as forcing a fresh
+update, checking logs for a specified number of days, and retrieving files
+from REDCap. The function can also handle metadata-only updates and batch
+processing.
 }
 \seealso{
 \link{setup_DB} for initializing the \code{DB} object.

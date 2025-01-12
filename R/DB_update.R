@@ -1,14 +1,21 @@
 #' @title Update REDCap Database
 #' @description
-#' Updates the REDCap database (`DB` object) by fetching the latest data from the REDCap server.
+#' Updates the REDCap database (`DB` object) by fetching the latest data from
+#' the REDCap server.
 #'
 #' @details
-#' This function updates the REDCap database by fetching the latest data from the REDCap server. It supports various options such as forcing a fresh update, checking logs for a specified number of days, and retrieving files from REDCap. The function can also handle metadata-only updates and batch processing.
+#' This function updates the REDCap database by fetching the latest data from
+#' the REDCap server. It supports various options such as forcing a fresh
+#' update, checking logs for a specified number of days, and retrieving files
+#' from REDCap. The function can also handle metadata-only updates and batch
+#' processing.
 #'
 #' @inheritParams save_DB
-#' @param set_token_if_fails Logical (TRUE/FALSE). If TRUE, prompts the user to set the REDCap API token if the update fails. Default is `TRUE`.
-#' @param force Logical (TRUE/FALSE). If TRUE, forces a fresh update. Default is `FALSE`.
-#' @param day_of_log Integer. Number of days to be checked in the log. Default is `10`.
+#' @param set_token_if_fails Logical (TRUE/FALSE). If TRUE, prompts the user to
+#' set the REDCap API token if the update fails. Default is `TRUE`.
+#' @param force Logical that forces a fresh update if TRUE. Default is `FALSE`.
+#' @param day_of_log Integer. Number of days to be checked in the log. Default
+#' is `10`.
 #' @param labelled Logical (TRUE/FALSE). If TRUE, returns labelled REDCap data. If FALSE, returns raw data. Default is `TRUE`.
 #' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap. Default is `FALSE`.
 #' @param original_file_names Logical (TRUE/FALSE). If TRUE, uses original file names for retrieved files. Default is `FALSE`.
@@ -42,8 +49,15 @@ update_DB <- function(
   if (!is.null(DB$internals$data_extract_labelled)) {
     if (DB$internals$data_extract_labelled != labelled) {
       if (!force) {
+        load_type <- ifelse(DB$internals$data_extract_labelled, "labelled", "raw")
+        chosen_type <- ifelse(labelled, "labelled", "raw")
         force <- TRUE
-        warning("The DB that was loaded was ", ifelse(DB$internals$data_extract_labelled, "labelled", "RAW"), " and you chose ", ifelse(labelled, "labelled", "RAW"), ". Therefore, we will set force to TRUE for a full update of data to avoid data conflicts", immediate. = TRUE)
+        warning(
+          "The DB that was loaded was ",
+          load_type, " and you chose ", chosen_type,
+          ". Therefore, a full update was triggered to avoid data conflicts",
+          immediate. = TRUE
+        )
       }
     }
   }

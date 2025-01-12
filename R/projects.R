@@ -53,7 +53,7 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
     return(character(0))
   }
   file_name <- tools::file_path_sans_ext(basename(files))
-  file_ext <- tools::file_ext(files) %>% tolower()
+  file_ext <- tools::file_ext(files)
   df <- data.frame(
     file_path = files,
     file_name = file_name,

@@ -23,6 +23,7 @@
 #' @param metadata_only Logical (TRUE/FALSE). If TRUE, updates only the metadata. Default is `FALSE`.
 #' @param ask_about_overwrites Logical (TRUE/FALSE). If TRUE, prompts the user before overwriting existing data. Default is `TRUE`.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to the directory. Default is `TRUE`.
+#' @param records optional records character vector
 #' @param batch_size Integer. Number of records to process in each batch. Default is `2000`.
 #' @return Messages for confirmation.
 #' @seealso
@@ -41,11 +42,15 @@ update_DB <- function(
     metadata_only = FALSE,
     ask_about_overwrites = TRUE,
     save_to_dir = TRUE,
+    records = NULL,
     batch_size = 2000) {
   IDs <- NULL
   will_update <- TRUE
   was_updated <- FALSE
   DB <- validate_DB(DB)
+  if(is_something(records)){
+    bullet_in_console("Presently, if you supply specified records it will only check REDCap updates for those records.")
+  }
   if (!is.null(DB$internals$data_extract_labelled)) {
     if (DB$internals$data_extract_labelled != labelled) {
       if (!force) {
@@ -91,8 +96,7 @@ update_DB <- function(
       ilog <- get_REDCap_log(
         DB,
         begin_time = as.character(strptime(DB$redcap$log$timestamp[1], format = "%Y-%m-%d %H:%M") - lubridate::days(1))
-      ) %>%
-        clean_redcap_log()
+      ) %>% clean_redcap_log()
       if (nrow(ilog) <= nrow(DB$redcap$log)) {
         head_of_log <- DB$redcap$log %>% utils::head(n = nrow(ilog))
       } else {
@@ -109,14 +113,18 @@ update_DB <- function(
           unique()
         ilog$timestamp <- NULL
         ilog_metadata <- ilog[which(is.na(ilog$record)), ]
-        ilog_metadata <- ilog_metadata[which(ilog_metadata$details %in% internal_log_details_metadata_major), ] # inclusion
+        ilog_metadata <- ilog_metadata[which(ilog_metadata$action_type %in% "Metadata Change Major"), ] # inclusion
+        ilog_metadata_minor <- length(which(ilog_metadata$action_type %in% "Metadata Change Minor")) > 0
         # ilog_metadata <- ilog_metadata[grep(ignore_redcap_log(),ilog_metadata$details,ignore.case = TRUE,invert = TRUE) %>% unique(),]
-        if (nrow(ilog_metadata) > 0) {
+        if (nrow(ilog_metadata) > 0 || ilog_metadata_minor) { #account for minor changes later
           force <- TRUE
           message(paste0("Update because: Metadata was changed!"))
         } else {
           ilog_data <- ilog[which(!is.na(ilog$record)), ]
           ilog_data <- ilog_data[which(ilog_data$action_type != "Users"), ]
+          if(is_something(records)){
+            ilog_data <- ilog_data[which(ilog$record %in% records),]
+          }
           deleted_records <- ilog_data$record[which(ilog_data$action_type %in% c("Delete"))]
           if (length(deleted_records) > 0) {
             warning("There were recent records deleted from redcap Consider running with 'force = TRUE'. Records: ", deleted_records %>% paste0(collapse = ", "), immediate. = TRUE)
@@ -139,7 +147,7 @@ update_DB <- function(
       DB$data <- list()
       DB$data_update <- list()
       DB$summary <- list()
-      DB$data <- DB %>% get_REDCap_data(labelled = labelled, batch_size = batch_size)
+      DB$data <- DB %>% get_REDCap_data(labelled = labelled, batch_size = batch_size, records = records)
       DB$internals$data_extract_labelled <- labelled
       log <- DB$redcap$log # in case there is a log already
       if (entire_log) {
@@ -162,6 +170,13 @@ update_DB <- function(
       was_updated <- TRUE
     }
   } else {
+    # if(ilog_metadata_minor){
+    #   # what if transformed already
+    #   # if(DB$internals$is_transformed){
+    #   #   # untransform
+    #   # }
+    #   DB <- DB %>% get_REDCap_metadata(include_users = !metadata_only)
+    # }
     if (will_update) {
       DB$data <- DB$data %>% all_character_cols_list()
       if (length(deleted_records) > 0) {

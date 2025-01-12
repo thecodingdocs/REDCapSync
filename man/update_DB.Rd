@@ -16,6 +16,7 @@ update_DB(
   metadata_only = FALSE,
   ask_about_overwrites = TRUE,
   save_to_dir = TRUE,
+  records = NULL,
   batch_size = 2000
 )
 }
@@ -44,6 +45,8 @@ is \code{10}.}
 \item{ask_about_overwrites}{Logical (TRUE/FALSE). If TRUE, prompts the user before overwriting existing data. Default is \code{TRUE}.}
 
 \item{save_to_dir}{Logical (TRUE/FALSE). If TRUE, saves the updated data to the directory. Default is \code{TRUE}.}
+
+\item{records}{optional records character vector}
 
 \item{batch_size}{Integer. Number of records to process in each batch. Default is \code{2000}.}
 }

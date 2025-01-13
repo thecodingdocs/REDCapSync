@@ -1,18 +1,22 @@
 Package: REDCapSync
-Title: What the Package Does (One Line, Title Case)
+Title: Synchronize and Standardize Data Pipelines from REDCap
 Version: 0.0.0.9003
 Authors@R: c(
     person("Brandon", "Rose", , "thecodingdocs@gmail.com", role = c("cre", "aut"),
            comment = c(ORCID = "0009-0009-7813-1960")),
-    person("Natalie", "Goulett", role = "aut"),
-    person("Chris", "Hilsinger-Pate", role = "aut"),
-    person("Nikola", "Susic", role = "aut"),
+    person("Natalie", "Goulett", role = "ctb"),
+    person("Chris", "Hilsinger-Pate", role = "ctb"),
+    person("Nikola", "Susic", role = "ctb"),
     person("Sydney", "Stern", role = "ctb",
            comment = c(ORCID = "0000-0002-1479-605X"))
   )
-Description: Uses the REDCap API to build a standardized R list object
-    (DB), designed to be used downstream for data pipelines and the R
-    shiny app RosyREDCap.
+Description: Uses the REDCap API to build a standardized R list object that can
+    be stored in a user-defined local or cloud directory. Checks the REDCap log 
+    and only gets necessary data updates. Full updates are only triggered by 
+    major metadata changes. User can define subsets, derived fields, and 
+    transformations, which are stored in the list object and passed down to
+    output objects to be used downstream for data pipelines and the R shiny app 
+    RosyREDCap.
 License: MIT + file LICENSE
 URL: https://github.com/thecodingdocs/REDCapSync,
     https://thecodingdocs.github.io/REDCapSync/

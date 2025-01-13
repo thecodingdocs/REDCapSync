@@ -32,23 +32,31 @@ set the REDCap API token if the update fails. Default is \code{TRUE}.}
 \item{day_of_log}{Integer. Number of days to be checked in the log. Default
 is \code{10}.}
 
-\item{labelled}{Logical (TRUE/FALSE). If TRUE, returns labelled REDCap data. If FALSE, returns raw data. Default is \code{TRUE}.}
+\item{labelled}{Logical (TRUE/FALSE). If TRUE, returns labelled REDCap data.
+If FALSE, returns raw data. Default is \code{TRUE}.}
 
-\item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap. Default is \code{FALSE}.}
+\item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
+Default is \code{FALSE}.}
 
-\item{original_file_names}{Logical (TRUE/FALSE). If TRUE, uses original file names for retrieved files. Default is \code{FALSE}.}
+\item{original_file_names}{Logical (TRUE/FALSE). If TRUE, uses original file
+names for retrieved files. Default is \code{FALSE}.}
 
-\item{entire_log}{Logical (TRUE/FALSE). If TRUE, retrieves the entire log. Default is \code{FALSE}.}
+\item{entire_log}{Logical (TRUE/FALSE). If TRUE, retrieves the entire log.
+Default is \code{FALSE}.}
 
-\item{metadata_only}{Logical (TRUE/FALSE). If TRUE, updates only the metadata. Default is \code{FALSE}.}
+\item{metadata_only}{Logical (TRUE/FALSE). If TRUE, updates only the
+metadata. Default is \code{FALSE}.}
 
-\item{ask_about_overwrites}{Logical (TRUE/FALSE). If TRUE, prompts the user before overwriting existing data. Default is \code{TRUE}.}
+\item{ask_about_overwrites}{Logical (TRUE/FALSE). If TRUE, prompts the user
+before overwriting existing data. Default is \code{TRUE}.}
 
-\item{save_to_dir}{Logical (TRUE/FALSE). If TRUE, saves the updated data to the directory. Default is \code{TRUE}.}
+\item{save_to_dir}{Logical (TRUE/FALSE). If TRUE, saves the updated data to
+the directory. Default is \code{TRUE}.}
 
 \item{records}{optional records character vector}
 
-\item{batch_size}{Integer. Number of records to process in each batch. Default is \code{2000}.}
+\item{batch_size}{Integer. Number of records to process in each batch.
+Default is \code{2000}.}
 }
 \value{
 Messages for confirmation.

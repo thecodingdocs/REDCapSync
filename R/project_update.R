@@ -16,15 +16,23 @@
 #' @param force Logical that forces a fresh update if TRUE. Default is `FALSE`.
 #' @param day_of_log Integer. Number of days to be checked in the log. Default
 #' is `10`.
-#' @param labelled Logical (TRUE/FALSE). If TRUE, returns labelled REDCap data. If FALSE, returns raw data. Default is `TRUE`.
-#' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap. Default is `FALSE`.
-#' @param original_file_names Logical (TRUE/FALSE). If TRUE, uses original file names for retrieved files. Default is `FALSE`.
-#' @param entire_log Logical (TRUE/FALSE). If TRUE, retrieves the entire log. Default is `FALSE`.
-#' @param metadata_only Logical (TRUE/FALSE). If TRUE, updates only the metadata. Default is `FALSE`.
-#' @param ask_about_overwrites Logical (TRUE/FALSE). If TRUE, prompts the user before overwriting existing data. Default is `TRUE`.
-#' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to the directory. Default is `TRUE`.
+#' @param labelled Logical (TRUE/FALSE). If TRUE, returns labelled REDCap data.
+#' If FALSE, returns raw data. Default is `TRUE`.
+#' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
+#' Default is `FALSE`.
+#' @param original_file_names Logical (TRUE/FALSE). If TRUE, uses original file
+#' names for retrieved files. Default is `FALSE`.
+#' @param entire_log Logical (TRUE/FALSE). If TRUE, retrieves the entire log.
+#' Default is `FALSE`.
+#' @param metadata_only Logical (TRUE/FALSE). If TRUE, updates only the
+#' metadata. Default is `FALSE`.
+#' @param ask_about_overwrites Logical (TRUE/FALSE). If TRUE, prompts the user
+#' before overwriting existing data. Default is `TRUE`.
+#' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
+#' the directory. Default is `TRUE`.
 #' @param records optional records character vector
-#' @param batch_size Integer. Number of records to process in each batch. Default is `2000`.
+#' @param batch_size Integer. Number of records to process in each batch.
+#' Default is `2000`.
 #' @return Messages for confirmation.
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.

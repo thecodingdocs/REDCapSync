@@ -4,18 +4,18 @@ pkgdown_sha: ~
 articles:
   Advanced: Advanced.html
   Basic: Basic.html
-  DB_object: DB_object.html
   Download: Download.html
   Intermediate: Intermediate.html
   multiple_projects: multiple_projects.html
   project_cache: project_cache.html
+  project_object: project_object.html
   REDCap: REDCap.html
-  REDCapDB: REDCapDB.html
+  REDCapSync: REDCapSync.html
   RosyREDCap: RosyREDCap.html
   Security: Security.html
   Tokens: Tokens.html
   Upload: Upload.html
-last_built: 2025-01-13T02:35Z
+last_built: 2025-01-13T19:25Z
 urls:
-  reference: https://brandonerose.github.io/REDCapDB/reference
-  article: https://brandonerose.github.io/REDCapDB/articles
+  reference: https://brandonerose.github.io/REDCapSync/reference
+  article: https://brandonerose.github.io/REDCapSync/articles

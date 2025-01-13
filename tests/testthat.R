@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(REDCapDB)
+library(REDCapSync)
 
-test_check("REDCapDB")
+test_check("REDCapSync")

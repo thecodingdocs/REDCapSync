@@ -1,6 +1,6 @@
-url: https://brandonerose.github.io/REDCapDB/
+url: https://brandonerose.github.io/REDCapSync/
 home:
-  title: REDCapDB
+  title: REDCapSync
   description: Unleash R and REDCap
 deploy:
   install_metadata: true
@@ -37,7 +37,7 @@ reference:
   - title: Everything by Topic (Intermediate/Advanced)
     desc: Expands on functionality and breaksdown core feautures into more customizable parts
   - subtitle: Project Cache
-    desc: REDCapDB cahces user-level project metadata (name, directory, links, last update and other details). Tokens and data are NOT stored here.
+    desc: REDCapSync cahces user-level project metadata (name, directory, links, last update and other details). Tokens and data are NOT stored here.
     contents:
       - get_projects
       - cache_clear
@@ -84,7 +84,7 @@ reference:
       - delete_REDCap_records
       - delete_file_from_REDCap
   - subtitle: DB Object Modifications
-    desc: One of the core internal motivations for REDCapDB development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
+    desc: One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
     contents:
       - clean_DB
       - deidentify_DB

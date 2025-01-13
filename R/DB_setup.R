@@ -94,7 +94,7 @@ setup_DB <- function(
       has_expected_file <- file.exists(expected_file)
     }
     if (in_proj_cache || has_expected_file) {
-      DB <- load_DB_from_path(expected_file)#if it fails should default to blank
+      DB <- load_DB_from_path(expected_file) # if it fails should default to blank
     }
     if (!(in_proj_cache || has_expected_file)) {
       if (is_a_test) {
@@ -157,7 +157,7 @@ load_DB <- function(short_name, validate = TRUE) {
 load_DB_from_path <- function(DB_path, validate = TRUE) {
   if (!file.exists(DB_path)) stop("No file at path '", DB_path, "'. Did you use `setup_DB()` and `update_DB()`?")
   DB <- readRDS(file = DB_path)
-  #if failed through message like unlink to DB_path
+  # if failed through message like unlink to DB_path
   if (validate) {
     DB <- DB %>% validate_DB(silent = FALSE)
   }

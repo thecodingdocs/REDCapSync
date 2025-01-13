@@ -3,13 +3,13 @@
 #' @param report_id character or integer of REDCap report ID. This can be found at the end of the URL of the report.
 #' @return data.frame of REDCap report
 #' @export
-get_REDCap_report <- function(DB, report_id,silent = TRUE) {
+get_REDCap_report <- function(DB, report_id, silent = TRUE) {
   report_id <- as.integer(report_id)
   report <- REDCapR::redcap_report(
     redcap_uri = DB$links$redcap_uri,
     token = validate_REDCap_token(DB),
     report_id = report_id,
-    verbose = ! silent
+    verbose = !silent
   )
   return(report)
 }

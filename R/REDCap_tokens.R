@@ -91,7 +91,7 @@ test_REDCap_token <- function(DB, set_if_fails = TRUE, launch_browser = TRUE) {
     suppressWarnings()
   DB$internals$last_test_connection_attempt <- Sys.time()
   ERROR <- is.na(version)
-  DB$internals$last_test_connection_outcome <- ! ERROR
+  DB$internals$last_test_connection_outcome <- !ERROR
   if (!set_if_fails) {
     return(DB)
   }
@@ -106,7 +106,7 @@ test_REDCap_token <- function(DB, set_if_fails = TRUE, launch_browser = TRUE) {
       version <- get_REDCap_version(DB, show_method_help = FALSE) %>%
         suppressWarnings()
       ERROR <- is.na(version)
-      DB$internals$last_test_connection_outcome <- ! ERROR
+      DB$internals$last_test_connection_outcome <- !ERROR
     }
   }
   bullet_in_console("Connected to REDCap!", bullet_type = "v")
@@ -168,8 +168,8 @@ is_valid_REDCap_token <- function(token, silent = TRUE, is_a_test = FALSE) {
     )
     return(FALSE)
   }
-  if ( ! is_a_test) {
-    if ( ! is_hexadecimal(token,length = 32)) {
+  if (!is_a_test) {
+    if (!is_hexadecimal(token, length = 32)) {
       bullet_in_console(
         text = paste0(start_text, token_text, end_text),
         bullet_type = "x", silent = silent
@@ -181,21 +181,23 @@ is_valid_REDCap_token <- function(token, silent = TRUE, is_a_test = FALSE) {
 }
 #' @noRd
 is_hexadecimal <- function(string, length = NULL) {
-  if ( ! is_something(string)){
+  if (!is_something(string)) {
     return(FALSE)
   }
   pattern <- if (is.null(length)) {
-    "^[0-9A-Fa-f]+$"  # Any length
+    "^[0-9A-Fa-f]+$" # Any length
   } else {
-    paste0("^[0-9A-Fa-f]{", length, "}$")  # Exact length
+    paste0("^[0-9A-Fa-f]{", length, "}$") # Exact length
   }
   return(grepl(pattern, string))
 }
 #' @noRd
 get_REDCap_token_name <- function(DB) {
-  token_name <- paste0(internal_REDCapDB_token_prefix,
-                       validate_env_name(DB$short_name))
-  if(is_something(DB$redcap$token_name)){
+  token_name <- paste0(
+    internal_REDCapDB_token_prefix,
+    validate_env_name(DB$short_name)
+  )
+  if (is_something(DB$redcap$token_name)) {
     token_name <- DB$redcap$token_name
   }
   return(token_name)
@@ -209,8 +211,9 @@ validate_REDCap_token <- function(DB, silent = TRUE) {
   is_a_test <- is_test_DB(DB)
   valid <- token %>% is_valid_REDCap_token(silent = silent, is_a_test = is_a_test)
   message_about_token <- ifelse(is_a_test,
-                                get_test_token(DB$short_name),
-                                "YoUrNevErShaReToKeNfRoMREDCapWebsiTe")
+    get_test_token(DB$short_name),
+    "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
+  )
   if (!silent) {
     bullet_in_console(
       paste0(
@@ -254,8 +257,7 @@ validate_REDCap_token <- function(DB, silent = TRUE) {
 check_saved_REDCapDB_tokens <- function() {
   the_names <- Sys.getenv() %>% names()
   the_names <- the_names[
-    which(startsWith(the_names, internal_REDCapDB_token_prefix)
-    )
+    which(startsWith(the_names, internal_REDCapDB_token_prefix))
   ]
   if (length(the_names) == 0) {
     bullet_in_console(
@@ -270,7 +272,8 @@ check_saved_REDCapDB_tokens <- function() {
     paste0(
       "There are ", ltn,
       " known REDCap tokens saved in the session: ",
-      as_comma_string(the_names)),
+      as_comma_string(the_names)
+    ),
     bullet_type = "x"
   )
   return(invisible())

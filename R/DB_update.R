@@ -48,7 +48,7 @@ update_DB <- function(
   will_update <- TRUE
   was_updated <- FALSE
   DB <- validate_DB(DB)
-  if(is_something(records)){
+  if (is_something(records)) {
     bullet_in_console("Presently, if you supply specified records it will only check REDCap updates for those records.")
   }
   if (!is.null(DB$internals$data_extract_labelled)) {
@@ -88,8 +88,8 @@ update_DB <- function(
   if (!force) { # check log interim
     if (
       is.null(DB$internals$last_metadata_update) ||
-      is.null(DB$internals$last_data_update) ||
-      is.null(DB$internals$last_full_update)
+        is.null(DB$internals$last_data_update) ||
+        is.null(DB$internals$last_full_update)
     ) {
       force <- TRUE
     } else {
@@ -116,14 +116,14 @@ update_DB <- function(
         ilog_metadata <- ilog_metadata[which(ilog_metadata$action_type %in% "Metadata Change Major"), ] # inclusion
         ilog_metadata_minor <- length(which(ilog_metadata$action_type %in% "Metadata Change Minor")) > 0
         # ilog_metadata <- ilog_metadata[grep(ignore_redcap_log(),ilog_metadata$details,ignore.case = TRUE,invert = TRUE) %>% unique(),]
-        if (nrow(ilog_metadata) > 0 || ilog_metadata_minor) { #account for minor changes later
+        if (nrow(ilog_metadata) > 0 || ilog_metadata_minor) { # account for minor changes later
           force <- TRUE
           message(paste0("Update because: Metadata was changed!"))
         } else {
           ilog_data <- ilog[which(!is.na(ilog$record)), ]
           ilog_data <- ilog_data[which(ilog_data$action_type != "Users"), ]
-          if(is_something(records)){
-            ilog_data <- ilog_data[which(ilog$record %in% records),]
+          if (is_something(records)) {
+            ilog_data <- ilog_data[which(ilog$record %in% records), ]
           }
           deleted_records <- ilog_data$record[which(ilog_data$action_type %in% c("Delete"))]
           if (length(deleted_records) > 0) {
@@ -152,7 +152,7 @@ update_DB <- function(
       log <- DB$redcap$log # in case there is a log already
       if (entire_log) {
         DB$redcap$log <- log %>% dplyr::bind_rows(
-          DB %>% get_REDCap_log(begin_time = DB$redcap$project_info$creation_time) %>% unique()# should add - lubridate::days(2)
+          DB %>% get_REDCap_log(begin_time = DB$redcap$project_info$creation_time) %>% unique() # should add - lubridate::days(2)
         )
       } else {
         DB$redcap$log <- log %>% dplyr::bind_rows(

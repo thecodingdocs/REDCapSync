@@ -8,7 +8,7 @@
 #' @return original dataframe with REDCap id_col added as the first column
 #' @export
 add_ID_to_DF <- function(DF, DB, ref_id) {
-  if (!ref_id %in% DB$metadata$fields$field_name){
+  if (!ref_id %in% DB$metadata$fields$field_name) {
     stop("The ref_id not valid. Must be a REDCap raw colname")
   }
   form <- DB$metadata$fields$form_name[
@@ -70,9 +70,11 @@ deidentify_DB <- function(DB, identifiers, drop_free_text = FALSE) {
     }
     if (DB$redcap$id_col %in% identifiers) {
       # If you want to pass a new set of random IDs to make this data use `scramble_ID_DB(DB)`."
-      stop("Your REDCap ID, ",
-           DB$redcap$id_col,
-           ", should not be deidentified.")
+      stop(
+        "Your REDCap ID, ",
+        DB$redcap$id_col,
+        ", should not be deidentified."
+      )
     }
   }
   if (missing_identifiers) {
@@ -226,10 +228,10 @@ raw_process_redcap <- function(raw, DB, labelled) {
     has_repeating_forms <- DB$redcap$has_repeating_forms
     for (form_name in form_names) {
       form_field_names <- fields$field_name[which(fields$form_name == form_name & fields$field_name %in% colnames(raw) & fields$field_name != DB$redcap$id_col)]
-      if(length(form_field_names) == 0){
-        bullet_in_console(paste0("You might not have access to ",form_name,". Unable to obtain."),bullet_type = "x")
+      if (length(form_field_names) == 0) {
+        bullet_in_console(paste0("You might not have access to ", form_name, ". Unable to obtain."), bullet_type = "x")
       }
-      if(length(form_field_names)>0){
+      if (length(form_field_names) > 0) {
         add_ons_x <- add_ons
         # form_name <-  forms$form_name %>% sample(1)
         is_repeating_form <- form_name %in% forms$form_name[which(forms$repeating)]
@@ -241,16 +243,16 @@ raw_process_redcap <- function(raw, DB, labelled) {
             # rows <- which(raw$redcap_repeat_instrument==form_name)
             rows <- which(raw$redcap_repeat_instrument == form_name | raw$redcap_event_name %in% event_mapping$unique_event_name[which(!event_mapping$repeating & event_mapping$form == form_name)])
           }
-          if( ! is_longitudinal){
+          if (!is_longitudinal) {
             rows <- which(raw$redcap_repeat_instrument == form_name)
           }
         }
-        if( ! is_repeating_form){
+        if (!is_repeating_form) {
           add_ons_x <- add_ons_x[which(!add_ons_x %in% c("redcap_repeat_instrument", "redcap_repeat_instance"))]
           if (is_longitudinal) {
             rows <- which(raw$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)]))
           }
-          if( ! is_longitudinal){
+          if (!is_longitudinal) {
             if (has_repeating_forms) rows <- which(is.na(raw$redcap_repeat_instrument))
           }
         }

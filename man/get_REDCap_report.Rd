@@ -11,6 +11,8 @@ get_REDCap_report(DB, report_id, silent = TRUE)
 settings. Generated using \link{load_DB} or \link{setup_DB}}
 
 \item{report_id}{character or integer of REDCap report ID. This can be found at the end of the URL of the report.}
+
+\item{silent}{Logical (TRUE/FALSE). For messages.}
 }
 \value{
 data.frame of REDCap report

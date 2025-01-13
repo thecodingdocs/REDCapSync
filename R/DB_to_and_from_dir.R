@@ -43,7 +43,7 @@ drop_REDCap_to_directory <- function(
   }
   if (missing(dir_other)) {
     root_dir <- get_dir(DB)
-    output_dir <- file.path(root_dir, "output")
+    # output_dir <- file.path(root_dir, "output")
     redcap_dir <- file.path(root_dir, "REDCap", DB$short_name)
   } else {
     redcap_dir <- dir_other
@@ -198,7 +198,7 @@ drop_REDCap_to_directory <- function(
 read_from_REDCap_upload <- function(DB, allow_all = TRUE, drop_nonredcap_vars = TRUE, drop_non_form_vars = TRUE, stop_or_warn = "warn") {
   DB <- validate_DB(DB)
   root_dir <- get_dir(DB)
-  output_dir <- file.path(root_dir, "output")
+  # output_dir <- file.path(root_dir, "output")
   redcap_dir <- file.path(root_dir, "REDCap", DB$short_name)
   redcap_upload_dir <- file.path(redcap_dir, "upload")
   if (!file.exists(redcap_upload_dir)) stop("Did you forget to run `setup_DB()`? No upload folder --> ", redcap_upload_dir)

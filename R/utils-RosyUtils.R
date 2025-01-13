@@ -618,7 +618,7 @@ list_to_excel <- function(
     freeze_keys = TRUE,
     key_cols_list = NULL,
     drop_empty = TRUE) {
-  wb <- openxlsx::createWorkbook()
+  # wb <- openxlsx::createWorkbook()
   list <- process_df_list(list, drop_empty = drop_empty)
   list_names <- names(list)
   if (length(list) == 0) {

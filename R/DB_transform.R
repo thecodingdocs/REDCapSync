@@ -508,8 +508,8 @@ run_fields_transformation <- function(DB, ask = TRUE) {
 #' @param ask Logical (TRUE/FALSE). If TRUE, prompts the user for confirmation before proceeding with the transformation. Default is `TRUE`.
 #' @return The transformed `DB` object.
 #' @seealso
-#' \code{\link[REDCapDB]{save_DB}} for saving the transformed database object.
-#' \code{\link[REDCapDB]{untransform_DB}} for reverting the transformation.
+#' \code{\link[REDCapSync]{save_DB}} for saving the transformed database object.
+#' \code{\link[REDCapSync]{untransform_DB}} for reverting the transformation.
 #' @family db_functions
 #' @export
 transform_DB <- function(DB, ask = TRUE) {

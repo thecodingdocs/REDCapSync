@@ -3,6 +3,6 @@
 }
 .onAttach <- function(libname, pkgname) {
   if (interactive()) {
-    packageStartupMessage("REDCapDB Loaded! Check available projects with `get_projects()`")
+    packageStartupMessage("REDCapSync Loaded! Check available projects with `get_projects()`")
   }
 }

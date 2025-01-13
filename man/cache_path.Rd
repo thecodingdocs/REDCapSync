@@ -7,17 +7,17 @@
 cache_path()
 }
 \value{
-The file path of your REDCapDB cache
+The file path of your REDCapSync cache
 }
 \description{
 Included for transparency and confirmation/testing. This is where the basic
-information about your projects is cached when you use the REDCapDB package.
+information about your projects is cached when you use the REDCapSync package.
 }
 \details{
 This function checks the location of the cache established
 by \code{\link[hoardr]{hoard}}.
 \emph{No project data is stored here. Tokens are not stored here either.}
-Key information stored here is \code{short_name} (primary key for REDCapDB
+Key information stored here is \code{short_name} (primary key for REDCapSync
 projects) and other details about project information.
 }
 \examples{

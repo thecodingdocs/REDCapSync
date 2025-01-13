@@ -1,14 +1,14 @@
 #' @title Get your Get Cache Path
 #' @description
 #' Included for transparency and confirmation/testing. This is where the basic
-#' information about your projects is cached when you use the REDCapDB package.
+#' information about your projects is cached when you use the REDCapSync package.
 #' @details
 #' This function checks the location of the cache established
 #' by \code{\link[hoardr]{hoard}}.
 #' \emph{No project data is stored here. Tokens are not stored here either.}
-#' Key information stored here is `short_name` (primary key for REDCapDB
+#' Key information stored here is `short_name` (primary key for REDCapSync
 #' projects) and other details about project information.
-#' @return The file path of your REDCapDB cache
+#' @return The file path of your REDCapSync cache
 #' @seealso
 #' For more details, see \code{\link[hoardr]{hoard}}.
 #' @examples
@@ -43,7 +43,7 @@ cache_clear <- function() {
     bullet_type = "!"
   )
   bullet_in_console(
-    "REDCapDB cache cleared!",
+    "REDCapSync cache cleared!",
     file = cache$cache_path_get(),
     bullet_type = "v"
   )
@@ -68,7 +68,7 @@ cache_projects_exists <- function() {
 #' @noRd
 get_cache <- function() {
   cache <- hoardr::hoard()
-  cache$cache_path_set(path = "REDCapDB", type = "user_cache_dir")
+  cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
   cache$mkdir()
   return(cache)
 }

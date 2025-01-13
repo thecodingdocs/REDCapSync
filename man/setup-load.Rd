@@ -5,16 +5,17 @@
 \alias{load_DB}
 \alias{load_DB_from_path}
 \alias{load_test_DB}
-\title{Setup or Load REDCapDB Project}
+\title{Setup or Load REDCapSync Project}
 \usage{
 setup_DB(
   short_name,
   dir_path,
   redcap_base,
-  token_name = paste0("REDCapDB_", short_name),
+  token_name = paste0("REDCapSync_", short_name),
   force = FALSE,
   merge_form_name = "merged",
   use_csv = FALSE,
+  get_type = c("identified", "deidentified", "strict-deidentified"),
   auto_check_token = TRUE
 )
 
@@ -36,7 +37,7 @@ will only be in current R session.}
 server.}
 
 \item{token_name}{An optional character string for setting your token name.
-Default is \verb{REDCapDB_<short_name>}}
+Default is \verb{REDCapSync_<short_name>}}
 
 \item{force}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the \code{DB}
 object already exists. Default is \code{FALSE}.}
@@ -54,13 +55,13 @@ checks the validity of the REDCap API token. Default is \code{TRUE}.}
 current rules. Default is \code{TRUE}.}
 
 \item{DB_path}{A character string representing the file path of the exact
-\verb{<short_name>_REDCapDB.RData} file to be loaded.}
+\verb{<short_name>_REDCapSync.RData} file to be loaded.}
 
 \item{with_data}{Logical (TRUE/FALSE). If TRUE, loads the test DB object with
 data as if user ran \code{update_DB}. Default is \code{FALSE}.}
 }
 \value{
-REDCapDB \code{DB} list object.
+REDCapSync \code{DB} list object.
 }
 \description{
 Setup or Load the \code{DB} object for pipeline.
@@ -93,7 +94,7 @@ DB <- load_DB("TEST")
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[REDCapDB]{get_projects}} for retrieving a list of projects from
+\code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from
 the directory cache.
 
 Other DB object: 

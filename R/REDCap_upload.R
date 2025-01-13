@@ -108,7 +108,7 @@ find_upload_diff <- function(DB, view_old = FALSE, n_row_view = 20) {
     ref_cols <- ref_cols[which(ref_cols %in% colnames(new))]
     data_cols <- colnames(new)[which(!colnames(new) %in% ref_cols)]
     form_names <- field_names_to_form_names(DB, data_cols)
-    if (any(form_names %in% already_used)) stop("REDCapDB will not allow you to upload items from same form multiple times in one loop without refreshing.")
+    if (any(form_names %in% already_used)) stop("REDCapSync will not allow you to upload items from same form multiple times in one loop without refreshing.")
     # old <- merge_forms(forms = form_names, DB = DB,data_choice = "data",exact = TRUE)
     drop <- data_cols %>% vec1_not_in_vec2(form_names_to_field_names(form_names = form_names, DB = DB))
     if (length(drop) > 0) {

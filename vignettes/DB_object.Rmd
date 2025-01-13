@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 # Setup
 
 ```{r setup}
-library(REDCapDB)
+library(REDCapSync)
 ```
 
 # Update From REDCap 

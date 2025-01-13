@@ -30,7 +30,7 @@ The token is validated internally and stored using \code{Sys.setenv()}.
 }
 \seealso{
 For the function to work you need to have a valid DB object from \code{\link{setup_DB}()}.
-See our \href{https://thecodingdocs.github.io/REDCapDB/articles/Tokens.html}{REDCap Tokens Article}
+See our \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
 
 Other Token Functions: 
 \code{\link{test_REDCap_token}()},

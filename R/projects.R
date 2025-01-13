@@ -1,6 +1,6 @@
-#' @title Get your REDCap projects used by REDCapDB
+#' @title Get your REDCap projects used by REDCapSync
 #' @description
-#' Everytime a setup or update is performed REDCapDB stores the most basic information
+#' Everytime a setup or update is performed REDCapSync stores the most basic information
 #' about that project to the cache so the user has a running log of everywhere there project information is stored,
 #' which can be used to find, move, edit, delete that data.
 #' @return data.frame of projects from the cache
@@ -23,20 +23,20 @@ get_projects <- function() {
   }
   return(projects)
 }
-#' @title List File Paths of REDCapDB Projects in a Folder
+#' @title List File Paths of REDCapSync Projects in a Folder
 #' @description
-#' Searches a specified folder for files related to REDCapDB projects and returns their file paths.
+#' Searches a specified folder for files related to REDCapSync projects and returns their file paths.
 #' Optionally validates the folder to ensure it was previously set up using `setup_DB()`.
 #'
 #' @param file_path Character. The path to the folder to search.
 #' @param validate Logical. If `TRUE`, the function will only accept valid directories previously set up with `setup_DB()`. Default is `TRUE`.
 #'
 #' @return
-#' A character vector of file paths for valid REDCapDB project files in the folder. Returns an empty character vector if no valid files are found.
+#' A character vector of file paths for valid REDCapSync project files in the folder. Returns an empty character vector if no valid files are found.
 #'
 #' @details
-#' This function checks a folder (and optionally validates its setup) for `.RData` files that correspond to REDCapDB projects.
-#' It identifies files with the extension `.RData` and names ending in `_REDCapDB`, filtering out any unrelated files.
+#' This function checks a folder (and optionally validates its setup) for `.RData` files that correspond to REDCapSync projects.
+#' It identifies files with the extension `.RData` and names ending in `_REDCapSync`, filtering out any unrelated files.
 #'
 #' @seealso
 #' \link{setup_DB} for setting up valid directories.
@@ -59,7 +59,7 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
     file_name = file_name,
     file_ext = file_ext
   )
-  df <- df[which((df$file_ext == "RData") & (endsWith(df$file_name, "_REDCapDB"))), ]
+  df <- df[which((df$file_ext == "RData") & (endsWith(df$file_name, "_REDCapSync"))), ]
   if (nrow(df) == 0) {
     return(character(0))
   }
@@ -203,7 +203,7 @@ add_project <- function(DB, silent = TRUE) {
   projects <- projects[which(projects$short_name != DB$short_name), ]
   OUT <- extract_project_details(DB = DB)
   OUT$R_object_size <- size(DB)
-  OUT$file_size <- file.path(DB$dir_path, "R_objects", paste0(DB$short_name, "_REDCapDB.RData")) %>% file_size_mb()
+  OUT$file_size <- file.path(DB$dir_path, "R_objects", paste0(DB$short_name, "_REDCapSync.RData")) %>% file_size_mb()
   projects <- projects %>% dplyr::bind_rows(OUT)
   save_projects_to_cache(projects, silent = silent)
 }

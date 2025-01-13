@@ -485,11 +485,11 @@ generate_summary_save_list <- function(
   return(to_save_list)
 }
 #' @noRd
-save_REDCapDB_list <- function(
+save_REDCapSync_list <- function(
     DB,
     to_save_list,
     dir_other = file.path(DB$dir_path, "output"),
-    file_name = paste0(DB$short_name, "_REDCapDB"),
+    file_name = paste0(DB$short_name, "_REDCapSync"),
     separate = FALSE,
     with_links = TRUE) {
   link_col_list <- list()
@@ -635,7 +635,7 @@ summarize_DB <- function(
       include_users = include_users,
       include_log = include_log
     )
-    DB %>% save_REDCapDB_list(
+    DB %>% save_REDCapSync_list(
       to_save_list = to_save_list,
       separate = separate,
       with_links = with_links
@@ -660,7 +660,7 @@ summarize_DB <- function(
         include_users = include_users,
         include_log = include_log
       )
-      DB %>% save_REDCapDB_list(
+      DB %>% save_REDCapSync_list(
         to_save_list = to_save_list,
         dir_other = subset_list$dir_other,
         file_name = subset_list$file_name,
@@ -892,7 +892,7 @@ filter_DB <- function(DB, filter_field, filter_choices, form_names, field_names,
 #' If not provided, it defaults to the `output` directory inside the project's main directory.
 #' @return A message indicating the creation of the RMarkdown report and the path to the generated file.
 #' @seealso
-#' \code{\link[REDCapDB]{save_DB}} for saving the `DB` object.
+#' \code{\link[REDCapSync]{save_DB}} for saving the `DB` object.
 #' @family db_functions
 #' @export
 rmarkdown_DB <- function(DB, dir_other) {

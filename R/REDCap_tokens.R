@@ -15,7 +15,7 @@
 #' @return Invisible. A message is printed to confirm the token is successfully set.
 #' @seealso
 #' For the function to work you need to have a valid DB object from \code{\link{setup_DB}()}.
-#' See our \href{https://thecodingdocs.github.io/REDCapDB/articles/Tokens.html}{REDCap Tokens Article}
+#' See our \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
@@ -81,7 +81,7 @@ view_REDCap_token <- function(DB) {
 #' @return Logical. Returns `TRUE` if the API token is valid, otherwise `FALSE`.
 #' @seealso
 #' \href{../articles/Tokens.html}{pkgdown article on tokens}
-#' \href{https://thecodingdocs.github.io/REDCapDB/articles/Tokens.html}{pkgdown article on tokens}
+#' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{pkgdown article on tokens}
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
@@ -194,7 +194,7 @@ is_hexadecimal <- function(string, length = NULL) {
 #' @noRd
 get_REDCap_token_name <- function(DB) {
   token_name <- paste0(
-    internal_REDCapDB_token_prefix,
+    internal_REDCapSync_token_prefix,
     validate_env_name(DB$short_name)
   )
   if (is_something(DB$redcap$token_name)) {
@@ -254,10 +254,10 @@ validate_REDCap_token <- function(DB, silent = TRUE) {
   return(token)
 }
 #' @noRd
-check_saved_REDCapDB_tokens <- function() {
+check_saved_REDCapSync_tokens <- function() {
   the_names <- Sys.getenv() %>% names()
   the_names <- the_names[
-    which(startsWith(the_names, internal_REDCapDB_token_prefix))
+    which(startsWith(the_names, internal_REDCapSync_token_prefix))
   ]
   if (length(the_names) == 0) {
     bullet_in_console(
@@ -266,7 +266,7 @@ check_saved_REDCapDB_tokens <- function() {
     )
     return(invisible())
   }
-  the_names <- gsub(internal_REDCapDB_token_prefix, "", the_names)
+  the_names <- gsub(internal_REDCapSync_token_prefix, "", the_names)
   ltn <- length(the_names)
   bullet_in_console(
     paste0(
@@ -279,7 +279,7 @@ check_saved_REDCapDB_tokens <- function() {
   return(invisible())
 }
 #' @noRd
-internal_REDCapDB_token_prefix <- "REDCapDB_"
+internal_REDCapSync_token_prefix <- "REDCapSync_"
 #' @noRd
 internal_TEST_classic_token <- "FAKE32TESTTOKENCLASSIC1111111111"
 #' @noRd

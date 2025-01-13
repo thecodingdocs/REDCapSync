@@ -82,7 +82,7 @@ test_that("save_DB doesn't save if it's blank but will save and cache if valid, 
     auto_check_token = FALSE
   )
   save_DB(DB)
-  expect_false(file.exists(file.path(DB$dir_path,"R_objects",paste0(short_name,"_REDCapDB.RData"))))
+  expect_false(file.exists(file.path(DB$dir_path,"R_objects",paste0(short_name,"_REDCapSync.RData"))))
   #fakeDB
   DB$internals$ever_connected <- TRUE
   fake_time <- Sys.time()
@@ -101,7 +101,7 @@ test_that("save_DB doesn't save if it's blank but will save and cache if valid, 
   DB$links$redcap_API_playground <- DB$links$redcap_base
   #saving
   save_DB(DB)
-  expected_save_location <- file.path(DB$dir_path,"R_objects",paste0(short_name,"_REDCapDB.RData"))
+  expected_save_location <- file.path(DB$dir_path,"R_objects",paste0(short_name,"_REDCapSync.RData"))
   expect_true(file.exists(expected_save_location))
   #check cached proj
   projects <- get_projects()

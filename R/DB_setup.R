@@ -1,5 +1,5 @@
 #' @rdname setup-load
-#' @title Setup or Load REDCapDB Project
+#' @title Setup or Load REDCapSync Project
 #' @description
 #' Setup or Load the `DB` object for pipeline.
 #'
@@ -27,7 +27,7 @@
 #' @param redcap_base A character string representing the base URL of the REDCap
 #' server.
 #' @param token_name An optional character string for setting your token name.
-#' Default is `REDCapDB_<short_name>`
+#' Default is `REDCapSync_<short_name>`
 #' @param force Logical (TRUE/FALSE). If TRUE, forces the setup even if the `DB`
 #' object already exists. Default is `FALSE`.
 #' @param validate Logical (TRUE/FALSE). If TRUE, validates DB object based on
@@ -39,12 +39,12 @@
 #' @param auto_check_token Logical (TRUE/FALSE). If TRUE, automatically
 #' checks the validity of the REDCap API token. Default is `TRUE`.
 #' @param DB_path A character string representing the file path of the exact
-#' `<short_name>_REDCapDB.RData` file to be loaded.
+#' `<short_name>_REDCapSync.RData` file to be loaded.
 #' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test DB object with
 #' data as if user ran `update_DB`. Default is `FALSE`.
-#' @return REDCapDB `DB` list object.
+#' @return REDCapSync `DB` list object.
 #' @seealso
-#' \code{\link[REDCapDB]{get_projects}} for retrieving a list of projects from
+#' \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from
 #' the directory cache.
 #' @examplesIf FALSE
 #' # Initialize the DB object with the REDCap API token and URL
@@ -60,17 +60,18 @@ setup_DB <- function(
     short_name,
     dir_path,
     redcap_base,
-    token_name = paste0("REDCapDB_", short_name),
+    token_name = paste0("REDCapSync_", short_name),
     force = FALSE,
     merge_form_name = "merged",
     use_csv = FALSE,
+    get_type = c("identified","deidentified","strict-deidentified"),
     auto_check_token = TRUE) {
   em <- "`short_name` must be character string of length 1"
   if (!is.character(short_name)) stop(em)
   if (length(short_name) != 1) stop(em)
   projects <- get_projects() # add short_name conflict check id-base url differs
   short_name <- validate_env_name(short_name)
-  if (paste0(internal_REDCapDB_token_prefix, short_name) != token_name) {
+  if (paste0(internal_REDCapSync_token_prefix, short_name) != token_name) {
   } # maybe a message
   token_name <- validate_env_name(token_name)
   in_proj_cache <- short_name %in% projects$short_name
@@ -89,7 +90,7 @@ setup_DB <- function(
       expected_file <- file.path(
         dir_path,
         "R_objects",
-        paste0(short_name, "_REDCapDB.RData")
+        paste0(short_name, "_REDCapSync.RData")
       )
       has_expected_file <- file.exists(expected_file)
     }
@@ -110,7 +111,7 @@ setup_DB <- function(
   }
   if (missing_dir_path) { # if missing the directory path from setup or load then let user know nothing will be stored
     if (!is_something(DB$dir_path)) { # only show message if load_DB wasn't used internally (that has a directory)
-      bullet_in_console("If you don't supply a directory, REDCapDB will only run in R session. Package is best with a directory.", bullet_type = "!")
+      bullet_in_console("If you don't supply a directory, REDCapSync will only run in R session. Package is best with a directory.", bullet_type = "!")
     }
   }
   if (!missing_dir_path) {
@@ -146,7 +147,7 @@ load_DB <- function(short_name, validate = TRUE) {
   if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_DB()` and `update_DB()`?")
   dir_path <- projects$dir_path[which(projects$short_name == short_name)]
   if (!file.exists(dir_path)) stop("`dir_path` doesn't exist: '", dir_path, "'")
-  DB_path <- file.path(dir_path, "R_objects", paste0(short_name, "_REDCapDB.RData"))
+  DB_path <- file.path(dir_path, "R_objects", paste0(short_name, "_REDCapSync.RData"))
   load_DB_from_path(
     DB_path = DB_path,
     validate = validate
@@ -198,7 +199,7 @@ is_test_DB <- function(DB) {
 #' @param DB A validated `DB` object containing REDCap project data and
 #' settings. Generated using \link{load_DB} or \link{setup_DB}
 #' @description
-#' This will save/delete the "<short_name>_REDCapDB.RData" file in the given DB
+#' This will save/delete the "<short_name>_REDCapSync.RData" file in the given DB
 #' directories R_objects folder. These are optional functions given that
 #' `save_DB` is a also handled by a default parameter in `update_DB.`
 #'
@@ -220,7 +221,7 @@ save_DB <- function(DB) {
   save_file_path <- file.path(
     DB$dir_path,
     "R_objects",
-    paste0(DB$short_name, "_REDCapDB.RData")
+    paste0(DB$short_name, "_REDCapSync.RData")
   )
   saveRDS(
     object = DB,
@@ -237,7 +238,7 @@ delete_DB <- function(DB) {
   DB <- validate_DB(DB)
   dir_path <- DB$dir_path
   dir_path <- validate_dir(dir_path, silent = FALSE)
-  delete_this <- file.path(dir_path, "R_objects", paste0(DB$short_name, "_REDCapDB.RData"))
+  delete_this <- file.path(dir_path, "R_objects", paste0(DB$short_name, "_REDCapSync.RData"))
   if (file.exists(delete_this)) {
     unlink(delete_this)
     bullet_in_console("Deleted saved DB", bullet_type = "v")
@@ -400,8 +401,8 @@ internal_blank_DB <- list(
     redcap_records_dashboard = NULL,
     redcap_api = NULL,
     redcap_api_playground = NULL,
-    pkgdown = "https://thecodingdocs.github.io/REDCapDB/",
-    github = "https://github.com/thecodingdocs/REDCapDB/",
+    pkgdown = "https://thecodingdocs.github.io/REDCapSync/",
+    github = "https://github.com/thecodingdocs/REDCapSync/",
     thecodingdocs = "https://www.thecodingdocs.com/"
   )
 )

@@ -23,8 +23,8 @@ This function modifies the structure of the data and records according to the tr
 This function checks if the database has already been transformed and applies the transformation if not. It stores the original column names before transforming the data. The transformation process can include modifying field values and renaming columns based on predefined transformation rules.
 }
 \seealso{
-\code{\link[REDCapDB]{save_DB}} for saving the transformed database object.
-\code{\link[REDCapDB]{untransform_DB}} for reverting the transformation.
+\code{\link[REDCapSync]{save_DB}} for saving the transformed database object.
+\code{\link[REDCapSync]{untransform_DB}} for reverting the transformation.
 
 Other db_functions: 
 \code{\link{rmarkdown_DB}()},

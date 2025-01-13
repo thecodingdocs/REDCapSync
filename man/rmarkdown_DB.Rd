@@ -27,7 +27,7 @@ within the project's directory. It generates the RMarkdown file that can then be
 processing or rendering into HTML, PDF, or other formats.
 }
 \seealso{
-\code{\link[REDCapDB]{save_DB}} for saving the \code{DB} object.
+\code{\link[REDCapSync]{save_DB}} for saving the \code{DB} object.
 
 Other db_functions: 
 \code{\link{summarize_DB}()},

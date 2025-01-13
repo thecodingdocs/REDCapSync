@@ -54,7 +54,7 @@ REDCap_diagram <- function(DB, static = FALSE, render = TRUE, duplicate_forms = 
       edges = OUT$edge_df,
       main = DB$redcap$project_info$project_title,
       submain = DB$redcap$project_info$project_notes %>%
-        paste0("<br>Code by Brandon Rose, M.D., M.P.H. at <a href='https://www.thecodingdocs.com/home'>TheCodingDocs.com</a> using <a href='https://github.com/thecodingdocs/REDCapDB'>REDCapDB</a> and <a href='https://github.com/datastorm-open/visNetwork'>VisNetwork</a>")
+        paste0("<br>Code by Brandon Rose, M.D., M.P.H. at <a href='https://www.thecodingdocs.com/home'>TheCodingDocs.com</a> using <a href='https://github.com/thecodingdocs/REDCapSync'>REDCapSync</a> and <a href='https://github.com/datastorm-open/visNetwork'>VisNetwork</a>")
     ) %>%
       visNetwork::visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) %>%
       visNetwork::visLegend(main = "Legend") %>%

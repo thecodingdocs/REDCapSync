@@ -4,11 +4,11 @@
 \name{REDCapSync-package}
 \alias{REDCapSync}
 \alias{REDCapSync-package}
-\title{REDCapSync: What the Package Does (One Line, Title Case)}
+\title{REDCapSync: Synchronize and Standardize Data Pipelines from REDCap}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Uses the REDCap API to build a standardized R list object (DB), designed to be used downstream for data pipelines and the R shiny app RosyREDCap.
+Uses the REDCap API to build a standardized R list object that can be stored in a user-defined local or cloud directory. Checks the REDCap log and only gets necessary data updates. Full updates are only triggered by major metadata changes. User can define subsets, derived fields, and transformations, which are stored in the list object and passed down to output objects to be used downstream for data pipelines and the R shiny app RosyREDCap.
 }
 \seealso{
 Useful links:
@@ -22,15 +22,11 @@ Useful links:
 \author{
 \strong{Maintainer}: Brandon Rose \email{thecodingdocs@gmail.com} (\href{https://orcid.org/0009-0009-7813-1960}{ORCID})
 
-Authors:
-\itemize{
-  \item Natalie Goulett
-  \item Chris Hilsinger-Pate
-  \item Nikola Susic
-}
-
 Other contributors:
 \itemize{
+  \item Natalie Goulett [contributor]
+  \item Chris Hilsinger-Pate [contributor]
+  \item Nikola Susic [contributor]
   \item Sydney Stern (\href{https://orcid.org/0000-0002-1479-605X}{ORCID}) [contributor]
 }
 

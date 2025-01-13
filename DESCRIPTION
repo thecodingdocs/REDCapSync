@@ -10,13 +10,13 @@ Authors@R: c(
     person("Sydney", "Stern", role = "ctb",
            comment = c(ORCID = "0000-0002-1479-605X"))
   )
-Description: Uses the REDCap API to build a standardized R list object that can
-    be stored in a user-defined local or cloud directory. Checks the REDCap log 
-    and only gets necessary data updates. Full updates are only triggered by 
-    major metadata changes. User can define subsets, derived fields, and 
-    transformations, which are stored in the list object and passed down to
-    output objects to be used downstream for data pipelines and the R shiny app 
-    RosyREDCap.
+Description: Uses the REDCap API to build a standardized R list object
+    that can be stored in a user-defined local or cloud directory. Checks
+    the REDCap log and only gets necessary data updates. Full updates are
+    only triggered by major metadata changes. User can define subsets,
+    derived fields, and transformations, which are stored in the list
+    object and passed down to output objects to be used downstream for
+    data pipelines and the R shiny app RosyREDCap.
 License: MIT + file LICENSE
 URL: https://github.com/thecodingdocs/REDCapSync,
     https://thecodingdocs.github.io/REDCapSync/

@@ -1,10 +1,3 @@
-#' @title Get REDCap Report
-#' @inheritParams save_DB
-#' @param report_id character or integer of REDCap report ID. This can be found at the end of the URL of the report.
-#' @return data.frame of REDCap report
-#' @export
-get_REDCap_report <- function(DB, report_id) {
-}
 #' @noRd
 redcap_api_request <- function(url, token, additional_args = NULL) {
   body <- list(
@@ -258,18 +251,6 @@ get_REDCap_metadata <- function(DB, include_users = TRUE) {
   DB$links$redcap_API <- paste0(DB$links$redcap_base, "redcap_v", DB$redcap$version, "/API/project_api.php?pid=", DB$redcap$project_id)
   DB$links$redcap_API_playground <- paste0(DB$links$redcap_base, "redcap_v", DB$redcap$version, "/API/playground.php?pid=", DB$redcap$project_id)
   return(DB)
-}
-#' @noRd
-get_REDCap_data <- function(DB, labelled = TRUE, records = NULL, batch_size = 2000) {
-  data_list <- list()
-  raw <- get_REDCap_raw_data(
-    DB = DB,
-    labelled = FALSE,
-    records = records,
-    batch_size = batch_size
-  )
-  data_list <- raw %>% raw_process_redcap(DB = DB, labelled = labelled)
-  return(data_list)
 }
 #' @noRd
 get_REDCap_version <- function(DB, show_method_help = TRUE) {

@@ -4,11 +4,11 @@
 \alias{view_REDCap_token}
 \title{View the REDCap API Token Stored in the Session}
 \usage{
-view_REDCap_token(DB)
+view_REDCap_token(project)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and
-settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{project}{A validated \code{project} object containing REDCap project data and
+settings. Generated using \link{load_project} or \link{setup_project}}
 }
 \value{
 Invisible. Prints a message displaying the stored token.
@@ -17,7 +17,7 @@ Invisible. Prints a message displaying the stored token.
 Displays the REDCap API token currently stored in the session as an environment variable. It's essentially a wrapper for Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is formatted like a REDCap token and provides messgaes if not valid.
 }
 \details{
-This function retrieves the REDCap API token associated with the specified \code{DB} object and displays it as a message.
+This function retrieves the REDCap API token associated with the specified \code{project} object and displays it as a message.
 The token is not returned as an R object to maintain security.
 Use this function to confirm the token currently in use without exposing it unnecessarily.
 }

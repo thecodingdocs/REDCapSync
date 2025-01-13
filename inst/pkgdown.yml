@@ -1,8 +1,21 @@
 pandoc: '3.2'
 pkgdown: 2.1.1
 pkgdown_sha: ~
-articles: {}
-last_built: 2025-01-07T17:24Z
+articles:
+  Advanced: Advanced.html
+  Basic: Basic.html
+  Download: Download.html
+  Intermediate: Intermediate.html
+  multiple_projects: multiple_projects.html
+  project_cache: project_cache.html
+  project_object: project_object.html
+  REDCap: REDCap.html
+  REDCapSync: REDCapSync.html
+  RosyREDCap: RosyREDCap.html
+  Security: Security.html
+  Tokens: Tokens.html
+  Upload: Upload.html
+last_built: 2025-01-13T18:51Z
 urls:
-  reference: https://brandonerose.github.io/RosyREDCap/reference
-  article: https://brandonerose.github.io/RosyREDCap/articles
+  reference: https://brandonerose.github.io/REDCapSync/reference
+  article: https://brandonerose.github.io/REDCapSync/articles

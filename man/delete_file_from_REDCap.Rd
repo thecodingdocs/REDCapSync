@@ -5,7 +5,7 @@
 \title{Delete a File from REDCap}
 \usage{
 delete_file_from_REDCap(
-  DB,
+  project,
   record,
   field,
   repeat_instance = NULL,
@@ -13,8 +13,8 @@ delete_file_from_REDCap(
 )
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and
-settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{project}{A validated \code{project} object containing REDCap project data and
+settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{record}{Character. The unique identifier of the record from which the file should be deleted.}
 
@@ -34,5 +34,5 @@ Deletes a file uploaded to a specific field in a REDCap project for a given reco
 This function sends a request to the REDCap API to delete a file associated with a specific record and field. It supports optional parameters to handle repeating instruments or events, ensuring flexibility for more complex REDCap projects. If the API request fails, the function raises an error.
 }
 \seealso{
-\code{\link{save_DB}} for managing database objects.
+\code{\link{save_project}} for managing database objects.
 }

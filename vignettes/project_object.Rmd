@@ -1,8 +1,8 @@
 ---
-title: "The DB Object"
+title: "The project Object"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{The DB Object}
+  %\VignetteIndexEntry{The project Object}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 # Setup
 
-```{r setup}
+```{r setup, eval=FALSE}
 library(REDCapSync)
 ```
 

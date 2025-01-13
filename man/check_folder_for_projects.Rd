@@ -9,19 +9,19 @@ check_folder_for_projects(file_path, validate = TRUE)
 \arguments{
 \item{file_path}{Character. The path to the folder to search.}
 
-\item{validate}{Logical. If \code{TRUE}, the function will only accept valid directories previously set up with \code{setup_DB()}. Default is \code{TRUE}.}
+\item{validate}{Logical. If \code{TRUE}, the function will only accept valid directories previously set up with \code{setup_project()}. Default is \code{TRUE}.}
 }
 \value{
 A character vector of file paths for valid REDCapSync project files in the folder. Returns an empty character vector if no valid files are found.
 }
 \description{
 Searches a specified folder for files related to REDCapSync projects and returns their file paths.
-Optionally validates the folder to ensure it was previously set up using \code{setup_DB()}.
+Optionally validates the folder to ensure it was previously set up using \code{setup_project()}.
 }
 \details{
 This function checks a folder (and optionally validates its setup) for \code{.RData} files that correspond to REDCapSync projects.
 It identifies files with the extension \code{.RData} and names ending in \verb{_REDCapSync}, filtering out any unrelated files.
 }
 \seealso{
-\link{setup_DB} for setting up valid directories.
+\link{setup_project} for setting up valid directories.
 }

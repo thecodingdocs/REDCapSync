@@ -10,7 +10,7 @@ project_health_check()
 project cache data.frame
 }
 \description{
-Check directory, DB object, and REDCap token. Optional update.
+Check directory, project object, and REDCap token. Optional update.
 }
 \seealso{
 Other Project Cache Functions: 

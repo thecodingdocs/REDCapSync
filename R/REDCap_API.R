@@ -44,10 +44,10 @@ process_redcap_response <- function(response, error_action = "warn", method, sho
   return(content)
 }
 #' @noRd
-run_redcap_api_method <- function(DB, url, token, method, error_action = "warn", additional_args = NULL, only_get = FALSE, show_method_help = TRUE) {
-  if (!missing(DB)) {
-    url <- DB$links$redcap_uri
-    token <- validate_REDCap_token(DB)
+run_redcap_api_method <- function(project, url, token, method, error_action = "warn", additional_args = NULL, only_get = FALSE, show_method_help = TRUE) {
+  if (!missing(project)) {
+    url <- project$links$redcap_uri
+    token <- validate_REDCap_token(project)
   }
   allowed_methods <- REDCap_API$methods$method_short_name %>% sort()
   if (only_get) {
@@ -72,11 +72,11 @@ run_redcap_api_method <- function(DB, url, token, method, error_action = "warn",
     return()
 }
 #' @noRd
-get_REDCap_method <- function(DB, method, error_action = "warn", additional_args = NULL, show_method_help = TRUE) {
+get_REDCap_method <- function(project, method, error_action = "warn", additional_args = NULL, show_method_help = TRUE) {
   return(
     run_redcap_api_method(
-      url = DB$links$redcap_uri,
-      token = validate_REDCap_token(DB),
+      url = project$links$redcap_uri,
+      token = validate_REDCap_token(project),
       method = method,
       additional_args = additional_args,
       error_action = error_action,
@@ -86,39 +86,39 @@ get_REDCap_method <- function(DB, method, error_action = "warn", additional_args
   )
 }
 #' @noRd
-get_REDCap_metadata <- function(DB, include_users = TRUE) {
-  DB$internals$last_metadata_update <- Sys.time()
-  DB$metadata <- list()
+get_REDCap_metadata <- function(project, include_users = TRUE) {
+  project$internals$last_metadata_update <- Sys.time()
+  project$metadata <- list()
   # info ----------
-  DB$redcap$project_info <- get_REDCap_method(DB, method = "exp_proj")
-  DB$redcap$project_title <- DB$redcap$project_info$project_title
-  DB$redcap$project_id <- DB$redcap$project_info$project_id
-  DB$redcap$is_longitudinal <- DB$redcap$project_info$is_longitudinal == "1"
-  DB$metadata$missing_codes <- missing_codes2(DB)
+  project$redcap$project_info <- get_REDCap_method(project, method = "exp_proj")
+  project$redcap$project_title <- project$redcap$project_info$project_title
+  project$redcap$project_id <- project$redcap$project_info$project_id
+  project$redcap$is_longitudinal <- project$redcap$project_info$is_longitudinal == "1"
+  project$metadata$missing_codes <- missing_codes2(project)
   # instruments --------
-  DB$metadata$forms <- get_REDCap_method(DB, method = "exp_instr") %>% rename_forms_redcap_to_default()
-  DB$metadata$forms$repeating <- FALSE
-  DB$redcap$has_repeating_forms <- FALSE
-  DB$redcap$has_repeating_events <- FALSE
-  DB$redcap$has_repeating_forms_or_events <- DB$redcap$project_info$has_repeating_instruments_or_events == "1"
-  # if(DB$redcap$project_info$has_repeating_instruments_or_events=="1")
-  repeatingFormsEvents <- get_REDCap_method(DB, method = "exp_repeating_forms_events")
+  project$metadata$forms <- get_REDCap_method(project, method = "exp_instr") %>% rename_forms_redcap_to_default()
+  project$metadata$forms$repeating <- FALSE
+  project$redcap$has_repeating_forms <- FALSE
+  project$redcap$has_repeating_events <- FALSE
+  project$redcap$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events == "1"
+  # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
+  repeatingFormsEvents <- get_REDCap_method(project, method = "exp_repeating_forms_events")
   if (is.data.frame(repeatingFormsEvents)) {
-    DB$metadata$forms$repeating <- DB$metadata$forms$form_name %in% repeatingFormsEvents$form_name
+    project$metadata$forms$repeating <- project$metadata$forms$form_name %in% repeatingFormsEvents$form_name
   }
-  if (any(DB$metadata$forms$repeating)) {
-    DB$redcap$has_repeating_forms <- TRUE
+  if (any(project$metadata$forms$repeating)) {
+    project$redcap$has_repeating_forms <- TRUE
   }
   # metadata ----------
-  DB$metadata$fields <- get_REDCap_method(DB, method = "exp_metadata", error_action = "stop")
-  DB$metadata$fields$section_header <- DB$metadata$fields$section_header %>% remove_html_tags()
-  DB$metadata$fields$field_label <- DB$metadata$fields$field_label %>% remove_html_tags()
-  DB$redcap$id_col <- DB$metadata$fields[1, 1] %>% as.character() # RISKY?
-  DB$metadata$form_key_cols <- get_key_col_list(DB)
-  DB$redcap$raw_structure_cols <- DB$metadata$form_key_cols %>%
+  project$metadata$fields <- get_REDCap_method(project, method = "exp_metadata", error_action = "stop")
+  project$metadata$fields$section_header <- project$metadata$fields$section_header %>% remove_html_tags()
+  project$metadata$fields$field_label <- project$metadata$fields$field_label %>% remove_html_tags()
+  project$redcap$id_col <- project$metadata$fields[1, 1] %>% as.character() # RISKY?
+  project$metadata$form_key_cols <- get_key_col_list(project)
+  project$redcap$raw_structure_cols <- project$metadata$form_key_cols %>%
     unlist() %>%
     unique()
-  form_names <- DB$metadata$forms$form_name # [which(DB$metadata$forms$form_name%in%unique(DB$metadata$fields$form_name))]
+  form_names <- project$metadata$forms$form_name # [which(project$metadata$forms$form_name%in%unique(project$metadata$fields$form_name))]
   for (form_name in form_names) {
     new_row <- data.frame(
       field_name = paste0(form_name, "_complete"),
@@ -127,16 +127,16 @@ get_REDCap_metadata <- function(DB, include_users = TRUE) {
       field_label = paste0(form_name, "_complete") %>% strsplit("_") %>% unlist() %>% stringr::str_to_title() %>% paste0(collapse = " "),
       select_choices_or_calculations = "0, Incomplete | 1, Unverified | 2, Complete"
     )
-    last_row <- nrow(DB$metadata$fields)
-    rows <- which(DB$metadata$fields$form_name == form_name)
+    last_row <- nrow(project$metadata$fields)
+    rows <- which(project$metadata$fields$form_name == form_name)
     if (length(rows) == 0) rows <- last_row
     row <- dplyr::last(rows)
-    top <- DB$metadata$fields[1:row, ]
+    top <- project$metadata$fields[1:row, ]
     bottom <- NULL
     if (last_row > row) {
-      bottom <- DB$metadata$fields[(row + 1):last_row, ]
+      bottom <- project$metadata$fields[(row + 1):last_row, ]
     }
-    DB$metadata$fields <- top %>%
+    project$metadata$fields <- top %>%
       dplyr::bind_rows(
         new_row
       ) %>%
@@ -144,25 +144,25 @@ get_REDCap_metadata <- function(DB, include_users = TRUE) {
         bottom
       )
   }
-  if (any(DB$metadata$fields$field_type == "checkbox")) {
-    for (field_name in DB$metadata$fields$field_name[which(DB$metadata$fields$field_type == "checkbox")]) {
-      x <- DB$metadata$fields$select_choices_or_calculations[which(DB$metadata$fields$field_name == field_name)] %>% split_choices()
+  if (any(project$metadata$fields$field_type == "checkbox")) {
+    for (field_name in project$metadata$fields$field_name[which(project$metadata$fields$field_type == "checkbox")]) {
+      x <- project$metadata$fields$select_choices_or_calculations[which(project$metadata$fields$field_name == field_name)] %>% split_choices()
       new_rows <- data.frame(
         field_name = paste0(field_name, "___", x$code),
-        form_name = DB$metadata$fields$form_name[which(DB$metadata$fields$field_name == field_name)],
+        form_name = project$metadata$fields$form_name[which(project$metadata$fields$field_name == field_name)],
         field_label = x$name,
-        # field_label_full=paste0(DB$metadata$fields$field_label[which(DB$metadata$fields$field_name==field_name)]," - ",x$name),
+        # field_label_full=paste0(project$metadata$fields$field_label[which(project$metadata$fields$field_name==field_name)]," - ",x$name),
         field_type = "checkbox_choice",
         select_choices_or_calculations = c("0, Unchecked | 1, Checked")
       )
-      row <- which(DB$metadata$fields$field_name == field_name)
-      last_row <- nrow(DB$metadata$fields)
-      top <- DB$metadata$fields[1:row, ]
+      row <- which(project$metadata$fields$field_name == field_name)
+      last_row <- nrow(project$metadata$fields)
+      top <- project$metadata$fields[1:row, ]
       bottom <- NULL
       if (last_row > row) {
-        bottom <- DB$metadata$fields[(row + 1):last_row, ]
+        bottom <- project$metadata$fields[(row + 1):last_row, ]
       }
-      DB$metadata$fields <- top %>%
+      project$metadata$fields <- top %>%
         dplyr::bind_rows(
           new_rows
         ) %>%
@@ -171,113 +171,113 @@ get_REDCap_metadata <- function(DB, include_users = TRUE) {
         )
     }
   }
-  if (any(DB$metadata$fields$field_type == "yesno")) {
-    DB$metadata$fields$select_choices_or_calculations[which(DB$metadata$fields$field_type == "yesno")] <- c("0, No | 1, Yes")
+  if (any(project$metadata$fields$field_type == "yesno")) {
+    project$metadata$fields$select_choices_or_calculations[which(project$metadata$fields$field_type == "yesno")] <- c("0, No | 1, Yes")
   }
-  DB$metadata$fields <- DB %>% annotate_fields(summarize_data = FALSE)
-  DB$metadata$choices <- fields_to_choices(fields = DB$metadata$fields)
+  project$metadata$fields <- project %>% annotate_fields(summarize_data = FALSE)
+  project$metadata$choices <- fields_to_choices(fields = project$metadata$fields)
   # is longitudinal ------
-  if (DB$redcap$is_longitudinal) {
-    DB$redcap$raw_structure_cols <- c(DB$redcap$raw_structure_cols, "arm_num", "event_name") %>% unique()
-    DB$metadata$arms <- get_REDCap_method(DB, method = "exp_arms")
-    DB$redcap$has_arms <- TRUE
-    DB$redcap$has_multiple_arms <- nrow(DB$metadata$arms) > 1
-    DB$redcap$has_arms_that_matter <- DB$redcap$has_multiple_arms
-    DB$metadata$event_mapping <- get_REDCap_method(DB, method = "exp_inst_event_maps")
-    DB$metadata$events <- get_REDCap_method(DB, method = "exp_events")
-    DB$metadata$events$repeating <- FALSE
-    DB$metadata$event_mapping$repeating <- FALSE
+  if (project$redcap$is_longitudinal) {
+    project$redcap$raw_structure_cols <- c(project$redcap$raw_structure_cols, "arm_num", "event_name") %>% unique()
+    project$metadata$arms <- get_REDCap_method(project, method = "exp_arms")
+    project$redcap$has_arms <- TRUE
+    project$redcap$has_multiple_arms <- nrow(project$metadata$arms) > 1
+    project$redcap$has_arms_that_matter <- project$redcap$has_multiple_arms
+    project$metadata$event_mapping <- get_REDCap_method(project, method = "exp_inst_event_maps")
+    project$metadata$events <- get_REDCap_method(project, method = "exp_events")
+    project$metadata$events$repeating <- FALSE
+    project$metadata$event_mapping$repeating <- FALSE
     if (is.data.frame(repeatingFormsEvents)) {
-      DB$metadata$events$repeating <- DB$metadata$events$unique_event_name %in% repeatingFormsEvents$event_name[which(is.na(repeatingFormsEvents$form_name))]
+      project$metadata$events$repeating <- project$metadata$events$unique_event_name %in% repeatingFormsEvents$event_name[which(is.na(repeatingFormsEvents$form_name))]
       repeatingFormsEvents_ind <- repeatingFormsEvents[which(!is.na(repeatingFormsEvents$event_name) & !is.na(repeatingFormsEvents$form_name)), ]
       if (nrow(repeatingFormsEvents_ind) > 0) {
         rows_event_mapping <- seq_len(nrow(repeatingFormsEvents_ind)) %>%
           lapply(function(i) {
-            which(DB$metadata$event_mapping$unique_event_name == repeatingFormsEvents_ind$event_name[i] & DB$metadata$event_mapping$form == repeatingFormsEvents_ind$form_name[i])
+            which(project$metadata$event_mapping$unique_event_name == repeatingFormsEvents_ind$event_name[i] & project$metadata$event_mapping$form == repeatingFormsEvents_ind$form_name[i])
           }) %>%
           unlist()
-        DB$metadata$event_mapping$repeating[rows_event_mapping] <- TRUE
+        project$metadata$event_mapping$repeating[rows_event_mapping] <- TRUE
       }
     }
-    DB$metadata$events$forms <- DB$metadata$events$unique_event_name %>%
+    project$metadata$events$forms <- project$metadata$events$unique_event_name %>%
       lapply(function(events) {
-        DB$metadata$event_mapping$form[which(DB$metadata$event_mapping$unique_event_name == events)] %>%
+        project$metadata$event_mapping$form[which(project$metadata$event_mapping$unique_event_name == events)] %>%
           unique() %>%
           paste0(collapse = " | ")
       }) %>%
       unlist()
-    if (DB$redcap$has_arms_that_matter) {
-      DB$redcap$has_arms_that_matter <- DB$metadata$arms$arm_num %>%
+    if (project$redcap$has_arms_that_matter) {
+      project$redcap$has_arms_that_matter <- project$metadata$arms$arm_num %>%
         lapply(function(arm) {
-          DB$metadata$event_mapping$form[which(DB$metadata$event_mapping$arm_num == arm)]
+          project$metadata$event_mapping$form[which(project$metadata$event_mapping$arm_num == arm)]
         }) %>%
         check_match() %>%
         magrittr::not()
     }
-    # if(is.data.frame(DB$unique_events)){
-    #   DB$metadata$events <- data.frame(
-    #     event_name = unique(DB$unique_events$event_name),
-    #     arms = unique(DB$unique_events$event_name) %>% lapply(function(event_name){
-    #       DB$unique_events$arm_num[which(DB$unique_events$event_name==event_name)] %>% unique() %>% paste0(collapse = " | ")
+    # if(is.data.frame(project$unique_events)){
+    #   project$metadata$events <- data.frame(
+    #     event_name = unique(project$unique_events$event_name),
+    #     arms = unique(project$unique_events$event_name) %>% lapply(function(event_name){
+    #       project$unique_events$arm_num[which(project$unique_events$event_name==event_name)] %>% unique() %>% paste0(collapse = " | ")
     #     })
     #   )
     # }
-    DB$metadata$forms$repeating_via_events <- FALSE
-    DB$metadata$forms$repeating_via_events[
+    project$metadata$forms$repeating_via_events <- FALSE
+    project$metadata$forms$repeating_via_events[
       which(
-        DB$metadata$forms$form_name %>% lapply(function(form_name) {
+        project$metadata$forms$form_name %>% lapply(function(form_name) {
           # form_name <- forms$form_name %>% sample(1)
-          anyDuplicated(DB$metadata$event_mapping$arm_num[which(DB$metadata$event_mapping$form == form_name)]) > 0
+          anyDuplicated(project$metadata$event_mapping$arm_num[which(project$metadata$event_mapping$form == form_name)]) > 0
         }) %>% unlist()
       )
     ] <- TRUE
   } else {
-    DB$redcap$has_arms <- FALSE
-    DB$redcap$has_multiple_arms <- FALSE
-    DB$redcap$has_arms_that_matter <- FALSE
-    DB$metadata$event_mapping <- NA
-    DB$metadata$events <- NA
+    project$redcap$has_arms <- FALSE
+    project$redcap$has_multiple_arms <- FALSE
+    project$redcap$has_arms_that_matter <- FALSE
+    project$metadata$event_mapping <- NA
+    project$metadata$events <- NA
   }
   # other-------
   if (include_users) {
-    DB$redcap$users <- get_REDCap_users(DB)
-    DB$redcap$log <- get_REDCap_log(DB, last = 2, units = "mins")
-    DB$redcap$users$current_user <- DB$redcap$users$username == DB$redcap$log$username[which(DB$redcap$log$details == "Export REDCap version (API)") %>% dplyr::first()]
+    project$redcap$users <- get_REDCap_users(project)
+    project$redcap$log <- get_REDCap_log(project, last = 2, units = "mins")
+    project$redcap$users$current_user <- project$redcap$users$username == project$redcap$log$username[which(project$redcap$log$details == "Export REDCap version (API)") %>% dplyr::first()]
   }
-  DB$links$redcap_home <- paste0(DB$links$redcap_base, "redcap_v", DB$redcap$version, "/index.php?pid=", DB$redcap$project_id)
-  DB$links$redcap_record_home <- paste0(DB$links$redcap_base, "redcap_v", DB$redcap$version, "/DataEntry/record_home.php?pid=", DB$redcap$project_id)
-  DB$links$redcap_record_subpage <- paste0(DB$links$redcap_base, "redcap_v", DB$redcap$version, "/DataEntry/index.php?pid=", DB$redcap$project_id)
-  DB$links$redcap_records_dashboard <- paste0(DB$links$redcap_base, "redcap_v", DB$redcap$version, "/DataEntry/record_status_dashboard.php?pid=", DB$redcap$project_id)
-  DB$links$redcap_API <- paste0(DB$links$redcap_base, "redcap_v", DB$redcap$version, "/API/project_api.php?pid=", DB$redcap$project_id)
-  DB$links$redcap_API_playground <- paste0(DB$links$redcap_base, "redcap_v", DB$redcap$version, "/API/playground.php?pid=", DB$redcap$project_id)
-  return(DB)
+  project$links$redcap_home <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/index.php?pid=", project$redcap$project_id)
+  project$links$redcap_record_home <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/DataEntry/record_home.php?pid=", project$redcap$project_id)
+  project$links$redcap_record_subpage <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/DataEntry/index.php?pid=", project$redcap$project_id)
+  project$links$redcap_records_dashboard <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/DataEntry/record_status_dashboard.php?pid=", project$redcap$project_id)
+  project$links$redcap_API <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/API/project_api.php?pid=", project$redcap$project_id)
+  project$links$redcap_API_playground <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/API/playground.php?pid=", project$redcap$project_id)
+  return(project)
 }
 #' @noRd
-get_REDCap_version <- function(DB, show_method_help = TRUE) {
+get_REDCap_version <- function(project, show_method_help = TRUE) {
   return(
     get_REDCap_method(
-      DB = DB,
+      project = project,
       method = "exp_rc_v",
       show_method_help = show_method_help
     )
   )
 }
 #' @noRd
-get_REDCap_files <- function(DB, original_file_names = FALSE, overwrite = FALSE) {
-  file_rows <- which(DB$metadata$fields$field_type == "file")
-  out_dir <- file.path(DB$dir_path, "REDCap", DB$short_name, "files")
+get_REDCap_files <- function(project, original_file_names = FALSE, overwrite = FALSE) {
+  file_rows <- which(project$metadata$fields$field_type == "file")
+  out_dir <- file.path(project$dir_path, "REDCap", project$short_name, "files")
   if (length(file_rows) > 0) {
     dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
-    for (field_name in DB$metadata$fields$field_name[file_rows]) {
+    for (field_name in project$metadata$fields$field_name[file_rows]) {
       out_dir_folder <- file.path(out_dir, field_name)
       dir.create(out_dir_folder, showWarnings = FALSE, recursive = TRUE)
-      form_name <- DB$metadata$fields$form_name[which(DB$metadata$fields$field_name == field_name)]
-      is_repeating <- DB$metadata$forms$repeating[which(DB$metadata$forms$form_name == form_name)]
-      form <- DB$data[[form_name]]
+      form_name <- project$metadata$fields$form_name[which(project$metadata$fields$field_name == field_name)]
+      is_repeating <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == form_name)]
+      form <- project$data[[form_name]]
       rows_to_save <- which(!is.na(form[[field_name]]))
       for (i in rows_to_save) {
         file_name <- form[[field_name]][i]
-        record_id <- form[[DB$redcap$id_col]][i]
+        record_id <- form[[project$redcap$id_col]][i]
         repeat_instance <- form[["redcap_repeat_instance"]][i]
         redcap_event_name <- form[["redcap_event_name"]][i]
         if (!original_file_names) {
@@ -289,10 +289,10 @@ get_REDCap_files <- function(DB, original_file_names = FALSE, overwrite = FALSE)
         file_name <- ifelse(original_file_names, file_name, paste0(form_name, "_", field_name, "_", ifelse(is_repeating, "inst_", ""), repeat_instance, "ID_", record_id, ".", tools::file_ext(file_name)))
         if (!file.exists(file.path(out_dir_folder, file_name)) || overwrite) {
           REDCapR::redcap_file_download_oneshot(
-            redcap_uri = DB$links$redcap_uri,
-            token = validate_REDCap_token(DB),
+            redcap_uri = project$links$redcap_uri,
+            token = validate_REDCap_token(project),
             field = field_name,
-            record = form[[DB$redcap$id_col]][i],
+            record = form[[project$redcap$id_col]][i],
             directory = out_dir_folder,
             file_name = file_name,
             event = redcap_event_name,
@@ -307,19 +307,19 @@ get_REDCap_files <- function(DB, original_file_names = FALSE, overwrite = FALSE)
   bullet_in_console("Checked for files! Stored at ...", file = out_dir, bullet_type = "v")
 }
 #' @noRd
-get_REDCap_users <- function(DB) {
-  users <- get_REDCap_method(DB, method = "exp_users")
-  userRole <- get_REDCap_method(DB, method = "exp_user_roles") %>% dplyr::select("unique_role_name", "role_label")
-  userRoleMapping <- get_REDCap_method(DB, method = "exp_user_role_maps")
+get_REDCap_users <- function(project) {
+  users <- get_REDCap_method(project, method = "exp_users")
+  userRole <- get_REDCap_method(project, method = "exp_user_roles") %>% dplyr::select("unique_role_name", "role_label")
+  userRoleMapping <- get_REDCap_method(project, method = "exp_user_role_maps")
   final <- merge(merge(userRole, userRoleMapping, by = "unique_role_name"), users, by = "username", all.y = TRUE)
   return(final)
 }
 #' @noRd
-get_REDCap_structure <- function(DB) {
-  get_REDCap_metadata(DB, include_users = FALSE)
+get_REDCap_structure <- function(project) {
+  get_REDCap_metadata(project, include_users = FALSE)
 }
 #' @noRd
-get_REDCap_log <- function(DB, last = 24, user = "", units = "hours", begin_time = "", clean = TRUE, record = "") {
+get_REDCap_log <- function(project, last = 24, user = "", units = "hours", begin_time = "", clean = TRUE, record = "") {
   if (units == "days") {
     x <- (Sys.time() - lubridate::days(last)) %>%
       format("%Y-%m-%d %H:%M") %>%
@@ -343,7 +343,7 @@ get_REDCap_log <- function(DB, last = 24, user = "", units = "hours", begin_time
   if (begin_time != "") {
     x <- begin_time
   }
-  log <- get_REDCap_method(DB, "exp_logging", additional_args = list(beginTime = x, record = record, user = user))
+  log <- get_REDCap_method(project, "exp_logging", additional_args = list(beginTime = x, record = record, user = user))
   if (is.data.frame(log)) {
     if (clean) {
       log <- log %>% clean_redcap_log()
@@ -352,10 +352,10 @@ get_REDCap_log <- function(DB, last = 24, user = "", units = "hours", begin_time
   log # deal with if NA if user does not have log privileges.
 }
 #' @noRd
-get_REDCap_raw_data <- function(DB, labelled = FALSE, records = NULL, batch_size = 1000) {
+get_REDCap_raw_data <- function(project, labelled = FALSE, records = NULL, batch_size = 1000) {
   raw <- REDCapR::redcap_read(
-    redcap_uri = DB$links$redcap_uri,
-    token = validate_REDCap_token(DB),
+    redcap_uri = project$links$redcap_uri,
+    token = validate_REDCap_token(project),
     # forms = forms,
     # events = events,
     batch_size = batch_size,
@@ -369,23 +369,23 @@ get_REDCap_raw_data <- function(DB, labelled = FALSE, records = NULL, batch_size
 #' @description
 #' This function deletes one or more records from a REDCap project using the REDCap API. It sends a `delete` action request for each specified record and ensures that only records present in the database are processed.
 #'
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @param records A character vector of record IDs to be deleted from the REDCap project.
 #' @return NULL. The function does not return a value but will print a message confirming deletion.
 #'
 #' @details
-#' The function checks whether the records to be deleted are included in the `DB$summary$all_records` list. If any records are not found, an error is thrown. Otherwise, the function proceeds to delete each specified record from the REDCap project via the REDCap API.
+#' The function checks whether the records to be deleted are included in the `project$summary$all_records` list. If any records are not found, an error is thrown. Otherwise, the function proceeds to delete each specified record from the REDCap project via the REDCap API.
 #' The `delete` action is executed using the `httr::POST` method, sending the necessary request to the REDCap server.
 #'
 #' @export
-delete_REDCap_records <- function(DB, records) {
-  BAD <- records[which(!records %in% DB$summary$all_records[[DB$redcap$id_col]])]
-  if (length(BAD) > 0) stop("Records not included in DB: ", records %>% paste0(collapse = ", "))
+delete_REDCap_records <- function(project, records) {
+  BAD <- records[which(!records %in% project$summary$all_records[[project$redcap$id_col]])]
+  if (length(BAD) > 0) stop("Records not included in project: ", records %>% paste0(collapse = ", "))
   for (record in records) {
     httr::POST(
-      url = DB$links$redcap_uri,
+      url = project$links$redcap_uri,
       body = list(
-        "token" = validate_REDCap_token(DB),
+        "token" = validate_REDCap_token(project),
         content = "record",
         action = "delete",
         `records[0]` = record,

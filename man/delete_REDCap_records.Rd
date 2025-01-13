@@ -4,11 +4,11 @@
 \alias{delete_REDCap_records}
 \title{Delete Records from REDCap}
 \usage{
-delete_REDCap_records(DB, records)
+delete_REDCap_records(project, records)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and
-settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{project}{A validated \code{project} object containing REDCap project data and
+settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{records}{A character vector of record IDs to be deleted from the REDCap project.}
 }
@@ -19,6 +19,6 @@ NULL. The function does not return a value but will print a message confirming d
 This function deletes one or more records from a REDCap project using the REDCap API. It sends a \code{delete} action request for each specified record and ensures that only records present in the database are processed.
 }
 \details{
-The function checks whether the records to be deleted are included in the \code{DB$summary$all_records} list. If any records are not found, an error is thrown. Otherwise, the function proceeds to delete each specified record from the REDCap project via the REDCap API.
+The function checks whether the records to be deleted are included in the \code{project$summary$all_records} list. If any records are not found, an error is thrown. Otherwise, the function proceeds to delete each specified record from the REDCap project via the REDCap API.
 The \code{delete} action is executed using the \code{httr::POST} method, sending the necessary request to the REDCap server.
 }

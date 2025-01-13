@@ -1,28 +1,28 @@
 #' @title Get REDCap Report
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @param report_id character or integer of REDCap report ID. This can be found at the end of the URL of the report.
 #' @param silent Logical (TRUE/FALSE). For messages.
 #' @return data.frame of REDCap report
 #' @export
-get_REDCap_report <- function(DB, report_id, silent = TRUE) {
+get_REDCap_report <- function(project, report_id, silent = TRUE) {
   report_id <- as.integer(report_id)
   report <- REDCapR::redcap_report(
-    redcap_uri = DB$links$redcap_uri,
-    token = validate_REDCap_token(DB),
+    redcap_uri = project$links$redcap_uri,
+    token = validate_REDCap_token(project),
     report_id = report_id,
     verbose = !silent
   )
   return(report)
 }
 #' @noRd
-get_REDCap_data <- function(DB, labelled = TRUE, records = NULL, batch_size = 2000) {
+get_REDCap_data <- function(project, labelled = TRUE, records = NULL, batch_size = 2000) {
   data_list <- list()
   raw <- get_REDCap_raw_data(
-    DB = DB,
+    project = project,
     labelled = FALSE,
     records = records,
     batch_size = batch_size
   )
-  data_list <- raw %>% raw_process_redcap(DB = DB, labelled = labelled)
+  data_list <- raw %>% raw_process_redcap(project = project, labelled = labelled)
   return(data_list)
 }

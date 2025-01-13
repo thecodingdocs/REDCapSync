@@ -4,13 +4,13 @@
 \alias{delete_REDCap_file}
 \title{Uploads a folder name to REDCap}
 \usage{
-delete_REDCap_file(DB, doc_id)
+delete_REDCap_file(project, doc_id)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and
-settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{project}{A validated \code{project} object containing REDCap project data and
+settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{doc_id}{from the file list \code{get_REDCap_file_repository(DB)}}
+\item{doc_id}{from the file list \code{get_REDCap_file_repository(project)}}
 }
 \value{
 messages for confirmation

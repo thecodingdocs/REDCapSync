@@ -27,12 +27,11 @@ reference:
     desc: For basic users use these core functions to maintain REDCap data pipelines. Setup or Load your project. Update from REDCap using what is already saved. Save the outputs to a directory.
     contents:
       - get_projects
-      - setup_DB
-      - load_DB
-      - update_DB
-      - REDCap_diagram
+      - setup_project
+      - load_project
+      - sync_project
       - drop_REDCap_to_directory
-      - summarize_DB
+      - summarize_project
 
   - title: Everything by Topic (Intermediate/Advanced)
     desc: Expands on functionality and breaksdown core feautures into more customizable parts
@@ -50,18 +49,18 @@ reference:
       - set_REDCap_token
       - view_REDCap_token
       - test_REDCap_token
-  - subtitle: Setup/Load/Save/Delete DB Object
-    desc: DB objects are R lists meant to store all metadata and data for a single REDCap project. They utilize the REDCap log to only fetch recent updates. The can be "mirrored" to a local/cloud directory to maintain file pipelines and/or used for an exploratory data analysis shiny app via `RosyREDCap::run_RosyREDCap`.
+  - subtitle: Setup/Load/Save/Delete project Object
+    desc: project objects are R lists meant to store all metadata and data for a single REDCap project. They utilize the REDCap log to only fetch recent updates. The can be "mirrored" to a local/cloud directory to maintain file pipelines and/or used for an exploratory data analysis shiny app via `RosyREDCap::run_RosyREDCap`.
     contents:
-      - setup_DB
-      - load_DB
-      - load_DB_from_path
-      - delete_DB
-      - save_DB
+      - setup_project
+      - load_project
+      - load_project_from_path
+      - delete_project
+      - save_project
   - subtitle: Get from REDCap
-    desc: For most project, even with tens-of-thousands records and hundreds of variables, this can be handeled with update_DB. This package is not presently intended for massive REDCap projects.
+    desc: For most project, even with tens-of-thousands records and hundreds of variables, this can be handeled with sync_project. This package is not presently intended for massive REDCap projects.
     contents:
-      - update_DB
+      - sync_project
       - get_REDCap_report
   - subtitle: Data Helpers
     desc: Used for managing to-be-upload data
@@ -75,37 +74,36 @@ reference:
     desc: Always use with caution! Package takes several steps to test and confirm uploads but ultimately the user is responsible for data changes. Remember REDCap always keeps a log of changes.
     contents:
       - add_REDCap_folder
-      - upload_DB_to_REDCap
+      - upload_project_to_REDCap
       - upload_file_to_REDCap
       - upload_file_to_REDCap_file_repository
       - upload_form_to_REDCap
-      - upload_transform_to_DB
+      - upload_transform_to_project
       - delete_REDCap_file
       - delete_REDCap_records
       - delete_file_from_REDCap
-  - subtitle: DB Object Modifications
+  - subtitle: project Object Modifications
     desc: One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
     contents:
-      - clean_DB
-      - deidentify_DB
-      - filter_DB
+      - clean_project
+      - deidentify_project
+      - filter_project
       - add_default_forms_transformation
-      - add_DB_subset
+      - add_project_subset
       - add_field_transformation
-      - transform_DB
-      - untransform_DB
-  - subtitle: DB Object Outputs
-    desc: Mirror your DB object to a local/cloud file system. If you have subsets, will only update file if record beloning to that subset was updated.
+      - transform_project
+      - untransform_project
+  - subtitle: project Object Outputs
+    desc: Mirror your project object to a local/cloud file system. If you have subsets, will only update file if record beloning to that subset was updated.
     contents:
-      - REDCap_diagram
       - drop_REDCap_to_directory
       - generate_horizontal_transform
       - generate_summary_from_subset_name
-      - summarize_DB
+      - summarize_project
   - subtitle: Experimental/Dev Functions
     desc: These functions are still in development and is subject to changes.
     contents:
-      - rmarkdown_DB
+      - rmarkdown_project
       - run_quality_checks
       - edit_REDCap_while_viewing
   - subtitle: Other Helpers
@@ -136,7 +134,7 @@ articles:
   - title: Setup
     contents:
       - project_cache
-      - DB_object
+      - project_object
       - multiple_projects
   - title: File Management
     contents:

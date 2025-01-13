@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 REDCap API tokens are equivalent to your username and password. They should never be shared with anyone. Ideally, they should never be directly written in an R script, especially if you plan on sharing it in the future. **Never commit a file containing your token on git or GitHub because this will forever be in the history.** If there is ever any doubt in your mind you should quickly regenerate your token on the REDCap website. If you are working on a *real* REDCap project it's good practice to regenerate your token periodically, such as once a week, just to be safe.
 
-Precisely because tokens are sensitive, REDCapSync is designed to only reference the name of your token, such as "REDCapSync_TEST". If REDCapSync ever wants to use the token to make an API call to REDCap, it will check `Sys.getenv("REDCapSync_TEST")`. By default are token names start with "REDCapSync_", followed by the `short_name` you chose in `setup_DB()`.Below demonstrates how to set and check your tokens...
+Precisely because tokens are sensitive, REDCapSync is designed to only reference the name of your token, such as "REDCapSync_TEST". If REDCapSync ever wants to use the token to make an API call to REDCap, it will check `Sys.getenv("REDCapSync_TEST")`. By default are token names start with "REDCapSync_", followed by the `short_name` you chose in `setup_project()`.Below demonstrates how to set and check your tokens...
 
 ## Setting Your Token for One Session
 
@@ -26,9 +26,9 @@ Precisely because tokens are sensitive, REDCapSync is designed to only reference
 library(REDCapSync)
 Sys.getenv("REDCapSync_TEST")
 #>[1] ""
-# Assuming you already setup or loaded a DB object you can set the token like this...
-DB <- load_DB("TEST")
-set_REDCap_token(DB)
+# Assuming you already setup or loaded a project object you can set the token like this...
+project <- load_project("TEST")
+set_REDCap_token(project)
 ```
 
 You can also set manually with base R. Unless you specifically set the token `Sys.getenv("REDCapSync_TEST")` will be blank.
@@ -66,17 +66,17 @@ usethis::edit_r_environ()
 Sys.getenv("REDCapSync_TEST") # now should contain your token
 ```
 
-The only reference to your token that is ever made or saved in REDCapSync is with its name. For example, any REDCap DB object will have the token name at `DB$token_name`. In the future, we may set our token in a different way. 
+The only reference to your token that is ever made or saved in REDCapSync is with its name. For example, any REDCap project object will have the token name at `project$token_name`. In the future, we may set our token in a different way. 
 
 ## Testing Your Token (optional)
 
-If you are ever having any issues with your token, you can test your DB object with `view_REDCap_token(DB)` and/or `test_REDCap_token(DB)`
+If you are ever having any issues with your token, you can test your project object with `view_REDCap_token(project)` and/or `test_REDCap_token(project)`
 
 ```{r, eval=FALSE}
 
-view_REDCap_token(DB)
+view_REDCap_token(project)
 
-test_REDCap_token(DB)
+test_REDCap_token(project)
 
 ```
 

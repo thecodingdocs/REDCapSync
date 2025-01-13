@@ -5,7 +5,7 @@
 \title{Edit REDCap Data While Viewing}
 \usage{
 edit_REDCap_while_viewing(
-  DB,
+  project,
   optional_DF,
   records,
   field_name_to_change,
@@ -14,8 +14,8 @@ edit_REDCap_while_viewing(
 )
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and
-settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{project}{A validated \code{project} object containing REDCap project data and
+settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{optional_DF}{Optional data frame. A data frame containing the data to be edited. If not provided, the function will pull the data from the REDCap database using the specified \code{field_name_to_change}.}
 
@@ -28,7 +28,7 @@ settings. Generated using \link{load_DB} or \link{setup_DB}}
 \item{upload_individually}{Logical. If \code{TRUE}, each change is uploaded individually. Default is \code{TRUE}.}
 }
 \value{
-A modified \code{DB} object with changes to the specified field(s) in the REDCap project.
+A modified \code{project} object with changes to the specified field(s) in the REDCap project.
 }
 \description{
 Allows for editing a specific field in a REDCap project while simultaneously viewing the corresponding records and fields from other forms. Supports viewing and updating records individually, with flexible field selection.
@@ -37,5 +37,5 @@ Allows for editing a specific field in a REDCap project while simultaneously vie
 This function is useful when you want to edit specific fields in a REDCap project while also reviewing related data from other forms in the project. The \code{field_name_to_change} must be provided, and you can also specify additional fields to view while editing. The data is either passed through \code{optional_DF} or pulled from the project based on the provided field names.
 }
 \seealso{
-\code{\link{save_DB}} for saving the modified database.
+\code{\link{save_project}} for saving the modified database.
 }

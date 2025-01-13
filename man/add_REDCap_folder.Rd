@@ -4,11 +4,11 @@
 \alias{add_REDCap_folder}
 \title{Uploads a folder name to REDCap}
 \usage{
-add_REDCap_folder(DB, name)
+add_REDCap_folder(project, name)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and
-settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{project}{A validated \code{project} object containing REDCap project data and
+settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{name}{folder name}
 }

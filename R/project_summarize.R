@@ -1,39 +1,39 @@
-#' @title Clean DB columns for plotting using the metadata
+#' @title Clean project columns for plotting using the metadata
 #' @description
-#' This function cleans the columns of a `DB` object, transforming choice fields into factors and ensuring numeric columns are set correctly for table processing or plotting (e.g., using `table1`). It handles the transformation of missing values and optional removal of certain codes based on user input.
+#' This function cleans the columns of a `project` object, transforming choice fields into factors and ensuring numeric columns are set correctly for table processing or plotting (e.g., using `table1`). It handles the transformation of missing values and optional removal of certain codes based on user input.
 #'
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @param drop_blanks Logical. If TRUE, will drop choice fields with zero occurrences (n = 0). Default is FALSE.
 #' @param other_drops A list of additional fields or choices to drop from the data. Defaults to NULL.
 #'
-#' @return A cleaned `DB` object ready for table or plot processing.
+#' @return A cleaned `project` object ready for table or plot processing.
 #'
 #' @details
-#' The function works by cleaning up the data frame list (`DB$data`) according to the metadata (`DB$metadata$fields`). It converts choice fields into factors, numeric fields are treated appropriately, and any unwanted or missing codes can be dropped based on the parameters provided. The function also ensures that the data is only cleaned once by checking the internal `is_clean` flag.
+#' The function works by cleaning up the data frame list (`project$data`) according to the metadata (`project$metadata$fields`). It converts choice fields into factors, numeric fields are treated appropriately, and any unwanted or missing codes can be dropped based on the parameters provided. The function also ensures that the data is only cleaned once by checking the internal `is_clean` flag.
 #'
 #' @note
-#' The function will not proceed with cleaning if `DB$internals$is_clean` is already TRUE, signaling that the DB has already been cleaned.
+#' The function will not proceed with cleaning if `project$internals$is_clean` is already TRUE, signaling that the project has already been cleaned.
 #' @export
-clean_DB <- function(DB, drop_blanks = FALSE, other_drops = NULL) { # problematic because setting numeric would delete missing codes
-  # DB <-  DB %>% annotate_fields(skim = FALSE)
-  if (!is_something(DB)) {
-    return(DB)
+clean_project <- function(project, drop_blanks = FALSE, other_drops = NULL) { # problematic because setting numeric would delete missing codes
+  # project <-  project %>% annotate_fields(skim = FALSE)
+  if (!is_something(project)) {
+    return(project)
   }
-  if (!is_something(DB$data)) {
-    return(DB)
+  if (!is_something(project$data)) {
+    return(project)
   }
-  if (DB$internals$is_clean) {
+  if (project$internals$is_clean) {
     bullet_in_console("Already Clean", bullet_type = "v")
-    return(DB)
+    return(project)
   }
-  DB$data <- clean_DF_list(
-    DF_list = DB$data,
-    fields = DB$metadata$fields,
+  project$data <- clean_DF_list(
+    DF_list = project$data,
+    fields = project$metadata$fields,
     drop_blanks = drop_blanks,
     other_drops = other_drops
   )
-  DB$internals$is_clean <- TRUE
-  return(DB)
+  project$internals$is_clean <- TRUE
+  return(project)
 }
 #' @noRd
 fields_to_choices <- function(fields) {
@@ -80,8 +80,8 @@ add_labels_to_checkbox <- function(fields) {
   return(fields)
 }
 #' @noRd
-annotate_fields <- function(DB, summarize_data = TRUE) {
-  fields <- DB$metadata$fields # [,colnames(get_original_fields(DB))]
+annotate_fields <- function(project, summarize_data = TRUE) {
+  fields <- project$metadata$fields # [,colnames(get_original_fields(project))]
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields <- add_labels_to_checkbox(fields)
   fields <- fields[which(fields$field_type != "checkbox"), ]
@@ -99,9 +99,9 @@ annotate_fields <- function(DB, summarize_data = TRUE) {
   fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "datetime_dmy")] <- "datetime"
   fields$in_original_redcap <- TRUE
   fields$original_form_name <- fields$form_name
-  if (DB$internals$is_transformed) {
-    fields$in_original_redcap <- fields$field_name %in% DB$transformation$original_fields$field_name
-    fields$original_form_name <- DB$transformation$original_fields$form_name[match(fields$field_name, DB$transformation$original_fields$field_name)]
+  if (project$internals$is_transformed) {
+    fields$in_original_redcap <- fields$field_name %in% project$transformation$original_fields$field_name
+    fields$original_form_name <- project$transformation$original_fields$form_name[match(fields$field_name, project$transformation$original_fields$field_name)]
   }
   if (!"units" %in% colnames(fields)) fields$units <- NA
   if (!"field_label_short" %in% colnames(fields)) fields$field_label_short <- fields$field_label
@@ -110,7 +110,7 @@ annotate_fields <- function(DB, summarize_data = TRUE) {
     skimmed <- NULL
     for (form in unique(fields$form_name)) {
       COLS <- fields$field_name[which(fields$form_name == form)]
-      CHECK_THIS <- DB$data[[form]]
+      CHECK_THIS <- project$data[[form]]
       COLS <- COLS[which(COLS %in% colnames(CHECK_THIS))]
       skimmed <- skimmed %>% dplyr::bind_rows(CHECK_THIS[, COLS] %>% skimr::skim())
     }
@@ -122,20 +122,20 @@ annotate_fields <- function(DB, summarize_data = TRUE) {
       }) %>%
       dplyr::bind_rows()
   }
-  # bullet_in_console("Annotated `DB$metadata$fields`",bullet_type = "v")
+  # bullet_in_console("Annotated `project$metadata$fields`",bullet_type = "v")
   return(fields)
 }
 #' @noRd
-annotate_forms <- function(DB, summarize_data = TRUE) {
-  forms <- DB$metadata$forms
-  # forms <- get_original_forms(DB)
-  # if(!is.null(DB$metadata$form_key_cols)){
+annotate_forms <- function(project, summarize_data = TRUE) {
+  forms <- project$metadata$forms
+  # forms <- get_original_forms(project)
+  # if(!is.null(project$metadata$form_key_cols)){
   #   forms$key_cols <- forms$form_name %>% lapply(function(IN){
-  #     DB$metadata$form_key_cols[[IN]] %>% paste0(collapse = "+")
+  #     project$metadata$form_key_cols[[IN]] %>% paste0(collapse = "+")
   #   })
   #   forms$key_names <- forms$form_name %>% lapply(function(IN){
   #     row_match <- which(forms$form_name==IN)
-  #     if(!forms$repeating[row_match])return(DB$metadata$form_key_cols[[IN]])
+  #     if(!forms$repeating[row_match])return(project$metadata$form_key_cols[[IN]])
   #     return(paste0(forms$form_name[row_match],"_key"))
   #   })
   # }
@@ -148,7 +148,7 @@ annotate_forms <- function(DB, summarize_data = TRUE) {
             strsplit(" [:|:] ") %>%
             unlist() %>%
             lapply(function(form_name) {
-              (DB$data[[form_name]][[paste0(form_name, "_complete")]] == status) %>%
+              (project$data[[form_name]][[paste0(form_name, "_complete")]] == status) %>%
                 which() %>%
                 length()
             }) %>%
@@ -161,10 +161,10 @@ annotate_forms <- function(DB, summarize_data = TRUE) {
   return(forms)
 }
 #' @noRd
-annotate_choices <- function(DB, summarize_data = TRUE) {
-  # forms <- DB$metadata$forms
-  # fields <- DB$metadata$fields
-  choices <- DB$metadata$choices
+annotate_choices <- function(project, summarize_data = TRUE) {
+  # forms <- project$metadata$forms
+  # fields <- project$metadata$fields
+  choices <- project$metadata$choices
   # choices$field_name_raw <- choices$field_name
   # choices$field_name_raw[which(choices$field_type=="checkbox_choice")] <- choices$field_name[which(choices$field_type=="checkbox_choice")] %>%
   #   strsplit("___") %>%
@@ -172,12 +172,12 @@ annotate_choices <- function(DB, summarize_data = TRUE) {
   # choices$field_label_raw <- choices$field_label
   # choices$field_label_raw[which(choices$field_type=="checkbox_choice")] <- choices$field_name_raw[which(choices$field_type=="checkbox_choice")] %>%
   #   lapply(function(X){
-  #     DB$metadata$fields$field_label[which(fields$field_name==X)] %>% unique()
+  #     project$metadata$fields$field_label[which(fields$field_name==X)] %>% unique()
   #   })
   if (summarize_data) {
     choices$n <- seq_len(nrow(choices)) %>%
       lapply(function(i) {
-        DF <- DB$data[[choices$form_name[i]]]
+        DF <- project$data[[choices$form_name[i]]]
         if (is.null(DF)) {
           return(0)
         }
@@ -190,7 +190,7 @@ annotate_choices <- function(DB, summarize_data = TRUE) {
       unlist()
     choices$n_total <- seq_len(nrow(choices)) %>%
       lapply(function(i) {
-        DF <- DB$data[[choices$form_name[i]]]
+        DF <- project$data[[choices$form_name[i]]]
         if (is.null(DF)) {
           return(0)
         }
@@ -205,21 +205,21 @@ annotate_choices <- function(DB, summarize_data = TRUE) {
       magrittr::multiply_by(100) %>%
       round(1) %>%
       paste0("%")
-    # DB$summary$choices <- choices
-    # bullet_in_console("Annotated `DB$summary$choices`",bullet_type = "v")
+    # project$summary$choices <- choices
+    # bullet_in_console("Annotated `project$summary$choices`",bullet_type = "v")
   }
   return(choices)
 }
 #' @noRd
-fields_with_no_data <- function(DB) {
-  DB$metadata$fields$field_name[which(is.na(DB$metadata$fields$complete_rate) & !DB$metadata$fields$field_type %in% c("checkbox", "descriptive"))]
+fields_with_no_data <- function(project) {
+  project$metadata$fields$field_name[which(is.na(project$metadata$fields$complete_rate) & !project$metadata$fields$field_type %in% c("checkbox", "descriptive"))]
 }
 #' @noRd
-reverse_clean_DB <- function(DB) { # problematic because setting numeric would delete missing codes
-  DB$data <- all_character_cols_list(DB$data)
-  DB$data_update <- DB$data_update %>% all_character_cols_list()
-  DB$internals$is_clean <- FALSE
-  return(DB)
+reverse_clean_project <- function(project) { # problematic because setting numeric would delete missing codes
+  project$data <- all_character_cols_list(project$data)
+  project$data_update <- project$data_update %>% all_character_cols_list()
+  project$internals$is_clean <- FALSE
+  return(project)
 }
 #' @noRd
 clean_DF_list <- function(DF_list, fields, drop_blanks = TRUE, other_drops = NULL) {
@@ -320,9 +320,9 @@ clean_column_for_table <- function(col, class, label, units, levels) {
   col
 }
 # generate_cross_codebook <- function(){
-#   codebook <- DB$metadata$choices
-#   metadata <- get_original_field_names(DB)
-#   data_choice<-get_default_data_choice(DB)
+#   codebook <- project$metadata$choices
+#   metadata <- get_original_field_names(project)
+#   data_choice<-get_default_data_choice(project)
 #
 #   cross_codebook <- codebook[,c("form_name","field_name","name")]
 #   cross_codebook$label <- paste0(cross_codebook$form_name, " - ",cross_codebook$field_name, " - ", cross_codebook$name)
@@ -354,14 +354,14 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 #   rownames(all_combinations) <- NULL
 #   i <- seq_len(nrow(all_combinations)) %>% sample1()
 #   all_combinations$n <- seq_len(nrow(all_combinations)) %>% lapply(function(i){
-#     x<-DB$data[[all_combinations$form_name1[i]]]
-#     x<-DB$data[[all_combinations$form_name1[i]]]
+#     x<-project$data[[all_combinations$form_name1[i]]]
+#     x<-project$data[[all_combinations$form_name1[i]]]
 #     x[which(x[[all_combinations[i]]])]
 #
 #     ==codebook$name[i],na.rm = TRUE)
 #   }) %>% unlist()
 #   codebook$n_total <- seq_len(nrow(codebook)) %>% lapply(function(i){
-#     sum(!is.na(DB$data[[codebook$form_name[i]]][,codebook$field_name[i]]),na.rm = TRUE)
+#     sum(!is.na(project$data[[codebook$form_name[i]]][,codebook$field_name[i]]),na.rm = TRUE)
 #   }) %>% unlist()
 #   codebook$perc <-  (codebook$n/codebook$n_total) %>% round(4)
 #   codebook$perc_text <- codebook$perc %>% magrittr::multiply_by(100) %>% round(1) %>% paste0("%")
@@ -369,25 +369,25 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 # }
 #' @title Add a Subset to a REDCap Database
 #' @description
-#' Creates a subset of the main REDCap database (`DB`) based on specific filter criteria
+#' Creates a subset of the main REDCap database (`project`) based on specific filter criteria
 #' and saves it to a specified directory. The subset can be further customized with
 #' additional forms, fields, and deidentification options.
 #'
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @param subset_name Character. The name of the subset to create.
 #' @param filter_field Character. The name of the field in the database to filter on.
 #' @param filter_choices Vector. The values of `filter_field` used to define the subset.
 #' @param dir_other Character. The directory where the subset file will be saved.
 #' Default is the `output` folder within the database directory.
 #' @param file_name Character. The base name of the file where the subset will be saved.
-#' Default is `<DB$short_name>_<subset_name>`.
+#' Default is `<project$short_name>_<subset_name>`.
 #' @param form_names Character vector. Names of forms to include in the subset. Default is `NULL`, which includes all forms.
 #' @param field_names Character vector. Names of specific fields to include in the subset. Default is `NULL`, which includes all fields.
 #' @param deidentify Logical. Whether to deidentify the data in the subset. Default is `TRUE`.
 #' @param force Logical. If `TRUE`, overwrite existing subset files with the same name. Default is `FALSE`.
 #'
 #' @return
-#' A modified `DB` object that includes the newly created subset.
+#' A modified `project` object that includes the newly created subset.
 #' The subset is also saved as a file in the specified directory.
 #'
 #' @details
@@ -397,30 +397,30 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 #' is saved to a file for future use.
 #'
 #' @seealso
-#' \code{\link{save_DB}} for saving the main database or subsets.
+#' \code{\link{save_project}} for saving the main database or subsets.
 #' @export
-add_DB_subset <- function(
-    DB,
+add_project_subset <- function(
+    project,
     subset_name,
     filter_field,
     filter_choices,
-    dir_other = file.path(DB$dir_path, "output"),
-    file_name = paste0(DB$short_name, "_", subset_name),
+    dir_other = file.path(project$dir_path, "output"),
+    file_name = paste0(project$short_name, "_", subset_name),
     form_names = NULL,
     field_names = NULL,
     deidentify = TRUE,
     force = FALSE) {
-  if (is.null(DB$summary$subsets[[subset_name]]) || force) {
+  if (is.null(project$summary$subsets[[subset_name]]) || force) {
     subset_records <- NULL
-    if (filter_field == DB$redcap$id_col) {
+    if (filter_field == project$redcap$id_col) {
       records <- unique(filter_choices)
       filter_choices <- NULL
     } else {
-      form_name <- field_names_to_form_names(DB, field_names = filter_field)
-      records <- DB$data[[form_name]][[DB$redcap$id_col]][which(DB$data[[form_name]][[filter_field]] %in% filter_choices)] %>% unique()
+      form_name <- field_names_to_form_names(project, field_names = filter_field)
+      records <- project$data[[form_name]][[project$redcap$id_col]][which(project$data[[form_name]][[filter_field]] %in% filter_choices)] %>% unique()
     }
-    subset_records <- DB$summary$all_records[which(DB$summary$all_records[[DB$redcap$id_col]] %in% records), ]
-    DB$summary$subsets[[subset_name]] <- list(
+    subset_records <- project$summary$all_records[which(project$summary$all_records[[project$redcap$id_col]] %in% records), ]
+    project$summary$subsets[[subset_name]] <- list(
       subset_name = subset_name,
       filter_field = filter_field,
       filter_choices = filter_choices,
@@ -434,11 +434,11 @@ add_DB_subset <- function(
       file_path = file.path(dir_other, paste0(file_name, ".xlsx"))
     )
   }
-  return(DB)
+  return(project)
 }
 #' @noRd
 generate_summary_save_list <- function(
-    DB,
+    project,
     deidentify = TRUE,
     clean = TRUE,
     drop_blanks = TRUE,
@@ -448,66 +448,66 @@ generate_summary_save_list <- function(
     include_record_summary = TRUE,
     include_users = TRUE,
     include_log = TRUE) {
-  records <- sum_records(DB)[[1]]
+  records <- sum_records(project)[[1]]
   if (deidentify) {
-    DB <- deidentify_DB(DB)
+    project <- deidentify_project(project)
   }
   if (clean) {
-    DB <- DB %>% clean_DB(drop_blanks = drop_blanks, other_drops = other_drops) # problematic because setting numeric would delete missing codes
+    project <- project %>% clean_project(drop_blanks = drop_blanks, other_drops = other_drops) # problematic because setting numeric would delete missing codes
   }
-  to_save_list <- DB$data
+  to_save_list <- project$data
   if (include_metadata) {
-    if (annotate_metadata && is_something(DB$data)) {
-      to_save_list$forms <- annotate_forms(DB)
-      to_save_list$fields <- annotate_fields(DB)
-      to_save_list$choices <- annotate_choices(DB)
+    if (annotate_metadata && is_something(project$data)) {
+      to_save_list$forms <- annotate_forms(project)
+      to_save_list$fields <- annotate_fields(project)
+      to_save_list$choices <- annotate_choices(project)
     } else {
-      to_save_list$forms <- DB$metadata$forms
-      to_save_list$fields <- DB$metadata$fields
-      to_save_list$choices <- DB$metadata$choices
+      to_save_list$forms <- project$metadata$forms
+      to_save_list$fields <- project$metadata$fields
+      to_save_list$choices <- project$metadata$choices
     }
-    # if(DB$internals$is_transformed){
-    #   to_save_list$original_forms <- DB$transformation$original_forms
-    #   to_save_list$original_fields <- DB$transformation$original_fields
+    # if(project$internals$is_transformed){
+    #   to_save_list$original_forms <- project$transformation$original_forms
+    #   to_save_list$original_fields <- project$transformation$original_fields
     # }
   }
   if (include_record_summary) {
-    to_save_list$records <- summarize_records_from_log(DB, records = records)
+    to_save_list$records <- summarize_records_from_log(project, records = records)
   }
   if (include_users) {
-    to_save_list$users <- summarize_users_from_log(DB, records = records)
+    to_save_list$users <- summarize_users_from_log(project, records = records)
   }
   if (include_log) {
-    to_save_list$log <- get_log(DB, records = records)
+    to_save_list$log <- get_log(project, records = records)
   }
-  # to_save_list$choices <- annotate_choices(DB)
-  # to_save_list$choices <- annotate_choices(DB)
+  # to_save_list$choices <- annotate_choices(project)
+  # to_save_list$choices <- annotate_choices(project)
   return(to_save_list)
 }
 #' @noRd
 save_REDCapSync_list <- function(
-    DB,
+    project,
     to_save_list,
-    dir_other = file.path(DB$dir_path, "output"),
-    file_name = paste0(DB$short_name, "_REDCapSync"),
+    dir_other = file.path(project$dir_path, "output"),
+    file_name = paste0(project$short_name, "_REDCapSync"),
     separate = FALSE,
     with_links = TRUE) {
   link_col_list <- list()
   if (with_links) {
-    if (DB$internals$DB_type == "redcap") {
-      add_links <- which(names(to_save_list) %in% names(DB$data))
+    if (project$internals$project_type == "redcap") {
+      add_links <- which(names(to_save_list) %in% names(project$data))
       if (length(add_links) > 0) {
         to_save_list[add_links] <- to_save_list[add_links] %>% lapply(function(DF) {
-          add_redcap_links_to_DF(DF, DB)
+          add_redcap_links_to_DF(DF, project)
         })
         link_col_list <- list(
           "redcap_link"
         )
-        names(link_col_list) <- DB$redcap$id_col
+        names(link_col_list) <- project$redcap$id_col
       }
     }
   }
-  if (DB$internals$use_csv) {
+  if (project$internals$use_csv) {
     to_save_list %>% list_to_csv(
       dir = dir_other,
       file_name = file_name,
@@ -520,8 +520,8 @@ save_REDCapSync_list <- function(
       link_col_list = link_col_list,
       file_name = file_name,
       # str_trunc_length = 10000,
-      header_df_list = to_save_list %>% construct_header_list(fields = DB$metadata$fields) %>% process_df_list(silent = TRUE),
-      key_cols_list = construct_key_col_list(DB),
+      header_df_list = to_save_list %>% construct_header_list(fields = project$metadata$fields) %>% process_df_list(silent = TRUE),
+      key_cols_list = construct_key_col_list(project),
       overwrite = TRUE
     )
   }
@@ -530,7 +530,7 @@ save_REDCapSync_list <- function(
 #' @description
 #' Generates a summary from a predefined subset of data within a REDCap project. The summary can be customized based on various options, such as cleaning the data, including metadata, and annotating metadata.
 #'
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @param subset_name Character. The name of the subset from which to generate the summary.
 #' @param clean Logical. If `TRUE`, the data will be cleaned before summarizing. Default is `TRUE`.
 #' @param drop_blanks Logical. If `TRUE`, records with blank fields will be dropped. Default is `TRUE`.
@@ -547,7 +547,7 @@ save_REDCapSync_list <- function(
 #' This function allows you to generate a summary of data from a specific subset of records within the REDCap project. The function provides flexible options for cleaning, annotating, and including metadata, as well as controlling whether to include record summaries, user information, and logs.
 #' @export
 generate_summary_from_subset_name <- function(
-    DB,
+    project,
     subset_name,
     clean = TRUE,
     drop_blanks = TRUE,
@@ -556,18 +556,18 @@ generate_summary_from_subset_name <- function(
     include_record_summary = TRUE,
     include_users = TRUE,
     include_log = TRUE) {
-  subset_list <- DB$summary$subsets[[subset_name]]
-  if (subset_list$filter_field == DB$redcap$id_col) {
-    subset_list$filter_choices <- subset_list$subset_records[[DB$redcap$id_col]]
+  subset_list <- project$summary$subsets[[subset_name]]
+  if (subset_list$filter_field == project$redcap$id_col) {
+    subset_list$filter_choices <- subset_list$subset_records[[project$redcap$id_col]]
   }
-  DB$data <- filter_DB(
-    DB = DB,
+  project$data <- filter_project(
+    project = project,
     field_names = subset_list$field_names,
     form_names = subset_list$form_names,
     filter_field = subset_list$filter_field,
     filter_choices = subset_list$filter_choices
   )
-  to_save_list <- DB %>% generate_summary_save_list(
+  to_save_list <- project %>% generate_summary_save_list(
     deidentify = subset_list$deidentify,
     clean = clean,
     drop_blanks = drop_blanks,
@@ -581,12 +581,12 @@ generate_summary_from_subset_name <- function(
 }
 #' @title Summarize REDCap Database
 #' @description
-#' Summarizes the REDCap database (`DB` object) by filtering and generating a summary list.
+#' Summarizes the REDCap database (`project` object) by filtering and generating a summary list.
 #'
 #' @details
 #' This function filters the REDCap database based on the provided parameters and generates a summary list. The summary can include metadata, record summaries, user information, and logs. The function also supports deidentification and cleaning of the data.
 #'
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @param with_links Logical (TRUE/FALSE). If TRUE, includes links in the summary. Default is `TRUE`.
 #' @param deidentify Logical (TRUE/FALSE). If TRUE, deidentifies the summary data. Default is `TRUE`.
 #' @param clean Logical (TRUE/FALSE). If TRUE, cleans the summary data. Default is `TRUE`.
@@ -600,12 +600,12 @@ generate_summary_from_subset_name <- function(
 #' @param force Logical (TRUE/FALSE). If TRUE, forces the summary generation even if there are issues. Default is `FALSE`.
 #' @return List. Returns a list containing the summarized data, including records, metadata, users, logs, and any other specified data.
 #' @seealso
-#' \link{setup_DB} for initializing the `DB` object.
-#' \link{update_DB} for updating the `DB` object.
+#' \link{setup_project} for initializing the `project` object.
+#' \link{sync_project} for updating the `project` object.
 #' @family db_functions
 #' @export
-summarize_DB <- function(
-    DB,
+summarize_project <- function(
+    project,
     with_links = TRUE,
     deidentify = TRUE,
     clean = TRUE,
@@ -617,15 +617,15 @@ summarize_DB <- function(
     include_log = TRUE,
     separate = FALSE,
     force = FALSE) {
-  DB <- DB %>% validate_DB()
-  original_data <- DB$data
-  do_it <- is.null(DB$internals$last_summary)
-  last_data_update <- DB$internals$last_data_update
+  project <- project %>% validate_project()
+  original_data <- project$data
+  do_it <- is.null(project$internals$last_summary)
+  last_data_update <- project$internals$last_data_update
   if (!do_it) {
-    do_it <- DB$internals$last_summary < last_data_update
+    do_it <- project$internals$last_summary < last_data_update
   }
   if (force || do_it) {
-    to_save_list <- DB %>% generate_summary_save_list(
+    to_save_list <- project %>% generate_summary_save_list(
       deidentify = deidentify,
       clean = clean,
       drop_blanks = drop_blanks,
@@ -635,22 +635,22 @@ summarize_DB <- function(
       include_users = include_users,
       include_log = include_log
     )
-    DB %>% save_REDCapSync_list(
+    project %>% save_REDCapSync_list(
       to_save_list = to_save_list,
       separate = separate,
       with_links = with_links
     )
-    DB$internals$last_summary <- last_data_update
+    project$internals$last_summary <- last_data_update
   }
-  subset_names <- check_subsets(DB)
-  if (force) subset_names <- DB$summary$subsets %>% names()
+  subset_names <- check_subsets(project)
+  if (force) subset_names <- project$summary$subsets %>% names()
   if (is_something(subset_names)) {
     for (subset_name in subset_names) {
-      DB$data <- original_data
-      subset_list <- DB$summary$subsets[[subset_name]]
-      DB$summary$subsets[[subset_name]]$subset_records <- get_subset_records(DB = DB, subset_name = subset_name)
-      DB$summary$subsets[[subset_name]]$last_save_time <- Sys.time()
-      to_save_list <- DB %>% generate_summary_from_subset_name(
+      project$data <- original_data
+      subset_list <- project$summary$subsets[[subset_name]]
+      project$summary$subsets[[subset_name]]$subset_records <- get_subset_records(project = project, subset_name = subset_name)
+      project$summary$subsets[[subset_name]]$last_save_time <- Sys.time()
+      to_save_list <- project %>% generate_summary_from_subset_name(
         subset_name = subset_name,
         clean = clean,
         drop_blanks = drop_blanks,
@@ -660,7 +660,7 @@ summarize_DB <- function(
         include_users = include_users,
         include_log = include_log
       )
-      DB %>% save_REDCapSync_list(
+      project %>% save_REDCapSync_list(
         to_save_list = to_save_list,
         dir_other = subset_list$dir_other,
         file_name = subset_list$file_name,
@@ -669,60 +669,60 @@ summarize_DB <- function(
       )
     }
   }
-  DB$data <- original_data
-  return(DB)
+  project$data <- original_data
+  return(project)
 }
 #' @title Run Quality Checks
-#' @inheritParams save_DB
-#' @return DB object
+#' @inheritParams save_project
+#' @return project object
 #' @export
-run_quality_checks <- function(DB) {
-  DB <- validate_DB(DB)
-  if (is_something(DB$quality_checks)) {
-    for (qual_check in names(DB$quality_checks)) {
-      the_function <- DB$quality_checks[[qual_check]]
+run_quality_checks <- function(project) {
+  project <- validate_project(project)
+  if (is_something(project$quality_checks)) {
+    for (qual_check in names(project$quality_checks)) {
+      the_function <- project$quality_checks[[qual_check]]
       if (is.function(the_function)) {
-        DB <- the_function(DB)
+        project <- the_function(project)
       }
     }
   }
-  return(DB)
+  return(project)
 }
 #' @noRd
-sum_records <- function(DB) {
+sum_records <- function(project) {
   records <- NULL
-  if (DB$data %>% is_something()) {
-    cols <- DB$redcap$id_col
-    if (is.data.frame(DB$metadata$arms)) {
-      if (nrow(DB$metadata$arms) > 1) {
-        cols <- DB$redcap$id_col %>% append("arm_num")
+  if (project$data %>% is_something()) {
+    cols <- project$redcap$id_col
+    if (is.data.frame(project$metadata$arms)) {
+      if (nrow(project$metadata$arms) > 1) {
+        cols <- project$redcap$id_col %>% append("arm_num")
       }
     }
     if (length(cols) == 1) {
       records <- data.frame(
-        records = names(DB$data) %>% lapply(function(IN) {
-          DB$data[[IN]][, cols]
+        records = names(project$data) %>% lapply(function(IN) {
+          project$data[[IN]][, cols]
         }) %>% unlist() %>% unique()
       )
       colnames(records) <- cols
     }
     if (length(cols) == 2) {
-      records <- names(DB$data) %>%
+      records <- names(project$data) %>%
         lapply(function(IN) {
-          DB$data[[IN]][, cols]
+          project$data[[IN]][, cols]
         }) %>%
         dplyr::bind_rows() %>%
         unique()
-      # records <- records[order(as.integer(records[[DB$redcap$id_col]])),]
+      # records <- records[order(as.integer(records[[project$redcap$id_col]])),]
     }
     rownames(records) <- NULL
-    if (records[[DB$redcap$id_col]] %>% duplicated() %>% any()) stop("duplicate ", DB$redcap$id_col, " in sum_records() function")
+    if (records[[project$redcap$id_col]] %>% duplicated() %>% any()) stop("duplicate ", project$redcap$id_col, " in sum_records() function")
   }
   return(records)
 }
 #' @noRd
-get_log <- function(DB, records) {
-  log <- DB$redcap$log
+get_log <- function(project, records) {
+  log <- project$redcap$log
   log <- log[which(!is.na(log$username)), ]
   log <- log[which(!is.na(log$record)), ]
   if (!missing(records)) {
@@ -733,9 +733,9 @@ get_log <- function(DB, records) {
   return(log)
 }
 #' @noRd
-summarize_users_from_log <- function(DB, records) {
-  log <- get_log(DB, records)
-  summary_users <- DB$redcap$users %>% dplyr::select(c("username", "role_label", "email", "firstname", "lastname"))
+summarize_users_from_log <- function(project, records) {
+  log <- get_log(project, records)
+  summary_users <- project$redcap$users %>% dplyr::select(c("username", "role_label", "email", "firstname", "lastname"))
   user_groups <- log %>% split(log$username)
   summary_users <- summary_users[which(summary_users$username %in% names(user_groups)), ]
   user_groups <- user_groups[drop_nas(match(summary_users$username, names(user_groups)))]
@@ -760,8 +760,8 @@ summarize_users_from_log <- function(DB, records) {
   return(summary_users)
 }
 #' @noRd
-summarize_records_from_log <- function(DB, records) {
-  log <- DB$redcap$log
+summarize_records_from_log <- function(project, records) {
+  log <- project$redcap$log
   log <- log[which(!is.na(log$username)), ]
   log <- log[which(!is.na(log$record)), ]
   if (!missing(records)) {
@@ -771,12 +771,12 @@ summarize_records_from_log <- function(DB, records) {
   }
   # records -------------
   # all_records <- unique(log$record)
-  summary_records <- DB$summary$all_records
+  summary_records <- project$summary$all_records
   record_groups <- log %>% split(log$record)
-  summary_records <- summary_records[which(summary_records[[DB$redcap$id_col]] %in% names(record_groups)), , drop = FALSE]
+  summary_records <- summary_records[which(summary_records[[project$redcap$id_col]] %in% names(record_groups)), , drop = FALSE]
   # users_log_rows <- users %>% lapply(function(user){which(log$username==user)})
   # records_log_rows <- records %>% lapply(function(record){which(log$record==record)})
-  record_groups <- record_groups[match(summary_records[[DB$redcap$id_col]], names(record_groups))]
+  record_groups <- record_groups[match(summary_records[[project$redcap$id_col]], names(record_groups))]
   summary_records$last_timestamp <- record_groups %>%
     lapply(function(group) {
       group$timestamp[[1]]
@@ -800,22 +800,22 @@ summarize_records_from_log <- function(DB, records) {
   return(summary_records)
 }
 #' @noRd
-get_subset_records <- function(DB, subset_name) {
-  subset_list <- DB$summary$subsets[[subset_name]]
+get_subset_records <- function(project, subset_name) {
+  subset_list <- project$summary$subsets[[subset_name]]
   subset_records <- NULL
-  if (subset_list$filter_field == DB$redcap$id_col) {
-    records <- unique(subset_list$subset_records[[DB$redcap$id_col]])
+  if (subset_list$filter_field == project$redcap$id_col) {
+    records <- unique(subset_list$subset_records[[project$redcap$id_col]])
   } else {
     filter_choices <- subset_list$filter_choices
-    form_name <- field_names_to_form_names(DB, field_names = subset_list$filter_field)
-    records <- DB$data[[form_name]][[DB$redcap$id_col]][which(DB$data[[form_name]][[subset_list$filter_field]] %in% filter_choices)] %>% unique()
+    form_name <- field_names_to_form_names(project, field_names = subset_list$filter_field)
+    records <- project$data[[form_name]][[project$redcap$id_col]][which(project$data[[form_name]][[subset_list$filter_field]] %in% filter_choices)] %>% unique()
   }
-  subset_records <- DB$summary$all_records[which(DB$summary$all_records[[DB$redcap$id_col]] %in% records), ]
+  subset_records <- project$summary$all_records[which(project$summary$all_records[[project$redcap$id_col]] %in% records), ]
   return(subset_records)
 }
 #' @noRd
-subset_records_due <- function(DB, subset_name) {
-  subset_list <- DB$summary$subsets[[subset_name]]
+subset_records_due <- function(project, subset_name) {
+  subset_list <- project$summary$subsets[[subset_name]]
   if (is.null(subset_list$last_save_time)) {
     return(TRUE)
   }
@@ -823,27 +823,27 @@ subset_records_due <- function(DB, subset_name) {
     return(TRUE)
   }
   subset_records <- get_subset_records(
-    DB = DB,
+    project = project,
     subset_name = subset_name
   )
   return(!identical(unname(subset_list$subset_records), unname(subset_records)))
 }
 #' @noRd
-check_subsets <- function(DB, subset_names) {
-  if (missing(subset_names)) subset_names <- DB$summary$subsets %>% names()
+check_subsets <- function(project, subset_names) {
+  if (missing(subset_names)) subset_names <- project$summary$subsets %>% names()
   needs_refresh <- NULL
-  if (is.null(subset_names)) bullet_in_console("There are no subsets at `DB$summary$subsets` which can be added with `add_DB_subset()`!")
+  if (is.null(subset_names)) bullet_in_console("There are no subsets at `project$summary$subsets` which can be added with `add_project_subset()`!")
   for (subset_name in subset_names) {
-    if (subset_records_due(DB = DB, subset_name = subset_name)) needs_refresh <- needs_refresh %>% append(subset_name)
+    if (subset_records_due(project = project, subset_name = subset_name)) needs_refresh <- needs_refresh %>% append(subset_name)
   }
   if (is.null(needs_refresh)) bullet_in_console("Refresh of subsets not needed!", bullet_type = "v")
   return(needs_refresh)
 }
-#' @title Select REDCap Records from DB
+#' @title Select REDCap Records from project
 #' @description
-#' This function filters the records in the `DB` object by specified criteria, such as field names, form names, and optional filtering based on a specific field and its values. It returns a modified `DB` object containing only the records that match the filter criteria.
+#' This function filters the records in the `project` object by specified criteria, such as field names, form names, and optional filtering based on a specific field and its values. It returns a modified `project` object containing only the records that match the filter criteria.
 #'
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @param field_names A character vector of field names to be included in the filtered data. If missing, all fields are included.
 #' @param form_names A character vector of form names to be included in the filtered data. If missing, all forms are included.
 #' @param filter_field A character string representing an extra variable name to be filtered by. This field must be present in the data frame.
@@ -851,22 +851,22 @@ check_subsets <- function(DB, subset_names) {
 #' @param warn_only A logical flag (`TRUE` or `FALSE`). If `TRUE`, the function will issue a warning instead of stopping if the filtering criteria do not match any records. Defaults to `FALSE`.
 #' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the function will avoid including duplicate columns in the output. Defaults to `FALSE`.
 #'
-#' @return A modified `DB` object with filtered records and columns based on the provided criteria.
+#' @return A modified `project` object with filtered records and columns based on the provided criteria.
 #'
 #' @details
-#' This function filters the data in the `DB` object according to the specified form and field names and optional filter criteria. If no field names or form names are provided, it defaults to using all fields and forms in the database.
-#' The function uses the helper `filter_DF_list` to apply the filtering logic to the `DB$data` list.
+#' This function filters the data in the `project` object according to the specified form and field names and optional filter criteria. If no field names or form names are provided, it defaults to using all fields and forms in the database.
+#' The function uses the helper `filter_DF_list` to apply the filtering logic to the `project$data` list.
 #'
 #' @export
-filter_DB <- function(DB, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE) { # , ignore_incomplete=FALSE, ignore_unverified = FALSE
-  if (missing(field_names)) field_names <- DB %>% get_all_field_names()
-  if (is.null(field_names)) field_names <- DB %>% get_all_field_names()
-  if (missing(form_names)) form_names <- names(DB$data)
-  if (is.null(form_names)) form_names <- names(DB$data)
+filter_project <- function(project, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE) { # , ignore_incomplete=FALSE, ignore_unverified = FALSE
+  if (missing(field_names)) field_names <- project %>% get_all_field_names()
+  if (is.null(field_names)) field_names <- project %>% get_all_field_names()
+  if (missing(form_names)) form_names <- names(project$data)
+  if (is.null(form_names)) form_names <- names(project$data)
   return(
     filter_DF_list(
-      DF_list = DB$data,
-      DB = DB,
+      DF_list = project$data,
+      project = project,
       filter_field = filter_field,
       filter_choices = filter_choices,
       form_names = form_names,
@@ -876,9 +876,9 @@ filter_DB <- function(DB, filter_field, filter_choices, form_names, field_names,
     )
   )
 }
-#' @title rmarkdown_DB
+#' @title rmarkdown_project
 #' @description
-#' Generates an RMarkdown report for the given REDCap database (`DB` object).
+#' Generates an RMarkdown report for the given REDCap database (`project` object).
 #' This function creates an RMarkdown file in the specified directory or default directory,
 #' allowing users to create custom reports based on the database content.
 #'
@@ -887,21 +887,21 @@ filter_DB <- function(DB, filter_field, filter_choices, form_names, field_names,
 #' within the project's directory. It generates the RMarkdown file that can then be used for further
 #' processing or rendering into HTML, PDF, or other formats.
 #'
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @param dir_other Character string specifying the directory where the RMarkdown report will be saved.
 #' If not provided, it defaults to the `output` directory inside the project's main directory.
 #' @return A message indicating the creation of the RMarkdown report and the path to the generated file.
 #' @seealso
-#' \code{\link[REDCapSync]{save_DB}} for saving the `DB` object.
+#' \code{\link[REDCapSync]{save_project}} for saving the `project` object.
 #' @family db_functions
 #' @export
-rmarkdown_DB <- function(DB, dir_other) {
+rmarkdown_project <- function(project, dir_other) {
   if (missing(dir_other)) {
-    dir <- get_dir(DB) %>% file.path("output")
+    dir <- get_dir(project) %>% file.path("output")
   } else {
     dir <- dir_other
   }
-  filename <- paste0(DB$short_name, "_full_summary_", gsub("-", "_", Sys.Date()), ".pdf")
+  filename <- paste0(project$short_name, "_full_summary_", gsub("-", "_", Sys.Date()), ".pdf")
   rmarkdown::render(
     input = system.file("rmarkdown", "pdf.Rmd", package = pkg_name),
     output_format = "pdf_document",
@@ -911,13 +911,13 @@ rmarkdown_DB <- function(DB, dir_other) {
   )
 }
 #' @title Clean to Raw REDCap forms
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @param FORM data.frame of labelled REDCap to be converted to raw REDCap (for uploads)
-#' @return DB object that has been filtered to only include the specified records
+#' @return project object that has been filtered to only include the specified records
 #' @export
-labelled_to_raw_form <- function(FORM, DB) {
-  use_missing_codes <- is.data.frame(DB$metadata$missing_codes)
-  fields <- filter_fields_from_form(FORM = FORM, DB = DB)
+labelled_to_raw_form <- function(FORM, project) {
+  use_missing_codes <- is.data.frame(project$metadata$missing_codes)
+  fields <- filter_fields_from_form(FORM = FORM, project = project)
   for (i in seq_len(nrow(fields))) { # i <-  seq_len(nrow(fields) %>% sample(1)
     COL_NAME <- fields$field_name[i]
     has_choices <- fields$has_choices[i]
@@ -932,9 +932,9 @@ labelled_to_raw_form <- function(FORM, DB) {
               OUT <- z$code[coded_redcap]
             } else {
               if (use_missing_codes) {
-                coded_redcap2 <- which(DB$metadata$missing_codes$name == C)
+                coded_redcap2 <- which(project$metadata$missing_codes$name == C)
                 if (length(coded_redcap2) > 0) {
-                  OUT <- DB$metadata$missing_codes$code[coded_redcap2]
+                  OUT <- project$metadata$missing_codes$code[coded_redcap2]
                 } else {
                   stop("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME, ", Choice: ", C)
                 }
@@ -953,9 +953,9 @@ labelled_to_raw_form <- function(FORM, DB) {
           lapply(function(C) {
             OUT <- C
             if (!is.na(C)) {
-              D <- which(DB$metadata$missing_codes$name == C)
+              D <- which(project$metadata$missing_codes$name == C)
               if (length(D) > 0) {
-                OUT <- DB$metadata$missing_codes$code[D]
+                OUT <- project$metadata$missing_codes$code[D]
               }
             }
             OUT
@@ -969,13 +969,13 @@ labelled_to_raw_form <- function(FORM, DB) {
 }
 #' @title Raw to Labelled REDCap forms
 #' @param FORM data.frame of raw REDCap to be converted to labelled REDCap
-#' @inheritParams save_DB
-#' @return DB object
+#' @inheritParams save_project
+#' @return project object
 #' @export
-raw_to_labelled_form <- function(FORM, DB) {
+raw_to_labelled_form <- function(FORM, project) {
   if (nrow(FORM) > 0) {
-    use_missing_codes <- is.data.frame(DB$metadata$missing_codes)
-    metadata <- filter_fields_from_form(FORM = FORM, DB = DB)
+    use_missing_codes <- is.data.frame(project$metadata$missing_codes)
+    metadata <- filter_fields_from_form(FORM = FORM, project = project)
     for (i in seq_len(nrow(metadata))) { # i <-  seq_len(nrow(metadata)) %>% sample(1)
       COL_NAME <- metadata$field_name[i]
       has_choices <- metadata$has_choices[i]
@@ -990,9 +990,9 @@ raw_to_labelled_form <- function(FORM, DB) {
                 OUT <- z$name[coded_redcap]
               } else {
                 if (use_missing_codes) {
-                  coded_redcap2 <- which(DB$metadata$missing_codes$code == C)
+                  coded_redcap2 <- which(project$metadata$missing_codes$code == C)
                   if (length(coded_redcap2) > 0) {
-                    OUT <- DB$metadata$missing_codes$name[coded_redcap2]
+                    OUT <- project$metadata$missing_codes$name[coded_redcap2]
                   } else {
                     warning("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME, ", Choice: ", C, ". Also not a missing code.")
                   }
@@ -1007,7 +1007,7 @@ raw_to_labelled_form <- function(FORM, DB) {
           as.character()
       } else {
         if (use_missing_codes) {
-          z <- DB$metadata$missing_codes
+          z <- project$metadata$missing_codes
           FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>%
             lapply(function(C) {
               OUT <- C
@@ -1028,13 +1028,13 @@ raw_to_labelled_form <- function(FORM, DB) {
   FORM
 }
 #' @noRd
-stack_vars <- function(DB, vars, new_name, drop_na = TRUE) {
-  DB <- validate_DB(DB)
-  fields <- DB$metadata$fields
+stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
+  project <- validate_project(project)
+  fields <- project$metadata$fields
   if (!all(vars %in% fields$field_name)) stop("all vars must be in metadata.")
   the_stack <- NULL
   for (var in vars) { # var <- vars %>% sample1()
-    DF <- filter_DB(DB, field_names = var)[[1]]
+    DF <- filter_project(project, field_names = var)[[1]]
     colnames(DF)[which(colnames(DF) == var)] <- new_name
     the_stack <- the_stack %>% dplyr::bind_rows(DF)
   }
@@ -1044,28 +1044,28 @@ stack_vars <- function(DB, vars, new_name, drop_na = TRUE) {
   return(the_stack)
 }
 #' @noRd
-get_original_field_names <- function(DB) {
-  if (DB$internals$is_transformed) {
-    return(DB$transformation$original_fields$field_name)
+get_original_field_names <- function(project) {
+  if (project$internals$is_transformed) {
+    return(project$transformation$original_fields$field_name)
   }
-  return(DB$metadata$fields$field_name)
+  return(project$metadata$fields$field_name)
 }
 #' @noRd
-get_all_field_names <- function(DB) {
-  return(DB$data %>% lapply(colnames) %>% unlist() %>% unique())
+get_all_field_names <- function(project) {
+  return(project$data %>% lapply(colnames) %>% unlist() %>% unique())
 }
 #' @noRd
-field_names_to_form_names <- function(DB, field_names) {
-  form_key_cols <- DB$metadata$form_key_cols %>%
+field_names_to_form_names <- function(project, field_names) {
+  form_key_cols <- project$metadata$form_key_cols %>%
     unlist() %>%
     unique()
   field_names_keys <- field_names[which(field_names %in% form_key_cols)]
   form_names_keys <- field_names_keys %>%
     lapply(function(field_name) {
-      DB$metadata$form_key_cols %>%
+      project$metadata$form_key_cols %>%
         names() %>%
         lapply(function(FORM) {
-          if (!field_name %in% DB$metadata$form_key_cols[[FORM]]) {
+          if (!field_name %in% project$metadata$form_key_cols[[FORM]]) {
             return(NULL)
           }
           return(FORM)
@@ -1075,19 +1075,19 @@ field_names_to_form_names <- function(DB, field_names) {
     unlist() %>%
     as.character() %>%
     unique()
-  fields <- DB$metadata$fields
+  fields <- project$metadata$fields
   field_names_not_keys <- field_names[which(!field_names %in% form_key_cols)]
   form_names_not_keys <- fields$form_name[match(field_names_not_keys, fields$field_name)] %>% drop_nas()
   form_names <- c(form_names_not_keys, form_names_keys) %>% unique()
   return(form_names)
 }
 #' @noRd
-form_names_to_field_names <- function(form_names, DB, original_only = FALSE) {
+form_names_to_field_names <- function(form_names, project, original_only = FALSE) {
   field_names <- NULL
   if (original_only) {
-    fields <- get_original_fields(DB)
+    fields <- get_original_fields(project)
   } else {
-    fields <- DB$metadata$fields
+    fields <- project$metadata$fields
   }
   for (form_name in form_names) {
     field_names <- field_names %>% append(fields$field_name[which(fields$form_name == form_name)])
@@ -1095,34 +1095,34 @@ form_names_to_field_names <- function(form_names, DB, original_only = FALSE) {
   return(unique(field_names))
 }
 #' @noRd
-form_names_to_form_labels <- function(form_names, DB) {
+form_names_to_form_labels <- function(form_names, project) {
   return(
-    DB$metadata$forms$form_label[
+    project$metadata$forms$form_label[
       match(
         x = form_names,
-        table = DB$metadata$forms$form_name
+        table = project$metadata$forms$form_name
       )
     ]
   )
 }
 #' @noRd
-form_labels_to_form_names <- function(form_labels, DB) {
+form_labels_to_form_names <- function(form_labels, project) {
   return(
-    DB$metadata$forms$form_name[
+    project$metadata$forms$form_name[
       match(
         x = form_labels,
-        table = DB$metadata$forms$form_label
+        table = project$metadata$forms$form_label
       )
     ]
   )
 }
 #' @noRd
-field_names_to_field_labels <- function(field_names, DB) {
+field_names_to_field_labels <- function(field_names, project) {
   return(
-    DB$metadata$fields$field_label[
+    project$metadata$fields$field_label[
       match(
         x = field_names,
-        table = DB$metadata$fields$field_name
+        table = project$metadata$fields$field_name
       )
     ]
   )
@@ -1151,47 +1151,47 @@ construct_header_list <- function(DF_list, md_elements = c("form_name", "field_t
   return(header_df_list)
 }
 #' @noRd
-stripped_DB <- function(DB) {
-  DB$redcap$log <- list()
-  DB$data <- list()
-  DB$data_update <- list()
-  return(DB)
+stripped_project <- function(project) {
+  project$redcap$log <- list()
+  project$data <- list()
+  project$data_update <- list()
+  return(project)
 }
 #' @noRd
-filter_DF_list <- function(DF_list, DB, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE) {
-  if (missing(field_names)) field_names <- DB %>% get_all_field_names()
-  if (is.null(field_names)) field_names <- DB %>% get_all_field_names()
+filter_DF_list <- function(DF_list, project, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE) {
+  if (missing(field_names)) field_names <- project %>% get_all_field_names()
+  if (is.null(field_names)) field_names <- project %>% get_all_field_names()
   if (missing(form_names)) form_names <- names(DF_list)
   if (is.null(form_names)) form_names <- names(DF_list)
   out_list <- list()
-  form_key_cols <- DB$metadata$form_key_cols %>%
+  form_key_cols <- project$metadata$form_key_cols %>%
     unlist() %>%
     unique()
   is_key <- filter_field %in% form_key_cols
   if (!is_key) {
-    form_name <- field_names_to_form_names(DB, field_names = filter_field)
-    is_repeating_filter <- DB$metadata$forms$repeating[which(DB$metadata$forms$form_name == form_name)]
+    form_name <- field_names_to_form_names(project, field_names = filter_field)
+    is_repeating_filter <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == form_name)]
   }
   for (FORM in form_names) {
     DF <- DF_list[[FORM]]
-    is_repeating_form <- DB$metadata$forms$repeating[which(DB$metadata$forms$form_name == FORM)]
+    is_repeating_form <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == FORM)]
     if (is_something(DF)) {
       filter_field_final <- filter_field
       filter_choices_final <- filter_choices
       if (!is_key) {
         if (is_repeating_filter) {
           if (!is_repeating_form) {
-            filter_field_final <- DB$metadata$form_key_cols[[FORM]]
+            filter_field_final <- project$metadata$form_key_cols[[FORM]]
             filter_choices_final <- DF_list[[form_name]][[filter_field_final]][which(DF_list[[form_name]][[filter_field]] %in% filter_choices)] %>% unique()
           }
         }
       }
       rows <- which(DF_list[[FORM]][[filter_field_final]] %in% filter_choices_final)
       field_names_adj <- field_names
-      if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(FORM, DB, original_only = FALSE))
+      if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(FORM, project, original_only = FALSE))
       cols <- colnames(DF)[which(colnames(DF) %in% field_names_adj)]
       if (length(rows) > 0 && length(cols) > 0) {
-        cols <- colnames(DF)[which(colnames(DF) %in% unique(c(DB$metadata$form_key_cols[[FORM]], field_names_adj)))]
+        cols <- colnames(DF)[which(colnames(DF) %in% unique(c(project$metadata$form_key_cols[[FORM]], field_names_adj)))]
         out_list[[FORM]] <- DF[rows, cols]
       }
     }
@@ -1199,12 +1199,12 @@ filter_DF_list <- function(DF_list, DB, filter_field, filter_choices, form_names
   return(out_list)
 }
 #' @noRd
-field_names_metadata <- function(DB, field_names, col_names) {
-  fields <- get_original_fields(DB) # DB$metadata$fields
-  # if(!deparse(substitute(FORM))%in%DB$metadata$forms$form_name)stop("To avoid potential issues the form name should match one of the instrument names" )
-  BAD <- field_names[which(!field_names %in% c(DB$metadata$fields$field_name, DB$redcap$raw_structure_cols, "arm_num", "event_name"))]
-  if (length(BAD) > 0) stop("All column names in your form must match items in your metadata, `DB$metadata$fields$field_name`... ", paste0(BAD, collapse = ", "))
-  # metadata <- DB$metadata$fields[which(DB$metadata$fields$form_name%in%instruments),]
+field_names_metadata <- function(project, field_names, col_names) {
+  fields <- get_original_fields(project) # project$metadata$fields
+  # if(!deparse(substitute(FORM))%in%project$metadata$forms$form_name)stop("To avoid potential issues the form name should match one of the instrument names" )
+  BAD <- field_names[which(!field_names %in% c(project$metadata$fields$field_name, project$redcap$raw_structure_cols, "arm_num", "event_name"))]
+  if (length(BAD) > 0) stop("All column names in your form must match items in your metadata, `project$metadata$fields$field_name`... ", paste0(BAD, collapse = ", "))
+  # metadata <- project$metadata$fields[which(project$metadata$fields$form_name%in%instruments),]
   fields <- fields[which(fields$field_name %in% field_names), ]
   # metadata <- metadata[which(metadata$field_name%in%field_names),]
   if (!missing(col_names)) {
@@ -1213,35 +1213,35 @@ field_names_metadata <- function(DB, field_names, col_names) {
   return(fields)
 }
 #' @noRd
-filter_fields_from_form <- function(FORM, DB) {
-  forms <- DB %>% field_names_to_form_names(field_names = colnames(FORM))
-  if (any(forms %in% get_original_forms(DB)$repeating)) stop("All column names in your form must match only one form in your metadata, `DB$metadata$forms$form_name`, unless they are all non-repeating")
-  fields <- DB %>% field_names_metadata(field_names = colnames(FORM))
+filter_fields_from_form <- function(FORM, project) {
+  forms <- project %>% field_names_to_form_names(field_names = colnames(FORM))
+  if (any(forms %in% get_original_forms(project)$repeating)) stop("All column names in your form must match only one form in your metadata, `project$metadata$forms$form_name`, unless they are all non-repeating")
+  fields <- project %>% field_names_metadata(field_names = colnames(FORM))
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
   return(fields)
 }
 #' @noRd
-labelled_to_raw_DB <- function(DB) {
-  DB <- validate_DB(DB)
-  if (!DB$internals$data_extract_labelled) stop("DB is already raw/coded (not labelled values)")
-  for (TABLE in names(DB$data)) {
-    DB$data[[TABLE]] <- labelled_to_raw_form(FORM = DB$data[[TABLE]], DB = DB)
+labelled_to_raw_project <- function(project) {
+  project <- validate_project(project)
+  if (!project$internals$data_extract_labelled) stop("project is already raw/coded (not labelled values)")
+  for (TABLE in names(project$data)) {
+    project$data[[TABLE]] <- labelled_to_raw_form(FORM = project$data[[TABLE]], project = project)
   }
-  DB$internals$data_extract_labelled <- FALSE
-  DB
+  project$internals$data_extract_labelled <- FALSE
+  project
 }
 #' @noRd
-DF_list_to_text <- function(DF_list, DB, drop_nas = TRUE, clean_names = TRUE) {
+DF_list_to_text <- function(DF_list, project, drop_nas = TRUE, clean_names = TRUE) {
   output_list <- c()
   for (i in seq_along(DF_list)) {
     DF <- DF_list[[i]]
     the_raw_name <- names(DF_list)[[i]]
     the_name <- the_raw_name
-    if (clean_names) the_name <- DB$metadata$forms$form_label[which(DB$metadata$forms$form_name == the_raw_name)]
+    if (clean_names) the_name <- project$metadata$forms$form_label[which(project$metadata$forms$form_name == the_raw_name)]
     df_name <- paste0("----- ", the_name, " Table -----")
     output_list <- c(output_list, paste0("&nbsp;&nbsp;<strong>", df_name, "</strong><br>"))
-    key_col_names <- DB$metadata$form_key_cols[[the_raw_name]]
+    key_col_names <- project$metadata$form_key_cols[[the_raw_name]]
     for (j in seq_len(nrow(DF))) {
       for (col_name in colnames(DF)) {
         entry <- DF[j, col_name]
@@ -1249,7 +1249,7 @@ DF_list_to_text <- function(DF_list, DB, drop_nas = TRUE, clean_names = TRUE) {
           if (!is.na(entry) || !drop_nas) {
             entry <- gsub("\\n", "<br>", entry)
             col_name_clean <- col_name
-            if (clean_names) col_name_clean <- DB$metadata$fields$field_label[which(DB$metadata$fields$field_name == col_name)]
+            if (clean_names) col_name_clean <- project$metadata$fields$field_label[which(project$metadata$fields$field_name == col_name)]
             output_list <- c(output_list, paste0("&nbsp;&nbsp;<strong>", col_name_clean, ":</strong> <br>&nbsp;&nbsp;&nbsp;&nbsp;", entry, "<br>"))
           }
         }
@@ -1261,11 +1261,11 @@ DF_list_to_text <- function(DF_list, DB, drop_nas = TRUE, clean_names = TRUE) {
   return(output_list)
 }
 #' @noRd
-check_DB_for_IDs <- function(DB, required_percent_filled = 0.7) {
+check_project_for_IDs <- function(project, required_percent_filled = 0.7) {
   cols <- NULL
-  if (is_something(DB)) {
-    if (is_something(DB$data)) {
-      DF <- DB$data[[DB$metadata$forms$form_name[which(!DB$metadata$forms$repeating)][[1]]]]
+  if (is_something(project)) {
+    if (is_something(project$data)) {
+      DF <- project$data[[project$metadata$forms$form_name[which(!project$metadata$forms$repeating)][[1]]]]
       IN_length <- DF %>% nrow()
       cols <- colnames(DF)[DF %>%
         lapply(function(IN) {

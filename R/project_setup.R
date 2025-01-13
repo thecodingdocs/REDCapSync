@@ -1,36 +1,36 @@
 #' @rdname setup-load
 #' @title Setup or Load REDCapSync Project
 #' @description
-#' Setup or Load the `DB` object for pipeline.
+#' Setup or Load the `project` object for pipeline.
 #'
 #' @details
-#' This function sets up the `DB` object by storing the REDCap API token and
+#' This function sets up the `project` object by storing the REDCap API token and
 #' other configurations required for interacting with the REDCap server.
 #' It ensures that the token is valid and ready for use in subsequent API calls.
 #' Neither function directly attempts communication with REDCap.
 #'
-#' `setup_DB` is used the first time you initialize/link a REDCap project.
+#' `setup_project` is used the first time you initialize/link a REDCap project.
 #' Mainly, it sets your unique `short_name` and your intended directory.
-#' Unless you run \code{force = TRUE} the default will first try load_DB.
+#' Unless you run \code{force = TRUE} the default will first try load_project.
 #' dir_path is technically optional but without it the user cannot
 #' save/load/update projects.
 #'
-#' `load_DB` can be used with just the `short_name` parameter after you have
-#' already run `setup_DB` in the past with an established directory. `dir_path`
+#' `load_project` can be used with just the `short_name` parameter after you have
+#' already run `setup_project` in the past with an established directory. `dir_path`
 #' is optional for this function but can be used if you relocated the directory.
 #'
 #' @param short_name A character string with no spaces or symbols representing
 #' the unique short name for the REDCap project.
 #' @param dir_path Optional character string representing the directory path
-#' where you want the REDCap project data to be stored. If missing, DB object
+#' where you want the REDCap project data to be stored. If missing, project object
 #' will only be in current R session.
 #' @param redcap_base A character string representing the base URL of the REDCap
 #' server.
 #' @param token_name An optional character string for setting your token name.
 #' Default is `REDCapSync_<short_name>`
-#' @param force Logical (TRUE/FALSE). If TRUE, forces the setup even if the `DB`
+#' @param force Logical (TRUE/FALSE). If TRUE, forces the setup even if the `project`
 #' object already exists. Default is `FALSE`.
-#' @param validate Logical (TRUE/FALSE). If TRUE, validates DB object based on
+#' @param validate Logical (TRUE/FALSE). If TRUE, validates project object based on
 #' current rules. Default is `TRUE`.
 #' @param merge_form_name A character string representing the name of the merged
 #' form. Default is "merged".
@@ -38,25 +38,26 @@
 #' storage. Default is `FALSE`.
 #' @param auto_check_token Logical (TRUE/FALSE). If TRUE, automatically
 #' checks the validity of the REDCap API token. Default is `TRUE`.
-#' @param DB_path A character string representing the file path of the exact
+#' @param project_path A character string representing the file path of the exact
 #' `<short_name>_REDCapSync.RData` file to be loaded.
-#' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test DB object with
-#' data as if user ran `update_DB`. Default is `FALSE`.
-#' @return REDCapSync `DB` list object.
+#' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test project object with
+#' @param get_type optional character of REDCap API call type.
+#' data as if user ran `sync_project`. Default is `FALSE`.
+#' @return REDCapSync `project` list object.
 #' @seealso
 #' \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from
 #' the directory cache.
 #' @examplesIf FALSE
-#' # Initialize the DB object with the REDCap API token and URL
-#' DB <- setup_DB(
+#' # Initialize the project object with the REDCap API token and URL
+#' project <- setup_project(
 #'   short_name = "TEST",
 #'   dir_path = "path/to/secure/file/storage",
 #'   redcap_base = "https://redcap.yourinstitution.edu/"
 #' )
-#' DB <- load_DB("TEST")
-#' @family DB object
+#' project <- load_project("TEST")
+#' @family project object
 #' @export
-setup_DB <- function(
+setup_project <- function(
     short_name,
     dir_path,
     redcap_base,
@@ -78,8 +79,8 @@ setup_DB <- function(
   missing_dir_path <- missing(dir_path)
   is_a_test <- is_test_short_name(short_name = short_name)
   if (force) { # load blank if force = TRUE
-    DB <- internal_blank_DB
-    bullet_in_console(paste0("Setup blank DB object because `force = TRUE`"))
+    project <- internal_blank_project
+    bullet_in_console(paste0("Setup blank project object because `force = TRUE`"))
   }
   if (!force) {
     has_expected_file <- FALSE
@@ -95,85 +96,85 @@ setup_DB <- function(
       has_expected_file <- file.exists(expected_file)
     }
     if (in_proj_cache || has_expected_file) {
-      DB <- load_DB_from_path(expected_file) # if it fails should default to blank
+      project <- load_project_from_path(expected_file) # if it fails should default to blank
     }
     if (!(in_proj_cache || has_expected_file)) {
       if (is_a_test) {
-        DB <- load_test_DB(short_name = short_name, with_data = FALSE)
+        project <- load_test_project(short_name = short_name, with_data = FALSE)
       } else {
-        DB <- internal_blank_DB
+        project <- internal_blank_project
       }
       bullet_in_console(
-        "Setup blank DB object because nothing found in cache or directory.",
+        "Setup blank project object because nothing found in cache or directory.",
         bullet_type = "!"
       )
     }
   }
   if (missing_dir_path) { # if missing the directory path from setup or load then let user know nothing will be stored
-    if (!is_something(DB$dir_path)) { # only show message if load_DB wasn't used internally (that has a directory)
+    if (!is_something(project$dir_path)) { # only show message if load_project wasn't used internally (that has a directory)
       bullet_in_console("If you don't supply a directory, REDCapSync will only run in R session. Package is best with a directory.", bullet_type = "!")
     }
   }
   if (!missing_dir_path) {
-    DB$dir_path <- set_dir(dir_path) # will also ask user if provided dir is new or different (will load from original but start using new dir)
+    project$dir_path <- set_dir(dir_path) # will also ask user if provided dir is new or different (will load from original but start using new dir)
   }
-  DB$short_name <- short_name
-  DB$internals$use_csv <- use_csv
-  DB$redcap$token_name <- token_name
+  project$short_name <- short_name
+  project$internals$use_csv <- use_csv
+  project$redcap$token_name <- token_name
   if (!is_a_test) {
-    DB$links$redcap_base <- validate_web_link(redcap_base)
-    DB$links$redcap_uri <- DB$links$redcap_base %>% paste0("api/")
+    project$links$redcap_base <- validate_web_link(redcap_base)
+    project$links$redcap_uri <- project$links$redcap_base %>% paste0("api/")
   } else {
     bullet_in_console("Test objects ignore the `redcap_base` url argument and will not communicate with the REDCap API.")
   }
-  DB$internals$merge_form_name <- validate_env_name(merge_form_name)
-  DB$internals$use_csv <- use_csv
-  DB$internals$is_blank <- FALSE
-  DB$data <- DB$data %>% all_character_cols_list()
+  project$internals$merge_form_name <- validate_env_name(merge_form_name)
+  project$internals$use_csv <- use_csv
+  project$internals$is_blank <- FALSE
+  project$data <- project$data %>% all_character_cols_list()
   bullet_in_console(paste0("Token name: '", token_name, "'"))
   if (auto_check_token) {
-    if (!is_valid_REDCap_token(validate_REDCap_token(DB), is_a_test = is_a_test)) {
-      set_REDCap_token(DB, ask = FALSE)
+    if (!is_valid_REDCap_token(validate_REDCap_token(project), is_a_test = is_a_test)) {
+      set_REDCap_token(project, ask = FALSE)
     }
   }
-  DB <- validate_DB(DB, silent = FALSE)
-  return(DB)
+  project <- validate_project(project, silent = FALSE)
+  return(project)
 }
 #' @rdname setup-load
 #' @export
-load_DB <- function(short_name, validate = TRUE) {
+load_project <- function(short_name, validate = TRUE) {
   projects <- get_projects()
   if (nrow(projects) == 0) stop("No projects in cache")
-  if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_DB()` and `update_DB()`?")
+  if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_project()` and `sync_project()`?")
   dir_path <- projects$dir_path[which(projects$short_name == short_name)]
   if (!file.exists(dir_path)) stop("`dir_path` doesn't exist: '", dir_path, "'")
-  DB_path <- file.path(dir_path, "R_objects", paste0(short_name, "_REDCapSync.RData"))
-  load_DB_from_path(
-    DB_path = DB_path,
+  project_path <- file.path(dir_path, "R_objects", paste0(short_name, "_REDCapSync.RData"))
+  load_project_from_path(
+    project_path = project_path,
     validate = validate
   ) %>% return()
 }
 #' @rdname setup-load
 #' @export
-load_DB_from_path <- function(DB_path, validate = TRUE) {
-  if (!file.exists(DB_path)) stop("No file at path '", DB_path, "'. Did you use `setup_DB()` and `update_DB()`?")
-  DB <- readRDS(file = DB_path)
-  # if failed through message like unlink to DB_path
+load_project_from_path <- function(project_path, validate = TRUE) {
+  if (!file.exists(project_path)) stop("No file at path '", project_path, "'. Did you use `setup_project()` and `sync_project()`?")
+  project <- readRDS(file = project_path)
+  # if failed through message like unlink to project_path
   if (validate) {
-    DB <- DB %>% validate_DB(silent = FALSE)
+    project <- project %>% validate_project(silent = FALSE)
   }
-  return(DB)
+  return(project)
 }
 #' @rdname setup-load
 #' @export
-load_test_DB <- function(short_name = "TEST_repeating", with_data = FALSE) {
+load_test_project <- function(short_name = "TEST_repeating", with_data = FALSE) {
   em <- "`short_name` must be character string of length 1 equal to one of the following: " %>% paste0(as_comma_string(internal_allowed_test_short_names))
   if (!is.character(short_name)) stop(em)
   if (length(short_name) != 1) stop(em)
   if (!is_test_short_name(short_name = short_name)) stop(em)
-  DB <- internal_blank_DB
-  DB$short_name <- short_name
-  DB$internals$is_test <- TRUE
+  project <- internal_blank_project
+  project$short_name <- short_name
+  project$internals$is_test <- TRUE
   if (with_data) {
     if (short_name == "TEST_classic") {
     }
@@ -184,74 +185,74 @@ load_test_DB <- function(short_name = "TEST_repeating", with_data = FALSE) {
     if (short_name == "TEST_multiarm") {
     }
   }
-  return(DB)
+  return(project)
 }
 #' @noRd
 is_test_short_name <- function(short_name) {
   return(short_name %in% internal_allowed_test_short_names)
 }
 #' @noRd
-is_test_DB <- function(DB) {
-  return((DB$short_name %in% internal_allowed_test_short_names) && DB$internals$is_test)
+is_test_project <- function(project) {
+  return((project$short_name %in% internal_allowed_test_short_names) && project$internals$is_test)
 }
-#' @rdname save-deleteDB
-#' @title Save or Delete DB file from the directory
-#' @param DB A validated `DB` object containing REDCap project data and
-#' settings. Generated using \link{load_DB} or \link{setup_DB}
+#' @rdname save-deleteproject
+#' @title Save or Delete project file from the directory
+#' @param project A validated `project` object containing REDCap project data and
+#' settings. Generated using \link{load_project} or \link{setup_project}
 #' @description
-#' This will save/delete the "<short_name>_REDCapSync.RData" file in the given DB
+#' This will save/delete the "<short_name>_REDCapSync.RData" file in the given project
 #' directories R_objects folder. These are optional functions given that
-#' `save_DB` is a also handled by a default parameter in `update_DB.`
+#' `save_project` is a also handled by a default parameter in `sync_project.`
 #'
-#' @details delete_DB will not delete any other files from that directory. The
+#' @details delete_project will not delete any other files from that directory. The
 #' user must delete any other files manually.
 #' @return Message
-#' @family DB object
+#' @family project object
 #' @export
-save_DB <- function(DB) {
+save_project <- function(project) {
   # param check
-  if (!is.list(DB)) stop("DB must be a list")
+  if (!is.list(project)) stop("project must be a list")
   # function
-  DB <- DB %>% validate_DB()
-  if (!DB$internals$ever_connected) {
-    bullet_in_console(paste0("Did not save ", DB$short_name, " because there has never been a REDCap connection! You must use `setup_DB()` and `update_DB()`"), bullet_type = "x")
+  project <- project %>% validate_project()
+  if (!project$internals$ever_connected) {
+    bullet_in_console(paste0("Did not save ", project$short_name, " because there has never been a REDCap connection! You must use `setup_project()` and `sync_project()`"), bullet_type = "x")
     return(invisible())
   }
-  # DB <- reverse_clean_DB(DB) # # problematic because setting numeric would delete missing codes
+  # project <- reverse_clean_project(project) # # problematic because setting numeric would delete missing codes
   save_file_path <- file.path(
-    DB$dir_path,
+    project$dir_path,
     "R_objects",
-    paste0(DB$short_name, "_REDCapSync.RData")
+    paste0(project$short_name, "_REDCapSync.RData")
   )
   saveRDS(
-    object = DB,
+    object = project,
     file = save_file_path
   )
-  add_project(DB)
-  # save_xls_wrapper(DB)
-  # nav_to_dir(DB)
+  add_project(project)
+  # save_xls_wrapper(project)
+  # nav_to_dir(project)
   return(invisible())
 }
-#' @rdname save-deleteDB
+#' @rdname save-deleteproject
 #' @export
-delete_DB <- function(DB) {
-  DB <- validate_DB(DB)
-  dir_path <- DB$dir_path
+delete_project <- function(project) {
+  project <- validate_project(project)
+  dir_path <- project$dir_path
   dir_path <- validate_dir(dir_path, silent = FALSE)
-  delete_this <- file.path(dir_path, "R_objects", paste0(DB$short_name, "_REDCapSync.RData"))
+  delete_this <- file.path(dir_path, "R_objects", paste0(project$short_name, "_REDCapSync.RData"))
   if (file.exists(delete_this)) {
     unlink(delete_this)
-    bullet_in_console("Deleted saved DB", bullet_type = "v")
+    bullet_in_console("Deleted saved project", bullet_type = "v")
   } else {
-    warning("The DB object you wanted to is not there. Did you delete already? ", delete_this)
+    warning("The project object you wanted to is not there. Did you delete already? ", delete_this)
   }
 }
 #' @title get your directory
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @return file path of directory
 #' @export
-get_dir <- function(DB) {
-  dir_path <- DB$dir_path
+get_dir <- function(project) {
+  dir_path <- project$dir_path
   stop_mes <- "Did you use `set_dir()`?"
   if (!file.exists(dir_path)) {
     bullet_in_console("Searched for directory --> '", file = dir_path, bullet_type = "x")
@@ -260,52 +261,52 @@ get_dir <- function(DB) {
   return(validate_dir(dir_path, silent = TRUE))
 }
 #' @title nav_to_dir
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @return opens browser link
 #' @export
-nav_to_dir <- function(DB) {
-  utils::browseURL(DB$dir_path)
+nav_to_dir <- function(project) {
+  utils::browseURL(project$dir_path)
 }
 #' @noRd
-validate_DB <- function(DB, silent = TRUE, warn_only = FALSE) {
+validate_project <- function(project, silent = TRUE, warn_only = FALSE) {
   # param check
-  if (!is.list(DB)) stop("DB must be a list")
+  if (!is.list(project)) stop("project must be a list")
   # function
   outcome_valid <- TRUE
   messages <- NULL
-  if (!all(names(internal_blank_DB) %in% names(DB))) {
+  if (!all(names(internal_blank_project) %in% names(project))) {
     outcome_valid <- FALSE
-    messages <- messages %>% append("`DB` does not have the appropriate names. Did you use `load_DB()` or `setup_DB()` to generate it?")
+    messages <- messages %>% append("`project` does not have the appropriate names. Did you use `load_project()` or `setup_project()` to generate it?")
   }
-  if (is.null(DB$short_name)) {
+  if (is.null(project$short_name)) {
     outcome_valid <- FALSE
-    messages <- messages %>% append("`DB$short_name` is NULL!, Did you use `setup_DB()`?")
+    messages <- messages %>% append("`project$short_name` is NULL!, Did you use `setup_project()`?")
   } else {
-    DB$short_name %>% validate_env_name()
+    project$short_name %>% validate_env_name()
   }
   if (!silent) {
-    if ((length(DB$data) == 0) > 0) {
-      bullet_in_console("Valid DB object but no data yet!", bullet_type = "!")
+    if ((length(project$data) == 0) > 0) {
+      bullet_in_console("Valid project object but no data yet!", bullet_type = "!")
     }
-    if (is.null(DB$dir_path)) {
-      bullet_in_console("`DB$dir_path` is NULL!, Did you use `setup_DB()`?", bullet_type = "!")
+    if (is.null(project$dir_path)) {
+      bullet_in_console("`project$dir_path` is NULL!, Did you use `setup_project()`?", bullet_type = "!")
     } else {
-      if (!DB$dir_path %>% file.exists()) {
-        bullet_in_console(paste0("`DB$dir_path`, '", DB$dir_path, "', does not exist!, Did you use `setup_DB()`?\nThis can also happen with shared directories."), bullet_type = "!")
+      if (!project$dir_path %>% file.exists()) {
+        bullet_in_console(paste0("`project$dir_path`, '", project$dir_path, "', does not exist!, Did you use `setup_project()`?\nThis can also happen with shared directories."), bullet_type = "!")
       } else {
-        bullet_in_console(DB$short_name %>% paste0(" loaded from: "), url = DB$dir_path, bullet_type = "v")
+        bullet_in_console(project$short_name %>% paste0(" loaded from: "), url = project$dir_path, bullet_type = "v")
       }
     }
-    if ((DB$internals$is_test)) {
-      bullet_in_console(DB$short_name %>% paste0(" is a test DB object that doesn't actually communicate with any REDCap API!"), bullet_type = "i")
+    if ((project$internals$is_test)) {
+      bullet_in_console(project$short_name %>% paste0(" is a test project object that doesn't actually communicate with any REDCap API!"), bullet_type = "i")
     }
-    if (DB$internals$is_transformed) {
-      bullet_in_console(DB$short_name %>% paste0(" is currently transformed! Can reverse with `untransform_DB(DB)`"), bullet_type = "i")
+    if (project$internals$is_transformed) {
+      bullet_in_console(project$short_name %>% paste0(" is currently transformed! Can reverse with `untransform_project(project)`"), bullet_type = "i")
     }
-    bullet_in_console("To get data/updates from REDCap run `DB <- update_DB(DB)`")
+    bullet_in_console("To get data/updates from REDCap run `project <- sync_project(project)`")
   }
   if (outcome_valid) {
-    bullet_in_console(paste0(DB$short_name, " is valid DB object!"), bullet_type = "v")
+    bullet_in_console(paste0(project$short_name, " is valid project object!"), bullet_type = "v")
   }
   if (!outcome_valid) {
     for (m in messages) {
@@ -316,12 +317,12 @@ validate_DB <- function(DB, silent = TRUE, warn_only = FALSE) {
       }
     }
   }
-  return(DB)
+  return(project)
 }
 #' @noRd
 internal_allowed_test_short_names <- c("TEST_classic", "TEST_repeating", "TEST_longitudinal", "TEST_multiarm")
 #' @noRd
-internal_blank_DB <- list(
+internal_blank_project <- list(
   short_name = NULL,
   dir_path = NULL,
   redcap = list(
@@ -384,7 +385,7 @@ internal_blank_DB <- list(
     data_extract_labelled = NULL,
     data_extract_merged = NULL,
     merge_form_name = "merged",
-    DB_type = "redcap",
+    project_type = "redcap",
     is_blank = TRUE,
     is_test = FALSE,
     ever_connected = FALSE,
@@ -432,7 +433,7 @@ validate_dir <- function(dir_path, silent = TRUE) {
   dir_path <- clean_dir_path(dir_path)
   if (!file.exists(dir_path)) stop("dir_path does not exist")
   if (!is.logical(silent)) stop("silent parameter must be TRUE/FALSE")
-  stop_mes <- "Did you use `setup_DB()`?"
+  stop_mes <- "Did you use `setup_project()`?"
   for (folder in internal_dir_folders) {
     if (!file.exists(file.path(dir_path, folder))) stop("'", dir_path, "/", folder, "' missing! ", stop_mes)
   }

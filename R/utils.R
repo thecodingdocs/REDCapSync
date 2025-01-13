@@ -1,16 +1,16 @@
 #' @noRd
-add_redcap_links_to_DF <- function(DF, DB) { # add instance links
-  if (DB$redcap$id_col %in% colnames(DF)) {
-    DF_structure_cols <- DB$redcap$raw_structure_cols[which(DB$redcap$raw_structure_cols %in% colnames(DF))]
-    DF_structure_cols <- DB$redcap$raw_structure_cols[which(DB$redcap$raw_structure_cols %in% colnames(DF) & DB$redcap$raw_structure_cols != DB$redcap$id_col)]
-    link_head <- DB$links$redcap_record_home
-    link_tail <- "&id=" %>% paste0(DF[[DB$redcap$id_col]])
+add_redcap_links_to_DF <- function(DF, project) { # add instance links
+  if (project$redcap$id_col %in% colnames(DF)) {
+    DF_structure_cols <- project$redcap$raw_structure_cols[which(project$redcap$raw_structure_cols %in% colnames(DF))]
+    DF_structure_cols <- project$redcap$raw_structure_cols[which(project$redcap$raw_structure_cols %in% colnames(DF) & project$redcap$raw_structure_cols != project$redcap$id_col)]
+    link_head <- project$links$redcap_record_home
+    link_tail <- "&id=" %>% paste0(DF[[project$redcap$id_col]])
     if ("redcap_repeat_instrument" %in% DF_structure_cols) {
-      link_head <- DB$links$redcap_record_subpage
+      link_head <- project$links$redcap_record_subpage
       link_tail <- link_tail %>% paste0("&page=", DF[["redcap_repeat_instrument"]])
     }
     if ("redcap_repeat_instance" %in% DF_structure_cols) {
-      link_head <- DB$links$redcap_record_subpage
+      link_head <- project$links$redcap_record_subpage
       link_tail <- link_tail %>% paste0("&instance=", DF[["redcap_repeat_instance"]])
     }
     DF$redcap_link <- paste0(link_head, link_tail)
@@ -21,8 +21,8 @@ add_redcap_links_to_DF <- function(DF, DB) { # add instance links
   return(DF)
 }
 #' @noRd
-count_DB_upload_cells <- function(DB) {
-  DB$data_update %>%
+count_project_upload_cells <- function(project) {
+  project$data_update %>%
     lapply(function(x) {
       nrow(x) * ncol(x)
     }) %>%
@@ -30,9 +30,9 @@ count_DB_upload_cells <- function(DB) {
     sum()
 }
 #' @noRd
-husk_of_form <- function(DB, FORM, field_names) {
-  DF <- DB$data[[FORM]]
-  cols <- colnames(DF)[which(colnames(DF) %in% DB$redcap$raw_structure_cols)]
+husk_of_form <- function(project, FORM, field_names) {
+  DF <- project$data[[FORM]]
+  cols <- colnames(DF)[which(colnames(DF) %in% project$redcap$raw_structure_cols)]
   DF2 <- NULL
   for (col in cols) {
     DF2[[col]] <- DF[[col]]
@@ -41,23 +41,23 @@ husk_of_form <- function(DB, FORM, field_names) {
   return(DF2)
 }
 #' @noRd
-all_DB_to_char_cols <- function(DB) {
-  DB$data <- DB$data %>% all_character_cols_list()
-  DB$data_update <- DB$data_update %>% all_character_cols_list()
-  return(DB)
+all_project_to_char_cols <- function(project) {
+  project$data <- project$data %>% all_character_cols_list()
+  project$data_update <- project$data_update %>% all_character_cols_list()
+  return(project)
 }
 #' @noRd
-add_redcap_links_table <- function(DF, DB) {
+add_redcap_links_table <- function(DF, project) {
   if (nrow(DF) > 0) {
-    DF[[DB$redcap$id_col]] <- paste0("<a href='", paste0("https://redcap.miami.edu/redcap_v", DB$redcap$version, "/DataEntry/record_home.php?pid=", DB$redcap$project_id, "&id=", DF[[DB$redcap$id_col]], "&arm=1"), "' target='_blank'>", DF[[DB$redcap$id_col]], "</a>")
+    DF[[project$redcap$id_col]] <- paste0("<a href='", paste0("https://redcap.miami.edu/redcap_v", project$redcap$version, "/DataEntry/record_home.php?pid=", project$redcap$project_id, "&id=", DF[[project$redcap$id_col]], "&arm=1"), "' target='_blank'>", DF[[project$redcap$id_col]], "</a>")
   }
   DF
 }
 #' @noRd
-clean_RC_col_names <- function(DF, DB) {
+clean_RC_col_names <- function(DF, project) {
   colnames(DF) <- colnames(DF) %>%
     lapply(function(COL) {
-      x <- DB$metadata$fields$field_label[which(DB$metadata$fields$field_name == COL)]
+      x <- project$metadata$fields$field_label[which(project$metadata$fields$field_name == COL)]
       if (length(x) > 1) {
         x <- x[[1]]
       }
@@ -68,15 +68,15 @@ clean_RC_col_names <- function(DF, DB) {
   DF
 }
 #' @noRd
-clean_RC_df_for_DT <- function(DF, DB) {
+clean_RC_df_for_DT <- function(DF, project) {
   DF %>%
-    add_redcap_links_table(DB) %>%
-    clean_RC_col_names(DB) %>%
+    add_redcap_links_table(project) %>%
+    clean_RC_col_names(project) %>%
     return()
 }
 #' @noRd
-remove_records_from_list <- function(DB, records, silent = FALSE) {
-  data_list <- DB$data
+remove_records_from_list <- function(project, records, silent = FALSE) {
+  data_list <- project$data
   if (!is_df_list(data_list)) stop("data_list is not a list of data.frames as expected.")
   if (length(records) == 0) stop("no records supplied to remove_records_from_list, but it's used in update which depends on records.")
   forms <- names(data_list)[
@@ -88,7 +88,7 @@ remove_records_from_list <- function(DB, records, silent = FALSE) {
     )
   ]
   for (TABLE in forms) {
-    data_list[[TABLE]] <- data_list[[TABLE]][which(!data_list[[TABLE]][[DB$redcap$id_col]] %in% records), ]
+    data_list[[TABLE]] <- data_list[[TABLE]][which(!data_list[[TABLE]][[project$redcap$id_col]] %in% records), ]
   }
   if (!silent) message("Removed: ", paste0(records, collapse = ", "))
   return(data_list)
@@ -130,8 +130,8 @@ ignore_redcap_log <- function(collapse = TRUE) {
   return(ignores)
 }
 #' @noRd
-sidebar_choices <- function(DB, n_threshold = 1) {
-  choices <- annotate_choices(DB)
+sidebar_choices <- function(project, n_threshold = 1) {
+  choices <- annotate_choices(project)
   choices <- choices[which(choices$n >= n_threshold), ]
   sbc <- data.frame(
     form_name = choices$form_name,

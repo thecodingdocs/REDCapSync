@@ -4,11 +4,11 @@
 \alias{upload_file_to_REDCap_file_repository}
 \title{Uploads a file to REDCap}
 \usage{
-upload_file_to_REDCap_file_repository(DB, file)
+upload_file_to_REDCap_file_repository(project, file)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and
-settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{project}{A validated \code{project} object containing REDCap project data and
+settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{file}{file location on your PC}
 }

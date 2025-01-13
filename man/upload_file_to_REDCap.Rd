@@ -5,7 +5,7 @@
 \title{Upload File to REDCap}
 \usage{
 upload_file_to_REDCap(
-  DB,
+  project,
   file,
   record,
   field,
@@ -14,8 +14,8 @@ upload_file_to_REDCap(
 )
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and
-settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{project}{A validated \code{project} object containing REDCap project data and
+settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{file}{A character string specifying the file path of the file to be uploaded.}
 

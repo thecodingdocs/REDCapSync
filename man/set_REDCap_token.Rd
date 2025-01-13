@@ -4,11 +4,11 @@
 \alias{set_REDCap_token}
 \title{Set a REDCap API Token to Your Current R Session}
 \usage{
-set_REDCap_token(DB, ask = TRUE)
+set_REDCap_token(project, ask = TRUE)
 }
 \arguments{
-\item{DB}{A validated \code{DB} object containing REDCap project data and
-settings. Generated using \link{load_DB} or \link{setup_DB}}
+\item{project}{A validated \code{project} object containing REDCap project data and
+settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{ask}{Logical (TRUE/FALSE). If TRUE, asks the user for confirmation before overwriting an existing valid token. Default is \code{TRUE}.}
 }
@@ -29,7 +29,7 @@ It is strongly discouraged to include API tokens directly within R scripts.
 The token is validated internally and stored using \code{Sys.setenv()}.
 }
 \seealso{
-For the function to work you need to have a valid DB object from \code{\link{setup_DB}()}.
+For the function to work you need to have a valid project object from \code{\link{setup_project}()}.
 See our \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
 
 Other Token Functions: 

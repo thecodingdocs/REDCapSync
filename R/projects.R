@@ -14,7 +14,7 @@ get_projects <- function() {
     projects <- cache_path() %>%
       file.path("projects.rds") %>%
       readRDS()
-    if (!does_exist) message("You have no projects cached. Try `setup_DB()`")
+    if (!does_exist) message("You have no projects cached. Try `setup_project()`")
     is_ok <- all(colnames(blank_project() %in% colnames(projects)))
     if (!is_ok) cache_clear()
   }
@@ -26,10 +26,10 @@ get_projects <- function() {
 #' @title List File Paths of REDCapSync Projects in a Folder
 #' @description
 #' Searches a specified folder for files related to REDCapSync projects and returns their file paths.
-#' Optionally validates the folder to ensure it was previously set up using `setup_DB()`.
+#' Optionally validates the folder to ensure it was previously set up using `setup_project()`.
 #'
 #' @param file_path Character. The path to the folder to search.
-#' @param validate Logical. If `TRUE`, the function will only accept valid directories previously set up with `setup_DB()`. Default is `TRUE`.
+#' @param validate Logical. If `TRUE`, the function will only accept valid directories previously set up with `setup_project()`. Default is `TRUE`.
 #'
 #' @return
 #' A character vector of file paths for valid REDCapSync project files in the folder. Returns an empty character vector if no valid files are found.
@@ -39,7 +39,7 @@ get_projects <- function() {
 #' It identifies files with the extension `.RData` and names ending in `_REDCapSync`, filtering out any unrelated files.
 #'
 #' @seealso
-#' \link{setup_DB} for setting up valid directories.
+#' \link{setup_project} for setting up valid directories.
 #'
 #' @export
 check_folder_for_projects <- function(file_path, validate = TRUE) {
@@ -67,7 +67,7 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
 }
 #' @title project_health_check
 #' @description
-#' Check directory, DB object, and REDCap token. Optional update.
+#' Check directory, project object, and REDCap token. Optional update.
 #' @family Project Cache Functions
 #' @keywords Project Cache Functions
 #' @return project cache data.frame
@@ -76,7 +76,7 @@ project_health_check <- function() {
   # projects <- projects_old <- get_projects()
   # DROPS <- NULL
   # projects_old$test_dir <- FALSE
-  # projects$test_DB <- FALSE
+  # projects$test_project <- FALSE
   # projects$test_RC <- FALSE
   # if(nrow(projects)>0){
   #   # DROPS<- projects[which(is.na(projects$project_id)),]
@@ -85,13 +85,13 @@ project_health_check <- function() {
   #     OUT <- projects_old[i,]
   #     if(file.exists(OUT$dir_path)){
   #       OUT$test_dir <- TRUE
-  #       DB <- tryCatch({
-  #         load_DB(OUT$dir_path)
+  #       project <- tryCatch({
+  #         load_project(OUT$dir_path)
   #       },error = function(e) {NULL})
-  #       OUT$test_DB <- !is.null(DB)
-  #       if(!OUT$test_DB){
-  #         DB <- tryCatch({
-  #           setup_DB(
+  #       OUT$test_project <- !is.null(project)
+  #       if(!OUT$test_project){
+  #         project <- tryCatch({
+  #           setup_project(
   #             short_name = OUT$short_name,
   #             dir_path = OUT$dir_path,
   #             token_name = OUT$token_name,
@@ -100,20 +100,20 @@ project_health_check <- function() {
   #             merge_form_name = "merged"
   #           )
   #         },error = function(e) {NULL})
-  #         OUT$test_DB <- !is.null(DB)
+  #         OUT$test_project <- !is.null(project)
   #       }
-  #       if(OUT$test_DB){
-  #         OUT$test_RC <- redcap_token_works(DB)
+  #       if(OUT$test_project){
+  #         OUT$test_RC <- redcap_token_works(project)
   #         if(OUT$test_RC){
-  #           if(update)DB <- update_DB(DB)
+  #           if(update)project <- sync_project(project)
   #         }
   #       }
-  #       if(OUT$test_DB){
-  #         OUT_DB <- extract_project_details(DB = DB)
-  #         OUT_DB$test_dir <- OUT$test_dir
-  #         OUT_DB$test_DB <- OUT$test_DB
-  #         OUT_DB$test_RC <- OUT$test_RC
-  #         OUT <- OUT_DB
+  #       if(OUT$test_project){
+  #         OUT_project <- extract_project_details(project = project)
+  #         OUT_project$test_dir <- OUT$test_dir
+  #         OUT_project$test_project <- OUT$test_project
+  #         OUT_project$test_RC <- OUT$test_RC
+  #         OUT <- OUT_project
   #       }
   #       projects <- projects[which(projects$short_name!=OUT$short_name),]
   #       projects <- projects %>% dplyr::bind_rows(OUT)
@@ -144,7 +144,7 @@ internal_blank_project_cols <- c(
   "redcap_home",
   "redcap_API_playground"
   # "test_dir"
-  # "test_DB",
+  # "test_project",
   # "test_RC"
 )
 #' @noRd
@@ -157,7 +157,7 @@ blank_project <- function() {
 save_projects_to_cache <- function(projects, silent = TRUE) {
   projects <- projects[order(projects$short_name), ]
   # projects$test_dir <- projects$test_dir %>% as.logical()
-  # projects$test_DB <- projects$test_DB %>% as.logical()
+  # projects$test_project <- projects$test_project %>% as.logical()
   # projects$test_RC <- projects$test_RC %>% as.logical()
   saveRDS(projects, file = cache_path() %>% file.path("projects.rds"))
   if (!silent) {
@@ -172,43 +172,43 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
   }
 }
 #' @noRd
-extract_project_details <- function(DB) {
+extract_project_details <- function(project) {
   OUT <- data.frame(
-    short_name = DB$short_name,
-    dir_path = DB$dir_path %>% is.null() %>% ifelse(NA, sanitize_path(DB$dir_path)),
-    last_save = DB$internals$last_data_dir_save %>% is.null() %>% ifelse(NA, DB$internals$last_data_dir_save) %>% as.POSIXct(),
-    last_metadata_update = DB$internals$last_metadata_update,
-    last_data_update = DB$internals$last_data_update,
-    version = DB$redcap$version,
-    token_name = DB$redcap$token_name,
-    project_id = DB$redcap$project_id,
-    project_title = DB$redcap$project_title,
-    id_col = DB$redcap$id_col,
-    is_longitudinal = DB$redcap$is_longitudinal,
-    has_repeating_forms_or_events = DB$redcap$has_repeating_forms_or_events,
-    has_multiple_arms = DB$redcap$has_multiple_arms,
-    n_records = ifelse(is.null(DB$summary$all_records[[DB$redcap$id_col]]), NA, DB$summary$all_records %>% nrow()),
+    short_name = project$short_name,
+    dir_path = project$dir_path %>% is.null() %>% ifelse(NA, sanitize_path(project$dir_path)),
+    last_save = project$internals$last_data_dir_save %>% is.null() %>% ifelse(NA, project$internals$last_data_dir_save) %>% as.POSIXct(),
+    last_metadata_update = project$internals$last_metadata_update,
+    last_data_update = project$internals$last_data_update,
+    version = project$redcap$version,
+    token_name = project$redcap$token_name,
+    project_id = project$redcap$project_id,
+    project_title = project$redcap$project_title,
+    id_col = project$redcap$id_col,
+    is_longitudinal = project$redcap$is_longitudinal,
+    has_repeating_forms_or_events = project$redcap$has_repeating_forms_or_events,
+    has_multiple_arms = project$redcap$has_multiple_arms,
+    n_records = ifelse(is.null(project$summary$all_records[[project$redcap$id_col]]), NA, project$summary$all_records %>% nrow()),
     R_object_size = NA,
     file_size = NA,
-    redcap_base = DB$links$redcap_base,
-    redcap_home = DB$links$redcap_home,
-    redcap_API_playground = DB$links$redcap_API_playground
+    redcap_base = project$links$redcap_base,
+    redcap_home = project$links$redcap_home,
+    redcap_API_playground = project$links$redcap_API_playground
   ) %>% all_character_cols()
   rownames(OUT) <- NULL
   return(OUT)
 }
 #' @noRd
-add_project <- function(DB, silent = TRUE) {
+add_project <- function(project, silent = TRUE) {
   projects <- get_projects()
-  projects <- projects[which(projects$short_name != DB$short_name), ]
-  OUT <- extract_project_details(DB = DB)
-  OUT$R_object_size <- size(DB)
-  OUT$file_size <- file.path(DB$dir_path, "R_objects", paste0(DB$short_name, "_REDCapSync.RData")) %>% file_size_mb()
+  projects <- projects[which(projects$short_name != project$short_name), ]
+  OUT <- extract_project_details(project = project)
+  OUT$R_object_size <- size(project)
+  OUT$file_size <- file.path(project$dir_path, "R_objects", paste0(project$short_name, "_REDCapSync.RData")) %>% file_size_mb()
   projects <- projects %>% dplyr::bind_rows(OUT)
   save_projects_to_cache(projects, silent = silent)
 }
 #' @noRd
-delete_project <- function(short_name) {
+delete_project_from_name <- function(short_name) {
   projects <- get_projects()
   ROW <- which(projects$short_name == short_name)
   OTHERS <- which(projects$short_name != short_name)

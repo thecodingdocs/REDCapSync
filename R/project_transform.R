@@ -1,24 +1,24 @@
 #' @title Horizontal Transform
 #' @description
-#' This function performs a horizontal transformation on the data in the `DB` object, transforming the data format so that each record is represented in a horizontal layout. It is useful when you want to reshape or pivot the data for further analysis or presentation.
+#' This function performs a horizontal transformation on the data in the `project` object, transforming the data format so that each record is represented in a horizontal layout. It is useful when you want to reshape or pivot the data for further analysis or presentation.
 #'
-#' @inheritParams save_DB
-#' @param records A vector of records to be transformed. The transformation applies only to the specified records from the `DB` object.
+#' @inheritParams save_project
+#' @param records A vector of records to be transformed. The transformation applies only to the specified records from the `project` object.
 #'
-#' @return A transformed version of the `DB` object, where the data is rearranged horizontally, typically in a format where columns represent different variables or field values for each record.
+#' @return A transformed version of the `project` object, where the data is rearranged horizontally, typically in a format where columns represent different variables or field values for each record.
 #'
 #' @details
-#' The function begins by validating the `DB` object and checking that the records to be transformed exist. It then reshapes the data from a vertical to a horizontal format, allowing for easier access and analysis, especially when dealing with wide datasets.
+#' The function begins by validating the `project` object and checking that the records to be transformed exist. It then reshapes the data from a vertical to a horizontal format, allowing for easier access and analysis, especially when dealing with wide datasets.
 #' @export
-generate_horizontal_transform <- function(DB, records) {
-  DB <- validate_DB(DB)
-  if (missing(records)) records <- DB$summary$all_records[[DB$redcap$id_col]]
-  data <- filter_DB(DB, filter_field = DB$redcap$id_col, filter_choices = records)
+generate_horizontal_transform <- function(project, records) {
+  project <- validate_project(project)
+  if (missing(records)) records <- project$summary$all_records[[project$redcap$id_col]]
+  data <- filter_project(project, filter_field = project$redcap$id_col, filter_choices = records)
   FINAL_out <- NULL
   forms <- names(data)
   col_names <- NULL
   max_by_record <- NULL
-  ID_col <- DB$redcap$id_col
+  ID_col <- project$redcap$id_col
   max_by_record <- data.frame(
     record = records,
     max = records %>% lapply(function(record) {
@@ -76,33 +76,33 @@ generate_horizontal_transform <- function(DB, records) {
   FINAL_out <- col_names2 %>% dplyr::bind_rows(FINAL_out)
   return(FINAL_out)
 }
-#' @title upload_transform_to_DB Transform
-#' @inheritParams save_DB
-#' @return DB object
+#' @title upload_transform_to_project Transform
+#' @inheritParams save_project
+#' @return project object
 #' @export
-upload_transform_to_DB <- function(DB) {
-  if (is_something(DB$transformation$data_updates)) {
-    for (i in seq_along(DB$transformation$data_updates)) {
-      DB$transformation$data_updates[[i]] %>%
-        labelled_to_raw_form(DB) %>%
-        upload_form_to_REDCap(DB)
+upload_transform_to_project <- function(project) {
+  if (is_something(project$transformation$data_updates)) {
+    for (i in seq_along(project$transformation$data_updates)) {
+      project$transformation$data_updates[[i]] %>%
+        labelled_to_raw_form(project) %>%
+        upload_form_to_REDCap(project)
     }
     bullet_in_console("Successfully uploaded to REDCap!", bullet_type = "v")
-    DB$transformation$data_updates <- NULL
+    project$transformation$data_updates <- NULL
   } else {
     bullet_in_console("Nothing to upload!")
   }
-  return(DB)
+  return(project)
 }
 #' @noRd
-extract_form_from_merged <- function(DB, form_name) {
-  merged <- DB$data[[DB$internals$merge_form_name]]
+extract_form_from_merged <- function(project, form_name) {
+  merged <- project$data[[project$internals$merge_form_name]]
   if (nrow(merged) > 0) {
-    add_ons <- c(DB$redcap$id_col, "arm_num", "event_name", "redcap_event_name", "redcap_repeat_instrument", "redcap_repeat_instance")
+    add_ons <- c(project$redcap$id_col, "arm_num", "event_name", "redcap_event_name", "redcap_repeat_instrument", "redcap_repeat_instance")
     add_ons <- add_ons[which(add_ons %in% colnames(merged))]
-    if (!form_name %in% DB$metadata$forms$form_name) stop("form_name must be included in set of DB$metadata$forms$form_name")
-    # form_name <-  DB$metadata$forms$form_name %>% sample(1)
-    is_repeating_form <- form_name %in% DB$metadata$forms$form_name[which(DB$metadata$forms$repeating)]
+    if (!form_name %in% project$metadata$forms$form_name) stop("form_name must be included in set of project$metadata$forms$form_name")
+    # form_name <-  project$metadata$forms$form_name %>% sample(1)
+    is_repeating_form <- form_name %in% project$metadata$forms$form_name[which(project$metadata$forms$repeating)]
     rows <- seq_len(nrow(merged))
     if (is_repeating_form) {
       # rows <- which(merged$redcap_repeat_form==form_name)
@@ -111,7 +111,7 @@ extract_form_from_merged <- function(DB, form_name) {
       rows <- which(!is.na(merged[[paste0(form_name, "_complete")]]))
     }
     #
-    # if(!DB$redcap$is_longitudinal){
+    # if(!project$redcap$is_longitudinal){
     #   if("redcap_repeat_form"%in%colnames(merged)){
     #     if(is_repeating_form){
     #       rows <- which(merged$redcap_repeat_instrument==form_name)
@@ -121,46 +121,46 @@ extract_form_from_merged <- function(DB, form_name) {
     #     }
     #   }
     # }
-    # if(DB$redcap$is_longitudinal){
-    #   events_ins <- DB$metadata$event_mapping$unique_event_name[which(DB$metadata$event_mapping$form==form_name)] %>% unique()
+    # if(project$redcap$is_longitudinal){
+    #   events_ins <- project$metadata$event_mapping$unique_event_name[which(project$metadata$event_mapping$form==form_name)] %>% unique()
     #   rows <- which(merged$redcap_event_name%in%events_ins)
     # }
     # if(!is_repeating_form){
     #   add_ons <- add_ons[which(!add_ons%in%c("redcap_repeat_instrument","redcap_repeat_instance"))]
     # }
-    cols <- unique(c(add_ons, DB$metadata$fields$field_name[which(DB$metadata$fields$form_name == form_name & DB$metadata$fields$field_name %in% colnames(merged))]))
+    cols <- unique(c(add_ons, project$metadata$fields$field_name[which(project$metadata$fields$form_name == form_name & project$metadata$fields$field_name %in% colnames(merged))]))
     return(merged[rows, cols])
   }
 }
 #' @noRd
-get_original_forms <- function(DB) {
-  forms <- DB$metadata$forms
-  if (DB$internals$is_transformed) {
-    forms <- DB$transformation$original_forms
+get_original_forms <- function(project) {
+  forms <- project$metadata$forms
+  if (project$internals$is_transformed) {
+    forms <- project$transformation$original_forms
   }
   return(forms)
 }
 #' @noRd
-get_original_fields <- function(DB) {
-  fields <- DB$metadata$fields
-  if (DB$internals$is_transformed) {
-    fields <- DB$transformation$original_fields
+get_original_fields <- function(project) {
+  fields <- project$metadata$fields
+  if (project$internals$is_transformed) {
+    fields <- project$transformation$original_fields
   }
   return(fields)
 }
 #' @noRd
-get_transformed_fields <- function(DB) {
+get_transformed_fields <- function(project) {
   fields <- NULL
-  if (DB$internals$is_transformed) {
-    fields <- DB$metadata$fields
+  if (project$internals$is_transformed) {
+    fields <- project$metadata$fields
   }
   return(fields)
 }
 #' @noRd
-get_transformed_forms <- function(DB) {
+get_transformed_forms <- function(project) {
   forms <- NULL
-  if (DB$internals$is_transformed) {
-    forms <- DB$metadata$forms
+  if (project$internals$is_transformed) {
+    forms <- project$metadata$forms
     forms$form_name <- forms$form_name_remap
     forms$form_label <- forms$form_label_remap
     forms <- forms[, which(colnames(forms) %in% c("form_name", "form_label", "repeating", "repeating_via_events"))] %>% unique()
@@ -169,13 +169,13 @@ get_transformed_forms <- function(DB) {
 }
 #' @title Add Default Forms Transformation to the Database
 #' @description
-#' Applies default transformations to specific forms within the REDCap database (`DB`).
-#' This function modifies the `DB` object to include default transformations, which may
+#' Applies default transformations to specific forms within the REDCap database (`project`).
+#' This function modifies the `project` object to include default transformations, which may
 #' involve adjustments, calculations, or reformatting of data in predefined forms.
 #'
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @return
-#' The updated `DB` object with default transformations applied to the specified forms.
+#' The updated `project` object with default transformations applied to the specified forms.
 #'
 #' @details
 #' This function is designed to streamline and standardize data processing by applying
@@ -183,15 +183,15 @@ get_transformed_forms <- function(DB) {
 #' within the function and ensure consistency across datasets.
 #'
 #' @seealso
-#' \code{\link{save_DB}} for saving the database or subsets.
+#' \code{\link{save_project}} for saving the database or subsets.
 #' @export
-add_default_forms_transformation <- function(DB) {
-  forms_transformation <- get_original_forms(DB)
+add_default_forms_transformation <- function(project) {
+  forms_transformation <- get_original_forms(project)
   if ("repeating_via_events" %in% colnames(forms_transformation)) {
     forms_transformation <- forms_transformation[order(forms_transformation$repeating_via_events), ]
   }
   forms_transformation <- forms_transformation[order(forms_transformation$repeating), ]
-  merge_form_name <- DB$internals$merge_form_name
+  merge_form_name <- project$internals$merge_form_name
   forms_transformation$form_name_remap <- forms_transformation$form_name
   forms_transformation$form_label_remap <- forms_transformation$form_label
   forms_transformation$form_name_remap[which(!forms_transformation$repeating)] <- merge_form_name
@@ -203,8 +203,8 @@ add_default_forms_transformation <- function(DB) {
   forms_transformation$merge_to <- merge_form_name
   forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to %>%
     lapply(function(form_name) {
-      if (form_name %in% names(DB$metadata$form_key_cols)) {
-        DB$metadata$form_key_cols[[form_name]] %>%
+      if (form_name %in% names(project$metadata$form_key_cols)) {
+        project$metadata$form_key_cols[[form_name]] %>%
           paste0(collapse = "+") %>%
           return()
       } else {
@@ -213,7 +213,7 @@ add_default_forms_transformation <- function(DB) {
           return(NA)
         }
         form_name <- forms_transformation$form_name[rows[[1]]]
-        DB$metadata$form_key_cols[[form_name]] %>%
+        project$metadata$form_key_cols[[form_name]] %>%
           paste0(collapse = "+") %>%
           return()
       }
@@ -224,8 +224,8 @@ add_default_forms_transformation <- function(DB) {
   return(forms_transformation)
 }
 #' @noRd
-add_default_fields_transformation <- function(DB) {
-  # DB$transformation <- list(
+add_default_fields_transformation <- function(project) {
+  # project$transformation <- list(
   #   forms = NULL,
   #   fields = NULL,
   #   # original_forms = NULL,
@@ -233,31 +233,31 @@ add_default_fields_transformation <- function(DB) {
   #   data_updates = NULL
   # )
   # fields_transformation <- NULL
-  DB$metadata$form_key_cols %>%
+  project$metadata$form_key_cols %>%
     names() %>%
     lapply(function(form_name) {
-      DB$metadata$form_key_cols[[form_name]]
+      project$metadata$form_key_cols[[form_name]]
     })
-  forms <- get_original_forms(DB)
+  forms <- get_original_forms(project)
   last_non_rep <- forms$form_name[which(!forms$repeating)] %>% dplyr::last()
   form_names <- forms$form_name[which(forms$repeating)]
-  # id_col <- DB$metadata$form_key_cols[[last_non_rep]]
+  # id_col <- project$metadata$form_key_cols[[last_non_rep]]
   has_non_rep <- length(last_non_rep) > 0
   if (has_non_rep) {
     for (form_name in form_names) {
       form_label <- forms$form_label[which(forms$form_name == form_name)]
-      DB <- DB %>% add_field_transformation(
+      project <- project %>% add_field_transformation(
         field_name = paste0("n_forms_", form_name),
         form_name = last_non_rep,
         field_type = "text",
         field_type_R = "integer",
         field_label = paste0(form_label, " Forms"),
         units = "n",
-        data_func = function(DB, field_name, form_name) {
+        data_func = function(project, field_name, form_name) {
           form <- gsub("n_forms_", "", field_name)
-          id_col <- DB$metadata$form_key_cols[[form_name]]
-          DB$data[[form_name]][[id_col]] %>%
-            matches(DB$data[[form]][[id_col]], count_only = TRUE) %>%
+          id_col <- project$metadata$form_key_cols[[form_name]]
+          project$data[[form_name]][[id_col]] %>%
+            matches(project$data[[form]][[id_col]], count_only = TRUE) %>%
             as.character() %>%
             return()
         }
@@ -266,20 +266,20 @@ add_default_fields_transformation <- function(DB) {
   }
   for (form_name in form_names) {
     form_label <- forms$form_label[which(forms$form_name == form_name)]
-    DB <- DB %>% add_field_transformation(
+    project <- project %>% add_field_transformation(
       field_name = paste0(form_name, "_compound_key"),
       form_name = form_name,
       field_type = "text",
       field_type_R = "character",
       field_label = paste(form_label, "Compound Key"),
-      data_func = function(DB, field_name, form_name) {
-        cols <- DB$metadata$form_key_cols[[form_name]]
+      data_func = function(project, field_name, form_name) {
+        cols <- project$metadata$form_key_cols[[form_name]]
         OUT <- NULL
         while (length(cols) > 0) {
           if (is.null(OUT)) {
-            OUT <- DB$data[[form_name]][[cols[1]]]
+            OUT <- project$data[[form_name]][[cols[1]]]
           } else {
-            OUT <- OUT %>% paste0("_", DB$data[[form_name]][[cols[1]]])
+            OUT <- OUT %>% paste0("_", project$data[[form_name]][[cols[1]]])
           }
           cols <- cols[-1]
         }
@@ -287,11 +287,11 @@ add_default_fields_transformation <- function(DB) {
       }
     )
   }
-  return(DB)
+  return(project)
 }
 #' @noRd
-add_forms_transformation <- function(DB, forms_transformation, ask = TRUE) {
-  if (missing(forms_transformation)) forms_transformation <- add_default_forms_transformation(DB)
+add_forms_transformation <- function(project, forms_transformation, ask = TRUE) {
+  if (missing(forms_transformation)) forms_transformation <- add_default_forms_transformation(project)
   forms_tranformation_cols <- c(
     "form_name",
     "form_label",
@@ -303,30 +303,30 @@ add_forms_transformation <- function(DB, forms_transformation, ask = TRUE) {
     "by.y",
     "x_first"
   )
-  if (DB$redcap$is_longitudinal) {
+  if (project$redcap$is_longitudinal) {
     forms_tranformation_cols <- forms_tranformation_cols %>% append("repeating_via_events")
   }
   if (any(!names(forms_transformation) %in% forms_tranformation_cols)) {
-    bullet_in_console("Use `add_default_forms_transformation(DB)` is an example!")
+    bullet_in_console("Use `add_default_forms_transformation(project)` is an example!")
     stop("forms_transformation needs the following colnames... ", forms_tranformation_cols %>% as_comma_string())
   }
   choice <- TRUE
-  if (!is.null(DB$transformation)) {
-    if (!identical(DB$transformation$forms, forms_transformation)) {
+  if (!is.null(project$transformation)) {
+    if (!identical(project$transformation$forms, forms_transformation)) {
       if (ask) {
         choice <- utils::askYesNo("Do you want to add transformation? (it doesn't match previous transform)")
       }
     }
   }
   # add more checks
-  DB$transformation$forms <- forms_transformation
-  return(DB)
+  project$transformation$forms <- forms_transformation
+  return(project)
 }
 #' @title Add Field Transformation to the Database
 #' @description
-#' Adds a new field transformation to the REDCap database (`DB`). This allows users to define custom transformations for a specific field in a form, including its type, label, choices, and associated function for data manipulation.
+#' Adds a new field transformation to the REDCap database (`project`). This allows users to define custom transformations for a specific field in a form, including its type, label, choices, and associated function for data manipulation.
 #'
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @param field_name Character. The name of the field to which the transformation will be applied.
 #' @param form_name Character. The name of the form containing the field.
 #' @param field_type Character. The type of the field in REDCap (e.g., "text", "checkbox", "dropdown").
@@ -339,17 +339,17 @@ add_forms_transformation <- function(DB, forms_transformation, ask = TRUE) {
 #' @param data_func Function or NA. An optional function to transform or validate the data in the field. Default is `NA`.
 #'
 #' @return
-#' The updated `DB` object with the field transformation added.
+#' The updated `project` object with the field transformation added.
 #'
 #' @details
 #' This function facilitates the addition of a new field transformation to a REDCap database. The transformation includes metadata such as the field's type, label, and choices, along with an optional function to process the data. This is particularly useful for customizing or extending the functionality of existing REDCap forms and fields.
 #'
 #' @seealso
-#' \code{\link{save_DB}} for saving the database or subsets.
+#' \code{\link{save_project}} for saving the database or subsets.
 #'
 #' @export
 add_field_transformation <- function(
-    DB,
+    project,
     field_name,
     form_name,
     field_type,
@@ -360,12 +360,12 @@ add_field_transformation <- function(
     identifier = "",
     units = NA,
     data_func = NA) {
-  DB <- validate_DB(DB, silent = TRUE)
-  if (wl(DB$transformation$fields$field_name == field_name) > 0) {
-    DB$transformation$fields <- DB$transformation$fields[which(DB$transformation$fields$field_name != field_name), ]
+  project <- validate_project(project, silent = TRUE)
+  if (wl(project$transformation$fields$field_name == field_name) > 0) {
+    project$transformation$fields <- project$transformation$fields[which(project$transformation$fields$field_name != field_name), ]
   }
-  # if(!DB$data %>% is_something())stop("Must have transformed data to add new vars.")
-  fields <- get_original_fields(DB)
+  # if(!project$data %>% is_something())stop("Must have transformed data to add new vars.")
+  fields <- get_original_fields(project)
   in_original_redcap <- field_name %in% fields$field_name
   if (is_something(select_choices_or_calculations)) select_choices_or_calculations <- choice_vector_string(select_choices_or_calculations)
   if (in_original_redcap) {
@@ -382,11 +382,11 @@ add_field_transformation <- function(
   }
   if (!is_something(data_func)) warning("if no `data_func` is provided, the column is only added to the metadata", immediate. = TRUE)
   if (is_something(data_func)) {
-    func_template <- "data_func = function(DB,field_name){YOUR FUNCTION}"
+    func_template <- "data_func = function(project,field_name){YOUR FUNCTION}"
     if (!is.function(data_func)) stop("`data_func` must be a function ... ", func_template)
-    allowed_args <- c("DB", "field_name", "form_name")
-    if (all(!allowed_args %in% names(formals(data_func)))) stop("`data_func` must have two aruguments (DB and field_name) ... ", func_template)
-    if (any(!names(formals(data_func)) %in% allowed_args)) stop("`data_func` can only have two aruguments (DB and field_name) ... ", func_template)
+    allowed_args <- c("project", "field_name", "form_name")
+    if (all(!allowed_args %in% names(formals(data_func)))) stop("`data_func` must have two aruguments (project and field_name) ... ", func_template)
+    if (any(!names(formals(data_func)) %in% allowed_args)) stop("`data_func` can only have two aruguments (project and field_name) ... ", func_template)
   }
   field_row <- data.frame(
     field_name = field_name,
@@ -402,21 +402,21 @@ add_field_transformation <- function(
     field_label_short = field_label,
     field_func = data_func %>% function_to_string()
   )
-  DB$transformation$fields <- DB$transformation$fields %>% dplyr::bind_rows(field_row)
-  DB$transformation$field_functions[[field_name]] <- data_func %>% clean_function()
+  project$transformation$fields <- project$transformation$fields %>% dplyr::bind_rows(field_row)
+  project$transformation$field_functions[[field_name]] <- data_func %>% clean_function()
   message("added '", field_name, "' column")
-  return(DB)
+  return(project)
 }
 #' @noRd
-combine_original_transformed_fields <- function(DB) {
-  the_names <- DB$transformation$fields$field_name
-  fields <- get_original_fields(DB)
+combine_original_transformed_fields <- function(project) {
+  the_names <- project$transformation$fields$field_name
+  fields <- get_original_fields(project)
   if (is.null(the_names)) {
     bullet_in_console("Nothing to add. Use `add_field_transformation()`", bullet_type = "x")
     return(fields)
   }
   for (field_name in the_names) {
-    field_row <- DB$transformation$fields[which(DB$transformation$fields$field_name == field_name), ]
+    field_row <- project$transformation$fields[which(project$transformation$fields$field_name == field_name), ]
     form_name <- field_row$form_name
     # if(any(fields$field_name==field_name))stop("field_name already included")
     current_row <- which(fields$field_name == field_name)
@@ -450,32 +450,32 @@ combine_original_transformed_fields <- function(DB) {
   return(fields)
 }
 #' @noRd
-run_fields_transformation <- function(DB, ask = TRUE) {
-  the_names <- DB$transformation$fields$field_name
+run_fields_transformation <- function(project, ask = TRUE) {
+  the_names <- project$transformation$fields$field_name
   if (is.null(the_names)) {
     bullet_in_console("Nothing to run. Use `add_field_transformation()`", bullet_type = "x")
-    return(DB)
+    return(project)
   }
-  original_fields <- get_original_fields(DB)
+  original_fields <- get_original_fields(project)
   the_names_existing <- the_names[which(the_names %in% original_fields$field_name)]
   the_names_new <- the_names[which(!the_names %in% original_fields$field_name)]
   # fields_to_update <- NULL
   for (field_name in c(the_names_existing, the_names_new)) {
     OUT <- NA
-    row_of_interest <- DB$transformation$fields[which(DB$transformation$fields$field_name == field_name), ]
+    row_of_interest <- project$transformation$fields[which(project$transformation$fields$field_name == field_name), ]
     form_name <- row_of_interest$form_name
-    field_func <- DB$transformation$field_functions[[field_name]]
+    field_func <- project$transformation$field_functions[[field_name]]
     environment(field_func) <- environment()
     if (is_something(field_func)) {
-      if (form_name %in% names(DB$data)) {
-        OUT <- field_func(DB = DB, field_name = field_name, form_name = form_name)
+      if (form_name %in% names(project$data)) {
+        OUT <- field_func(project = project, field_name = field_name, form_name = form_name)
       }
     }
     if (field_name %in% the_names_existing) {
-      OLD <- DB$data[[form_name]][[field_name]]
+      OLD <- project$data[[form_name]][[field_name]]
       if (!identical(OUT, OLD)) {
-        ref_cols <- DB$metadata$form_key_cols[[form_name]]
-        new <- old <- DB$data[[form_name]][, c(ref_cols, field_name)]
+        ref_cols <- project$metadata$form_key_cols[[form_name]]
+        new <- old <- project$data[[form_name]][, c(ref_cols, field_name)]
         new[[field_name]] <- OUT
         DF <- find_df_diff2(
           new = new,
@@ -485,48 +485,48 @@ run_fields_transformation <- function(DB, ask = TRUE) {
           message_pass = paste0(form_name, " - ", field_name, ": ")
         )
         if (is_something(DF)) {
-          DB$transformation$data_updates[[field_name]] <- DF
+          project$transformation$data_updates[[field_name]] <- DF
         }
       }
     }
-    if (form_name %in% names(DB$data)) {
-      DB$data[[form_name]][[field_name]] <- OUT
+    if (form_name %in% names(project$data)) {
+      project$data[[form_name]][[field_name]] <- OUT
     }
   }
-  bullet_in_console(paste0("Added new fields to ", DB$short_name, " `DB$data`"), bullet_type = "v")
-  return(DB)
+  bullet_in_console(paste0("Added new fields to ", project$short_name, " `project$data`"), bullet_type = "v")
+  return(project)
 }
-#' @title transform_DB
+#' @title transform_project
 #' @description
-#' Transforms the REDCap database (`DB` object) by applying the necessary field transformations.
+#' Transforms the REDCap database (`project` object) by applying the necessary field transformations.
 #' This function modifies the structure of the data and records according to the transformation rules specified.
 #'
 #' @details
 #' This function checks if the database has already been transformed and applies the transformation if not. It stores the original column names before transforming the data. The transformation process can include modifying field values and renaming columns based on predefined transformation rules.
 #'
-#' @inheritParams save_DB
+#' @inheritParams save_project
 #' @param ask Logical (TRUE/FALSE). If TRUE, prompts the user for confirmation before proceeding with the transformation. Default is `TRUE`.
-#' @return The transformed `DB` object.
+#' @return The transformed `project` object.
 #' @seealso
-#' \code{\link[REDCapSync]{save_DB}} for saving the transformed database object.
-#' \code{\link[REDCapSync]{untransform_DB}} for reverting the transformation.
+#' \code{\link[REDCapSync]{save_project}} for saving the transformed database object.
+#' \code{\link[REDCapSync]{untransform_project}} for reverting the transformation.
 #' @family db_functions
 #' @export
-transform_DB <- function(DB, ask = TRUE) {
-  if (DB$internals$is_transformed) {
+transform_project <- function(project, ask = TRUE) {
+  if (project$internals$is_transformed) {
     bullet_in_console("Already transformed... nothing to do!", bullet_type = "x")
-    return(DB)
+    return(project)
   }
-  forms_transformation <- DB$transformation$forms
-  DB$transformation$original_col_names <- DB$data %>%
+  forms_transformation <- project$transformation$forms
+  project$transformation$original_col_names <- project$data %>%
     names() %>%
     lapply(function(l) {
-      DB$data[[l]] %>% colnames()
+      project$data[[l]] %>% colnames()
     })
-  names(DB$transformation$original_col_names) <- DB$data %>% names()
-  # if(any(!names(transformation)%in%names(DB$data)))stop("must have all DB$data names in transformation")
-  if (is_something(process_df_list(DB$data, silent = TRUE))) DB <- run_fields_transformation(DB, ask = ask)
-  named_df_list <- DB$data
+  names(project$transformation$original_col_names) <- project$data %>% names()
+  # if(any(!names(transformation)%in%names(project$data)))stop("must have all project$data names in transformation")
+  if (is_something(process_df_list(project$data, silent = TRUE))) project <- run_fields_transformation(project, ask = ask)
+  named_df_list <- project$data
   OUT <- NULL
   for (i in (seq_len(nrow(forms_transformation)))) {
     TABLE <- forms_transformation$form_name[i]
@@ -613,44 +613,44 @@ transform_DB <- function(DB, ask = TRUE) {
       }
     }
   }
-  if (any(!names(OUT) %in% unique(forms_transformation$form_name_remap))) stop("not all names in OUT objext. Something wrong with transform_DB()")
-  DB$data <- OUT
-  # forms_transformation <- annotate_forms(DB,summarize_data = FALSE)
-  if (!is.null(DB$metadata$form_key_cols)) {
+  if (any(!names(OUT) %in% unique(forms_transformation$form_name_remap))) stop("not all names in OUT objext. Something wrong with transform_project()")
+  project$data <- OUT
+  # forms_transformation <- annotate_forms(project,summarize_data = FALSE)
+  if (!is.null(project$metadata$form_key_cols)) {
     forms_transformation$key_cols <- forms_transformation$form_name %>%
       lapply(function(IN) {
-        DB$metadata$form_key_cols[[IN]] %>% paste0(collapse = "+")
+        project$metadata$form_key_cols[[IN]] %>% paste0(collapse = "+")
       }) %>%
       unlist()
     forms_transformation$key_names <- forms_transformation$form_name %>%
       lapply(function(IN) {
         row_match <- which(forms_transformation$form_name == IN)
         if (!forms_transformation$repeating[row_match]) {
-          return(DB$metadata$form_key_cols[[IN]])
+          return(project$metadata$form_key_cols[[IN]])
         }
         return(paste0(forms_transformation$form_name[row_match], "_key"))
       }) %>%
       unlist()
   }
-  DB$internals$is_transformed <- TRUE
-  bullet_in_console(paste0(DB$short_name, " transformed according to `DB$transformation`"), bullet_type = "v")
+  project$internals$is_transformed <- TRUE
+  bullet_in_console(paste0(project$short_name, " transformed according to `project$transformation`"), bullet_type = "v")
   # forms ---------
-  DB$transformation$original_forms <- DB$metadata$forms
+  project$transformation$original_forms <- project$metadata$forms
   # new function RosyUtils
   cols_to_keep <- c("form_name_remap", "form_label_remap", "repeating", "repeating_via_events", "key_cols", "key_names")
   cols_to_keep <- cols_to_keep[which(cols_to_keep %in% colnames(forms_transformation))]
-  DB$metadata$forms <- forms_transformation[, cols_to_keep] %>% unique()
-  colnames(DB$metadata$forms)[which(colnames(DB$metadata$forms) == "form_name_remap")] <- "form_name"
-  colnames(DB$metadata$forms)[which(colnames(DB$metadata$forms) == "form_label_remap")] <- "form_label"
-  DB$metadata$forms$original_form_name <- DB$metadata$forms$form_name %>%
+  project$metadata$forms <- forms_transformation[, cols_to_keep] %>% unique()
+  colnames(project$metadata$forms)[which(colnames(project$metadata$forms) == "form_name_remap")] <- "form_name"
+  colnames(project$metadata$forms)[which(colnames(project$metadata$forms) == "form_label_remap")] <- "form_label"
+  project$metadata$forms$original_form_name <- project$metadata$forms$form_name %>%
     lapply(function(form_name) {
       forms_transformation$form_name[which(forms_transformation$form_name_remap == form_name)] %>% paste0(collapse = " | ")
     }) %>%
     unlist() %>%
     as.character()
   # fields------------
-  DB$transformation$original_fields <- DB$metadata$fields
-  fields <- combine_original_transformed_fields(DB)
+  project$transformation$original_fields <- project$metadata$fields
+  fields <- combine_original_transformed_fields(project)
   fields$original_form_name <- fields$form_name
   fields$form_name <- forms_transformation$form_name_remap[match(fields$form_name, forms_transformation$form_name)]
   fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]
@@ -659,50 +659,50 @@ transform_DB <- function(DB, ask = TRUE) {
   move <- which(colnames(fields) == "original_form_name")
   last <- which(colnames(fields) != "original_form_name")[-first]
   fields <- fields[, c(first, move, last)]
-  DB$metadata$fields <- fields
-  bullet_in_console(paste0("Added mod fields to ", DB$short_name, " `DB$metadata$fields`"), bullet_type = "v")
-  DB$metadata$choices <- fields_to_choices(DB$metadata$fields)
-  DB$internals$last_data_transformation <- Sys.time()
-  return(DB)
+  project$metadata$fields <- fields
+  bullet_in_console(paste0("Added mod fields to ", project$short_name, " `project$metadata$fields`"), bullet_type = "v")
+  project$metadata$choices <- fields_to_choices(project$metadata$fields)
+  project$internals$last_data_transformation <- Sys.time()
+  return(project)
 }
-#' @title Untransform DB
+#' @title Untransform project
 #' @description
 #' This function reverses any transformations applied to a REDCap database object.
-#' If the database is not transformed, it will return the original DB without changes.
+#' If the database is not transformed, it will return the original project without changes.
 #' The function can optionally allow partial transformations if specified.
 #'
-#' @inheritParams save_DB
-#' @param allow_partial Logical. If TRUE, allows filtered DBs with less than original field names. Default is FALSE.
+#' @inheritParams save_project
+#' @param allow_partial Logical. If TRUE, allows filtered projects with less than original field names. Default is FALSE.
 #'
-#' @return The original, untransformed DB object.
+#' @return The original, untransformed project object.
 #'
 #' @export
-untransform_DB <- function(DB, allow_partial = FALSE) {
-  if (!DB$internals$is_transformed) {
+untransform_project <- function(project, allow_partial = FALSE) {
+  if (!project$internals$is_transformed) {
     bullet_in_console("Already not transformed... nothing to do!", bullet_type = "x")
-    return(DB)
+    return(project)
   }
-  named_df_list <- DB$data
-  forms_transformation <- DB$transformation$forms
-  original_form_names <- DB$transformation$original_forms$form_name
-  original_fields <- DB$metadata$fields
-  original_forms <- DB$metadata$forms
-  # keys <- DB$metadata$form_key_cols
+  named_df_list <- project$data
+  forms_transformation <- project$transformation$forms
+  original_form_names <- project$transformation$original_forms$form_name
+  original_fields <- project$metadata$fields
+  original_forms <- project$metadata$forms
+  # keys <- project$metadata$form_key_cols
   OUT <- NULL
   if (!allow_partial) {
     if (any(!original_form_names %in% forms_transformation$form_name)) stop("Must have all original form names in transformation!")
   }
   # TABLE <- original_form_names%>%sample1()
   for (TABLE in original_form_names) {
-    is_in_DB <- TABLE %in% names(named_df_list)
-    if (!is_in_DB && !allow_partial) {
+    is_in_project <- TABLE %in% names(named_df_list)
+    if (!is_in_project && !allow_partial) {
       stop("Must have all original form names in transformation!")
     }
-    if (is_in_DB) {
+    if (is_in_project) {
       DF <- named_df_list[[forms_transformation$form_name_remap[which(forms_transformation$form_name == TABLE)]]]
       COLS <- c(
-        DB$metadata$form_key_cols[[TABLE]],
-        DB$transformation$original_col_names[[TABLE]]
+        project$metadata$form_key_cols[[TABLE]],
+        project$transformation$original_col_names[[TABLE]]
       ) %>% unique()
       if (allow_partial) {
         COLS <- colnames(DF) %>% vec1_in_vec2(COLS)
@@ -713,31 +713,31 @@ untransform_DB <- function(DB, allow_partial = FALSE) {
       OUT[[TABLE]] <- DF
     }
   }
-  DB$data <- OUT
-  DB$internals$is_transformed <- FALSE
-  DB$metadata$forms <- original_forms
-  DB$metadata$fields <- original_fields
-  bullet_in_console(paste0(DB$short_name, " untransformed according to `DB$transformation`"), bullet_type = "v")
-  return(DB)
+  project$data <- OUT
+  project$internals$is_transformed <- FALSE
+  project$metadata$forms <- original_forms
+  project$metadata$fields <- original_fields
+  bullet_in_console(paste0(project$short_name, " untransformed according to `project$transformation`"), bullet_type = "v")
+  return(project)
 }
 #' @noRd
-missing_form_names <- function(DB) {
-  form_names <- names(DB$data)
-  form_names <- form_names[which(!form_names %in% DB$metadata$forms$form_name)]
+missing_form_names <- function(project) {
+  form_names <- names(project$data)
+  form_names <- form_names[which(!form_names %in% project$metadata$forms$form_name)]
   return(form_names)
 }
 #' @noRd
-missing_field_names <- function(DB) {
+missing_field_names <- function(project) {
   # md <- data.frame(
-  #   field_name = DB$metadata$fields$field_name,
-  #   form_name = DB$metadata$fields$form_name
+  #   field_name = project$metadata$fields$field_name,
+  #   form_name = project$metadata$fields$form_name
   # )
-  # d <- DB$data %>%
+  # d <- project$data %>%
   #   names() %>%
   #   lapply(function(form_name) {
   #     data.frame(
   #       form_name = form_name,
-  #       field_name = colnames(DB$data[[form_name]])
+  #       field_name = colnames(project$data[[form_name]])
   #     )
   #   }) %>%
   #   dplyr::bind_rows()

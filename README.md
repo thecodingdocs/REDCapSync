@@ -61,7 +61,7 @@ collection, monitoring, transformation, and analysis.
 ## Installing REDCapSync
 
 *Note: The current version of `{REDCapSync}` used when writing this book
-is 0.0.0.9002, and some of the features presented in this book might not
+is 0.0.0.9003, and some of the features presented in this book might not
 be available if you are using an older version, or be a little bit
 different if you have a newer version. Feel free to browse the package
 NEWS.*
@@ -83,12 +83,12 @@ remotes::install_github("thecodingdocs/REDCapSync",build_vignettes = T,build_man
 ```
 
 Note that the version used at the time of writing this book is
-0.0.0.9002. You can check what version you have installed with the
+0.0.0.9003. You can check what version you have installed with the
 following.
 
 ``` r
 packageVersion("REDCapSync")
-#> [1] '0.0.0.9002'
+#> [1] '0.0.0.9003'
 ```
 
 If you have any issues, try downloading the most recent version of R at

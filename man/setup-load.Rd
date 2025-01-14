@@ -16,7 +16,8 @@ setup_project(
   merge_form_name = "merged",
   use_csv = FALSE,
   get_type = c("identified", "deidentified", "strict-deidentified"),
-  auto_check_token = TRUE
+  auto_check_token = TRUE,
+  silent = FALSE
 )
 
 load_project(short_name, validate = TRUE)
@@ -53,6 +54,8 @@ data as if user ran \code{sync_project}. Default is \code{FALSE}.}
 
 \item{auto_check_token}{Logical (TRUE/FALSE). If TRUE, automatically
 checks the validity of the REDCap API token. Default is \code{TRUE}.}
+
+\item{silent}{Logical (TRUE/FALSE). For messages.}
 
 \item{validate}{Logical (TRUE/FALSE). If TRUE, validates project object based on
 current rules. Default is \code{TRUE}.}

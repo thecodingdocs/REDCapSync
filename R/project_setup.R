@@ -43,6 +43,7 @@
 #' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test project object with
 #' @param get_type optional character of REDCap API call type.
 #' data as if user ran `sync_project`. Default is `FALSE`.
+#' @param silent Logical (TRUE/FALSE). For messages.
 #' @return REDCapSync `project` list object.
 #' @seealso
 #' \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from
@@ -66,7 +67,9 @@ setup_project <- function(
     merge_form_name = "merged",
     use_csv = FALSE,
     get_type = c("identified","deidentified","strict-deidentified"),
-    auto_check_token = TRUE) {
+    auto_check_token = TRUE,
+    silent = FALSE
+    ) {
   em <- "`short_name` must be character string of length 1"
   if (!is.character(short_name)) stop(em)
   if (length(short_name) != 1) stop(em)
@@ -80,7 +83,10 @@ setup_project <- function(
   is_a_test <- is_test_short_name(short_name = short_name)
   if (force) { # load blank if force = TRUE
     project <- internal_blank_project
-    bullet_in_console(paste0("Setup blank project object because `force = TRUE`"))
+    bullet_in_console(
+      paste0("Setup blank project object because `force = TRUE`"),
+      silent = silent
+      )
   }
   if (!force) {
     has_expected_file <- FALSE
@@ -106,13 +112,18 @@ setup_project <- function(
       }
       bullet_in_console(
         "Setup blank project object because nothing found in cache or directory.",
-        bullet_type = "!"
+        bullet_type = "!",
+        silent = silent
       )
     }
   }
   if (missing_dir_path) { # if missing the directory path from setup or load then let user know nothing will be stored
     if (!is_something(project$dir_path)) { # only show message if load_project wasn't used internally (that has a directory)
-      bullet_in_console("If you don't supply a directory, REDCapSync will only run in R session. Package is best with a directory.", bullet_type = "!")
+      bullet_in_console(
+        "If you don't supply a directory, REDCapSync will only run in R session. Package is best with a directory.",
+        bullet_type = "!",
+        silent = silent
+      )
     }
   }
   if (!missing_dir_path) {
@@ -125,7 +136,10 @@ setup_project <- function(
     project$links$redcap_base <- validate_web_link(redcap_base)
     project$links$redcap_uri <- project$links$redcap_base %>% paste0("api/")
   } else {
-    bullet_in_console("Test objects ignore the `redcap_base` url argument and will not communicate with the REDCap API.")
+    bullet_in_console(
+      "Test objects ignore the `redcap_base` url argument and will not communicate with the REDCap API.",
+      silent = silent
+    )
   }
   project$internals$merge_form_name <- validate_env_name(merge_form_name)
   project$internals$use_csv <- use_csv
@@ -137,7 +151,7 @@ setup_project <- function(
       set_REDCap_token(project, ask = FALSE)
     }
   }
-  project <- validate_project(project, silent = FALSE)
+  project <- validate_project(project, silent = silent)
   return(project)
 }
 #' @rdname setup-load

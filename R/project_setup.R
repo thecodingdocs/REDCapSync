@@ -199,6 +199,7 @@ is_test_project <- function(project) {
 #' @title Save or Delete project file from the directory
 #' @param project A validated `project` object containing REDCap project data and
 #' settings. Generated using \link{load_project} or \link{setup_project}
+#' @inheritParams setup_project
 #' @description
 #' This will save/delete the "<short_name>_REDCapSync.RData" file in the given project
 #' directories R_objects folder. These are optional functions given that
@@ -209,14 +210,19 @@ is_test_project <- function(project) {
 #' @return Message
 #' @family project object
 #' @export
-save_project <- function(project) {
-  # param check
-  if (!is.list(project)) stop("project must be a list")
-  # function
+save_project <- function(project,silent = FALSE) {
   project <- project %>% validate_project()
   if (!project$internals$ever_connected) {
-    bullet_in_console(paste0("Did not save ", project$short_name, " because there has never been a REDCap connection! You must use `setup_project()` and `sync_project()`"), bullet_type = "x")
-    return(invisible())
+    bullet_in_console(
+      paste0(
+        "Did not save ",
+        project$short_name,
+        " because there has never been a REDCap connection! You must use `setup_project()` and `sync_project()`"
+      ),
+      bullet_type = "x",
+      silent = silent
+    )
+    return(project)
   }
   # project <- reverse_clean_project(project) # # problematic because setting numeric would delete missing codes
   save_file_path <- file.path(
@@ -227,11 +233,17 @@ save_project <- function(project) {
   saveRDS(
     object = project,
     file = save_file_path
+  )# add error check
+  bullet_in_console(
+    paste0("Saved ", project$short_name ,"!"),
+    bullet_type = "v",
+    silent = silent
   )
+  project$internals$last_directory_save <- Sys.time()
   add_project(project)
   # save_xls_wrapper(project)
   # nav_to_dir(project)
-  return(invisible())
+  return(project)
 }
 #' @rdname save-deleteproject
 #' @export

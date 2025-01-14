@@ -5,7 +5,7 @@
 \alias{delete_project}
 \title{Save or Delete project file from the directory}
 \usage{
-save_project(project)
+save_project(project, silent = FALSE)
 
 delete_project(project)
 }

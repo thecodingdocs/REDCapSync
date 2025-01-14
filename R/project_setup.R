@@ -48,6 +48,8 @@
 #' @param batch_size_upload Integer. Number of records to process in each batch.
 #' Default is `500`.
 #' @param silent Logical (TRUE/FALSE). For messages.
+#' @param labelled Logical (TRUE/FALSE). For whether or not to use labelled vs
+#' raw coded data in output.
 #' @return REDCapSync `project` list object.
 #' @seealso
 #' \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from

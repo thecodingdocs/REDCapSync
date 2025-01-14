@@ -43,6 +43,9 @@ server.}
 \item{token_name}{An optional character string for setting your token name.
 Default is \verb{REDCapSync_<short_name>}}
 
+\item{labelled}{Logical (TRUE/FALSE). For whether or not to use labelled vs
+raw coded data in output.}
+
 \item{reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the \code{project}
 object already exists. Default is \code{FALSE}.}
 

@@ -167,8 +167,8 @@ setup_project <- function(
   project$short_name <- short_name
   project$internals$use_csv <- use_csv
   project$internals$data_extract_labelled <- labelled
-  project$internals$batch_size_download <- batch_size_download %>% validate_integer()
-  project$internals$batch_size_upload <- batch_size_upload %>% validate_integer()
+  project$internals$batch_size_download <- batch_size_download %>% validate_numeric()
+  project$internals$batch_size_upload <- batch_size_upload %>% validate_numeric()
   project$redcap$token_name <- token_name
   if (!is_a_test) {
     project$links$redcap_base <- validate_web_link(redcap_base)

@@ -313,9 +313,9 @@ validate_web_link <- function(link) {
   link <- paste0(link, "/")
   return(link)
 }
-validate_integer <- function(num,passed_name) {
-  if( ! is.integer(num)) {
-    stop("Parameter is not an integer.")
+validate_numeric <- function(num,passed_name) {
+  if( ! is.numeric(num)) {
+    stop("Parameter is not numeric")
   }
 }
 validate_env_name <- function(env_name) {

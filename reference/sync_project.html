@@ -61,11 +61,6 @@ the REDCap server.</p>
 <span>  <span class="va">project</span>,</span>
 <span>  set_token_if_fails <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  reset <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  day_of_log <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  get_files <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  original_file_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  entire_log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  metadata_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ask_about_overwrites <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  save_to_dir <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  records <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -89,31 +84,6 @@ set the REDCap API token if the update fails. Default is <code>TRUE</code>.</p><
 
 <dt id="arg-reset">reset<a class="anchor" aria-label="anchor" href="#arg-reset"></a></dt>
 <dd><p>Logical that forces a fresh update if TRUE. Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-day-of-log">day_of_log<a class="anchor" aria-label="anchor" href="#arg-day-of-log"></a></dt>
-<dd><p>Integer. Number of days to be checked in the log. Default
-is <code>10</code>.</p></dd>
-
-
-<dt id="arg-get-files">get_files<a class="anchor" aria-label="anchor" href="#arg-get-files"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-original-file-names">original_file_names<a class="anchor" aria-label="anchor" href="#arg-original-file-names"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, uses original file
-names for retrieved files. Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-entire-log">entire_log<a class="anchor" aria-label="anchor" href="#arg-entire-log"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, retrieves the entire log.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-metadata-only">metadata_only<a class="anchor" aria-label="anchor" href="#arg-metadata-only"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, updates only the
-metadata. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-ask-about-overwrites">ask_about_overwrites<a class="anchor" aria-label="anchor" href="#arg-ask-about-overwrites"></a></dt>

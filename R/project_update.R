@@ -237,7 +237,7 @@ sync_project <- function(
     get_REDCap_files(project, original_file_names = original_file_names)
   }
   if (was_updated && save_to_dir && !is.null(project$dir_path)) {
-    save_project(project)
+    project <- save_project(project)
   }
   project
 }

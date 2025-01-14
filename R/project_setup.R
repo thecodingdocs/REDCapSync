@@ -153,10 +153,10 @@ setup_project <- function(
   }
   if(was_loaded) {
     #compare current setting to previous settings...
-    if (!is.null(project$internals$data_extract_labelled)) {
-      if (project$internals$data_extract_labelled != labelled) {
+    if (!is.null(project$internals$labelled)) {
+      if (project$internals$labelled != labelled) {
         if (!reset) {
-          load_type <- ifelse(project$internals$data_extract_labelled, "labelled", "raw")
+          load_type <- ifelse(project$internals$labelled, "labelled", "raw")
           chosen_type <- ifelse(labelled, "labelled", "raw")
           reset <- TRUE
           warning(
@@ -181,7 +181,7 @@ setup_project <- function(
   }
   project$short_name <- short_name
   project$internals$use_csv <- use_csv
-  project$internals$data_extract_labelled <- labelled
+  project$internals$labelled <- labelled
   project$internals$original_file_names <- original_file_names
   project$internals$entire_log <- entire_log
   project$internals$days_of_log <- days_of_log
@@ -390,9 +390,6 @@ validate_project <- function(project, silent = TRUE, warn_only = FALSE) {
   if (outcome_valid) {
     bullet_in_console(paste0(project$short_name, " is valid project object!"), bullet_type = "v",silent = silent)
   }
-  project$internals$days_of_log <- days_of_log
-  project$internals$batch_size_download <- batch_size_download %>% validate_numeric()
-  project$internals$batch_size_upload <- batch_size_upload %>% validate_numeric()
   em <- "Did you use `setup_project()`?"
   if( ! is.numeric(as.integer(project$internals$days_of_log))) {
     stop(em)
@@ -406,7 +403,7 @@ validate_project <- function(project, silent = TRUE, warn_only = FALSE) {
   if( ! is.logical(project$internals$get_file_repository)) {
     stop(em)
   }
-  if( ! is.logical(project$internals$data_extract_labelled)) {
+  if( ! is.logical(project$internals$labelled)) {
     stop(em)
   }
   if( ! is.logical(project$internals$get_files)) {
@@ -502,7 +499,7 @@ internal_blank_project <- list(
     original_file_names = NULL,
     days_of_log = NULL,
     entire_log = NULL,
-    data_extract_labelled = NULL,
+    labelled = NULL,
     data_extract_merged = NULL,
     merge_form_name = "merged",
     project_type = "redcap",

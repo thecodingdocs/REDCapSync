@@ -1176,11 +1176,11 @@ filter_fields_from_form <- function(FORM, project) {
 #' @noRd
 labelled_to_raw_project <- function(project) {
   project <- validate_project(project)
-  if (!project$internals$data_extract_labelled) stop("project is already raw/coded (not labelled values)")
+  if (!project$internals$labelled) stop("project is already raw/coded (not labelled values)")
   for (TABLE in names(project$data)) {
     project$data[[TABLE]] <- labelled_to_raw_form(FORM = project$data[[TABLE]], project = project)
   }
-  project$internals$data_extract_labelled <- FALSE
+  project$internals$labelled <- FALSE
   project
 }
 #' @noRd

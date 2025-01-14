@@ -301,7 +301,7 @@ add_default_project_fields <- function(project) {
   return(project)
 }
 #' @noRd
-add_forms_transformation <- function(project, forms_transformation, ask = TRUE) {
+add_project_transformation <- function(project, forms_transformation, ask = TRUE) {
   if (missing(forms_transformation)) forms_transformation <- default_project_transformation(project)
   forms_tranformation_cols <- c(
     "form_name",

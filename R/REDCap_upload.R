@@ -60,7 +60,7 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
       project <- find_upload_diff(project, view_old = view_old, n_row_view = n_row_view)
       to_be_uploaded <- project$data_update[[TABLE]]
       if (is_something(to_be_uploaded)) {
-        if (project$internals$data_extract_labelled) {
+        if (project$internals$labelled) {
           to_be_uploaded <- to_be_uploaded %>% labelled_to_raw_form(project)
         }
         do_it <- 1

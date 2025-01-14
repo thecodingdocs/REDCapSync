@@ -124,7 +124,7 @@ sync_project <- function(
       project$data <- list()
       project$data_update <- list()
       project$summary <- list()
-      project$data <- project %>% get_REDCap_data(labelled = labelled, batch_size = batch_size, records = records)
+      project$data <- project %>% get_REDCap_data(labelled = project$internals$labelled, batch_size = project$internals$batch_size_download, records = records)
       log <- project$redcap$log # in case there is a log already
       if (project$internals$entire_log) {
         project$redcap$log <- log %>% dplyr::bind_rows(
@@ -160,7 +160,7 @@ sync_project <- function(
         IDs <- IDs[which(!IDs %in% deleted_records)]
         project$data <- remove_records_from_list(project = project, records = deleted_records, silent = TRUE)
       }
-      data_list <- project %>% get_REDCap_data(labelled = labelled, records = IDs)
+      data_list <- project %>% get_REDCap_data(labelled = project$internals$labelled, records = IDs)
       missing_from_summary <- IDs[which(!IDs %in% project$summary$all_records[[project$redcap$id_col]])]
       if (length(missing_from_summary) > 0) {
         x <- data.frame(

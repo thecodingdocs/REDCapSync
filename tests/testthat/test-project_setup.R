@@ -36,7 +36,7 @@ test_that("setup_project creates a valid project object and valid directory", {
     short_name = short_name,
     dir_path = test_dir,
     redcap_base = redcap_base,
-    force = TRUE,
+    reset = TRUE,
     auto_check_token = FALSE
   )
   expect_no_error(validate_dir(dir_path = test_dir))

@@ -36,6 +36,16 @@
 #' form. Default is "merged".
 #' @param use_csv Logical (TRUE/FALSE). If TRUE, uses CSV files for data
 #' storage. Default is `FALSE`.
+#' @param days_of_log Integer. Number of days to be checked in the log if a reset
+#' or new project is setup. Default is `10`.
+#' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
+#' Default is `FALSE`.
+#' @param original_file_names Logical (TRUE/FALSE). If TRUE, uses original file
+#' names for retrieved files. Default is `FALSE`.
+#' @param entire_log Logical (TRUE/FALSE). If TRUE, retrieves the entire log.
+#' Default is `FALSE`.
+#' @param metadata_only Logical (TRUE/FALSE). If TRUE, updates only the
+#' metadata. Default is `FALSE`.
 #' @param auto_check_token Logical (TRUE/FALSE). If TRUE, automatically
 #' checks the validity of the REDCap API token. Default is `TRUE`.
 #' @param project_path A character string representing the file path of the exact
@@ -69,8 +79,13 @@ setup_project <- function(
     dir_path,
     redcap_base,
     token_name = paste0("REDCapSync_", short_name),
-    labelled = TRUE,
     reset = FALSE,
+    labelled = TRUE,
+    days_of_log = 10,
+    get_files = FALSE,
+    original_file_names = FALSE,
+    entire_log = FALSE,
+    metadata_only = FALSE,
     merge_form_name = "merged",
     use_csv = FALSE,
     get_type = c("identified","deidentified","strict-deidentified"),
@@ -167,6 +182,11 @@ setup_project <- function(
   project$short_name <- short_name
   project$internals$use_csv <- use_csv
   project$internals$data_extract_labelled <- labelled
+  project$internals$original_file_names <- original_file_names
+  project$internals$entire_log <- entire_log
+  project$internals$days_of_log <- days_of_log
+  project$internals$get_files <- get_files
+  project$internals$metadata_only <- metadata_only
   project$internals$batch_size_download <- batch_size_download %>% validate_numeric()
   project$internals$batch_size_upload <- batch_size_upload %>% validate_numeric()
   project$redcap$token_name <- token_name
@@ -348,31 +368,63 @@ validate_project <- function(project, silent = TRUE, warn_only = FALSE) {
   } else {
     project$short_name %>% validate_env_name()
   }
-  if (!silent) {
-    if ((length(project$data) == 0) > 0) {
-      bullet_in_console("Valid project object but no data yet!", bullet_type = "!")
-    }
-    if (is.null(project$dir_path)) {
-      bullet_in_console("`project$dir_path` is NULL!, Did you use `setup_project()`?", bullet_type = "!")
+  if ((length(project$data) == 0) > 0) {
+    bullet_in_console("Valid project object but no data yet!", bullet_type = "!",silent = silent)
+  }
+  if (is.null(project$dir_path)) {
+    bullet_in_console("`project$dir_path` is NULL!, Did you use `setup_project()`?", bullet_type = "!",silent = silent)
+  } else {
+    if (!project$dir_path %>% file.exists()) {
+      bullet_in_console(paste0("`project$dir_path`, '", project$dir_path, "', does not exist!, Did you use `setup_project()`?\nThis can also happen with shared directories."), bullet_type = "!",silent = silent)
     } else {
-      if (!project$dir_path %>% file.exists()) {
-        bullet_in_console(paste0("`project$dir_path`, '", project$dir_path, "', does not exist!, Did you use `setup_project()`?\nThis can also happen with shared directories."), bullet_type = "!")
-      } else {
-        bullet_in_console(project$short_name %>% paste0(" loaded from: "), url = project$dir_path, bullet_type = "v")
-      }
+      bullet_in_console(project$short_name %>% paste0(" loaded from: "), url = project$dir_path, bullet_type = "v",silent = silent)
     }
-    if ((project$internals$is_test)) {
-      bullet_in_console(project$short_name %>% paste0(" is a test project object that doesn't actually communicate with any REDCap API!"), bullet_type = "i")
-    }
-    if (project$internals$is_transformed) {
-      bullet_in_console(project$short_name %>% paste0(" is currently transformed! Can reverse with `untransform_project(project)`"), bullet_type = "i")
-    }
-    bullet_in_console("To get data/updates from REDCap run `project <- sync_project(project)`")
   }
+  if ((project$internals$is_test)) {
+    bullet_in_console(project$short_name %>% paste0(" is a test project object that doesn't actually communicate with any REDCap API!"), bullet_type = "i",silent = silent)
+  }
+  if (project$internals$is_transformed) {
+    bullet_in_console(project$short_name %>% paste0(" is currently transformed! Can reverse with `untransform_project(project)`"), bullet_type = "i",silent = silent)
+  }
+  bullet_in_console("To get data/updates from REDCap run `project <- sync_project(project)`",silent = silent)
   if (outcome_valid) {
-    bullet_in_console(paste0(project$short_name, " is valid project object!"), bullet_type = "v")
+    bullet_in_console(paste0(project$short_name, " is valid project object!"), bullet_type = "v",silent = silent)
   }
-  if (!outcome_valid) {
+  project$internals$days_of_log <- days_of_log
+  project$internals$batch_size_download <- batch_size_download %>% validate_numeric()
+  project$internals$batch_size_upload <- batch_size_upload %>% validate_numeric()
+  em <- "Did you use `setup_project()`?"
+  if( ! is.numeric(as.integer(project$internals$days_of_log))) {
+    stop(em)
+  }
+  if( ! is.numeric(as.integer(project$internals$batch_size_download))) {
+    stop(em)
+  }
+  if( ! is.numeric(as.integer(project$internals$batch_size_upload))) {
+    stop(em)
+  }
+  if( ! is.logical(project$internals$get_file_repository)) {
+    stop(em)
+  }
+  if( ! is.logical(project$internals$data_extract_labelled)) {
+    stop(em)
+  }
+  if( ! is.logical(project$internals$get_files)) {
+    stop(em)
+  }
+  if( ! is.logical(project$internals$entire_log)) {
+    stop(em)
+  }
+  if( ! is.logical(project$internals$metadata_only)) {
+    stop(em)
+  }
+  if( ! is.logical(project$internals$use_csv)) {
+    stop(em)
+  }
+  if( ! is.logical(project$internals$original_file_names)) {
+    stop(em)
+  }
+  if ( ! outcome_valid) {
     for (m in messages) {
       if (warn_only) {
         warning(m, immediate. = TRUE)
@@ -446,6 +498,10 @@ internal_blank_project <- list(
     last_quality_check = NULL,
     last_clean = NULL,
     last_directory_save = NULL,
+    get_files = NULL,
+    original_file_names = NULL,
+    days_of_log = NULL,
+    entire_log = NULL,
     data_extract_labelled = NULL,
     data_extract_merged = NULL,
     merge_form_name = "merged",

@@ -14,16 +14,6 @@
 #' @param set_token_if_fails Logical (TRUE/FALSE). If TRUE, prompts the user to
 #' set the REDCap API token if the update fails. Default is `TRUE`.
 #' @param reset Logical that forces a fresh update if TRUE. Default is `FALSE`.
-#' @param day_of_log Integer. Number of days to be checked in the log. Default
-#' is `10`.
-#' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
-#' Default is `FALSE`.
-#' @param original_file_names Logical (TRUE/FALSE). If TRUE, uses original file
-#' names for retrieved files. Default is `FALSE`.
-#' @param entire_log Logical (TRUE/FALSE). If TRUE, retrieves the entire log.
-#' Default is `FALSE`.
-#' @param metadata_only Logical (TRUE/FALSE). If TRUE, updates only the
-#' metadata. Default is `FALSE`.
 #' @param ask_about_overwrites Logical (TRUE/FALSE). If TRUE, prompts the user
 #' before overwriting existing data. Default is `TRUE`.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
@@ -38,11 +28,6 @@ sync_project <- function(
     project,
     set_token_if_fails = TRUE,
     reset = FALSE,
-    day_of_log = 10,
-    get_files = FALSE,
-    original_file_names = FALSE,
-    entire_log = FALSE,
-    metadata_only = FALSE,
     ask_about_overwrites = TRUE,
     save_to_dir = TRUE,
     records = NULL,
@@ -52,14 +37,6 @@ sync_project <- function(
   will_update <- TRUE
   was_updated <- FALSE
   project <- validate_project(project)
-  labelled <- project$internals$data_extract_labelled
-  if(is.null(labelled)){
-    stop("project$internals$data_extract_labelled is NULL. Did you use `setup_project`?")
-  } # validation step for setup has values like has_internals_params
-  batch_size <- project$internals$batch_size_download
-  if(is.null(batch_size)){
-    stop("project$internals$batch_size_download is NULL. Did you use `setup_project`?")
-  } # validation step for setup has values like has_internals_params
   if (is_something(records)) {
     bullet_in_console("Presently, if you supply specified records it will only check REDCap updates for those records.")
   }
@@ -73,7 +50,6 @@ sync_project <- function(
     )
     return(project)
   }
-  if (metadata_only) reset <- TRUE
   # project$internals$last_metadata_update <- Sys.time()-lubridate::days(1)
   # project$internals$last_data_update <- Sys.time()-lubridate::days(1)
   if (!is.null(project$transformation$data_updates)) {
@@ -142,21 +118,21 @@ sync_project <- function(
     }
   }
   if (reset) {
-    project <- project %>% get_REDCap_metadata(include_users = !metadata_only)
+    project <- project %>% get_REDCap_metadata(include_users = ! project$internals$metadata_only)
     project$internals$is_transformed <- FALSE
-    if (!metadata_only) {
+    if ( ! project$internals$metadata_only) {
       project$data <- list()
       project$data_update <- list()
       project$summary <- list()
       project$data <- project %>% get_REDCap_data(labelled = labelled, batch_size = batch_size, records = records)
       log <- project$redcap$log # in case there is a log already
-      if (entire_log) {
+      if (project$internals$entire_log) {
         project$redcap$log <- log %>% dplyr::bind_rows(
           project %>% get_REDCap_log(begin_time = project$redcap$project_info$creation_time) %>% unique() # should add - lubridate::days(2)
         )
       } else {
         project$redcap$log <- log %>% dplyr::bind_rows(
-          project %>% get_REDCap_log(last = day_of_log, units = "days") %>% unique()
+          project %>% get_REDCap_log(last = project$internals$days_of_log, units = "days") %>% unique()
         )
       }
       # project <- annotate_fields(project)
@@ -225,8 +201,8 @@ sync_project <- function(
       message("Up to date already!")
     }
   }
-  if (get_files) { # test now
-    get_REDCap_files(project, original_file_names = original_file_names)
+  if (project$internals$get_files) { # test now
+    get_REDCap_files(project, original_file_names = project$internals$original_file_names)
   }
   if (was_updated && save_to_dir && !is.null(project$dir_path)) {
     project <- save_project(project)

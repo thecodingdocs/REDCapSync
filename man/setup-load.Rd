@@ -12,8 +12,13 @@ setup_project(
   dir_path,
   redcap_base,
   token_name = paste0("REDCapSync_", short_name),
-  labelled = TRUE,
   reset = FALSE,
+  labelled = TRUE,
+  days_of_log = 10,
+  get_files = FALSE,
+  original_file_names = FALSE,
+  entire_log = FALSE,
+  metadata_only = FALSE,
   merge_form_name = "merged",
   use_csv = FALSE,
   get_type = c("identified", "deidentified", "strict-deidentified"),
@@ -43,11 +48,26 @@ server.}
 \item{token_name}{An optional character string for setting your token name.
 Default is \verb{REDCapSync_<short_name>}}
 
+\item{reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the \code{project}
+object already exists. Default is \code{FALSE}.}
+
 \item{labelled}{Logical (TRUE/FALSE). For whether or not to use labelled vs
 raw coded data in output.}
 
-\item{reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the \code{project}
-object already exists. Default is \code{FALSE}.}
+\item{days_of_log}{Integer. Number of days to be checked in the log if a reset
+or new project is setup. Default is \code{10}.}
+
+\item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
+Default is \code{FALSE}.}
+
+\item{original_file_names}{Logical (TRUE/FALSE). If TRUE, uses original file
+names for retrieved files. Default is \code{FALSE}.}
+
+\item{entire_log}{Logical (TRUE/FALSE). If TRUE, retrieves the entire log.
+Default is \code{FALSE}.}
+
+\item{metadata_only}{Logical (TRUE/FALSE). If TRUE, updates only the
+metadata. Default is \code{FALSE}.}
 
 \item{merge_form_name}{A character string representing the name of the merged
 form. Default is "merged".}

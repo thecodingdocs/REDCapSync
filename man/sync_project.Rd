@@ -8,11 +8,6 @@ sync_project(
   project,
   set_token_if_fails = TRUE,
   reset = FALSE,
-  day_of_log = 10,
-  get_files = FALSE,
-  original_file_names = FALSE,
-  entire_log = FALSE,
-  metadata_only = FALSE,
   ask_about_overwrites = TRUE,
   save_to_dir = TRUE,
   records = NULL,
@@ -27,21 +22,6 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 set the REDCap API token if the update fails. Default is \code{TRUE}.}
 
 \item{reset}{Logical that forces a fresh update if TRUE. Default is \code{FALSE}.}
-
-\item{day_of_log}{Integer. Number of days to be checked in the log. Default
-is \code{10}.}
-
-\item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
-Default is \code{FALSE}.}
-
-\item{original_file_names}{Logical (TRUE/FALSE). If TRUE, uses original file
-names for retrieved files. Default is \code{FALSE}.}
-
-\item{entire_log}{Logical (TRUE/FALSE). If TRUE, retrieves the entire log.
-Default is \code{FALSE}.}
-
-\item{metadata_only}{Logical (TRUE/FALSE). If TRUE, updates only the
-metadata. Default is \code{FALSE}.}
 
 \item{ask_about_overwrites}{Logical (TRUE/FALSE). If TRUE, prompts the user
 before overwriting existing data. Default is \code{TRUE}.}

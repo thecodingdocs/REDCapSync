@@ -88,9 +88,11 @@ reference:
       - clean_project
       - deidentify_project
       - filter_project
-      - add_default_forms_transformation
+      - default_project_transformation
+      - add_default_project_transformation
+      - add_default_project_fields
       - add_project_subset
-      - add_field_transformation
+      - add_project_field
       - transform_project
       - untransform_project
   - subtitle: project Object Outputs

@@ -96,8 +96,8 @@ sync_project <- function(
   if (!force) { # check log interim
     if (
       is.null(project$internals$last_metadata_update) ||
-        is.null(project$internals$last_data_update) ||
-        is.null(project$internals$last_full_update)
+      is.null(project$internals$last_data_update) ||
+      is.null(project$internals$last_full_update)
     ) {
       force <- TRUE
     } else {

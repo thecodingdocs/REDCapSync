@@ -81,7 +81,7 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
   if (missing_identifiers) {
     identifiers <- project$metadata$fields$field_name[
       which(project$metadata$fields$identifier == "y")
-      ]
+    ]
     if (length(identifiers) == 0) {
       warning("You have no identifiers marked in `project$metadata$fields$identifier`. You can set it in REDCap Project Setup and update project OR define your idenitifiers in this functions `identifiers` argument.", immediate. = TRUE)
     }

@@ -167,6 +167,7 @@ get_transformed_forms <- function(project) {
   }
   return(forms)
 }
+#' @rdname default-transformations
 #' @title Add Default Forms Transformation to the Database
 #' @description
 #' Applies default transformations to specific forms within the REDCap database (`project`).
@@ -185,7 +186,15 @@ get_transformed_forms <- function(project) {
 #' @seealso
 #' \code{\link{save_project}} for saving the database or subsets.
 #' @export
-add_default_forms_transformation <- function(project) {
+add_default_project_transformation <- function(project) {
+  project <- add_project_transformation(
+    project = project,
+    forms_transformation = default_project_transformation(project = project)
+  )
+  return(project)
+}
+#' @noRd
+default_project_transformation <- function (project) {
   forms_transformation <- get_original_forms(project)
   if ("repeating_via_events" %in% colnames(forms_transformation)) {
     forms_transformation <- forms_transformation[order(forms_transformation$repeating_via_events), ]
@@ -223,8 +232,9 @@ add_default_forms_transformation <- function(project) {
   forms_transformation$x_first[which(forms_transformation$repeating)] <- TRUE
   return(forms_transformation)
 }
-#' @noRd
-add_default_fields_transformation <- function(project) {
+#' @rdname default-transformations
+#' @export
+add_default_project_fields <- function(project) {
   # project$transformation <- list(
   #   forms = NULL,
   #   fields = NULL,
@@ -246,7 +256,7 @@ add_default_fields_transformation <- function(project) {
   if (has_non_rep) {
     for (form_name in form_names) {
       form_label <- forms$form_label[which(forms$form_name == form_name)]
-      project <- project %>% add_field_transformation(
+      project <- project %>% add_project_field(
         field_name = paste0("n_forms_", form_name),
         form_name = last_non_rep,
         field_type = "text",
@@ -266,7 +276,7 @@ add_default_fields_transformation <- function(project) {
   }
   for (form_name in form_names) {
     form_label <- forms$form_label[which(forms$form_name == form_name)]
-    project <- project %>% add_field_transformation(
+    project <- project %>% add_project_field(
       field_name = paste0(form_name, "_compound_key"),
       form_name = form_name,
       field_type = "text",
@@ -291,7 +301,7 @@ add_default_fields_transformation <- function(project) {
 }
 #' @noRd
 add_forms_transformation <- function(project, forms_transformation, ask = TRUE) {
-  if (missing(forms_transformation)) forms_transformation <- add_default_forms_transformation(project)
+  if (missing(forms_transformation)) forms_transformation <- default_project_transformation(project)
   forms_tranformation_cols <- c(
     "form_name",
     "form_label",
@@ -315,6 +325,9 @@ add_forms_transformation <- function(project, forms_transformation, ask = TRUE) 
     if (!identical(project$transformation$forms, forms_transformation)) {
       if (ask) {
         choice <- utils::askYesNo("Do you want to add transformation? (it doesn't match previous transform)")
+        if( ! choice){
+          stop("Stopped as you asked.")
+        }
       }
     }
   }
@@ -348,7 +361,7 @@ add_forms_transformation <- function(project, forms_transformation, ask = TRUE) 
 #' \code{\link{save_project}} for saving the database or subsets.
 #'
 #' @export
-add_field_transformation <- function(
+add_project_field <- function(
     project,
     field_name,
     form_name,
@@ -412,7 +425,7 @@ combine_original_transformed_fields <- function(project) {
   the_names <- project$transformation$fields$field_name
   fields <- get_original_fields(project)
   if (is.null(the_names)) {
-    bullet_in_console("Nothing to add. Use `add_field_transformation()`", bullet_type = "x")
+    bullet_in_console("Nothing to add. Use `add_project_field()`", bullet_type = "x")
     return(fields)
   }
   for (field_name in the_names) {
@@ -453,7 +466,7 @@ combine_original_transformed_fields <- function(project) {
 run_fields_transformation <- function(project, ask = TRUE) {
   the_names <- project$transformation$fields$field_name
   if (is.null(the_names)) {
-    bullet_in_console("Nothing to run. Use `add_field_transformation()`", bullet_type = "x")
+    bullet_in_console("Nothing to run. Use `add_project_field()`", bullet_type = "x")
     return(project)
   }
   original_fields <- get_original_fields(project)

@@ -398,6 +398,8 @@ validate_project <- function(project, silent = TRUE, warn_only = FALSE) {
     bullet_in_console(paste0(project$short_name, " is valid project object!"), bullet_type = "v",silent = silent)
   }
   em <- "Did you use `setup_project()`?"
+  required_logicals
+  days_of_log
   if( ! is.numeric(as.integer(project$internals$days_of_log))) {
     stop(em)
   }

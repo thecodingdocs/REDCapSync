@@ -102,7 +102,7 @@
 </h1>
 <p>R and REDCap are both widely utilized in medicine, including basic science, clinical research, and clinal trials. Both have independent strengths, but together they can create powerful data pipelines. While several R packages exist for extracting data using the REDCap API, <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> stands out by offering comprehensive extraction of all metadata and data from any REDCap project into a standardized R list object, facilitating effortless downstream use in exports, imports, transformation, and applications. This is showcased in the exploratory data analysis shiny app included in the package. The three core aims of <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> are to…</p>
 <ol style="list-style-type: decimal">
-<li>Maintain a local version of the database (DB) object by only calling recently updated records using the REDCap log.</li>
+<li>Maintain a local version of the REDCap project by only calling recently updated records using the REDCap log.</li>
 <li>Allow imports of non-coded versions of the dataset using R or Excel/CSV.</li>
 <li>Launch a shiny app that allows you to explore all of your REDCap projects.</li>
 </ol>
@@ -110,7 +110,6 @@
 <div class="section level2">
 <h2 id="installing-redcapsync">Installing REDCapSync<a class="anchor" aria-label="anchor" href="#installing-redcapsync"></a>
 </h2>
-<p><em>Note: The current version of <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> used when writing this book is 0.0.0.9003, and some of the features presented in this book might not be available if you are using an older version, or be a little bit different if you have a newer version. Feel free to browse the package NEWS.</em></p>
 <p>The stable release can be found on CRAN and installed with: <strong>PLACEHOLDER NOT SUBMITTED TO CRAN YET</strong></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#install.packages("REDCapSync") #PLACEHOLDER NOT SUBMITTED TO CRAN YET</span></span></code></pre></div>
@@ -136,22 +135,14 @@
 <span><span class="va">your_project_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">your_project_path</span><span class="op">)</span> <span class="co"># confirm this is where you want files saved</span></span>
 <span></span>
-<span><span class="va">DB</span> <span class="op">&lt;-</span> <span class="fu">setup_DB</span><span class="op">(</span></span>
+<span><span class="va">TEST</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/setup-load.html">setup_project</a></span><span class="op">(</span></span>
 <span>  short_name <span class="op">=</span> <span class="st">"TEST_repeating"</span>,</span>
 <span>  redcap_base <span class="op">=</span> <span class="st">"https://redcap.yourinstitution.edu/"</span>, <span class="co"># change to your institutions link (stop at ".edu/")</span></span>
 <span>  dir_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># or change to your intended file path</span></span>
 <span><span class="op">)</span> <span class="co">#defaults will autocheck for valid token or ask you.</span></span>
 <span></span>
 <span><span class="co">#if you had to set a token above you might need to select the code below again for it to run</span></span>
-<span><span class="va">DB</span> <span class="op">&lt;-</span> <span class="fu">update_DB</span><span class="op">(</span><span class="va">DB</span><span class="op">)</span> <span class="co"># update from redcap by checking log and using saved object </span></span>
-<span></span>
-<span><span class="va">DB</span> <span class="op">&lt;-</span> <span class="va">DB</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">deidentify_DB</span><span class="op">(</span>drop_free_text <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/drop_REDCap_to_directory.html">drop_REDCap_to_directory</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># will save DEIDENTIFIED data (assuming this is set up properly on REDCap)</span></span>
-<span><span class="co">#use drop_free_text = T to be even safer</span></span>
-<span></span>
-<span><span class="co"># DB &lt;- drop_REDCap_to_directory(DB) # will save IDENTIFIED data (assuming this is set up properly on REDCap)</span></span>
-<span></span>
-<span><span class="co">#run shiny app!</span></span>
-<span><span class="fu">run_REDCapSync</span><span class="op">(</span><span class="op">)</span> <span class="co"># will work with multiple REDCap projects!</span></span></code></pre></div>
+<span><span class="va">TEST</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/sync_project.html">sync_project</a></span><span class="op">(</span><span class="va">TEST</span><span class="op">)</span> <span class="co"># update from redcap by checking log and using saved object </span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="links">Links<a class="anchor" aria-label="anchor" href="#links"></a>

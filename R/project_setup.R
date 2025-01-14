@@ -40,6 +40,9 @@
 #' or new project is setup. Default is `10`.
 #' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
 #' Default is `FALSE`.
+#' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves file repository
+#' from REDCap.
+#' Default is `FALSE`.
 #' @param original_file_names Logical (TRUE/FALSE). If TRUE, uses original file
 #' names for retrieved files. Default is `FALSE`.
 #' @param entire_log Logical (TRUE/FALSE). If TRUE, retrieves the entire log.
@@ -50,10 +53,12 @@
 #' checks the validity of the REDCap API token. Default is `TRUE`.
 #' @param project_path A character string representing the file path of the exact
 #' `<short_name>_REDCapSync.RData` file to be loaded.
-#' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test project object with
+#' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test project
+#' object with data included.
 #' @param get_type optional character of REDCap API call type.
 #' data as if user ran `sync_project`. Default is `FALSE`.
-#' @param batch_size_download Integer. Number of records to process in each batch.
+#' @param batch_size_download Integer. Number of records to process in each
+#' batch.
 #' Default is `2000`.
 #' @param batch_size_upload Integer. Number of records to process in each batch.
 #' Default is `500`.
@@ -83,6 +88,7 @@ setup_project <- function(
     labelled = TRUE,
     days_of_log = 10,
     get_files = FALSE,
+    get_file_repository = FALSE,
     original_file_names = FALSE,
     entire_log = FALSE,
     metadata_only = FALSE,
@@ -190,6 +196,7 @@ setup_project <- function(
   project$internals$batch_size_download <- batch_size_download %>% validate_numeric()
   project$internals$batch_size_upload <- batch_size_upload %>% validate_numeric()
   project$redcap$token_name <- token_name
+  project$internals$get_file_repository <- get_file_repository
   if (!is_a_test) {
     project$links$redcap_base <- validate_web_link(redcap_base)
     project$links$redcap_uri <- project$links$redcap_base %>% paste0("api/")
@@ -496,6 +503,7 @@ internal_blank_project <- list(
     last_clean = NULL,
     last_directory_save = NULL,
     get_files = NULL,
+    get_file_repository = NULL,
     original_file_names = NULL,
     days_of_log = NULL,
     entire_log = NULL,

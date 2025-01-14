@@ -16,6 +16,7 @@ setup_project(
   labelled = TRUE,
   days_of_log = 10,
   get_files = FALSE,
+  get_file_repository = FALSE,
   original_file_names = FALSE,
   entire_log = FALSE,
   metadata_only = FALSE,
@@ -57,7 +58,8 @@ raw coded data in output.}
 \item{days_of_log}{Integer. Number of days to be checked in the log if a reset
 or new project is setup. Default is \code{10}.}
 
-\item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
+\item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves file repository
+from REDCap.
 Default is \code{FALSE}.}
 
 \item{original_file_names}{Logical (TRUE/FALSE). If TRUE, uses original file
@@ -81,7 +83,8 @@ data as if user ran \code{sync_project}. Default is \code{FALSE}.}
 \item{auto_check_token}{Logical (TRUE/FALSE). If TRUE, automatically
 checks the validity of the REDCap API token. Default is \code{TRUE}.}
 
-\item{batch_size_download}{Integer. Number of records to process in each batch.
+\item{batch_size_download}{Integer. Number of records to process in each
+batch.
 Default is \code{2000}.}
 
 \item{batch_size_upload}{Integer. Number of records to process in each batch.
@@ -95,7 +98,8 @@ current rules. Default is \code{TRUE}.}
 \item{project_path}{A character string representing the file path of the exact
 \verb{<short_name>_REDCapSync.RData} file to be loaded.}
 
-\item{with_data}{Logical (TRUE/FALSE). If TRUE, loads the test project object with}
+\item{with_data}{Logical (TRUE/FALSE). If TRUE, loads the test project
+object with data included.}
 }
 \value{
 REDCapSync \code{project} list object.

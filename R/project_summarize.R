@@ -319,54 +319,6 @@ clean_column_for_table <- function(col, class, label, units, levels) {
   }
   col
 }
-# generate_cross_codebook <- function(){
-#   codebook <- project$metadata$choices
-#   metadata <- get_original_field_names(project)
-#   data_choice<-get_default_data_choice(project)
-#
-#   cross_codebook <- codebook[,c("form_name","field_name","name")]
-#   cross_codebook$label <- paste0(cross_codebook$form_name, " - ",cross_codebook$field_name, " - ", cross_codebook$name)
-#   # Generate all combinations
-#   all_combinations <- expand.grid(cross_codebook$label, cross_codebook$label)
-#
-#   # Filter out self pairs
-#   all_combinations <- all_combinations[all_combinations$Var1 != all_combinations$Var2, ]
-#
-#   # Extract variable names
-#   variable1 <- cross_codebook$label[match(all_combinations$Var1, cross_codebook$label)]
-#   variable2 <- cross_codebook$label[match(all_combinations$Var2, cross_codebook$label)]
-#   # Remove duplicates where variable1 and variable2 are interchanged
-#   all_combinations <- data.frame(
-#     variable1 = pmin(variable1, variable2),
-#     variable2 = pmax(variable1, variable2)
-#   ) %>% unique()
-#   form_field_pairs <- paste0(codebook$form_name," - ",codebook$field_name)
-#   for(form_field_pair in form_field_pairs){ #form_field_pair<-form_field_pairs %>% sample(1)
-#     keep_rows <- which(!((all_combinations$variable1 %>% startsWith(form_field_pair)) & (all_combinations$variable2 %>% startsWith(form_field_pair))))
-#     all_combinations <- all_combinations[keep_rows,]
-#   }
-#   cross_codebook1 <- cross_codebook
-#   colnames(cross_codebook1) <- colnames(cross_codebook1) %>% paste0(1)
-#   cross_codebook2 <- cross_codebook
-#   colnames(cross_codebook2) <- colnames(cross_codebook2) %>% paste0(2)
-#   all_combinations <- all_combinations %>% merge(cross_codebook1,by.x="variable1",by.y = "label1")
-#   all_combinations <- all_combinations %>% merge(cross_codebook2,by.x="variable2",by.y = "label2")
-#   rownames(all_combinations) <- NULL
-#   i <- seq_len(nrow(all_combinations)) %>% sample1()
-#   all_combinations$n <- seq_len(nrow(all_combinations)) %>% lapply(function(i){
-#     x<-project$data[[all_combinations$form_name1[i]]]
-#     x<-project$data[[all_combinations$form_name1[i]]]
-#     x[which(x[[all_combinations[i]]])]
-#
-#     ==codebook$name[i],na.rm = TRUE)
-#   }) %>% unlist()
-#   codebook$n_total <- seq_len(nrow(codebook)) %>% lapply(function(i){
-#     sum(!is.na(project$data[[codebook$form_name[i]]][,codebook$field_name[i]]),na.rm = TRUE)
-#   }) %>% unlist()
-#   codebook$perc <-  (codebook$n/codebook$n_total) %>% round(4)
-#   codebook$perc_text <- codebook$perc %>% magrittr::multiply_by(100) %>% round(1) %>% paste0("%")
-#   return(codebook)
-# }
 #' @title Add a Subset to a REDCap Database
 #' @description
 #' Creates a subset of the main REDCap database (`project`) based on specific filter criteria

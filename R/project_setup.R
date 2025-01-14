@@ -136,9 +136,6 @@ setup_project <- function(
       )
     }
   }
-  if (!missing_dir_path) {
-    project$dir_path <- set_dir(dir_path) # will also ask user if provided dir is new or different (will load from original but start using new dir)
-  }
   if(was_loaded) {
     #compare current setting to previous settings...
     if (!is.null(project$internals$data_extract_labelled)) {
@@ -163,6 +160,9 @@ setup_project <- function(
       paste0("Setup blank project object because `reset = TRUE`"),
       silent = silent
     )
+  }
+  if (!missing_dir_path) {
+    project$dir_path <- set_dir(dir_path) # will also ask user if provided dir is new or different (will load from original but start using new dir)
   }
   project$short_name <- short_name
   project$internals$use_csv <- use_csv

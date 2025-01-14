@@ -45,7 +45,7 @@ transformation, and applications. This is showcased in the exploratory
 data analysis shiny app included in the package. The three core aims of
 `{REDCapSync}` are to…
 
-1.  Maintain a local version of the database (DB) object by only calling
+1.  Maintain a local version of the REDCap project by only calling
     recently updated records using the REDCap log.
 2.  Allow imports of non-coded versions of the dataset using R or
     Excel/CSV.
@@ -59,12 +59,6 @@ object and data quality tool for most REDCap projects to aid in
 collection, monitoring, transformation, and analysis.
 
 ## Installing REDCapSync
-
-*Note: The current version of `{REDCapSync}` used when writing this book
-is 0.0.0.9003, and some of the features presented in this book might not
-be available if you are using an older version, or be a little bit
-different if you have a newer version. Feel free to browse the package
-NEWS.*
 
 The stable release can be found on CRAN and installed with:
 **PLACEHOLDER NOT SUBMITTED TO CRAN YET**
@@ -106,22 +100,14 @@ print.data.frame(projects) # show your previously saved projects
 your_project_path <- getwd()
 print(your_project_path) # confirm this is where you want files saved
 
-DB <- setup_DB(
+TEST <- setup_project(
   short_name = "TEST_repeating",
   redcap_base = "https://redcap.yourinstitution.edu/", # change to your institutions link (stop at ".edu/")
   dir_path = getwd() # or change to your intended file path
 ) #defaults will autocheck for valid token or ask you.
 
 #if you had to set a token above you might need to select the code below again for it to run
-DB <- update_DB(DB) # update from redcap by checking log and using saved object 
-
-DB <- DB %>% deidentify_DB(drop_free_text = F) %>% drop_REDCap_to_directory() # will save DEIDENTIFIED data (assuming this is set up properly on REDCap)
-#use drop_free_text = T to be even safer
-
-# DB <- drop_REDCap_to_directory(DB) # will save IDENTIFIED data (assuming this is set up properly on REDCap)
-
-#run shiny app!
-run_REDCapSync() # will work with multiple REDCap projects!
+TEST <- sync_project(TEST) # update from redcap by checking log and using saved object 
 ```
 
 ## Links

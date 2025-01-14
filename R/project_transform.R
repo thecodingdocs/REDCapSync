@@ -193,7 +193,8 @@ add_default_project_transformation <- function(project) {
   )
   return(project)
 }
-#' @noRd
+#' @rdname default-transformations
+#' @export
 default_project_transformation <- function (project) {
   forms_transformation <- get_original_forms(project)
   if ("repeating_via_events" %in% colnames(forms_transformation)) {

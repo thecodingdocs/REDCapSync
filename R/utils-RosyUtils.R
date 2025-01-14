@@ -313,6 +313,11 @@ validate_web_link <- function(link) {
   link <- paste0(link, "/")
   return(link)
 }
+validate_integer <- function(num,passed_name) {
+  if( ! is.integer(num)) {
+    stop("Parameter is not an integer.")
+  }
+}
 validate_env_name <- function(env_name) {
   # Check if the name is empty
   if (is.null(env_name)) stop("env_name is NULL")

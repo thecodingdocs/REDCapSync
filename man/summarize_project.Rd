@@ -16,7 +16,7 @@ summarize_project(
   include_users = TRUE,
   include_log = TRUE,
   separate = FALSE,
-  force = FALSE
+  reset = FALSE
 )
 }
 \arguments{
@@ -43,7 +43,7 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{separate}{Logical (TRUE/FALSE). If TRUE, separates the summary into different sections. Default is \code{FALSE}.}
 
-\item{force}{Logical (TRUE/FALSE). If TRUE, forces the summary generation even if there are issues. Default is \code{FALSE}.}
+\item{reset}{Logical (TRUE/FALSE). If TRUE, forces the summary generation even if there are issues. Default is \code{FALSE}.}
 }
 \value{
 List. Returns a list containing the summarized data, including records, metadata, users, logs, and any other specified data.

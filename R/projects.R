@@ -96,7 +96,7 @@ project_health_check <- function() {
   #             dir_path = OUT$dir_path,
   #             token_name = OUT$token_name,
   #             redcap_base = "https://redcap.miami.edu/",
-  #             force = TRUE,
+  #             reset = TRUE,
   #             merge_form_name = "merged"
   #           )
   #         },error = function(e) {NULL})

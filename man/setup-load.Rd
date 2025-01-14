@@ -12,11 +12,14 @@ setup_project(
   dir_path,
   redcap_base,
   token_name = paste0("REDCapSync_", short_name),
-  force = FALSE,
+  labelled = TRUE,
+  reset = FALSE,
   merge_form_name = "merged",
   use_csv = FALSE,
   get_type = c("identified", "deidentified", "strict-deidentified"),
   auto_check_token = TRUE,
+  batch_size_download = 2000,
+  batch_size_upload = 500,
   silent = FALSE
 )
 
@@ -40,7 +43,7 @@ server.}
 \item{token_name}{An optional character string for setting your token name.
 Default is \verb{REDCapSync_<short_name>}}
 
-\item{force}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the \code{project}
+\item{reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the \code{project}
 object already exists. Default is \code{FALSE}.}
 
 \item{merge_form_name}{A character string representing the name of the merged
@@ -54,6 +57,12 @@ data as if user ran \code{sync_project}. Default is \code{FALSE}.}
 
 \item{auto_check_token}{Logical (TRUE/FALSE). If TRUE, automatically
 checks the validity of the REDCap API token. Default is \code{TRUE}.}
+
+\item{batch_size_download}{Integer. Number of records to process in each batch.
+Default is \code{2000}.}
+
+\item{batch_size_upload}{Integer. Number of records to process in each batch.
+Default is \code{500}.}
 
 \item{silent}{Logical (TRUE/FALSE). For messages.}
 
@@ -79,7 +88,7 @@ Neither function directly attempts communication with REDCap.
 
 \code{setup_project} is used the first time you initialize/link a REDCap project.
 Mainly, it sets your unique \code{short_name} and your intended directory.
-Unless you run \code{force = TRUE} the default will first try load_project.
+Unless you run \code{reset = TRUE} the default will first try load_project.
 dir_path is technically optional but without it the user cannot
 save/load/update projects.
 

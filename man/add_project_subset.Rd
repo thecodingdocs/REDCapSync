@@ -14,7 +14,7 @@ add_project_subset(
   form_names = NULL,
   field_names = NULL,
   deidentify = TRUE,
-  force = FALSE
+  reset = FALSE
 )
 }
 \arguments{
@@ -39,7 +39,7 @@ Default is \verb{<project$short_name>_<subset_name>}.}
 
 \item{deidentify}{Logical. Whether to deidentify the data in the subset. Default is \code{TRUE}.}
 
-\item{force}{Logical. If \code{TRUE}, overwrite existing subset files with the same name. Default is \code{FALSE}.}
+\item{reset}{Logical. If \code{TRUE}, overwrite existing subset files with the same name. Default is \code{FALSE}.}
 }
 \value{
 A modified \code{project} object that includes the newly created subset.

@@ -1,4 +1,4 @@
-#' @title Update REDCap Database
+#' @title Syncronize REDCap Data
 #' @description
 #' Updates the REDCap database (`project` object) by fetching the latest data from
 #' the REDCap server.
@@ -13,11 +13,9 @@
 #' @inheritParams save_project
 #' @param set_token_if_fails Logical (TRUE/FALSE). If TRUE, prompts the user to
 #' set the REDCap API token if the update fails. Default is `TRUE`.
-#' @param force Logical that forces a fresh update if TRUE. Default is `FALSE`.
+#' @param reset Logical that forces a fresh update if TRUE. Default is `FALSE`.
 #' @param day_of_log Integer. Number of days to be checked in the log. Default
 #' is `10`.
-#' @param labelled Logical (TRUE/FALSE). If TRUE, returns labelled REDCap data.
-#' If FALSE, returns raw data. Default is `TRUE`.
 #' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
 #' Default is `FALSE`.
 #' @param original_file_names Logical (TRUE/FALSE). If TRUE, uses original file
@@ -31,8 +29,6 @@
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
 #' the directory. Default is `TRUE`.
 #' @param records optional records character vector
-#' @param batch_size Integer. Number of records to process in each batch.
-#' Default is `2000`.
 #' @return Messages for confirmation.
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.
@@ -41,9 +37,8 @@
 sync_project <- function(
     project,
     set_token_if_fails = TRUE,
-    force = FALSE,
+    reset = FALSE,
     day_of_log = 10,
-    labelled = TRUE,
     get_files = FALSE,
     original_file_names = FALSE,
     entire_log = FALSE,
@@ -51,36 +46,34 @@ sync_project <- function(
     ask_about_overwrites = TRUE,
     save_to_dir = TRUE,
     records = NULL,
-    batch_size = 2000) {
+    silent = FALSE
+) {
   IDs <- NULL
   will_update <- TRUE
   was_updated <- FALSE
   project <- validate_project(project)
+  labelled <- project$internals$data_extract_labelled
+  if(is.null(labelled)){
+    stop("project$internals$data_extract_labelled is NULL. Did you use `setup_project`?")
+  } # validation step for setup has values like has_internals_params
+  batch_size <- project$internals$batch_size_download
+  if(is.null(batch_size)){
+    stop("project$internals$batch_size_download is NULL. Did you use `setup_project`?")
+  } # validation step for setup has values like has_internals_params
   if (is_something(records)) {
     bullet_in_console("Presently, if you supply specified records it will only check REDCap updates for those records.")
-  }
-  if (!is.null(project$internals$data_extract_labelled)) {
-    if (project$internals$data_extract_labelled != labelled) {
-      if (!force) {
-        load_type <- ifelse(project$internals$data_extract_labelled, "labelled", "raw")
-        chosen_type <- ifelse(labelled, "labelled", "raw")
-        force <- TRUE
-        warning(
-          "The project that was loaded was ",
-          load_type, " and you chose ", chosen_type,
-          ". Therefore, a full update was triggered to avoid data conflicts",
-          immediate. = TRUE
-        )
-      }
-    }
   }
   project <- test_REDCap_token(project, set_if_fails = set_token_if_fails)
   connected <- project$internals$last_test_connection_outcome
   if (!connected) {
-    bullet_in_console("Could not connect to REDCap", bullet_type = "x")
+    bullet_in_console(
+      "Could not connect to REDCap",
+      bullet_type = "x",
+      silent = silent
+    )
     return(project)
   }
-  if (metadata_only) force <- TRUE
+  if (metadata_only) reset <- TRUE
   # project$internals$last_metadata_update <- Sys.time()-lubridate::days(1)
   # project$internals$last_data_update <- Sys.time()-lubridate::days(1)
   if (!is.null(project$transformation$data_updates)) {
@@ -93,51 +86,51 @@ sync_project <- function(
     if (!do_it) stop("Stopped as requested!")
     project <- upload_transform_to_project(project)
   }
-  if (!force) { # check log interim
+  if (!reset) { # check log interim
     if (
       is.null(project$internals$last_metadata_update) ||
       is.null(project$internals$last_data_update) ||
       is.null(project$internals$last_full_update)
     ) {
-      force <- TRUE
+      reset <- TRUE
     } else {
-      ilog <- get_REDCap_log(
+      interim_log <- get_REDCap_log(
         project,
         begin_time = as.character(strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d %H:%M") - lubridate::days(1))
       ) %>% clean_redcap_log()
-      if (nrow(ilog) <= nrow(project$redcap$log)) {
-        head_of_log <- project$redcap$log %>% utils::head(n = nrow(ilog))
+      if (nrow(interim_log) <= nrow(project$redcap$log)) {
+        head_of_log <- project$redcap$log %>% utils::head(n = nrow(interim_log))
       } else {
         head_of_log <- project$redcap$log
       }
-      df1 <- ilog %>%
+      unique_log <- interim_log %>%
         rbind(head_of_log) %>%
         unique()
-      # dup <- df1[which(duplicated(rbind(df1, head_of_log),fromLast = TRUE)[seq_len(nrow(df1)]), ]
-      ilog <- df1[which(!duplicated(rbind(df1, head_of_log), fromLast = TRUE)[seq_len(nrow(df1))]), ]
-      if (nrow(ilog) > 0) {
-        project$redcap$log <- ilog %>%
+      # dup <- unique_log[which(duplicated(rbind(unique_log, head_of_log),fromLast = TRUE)[seq_len(nrow(unique_log)]), ]
+      interim_log <- unique_log[which(!duplicated(rbind(unique_log, head_of_log), fromLast = TRUE)[seq_len(nrow(unique_log))]), ]
+      if (nrow(interim_log) > 0) {
+        project$redcap$log <- interim_log %>%
           dplyr::bind_rows(project$redcap$log) %>%
           unique()
-        ilog$timestamp <- NULL
-        ilog_metadata <- ilog[which(is.na(ilog$record)), ]
-        ilog_metadata <- ilog_metadata[which(ilog_metadata$action_type %in% "Metadata Change Major"), ] # inclusion
-        ilog_metadata_minor <- length(which(ilog_metadata$action_type %in% "Metadata Change Minor")) > 0
-        # ilog_metadata <- ilog_metadata[grep(ignore_redcap_log(),ilog_metadata$details,ignore.case = TRUE,invert = TRUE) %>% unique(),]
-        if (nrow(ilog_metadata) > 0 || ilog_metadata_minor) { # account for minor changes later
-          force <- TRUE
+        interim_log$timestamp <- NULL
+        interim_log_metadata <- interim_log[which(is.na(interim_log$record)), ]
+        interim_log_metadata <- interim_log_metadata[which(interim_log_metadata$action_type %in% "Metadata Change Major"), ] # inclusion
+        interim_log_metadata_minor <- length(which(interim_log_metadata$action_type %in% "Metadata Change Minor")) > 0
+        # interim_log_metadata <- interim_log_metadata[grep(ignore_redcap_log(),interim_log_metadata$details,ignore.case = TRUE,invert = TRUE) %>% unique(),]
+        if (nrow(interim_log_metadata) > 0 || interim_log_metadata_minor) { # account for minor changes later
+          reset <- TRUE
           message(paste0("Update because: Metadata was changed!"))
         } else {
-          ilog_data <- ilog[which(!is.na(ilog$record)), ]
-          ilog_data <- ilog_data[which(ilog_data$action_type != "Users"), ]
+          interim_log_data <- interim_log[which(!is.na(interim_log$record)), ]
+          interim_log_data <- interim_log_data[which(interim_log_data$action_type != "Users"), ]
           if (is_something(records)) {
-            ilog_data <- ilog_data[which(ilog$record %in% records), ]
+            interim_log_data <- interim_log_data[which(interim_log$record %in% records), ]
           }
-          deleted_records <- ilog_data$record[which(ilog_data$action_type %in% c("Delete"))]
+          deleted_records <- interim_log_data$record[which(interim_log_data$action_type %in% c("Delete"))]
           if (length(deleted_records) > 0) {
-            warning("There were recent records deleted from redcap Consider running with 'force = TRUE'. Records: ", deleted_records %>% paste0(collapse = ", "), immediate. = TRUE)
+            warning("There were recent records deleted from redcap Consider running with 'reset = TRUE'. Records: ", deleted_records %>% paste0(collapse = ", "), immediate. = TRUE)
           }
-          IDs <- ilog_data$record %>% unique()
+          IDs <- interim_log_data$record %>% unique()
           if (length(IDs) == 0) {
             IDs <- NULL
             will_update <- FALSE
@@ -148,7 +141,7 @@ sync_project <- function(
       }
     }
   }
-  if (force) {
+  if (reset) {
     project <- project %>% get_REDCap_metadata(include_users = !metadata_only)
     project$internals$is_transformed <- FALSE
     if (!metadata_only) {
@@ -156,7 +149,6 @@ sync_project <- function(
       project$data_update <- list()
       project$summary <- list()
       project$data <- project %>% get_REDCap_data(labelled = labelled, batch_size = batch_size, records = records)
-      project$internals$data_extract_labelled <- labelled
       log <- project$redcap$log # in case there is a log already
       if (entire_log) {
         project$redcap$log <- log %>% dplyr::bind_rows(
@@ -178,7 +170,7 @@ sync_project <- function(
       was_updated <- TRUE
     }
   } else {
-    # if(ilog_metadata_minor){
+    # if(interim_log_metadata_minor){
     #   # what if transformed already
     #   # if(project$internals$is_transformed){
     #   #   # untransform
@@ -221,7 +213,7 @@ sync_project <- function(
           process_df_list(silent = TRUE) %>%
           all_character_cols_list()
       }
-      if (any(!names(data_list) %in% names(project$data))) stop("Imported data names doesn't match project$data names. If this happens run `untransform_project()` or `sync_project(project, force = TRUE)`")
+      if (any(!names(data_list) %in% names(project$data))) stop("Imported data names doesn't match project$data names. If this happens run `untransform_project()` or `sync_project(project, reset = TRUE)`")
       for (TABLE in names(data_list)) {
         project$data[[TABLE]] <- project$data[[TABLE]] %>%
           all_character_cols() %>%

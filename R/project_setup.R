@@ -11,7 +11,7 @@
 #'
 #' `setup_project` is used the first time you initialize/link a REDCap project.
 #' Mainly, it sets your unique `short_name` and your intended directory.
-#' Unless you run \code{force = TRUE} the default will first try load_project.
+#' Unless you run \code{reset = TRUE} the default will first try load_project.
 #' dir_path is technically optional but without it the user cannot
 #' save/load/update projects.
 #'
@@ -28,7 +28,7 @@
 #' server.
 #' @param token_name An optional character string for setting your token name.
 #' Default is `REDCapSync_<short_name>`
-#' @param force Logical (TRUE/FALSE). If TRUE, forces the setup even if the `project`
+#' @param reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the `project`
 #' object already exists. Default is `FALSE`.
 #' @param validate Logical (TRUE/FALSE). If TRUE, validates project object based on
 #' current rules. Default is `TRUE`.
@@ -43,6 +43,10 @@
 #' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test project object with
 #' @param get_type optional character of REDCap API call type.
 #' data as if user ran `sync_project`. Default is `FALSE`.
+#' @param batch_size_download Integer. Number of records to process in each batch.
+#' Default is `2000`.
+#' @param batch_size_upload Integer. Number of records to process in each batch.
+#' Default is `500`.
 #' @param silent Logical (TRUE/FALSE). For messages.
 #' @return REDCapSync `project` list object.
 #' @seealso
@@ -63,13 +67,22 @@ setup_project <- function(
     dir_path,
     redcap_base,
     token_name = paste0("REDCapSync_", short_name),
-    force = FALSE,
+    labelled = TRUE,
+    reset = FALSE,
     merge_form_name = "merged",
     use_csv = FALSE,
     get_type = c("identified","deidentified","strict-deidentified"),
     auto_check_token = TRUE,
+    batch_size_download = 2000,
+    batch_size_upload = 500,
     silent = FALSE
-    ) {
+) {
+  if(missing(redcap_base)){
+    REDCapSync_REDCAP_BASE <- Sys.getenv("REDCapSync_REDCAP_BASE")
+    if(is_something(REDCapSync_REDCAP_BASE)) {
+      redcap_base <- validate_web_link(REDCapSync_REDCAP_BASE)
+    }
+  }
   em <- "`short_name` must be character string of length 1"
   if (!is.character(short_name)) stop(em)
   if (length(short_name) != 1) stop(em)
@@ -81,14 +94,8 @@ setup_project <- function(
   in_proj_cache <- short_name %in% projects$short_name
   missing_dir_path <- missing(dir_path)
   is_a_test <- is_test_short_name(short_name = short_name)
-  if (force) { # load blank if force = TRUE
-    project <- internal_blank_project
-    bullet_in_console(
-      paste0("Setup blank project object because `force = TRUE`"),
-      silent = silent
-      )
-  }
-  if (!force) {
+  was_loaded <- FALSE
+  if (!reset) {
     has_expected_file <- FALSE
     if (!missing_dir_path || in_proj_cache) {
       if (missing_dir_path || in_proj_cache) {
@@ -103,6 +110,7 @@ setup_project <- function(
     }
     if (in_proj_cache || has_expected_file) {
       project <- load_project_from_path(expected_file) # if it fails should default to blank
+      was_loaded <- TRUE
     }
     if (!(in_proj_cache || has_expected_file)) {
       if (is_a_test) {
@@ -129,8 +137,36 @@ setup_project <- function(
   if (!missing_dir_path) {
     project$dir_path <- set_dir(dir_path) # will also ask user if provided dir is new or different (will load from original but start using new dir)
   }
+  if(was_loaded) {
+    #compare current setting to previous settings...
+    if (!is.null(project$internals$data_extract_labelled)) {
+      if (project$internals$data_extract_labelled != labelled) {
+        if (!reset) {
+          load_type <- ifelse(project$internals$data_extract_labelled, "labelled", "raw")
+          chosen_type <- ifelse(labelled, "labelled", "raw")
+          reset <- TRUE
+          warning(
+            "The project that was loaded was ",
+            load_type, " and you chose ", chosen_type,
+            ". Therefore, a full update was triggered to avoid data conflicts",
+            immediate. = TRUE
+          )
+        }
+      }
+    }
+  }
+  if (reset) { # load blank if reset = TRUE
+    project <- internal_blank_project
+    bullet_in_console(
+      paste0("Setup blank project object because `reset = TRUE`"),
+      silent = silent
+    )
+  }
   project$short_name <- short_name
   project$internals$use_csv <- use_csv
+  project$internals$data_extract_labelled <- labelled
+  project$internals$batch_size_download <- batch_size_download %>% validate_integer()
+  project$internals$batch_size_upload <- batch_size_upload %>% validate_integer()
   project$redcap$token_name <- token_name
   if (!is_a_test) {
     project$links$redcap_base <- validate_web_link(redcap_base)

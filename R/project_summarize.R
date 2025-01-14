@@ -336,7 +336,7 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 #' @param form_names Character vector. Names of forms to include in the subset. Default is `NULL`, which includes all forms.
 #' @param field_names Character vector. Names of specific fields to include in the subset. Default is `NULL`, which includes all fields.
 #' @param deidentify Logical. Whether to deidentify the data in the subset. Default is `TRUE`.
-#' @param force Logical. If `TRUE`, overwrite existing subset files with the same name. Default is `FALSE`.
+#' @param reset Logical. If `TRUE`, overwrite existing subset files with the same name. Default is `FALSE`.
 #'
 #' @return
 #' A modified `project` object that includes the newly created subset.
@@ -361,8 +361,8 @@ add_project_subset <- function(
     form_names = NULL,
     field_names = NULL,
     deidentify = TRUE,
-    force = FALSE) {
-  if (is.null(project$summary$subsets[[subset_name]]) || force) {
+    reset = FALSE) {
+  if (is.null(project$summary$subsets[[subset_name]]) || reset) {
     subset_records <- NULL
     if (filter_field == project$redcap$id_col) {
       records <- unique(filter_choices)
@@ -549,7 +549,7 @@ generate_summary_from_subset_name <- function(
 #' @param include_users Logical (TRUE/FALSE). If TRUE, includes user information in the summary. Default is `TRUE`.
 #' @param include_log Logical (TRUE/FALSE). If TRUE, includes logs in the summary. Default is `TRUE`.
 #' @param separate Logical (TRUE/FALSE). If TRUE, separates the summary into different sections. Default is `FALSE`.
-#' @param force Logical (TRUE/FALSE). If TRUE, forces the summary generation even if there are issues. Default is `FALSE`.
+#' @param reset Logical (TRUE/FALSE). If TRUE, forces the summary generation even if there are issues. Default is `FALSE`.
 #' @return List. Returns a list containing the summarized data, including records, metadata, users, logs, and any other specified data.
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.
@@ -568,7 +568,7 @@ summarize_project <- function(
     include_users = TRUE,
     include_log = TRUE,
     separate = FALSE,
-    force = FALSE) {
+    reset = FALSE) {
   project <- project %>% validate_project()
   original_data <- project$data
   do_it <- is.null(project$internals$last_summary)
@@ -576,7 +576,7 @@ summarize_project <- function(
   if (!do_it) {
     do_it <- project$internals$last_summary < last_data_update
   }
-  if (force || do_it) {
+  if (reset || do_it) {
     to_save_list <- project %>% generate_summary_save_list(
       deidentify = deidentify,
       clean = clean,
@@ -595,7 +595,7 @@ summarize_project <- function(
     project$internals$last_summary <- last_data_update
   }
   subset_names <- check_subsets(project)
-  if (force) subset_names <- project$summary$subsets %>% names()
+  if (reset) subset_names <- project$summary$subsets %>% names()
   if (is_something(subset_names)) {
     for (subset_name in subset_names) {
       project$data <- original_data

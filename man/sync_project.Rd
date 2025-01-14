@@ -2,14 +2,13 @@
 % Please edit documentation in R/project_update.R
 \name{sync_project}
 \alias{sync_project}
-\title{Update REDCap Database}
+\title{Syncronize REDCap Data}
 \usage{
 sync_project(
   project,
   set_token_if_fails = TRUE,
-  force = FALSE,
+  reset = FALSE,
   day_of_log = 10,
-  labelled = TRUE,
   get_files = FALSE,
   original_file_names = FALSE,
   entire_log = FALSE,
@@ -17,7 +16,7 @@ sync_project(
   ask_about_overwrites = TRUE,
   save_to_dir = TRUE,
   records = NULL,
-  batch_size = 2000
+  silent = FALSE
 )
 }
 \arguments{
@@ -27,13 +26,10 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 \item{set_token_if_fails}{Logical (TRUE/FALSE). If TRUE, prompts the user to
 set the REDCap API token if the update fails. Default is \code{TRUE}.}
 
-\item{force}{Logical that forces a fresh update if TRUE. Default is \code{FALSE}.}
+\item{reset}{Logical that forces a fresh update if TRUE. Default is \code{FALSE}.}
 
 \item{day_of_log}{Integer. Number of days to be checked in the log. Default
 is \code{10}.}
-
-\item{labelled}{Logical (TRUE/FALSE). If TRUE, returns labelled REDCap data.
-If FALSE, returns raw data. Default is \code{TRUE}.}
 
 \item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
 Default is \code{FALSE}.}
@@ -55,8 +51,7 @@ the directory. Default is \code{TRUE}.}
 
 \item{records}{optional records character vector}
 
-\item{batch_size}{Integer. Number of records to process in each batch.
-Default is \code{2000}.}
+\item{silent}{Logical (TRUE/FALSE). For messages.}
 }
 \value{
 Messages for confirmation.

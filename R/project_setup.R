@@ -40,7 +40,7 @@
 #' or new project is setup. Default is `10`.
 #' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
 #' Default is `FALSE`.
-#' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves file repository
+#' @param get_file_repository Logical (TRUE/FALSE). If TRUE, retrieves file repository
 #' from REDCap.
 #' Default is `FALSE`.
 #' @param original_file_names Logical (TRUE/FALSE). If TRUE, uses original file

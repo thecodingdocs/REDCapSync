@@ -58,7 +58,10 @@ raw coded data in output.}
 \item{days_of_log}{Integer. Number of days to be checked in the log if a reset
 or new project is setup. Default is \code{10}.}
 
-\item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves file repository
+\item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
+Default is \code{FALSE}.}
+
+\item{get_file_repository}{Logical (TRUE/FALSE). If TRUE, retrieves file repository
 from REDCap.
 Default is \code{FALSE}.}
 

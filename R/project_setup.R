@@ -358,11 +358,38 @@ get_dir <- function(project) {
 nav_to_dir <- function(project) {
   utils::browseURL(project$dir_path)
 }
+validate_logical <- function(logical_value, n= NULL) {
+  arg_name <- "logical_value"
+  if (!is.logical(logical_value, n = n)) {
+    abort(sprintf("'%s' must be a logical value (TRUE or FALSE).", arg_name))
+  }
+  message(sprintf("'%s' is a valid logical value.", arg_name))
+}
 #' @noRd
 validate_project <- function(project, silent = TRUE, warn_only = FALSE) {
-  # param check
-  if (!is.list(project)) stop("project must be a list")
-  # function
+  # silent <- checkmate::assert_logical(silent, len = 1)
+  # required_logicals <- c(
+  #   "days_of_log",
+  #   "get_file_repository",
+  #   "labelled",
+  #   "get_files",
+  #   "original_file_names",
+  #   "get_file_repository",
+  #   "entire_log",
+  #   "use_csv",
+  #   "days_of_log"
+  # )
+  # for(required_logical in required_logicals) {
+  #   checkmate::assert_logical(
+  #     x = project$internals[[required_logical]],
+  #     any.missing = F,
+  #     len = 1,
+  #     .var.name = paste0("project$internals$", required_logical),
+  #     info ="Did you use setup_project?"
+  #   )
+  # }
+  # if (!is.list(project)) stop("project must be a list")
+  # # function
   outcome_valid <- TRUE
   messages <- NULL
   if (!all(names(internal_blank_project) %in% names(project))) {
@@ -398,38 +425,16 @@ validate_project <- function(project, silent = TRUE, warn_only = FALSE) {
     bullet_in_console(paste0(project$short_name, " is valid project object!"), bullet_type = "v",silent = silent)
   }
   em <- "Did you use `setup_project()`?"
-  required_logicals
-  days_of_log
-  if( ! is.numeric(as.integer(project$internals$days_of_log))) {
-    stop(em)
-  }
+
   if( ! is.numeric(as.integer(project$internals$batch_size_download))) {
     stop(em)
   }
   if( ! is.numeric(as.integer(project$internals$batch_size_upload))) {
     stop(em)
   }
-  if( ! is.logical(project$internals$get_file_repository)) {
-    stop(em)
-  }
-  if( ! is.logical(project$internals$labelled)) {
-    stop(em)
-  }
-  if( ! is.logical(project$internals$get_files)) {
-    stop(em)
-  }
-  if( ! is.logical(project$internals$entire_log)) {
-    stop(em)
-  }
-  if( ! is.logical(project$internals$metadata_only)) {
-    stop(em)
-  }
-  if( ! is.logical(project$internals$use_csv)) {
-    stop(em)
-  }
-  if( ! is.logical(project$internals$original_file_names)) {
-    stop(em)
-  }
+
+
+
   if ( ! outcome_valid) {
     for (m in messages) {
       if (warn_only) {

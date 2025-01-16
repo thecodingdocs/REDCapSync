@@ -54,11 +54,29 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sync</span><span class="op">(</span>use_console <span class="op">=</span> <span class="cn">TRUE</span>, hard_reset <span class="op">=</span> <span class="cn">FALSE</span>, project_names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
-  </main></div>
+
+<dl><dt id="arg-use-console">use_console<a class="anchor" aria-label="anchor" href="#arg-use-console"></a></dt>
+<dd><p>Whether or not to use console to guide through sync vs just running</p></dd>
+
+
+<dt id="arg-hard-reset">hard_reset<a class="anchor" aria-label="anchor" href="#arg-hard-reset"></a></dt>
+<dd><p>Will go get all projects from scratch if TRUE.</p></dd>
+
+
+<dt id="arg-project-names">project_names<a class="anchor" aria-label="anchor" href="#arg-project-names"></a></dt>
+<dd><p>character vector of project short_names to check for sync.
+Default is NULL which will check every project in cache.</p></dd>
+
+</dl></div>
+
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

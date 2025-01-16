@@ -14,6 +14,12 @@ sync <- function(use_console = TRUE, hard_reset = FALSE,project_names = NULL) {
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
+  cli::boxx(
+    "Start REDCapSync",
+    padding = 1,
+    background_col = "brown",
+    float = "center"
+  )
   #interactive TRUE FALSE
   projects <- get_projects()
   if(!is_something(projects)){
@@ -32,16 +38,40 @@ sync <- function(use_console = TRUE, hard_reset = FALSE,project_names = NULL) {
     not_needed <- 0
     failed <- 0
     succeeded <- 0
+    now <- Sys.time()
     for(project_name in project_names){
       project_row <- which(projects$short_name == project_name)
       last_data_update <- projects$last_data_update
+      then <- as.POSIXct(last_data_update, format = "%Y-%m-%d %H:%M:%OS",tz = Sys.timezone())
       project_status <- "Failed"
-      PROJ <- load_project(short_name = project_name) # failure
-      PROJ <- PROJ %>% sync_project(
-        set_token_if_fails = use_console,
-        save_to_dir = TRUE
-        #other params
-      )
+      sync_frequency <- projects$sync_frequency
+      have_to_check <- sync_frequency %in%c("hourly", "daily", "weekly", "monthly")
+      if(have_to_check){ # turn to function
+        if(sync_frequency == "hourly"){
+          do_it <- now >= (then + lubridate::hours(1))
+        }
+        if(sync_frequency == "daily"){
+          do_it <- now >= (then + lubridate::days(1))
+        }
+        if(sync_frequency == "weekly"){
+          do_it <- now >= (then + lubridate::weeks(1))
+        }
+        if(sync_frequency == "monthly"){
+          do_it <- now >= (then + lubridate::months(1))
+        }
+      }else{
+        do_it <- sync_frequency == "always"
+      }
+      if(do_it){
+        PROJ <- load_project(short_name = project_name) # failure
+        PROJ <- PROJ %>% sync_project(
+          set_token_if_fails = use_console,
+          save_to_dir = TRUE
+          #other params
+        )
+      }else{
+        cli::cli_alert_info("No need to update {project_name}: {then} ({sync_frequency})")
+      }
       if(PROJ$internals$last_test_connection_outcome){
         project_status <- "Updated"
         if(PROJ$internals$last_data_update == last_data_update){
@@ -49,10 +79,10 @@ sync <- function(use_console = TRUE, hard_reset = FALSE,project_names = NULL) {
         }
       }
       projects$status[project_row] <- project_status
-      rm(PROJ)
       cli::cli_progress_update()
     }
     cli::cli_progress_done()
+    bullet_in_console("{short_name}: ", url = PROJ$links$redcap_home)
   }
   not_needed <- sum(projects$status == "Not Needed")
   failed <- sum(projects$status == "Failed") # add why
@@ -62,6 +92,13 @@ sync <- function(use_console = TRUE, hard_reset = FALSE,project_names = NULL) {
   cli::cli_alert_danger("{failed} REDCaps failed to sync")
   cli::cli_alert_success("{succeeded} REDCaps Updated!")
   cli::cli_alert_success("{not_failed} REDCaps Synced!")
+  print.table(projects[,c("short_name","status")])
+  cli::boxx(
+    "End REDCapSync",
+    padding = 1,
+    background_col = "brown",
+    float = "center"
+  )
   return(invisible())
 }
 #' @title project_health_check

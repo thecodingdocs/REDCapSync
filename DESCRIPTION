@@ -1,6 +1,6 @@
 Package: REDCapSync
 Title: Synchronize and Standardize Data Pipelines from REDCap
-Version: 0.0.0.9003
+Version: 0.0.0.9004
 Authors@R: c(
     person("Brandon", "Rose", , "thecodingdocs@gmail.com", role = c("cre", "aut"),
            comment = c(ORCID = "0009-0009-7813-1960")),

@@ -62,6 +62,7 @@ test_that("setup_project creates a valid project object and valid directory", {
 ##test-load_test_project
 test_that("works",{
   test_dir <- withr::local_tempdir() %>% sanitize_path()
+  expect_error(assert_dir(test_dir))
 })
 ##test-save_project
 test_that("save_project doesn't save if it's blank but will save and cache if valid, also loads", {

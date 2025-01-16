@@ -89,7 +89,7 @@ sync <- function(
       cli::cli_progress_update()
     }
     cli::cli_progress_done()
-    bullet_in_console("{short_name}: ", url = PROJ$links$redcap_home)
+    bullet_in_console("{short_name}: ", url = projects$redcap_home[project_row])
   }
   not_needed <- sum(projects$status == "Not Needed")
   failed <- sum(projects$status == "Failed") # add why

@@ -240,7 +240,7 @@ assert_setup_project <- function(
   )
   #DIRPATH
   assert_env_name(
-    project$redcap$token_name,
+    env_name = project$redcap$token_name,
     max.chars = 50,
     arg_name = "token_name",
     underscore_allowed_first = TRUE,
@@ -255,7 +255,7 @@ assert_setup_project <- function(
   assert_logical(project$internals$entire_log, len = 1,add = collected)
   assert_logical(project$internals$metadata_only, len = 1,add = collected)
   assert_env_name(
-    merge_form_name,
+    project$internals$merge_form_name,
     max.chars = 31,
     arg_name = "merge_form_name",
     add = collected

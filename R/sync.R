@@ -1,6 +1,40 @@
+#' @title Syncronize your REDCaps
+#' @export
 sync <- function() {
+  #interactive TRUE FALSE
+  # projects <- get_projects()
+  #?anyprojects - NO
+  #if no setup whats home REDCap
+  #setup first project
+  #?anyprojects - Yes
+  #sync_projects -----
+  #loop
+  #
+  n <- 7
+  cli::cli_progress_bar("Syncing REDCaps ...", total = 100)
+  for (i in 1:100) {
+    Sys.sleep(3/100)
+    cli::cli_progress_update()
+  }
+  cli::cli_progress_done()
+  not_needed <- 1
+  failed <- 1
+  succeeded <- 3
+  cli::cli_alert_info("{not_needed} REDCaps did not need syncing.")
+  cli::cli_alert_danger("{failed} REDCaps failed to sync")
+  cli::cli_alert_success("{succeeded} REDCaps Synced!")
 }
+#' @title Syncronize your REDCaps
+#' @export
 sync_projects <- function() {
+  projects <- get_projects()
+  #?anyprojects - NO
+  #if no setup whats home REDCap
+  #setup first project
+  #?anyprojects - Yes
+  #sync_projects -----
+  #loop which ones
+
 }
 #' @title project_health_check
 #' @description

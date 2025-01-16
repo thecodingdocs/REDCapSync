@@ -26,9 +26,9 @@ reference:
   - title: Core Pipeline Functions (Basic)
     desc: For basic users use these core functions to maintain REDCap data pipelines. Setup or Load your project. Update from REDCap using what is already saved. Save the outputs to a directory.
     contents:
+      - sync
       - get_projects
       - setup_project
-      - load_project
       - sync_project
       - drop_REDCap_to_directory
       - summarize_project
@@ -60,7 +60,6 @@ reference:
   - subtitle: Get from REDCap
     desc: For most project, even with tens-of-thousands records and hundreds of variables, this can be handeled with sync_project. This package is not presently intended for massive REDCap projects.
     contents:
-      - sync_project
       - get_REDCap_report
   - subtitle: Data Helpers
     desc: Used for managing to-be-upload data
@@ -102,6 +101,13 @@ reference:
       - generate_horizontal_transform
       - generate_summary_from_subset_name
       - summarize_project
+  - subtitle: Sync Functions
+    desc: Run Syncs on periodic bases; sync and sync_projects are "hands-free" and they depend on sync_project which can work by name with the project object in the environment.
+    contents:
+      - sync
+      - sync_projects
+      - sync_project
+
   - subtitle: Experimental/Dev Functions
     desc: These functions are still in development and is subject to changes.
     contents:

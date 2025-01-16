@@ -120,26 +120,56 @@ extract_project_details <- function(project) {
   assert_setup_project(project)
   OUT <- data.frame(
     short_name = project$short_name,
-    dir_path = project$dir_path %>% is.null() %>% ifelse(NA, sanitize_path(project$dir_path)),
-    last_save = project$internals$last_data_dir_save %>% is.null() %>% ifelse(NA, project$internals$last_data_dir_save) %>% as.POSIXct(),
-    last_metadata_update = project$internals$last_metadata_update,
-    last_data_update = project$internals$last_data_update,
-    version = project$redcap$version,
+    dir_path = project$dir_path %>%
+      is.null() %>%
+      ifelse(NA, sanitize_path(project$dir_path)),
+    last_save = project$internals$last_data_dir_save %>%
+      is.null() %>%
+      ifelse(NA, project$internals$last_data_dir_save) %>% as.POSIXct(),
+    last_metadata_update = project$internals$last_metadata_update %>%
+      is.null() %>%
+      ifelse(NA, project$internals$last_metadata_update),
+    last_data_update = project$internals$last_data_update %>%
+      is.null() %>%
+      ifelse(NA, project$internals$last_data_update) ,
+    version = project$redcap$version %>%
+      is.null() %>%
+      ifelse(NA, project$redcap$version) ,
     token_name = project$redcap$token_name,
-    project_id = project$redcap$project_id,
-    project_title = project$redcap$project_title,
-    id_col = project$redcap$id_col,
-    is_longitudinal = project$redcap$is_longitudinal,
-    has_repeating_forms_or_events = project$redcap$has_repeating_forms_or_events,
-    has_multiple_arms = project$redcap$has_multiple_arms,
-    n_records = ifelse(is.null(project$summary$all_records[[project$redcap$id_col]]), NA, project$summary$all_records %>% nrow()),
+    project_id = project$redcap$project_id %>%
+      is.null() %>%
+      ifelse(NA, project$redcap$project_id),
+    project_title = project$redcap$project_title %>%
+      is.null() %>%
+      ifelse(NA, project$redcap$project_title) ,
+    id_col = project$redcap$id_col %>%
+      is.null() %>%
+      ifelse(NA, project$redcap$id_col) ,
+    is_longitudinal = project$redcap$is_longitudinal %>%
+      is.null() %>%
+      ifelse(NA, project$redcap$is_longitudinal) ,
+    has_repeating_forms_or_events =
+      project$redcap$has_repeating_forms_or_events %>%
+      is.null() %>% ifelse(NA, project$redcap$has_repeating_forms_or_events),
+    has_multiple_arms = project$redcap$has_multiple_arms %>%
+      is.null() %>%
+      ifelse(NA, project$redcap$has_multiple_arms) ,
+    n_records = ifelse(
+      is.null(project$summary$all_records[[project$redcap$id_col]]),
+      NA,
+      project$summary$all_records %>% nrow()
+    ),
     R_object_size = NA,
     file_size = NA,
     # deidentified = NA,
     sync_frequency =  project$internals$sync_frequency,
     redcap_base = project$links$redcap_base,
-    redcap_home = project$links$redcap_home,
-    redcap_API_playground = project$links$redcap_API_playground
+    redcap_home = project$links$redcap_home %>%
+      is.null() %>%
+      ifelse(NA, project$links$redcap_home) ,
+    redcap_API_playground = project$links$redcap_API_playground %>%
+      is.null() %>%
+      ifelse(NA, project$links$redcap_API_playground)
   ) %>% all_character_cols()
   rownames(OUT) <- NULL
   return(OUT)
@@ -165,7 +195,6 @@ add_project <- function(project, silent = TRUE) {
         "`remove_project(\"{projects$short_name[bad_row]}\")`"
       )
     )
-
   }
   OUT$R_object_size <- size(project)
   OUT$file_size <- file.path(project$dir_path, "R_objects", paste0(project$short_name, "_REDCapSync.RData")) %>% file_size_mb()

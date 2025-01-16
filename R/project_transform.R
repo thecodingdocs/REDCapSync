@@ -11,7 +11,7 @@
 #' The function begins by validating the `project` object and checking that the records to be transformed exist. It then reshapes the data from a vertical to a horizontal format, allowing for easier access and analysis, especially when dealing with wide datasets.
 #' @export
 generate_horizontal_transform <- function(project, records) {
-  project <- validate_project(project)
+  project <- assert_project(project)
   if (missing(records)) records <- project$summary$all_records[[project$redcap$id_col]]
   data <- filter_project(project, filter_field = project$redcap$id_col, filter_choices = records)
   FINAL_out <- NULL
@@ -374,7 +374,7 @@ add_project_field <- function(
     identifier = "",
     units = NA,
     data_func = NA) {
-  project <- validate_project(project, silent = TRUE)
+  project <- assert_project(project, silent = TRUE)
   if (wl(project$transformation$fields$field_name == field_name) > 0) {
     project$transformation$fields <- project$transformation$fields[which(project$transformation$fields$field_name != field_name), ]
   }

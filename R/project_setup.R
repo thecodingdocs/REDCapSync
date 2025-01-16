@@ -94,12 +94,41 @@ setup_project <- function(
     metadata_only = FALSE,
     merge_form_name = "merged",
     use_csv = FALSE,
-    get_type = c("identified","deidentified","strict-deidentified"),
+    get_type = "identified",
     auto_check_token = TRUE,
     batch_size_download = 2000,
     batch_size_upload = 500,
     silent = FALSE
 ) {
+  project$short_name <- assert_env_name(
+    env_name = short_name,
+    max.chars = 31,
+    arg_name = "short_name"
+  )
+  assert_character(
+    merge_form_name,
+    len = 1,
+    min.chars = 1,
+    .var.name = "merge_form_name"
+  )
+  assert_choice(
+    get_type,
+    choices = c("identified", "deidentified", "strict-deidentified")
+  )
+  assert_logical(reset, len = 1)
+  assert_logical(labelled, len = 1)
+  assert_integerish(days_of_log, len = 1, lower = 1)
+  assert_logical(get_files, len = 1)
+  assert_logical(get_file_repository, len = 1)
+  assert_logical(original_file_names, len = 1)
+  assert_logical(entire_log, len = 1)
+  assert_logical(metadata_only, len = 1)
+  assert_env_name(merge_form_name,arg_name = "merge_form_name")
+  assert_logical(use_csv, len = 1)
+  assert_logical(auto_check_token, len = 1)
+  assert_integerish(batch_size_download, len = 1, lower = 1)
+  assert_integerish(batch_size_upload, len = 1, lower = 1)
+  assert_logical(silent, len = 1)
   if(missing(redcap_base)){
     REDCapSync_REDCAP_BASE <- Sys.getenv("REDCapSync_REDCAP_BASE")
     if(is_something(REDCapSync_REDCAP_BASE)) {
@@ -110,10 +139,10 @@ setup_project <- function(
   if (!is.character(short_name)) stop(em)
   if (length(short_name) != 1) stop(em)
   projects <- get_projects() # add short_name conflict check id-base url differs
-  short_name <- validate_env_name(short_name)
+  short_name <- assert_env_name(short_name)
   if (paste0(internal_REDCapSync_token_prefix, short_name) != token_name) {
   } # maybe a message
-  token_name <- validate_env_name(token_name)
+  token_name <- assert_env_name(token_name)
   in_proj_cache <- short_name %in% projects$short_name
   missing_dir_path <- missing(dir_path)
   is_a_test <- is_test_short_name(short_name = short_name)
@@ -193,8 +222,8 @@ setup_project <- function(
   project$internals$days_of_log <- days_of_log
   project$internals$get_files <- get_files
   project$internals$metadata_only <- metadata_only
-  project$internals$batch_size_download <- batch_size_download %>% validate_numeric()
-  project$internals$batch_size_upload <- batch_size_upload %>% validate_numeric()
+  project$internals$batch_size_download <- batch_size_download %>% assert_integerish()
+  project$internals$batch_size_upload <- batch_size_upload %>% assert_integerish()
   project$redcap$token_name <- token_name
   project$internals$get_file_repository <- get_file_repository
   if (!is_a_test) {
@@ -206,7 +235,7 @@ setup_project <- function(
       silent = silent
     )
   }
-  project$internals$merge_form_name <- validate_env_name(merge_form_name)
+  project$internals$merge_form_name <- assert_env_name(merge_form_name)
   project$internals$use_csv <- use_csv
   project$internals$is_blank <- FALSE
   project$data <- project$data %>% all_character_cols_list()
@@ -216,7 +245,7 @@ setup_project <- function(
       set_REDCap_token(project, ask = FALSE)
     }
   }
-  project <- validate_project(project, silent = silent)
+  project <- assert_project(project, silent = silent)
   return(project)
 }
 #' @rdname setup-load
@@ -240,7 +269,7 @@ load_project_from_path <- function(project_path, validate = TRUE) {
   project <- readRDS(file = project_path)
   # if failed through message like unlink to project_path
   if (validate) {
-    project <- project %>% validate_project(silent = FALSE)
+    project <- project %>% assert_project(silent = FALSE)
   }
   return(project)
 }
@@ -290,7 +319,7 @@ is_test_project <- function(project) {
 #' @family project object
 #' @export
 save_project <- function(project,silent = FALSE) {
-  project <- project %>% validate_project()
+  project <- project %>% assert_project()
   if (!project$internals$ever_connected) {
     bullet_in_console(
       paste0(
@@ -327,7 +356,7 @@ save_project <- function(project,silent = FALSE) {
 #' @rdname save-deleteproject
 #' @export
 delete_project <- function(project) {
-  project <- validate_project(project)
+  project <- assert_project(project)
   dir_path <- project$dir_path
   dir_path <- validate_dir(dir_path, silent = FALSE)
   delete_this <- file.path(dir_path, "R_objects", paste0(project$short_name, "_REDCapSync.RData"))
@@ -358,93 +387,112 @@ get_dir <- function(project) {
 nav_to_dir <- function(project) {
   utils::browseURL(project$dir_path)
 }
-validate_logical <- function(logical_value, n= NULL) {
-  arg_name <- "logical_value"
-  if (!is.logical(logical_value, n = n)) {
-    abort(sprintf("'%s' must be a logical value (TRUE or FALSE).", arg_name))
-  }
-  message(sprintf("'%s' is a valid logical value.", arg_name))
+assert_collection <- function(collection){
+  assert_list(collection, any.missing = FALSE, len = 3, names = "unique")
+  assert_names(names(collection), identical.to = names(makeAssertCollection()))
+  return(invisible(collection))
 }
 #' @noRd
-validate_project <- function(project, silent = TRUE, warn_only = FALSE) {
-  # silent <- checkmate::assert_logical(silent, len = 1)
-  # required_logicals <- c(
-  #   "days_of_log",
-  #   "get_file_repository",
-  #   "labelled",
-  #   "get_files",
-  #   "original_file_names",
-  #   "get_file_repository",
-  #   "entire_log",
-  #   "use_csv",
-  #   "days_of_log"
-  # )
-  # for(required_logical in required_logicals) {
-  #   checkmate::assert_logical(
-  #     x = project$internals[[required_logical]],
-  #     any.missing = F,
-  #     len = 1,
-  #     .var.name = paste0("project$internals$", required_logical),
-  #     info ="Did you use setup_project?"
-  #   )
-  # }
-  # if (!is.list(project)) stop("project must be a list")
-  # # function
-  outcome_valid <- TRUE
-  messages <- NULL
-  if (!all(names(internal_blank_project) %in% names(project))) {
-    outcome_valid <- FALSE
-    messages <- messages %>% append("`project` does not have the appropriate names. Did you use `load_project()` or `setup_project()` to generate it?")
-  }
-  if (is.null(project$short_name)) {
-    outcome_valid <- FALSE
-    messages <- messages %>% append("`project$short_name` is NULL!, Did you use `setup_project()`?")
+cli_message_maker <- function(collected, function_name, info, internal = TRUE) {
+  assert_collection(collected)
+  assert_character(function_name, any.missing = FALSE, len = 1)
+  assert_logical(internal, any.missing = FALSE, len = 1)
+  if (internal) {
+    message <- c("i" = "This is an internal function. Something is very wrong!")
   } else {
-    project$short_name %>% validate_env_name()
+    pkg_separator <- ifelse(internal, ":::", "::")
+    pkg_ref <- paste0("{.fun REDCapSync", pkg_separator, function_name, "}")
+    message <- c("i" = paste0("See ", pkg_ref, " or github page for help."))
   }
-  if ((length(project$data) == 0) > 0) {
-    bullet_in_console("Valid project object but no data yet!", bullet_type = "!",silent = silent)
+  if (!missing(info)) {
+    assert_character(info, min.len = 1)
+    names(info) <- rep_len("i", length.out = length(info))
+    message <- message %>% append(info)
   }
-  if (is.null(project$dir_path)) {
-    bullet_in_console("`project$dir_path` is NULL!, Did you use `setup_project()`?", bullet_type = "!",silent = silent)
-  } else {
-    if (!project$dir_path %>% file.exists()) {
-      bullet_in_console(paste0("`project$dir_path`, '", project$dir_path, "', does not exist!, Did you use `setup_project()`?\nThis can also happen with shared directories."), bullet_type = "!",silent = silent)
-    } else {
-      bullet_in_console(project$short_name %>% paste0(" loaded from: "), url = project$dir_path, bullet_type = "v",silent = silent)
+  mistakes <- collected$getMessages()
+  names(mistakes) <- rep_len(">", length.out = length(mistakes))
+  message <- message %>% append(mistakes)
+  return(message)
+}
+#' @noRd
+is_exported <- function(func_name) {
+  # # Check if the package namespace is loaded
+  #
+  # # Get the namespace environment for the package
+  # ns_env <- asNamespace("REDCapSync")
+  # "setup_project" %in% getNamespaceExports(ns_env)
+  # RosyDev::get_external_functions()
+  # getNamespaceImports()
+}
+#' @noRd
+assert_project <- function(
+    project,
+    silent = TRUE,
+    warn_only = FALSE,
+    add = NULL
+) {
+  standalone <- is.null(add)
+  if ( ! standalone) {
+    assert_collection(add)
+  }
+  collected <- makeAssertCollection()
+  assert_logical(silent, any.missing = FALSE, len = 1, add = collected)
+  assert_logical(warn_only, any.missing = FALSE, len = 1, add = collected)
+  current_function <- as.character(current_call())[[1]]
+  if( ! collected$isEmpty()){
+    message <- collected %>% cli_message_maker(function_name = current_function)
+    cli::cli_abort(message)
+  }
+  collected <- makeAssertCollection()
+  assert_list(
+    project,
+    names = "unique",
+    len = length(internal_blank_project),
+    add = collected
+  )
+  assert_names(
+    names(internal_blank_project),
+    type = "unique",
+    identical.to = names(internal_blank_project),
+    add = collected
+  )
+  assert_env_name(project$short_name,add = collected)
+  assert_logical(project$internals$reset, len = 1,add = collected)
+  assert_logical(project$internals$labelled, len = 1,add = collected)
+  assert_integerish(project$internals$days_of_log, len = 1, lower = 1,add = collected)
+  assert_logical(project$internals$get_files, len = 1,add = collected)
+  assert_logical(project$internals$get_file_repository, len = 1,add = collected)
+  assert_logical(project$internals$original_file_names, len = 1,add = collected)
+  assert_logical(project$internals$entire_log, len = 1,add = collected)
+  assert_logical(project$internals$metadata_only, len = 1,add = collected)
+  assert_env_name(
+    project$internals$merge_form_name,
+    max.chars = 31,
+    arg_name = "merge_form_name",
+    add = collected
+  )
+  assert_logical(project$internals$use_csv, len = 1,add = collected)
+  assert_logical(project$internals$auto_check_token, len = 1,add = collected)
+  assert_integerish(project$internals$batch_size_download, len = 1, lower = 1,add = collected)
+  assert_integerish(project$internals$batch_size_upload, len = 1, lower = 1,add = collected)
+  assert_logical(project$internals$silent, len = 1,add = collected)
+  if(! collected$isEmpty()) {
+    if (standalone){
+      collected %>%
+        cli_message_maker(function_name = current_function) %>%
+        cli::cli_abort(message)
+    }else{
+      add$push(
+        cli::format_message(
+          paste0(
+            "Did you use {.fun REDCapSync::setup_project}? ",
+            "Consider using `reset = TRUE`."
+          )
+        )
+      )
     }
   }
-  if ((project$internals$is_test)) {
-    bullet_in_console(project$short_name %>% paste0(" is a test project object that doesn't actually communicate with any REDCap API!"), bullet_type = "i",silent = silent)
-  }
-  if (project$internals$is_transformed) {
-    bullet_in_console(project$short_name %>% paste0(" is currently transformed! Can reverse with `untransform_project(project)`"), bullet_type = "i",silent = silent)
-  }
-  bullet_in_console("To get data/updates from REDCap run `project <- sync_project(project)`",silent = silent)
-  if (outcome_valid) {
-    bullet_in_console(paste0(project$short_name, " is valid project object!"), bullet_type = "v",silent = silent)
-  }
-  em <- "Did you use `setup_project()`?"
-
-  if( ! is.numeric(as.integer(project$internals$batch_size_download))) {
-    stop(em)
-  }
-  if( ! is.numeric(as.integer(project$internals$batch_size_upload))) {
-    stop(em)
-  }
-
-
-
-  if ( ! outcome_valid) {
-    for (m in messages) {
-      if (warn_only) {
-        warning(m, immediate. = TRUE)
-      } else {
-        stop(m)
-      }
-    }
-  }
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 internal_allowed_test_short_names <- c("TEST_classic", "TEST_repeating", "TEST_longitudinal", "TEST_multiarm")

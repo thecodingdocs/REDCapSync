@@ -22,7 +22,7 @@ setup_project(
   metadata_only = FALSE,
   merge_form_name = "merged",
   use_csv = FALSE,
-  get_type = c("identified", "deidentified", "strict-deidentified"),
+  get_type = "identified",
   auto_check_token = TRUE,
   batch_size_download = 2000,
   batch_size_upload = 500,

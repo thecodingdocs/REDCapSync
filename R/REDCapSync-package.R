@@ -2,10 +2,13 @@
 "_PACKAGE"
 ## usethis namespace: start
 #' @import rlang
-#' @importFrom dplyr bind_rows
-#' @importFrom dplyr bind_cols
-#' @importFrom dplyr first
-#' @importFrom dplyr last
-#' @importFrom dplyr select
+#' @importFrom checkmate makeAssertCollection
+#' @importFrom checkmate assert_choice
+#' @importFrom checkmate assert_character
+#' @importFrom checkmate assert_logical
+#' @importFrom checkmate assert_list
+#' @importFrom checkmate assert_string
+#' @importFrom checkmate assert_integerish
+#' @importFrom checkmate assert_names
 ## usethis namespace: end
 NULL

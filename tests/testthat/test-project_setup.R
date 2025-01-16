@@ -13,14 +13,14 @@ test_that("setup_project creates a valid project object and valid directory", {
   short_name <- "TEST_PROJECT"
   redcap_base <- "https://redcap.miami.edu/"
   #test_short_names
-  expect_error(validate_env_name("A project"))
-  expect_error(validate_env_name("project$]"))
-  expect_error(validate_env_name("1"))
-  expect_error(validate_env_name(1))
-  expect_error(validate_env_name(another_name))
-  expect_no_error(validate_env_name("expected_name"))
-  expect_no_error(validate_env_name("expected_name2"))
-  expect_no_error(validate_env_name("EXPECTED_NAME"))
+  expect_error(assert_env_name("A project"))
+  expect_error(assert_env_name("project$]"))
+  expect_error(assert_env_name("1"))
+  expect_error(assert_env_name(1))
+  expect_error(assert_env_name(another_name))
+  expect_no_error(assert_env_name("expected_name"))
+  expect_no_error(assert_env_name("expected_name2"))
+  expect_no_error(assert_env_name("EXPECTED_NAME"))
   #test_redcap_base
   expect_error(validate_web_link("https://redcap.blah"))
   expect_no_error(validate_web_link("https://redcap.miami.edu/"))

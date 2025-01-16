@@ -36,7 +36,7 @@ sync_project <- function(
   IDs <- NULL
   will_update <- TRUE
   was_updated <- FALSE
-  project <- validate_project(project)
+  project <- assert_project(project)
   if (is_something(records)) {
     bullet_in_console("Presently, if you supply specified records it will only check REDCap updates for those records.")
   }

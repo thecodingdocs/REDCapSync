@@ -313,26 +313,76 @@ validate_web_link <- function(link) {
   link <- paste0(link, "/")
   return(link)
 }
-validate_numeric <- function(num,passed_name) {
-  if( ! is.numeric(num)) {
-    stop("Parameter is not numeric")
+assert_env_name <- function(
+    env_name,
+    arg_name = "env_name",
+    max.chars = 26,
+    underscore_allowed_first = FALSE,
+    add = NULL
+) {
+  collected <- makeAssertCollection()
+  assert_character(
+    arg_name,
+    len = 1,
+    min.chars = 1,
+    add = collected
+  )
+  assert_integerish(
+    max.chars,
+    len = 1,
+    lower = 1,
+    upper = 255,
+    add = collected
+  )
+  assert_logical(
+    underscore_allowed_first,
+    len = 1,
+    add = collected
+  )
+  standalone <- is.null(add)
+  if(! standalone) {
+    assert_collection(add)
   }
-}
-validate_env_name <- function(env_name) {
-  # Check if the name is empty
-  if (is.null(env_name)) stop("env_name is NULL")
-  if (nchar(env_name) == 0) {
-    stop("Short name cannot be empty.")
+  if( ! collected$isEmpty()){
+    current_function <- as.character(current_call())[[1]]
+    message <- collected %>% cli_message_maker(function_name = current_function)
+    cli::cli_abort(message)
   }
-  # Check if the name starts with a number
-  if (grepl("^\\d", env_name)) {
-    stop("Short name cannot start with a number.")
+  collected <- makeAssertCollection()
+  assert_string(
+    x = env_name,
+    n.chars = NULL,
+    min.chars = 1,
+    max.chars = max.chars,
+    pattern = paste0(
+      ifelse(underscore_allowed_first,"","^[A-Za-z]"),
+      "[A-Za-z0-9_]*$"
+    ),
+    fixed = NULL,
+    ignore.case = TRUE,
+    .var.name = arg_name,
+    add = collected
+  )
+  if(! collected$isEmpty()) {
+    if (standalone){
+      collected %>%
+        cli_message_maker(
+          function_name = as.character(current_call())[[1]]) %>%
+        cli::cli_abort(message)
+    }else{
+      add$push(
+        cli::format_message(
+          paste0(
+            "`{arg_name}` = \"{env_name}\" is not allowed. `{arg_name}`can ",
+            "only contain letters, numbers, or underscores without spaces or ",
+            "symbols. ",ifelse(underscore_allowed_first,"","It must start "),
+            "with a letter. Maximum string length is {max.chars}."
+          )
+        )
+      )
+    }
   }
-  # Check if the name contains any invalid characters
-  if (grepl("[^A-Za-z0-9_]", env_name)) {
-    stop("Short name can only contain letters, numbers, and underscores.")
-  }
-  return(env_name)
+  return(invisible(env_name))
 }
 ul <- function(x) {
   length(unique(x))

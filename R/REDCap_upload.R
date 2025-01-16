@@ -41,7 +41,7 @@ upload_form_to_REDCap <- function(to_be_uploaded, project, batch_size = 500) {
 #' @export
 upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view_old = TRUE, n_row_view = 20) {
   warning("This function is not ready for primetime yet! Use at your own risk!", immediate. = TRUE)
-  project <- validate_project(project)
+  project <- assert_project(project)
   # if(ask){
   #   if(count_project_upload_cells(project)>5000){
   #     choice  <- utils::menu(choices = c("YES - Move forward with larger upload","NO - I want to stop and double check what I'm about to upload"),title = "This is a large upload. Do you want to proceed?")
@@ -97,7 +97,7 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
 #' The `compare` and `to` parameters allow users to specify specific data choices to compare, though their exact usage will depend on how the function is fully implemented.
 #' @export
 find_upload_diff <- function(project, view_old = FALSE, n_row_view = 20) {
-  project <- validate_project(project)
+  project <- assert_project(project)
   new_list <- project$data_update
   old_list <- list()
   if (any(!names(new_list) %in% project$metadata$forms$form_name)) warning("All upload names should ideally match the project form names, `project$metadata$forms$form_name`", immediate. = TRUE)

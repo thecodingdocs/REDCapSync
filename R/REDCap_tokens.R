@@ -20,7 +20,7 @@
 #' @keywords Token Functions
 #' @export
 set_REDCap_token <- function(project, ask = TRUE) {
-  project <- validate_project(project)
+  project <- assert_project(project)
   token_name <- get_REDCap_token_name(project)
   is_a_test <- is_test_project(project)
   answer <- 1
@@ -64,7 +64,7 @@ set_REDCap_token <- function(project, ask = TRUE) {
 #' @keywords Token Functions
 #' @export
 view_REDCap_token <- function(project) {
-  project <- validate_project(project)
+  project <- assert_project(project)
   token <- validate_REDCap_token(project, silent = FALSE)
   bullet_in_console(paste0("Never share your token: ", token), bullet_type = "!")
   return(invisible())
@@ -195,7 +195,7 @@ is_hexadecimal <- function(string, length = NULL) {
 get_REDCap_token_name <- function(project) {
   token_name <- paste0(
     internal_REDCapSync_token_prefix,
-    validate_env_name(project$short_name)
+    assert_env_name(project$short_name)
   )
   if (is_something(project$redcap$token_name)) {
     token_name <- project$redcap$token_name

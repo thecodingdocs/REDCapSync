@@ -10,7 +10,7 @@ assert_dir <- function(dir_path, silent = TRUE) {
   }
   # if ( ! file.exists(file.path(dir_path,"ref_tables"))) stop("'",dir_path,"/ref_tables' missing! ",stop_mes)
   if (!silent) bullet_in_console("Directory is Valid!", url = dir_path, bullet_type = "v")
-  dir_path
+  return(dir_path)
 }
 #' @noRd
 assert_REDCap_token <- function(project, silent = TRUE) {
@@ -247,7 +247,6 @@ assert_setup_project <- function(
     add = collected
   )
   #dirpath
-  assert_logical(project$internals$reset, len = 1,add = collected)
   assert_logical(project$internals$labelled, len = 1,add = collected)
   assert_integerish(project$internals$days_of_log, len = 1, lower = 1,add = collected)
   assert_logical(project$internals$get_files, len = 1,add = collected)
@@ -262,20 +261,12 @@ assert_setup_project <- function(
     add = collected
   )
   assert_logical(project$internals$use_csv, len = 1,add = collected)
-  assert_logical(project$internals$auto_check_token, len = 1,add = collected)
   assert_integerish(project$internals$batch_size_download, len = 1, lower = 1,add = collected)
   assert_integerish(project$internals$batch_size_upload, len = 1, lower = 1,add = collected)
-  assert_logical(project$internals$silent, len = 1,add = collected)
   assert_choice(
     project$internals$get_type,
     choices = c("identified", "deidentified", "strict-deidentified")
   )
-  if(missing(redcap_base)){
-    REDCapSync_REDCAP_BASE <- Sys.getenv("REDCapSync_REDCAP_BASE")
-    if(is_something(REDCapSync_REDCAP_BASE)) {
-      redcap_base <- REDCapSync_REDCAP_BASE
-    }
-  }
   assert_web_link(project$links$redcap_base)#argName #collected
   if(! collected$isEmpty()) {
     if ( ! standalone){

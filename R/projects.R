@@ -69,6 +69,7 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
 internal_blank_project_cols <- c(
   "short_name",
   "dir_path",
+  "sync_frequency",
   "last_save",
   "last_metadata_update",
   "last_data_update",

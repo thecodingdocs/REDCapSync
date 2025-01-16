@@ -43,7 +43,7 @@ sync <- function(use_console = TRUE, hard_reset = FALSE,project_names = NULL) {
       project_row <- which(projects$short_name == project_name)
       last_data_update <- projects$last_data_update
       then <- as.POSIXct(last_data_update, format = "%Y-%m-%d %H:%M:%OS",tz = Sys.timezone())
-      project_status <- "Failed"
+      project_status <- "Not Needed"
       sync_frequency <- projects$sync_frequency
       have_to_check <- sync_frequency %in%c("hourly", "daily", "weekly", "monthly")
       if(have_to_check){ # turn to function
@@ -63,20 +63,18 @@ sync <- function(use_console = TRUE, hard_reset = FALSE,project_names = NULL) {
         do_it <- sync_frequency == "always"
       }
       if(do_it){
-        PROJ <- load_project(short_name = project_name) # failure
+        project_status <- "Failed"
+        PROJ <- load_project(short_name = project_name) # failure tryCatch
         PROJ <- PROJ %>% sync_project(
           set_token_if_fails = use_console,
           save_to_dir = TRUE
           #other params
         )
+        if(PROJ$internals$last_test_connection_outcome){
+          project_status <- "Updated"
+        }
       }else{
         cli::cli_alert_info("No need to update {project_name}: {then} ({sync_frequency})")
-      }
-      if(PROJ$internals$last_test_connection_outcome){
-        project_status <- "Updated"
-        if(PROJ$internals$last_data_update == last_data_update){
-          project_status <- "Not Needed"
-        }
       }
       projects$status[project_row] <- project_status
       cli::cli_progress_update()
@@ -92,7 +90,7 @@ sync <- function(use_console = TRUE, hard_reset = FALSE,project_names = NULL) {
   cli::cli_alert_danger("{failed} REDCaps failed to sync")
   cli::cli_alert_success("{succeeded} REDCaps Updated!")
   cli::cli_alert_success("{not_failed} REDCaps Synced!")
-  print.table(projects[,c("short_name","status")])
+  print.table(projects[,c("short_name","sync_frequency","status")])
   cli::boxx(
     "End REDCapSync",
     padding = 1,

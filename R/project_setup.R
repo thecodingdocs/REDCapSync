@@ -239,7 +239,6 @@ setup_project <- function(
   project$internals$metadata_only <- metadata_only
   project$internals$batch_size_download <- batch_size_download %>% assert_integerish()
   project$internals$batch_size_upload <- batch_size_upload %>% assert_integerish()
-  project$redcap$token_name <- token_name
   project$internals$get_file_repository <- get_file_repository
   if (!is_a_test) {
     project$links$redcap_base <- assert_web_link(redcap_base)

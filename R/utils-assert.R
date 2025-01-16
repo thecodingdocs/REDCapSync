@@ -233,14 +233,14 @@ assert_setup_project <- function(
     add = collected
   )
   assert_env_name(
-    env_name = short_name,
+    env_name = project$short_name,
     max.chars = 31,
     arg_name = "short_name",
     add = collected
   )
   #DIRPATH
   assert_env_name(
-    token_name,
+    project$redcap$token_name,
     max.chars = 50,
     arg_name = "token_name",
     underscore_allowed_first = TRUE,

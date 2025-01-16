@@ -4,7 +4,11 @@
 #' @param project_names character vector of project short_names to check for sync.
 #' Default is NULL which will check every project in cache.
 #' @export
-sync <- function(use_console = TRUE, hard_reset = FALSE,project_names = NULL) {
+sync <- function(
+    use_console = TRUE,
+    hard_reset = FALSE,
+    project_names = NULL
+) {
   collected <- makeAssertCollection()
   assert_logical(use_console, any.missing = FALSE, len = 1, add = collected)
   assert_logical(hard_reset, any.missing = FALSE, len = 1, add = collected)

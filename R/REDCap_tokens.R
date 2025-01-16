@@ -25,7 +25,7 @@ set_REDCap_token <- function(project, ask = TRUE) {
   is_a_test <- is_test_project(project)
   answer <- 1
   if (ask) {
-    token <- validate_REDCap_token(project)
+    token <- assert_REDCap_token(project)
     if (is_valid_REDCap_token(token)) {
       bullet_in_console(paste0("You already have a valid token in your R session (pending test connection) '", token, "'."))
       answer <- utils::menu(choices = c("Yes", "No"), title = "Are you sure you want to set something else?")
@@ -48,7 +48,7 @@ set_REDCap_token <- function(project, ask = TRUE) {
     }
     do.call(Sys.setenv, stats::setNames(list(token), token_name))
   }
-  validate_REDCap_token(project, silent = FALSE)
+  assert_REDCap_token(project, silent = FALSE)
   return(invisible())
 }
 #' @title View the REDCap API Token Stored in the Session
@@ -65,7 +65,7 @@ set_REDCap_token <- function(project, ask = TRUE) {
 #' @export
 view_REDCap_token <- function(project) {
   project <- assert_project(project)
-  token <- validate_REDCap_token(project, silent = FALSE)
+  token <- assert_REDCap_token(project, silent = FALSE)
   bullet_in_console(paste0("Never share your token: ", token), bullet_type = "!")
   return(invisible())
 }
@@ -86,7 +86,7 @@ view_REDCap_token <- function(project) {
 #' @keywords Token Functions
 #' @export
 test_REDCap_token <- function(project, set_if_fails = TRUE, launch_browser = TRUE) {
-  # token <- validate_REDCap_token(project, silent = FALSE)
+  # token <- assert_REDCap_token(project, silent = FALSE)
   version <- get_REDCap_version(project, show_method_help = FALSE) %>%
     suppressWarnings()
   project$internals$last_test_connection_attempt <- Sys.time()
@@ -201,57 +201,6 @@ get_REDCap_token_name <- function(project) {
     token_name <- project$redcap$token_name
   }
   return(token_name)
-}
-#' @noRd
-validate_REDCap_token <- function(project, silent = TRUE) {
-  token_name <- project %>% get_REDCap_token_name()
-  token <- project %>%
-    get_REDCap_token_name() %>%
-    Sys.getenv()
-  is_a_test <- is_test_project(project)
-  valid <- token %>% is_valid_REDCap_token(silent = silent, is_a_test = is_a_test)
-  message_about_token <- ifelse(is_a_test,
-                                get_test_token(project$short_name),
-                                "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
-  )
-  if (!silent) {
-    bullet_in_console(
-      paste0(
-        "You can set REDCap tokens each session with `set_REDCap_token(project)` or `Sys.setenv(",
-        token_name,
-        "='",
-        message_about_token,
-        "')`... or for higher security run `edit_r_environ()` from `usethis` package and add
-        `",
-        token_name,
-        " = '",
-        message_about_token,
-        "'` to that file...(then restart R under session tab after saving file)... The way to tell it worked is to run the
-        code, `Sys.getenv('",
-        token_name,
-        "')`"
-      )
-    )
-    if (is_something(project$links$redcap_API)) {
-      bullet_in_console(
-        paste0(
-          "You can request/regenerate/delete with `link_API_token(project)` or go here: "
-        ),
-        url = project$links$redcap_API
-      )
-    }
-    if (valid) {
-      bullet_in_console(
-        paste0(
-          "Valid token for ",
-          project$short_name,
-          " is set in your R session (pending connection)!"
-        ),
-        bullet_type = "v"
-      )
-    }
-  }
-  return(token)
 }
 #' @noRd
 check_saved_REDCapSync_tokens <- function() {

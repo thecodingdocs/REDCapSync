@@ -10,7 +10,7 @@ upload_file_to_REDCap_file_repository <- function(project, file) {
   response <- httr::POST(
     url = project$links$redcap_uri,
     body = list(
-      "token" = validate_REDCap_token(project),
+      "token" = assert_REDCap_token(project),
       action = "import",
       content = "fileRepository",
       returnFormat = "json",
@@ -31,7 +31,7 @@ get_REDCap_file_repository <- function(project) {
   response <- httr::POST(
     url = project$links$redcap_uri,
     body = list(
-      "token" = validate_REDCap_token(project),
+      "token" = assert_REDCap_token(project),
       content = "fileRepository",
       action = "list",
       format = "csv",
@@ -54,7 +54,7 @@ add_REDCap_folder <- function(project, name) {
   response <- httr::POST(
     url = project$links$redcap_uri,
     body = list(
-      "token" = validate_REDCap_token(project),
+      "token" = assert_REDCap_token(project),
       content = "fileRepository",
       action = "createFolder",
       format = "csv",
@@ -77,7 +77,7 @@ delete_REDCap_file <- function(project, doc_id) {
   response <- httr::POST(
     url = project$links$redcap_uri,
     body = list(
-      "token" = validate_REDCap_token(project),
+      "token" = assert_REDCap_token(project),
       content = "fileRepository",
       action = "delete",
       doc_id = doc_id,
@@ -109,7 +109,7 @@ upload_file_to_REDCap <- function(project, file, record, field, repeat_instance 
   file <- sanitize_path(file)
   if (!file.exists(file)) stop("File does not exist! --> ", file)
   body <- list(
-    "token" = validate_REDCap_token(project),
+    "token" = assert_REDCap_token(project),
     action = "import",
     content = "file",
     record = record,
@@ -153,7 +153,7 @@ upload_file_to_REDCap <- function(project, file, record, field, repeat_instance 
 delete_file_from_REDCap <- function(project, record, field, repeat_instance = NULL, event = NULL) {
   # project <- assert_project(project)
   body <- list(
-    "token" = validate_REDCap_token(project),
+    "token" = assert_REDCap_token(project),
     action = "delete",
     content = "file",
     record = record,

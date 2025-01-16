@@ -47,7 +47,7 @@ process_redcap_response <- function(response, error_action = "warn", method, sho
 run_redcap_api_method <- function(project, url, token, method, error_action = "warn", additional_args = NULL, only_get = FALSE, show_method_help = TRUE) {
   if (!missing(project)) {
     url <- project$links$redcap_uri
-    token <- validate_REDCap_token(project)
+    token <- assert_REDCap_token(project)
   }
   allowed_methods <- REDCap_API$methods$method_short_name %>% sort()
   if (only_get) {
@@ -76,7 +76,7 @@ get_REDCap_method <- function(project, method, error_action = "warn", additional
   return(
     run_redcap_api_method(
       url = project$links$redcap_uri,
-      token = validate_REDCap_token(project),
+      token = assert_REDCap_token(project),
       method = method,
       additional_args = additional_args,
       error_action = error_action,
@@ -290,7 +290,7 @@ get_REDCap_files <- function(project, original_file_names = FALSE, overwrite = F
         if (!file.exists(file.path(out_dir_folder, file_name)) || overwrite) {
           REDCapR::redcap_file_download_oneshot(
             redcap_uri = project$links$redcap_uri,
-            token = validate_REDCap_token(project),
+            token = assert_REDCap_token(project),
             field = field_name,
             record = form[[project$redcap$id_col]][i],
             directory = out_dir_folder,
@@ -355,7 +355,7 @@ get_REDCap_log <- function(project, last = 24, user = "", units = "hours", begin
 get_REDCap_raw_data <- function(project, labelled = FALSE, records = NULL, batch_size = 1000) {
   raw <- REDCapR::redcap_read(
     redcap_uri = project$links$redcap_uri,
-    token = validate_REDCap_token(project),
+    token = assert_REDCap_token(project),
     # forms = forms,
     # events = events,
     batch_size = batch_size,
@@ -385,7 +385,7 @@ delete_REDCap_records <- function(project, records) {
     httr::POST(
       url = project$links$redcap_uri,
       body = list(
-        "token" = validate_REDCap_token(project),
+        "token" = assert_REDCap_token(project),
         content = "record",
         action = "delete",
         `records[0]` = record,

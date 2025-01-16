@@ -45,7 +45,7 @@ get_projects <- function() {
 check_folder_for_projects <- function(file_path, validate = TRUE) {
   check_path <- file_path
   if (validate) {
-    file_path <- validate_dir(file_path)
+    file_path <- assert_dir(file_path)
     check_path <- file.path(file_path, "R_objects")
   }
   files <- list.files.real(check_path, full.names = TRUE, recursive = TRUE)

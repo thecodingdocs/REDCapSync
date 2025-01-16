@@ -132,7 +132,7 @@ setup_project <- function(
   if(missing(redcap_base)){
     REDCapSync_REDCAP_BASE <- Sys.getenv("REDCapSync_REDCAP_BASE")
     if(is_something(REDCapSync_REDCAP_BASE)) {
-      redcap_base <- validate_web_link(REDCapSync_REDCAP_BASE)
+      redcap_base <- assert_web_link(REDCapSync_REDCAP_BASE)
     }
   }
   em <- "`short_name` must be character string of length 1"
@@ -227,7 +227,7 @@ setup_project <- function(
   project$redcap$token_name <- token_name
   project$internals$get_file_repository <- get_file_repository
   if (!is_a_test) {
-    project$links$redcap_base <- validate_web_link(redcap_base)
+    project$links$redcap_base <- assert_web_link(redcap_base)
     project$links$redcap_uri <- project$links$redcap_base %>% paste0("api/")
   } else {
     bullet_in_console(
@@ -241,7 +241,7 @@ setup_project <- function(
   project$data <- project$data %>% all_character_cols_list()
   bullet_in_console(paste0("Token name: '", token_name, "'"))
   if (auto_check_token) {
-    if (!is_valid_REDCap_token(validate_REDCap_token(project), is_a_test = is_a_test)) {
+    if (!is_valid_REDCap_token(assert_REDCap_token(project), is_a_test = is_a_test)) {
       set_REDCap_token(project, ask = FALSE)
     }
   }
@@ -358,7 +358,7 @@ save_project <- function(project,silent = FALSE) {
 delete_project <- function(project) {
   project <- assert_project(project)
   dir_path <- project$dir_path
-  dir_path <- validate_dir(dir_path, silent = FALSE)
+  dir_path <- assert_dir(dir_path, silent = FALSE)
   delete_this <- file.path(dir_path, "R_objects", paste0(project$short_name, "_REDCapSync.RData"))
   if (file.exists(delete_this)) {
     unlink(delete_this)
@@ -378,7 +378,7 @@ get_dir <- function(project) {
     bullet_in_console("Searched for directory --> '", file = dir_path, bullet_type = "x")
     stop(paste0("Does not exist. ", stop_mes))
   }
-  return(validate_dir(dir_path, silent = TRUE))
+  return(assert_dir(dir_path, silent = TRUE))
 }
 #' @title nav_to_dir
 #' @inheritParams save_project
@@ -386,113 +386,6 @@ get_dir <- function(project) {
 #' @export
 nav_to_dir <- function(project) {
   utils::browseURL(project$dir_path)
-}
-assert_collection <- function(collection){
-  assert_list(collection, any.missing = FALSE, len = 3, names = "unique")
-  assert_names(names(collection), identical.to = names(makeAssertCollection()))
-  return(invisible(collection))
-}
-#' @noRd
-cli_message_maker <- function(collected, function_name, info, internal = TRUE) {
-  assert_collection(collected)
-  assert_character(function_name, any.missing = FALSE, len = 1)
-  assert_logical(internal, any.missing = FALSE, len = 1)
-  if (internal) {
-    message <- c("i" = "This is an internal function. Something is very wrong!")
-  } else {
-    pkg_separator <- ifelse(internal, ":::", "::")
-    pkg_ref <- paste0("{.fun REDCapSync", pkg_separator, function_name, "}")
-    message <- c("i" = paste0("See ", pkg_ref, " or github page for help."))
-  }
-  if (!missing(info)) {
-    assert_character(info, min.len = 1)
-    names(info) <- rep_len("i", length.out = length(info))
-    message <- message %>% append(info)
-  }
-  mistakes <- collected$getMessages()
-  names(mistakes) <- rep_len(">", length.out = length(mistakes))
-  message <- message %>% append(mistakes)
-  return(message)
-}
-#' @noRd
-is_exported <- function(func_name) {
-  # # Check if the package namespace is loaded
-  #
-  # # Get the namespace environment for the package
-  # ns_env <- asNamespace("REDCapSync")
-  # "setup_project" %in% getNamespaceExports(ns_env)
-  # RosyDev::get_external_functions()
-  # getNamespaceImports()
-}
-#' @noRd
-assert_project <- function(
-    project,
-    silent = TRUE,
-    warn_only = FALSE,
-    add = NULL
-) {
-  standalone <- is.null(add)
-  if ( ! standalone) {
-    assert_collection(add)
-  }
-  collected <- makeAssertCollection()
-  assert_logical(silent, any.missing = FALSE, len = 1, add = collected)
-  assert_logical(warn_only, any.missing = FALSE, len = 1, add = collected)
-  current_function <- as.character(current_call())[[1]]
-  if( ! collected$isEmpty()){
-    message <- collected %>% cli_message_maker(function_name = current_function)
-    cli::cli_abort(message)
-  }
-  collected <- makeAssertCollection()
-  assert_list(
-    project,
-    names = "unique",
-    len = length(internal_blank_project),
-    add = collected
-  )
-  assert_names(
-    names(internal_blank_project),
-    type = "unique",
-    identical.to = names(internal_blank_project),
-    add = collected
-  )
-  assert_env_name(project$short_name,add = collected)
-  assert_logical(project$internals$reset, len = 1,add = collected)
-  assert_logical(project$internals$labelled, len = 1,add = collected)
-  assert_integerish(project$internals$days_of_log, len = 1, lower = 1,add = collected)
-  assert_logical(project$internals$get_files, len = 1,add = collected)
-  assert_logical(project$internals$get_file_repository, len = 1,add = collected)
-  assert_logical(project$internals$original_file_names, len = 1,add = collected)
-  assert_logical(project$internals$entire_log, len = 1,add = collected)
-  assert_logical(project$internals$metadata_only, len = 1,add = collected)
-  assert_env_name(
-    project$internals$merge_form_name,
-    max.chars = 31,
-    arg_name = "merge_form_name",
-    add = collected
-  )
-  assert_logical(project$internals$use_csv, len = 1,add = collected)
-  assert_logical(project$internals$auto_check_token, len = 1,add = collected)
-  assert_integerish(project$internals$batch_size_download, len = 1, lower = 1,add = collected)
-  assert_integerish(project$internals$batch_size_upload, len = 1, lower = 1,add = collected)
-  assert_logical(project$internals$silent, len = 1,add = collected)
-  if(! collected$isEmpty()) {
-    if (standalone){
-      collected %>%
-        cli_message_maker(function_name = current_function) %>%
-        cli::cli_abort(message)
-    }else{
-      add$push(
-        cli::format_message(
-          paste0(
-            "Did you use {.fun REDCapSync::setup_project}? ",
-            "Consider using `reset = TRUE`."
-          )
-        )
-      )
-    }
-  }
-  return(invisible(project))
 }
 #' @noRd
 internal_allowed_test_short_names <- c("TEST_classic", "TEST_repeating", "TEST_longitudinal", "TEST_multiarm")
@@ -603,12 +496,12 @@ set_dir <- function(dir_path) {
       dir.create(file.path(dir_path, folder), showWarnings = FALSE)
     }
   }
-  return(validate_dir(dir_path, silent = FALSE))
+  return(assert_dir(dir_path, silent = FALSE))
 }
 #' @noRd
 internal_dir_folders <- c("R_objects", "output", "scripts", "input", "REDCap")
 #' @noRd
-validate_dir <- function(dir_path, silent = TRUE) {
+assert_dir <- function(dir_path, silent = TRUE) {
   # param check
   dir_path <- clean_dir_path(dir_path)
   if (!file.exists(dir_path)) stop("dir_path does not exist")

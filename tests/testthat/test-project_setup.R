@@ -27,7 +27,9 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_no_error(assert_web_link("https://redcap.miami.edu"))
   expect_no_error(assert_web_link("https://redcap.edu"))
   #test db
-  expect_error(assert_blank_project(internal_blank_project))
+  expect_no_error(assert_blank_project(internal_blank_project))
+  expect_error(assert_setup_project(internal_blank_project))
+  expect_error(assert_blank_project(internal_blank_project[[-1]]))
   expect_error(assert_blank_project(1))
   expect_error(assert_blank_project(data.frame()))
   expect_error(get_dir(project))

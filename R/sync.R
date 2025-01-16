@@ -44,10 +44,8 @@ sync <- function(
     project_names_length <- length(project_names)
     cli::cli_progress_bar("Syncing REDCaps ...", total = project_names_length)
     projects$status <- NA
-    not_needed <- 0
-    failed <- 0
-    succeeded <- 0
     for(project_name in project_names){
+      project_row <- which(projects$short_name == project_name)
       do_it <- due_for_sync(project_name)
       if(do_it){
         project_status <- "Failed"
@@ -99,7 +97,6 @@ due_for_sync<- function (project_name) {
     return(TRUE)
   }
   then <- as.POSIXct(last_data_update, format = "%Y-%m-%d %H:%M:%OS",tz = Sys.timezone())
-  project_status <- "Not Needed"
   sync_frequency <- projects$sync_frequency[project_row]
   if(sync_frequency == "always"){
     return(TRUE)
@@ -120,6 +117,63 @@ due_for_sync<- function (project_name) {
     }
   }
   return(do_it)
+}
+due_for_sync2 <- function(){
+  now <- Sys.time()
+  projects <- get_projects()
+  if(nrow(projects)==0){
+    return(NULL)
+  }
+  project_names <- projects$short_name
+  # Early escapes ----
+  checkmate::assert_data_frame(projects, min.rows = 1)
+  assert_names(projects$short_name, must.include = project_names)
+  # Prepare results
+  results <- logical(length(project_names))
+
+  results_check <- which(
+    !is.na(projects$last_data_update) |
+      ! projects$sync_frequency %in% c("always","never")
+  )
+  results_no_check_true <- which(
+    is.na(projects$last_data_update) |
+                                   is.na(projects$sync_frequency) |
+                                   projects$sync_frequency == "always"
+                                 )
+  results_no_check_true <- which(projects$sync_frequency == "never")
+    #
+    # for (i in seq_along(project_names)) {
+    #   project_name <- project_names[i]
+    #   project_row <- which(projects$short_name == project_name)
+    #   last_data_update <- projects$last_data_update[project_row]
+    #   if (is.na(last_data_update)) {
+    #     results[i] <- TRUE
+    #     next
+    #   }
+    #   then <- as.POSIXct(last_data_update, format = "%Y-%m-%d %H:%M:%OS", tz = Sys.timezone())
+    #   sync_frequency <- projects$sync_frequency[project_row]
+    #
+    #   if (sync_frequency == "always") {
+    #     results[i] <- TRUE
+    #     next
+    #   }
+    #
+    #   if (sync_frequency %in% c("hourly", "daily", "weekly", "monthly")) {
+    #     if (sync_frequency == "hourly") {
+    #       results[i] <- now >= (then + lubridate::dhours(1))
+    #     } else if (sync_frequency == "daily") {
+    #       results[i] <- now >= (then + lubridate::ddays(1))
+    #     } else if (sync_frequency == "weekly") {
+    #       results[i] <- now >= (then + lubridate::dweeks(1))
+    #     } else if (sync_frequency == "monthly") {
+    #       results[i] <- now >= (then + lubridate::dmonths(1))
+    #     }
+    #   } else {
+    #     results[i] <- FALSE
+    #   }
+    # }
+    #
+  return(results)
 }
 #' @title project_health_check
 #' @description

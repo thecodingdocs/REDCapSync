@@ -91,6 +91,31 @@ internal_blank_project_cols <- c(
   # "test_project",
   # "test_RC"
 )
+internal_blank_project_details <- c(
+  "short_name",
+  "dir_path",
+  "sync_frequency",
+  "last_save",
+  "last_metadata_update",
+  "last_data_update",
+  "version",
+  "token_name",
+  "project_id",
+  "project_title",
+  "id_col",
+  "is_longitudinal",
+  "has_repeating_forms_or_events",
+  "has_multiple_arms",
+  "R_object_size",
+  "file_size",
+  "n_records",
+  "redcap_base",
+  "redcap_home",
+  "redcap_API_playground"
+  # "test_dir"
+  # "test_project",
+  # "test_RC"
+)
 #' @noRd
 blank_project <- function() {
   x <- matrix(data = character(0), ncol = length(internal_blank_project_cols)) %>% as.data.frame()

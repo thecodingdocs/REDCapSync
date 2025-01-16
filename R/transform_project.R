@@ -1,6 +1,9 @@
 #' @title Horizontal Transform
 #' @description
-#' This function performs a horizontal transformation on the data in the `project` object, transforming the data format so that each record is represented in a horizontal layout. It is useful when you want to reshape or pivot the data for further analysis or presentation.
+#' This function performs a horizontal transformation on the data in the
+#' `project` object, transforming the data format so that each record is
+#' represented in a horizontal layout. It is useful when you want to reshape
+#' or pivot the data for further analysis or presentation.
 #'
 #' @inheritParams save_project
 #' @param records A vector of records to be transformed. The transformation applies only to the specified records from the `project` object.

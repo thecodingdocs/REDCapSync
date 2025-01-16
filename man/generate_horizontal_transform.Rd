@@ -16,7 +16,10 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 A transformed version of the \code{project} object, where the data is rearranged horizontally, typically in a format where columns represent different variables or field values for each record.
 }
 \description{
-This function performs a horizontal transformation on the data in the \code{project} object, transforming the data format so that each record is represented in a horizontal layout. It is useful when you want to reshape or pivot the data for further analysis or presentation.
+This function performs a horizontal transformation on the data in the
+\code{project} object, transforming the data format so that each record is
+represented in a horizontal layout. It is useful when you want to reshape
+or pivot the data for further analysis or presentation.
 }
 \details{
 The function begins by validating the \code{project} object and checking that the records to be transformed exist. It then reshapes the data from a vertical to a horizontal format, allowing for easier access and analysis, especially when dealing with wide datasets.

@@ -135,7 +135,7 @@ extract_project_details <- function(project) {
     R_object_size = NA,
     file_size = NA,
     deidentified = NA,
-    seq_frequency =  project$internals$seq_frequency,
+    sync_frequency =  project$internals$sync_frequency,
     redcap_base = project$links$redcap_base,
     redcap_home = project$links$redcap_home,
     redcap_API_playground = project$links$redcap_API_playground

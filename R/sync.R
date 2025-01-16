@@ -1,10 +1,20 @@
 #' @title Syncronize your REDCaps
-#' @param interactive Whether or not to use console to guide through sync vs just running
+#' @param use_console Whether or not to use console to guide through sync vs just running
 #' @param hard_reset Will go get all projects from scratch if TRUE.
+#' @param project_names character vector of project short_names to check for sync.
+#' Default is NULL which will check every project in cache.
 #' @export
 sync <- function(use_console = TRUE, hard_reset = FALSE,project_names = NULL) {
+  collected <- makeAssertCollection()
+  assert_logical(use_console, any.missing = FALSE, len = 1, add = collected)
+  assert_logical(hard_reset, any.missing = FALSE, len = 1, add = collected)
+  assert_character(hard_reset, any.missing = FALSE, add = collected)
+  current_function <- as.character(current_call())[[1]]
+  if( ! collected$isEmpty()){
+    message <- collected %>% cli_message_maker(function_name = current_function)
+    cli::cli_abort(message)
+  }
   #interactive TRUE FALSE
-  assert_logical(interactive, len = )
   projects <- get_projects()
   if(!is_something(projects)){
     # setup_project if interactive
@@ -15,6 +25,7 @@ sync <- function(use_console = TRUE, hard_reset = FALSE,project_names = NULL) {
     if(is.null(project_names)) {
       project_names <- projects$short_name
     }
+    # assert_choice(project_names) #placeholder
     project_names_length <- length(project_names)
     cli::cli_progress_bar("Syncing REDCaps ...", total = project_names_length)
     projects$status <- NA

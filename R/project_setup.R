@@ -478,7 +478,8 @@ internal_blank_project <- list(
     ever_connected = FALSE,
     is_transformed = FALSE,
     is_clean = FALSE,
-    use_csv = FALSE
+    use_csv = FALSE,
+    sync_freq = NULL
   ),
   links = list(
     redcap_base = NULL,

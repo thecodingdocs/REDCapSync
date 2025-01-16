@@ -47,30 +47,8 @@ sync <- function(
     not_needed <- 0
     failed <- 0
     succeeded <- 0
-    now <- Sys.time()
     for(project_name in project_names){
-      project_row <- which(projects$short_name == project_name)
-      last_data_update <- projects$last_data_update[project_row]
-      then <- as.POSIXct(last_data_update, format = "%Y-%m-%d %H:%M:%OS",tz = Sys.timezone())
-      project_status <- "Not Needed"
-      sync_frequency <- projects$sync_frequency[project_row]
-      have_to_check <- sync_frequency %in%c("hourly", "daily", "weekly", "monthly")
-      if(have_to_check){ # turn to function
-        if(sync_frequency == "hourly"){
-          do_it <- now >= (then + lubridate::dhours(1))
-        }
-        if(sync_frequency == "daily"){
-          do_it <- now >= (then + lubridate::ddays(1))
-        }
-        if(sync_frequency == "weekly"){
-          do_it <- now >= (then + lubridate::dweeks(1))
-        }
-        if(sync_frequency == "monthly"){
-          do_it <- now >= (then + lubridate::dmonths(1))
-        }
-      }else{
-        do_it <- sync_frequency == "always"
-      }
+      do_it <- due_for_sync(project_name)
       if(do_it){
         project_status <- "Failed"
         PROJ <- load_project(short_name = project_name) # failure tryCatch
@@ -107,6 +85,41 @@ sync <- function(
     float = "center"
   )
   return(invisible())
+}
+due_for_sync<- function (project_name) {
+  now <- Sys.time()
+  projects <- get_projects()
+  #early escapes ----
+  checkmate::assert_data_frame(projects,min.rows = 1)
+  assert_names(projects$short_name, must.include = project_name)
+  #-----
+  project_row <- which(projects$short_name == project_name)
+  last_data_update <- projects$last_data_update[project_row]
+  if(is.na(last_data_update)){
+    return(TRUE)
+  }
+  then <- as.POSIXct(last_data_update, format = "%Y-%m-%d %H:%M:%OS",tz = Sys.timezone())
+  project_status <- "Not Needed"
+  sync_frequency <- projects$sync_frequency[project_row]
+  if(sync_frequency == "always"){
+    return(TRUE)
+  }
+  have_to_check <- sync_frequency %in%c("hourly", "daily", "weekly", "monthly")
+  if(have_to_check){ # turn to function
+    if(sync_frequency == "hourly"){
+      do_it <- now >= (then + lubridate::dhours(1))
+    }
+    if(sync_frequency == "daily"){
+      do_it <- now >= (then + lubridate::ddays(1))
+    }
+    if(sync_frequency == "weekly"){
+      do_it <- now >= (then + lubridate::dweeks(1))
+    }
+    if(sync_frequency == "monthly"){
+      do_it <- now >= (then + lubridate::dmonths(1))
+    }
+  }
+  return(do_it)
 }
 #' @title project_health_check
 #' @description

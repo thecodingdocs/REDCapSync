@@ -33,10 +33,37 @@ sync_project <- function(
     records = NULL,
     silent = FALSE
 ) {
+  collected <- makeAssertCollection()
+  assert_blank_project(project)
+  assert_logical(
+    set_token_if_fails,
+    any.missing = FALSE,
+    len = 1,
+    add = collected
+  )
+  assert_logical(reset, any.missing = FALSE, len = 1, add = collected)
+  assert_logical(
+    ask_about_overwrites,
+    any.missing = FALSE,
+    len = 1,
+    add = collected
+  )
+  #records more complicated assertion
+  assert_logical(save_to_dir, any.missing = FALSE, len = 1, add = collected)
+  assert_logical(silent, any.missing = FALSE, len = 1, add = collected)
+  current_function <- as.character(current_call())[[1]]
+  if( ! collected$isEmpty()){
+    message <- collected %>% cli_message_maker(function_name = current_function)
+    cli::cli_abort(message)
+  }
+  do_it <- due_for_sync(project_name = project$short_name)
+  if( ! do_it){
+    cli::cli_alert_info("{project$short_name} not due for sync ({project$internals$sync_frequency})")
+    return(project)
+  }
   IDs <- NULL
   will_update <- TRUE
   was_updated <- FALSE
-  project <- assert_blank_project(project)
   if (is_something(records)) {
     bullet_in_console("Presently, if you supply specified records it will only check REDCap updates for those records.")
   }

@@ -57,16 +57,16 @@ sync <- function(
       have_to_check <- sync_frequency %in%c("hourly", "daily", "weekly", "monthly")
       if(have_to_check){ # turn to function
         if(sync_frequency == "hourly"){
-          do_it <- now >= (then + lubridate::hours(1))
+          do_it <- now >= (then + lubridate::dhours(1))
         }
         if(sync_frequency == "daily"){
-          do_it <- now >= (then + lubridate::days(1))
+          do_it <- now >= (then + lubridate::ddays(1))
         }
         if(sync_frequency == "weekly"){
-          do_it <- now >= (then + lubridate::weeks(1))
+          do_it <- now >= (then + lubridate::dweeks(1))
         }
         if(sync_frequency == "monthly"){
-          do_it <- now >= (then + lubridate::months(1))
+          do_it <- now >= (then + lubridate::dmonths(1))
         }
       }else{
         do_it <- sync_frequency == "always"

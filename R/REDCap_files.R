@@ -4,7 +4,7 @@
 #' @return messages for confirmation
 #' @export
 upload_file_to_REDCap_file_repository <- function(project, file) {
-  project <- assert_project(project)
+  project <- assert_blank_project(project)
   file <- sanitize_path(file)
   if (!file.exists(file)) stop("File does not exist! --> ", file)
   response <- httr::POST(
@@ -27,7 +27,7 @@ upload_file_to_REDCap_file_repository <- function(project, file) {
 #' @keywords internal
 #' @noRd
 get_REDCap_file_repository <- function(project) {
-  project <- assert_project(project)
+  project <- assert_blank_project(project)
   response <- httr::POST(
     url = project$links$redcap_uri,
     body = list(
@@ -50,7 +50,7 @@ get_REDCap_file_repository <- function(project) {
 #' @return messages for confirmation
 #' @export
 add_REDCap_folder <- function(project, name) {
-  project <- assert_project(project)
+  project <- assert_blank_project(project)
   response <- httr::POST(
     url = project$links$redcap_uri,
     body = list(
@@ -105,7 +105,7 @@ delete_REDCap_file <- function(project, doc_id) {
 #' This function uploads a specified file to a particular record and field in a REDCap project using the REDCap API. The file is uploaded as multipart data, and the function will automatically handle file existence checks. If provided, the `event` and `repeat_instance` parameters will be used to specify the precise location for the upload.
 #' @export
 upload_file_to_REDCap <- function(project, file, record, field, repeat_instance = NULL, event = NULL) {
-  # project <- assert_project(project)
+  # project <- assert_blank_project(project)
   file <- sanitize_path(file)
   if (!file.exists(file)) stop("File does not exist! --> ", file)
   body <- list(
@@ -151,7 +151,7 @@ upload_file_to_REDCap <- function(project, file, record, field, repeat_instance 
 #' \code{\link{save_project}} for managing database objects.
 #' @export
 delete_file_from_REDCap <- function(project, record, field, repeat_instance = NULL, event = NULL) {
-  # project <- assert_project(project)
+  # project <- assert_blank_project(project)
   body <- list(
     "token" = assert_REDCap_token(project),
     action = "delete",

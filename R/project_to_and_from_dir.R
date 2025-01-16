@@ -37,7 +37,7 @@ drop_REDCap_to_directory <- function(
     str_trunc_length = 32000,
     file_name,
     dir_other) {
-  project <- assert_project(project)
+  project <- assert_blank_project(project)
   if (deidentify) {
     project <- deidentify_project(project) # will not drop free text
   }
@@ -196,7 +196,7 @@ drop_REDCap_to_directory <- function(
 #' @return messages for confirmation
 #' @export
 read_from_REDCap_upload <- function(project, allow_all = TRUE, drop_nonredcap_vars = TRUE, drop_non_form_vars = TRUE, stop_or_warn = "warn") {
-  project <- assert_project(project)
+  project <- assert_blank_project(project)
   root_dir <- get_dir(project)
   # output_dir <- file.path(root_dir, "output")
   redcap_dir <- file.path(root_dir, "REDCap", project$short_name)

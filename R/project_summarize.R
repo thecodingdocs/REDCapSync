@@ -569,7 +569,7 @@ summarize_project <- function(
     include_log = TRUE,
     separate = FALSE,
     reset = FALSE) {
-  project <- project %>% assert_project()
+  project <- project %>% assert_blank_project()
   original_data <- project$data
   do_it <- is.null(project$internals$last_summary)
   last_data_update <- project$internals$last_data_update
@@ -629,7 +629,7 @@ summarize_project <- function(
 #' @return project object
 #' @export
 run_quality_checks <- function(project) {
-  project <- assert_project(project)
+  project <- assert_blank_project(project)
   if (is_something(project$quality_checks)) {
     for (qual_check in names(project$quality_checks)) {
       the_function <- project$quality_checks[[qual_check]]
@@ -981,7 +981,7 @@ raw_to_labelled_form <- function(FORM, project) {
 }
 #' @noRd
 stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
-  project <- assert_project(project)
+  project <- assert_blank_project(project)
   fields <- project$metadata$fields
   if (!all(vars %in% fields$field_name)) stop("all vars must be in metadata.")
   the_stack <- NULL
@@ -1175,7 +1175,7 @@ filter_fields_from_form <- function(FORM, project) {
 }
 #' @noRd
 labelled_to_raw_project <- function(project) {
-  project <- assert_project(project)
+  project <- assert_blank_project(project)
   if (!project$internals$labelled) stop("project is already raw/coded (not labelled values)")
   for (TABLE in names(project$data)) {
     project$data[[TABLE]] <- labelled_to_raw_form(FORM = project$data[[TABLE]], project = project)

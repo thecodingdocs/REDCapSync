@@ -53,7 +53,7 @@ add_ID_to_DF <- function(DF, project, ref_id) {
 #'
 #' @export
 deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
-  project <- assert_project(project)
+  project <- assert_blank_project(project)
   missing_identifiers <- missing(identifiers)
   if (!missing_identifiers) {
     identifiers <- identifiers %>% unique()

@@ -100,44 +100,57 @@ setup_project <- function(
     batch_size_upload = 500,
     silent = FALSE
 ) {
-  project$short_name <- assert_env_name(
+  collected <- makeAssertCollection()
+  assert_env_name(
     env_name = short_name,
     max.chars = 31,
-    arg_name = "short_name"
+    arg_name = "short_name",
+    add = collected
   )
-  assert_character(
+  #DIRPATH
+  assert_env_name(
+    env_name = token_name,
+    max.chars = 50,
+    arg_name = "token_name",
+    underscore_allowed_first = TRUE,
+    add = collected
+  )
+  assert_logical(reset, len = 1,add = collected)
+  assert_logical(labelled, len = 1,add = collected)
+  assert_integerish(days_of_log, len = 1, lower = 1,add = collected)
+  assert_logical(get_files, len = 1,add = collected)
+  assert_logical(get_file_repository, len = 1,add = collected)
+  assert_logical(original_file_names, len = 1,add = collected)
+  assert_logical(entire_log, len = 1,add = collected)
+  assert_logical(metadata_only, len = 1,add = collected)
+  assert_env_name(
     merge_form_name,
-    len = 1,
-    min.chars = 1,
-    .var.name = "merge_form_name"
+    max.chars = 31,
+    arg_name = "merge_form_name",
+    add = collected
   )
+  assert_logical(use_csv, len = 1,add = collected)
   assert_choice(
     get_type,
-    choices = c("identified", "deidentified", "strict-deidentified")
+    choices = c("identified", "deidentified", "strict-deidentified"),
+    add = collected
   )
-  assert_logical(reset, len = 1)
-  assert_logical(labelled, len = 1)
-  assert_integerish(days_of_log, len = 1, lower = 1)
-  assert_logical(get_files, len = 1)
-  assert_logical(get_file_repository, len = 1)
-  assert_logical(original_file_names, len = 1)
-  assert_logical(entire_log, len = 1)
-  assert_logical(metadata_only, len = 1)
-  assert_env_name(merge_form_name,arg_name = "merge_form_name")
-  assert_logical(use_csv, len = 1)
-  assert_logical(auto_check_token, len = 1)
-  assert_integerish(batch_size_download, len = 1, lower = 1)
-  assert_integerish(batch_size_upload, len = 1, lower = 1)
-  assert_logical(silent, len = 1)
+  assert_logical(auto_check_token, len = 1,add = collected)
+  assert_integerish(batch_size_download, len = 1, lower = 1,add = collected)
+  assert_integerish(batch_size_upload, len = 1, lower = 1,add = collected)
+  assert_logical(silent, len = 1,add = collected)
   if(missing(redcap_base)){
     REDCapSync_REDCAP_BASE <- Sys.getenv("REDCapSync_REDCAP_BASE")
     if(is_something(REDCapSync_REDCAP_BASE)) {
-      redcap_base <- assert_web_link(REDCapSync_REDCAP_BASE)
+      redcap_base <- REDCapSync_REDCAP_BASE
     }
   }
-  em <- "`short_name` must be character string of length 1"
-  if (!is.character(short_name)) stop(em)
-  if (length(short_name) != 1) stop(em)
+  current_function <- as.character(current_call())[[1]]
+  if( ! collected$isEmpty()){
+    message <- collected %>% cli_message_maker(function_name = current_function)
+    cli::cli_abort(message)
+  }
+  # start function ----
   projects <- get_projects() # add short_name conflict check id-base url differs
   short_name <- assert_env_name(short_name)
   if (paste0(internal_REDCapSync_token_prefix, short_name) != token_name) {
@@ -221,6 +234,7 @@ setup_project <- function(
   project$internals$entire_log <- entire_log
   project$internals$days_of_log <- days_of_log
   project$internals$get_files <- get_files
+  project$internals$get_type <- get_type
   project$internals$metadata_only <- metadata_only
   project$internals$batch_size_download <- batch_size_download %>% assert_integerish()
   project$internals$batch_size_upload <- batch_size_upload %>% assert_integerish()
@@ -245,7 +259,7 @@ setup_project <- function(
       set_REDCap_token(project, ask = FALSE)
     }
   }
-  project <- assert_project(project, silent = silent)
+  project <- assert_setup_project(project, silent = silent)
   return(project)
 }
 #' @rdname setup-load
@@ -269,7 +283,7 @@ load_project_from_path <- function(project_path, validate = TRUE) {
   project <- readRDS(file = project_path)
   # if failed through message like unlink to project_path
   if (validate) {
-    project <- project %>% assert_project(silent = FALSE)
+    project <- project %>% assert_blank_project(silent = FALSE)
   }
   return(project)
 }
@@ -319,7 +333,7 @@ is_test_project <- function(project) {
 #' @family project object
 #' @export
 save_project <- function(project,silent = FALSE) {
-  project <- project %>% assert_project()
+  project <- project %>% assert_blank_project()
   if (!project$internals$ever_connected) {
     bullet_in_console(
       paste0(
@@ -356,7 +370,7 @@ save_project <- function(project,silent = FALSE) {
 #' @rdname save-deleteproject
 #' @export
 delete_project <- function(project) {
-  project <- assert_project(project)
+  project <- assert_blank_project(project)
   dir_path <- project$dir_path
   dir_path <- assert_dir(dir_path, silent = FALSE)
   delete_this <- file.path(dir_path, "R_objects", paste0(project$short_name, "_REDCapSync.RData"))
@@ -500,20 +514,6 @@ set_dir <- function(dir_path) {
 }
 #' @noRd
 internal_dir_folders <- c("R_objects", "output", "scripts", "input", "REDCap")
-#' @noRd
-assert_dir <- function(dir_path, silent = TRUE) {
-  # param check
-  dir_path <- clean_dir_path(dir_path)
-  if (!file.exists(dir_path)) stop("dir_path does not exist")
-  if (!is.logical(silent)) stop("silent parameter must be TRUE/FALSE")
-  stop_mes <- "Did you use `setup_project()`?"
-  for (folder in internal_dir_folders) {
-    if (!file.exists(file.path(dir_path, folder))) stop("'", dir_path, "/", folder, "' missing! ", stop_mes)
-  }
-  # if ( ! file.exists(file.path(dir_path,"ref_tables"))) stop("'",dir_path,"/ref_tables' missing! ",stop_mes)
-  if (!silent) bullet_in_console("Directory is Valid!", url = dir_path, bullet_type = "v")
-  dir_path
-}
 #' @noRd
 clean_dir_path <- function(dir_path) {
   if (!is.character(dir_path)) stop("dir must be a character string")

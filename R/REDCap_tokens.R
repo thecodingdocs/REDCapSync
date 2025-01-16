@@ -20,7 +20,7 @@
 #' @keywords Token Functions
 #' @export
 set_REDCap_token <- function(project, ask = TRUE) {
-  project <- assert_project(project)
+  project <- assert_blank_project(project)
   token_name <- get_REDCap_token_name(project)
   is_a_test <- is_test_project(project)
   answer <- 1
@@ -64,7 +64,7 @@ set_REDCap_token <- function(project, ask = TRUE) {
 #' @keywords Token Functions
 #' @export
 view_REDCap_token <- function(project) {
-  project <- assert_project(project)
+  project <- assert_blank_project(project)
   token <- assert_REDCap_token(project, silent = FALSE)
   bullet_in_console(paste0("Never share your token: ", token), bullet_type = "!")
   return(invisible())

@@ -20,7 +20,7 @@ test_that("check_folder_for_projects works",{
   file.create(test_file3)
   file.create(test_file4)
   local_mocked_bindings(
-    validate_dir = function(...) test_dir
+    assert_dir = function(...) test_dir
   )
   #check without validation
   expect_false(test_file1%in%check_folder_for_projects(file_path = test_dir,validate = FALSE))

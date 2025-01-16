@@ -9,7 +9,7 @@ test_that("test_dir works",{
 ##test-setup_project
 test_that("setup_project creates a valid project object and valid directory", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
-  expect_error(validate_dir(dir_path = test_dir))
+  expect_error(assert_dir(dir_path = test_dir))
   short_name <- "TEST_PROJECT"
   redcap_base <- "https://redcap.miami.edu/"
   #test_short_names
@@ -22,14 +22,14 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_no_error(assert_env_name("expected_name2"))
   expect_no_error(assert_env_name("EXPECTED_NAME"))
   #test_redcap_base
-  expect_error(validate_web_link("https://redcap.blah"))
-  expect_no_error(validate_web_link("https://redcap.miami.edu/"))
-  expect_no_error(validate_web_link("https://redcap.miami.edu"))
-  expect_no_error(validate_web_link("https://redcap.edu"))
+  expect_error(assert_web_link("https://redcap.blah"))
+  expect_no_error(assert_web_link("https://redcap.miami.edu/"))
+  expect_no_error(assert_web_link("https://redcap.miami.edu"))
+  expect_no_error(assert_web_link("https://redcap.edu"))
   #test db
-  expect_error(validate_project(internal_blank_project))
-  expect_error(validate_project(1))
-  expect_error(validate_project(data.frame()))
+  expect_error(assert_project(internal_blank_project))
+  expect_error(assert_project(1))
+  expect_error(assert_project(data.frame()))
   expect_error(get_dir(project))
   # Run setup_project
   project <- setup_project(
@@ -39,8 +39,8 @@ test_that("setup_project creates a valid project object and valid directory", {
     reset = TRUE,
     auto_check_token = FALSE
   )
-  expect_no_error(validate_dir(dir_path = test_dir))
-  expect_no_error(validate_project(project = project))
+  expect_no_error(assert_dir(dir_path = test_dir))
+  expect_no_error(assert_project(project = project))
   expect_no_error(get_dir(project))
   check_dir <- get_dir(project)
   expect_identical(test_dir,check_dir)

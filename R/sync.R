@@ -8,7 +8,12 @@ sync <- function(use_console = TRUE, hard_reset = FALSE,project_names = NULL) {
   collected <- makeAssertCollection()
   assert_logical(use_console, any.missing = FALSE, len = 1, add = collected)
   assert_logical(hard_reset, any.missing = FALSE, len = 1, add = collected)
-  assert_character(hard_reset, any.missing = FALSE, add = collected)
+  assert_character(
+    project_names,
+    null.ok = TRUE,
+    any.missing = FALSE,
+    add = collected
+  )
   current_function <- as.character(current_call())[[1]]
   if( ! collected$isEmpty()){
     message <- collected %>% cli_message_maker(function_name = current_function)

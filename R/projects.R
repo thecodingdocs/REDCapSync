@@ -135,7 +135,7 @@ extract_project_details <- function(project) {
     n_records = ifelse(is.null(project$summary$all_records[[project$redcap$id_col]]), NA, project$summary$all_records %>% nrow()),
     R_object_size = NA,
     file_size = NA,
-    deidentified = NA,
+    # deidentified = NA,
     sync_frequency =  project$internals$sync_frequency,
     redcap_base = project$links$redcap_base,
     redcap_home = project$links$redcap_home,

@@ -1,40 +1,57 @@
 #' @title Syncronize your REDCaps
+#' @param interactive Whether or not to use console to guide through sync vs just running
+#' @param hard_reset Will go get all projects from scratch if TRUE.
 #' @export
-sync <- function() {
+sync <- function(use_console = TRUE, hard_reset = FALSE,project_names = NULL) {
   #interactive TRUE FALSE
-  # projects <- get_projects()
-  #?anyprojects - NO
-  #if no setup whats home REDCap
-  #setup first project
-  #?anyprojects - Yes
-  #sync_projects -----
-  #loop
-  #
-  n <- 7
-  cli::cli_progress_bar("Syncing REDCaps ...", total = 100)
-  for (i in 1:100) {
-    Sys.sleep(3/100)
-    cli::cli_progress_update()
-  }
-  cli::cli_progress_done()
-  not_needed <- 1
-  failed <- 1
-  succeeded <- 3
-  cli::cli_alert_info("{not_needed} REDCaps did not need syncing.")
-  cli::cli_alert_danger("{failed} REDCaps failed to sync")
-  cli::cli_alert_success("{succeeded} REDCaps Synced!")
-}
-#' @title Syncronize your REDCaps
-#' @export
-sync_projects <- function() {
+  assert_logical(interactive, len = )
   projects <- get_projects()
-  #?anyprojects - NO
-  #if no setup whats home REDCap
-  #setup first project
-  #?anyprojects - Yes
-  #sync_projects -----
-  #loop which ones
-
+  if(!is_something(projects)){
+    # setup_project if interactive
+    if(use_console){
+      cli_abort("I can't help you with this yet. Dev.")
+    }
+  }else{
+    if(is.null(project_names)) {
+      project_names <- projects$short_name
+    }
+    project_names_length <- length(project_names)
+    cli::cli_progress_bar("Syncing REDCaps ...", total = project_names_length)
+    projects$status <- NA
+    not_needed <- 0
+    failed <- 0
+    succeeded <- 0
+    for(project_name in project_names){
+      project_row <- which(projects$short_name == project_name)
+      last_data_update <- projects$last_data_update
+      project_status <- "Failed"
+      PROJ <- load_project(short_name = project_name) # failure
+      PROJ <- PROJ %>% sync_project(
+        set_token_if_fails = use_console,
+        save_to_dir = TRUE
+        #other params
+      )
+      if(PROJ$internals$last_test_connection_outcome){
+        project_status <- "Updated"
+        if(PROJ$internals$last_data_update == last_data_update){
+          project_status <- "Not Needed"
+        }
+      }
+      projects$status[project_row] <- project_status
+      rm(PROJ)
+      cli::cli_progress_update()
+    }
+    cli::cli_progress_done()
+  }
+  not_needed <- sum(projects$status == "Not Needed")
+  failed <- sum(projects$status == "Failed") # add why
+  succeeded <- sum(projects$status == "Updated")
+  not_failed <- succeeded + not_needed
+  cli::cli_alert_info("{not_needed} REDCaps did not need syncing")
+  cli::cli_alert_danger("{failed} REDCaps failed to sync")
+  cli::cli_alert_success("{succeeded} REDCaps Updated!")
+  cli::cli_alert_success("{not_failed} REDCaps Synced!")
+  return(invisible())
 }
 #' @title project_health_check
 #' @description

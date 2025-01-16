@@ -248,6 +248,11 @@ assert_setup_project <- function(
   )
   #dirpath
   assert_logical(project$internals$labelled, len = 1,add = collected)
+  assert_choice(
+    project$internals$sync_frequency,
+    choices = c("always", "hourly", "daily", "weekly", "monthly", "never"),
+    add = collected
+  )
   assert_integerish(project$internals$days_of_log, len = 1, lower = 1,add = collected)
   assert_logical(project$internals$get_files, len = 1,add = collected)
   assert_logical(project$internals$get_file_repository, len = 1,add = collected)

@@ -12,6 +12,7 @@ setup_project(
   dir_path,
   redcap_base,
   token_name = paste0("REDCapSync_", short_name),
+  sync_frequency = "daily",
   reset = FALSE,
   labelled = TRUE,
   days_of_log = 10,
@@ -48,6 +49,11 @@ server.}
 
 \item{token_name}{An optional character string for setting your token name.
 Default is \verb{REDCapSync_<short_name>}}
+
+\item{sync_frequency}{Frequency of sync. Options are "always", "hourly",
+'daily', 'weekly', "monthly",and "never". The check is only triggered by
+calling the function, but can be automated with other packages.
+Default is \code{daily}}
 
 \item{reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the \code{project}
 object already exists. Default is \code{FALSE}.}

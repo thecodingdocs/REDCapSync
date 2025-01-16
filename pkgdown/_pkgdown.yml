@@ -102,10 +102,9 @@ reference:
       - generate_summary_from_subset_name
       - summarize_project
   - subtitle: Sync Functions
-    desc: Run Syncs on periodic bases; sync and sync_projects are "hands-free" and they depend on sync_project which can work by name with the project object in the environment.
+    desc: Run Syncs on periodic bases; sync is "hands-free", while sync_project uses project object in the environment.
     contents:
       - sync
-      - sync_projects
       - sync_project
 
   - subtitle: Experimental/Dev Functions

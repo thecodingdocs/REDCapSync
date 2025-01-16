@@ -28,6 +28,10 @@
 #' server.
 #' @param token_name An optional character string for setting your token name.
 #' Default is `REDCapSync_<short_name>`
+#' @param sync_frequency Frequency of sync. Options are "always", "hourly",
+#' 'daily', 'weekly', "monthly",and "never". The check is only triggered by
+#' calling the function, but can be automated with other packages.
+#' Default is `daily`
 #' @param reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the `project`
 #' object already exists. Default is `FALSE`.
 #' @param validate Logical (TRUE/FALSE). If TRUE, validates project object based on
@@ -84,6 +88,7 @@ setup_project <- function(
     dir_path,
     redcap_base,
     token_name = paste0("REDCapSync_", short_name),
+    sync_frequency = "daily",
     reset = FALSE,
     labelled = TRUE,
     days_of_log = 10,
@@ -133,6 +138,11 @@ setup_project <- function(
   assert_choice(
     get_type,
     choices = c("identified", "deidentified", "strict-deidentified"),
+    add = collected
+  )
+  assert_choice(
+    sync_frequency,
+    choices = c("always", "hourly", "daily", "weekly", "monthly", "never"),
     add = collected
   )
   assert_logical(auto_check_token, len = 1,add = collected)
@@ -229,6 +239,7 @@ setup_project <- function(
   }
   project$short_name <- short_name
   project$redcap$token_name <- token_name
+  project$internals$sync_frequency <- sync_frequency
   project$internals$use_csv <- use_csv
   project$internals$labelled <- labelled
   project$internals$original_file_names <- original_file_names
@@ -249,7 +260,7 @@ setup_project <- function(
       silent = silent
     )
   }
-  project$internals$merge_form_name <- assert_env_name(merge_form_name)
+  project$internals$merge_form_name <- merge_form_name
   project$internals$use_csv <- use_csv
   project$internals$is_blank <- FALSE
   project$data <- project$data %>% all_character_cols_list()
@@ -333,7 +344,7 @@ is_test_project <- function(project) {
 #' @family project object
 #' @export
 save_project <- function(project,silent = FALSE) {
-  project <- project %>% assert_blank_project()
+  assert_setup_project(project)
   if (!project$internals$ever_connected) {
     bullet_in_console(
       paste0(
@@ -365,7 +376,7 @@ save_project <- function(project,silent = FALSE) {
   add_project(project)
   # save_xls_wrapper(project)
   # nav_to_dir(project)
-  return(project)
+  return(invisible(project))
 }
 #' @rdname save-deleteproject
 #' @export

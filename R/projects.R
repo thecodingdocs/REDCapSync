@@ -116,6 +116,7 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
 }
 #' @noRd
 extract_project_details <- function(project) {
+  assert_setup_project(project)
   OUT <- data.frame(
     short_name = project$short_name,
     dir_path = project$dir_path %>% is.null() %>% ifelse(NA, sanitize_path(project$dir_path)),
@@ -133,6 +134,8 @@ extract_project_details <- function(project) {
     n_records = ifelse(is.null(project$summary$all_records[[project$redcap$id_col]]), NA, project$summary$all_records %>% nrow()),
     R_object_size = NA,
     file_size = NA,
+    deidentified = NA,
+    seq_frequency =  project$internals$seq_frequency,
     redcap_base = project$links$redcap_base,
     redcap_home = project$links$redcap_home,
     redcap_API_playground = project$links$redcap_API_playground

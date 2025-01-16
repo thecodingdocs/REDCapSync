@@ -4,7 +4,12 @@
 \alias{sync}
 \title{Syncronize your REDCaps}
 \usage{
-sync()
+sync(use_console = TRUE, hard_reset = FALSE, project_names = NULL)
+}
+\arguments{
+\item{hard_reset}{Will go get all projects from scratch if TRUE.}
+
+\item{interactive}{Whether or not to use console to guide through sync vs just running}
 }
 \description{
 Syncronize your REDCaps

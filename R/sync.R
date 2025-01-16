@@ -1,8 +1,6 @@
 sync <- function() {
-
 }
 sync_projects <- function() {
-
 }
 #' @title project_health_check
 #' @description

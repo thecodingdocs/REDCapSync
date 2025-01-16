@@ -271,6 +271,9 @@ setup_project <- function(
     }
   }
   project <- assert_setup_project(project, silent = silent)
+  if(!project$short_name %in% projects$short_name){
+    add_project(project)
+  }
   return(project)
 }
 #' @rdname setup-load

@@ -50,10 +50,10 @@ sync <- function(
     now <- Sys.time()
     for(project_name in project_names){
       project_row <- which(projects$short_name == project_name)
-      last_data_update <- projects$last_data_update
+      last_data_update <- projects$last_data_update[project_row]
       then <- as.POSIXct(last_data_update, format = "%Y-%m-%d %H:%M:%OS",tz = Sys.timezone())
       project_status <- "Not Needed"
-      sync_frequency <- projects$sync_frequency
+      sync_frequency <- projects$sync_frequency[project_row]
       have_to_check <- sync_frequency %in%c("hourly", "daily", "weekly", "monthly")
       if(have_to_check){ # turn to function
         if(sync_frequency == "hourly"){

@@ -146,9 +146,27 @@ extract_project_details <- function(project) {
 }
 #' @noRd
 add_project <- function(project, silent = TRUE) {
+  assert_setup_project(project)
+  assert_logical(silent, len = 1)
   projects <- get_projects()
   projects <- projects[which(projects$short_name != project$short_name), ]
   OUT <- extract_project_details(project = project)
+  bad_row <- which(
+    projects$project_id == OUT$project_id &
+      basename(projects$redcap_base) == basename(OUT$redcap_base)
+  )
+  if(length(bad_row)>0) {
+    cli::cli_abort(
+      paste0(
+        "You are trying to save from a project [{OUT$short_name} PID ",
+        "{projects$project_id[bad_row]}] that you have already setup ",
+        "[{projects$short_name[bad_row]} PID {OUT$project_id}] ",
+        "You can load the old project or run ",
+        "`remove_project(\"{projects$short_name[bad_row]}\")`"
+      )
+    )
+
+  }
   OUT$R_object_size <- size(project)
   OUT$file_size <- file.path(project$dir_path, "R_objects", paste0(project$short_name, "_REDCapSync.RData")) %>% file_size_mb()
   projects <- projects %>% dplyr::bind_rows(OUT)

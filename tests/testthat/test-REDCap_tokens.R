@@ -31,6 +31,16 @@ test_that("is_valid_REDCap_token respects the rules of 32L hexidecimal", {
   expect_false(is_valid_REDCap_token(generate_hex(32),is_a_test = TRUE))
 })
 test_that("assert_REDCap_token checks_env", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir,"fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...){
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
   project <- mock_project()
   token_name <- get_REDCap_token_name(project)
   token <- generate_hex(32)
@@ -47,6 +57,16 @@ test_that("assert_REDCap_token checks_env", {
   })
 })
 test_that("get_REDCap_token_name works", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir,"fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...){
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
   project <- mock_project()
   expect_equal(get_REDCap_token_name(project),"REDCapSync_TEST_PROJECT")
 })

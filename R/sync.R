@@ -126,26 +126,32 @@ due_for_sync<- function (project_name) {
     return(TRUE)
   }
   then <- as.POSIXct(last_data_update, format = "%Y-%m-%d %H:%M:%OS",tz = Sys.timezone())
+  if(is.na(then)){
+    return(TRUE)
+  }
   sync_frequency <- projects$sync_frequency[project_row]
   if(sync_frequency == "always"){
     return(TRUE)
   }
+  if(sync_frequency == "never"){
+    return(FALSE)
+  }
   have_to_check <- sync_frequency %in%c("hourly", "daily", "weekly", "monthly")
   if(have_to_check){ # turn to function
     if(sync_frequency == "hourly"){
-      do_it <- now >= (then + lubridate::dhours(1))
+      return(now >= (then + lubridate::dhours(1)))
     }
     if(sync_frequency == "daily"){
-      do_it <- now >= (then + lubridate::ddays(1))
+      return(now >= (then + lubridate::ddays(1)))
     }
     if(sync_frequency == "weekly"){
-      do_it <- now >= (then + lubridate::dweeks(1))
+      return(now >= (then + lubridate::dweeks(1)))
     }
     if(sync_frequency == "monthly"){
-      do_it <- now >= (then + lubridate::dmonths(1))
+      return(now >= (then + lubridate::dmonths(1)))
     }
   }
-  return(do_it)
+  return(TRUE)
 }
 due_for_sync2 <- function(){
   now <- Sys.time()

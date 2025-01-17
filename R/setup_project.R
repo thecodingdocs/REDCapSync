@@ -274,7 +274,7 @@ setup_project <- function(
   if(!project$short_name %in% projects$short_name){
     add_project(project)
   }
-  return(project)
+  return(invisible(project))
 }
 #' @rdname setup-load
 #' @export
@@ -358,7 +358,7 @@ save_project <- function(project,silent = FALSE) {
       bullet_type = "x",
       silent = silent
     )
-    return(project)
+    return(invisible(project))
   }
   # project <- reverse_clean_project(project) # # problematic because setting numeric would delete missing codes
   save_file_path <- file.path(

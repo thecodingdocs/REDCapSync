@@ -61,10 +61,9 @@ the REDCap server.</p>
 <span>  <span class="va">project</span>,</span>
 <span>  set_token_if_fails <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  reset <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  silent <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ask_about_overwrites <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  save_to_dir <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  records <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  silent <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  save_to_dir <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -86,6 +85,10 @@ set the REDCap API token if the update fails. Default is <code>TRUE</code>.</p><
 <dd><p>Logical that forces a fresh update if TRUE. Default is <code>FALSE</code>.</p></dd>
 
 
+<dt id="arg-silent">silent<a class="anchor" aria-label="anchor" href="#arg-silent"></a></dt>
+<dd><p>Logical (TRUE/FALSE). For messages.</p></dd>
+
+
 <dt id="arg-ask-about-overwrites">ask_about_overwrites<a class="anchor" aria-label="anchor" href="#arg-ask-about-overwrites"></a></dt>
 <dd><p>Logical (TRUE/FALSE). If TRUE, prompts the user
 before overwriting existing data. Default is <code>TRUE</code>.</p></dd>
@@ -94,14 +97,6 @@ before overwriting existing data. Default is <code>TRUE</code>.</p></dd>
 <dt id="arg-save-to-dir">save_to_dir<a class="anchor" aria-label="anchor" href="#arg-save-to-dir"></a></dt>
 <dd><p>Logical (TRUE/FALSE). If TRUE, saves the updated data to
 the directory. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-records">records<a class="anchor" aria-label="anchor" href="#arg-records"></a></dt>
-<dd><p>optional records character vector</p></dd>
-
-
-<dt id="arg-silent">silent<a class="anchor" aria-label="anchor" href="#arg-silent"></a></dt>
-<dd><p>Logical (TRUE/FALSE). For messages.</p></dd>
 
 </dl></div>
     <div class="section level2">

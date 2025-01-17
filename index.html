@@ -79,70 +79,75 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
-<img src="logo.png" class="logo" alt=""><h1 id="redcapsync-">REDCapSync <a class="anchor" aria-label="anchor" href="#redcapsync-"></a>
+<img src="logo.png" class="logo" alt=""><h1 id="redcapsync-">REDCapSync 
+<a class="anchor" aria-label="anchor" href="#redcapsync-"></a>
 </h1>
 </div>
 <!-- badges: start -->
 
-<p>Use your REDCap API tokens to create an updating R list object (DB) which can used downstream for analysis, data exports, shiny apps, and data imports! Rosy with a capital ‘R’ evokes the R statistical programming language, the primary developer’s last name, and the idea of making something more beautiful and user-friendly. This prefix combined with REDCap demonstrates the package’s goal of enhancing the REDCap experience by creating data tools that are powerful and pleasant to use, combining the best of R with best REDCap.</p>
-<p>At this time this package is <strong>not suited for Multi-Arm projects or massive REDCap projects yet</strong>. More to come in future versions! The core functions are stable but future development and changes are possible.</p>
+<!-- badges: end -->
+<p>Several R packages exist for using the REDCap Application Program Interface (API) such as, <a href="https://ouhscbbmc.github.io/REDCapR/" title="REDCapR R package" class="external-link">REDCapR</a>, <a href="https://github.com/vubiostat/redcapAPI/" title="redcapAPI R package" class="external-link">redcapAPI</a>, and <a href="https://raymondbalise.github.io/tidyREDCap/" title="redcapAPI R package" class="external-link">tidyREDCap</a>. However, there is no R package for maintaining synchronized data pipelines from REDCap. Enter <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a>, which streamlines comprehensive extraction from one or multiples REDCap projects with <code><a href="reference/sync.html">REDCapSync::sync()</a></code>.</p>
+<div class="section level2">
+<h2 id="what-is-redcapsync">What is <code>{REDCapSync}</code>?<a class="anchor" aria-label="anchor" href="#what-is-redcapsync"></a>
+</h2>
+<p>Using a cache of previous saves, a file directory, and the REDCap log, {REDCapSync} updates only the data that has been changed since the last call. Each project becomes a standardized nested R list object that can be used for the best that R has to offer via statistics, visualization, shiny apps, and more! REDCapSync unleashes the full power of the REDCap API even for the basic R user.</p>
+<p>The evolving aims of <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> are to…</p>
+<ol style="list-style-type: decimal">
+<li>Wrap the REDCap API functionality “behind-the-scenes” to streamline its use.</li>
+<li>Maintain local/cloud versions of one or many REDCap projects by only updating recently changed records on a user-defined schedule, such as daily, weekly, or monthly.</li>
+<li>Automate standard tasks such as cleaning, deidentification and quality control.</li>
+<li>Standardize creation of custom data transformations and subsets that are passed down to a directory.</li>
+<li>Allow bulk imports of <strong><em>uncoded</em></strong> data using R or Excel/CSV.</li>
+<li>Power the companion shiny app <a href="https://thecodingdocs.github.io/RosyREDCap/" title="RosyREDCap R package" class="external-link">RosyREDCap</a>
+</li>
+</ol>
+<p>By leveraging the combined strengths of R and REDCap, users can maintain strong data pipelines that include statistics, visuals, and even shiny applications!</p>
+</div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>The stable release can be found on CRAN (PENDING SUBMISSION) and installed with:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#install.packages("REDCapSync") #PLACEHOLDER NOT SUBMITTED TO CRAN YET</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="devopment-version">Devopment Version<a class="anchor" aria-label="anchor" href="#devopment-version"></a>
+</h3>
+<p>You can install the development version of REDCapSync from GitHub by using the <code>pak</code> package.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"thecodingdocs/REDCapSync"</span><span class="op">)</span></span></code></pre></div>
+<p>If you have any issues, try downloading the most recent version of R at RStudio and update all packages in RStudio. See <a href="https://www.thecodingdocs.com/r/getting-started" title="R Getting Started" class="external-link">thecodingdocs.com/r/getting-started</a>.</p>
+</div>
+<div class="section level3">
+<h3 id="getting-started">Getting Started!<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h3>
+<p>Getting started is as simple as 1.) setting your tokens, 2.) setting up a project, and 3.) running sync. See <a href="https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html" title="Getting Started">Getting Started</a> page for the basics!</p>
+<p>… If you want to be guided through your first setup, simply run the following!</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">REDCapSync</span><span class="fu">::</span><span class="fu"><a href="reference/sync.html">sync</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/cover.jpg"></p>
+</div>
+</div>
 <div class="section level2">
 <h2 id="minimum-requirements">Minimum Requirements<a class="anchor" aria-label="anchor" href="#minimum-requirements"></a>
 </h2>
 <ul>
-<li>R (and ideally RStudio) installed on your computer.</li>
-<li>Access to at least one REDCap project (real or test) with API Token Privileges according to User Rights.</li>
-<li>Permission to export and analyze date for this project.</li>
+<li>R (and RStudio) installed on your computer or server.</li>
+<li>Access to at least one REDCap project (real or test) with API Token privileges according to user rights.</li>
+<li>Appropriate permission to export and analyze data for projects for which you have a token.</li>
+<li>Basic R knowledge such as installing a package and running code.</li>
+<li>Thoughtful attention to how and where data you create is used and stored.</li>
 </ul>
-<p><img src="reference/figures/cover.jpg"></p>
-</div>
-</div>
-<div class="section level1">
-<h1 id="what-is-redcapsync">What is <code>{REDCapSync}</code>?<a class="anchor" aria-label="anchor" href="#what-is-redcapsync"></a>
-</h1>
-<p>R and REDCap are both widely utilized in medicine, including basic science, clinical research, and clinal trials. Both have independent strengths, but together they can create powerful data pipelines. While several R packages exist for extracting data using the REDCap API, <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> stands out by offering comprehensive extraction of all metadata and data from any REDCap project into a standardized R list object, facilitating effortless downstream use in exports, imports, transformation, and applications. This is showcased in the exploratory data analysis shiny app included in the package. The three core aims of <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> are to…</p>
-<ol style="list-style-type: decimal">
-<li>Maintain a local version of the REDCap project by only calling recently updated records using the REDCap log.</li>
-<li>Allow imports of non-coded versions of the dataset using R or Excel/CSV.</li>
-<li>Launch a shiny app that allows you to explore all of your REDCap projects.</li>
-</ol>
-<p>By leveraging the combined strengths of R and REDCap, users can maintain strong clinical data pipelines, collected and processed appropriately to improve research and patient care. REDCapSync can be used as a base data object and data quality tool for most REDCap projects to aid in collection, monitoring, transformation, and analysis.</p>
-<div class="section level2">
-<h2 id="installing-redcapsync">Installing REDCapSync<a class="anchor" aria-label="anchor" href="#installing-redcapsync"></a>
-</h2>
-<p>The stable release can be found on CRAN and installed with: <strong>PLACEHOLDER NOT SUBMITTED TO CRAN YET</strong></p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#install.packages("REDCapSync") #PLACEHOLDER NOT SUBMITTED TO CRAN YET</span></span></code></pre></div>
-<p>You can install the development version of REDCapSync from GitHub by using the <a href="https://remotes.r-lib.org" class="external-link">remotes</a> package. Be sure to install <a href="https://remotes.r-lib.org" class="external-link">remotes</a> if you don’t have it already.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#install.packages("remotes)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"thecodingdocs/REDCapSync"</span>,build_vignettes <span class="op">=</span> <span class="cn">T</span>,build_manual <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
-<p>Note that the version used at the time of writing this book is 0.0.0.9003. You can check what version you have installed with the following.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"REDCapSync"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] '0.0.0.9003'</span></span></code></pre></div>
-<p>If you have any issues, try downloading the most recent version of R at RStudtio and update all packages in RStudio. See <a href="https://www.thecodingdocs.com/r/getting-started" title="R Getting Started" class="external-link">thecodingdocs.com/r/getting-started</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+<h2 id="disclaimers">Disclaimers<a class="anchor" aria-label="anchor" href="#disclaimers"></a>
 </h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">"REDCapSync"</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">projects</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_projects.html">get_projects</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># get list of cached projects</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.dataframe.html" class="external-link">print.data.frame</a></span><span class="op">(</span><span class="va">projects</span><span class="op">)</span> <span class="co"># show your previously saved projects</span></span>
-<span></span>
-<span><span class="va">your_project_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">your_project_path</span><span class="op">)</span> <span class="co"># confirm this is where you want files saved</span></span>
-<span></span>
-<span><span class="va">TEST</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/setup-load.html">setup_project</a></span><span class="op">(</span></span>
-<span>  short_name <span class="op">=</span> <span class="st">"TEST_repeating"</span>,</span>
-<span>  redcap_base <span class="op">=</span> <span class="st">"https://redcap.yourinstitution.edu/"</span>, <span class="co"># change to your institutions link (stop at ".edu/")</span></span>
-<span>  dir_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># or change to your intended file path</span></span>
-<span><span class="op">)</span> <span class="co">#defaults will autocheck for valid token or ask you.</span></span>
-<span></span>
-<span><span class="co">#if you had to set a token above you might need to select the code below again for it to run</span></span>
-<span><span class="va">TEST</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/sync_project.html">sync_project</a></span><span class="op">(</span><span class="va">TEST</span><span class="op">)</span> <span class="co"># update from redcap by checking log and using saved object </span></span></code></pre></div>
+<ul>
+<li>With great power comes great responsibility! The REDCap API has the with ability to read and write sensitive data. The API token holder is ultimately responsible for their activity and security.</li>
+<li>Always confirm that you have the appropriate permission to use and store data.</li>
+<li>REDCap is maintained by Vanderbilt University and is not responsible for testing, developing, or maintaining this software.</li>
+<li>This package is still in development and is subject to changes, especially pre-CRAN submission.</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="links">Links<a class="anchor" aria-label="anchor" href="#links"></a>
@@ -163,7 +168,6 @@
 <p><a href="http://www.thecodingdocs.com" class="external-link"><img src="reference/figures/TCD.png" alt="TheCodingDocs.com"></a></p>
 </div>
 </div>
-
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">

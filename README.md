@@ -1,5 +1,5 @@
 
-# REDCapSync <img src="man/figures/logo.png" align="right" height="150" />
+# REDCapSync <a href="https://dplyr.tidyverse.org"><img src="man/figures/logo.png" align="right" height="170"/></a>
 
 <!-- badges: start -->
 
@@ -8,107 +8,109 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![R-CMD-check](https://github.com/thecodingdocs/REDCapSync/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thecodingdocs/REDCapSync/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/thecodingdocs/REDCapSync/graph/badge.svg)](https://app.codecov.io/gh/thecodingdocs/REDCapSync)
+
 <!-- badges: end -->
 
-Use your REDCap API tokens to create an updating R list object (DB)
-which can used downstream for analysis, data exports, shiny apps, and
-data imports! Rosy with a capital ‘R’ evokes the R statistical
-programming language, the primary developer’s last name, and the idea of
-making something more beautiful and user-friendly. This prefix combined
-with REDCap demonstrates the package’s goal of enhancing the REDCap
-experience by creating data tools that are powerful and pleasant to use,
-combining the best of R with best REDCap.
+Several R packages exist for using the REDCap Application Program
+Interface (API) such as,
+[REDCapR](https://ouhscbbmc.github.io/REDCapR/ "REDCapR R package"),
+[redcapAPI](https://github.com/vubiostat/redcapAPI/ "redcapAPI R package"),
+and
+[tidyREDCap](https://raymondbalise.github.io/tidyREDCap/ "redcapAPI R package").
+However, there is no R package for maintaining synchronized data
+pipelines from REDCap. Enter `{REDCapSync}`, which streamlines
+comprehensive extraction from one or multiples REDCap projects with
+`REDCapSync::sync()`.
 
-At this time this package is **not suited for Multi-Arm projects or
-massive REDCap projects yet**. More to come in future versions! The core
-functions are stable but future development and changes are possible.
+## What is `{REDCapSync}`?
 
-## Minimum Requirements
+Using a cache of previous saves, a file directory, and the REDCap log,
+{REDCapSync} updates only the data that has been changed since the last
+call. Each project becomes a standardized nested R list object that can
+be used for the best that R has to offer via statistics, visualization,
+shiny apps, and more! REDCapSync unleashes the full power of the REDCap
+API even for the basic R user.
 
-- R (and ideally RStudio) installed on your computer.
-- Access to at least one REDCap project (real or test) with API Token
-  Privileges according to User Rights.
-- Permission to export and analyze date for this project.
+The evolving aims of `{REDCapSync}` are to…
 
-![](man/figures/cover.jpg)
-
-# What is `{REDCapSync}`?
-
-R and REDCap are both widely utilized in medicine, including basic
-science, clinical research, and clinal trials. Both have independent
-strengths, but together they can create powerful data pipelines. While
-several R packages exist for extracting data using the REDCap API,
-`{REDCapSync}` stands out by offering comprehensive extraction of all
-metadata and data from any REDCap project into a standardized R list
-object, facilitating effortless downstream use in exports, imports,
-transformation, and applications. This is showcased in the exploratory
-data analysis shiny app included in the package. The three core aims of
-`{REDCapSync}` are to…
-
-1.  Maintain a local version of the REDCap project by only calling
-    recently updated records using the REDCap log.
-2.  Allow imports of non-coded versions of the dataset using R or
-    Excel/CSV.
-3.  Launch a shiny app that allows you to explore all of your REDCap
-    projects.
+1.  Wrap the REDCap API functionality “behind-the-scenes” to streamline
+    its use.
+2.  Maintain local/cloud versions of one or many REDCap projects by only
+    updating recently changed records on a user-defined schedule, such
+    as daily, weekly, or monthly.
+3.  Automate standard tasks such as cleaning, deidentification and
+    quality control.
+4.  Standardize creation of custom data transformations and subsets that
+    are passed down to a directory.
+5.  Allow bulk imports of ***uncoded*** data using R or Excel/CSV.
+6.  Power the companion shiny app
+    [RosyREDCap](https://thecodingdocs.github.io/RosyREDCap/ "RosyREDCap R package")
 
 By leveraging the combined strengths of R and REDCap, users can maintain
-strong clinical data pipelines, collected and processed appropriately to
-improve research and patient care. REDCapSync can be used as a base data
-object and data quality tool for most REDCap projects to aid in
-collection, monitoring, transformation, and analysis.
+strong data pipelines that include statistics, visuals, and even shiny
+applications!
 
-## Installing REDCapSync
+## Installation
 
-The stable release can be found on CRAN and installed with:
-**PLACEHOLDER NOT SUBMITTED TO CRAN YET**
+The stable release can be found on CRAN (PENDING SUBMISSION) and
+installed with:
 
 ``` r
 #install.packages("REDCapSync") #PLACEHOLDER NOT SUBMITTED TO CRAN YET
 ```
 
+### Devopment Version
+
 You can install the development version of REDCapSync from GitHub by
-using the `{remotes}` package. Be sure to install `{remotes}` if you
-don’t have it already.
+using the `pak` package.
 
 ``` r
-#install.packages("remotes)
-remotes::install_github("thecodingdocs/REDCapSync",build_vignettes = T,build_manual = T)
-```
-
-Note that the version used at the time of writing this book is
-0.0.0.9003. You can check what version you have installed with the
-following.
-
-``` r
-packageVersion("REDCapSync")
-#> [1] '0.0.0.9003'
+# install.packages("pak")
+pak::pak("thecodingdocs/REDCapSync")
 ```
 
 If you have any issues, try downloading the most recent version of R at
-RStudtio and update all packages in RStudio. See
+RStudio and update all packages in RStudio. See
 [thecodingdocs.com/r/getting-started](https://www.thecodingdocs.com/r/getting-started "R Getting Started").
 
-## Getting Started
+### Getting Started!
+
+Getting started is as simple as 1.) setting your tokens, 2.) setting up
+a project, and 3.) running sync. See [Getting
+Started](https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html "Getting Started")
+page for the basics!
+
+… If you want to be guided through your first setup, simply run the
+following!
 
 ``` r
-library("REDCapSync")
-
-projects <- get_projects() # get list of cached projects
-print.data.frame(projects) # show your previously saved projects
-
-your_project_path <- getwd()
-print(your_project_path) # confirm this is where you want files saved
-
-TEST <- setup_project(
-  short_name = "TEST_repeating",
-  redcap_base = "https://redcap.yourinstitution.edu/", # change to your institutions link (stop at ".edu/")
-  dir_path = getwd() # or change to your intended file path
-) #defaults will autocheck for valid token or ask you.
-
-#if you had to set a token above you might need to select the code below again for it to run
-TEST <- sync_project(TEST) # update from redcap by checking log and using saved object 
+REDCapSync::sync()
 ```
+
+![](man/figures/cover.jpg)
+
+## Minimum Requirements
+
+- R (and RStudio) installed on your computer or server.
+- Access to at least one REDCap project (real or test) with API Token
+  privileges according to user rights.
+- Appropriate permission to export and analyze data for projects for
+  which you have a token.
+- Basic R knowledge such as installing a package and running code.
+- Thoughtful attention to how and where data you create is used and
+  stored.
+
+## Disclaimers
+
+- With great power comes great responsibility! The REDCap API has the
+  with ability to read and write sensitive data. The API token holder is
+  ultimately responsible for their activity and security.
+- Always confirm that you have the appropriate permission to use and
+  store data.
+- REDCap is maintained by Vanderbilt University and is not responsible
+  for testing, developing, or maintaining this software.
+- This package is still in development and is subject to changes,
+  especially pre-CRAN submission.
 
 ## Links
 

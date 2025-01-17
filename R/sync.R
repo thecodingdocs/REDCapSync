@@ -130,7 +130,6 @@ due_for_sync2 <- function(){
   assert_names(projects$short_name, must.include = project_names)
   # Prepare results
   results <- logical(length(project_names))
-
   results_check <- which(
     !is.na(projects$last_data_update) |
       ! projects$sync_frequency %in% c("always","never")

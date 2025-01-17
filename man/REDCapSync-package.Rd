@@ -4,7 +4,7 @@
 \name{REDCapSync-package}
 \alias{REDCapSync}
 \alias{REDCapSync-package}
-\title{REDCapSync: Synchronize and Standardize Data Pipelines from REDCap}
+\title{REDCapSync: Synchronize Data Pipelines from the REDCap API}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 

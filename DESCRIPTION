@@ -1,5 +1,5 @@
 Package: REDCapSync
-Title: Synchronize and Standardize Data Pipelines from REDCap
+Title: Synchronize Data Pipelines from the REDCap API
 Version: 0.0.0.9004
 Authors@R: c(
     person("Brandon", "Rose", , "thecodingdocs@gmail.com", role = c("cre", "aut"),

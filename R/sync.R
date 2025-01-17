@@ -23,11 +23,12 @@ sync <- function(
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
-  cli::boxx(
-    "Start REDCapSync",
+  cli::cli_h1("Starting")
+  cli::cat_boxx(
+    "REDCapSync",
     padding = 1,
-    background_col = "brown",
-    float = "center"
+    background_col = "brown"
+    # float = "center"
   )
   #interactive TRUE FALSE
   projects <- get_projects()
@@ -49,14 +50,34 @@ sync <- function(
       do_it <- due_for_sync(project_name)
       if(do_it){
         project_status <- "Failed"
-        PROJ <- load_project(short_name = project_name) # failure tryCatch
-        PROJ <- PROJ %>% sync_project(
-          set_token_if_fails = use_console,
-          save_to_dir = TRUE
-          #other params
+        PROJ <- tryCatch(
+          expr = {
+            load_project(short_name = project_name)
+          },
+          error = function(e){NULL}
         )
-        if(PROJ$internals$last_test_connection_outcome){
-          project_status <- "Updated"
+        it_failed <- is.null(PROJ)
+        if(it_failed){
+          cli::cli_alert_danger(c("{project_name} failed to load!"))
+        }else{
+          PROJ <- tryCatch(
+            expr = {
+              PROJ %>% sync_project(
+                set_token_if_fails = use_console,
+                save_to_dir = TRUE
+                #other params
+              )
+            },
+            error = function(e){NULL}
+          )
+          it_failed <- is.null(PROJ)
+          if(it_failed){
+            cli::cli_alert_danger(c("{project_name} failed to sync!"))
+          } else{
+            if(PROJ$internals$last_test_connection_outcome){
+              project_status <- "Updated"
+            }
+          }
         }
       }else{
         cli::cli_alert_info("No need to update {project_name}: {then} ({sync_frequency})")
@@ -65,23 +86,29 @@ sync <- function(
       cli::cli_progress_update()
     }
     cli::cli_progress_done()
-    bullet_in_console("{short_name}: ", url = projects$redcap_home[project_row])
+    the_link <- projects$redcap_home[project_row]
+    if (is_something(the_link)){
+      bullet_in_console("{projects$short_name[project_row]}: ", url = the_link)
+    }
   }
   not_needed <- sum(projects$status == "Not Needed")
   failed <- sum(projects$status == "Failed") # add why
   succeeded <- sum(projects$status == "Updated")
   not_failed <- succeeded + not_needed
-  cli::cli_alert_info("{not_needed} REDCaps did not need syncing")
-  cli::cli_alert_danger("{failed} REDCaps failed to sync")
-  cli::cli_alert_success("{succeeded} REDCaps Updated!")
-  cli::cli_alert_success("{not_failed} REDCaps Synced!")
+  if(not_needed>0){
+    cli::cli_alert_info("{not_needed} REDCaps did not need syncing")
+  }
+  if(failed>0){
+    cli::cli_alert_danger("{failed} REDCaps failed to sync")
+  }
+  if(succeeded>0){
+    cli::cli_alert_success("{succeeded} REDCaps Updated!")
+  }
+  if(not_failed>0){
+    cli::cli_alert_success("{not_failed} REDCaps Synced!")
+  }
   print.table(projects[,c("short_name","sync_frequency","status")])
-  cli::boxx(
-    "End REDCapSync",
-    padding = 1,
-    background_col = "brown",
-    float = "center"
-  )
+  cli::cli_h1("Done!")
   return(invisible())
 }
 due_for_sync<- function (project_name) {
@@ -93,6 +120,7 @@ due_for_sync<- function (project_name) {
   #-----
   project_row <- which(projects$short_name == project_name)
   last_data_update <- projects$last_data_update[project_row]
+  assert_posixct(last_data_update, len = 1, any.missing = FALSE)
   if(is.na(last_data_update)){
     return(TRUE)
   }
@@ -131,48 +159,38 @@ due_for_sync2 <- function(){
   # Prepare results
   results <- logical(length(project_names))
   results_check <- which(
-    !is.na(projects$last_data_update) |
+    !is.na(projects$last_data_update) &
       ! projects$sync_frequency %in% c("always","never")
   )
   results_no_check_true <- which(
     is.na(projects$last_data_update) |
-                                   is.na(projects$sync_frequency) |
-                                   projects$sync_frequency == "always"
-                                 )
-  results_no_check_true <- which(projects$sync_frequency == "never")
-    #
-    # for (i in seq_along(project_names)) {
-    #   project_name <- project_names[i]
-    #   project_row <- which(projects$short_name == project_name)
-    #   last_data_update <- projects$last_data_update[project_row]
-    #   if (is.na(last_data_update)) {
-    #     results[i] <- TRUE
-    #     next
-    #   }
-    #   then <- as.POSIXct(last_data_update, format = "%Y-%m-%d %H:%M:%OS", tz = Sys.timezone())
-    #   sync_frequency <- projects$sync_frequency[project_row]
-    #
-    #   if (sync_frequency == "always") {
-    #     results[i] <- TRUE
-    #     next
-    #   }
-    #
-    #   if (sync_frequency %in% c("hourly", "daily", "weekly", "monthly")) {
-    #     if (sync_frequency == "hourly") {
-    #       results[i] <- now >= (then + lubridate::dhours(1))
-    #     } else if (sync_frequency == "daily") {
-    #       results[i] <- now >= (then + lubridate::ddays(1))
-    #     } else if (sync_frequency == "weekly") {
-    #       results[i] <- now >= (then + lubridate::dweeks(1))
-    #     } else if (sync_frequency == "monthly") {
-    #       results[i] <- now >= (then + lubridate::dmonths(1))
-    #     }
-    #   } else {
-    #     results[i] <- FALSE
-    #   }
-    # }
-    #
-  return(results)
+      is.na(projects$sync_frequency) |
+      projects$sync_frequency == "always"
+  )
+  results_no_check_false <- which(projects$sync_frequency == "never")
+  results[results_no_check_true] <- TRUE
+  results[results_no_check_false] <- FALSE
+  if(length(results_check)>0){
+    then <- as.POSIXct(projects$last_data_update[results_check], format = "%Y-%m-%d %H:%M:%OS", tz = Sys.timezone())
+    sync_frequency <- projects$sync_frequency[results_check]
+    time_diff_map <- list(
+      "hourly" = lubridate::dhours(1),
+      "daily" = lubridate::ddays(1),
+      "weekly" = lubridate::dweeks(1),
+      "monthly" = lubridate::dmonths(1)
+    )
+    results[results_check] <- mapply(function(last_update, freq) {
+      if (!freq %in% names(time_diff_map)) {
+        return(FALSE)
+      }
+      now >= (last_update + time_diff_map[[freq]])
+    }, then, sync_frequency, SIMPLIFY = TRUE)
+  }
+  result_rows <- which(results)
+  if(length(result_rows)==0){
+    return(NULL)
+  }
+  return(project_names[result_rows])
 }
 #' @title project_health_check
 #' @description

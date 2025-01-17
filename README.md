@@ -1,5 +1,5 @@
 
-# REDCapSync <a href="https://dplyr.tidyverse.org"><img src="man/figures/logo.png" align="right" height="170"/></a>
+## REDCapSync <a href="https://dplyr.tidyverse.org"><img src="man/figures/logo.png" align="right" height="170"/></a>
 
 <!-- badges: start -->
 

@@ -150,13 +150,16 @@ extract_project_details <- function(project) {
       ifelse(NA, sanitize_path(project$dir_path)),
     last_save = project$internals$last_data_dir_save %>%
       is.null() %>%
-      ifelse(NA, project$internals$last_data_dir_save) %>% as.POSIXct(),
+      ifelse(NA, project$internals$last_data_dir_save) %>%
+      as.POSIXct(),
     last_metadata_update = project$internals$last_metadata_update %>%
       is.null() %>%
-      ifelse(NA, project$internals$last_metadata_update),
+      ifelse(NA, project$internals$last_metadata_update) %>%
+      as.POSIXct(),
     last_data_update = project$internals$last_data_update %>%
       is.null() %>%
-      ifelse(NA, project$internals$last_data_update) ,
+      ifelse(NA, project$internals$last_data_update) %>%
+      as.POSIXct() ,
     version = project$redcap$version %>%
       is.null() %>%
       ifelse(NA, project$redcap$version) ,

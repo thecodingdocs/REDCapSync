@@ -10,6 +10,7 @@
 #' @importFrom checkmate assert_string
 #' @importFrom checkmate assert_integerish
 #' @importFrom checkmate assert_names
+#' @importFrom checkmate assert_posixct
 #' @importFrom cli cli_abort
 ## usethis namespace: end
 NULL

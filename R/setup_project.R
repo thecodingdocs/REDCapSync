@@ -172,8 +172,8 @@ setup_project <- function(
   was_loaded <- FALSE
   if (!reset) {
     has_expected_file <- FALSE
-    if (!missing_dir_path || in_proj_cache) {
-      if (missing_dir_path || in_proj_cache) {
+    if (in_proj_cache || !missing_dir_path) {
+      if (in_proj_cache && missing_dir_path) {
         dir_path <- projects$dir_path[which(projects$short_name == short_name)]
       }
       expected_file <- file.path(
@@ -183,11 +183,11 @@ setup_project <- function(
       )
       has_expected_file <- file.exists(expected_file)
     }
-    if (in_proj_cache || has_expected_file) {
+    if (has_expected_file) {
       project <- load_project_from_path(expected_file) # if it fails should default to blank
       was_loaded <- TRUE
     }
-    if (!(in_proj_cache || has_expected_file)) {
+    if (! has_expected_file) {
       if (is_a_test) {
         project <- load_test_project(short_name = short_name, with_data = FALSE)
       } else {
@@ -202,10 +202,8 @@ setup_project <- function(
   }
   if (missing_dir_path) { # if missing the directory path from setup or load then let user know nothing will be stored
     if (!is_something(project$dir_path)) { # only show message if load_project wasn't used internally (that has a directory)
-      bullet_in_console(
-        "If you don't supply a directory, REDCapSync will only run in R session. Package is best with a directory.",
-        bullet_type = "!",
-        silent = silent
+      cli::cli_alert_warning(
+        "If you don't supply a directory, REDCapSync will only run in R session. Package is best with a directory."
       )
     }
   }

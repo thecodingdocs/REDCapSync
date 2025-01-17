@@ -45,6 +45,7 @@ sync <- function(
     project_names_length <- length(project_names)
     cli::cli_progress_bar("Syncing REDCaps ...", total = project_names_length)
     projects$status <- NA
+   vector_of_due <- due_for_sync2()
     for(project_name in project_names){
       project_row <- which(projects$short_name == project_name)
       do_it <- due_for_sync(project_name)
@@ -119,8 +120,8 @@ due_for_sync<- function (project_name) {
   assert_names(projects$short_name, must.include = project_name)
   #-----
   project_row <- which(projects$short_name == project_name)
-  last_data_update <- projects$last_data_update[project_row]
-  assert_posixct(last_data_update, len = 1, any.missing = FALSE)
+  # last_data_update <- projects$last_data_update[project_row]
+  # assert_posixct(last_data_update, len = 1, any.missing = TRUE)
   if(is.na(last_data_update)){
     return(TRUE)
   }

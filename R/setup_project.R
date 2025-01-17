@@ -53,8 +53,6 @@
 #' Default is `FALSE`.
 #' @param metadata_only Logical (TRUE/FALSE). If TRUE, updates only the
 #' metadata. Default is `FALSE`.
-#' @param auto_check_token Logical (TRUE/FALSE). If TRUE, automatically
-#' checks the validity of the REDCap API token. Default is `TRUE`.
 #' @param project_path A character string representing the file path of the exact
 #' `<short_name>_REDCapSync.RData` file to be loaded.
 #' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test project
@@ -88,21 +86,20 @@ setup_project <- function(
     dir_path,
     redcap_base,
     token_name = paste0("REDCapSync_", short_name),
-    sync_frequency = "daily",
     reset = FALSE,
+    get_type = "identified",
     labelled = TRUE,
+    metadata_only = FALSE,
+    sync_frequency = "daily",
+    batch_size_download = 2000,
+    batch_size_upload = 500,
+    entire_log = FALSE,
     days_of_log = 10,
     get_files = FALSE,
     get_file_repository = FALSE,
     original_file_names = FALSE,
-    entire_log = FALSE,
-    metadata_only = FALSE,
     merge_form_name = "merged",
     use_csv = FALSE,
-    get_type = "identified",
-    auto_check_token = TRUE,
-    batch_size_download = 2000,
-    batch_size_upload = 500,
     silent = FALSE
 ) {
   collected <- makeAssertCollection()
@@ -145,7 +142,6 @@ setup_project <- function(
     choices = c("always", "hourly", "daily", "weekly", "monthly", "never"),
     add = collected
   )
-  assert_logical(auto_check_token, len = 1,add = collected)
   assert_integerish(batch_size_download, len = 1, lower = 1,add = collected)
   assert_integerish(batch_size_upload, len = 1, lower = 1,add = collected)
   assert_logical(silent, len = 1,add = collected)
@@ -262,17 +258,23 @@ setup_project <- function(
   project$internals$use_csv <- use_csv
   project$internals$is_blank <- FALSE
   project$data <- project$data %>% all_character_cols_list()
-  bullet_in_console(paste0("Token name: '", token_name, "'"))
-  if (auto_check_token) {
-    if (!is_valid_REDCap_token(assert_REDCap_token(project), is_a_test = is_a_test)) {
-      set_REDCap_token(project, ask = FALSE)
-    }
+  bullet_in_console()
+  if (!is_valid_REDCap_token(assert_REDCap_token(project), is_a_test = is_a_test)) {
+    cli::cli_alert_warning(paste0("No valid token in session: Sys.getenv('", token_name, "')"))
   }
   project <- assert_setup_project(project, silent = silent)
   if(!project$short_name %in% projects$short_name){
     add_project(project)
   }
   return(invisible(project))
+}
+get_expected_project_file_path <- function(project){
+  assert_setup_project(project)
+  file.path(
+    project$dir_path,
+    "R_objects",
+    paste0(project$short_name, "_REDCapSync.RData")
+  ) %>% sanitize_path() %>% return()
 }
 #' @rdname setup-load
 #' @export
@@ -419,6 +421,99 @@ nav_to_dir <- function(project) {
 }
 #' @noRd
 internal_allowed_test_short_names <- c("TEST_classic", "TEST_repeating", "TEST_longitudinal", "TEST_multiarm")
+#' @noRd
+internal_blank_project_new <- list(
+  short_name = NULL,
+  dir_path = NULL,
+  redcap = list(
+    token_name = NULL,
+    project_id = NULL,
+    project_title = NULL,
+    id_col = NULL,
+    version = NULL,
+    project_info = NULL,
+    log = NULL,
+    users = NULL,
+    current_user = NULL,
+    choices = NULL,
+    raw_structure_cols = NULL,
+    is_longitudinal = NULL,
+    has_arms = NULL,
+    has_multiple_arms = NULL,
+    has_arms_that_matter = NULL,
+    has_repeating_forms_or_events = NULL,
+    has_repeating_forms = NULL,
+    has_repeating_events = NULL,
+    project_type = "redcap"
+  ),
+  metadata = list( # model
+    forms = NULL,
+    fields = NULL,
+    choices = NULL,
+    form_key_cols = NULL,
+    arms = NULL,
+    events = NULL,
+    event_mapping = NULL,
+    missing_codes = NULL
+  ),
+  data = NULL, # model
+  data_update = NULL,
+  quality_checks = NULL,
+  transformation = list(
+    forms = NULL,
+    fields = NULL,
+    field_functions = NULL,
+    original_forms = NULL,
+    original_fields = NULL,
+    data_updates = NULL
+  ),
+  summary = list(
+    subsets = NULL
+  ),
+  settings = list(
+    sync_frequency = NULL,
+    get_files = NULL,
+    get_file_repository = NULL,
+    original_file_names = NULL,
+    days_of_log = NULL,
+    entire_log = NULL,
+    labelled = NULL,
+    merge_form_name = "merged",
+    use_csv = FALSE
+  ),
+  internals = list(
+    last_test_connection_attempt = NULL,
+    last_test_connection_outcome = NULL,
+    last_metadata_update = NULL,
+    last_metadata_dir_save = NULL,
+    last_full_update = NULL,
+    last_data_update = NULL,
+    last_data_dir_save = NULL,
+    last_data_transformation = NULL,
+    last_summary = NULL,
+    last_quality_check = NULL,
+    last_clean = NULL,
+    last_directory_save = NULL,
+    is_blank = TRUE,
+    is_test = FALSE,
+    is_transformed = FALSE,
+    is_clean = FALSE,
+    ever_connected = FALSE
+  ),
+  links = list(
+    redcap_base = NULL,
+    redcap_uri = NULL,
+    redcap_home = NULL,
+    redcap_record_home = NULL,
+    redcap_record_subpage = NULL,
+    redcap_records_dashboard = NULL,
+    redcap_api = NULL,
+    redcap_api_playground = NULL,
+    pkgdown = "https://thecodingdocs.github.io/REDCapSync/",
+    github = "https://github.com/thecodingdocs/REDCapSync/",
+    thecodingdocs = "https://www.thecodingdocs.com/"
+  )
+)
 #' @noRd
 internal_blank_project <- list(
   short_name = NULL,

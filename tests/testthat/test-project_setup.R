@@ -38,8 +38,7 @@ test_that("setup_project creates a valid project object and valid directory", {
     short_name = short_name,
     dir_path = test_dir,
     redcap_base = redcap_base,
-    reset = TRUE,
-    auto_check_token = FALSE
+    reset = TRUE
   )
   expect_no_error(assert_dir(dir_path = test_dir))
   expect_no_error(assert_blank_project(project = project))
@@ -81,8 +80,7 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   project <- setup_project(
     short_name = short_name,
     dir_path = test_dir,
-    redcap_base = redcap_base,
-    auto_check_token = FALSE
+    redcap_base = redcap_base
   )
   save_project(project)
   expect_false(file.exists(file.path(project$dir_path,"R_objects",paste0(short_name,"_REDCapSync.RData"))))

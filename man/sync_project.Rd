@@ -8,10 +8,9 @@ sync_project(
   project,
   set_token_if_fails = TRUE,
   reset = FALSE,
+  silent = FALSE,
   ask_about_overwrites = TRUE,
-  save_to_dir = TRUE,
-  records = NULL,
-  silent = FALSE
+  save_to_dir = TRUE
 )
 }
 \arguments{
@@ -23,15 +22,13 @@ set the REDCap API token if the update fails. Default is \code{TRUE}.}
 
 \item{reset}{Logical that forces a fresh update if TRUE. Default is \code{FALSE}.}
 
+\item{silent}{Logical (TRUE/FALSE). For messages.}
+
 \item{ask_about_overwrites}{Logical (TRUE/FALSE). If TRUE, prompts the user
 before overwriting existing data. Default is \code{TRUE}.}
 
 \item{save_to_dir}{Logical (TRUE/FALSE). If TRUE, saves the updated data to
 the directory. Default is \code{TRUE}.}
-
-\item{records}{optional records character vector}
-
-\item{silent}{Logical (TRUE/FALSE). For messages.}
 }
 \value{
 Messages for confirmation.

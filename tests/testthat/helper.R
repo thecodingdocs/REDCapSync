@@ -3,8 +3,7 @@ mock_project <- function(){
   redcap_base <- "https://redcap.miami.edu/"
   project <- setup_project(
     short_name = short_name,
-    redcap_base = redcap_base,
-    auto_check_token = FALSE
+    redcap_base = redcap_base
   )
   project$internals$ever_connected <- TRUE
   fake_time <- Sys.time()

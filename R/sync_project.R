@@ -18,7 +18,6 @@
 #' before overwriting existing data. Default is `TRUE`.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
 #' the directory. Default is `TRUE`.
-#' @param records optional records character vector
 #' @return Messages for confirmation.
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.
@@ -28,10 +27,9 @@ sync_project <- function(
     project,
     set_token_if_fails = TRUE,
     reset = FALSE,
+    silent = FALSE,
     ask_about_overwrites = TRUE,
-    save_to_dir = TRUE,
-    records = NULL,
-    silent = FALSE
+    save_to_dir = TRUE
 ) {
   collected <- makeAssertCollection()
   assert_blank_project(project)
@@ -48,7 +46,6 @@ sync_project <- function(
     len = 1,
     add = collected
   )
-  #records more complicated assertion
   assert_logical(save_to_dir, any.missing = FALSE, len = 1, add = collected)
   assert_logical(silent, any.missing = FALSE, len = 1, add = collected)
   current_function <- as.character(current_call())[[1]]
@@ -61,12 +58,9 @@ sync_project <- function(
     cli::cli_alert_info("{project$short_name} not due for sync ({project$internals$sync_frequency})")
     return(project)
   }
-  IDs <- NULL
+  stale_records <- NULL
   will_update <- TRUE
   was_updated <- FALSE
-  if (is_something(records)) {
-    bullet_in_console("Presently, if you supply specified records it will only check REDCap updates for those records.")
-  }
   project <- test_REDCap_token(project, set_if_fails = set_token_if_fails)
   connected <- project$internals$last_test_connection_outcome
   if (!connected) {
@@ -126,16 +120,13 @@ sync_project <- function(
         } else {
           interim_log_data <- interim_log[which(!is.na(interim_log$record)), ]
           interim_log_data <- interim_log_data[which(interim_log_data$action_type != "Users"), ]
-          if (is_something(records)) {
-            interim_log_data <- interim_log_data[which(interim_log$record %in% records), ]
-          }
           deleted_records <- interim_log_data$record[which(interim_log_data$action_type %in% c("Delete"))]
           if (length(deleted_records) > 0) {
             warning("There were recent records deleted from redcap Consider running with 'reset = TRUE'. Records: ", deleted_records %>% paste0(collapse = ", "), immediate. = TRUE)
           }
-          IDs <- interim_log_data$record %>% unique()
-          if (length(IDs) == 0) {
-            IDs <- NULL
+          stale_records <- interim_log_data$record %>% unique()
+          if (length(stale_records) == 0) {
+            stale_records <- NULL
             will_update <- FALSE
           }
         }
@@ -151,7 +142,7 @@ sync_project <- function(
       project$data <- list()
       project$data_update <- list()
       project$summary <- list()
-      project$data <- project %>% get_REDCap_data(labelled = project$internals$labelled, batch_size = project$internals$batch_size_download, records = records)
+      project$data <- project %>% get_REDCap_data(labelled = project$internals$labelled, batch_size = project$internals$batch_size_download)
       log <- project$redcap$log # in case there is a log already
       if (project$internals$entire_log) {
         project$redcap$log <- log %>% dplyr::bind_rows(
@@ -184,11 +175,11 @@ sync_project <- function(
       project$data <- project$data %>% all_character_cols_list()
       if (length(deleted_records) > 0) {
         project$summary$all_records <- project$summary$all_records[which(!project$summary$all_records[[project$redcap$id_col]] %in% deleted_records), ]
-        IDs <- IDs[which(!IDs %in% deleted_records)]
+        stale_records <- stale_records[which(!stale_records %in% deleted_records)]
         project$data <- remove_records_from_list(project = project, records = deleted_records, silent = TRUE)
       }
-      data_list <- project %>% get_REDCap_data(labelled = project$internals$labelled, records = IDs)
-      missing_from_summary <- IDs[which(!IDs %in% project$summary$all_records[[project$redcap$id_col]])]
+      data_list <- project %>% get_REDCap_data(labelled = project$internals$labelled, records = stale_records)
+      missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[project$redcap$id_col]])]
       if (length(missing_from_summary) > 0) {
         x <- data.frame(
           record = missing_from_summary,
@@ -198,10 +189,10 @@ sync_project <- function(
         project$summary$all_records <- project$summary$all_records %>% dplyr::bind_rows(x)
         project$summary$all_records <- project$summary$all_records[order(project$summary$all_records[[project$redcap$id_col]], decreasing = TRUE), ]
       }
-      project$summary$all_records$last_api_call[which(project$summary$all_records[[project$redcap$id_col]] %in% IDs)] <-
+      project$summary$all_records$last_api_call[which(project$summary$all_records[[project$redcap$id_col]] %in% stale_records)] <-
         project$internals$last_data_update <-
         Sys.time()
-      project$data <- remove_records_from_list(project = project, records = IDs, silent = TRUE)
+      project$data <- remove_records_from_list(project = project, records = stale_records, silent = TRUE)
       if (project$internals$is_transformed) {
         project2 <- stripped_project(project)
         project2$internals$is_transformed <- FALSE
@@ -222,7 +213,7 @@ sync_project <- function(
           all_character_cols() %>%
           dplyr::bind_rows(data_list[[TABLE]])
       }
-      message("Updated: ", paste0(IDs, collapse = ", "))
+      message("Updated: ", paste0(stale_records, collapse = ", "))
       was_updated <- TRUE
     } else {
       message("Up to date already!")

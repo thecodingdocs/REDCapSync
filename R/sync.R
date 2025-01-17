@@ -45,7 +45,7 @@ sync <- function(
     project_names_length <- length(project_names)
     cli::cli_progress_bar("Syncing REDCaps ...", total = project_names_length)
     projects$status <- NA
-   # vector_of_due <- due_for_sync2()
+    # vector_of_due <- due_for_sync2()
     for(project_name in project_names){
       project_row <- which(projects$short_name == project_name)
       do_it <- due_for_sync(project_name)
@@ -60,7 +60,7 @@ sync <- function(
         it_failed <- is.null(PROJ)
         if(it_failed){
           cli::cli_alert_danger(c("{project_name} failed to load!"))
-        }else{
+        } else{
           PROJ <- tryCatch(
             expr = {
               PROJ %>% sync_project(

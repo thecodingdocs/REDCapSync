@@ -310,7 +310,6 @@ load_project <- function(short_name, validate = TRUE) {
     paste0(short_name, internal_project_cache_path_suffix)
   )
   project_cache_details <- readRDS(file = project_cache_path)
-  project$dir_path <- set_dir(dir_path)
   project <- load_project_from_path(
     project_path = project_path,
     validate = validate
@@ -334,7 +333,15 @@ load_project_from_path <- function(project_path, validate = TRUE) {
   if (validate) {
     assert_project_path(project_path)
     project <- project %>% assert_setup_project(silent = FALSE)
+    expected_dir <- project_path %>% dirname() %>% dirname()
+    assert_dir(expected_dir)
+    # if(){
+    #   check if in cache already and relation!
+    # }
+    project$dir_path <- expected_dir %>% sanitize_path()
+    add_project_to_cache(project)
   }
+  # sub("_REDCapSync\\.RData$", "_REDCapSync_cache.RData", project_path)
   return(project)
 }
 #' @rdname setup-load
@@ -394,12 +401,13 @@ save_project <- function(project,silent = FALSE) {
     )
     return(invisible(project))
   }
+  project$internals$last_directory_save <- Sys.time()
   project_details <-extract_project_details(project = project)
   # project <- reverse_clean_project(project) # # problematic because setting numeric would delete missing codes
   save_project_path <- get_expected_project_path(project = project)
   save_project_cache_path <- get_expected_project_cache_path(project = project)
   current_function <- as.character(current_call())[[1]]
-  should_be_save <- TRUE
+  should_be_saved <- TRUE
   #check existing
   if(file.exists(save_project_cache_path)){
     project_cache_details <- readRDS(save_project_cache_path)
@@ -427,18 +435,23 @@ save_project <- function(project,silent = FALSE) {
       to = project_cache_details
     )
   }
-  saveRDS(
-    object = project,
-    file = save_project_path
-  )# add error check
-  bullet_in_console(
-    paste0("Saved ", project$short_name ,"!"),
-    url = save_project_path,
-    bullet_type = "v",
-    silent = silent
-  )
-  project$internals$last_directory_save <- Sys.time()
-  add_project_to_cache(project)
+  if(should_be_saved){
+    saveRDS(
+      object = project,
+      file = save_project_path
+    )# add error check
+    saveRDS(
+      object = project_details,
+      file = save_project_cache_path
+    )# add error check
+    bullet_in_console(
+      paste0("Saved ", project$short_name ,"!"),
+      url = save_project_path,
+      bullet_type = "v",
+      silent = silent
+    )
+    add_project_to_cache(project)
+  }
   # save_xls_wrapper(project)
   # nav_to_dir(project)
   return(invisible(project))

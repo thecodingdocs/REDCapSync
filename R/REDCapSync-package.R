@@ -16,6 +16,7 @@
 #' @importFrom checkmate assert_true
 #' @importFrom checkmate assert_directory
 #' @importFrom checkmate assert_directory_exists
+#' @importFrom checkmate assert_set_equal
 #' @importFrom cli cli_abort
 #' @importFrom cli cli_alert_danger
 #' @importFrom cli cli_alert_info

@@ -101,7 +101,7 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   project$links$redcap_home <- project$links$redcap_base
   project$links$redcap_API_playground <- project$links$redcap_base
   #saving
-  save_project(project)
+  project <- save_project(project)
   expected_save_location <- file.path(project$dir_path,"R_objects",paste0(short_name,"_REDCapSync.RData"))
   expect_true(file.exists(expected_save_location))
   #check cached proj

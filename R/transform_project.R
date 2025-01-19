@@ -477,7 +477,9 @@ run_fields_transformation <- function(project, ask = TRUE) {
   the_names_existing <- the_names[which(the_names %in% original_fields$field_name)]
   the_names_new <- the_names[which(!the_names %in% original_fields$field_name)]
   # fields_to_update <- NULL
-  for (field_name in c(the_names_existing, the_names_new)) {
+  field_names <- c(the_names_existing, the_names_new)
+  field_name <- field_names[[1]]
+  for (field_name in field_names) {
     OUT <- NA
     row_of_interest <- project$transformation$fields[which(project$transformation$fields$field_name == field_name), ]
     form_name <- row_of_interest$form_name

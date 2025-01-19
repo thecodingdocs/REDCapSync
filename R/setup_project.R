@@ -414,6 +414,7 @@ is_test_project <- function(project) {
 #' @export
 save_project <- function(project,silent = FALSE) {
   assert_setup_project(project)
+  # assert_setup_project(project)
   if (!project$internals$ever_connected) {
     cli::cli_alert_danger(
       paste0(
@@ -429,7 +430,7 @@ save_project <- function(project,silent = FALSE) {
   # project <- reverse_clean_project(project) # # problematic because setting numeric would delete missing codes
   save_project_path <- get_expected_project_path(project = project)
   save_project_cache_path <- get_expected_project_cache_path(project = project)
-  current_function <- as.character(current_call())[[1]]
+  current_function <- as.character(current_call()) %>% dplyr::first()
   should_be_saved <- TRUE
   #check existing
   if(file.exists(save_project_cache_path)){
@@ -450,13 +451,13 @@ save_project <- function(project,silent = FALSE) {
     if(!check_set_equal(from$dir_path,to$dir_path)){
       cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
     }
-    if(!check_true(from$last_directory_save,to$last_directory_save)){
+    if(!check_true(from$last_directory_save,to$last_directory_save,na.ok = TRUE)){
       cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
     }
-    compare_project_details(
-      from = project_details,
-      to = project_cache_details
-    )
+    # compare_project_details(
+    #   from = project_details,
+    #   to = project_cache_details
+    # )
   }
   if(should_be_saved){
     saveRDS(

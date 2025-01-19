@@ -179,7 +179,7 @@ assert_blank_project <- function(
     add = collected
   )
   assert_names(
-    names(internal_blank_project),
+    names(project),
     type = "unique",
     identical.to = names(internal_blank_project),
     add = collected

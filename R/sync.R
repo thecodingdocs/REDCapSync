@@ -53,7 +53,9 @@ sync <- function(
         project_status <- "Failed"
         PROJ <- tryCatch(
           expr = {
-            load_project(short_name = project_name)
+            suppressWarnings({
+              load_project(short_name = project_name)
+            })
           },
           error = function(e){NULL}
         )
@@ -63,11 +65,13 @@ sync <- function(
         } else{
           PROJ <- tryCatch(
             expr = {
-              PROJ %>% sync_project(
-                set_token_if_fails = use_console,
-                save_to_dir = TRUE
-                #other params
-              )
+              suppressWarnings({
+                PROJ %>% sync_project(
+                  set_token_if_fails = use_console,
+                  save_to_dir = TRUE
+                  #other params
+                )
+              })
             },
             error = function(e){NULL}
           )

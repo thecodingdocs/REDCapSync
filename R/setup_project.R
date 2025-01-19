@@ -169,7 +169,9 @@ setup_project <- function(
     if (in_proj_cache) {
       project <- tryCatch(
         expr = {
-          load_project(short_name = short_name)
+          suppressWarnings({
+            load_project(short_name = short_name)
+          })
         },
         error = function(e){NULL}
       )
@@ -193,7 +195,9 @@ setup_project <- function(
           # }
           project <- tryCatch(
             expr = {
-              load_project_from_path(project_path)
+              suppressWarnings({
+                load_project_from_path(project_path)
+              })
             },
             error = function(e){NULL}
           )

@@ -325,7 +325,7 @@ add_project_transformation <- function(project, forms_transformation, ask = TRUE
     stop("forms_transformation needs the following colnames... ", forms_tranformation_cols %>% as_comma_string())
   }
   choice <- TRUE
-  if (!is.null(project$transformation)) {
+  if (!is.null(project$transformation$forms)) {
     if (!identical(project$transformation$forms, forms_transformation)) {
       if (ask) {
         choice <- utils::askYesNo("Do you want to add transformation? (it doesn't match previous transform)")

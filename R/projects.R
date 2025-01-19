@@ -212,6 +212,9 @@ add_project <- function(project, silent = TRUE) {
   OUT$R_object_size <- size(project)
   OUT$file_size <- file.path(project$dir_path, "R_objects", paste0(project$short_name, "_REDCapSync.RData")) %>% file_size_mb()
   projects <- projects %>% dplyr::bind_rows(OUT)
+  if(!is.null(project$dir_path)){
+    saveRDS(OUT, file = file.path(project$dir_path, "R_objects", paste0(project$short_name, "_REDCapSync_cache.RData")))
+  }
   save_projects_to_cache(projects, silent = silent)
 }
 #' @noRd

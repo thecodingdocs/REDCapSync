@@ -167,22 +167,30 @@ setup_project <- function(
   was_loaded <- FALSE
   if (!reset) {
     if (in_proj_cache) {
-      # project <- load_project(short_name = short_name)
-      if (in_proj_cache && missing_dir_path) {
-        dir_path <- projects$dir_path[which(projects$short_name == short_name)]
-      }
-      expected_file <- file.path(
-        dir_path,
-        "R_objects",
-        paste0(short_name, "_REDCapSync.RData")
-      )
-      has_expected_file <- file.exists(expected_file)
-    }
-    if (has_expected_file) {
-      project <- load_project_from_path(expected_file) # if it fails should default to blank
+      project <- load_project(short_name = short_name)
       was_loaded <- TRUE
+    }else{
+      if(!missing_dir_path){
+        project_path <- file.path(
+          dir_path,
+          "R_objects",
+          paste0(short_name, internal_project_path_suffix)
+        )
+        project_cache_path <- file.path(
+          dir_path,
+          "R_objects",
+          paste0(short_name, internal_project_cache_path_suffix)
+        )
+        if(file.exists(project_path)){
+          if(!file.exists(project_cache_path)){
+            cli_abort("if project path exisit so should cache path in same dir")
+          }
+          project <- load_project_from_path(project_path) # if it fails should default to blank
+          was_loaded <- TRUE
+        }
+      }
     }
-    if (! has_expected_file) {
+    if (! was_loaded) {
       if (is_a_test) {
         project <- load_test_project(short_name = short_name, with_data = FALSE)
       } else {
@@ -302,6 +310,7 @@ load_project <- function(short_name, validate = TRUE) {
     paste0(short_name, internal_project_cache_path_suffix)
   )
   project_cache_details <- readRDS(file = project_cache_path)
+  project$dir_path <- set_dir(dir_path)
   project <- load_project_from_path(
     project_path = project_path,
     validate = validate

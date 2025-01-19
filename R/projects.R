@@ -70,7 +70,7 @@ internal_blank_project_cols <- c(
   "short_name",
   "dir_path",
   "sync_frequency",
-  "last_save",
+  "last_directory_save",
   "last_metadata_update",
   "last_data_update",
   "version",
@@ -142,9 +142,9 @@ extract_project_details <- function(project) {
     dir_path = project$dir_path %>%
       is.null() %>%
       ifelse(NA, sanitize_path(project$dir_path)),
-    last_save = project$internals$last_data_dir_save %>%
+    last_directory_save = project$internals$last_directory_save %>%
       is.null() %>%
-      ifelse(NA, project$internals$last_data_dir_save) %>%
+      ifelse(NA, project$internals$last_directory_save) %>%
       as.POSIXct(),
     last_metadata_update = project$internals$last_metadata_update %>%
       is.null() %>%

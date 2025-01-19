@@ -167,9 +167,15 @@ setup_project <- function(
   was_loaded <- FALSE
   if (!reset) {
     if (in_proj_cache) {
-      project <- load_project(short_name = short_name)
-      was_loaded <- TRUE
-    }else{
+      project <- tryCatch(
+        expr = {
+          load_project(short_name = short_name)
+        },
+        error = function(e){NULL}
+      )
+      was_loaded <- !  is.null(project)
+    }
+    if(! was_loaded){
       if(!missing_dir_path){
         project_path <- file.path(
           dir_path,
@@ -182,11 +188,16 @@ setup_project <- function(
           paste0(short_name, internal_project_cache_path_suffix)
         )
         if(file.exists(project_path)){
-          if(!file.exists(project_cache_path)){
-            cli_abort("if project path exisit so should cache path in same dir")
-          }
-          project <- load_project_from_path(project_path) # if it fails should default to blank
-          was_loaded <- TRUE
+          # if(!file.exists(project_cache_path)){
+          #   cli_abort("if project path exists so should cache path in same dir")
+          # }
+          project <- tryCatch(
+            expr = {
+              load_project_from_path(project_path)
+            },
+            error = function(e){NULL}
+          )
+          was_loaded <- !  is.null(project)
         }
       }
     }
@@ -339,6 +350,14 @@ load_project_from_path <- function(project_path, validate = TRUE) {
     #   check if in cache already and relation!
     # }
     project$dir_path <- expected_dir %>% sanitize_path()
+    project_cache_path <- get_expected_project_cache_path(project)
+    if(!file.exists(project_cache_path)){
+      saveRDS(
+        object = extract_project_details(project),
+        file = project_cache_path
+      )# add error check
+      cli_alert_warning("Cache mirror was missing. Regenerated it!")
+    }
     add_project_to_cache(project)
   }
   # sub("_REDCapSync\\.RData$", "_REDCapSync_cache.RData", project_path)

@@ -220,7 +220,7 @@ assert_setup_project <- function(
   collected <- makeAssertCollection()
   assert_logical(silent, any.missing = FALSE, len = 1, add = collected)
   assert_logical(warn_only, any.missing = FALSE, len = 1, add = collected)
-  current_function <- as.character(current_call())[[1]]
+  current_function <- as.character(current_call()) %>% dplyr::first()
   if( ! collected$isEmpty()){
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)

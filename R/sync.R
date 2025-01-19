@@ -116,7 +116,7 @@ due_for_sync<- function (project_name) {
   now <- Sys.time()
   projects <- get_projects()
   #early escapes ----
-  checkmate::assert_data_frame(projects,min.rows = 1)
+  assert_data_frame(projects,min.rows = 1)
   assert_names(projects$short_name, must.include = project_name)
   #-----
   project_row <- which(projects$short_name == project_name)
@@ -161,7 +161,7 @@ due_for_sync2 <- function(){
   }
   project_names <- projects$short_name
   # Early escapes ----
-  checkmate::assert_data_frame(projects, min.rows = 1)
+  assert_data_frame(projects, min.rows = 1)
   assert_names(projects$short_name, must.include = project_names)
   # Prepare results
   results <- logical(length(project_names))

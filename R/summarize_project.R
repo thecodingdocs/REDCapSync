@@ -855,7 +855,7 @@ rmarkdown_project <- function(project, dir_other) {
   }
   filename <- paste0(project$short_name, "_full_summary_", gsub("-", "_", Sys.Date()), ".pdf")
   rmarkdown::render(
-    input = system.file("rmarkdown", "pdf.Rmd", package = pkg_name),
+    input = system.file("rmarkdown", "pdf.Rmd", package = .packageName),
     output_format = "pdf_document",
     output_file = dir %>% file.path(filename),
     output_dir = dir,

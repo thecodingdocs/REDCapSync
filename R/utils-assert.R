@@ -111,8 +111,8 @@ assert_env_name <- function(
   if(! standalone) {
     assert_collection(add)
   }
+  current_function <- as.character(current_call())[[1]]
   if( ! collected$isEmpty()){
-    current_function <- as.character(current_call())[[1]]
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
@@ -300,4 +300,19 @@ assert_collection <- function(collection){
   assert_list(collection, any.missing = FALSE, len = 3, names = "unique")
   assert_names(names(collection), identical.to = names(makeAssertCollection()))
   return(invisible(collection))
+}
+assert_cache_project <- function(projects, nrows = NULL){
+  assert_data_frame(
+    x = projects,
+    nrows = nrows,
+    ncols = length(internal_blank_project_cols)
+  )
+}
+assert_project_path <- function(project_path){
+  assert_path_for_output(
+    x = project_path,
+    overwrite = TRUE,
+    extension = ".Rdata"
+  )
+  assert_true(endsWith(basename(project_path),internal_project_path_suffix))
 }

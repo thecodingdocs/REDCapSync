@@ -194,7 +194,7 @@ is_hexadecimal <- function(string, length = NULL) {
 #' @noRd
 get_REDCap_token_name <- function(project) {
   token_name <- paste0(
-    internal_REDCapSync_token_prefix,
+    internal_token_prefix,
     assert_env_name(project$short_name)
   )
   if (is_something(project$redcap$token_name)) {
@@ -206,7 +206,7 @@ get_REDCap_token_name <- function(project) {
 check_saved_REDCapSync_tokens <- function() {
   the_names <- Sys.getenv() %>% names()
   the_names <- the_names[
-    which(startsWith(the_names, internal_REDCapSync_token_prefix))
+    which(startsWith(the_names, internal_token_prefix))
   ]
   if (length(the_names) == 0) {
     bullet_in_console(
@@ -215,7 +215,7 @@ check_saved_REDCapSync_tokens <- function() {
     )
     return(invisible())
   }
-  the_names <- gsub(internal_REDCapSync_token_prefix, "", the_names)
+  the_names <- gsub(internal_token_prefix, "", the_names)
   ltn <- length(the_names)
   bullet_in_console(
     paste0(
@@ -227,8 +227,10 @@ check_saved_REDCapSync_tokens <- function() {
   )
   return(invisible())
 }
+internal_project_path_suffix <- "_REDCapSync.RData"
+internal_project_cache_path_suffix <- "_REDCapSync_cache.RData"
 #' @noRd
-internal_REDCapSync_token_prefix <- "REDCapSync_"
+internal_token_prefix <- "REDCapSync_"
 #' @noRd
 internal_TEST_classic_token <- "FAKE32TESTTOKENCLASSIC1111111111"
 #' @noRd

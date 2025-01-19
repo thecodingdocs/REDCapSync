@@ -156,10 +156,9 @@ setup_project <- function(
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
-  # start function ----
   projects <- get_projects() # add short_name conflict check id-base url differs
   short_name <- assert_env_name(short_name)
-  if (paste0(internal_REDCapSync_token_prefix, short_name) != token_name) {
+  if (paste0(internal_token_prefix, short_name) != token_name) {
   } # maybe a message
   token_name <- assert_env_name(token_name)
   in_proj_cache <- short_name %in% projects$short_name
@@ -167,8 +166,8 @@ setup_project <- function(
   is_a_test <- is_test_short_name(short_name = short_name)
   was_loaded <- FALSE
   if (!reset) {
-    has_expected_file <- FALSE
-    if (in_proj_cache || !missing_dir_path) {
+    if (in_proj_cache) {
+      # project <- load_project(short_name = short_name)
       if (in_proj_cache && missing_dir_path) {
         dir_path <- projects$dir_path[which(projects$short_name == short_name)]
       }
@@ -264,16 +263,24 @@ setup_project <- function(
   }
   project <- assert_setup_project(project, silent = silent)
   if(!project$short_name %in% projects$short_name){
-    add_project(project)
+    add_project_to_cache(project)
   }
   return(invisible(project))
 }
-get_expected_project_file_path <- function(project){
+get_expected_project_path <- function(project){
   assert_setup_project(project)
   file.path(
     project$dir_path,
     "R_objects",
-    paste0(project$short_name, "_REDCapSync.RData")
+    paste0(project$short_name, internal_project_path_suffix)
+  ) %>% sanitize_path() %>% return()
+}
+get_expected_project_cache_path <- function(project){
+  assert_setup_project(project)
+  file.path(
+    project$dir_path,
+    "R_objects",
+    paste0(project$short_name, internal_project_cache_path_suffix)
   ) %>% sanitize_path() %>% return()
 }
 #' @rdname setup-load
@@ -284,11 +291,30 @@ load_project <- function(short_name, validate = TRUE) {
   if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_project()` and `sync_project()`?")
   dir_path <- projects$dir_path[which(projects$short_name == short_name)]
   if (!file.exists(dir_path)) stop("`dir_path` doesn't exist: '", dir_path, "'")
-  project_path <- file.path(dir_path, "R_objects", paste0(short_name, "_REDCapSync.RData"))
-  load_project_from_path(
+  project_path <- file.path(
+    dir_path,
+    "R_objects",
+    paste0(short_name, internal_project_path_suffix)
+  )
+  project_cache_path <- file.path(
+    dir_path,
+    "R_objects",
+    paste0(short_name, internal_project_cache_path_suffix)
+  )
+  project_cache_details <- readRDS(file = project_cache_path)
+  project <- load_project_from_path(
     project_path = project_path,
     validate = validate
-  ) %>% return()
+  )
+  return(project)
+}
+compare_project_details <- function(from, to) {
+  assert_cache_project(from)
+  assert_cache_project(to)
+  collected <- makeAssertCollection()
+  assert_set_equal(from$short_name, to$short_name, add = collected)
+  assert_set_equal(from$project_id, to$project_id, add = collected)
+  assert_set_equal(from$redcap_base, to$redcap_base, add = collected)
 }
 #' @rdname setup-load
 #' @export
@@ -297,7 +323,8 @@ load_project_from_path <- function(project_path, validate = TRUE) {
   project <- readRDS(file = project_path)
   # if failed through message like unlink to project_path
   if (validate) {
-    project <- project %>% assert_blank_project(silent = FALSE)
+    assert_project_path(project_path)
+    project <- project %>% assert_setup_project(silent = FALSE)
   }
   return(project)
 }
@@ -349,41 +376,67 @@ is_test_project <- function(project) {
 save_project <- function(project,silent = FALSE) {
   assert_setup_project(project)
   if (!project$internals$ever_connected) {
-    bullet_in_console(
+    cli::cli_alert_danger(
       paste0(
         "Did not save ",
         project$short_name,
         " because there has never been a REDCap connection! You must use `setup_project()` and `sync_project()`"
-      ),
-      bullet_type = "x",
-      silent = silent
+      )
     )
     return(invisible(project))
   }
+  project_details <-extract_project_details(project = project)
   # project <- reverse_clean_project(project) # # problematic because setting numeric would delete missing codes
-  save_file_path <- file.path(
-    project$dir_path,
-    "R_objects",
-    paste0(project$short_name, "_REDCapSync.RData")
-  )
+  save_project_path <- get_expected_project_path(project = project)
+  save_project_cache_path <- get_expected_project_cache_path(project = project)
+  current_function <- as.character(current_call())[[1]]
+  should_be_save <- TRUE
+  #check existing
+  if(file.exists(save_project_cache_path)){
+    project_cache_details <- readRDS(save_project_cache_path)
+    from <- project_details
+    to <- project_cache_details
+    collected <- makeAssertCollection()
+    assert_set_equal(from$short_name, to$short_name, add = collected)
+    assert_set_equal(from$project_id, to$project_id, add = collected)
+    assert_set_equal(from$redcap_base, to$redcap_base, add = collected)
+    assert_set_equal(from$redcap_base, to$redcap_base, add = collected)
+    if(! collected$isEmpty()) {
+      info <- "Something critical doesn't match. You should run `delete_project_by_name(\"{project$short_name}\")"
+      message <- collected %>%
+        cli_message_maker(function_name = current_function, info = info) %>%
+        cli::cli_abort()
+    }
+    if(!check_set_equal(from$dir_path,to$dir_path)){
+      cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
+    }
+    if(!check_true(from$last_save)){
+      cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
+    }
+    compare_project_details(
+      from = project_details,
+      to = project_cache_details
+    )
+  }
   saveRDS(
     object = project,
-    file = save_file_path
+    file = save_project_path
   )# add error check
   bullet_in_console(
     paste0("Saved ", project$short_name ,"!"),
+    url = save_project_path,
     bullet_type = "v",
     silent = silent
   )
   project$internals$last_directory_save <- Sys.time()
-  add_project(project)
+  add_project_to_cache(project)
   # save_xls_wrapper(project)
   # nav_to_dir(project)
   return(invisible(project))
 }
 sweep_dirs_for_cache <- function(){
   projects <- get_projects()
-  # add_project(project)
+  # add_project_to_cache(project)
 }
 #' @rdname save-deleteproject
 #' @export

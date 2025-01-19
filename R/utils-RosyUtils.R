@@ -726,13 +726,11 @@ clean_function <- function(func) {
   environment(func) <- emptyenv()
   return(func)
 }
-size <- function(x) {
-  format(utils::object.size(x), units = "auto")
+object_size <- function(x) {
+  return(format(utils::object.size(x), units = "auto"))
 }
-file_size_mb <- function(path) {
-  (file.info(path)[["size"]] / 1048576) %>%
-    round(1) %>%
-    paste0(" Mb")
+file_size <- function(path) {
+  format(structure(file.size(path), class = "object_size"), units = "auto")
 }
 drop_if <- function(x, drops) {
   x[which(!x %in% drops)]

@@ -110,17 +110,26 @@ blank_project <- function() {
 #' @noRd
 save_projects_to_cache <- function(projects, silent = TRUE) {
   projects <- projects[order(projects$short_name), ]
-  # projects$test_dir <- projects$test_dir %>% as.logical()
-  # projects$test_project <- projects$test_project %>% as.logical()
-  # projects$test_RC <- projects$test_RC %>% as.logical()
   saveRDS(projects, file = cache_path() %>% file.path("projects.rds"))
   if (!silent) {
     bullet_in_console(
       bullet_type = "v",
-      text = paste0(pkg_name, " saved ", nrow(projects), " project locations to the cache...", paste0(projects$short_name, collapse = ", ")) # "   Token: ",projects$token_name,collapse = "\n"))
+      text = paste0(
+        .packageName,
+        " saved ",
+        nrow(projects),
+        " project locations to the cache...",
+        paste0(projects$short_name, collapse = ", ")
+      ) # "   Token: ",projects$token_name,collapse = "\n"))
     )
     bullet_in_console(
-      text = paste0("The cache is stored in directory on your computer. It can be found with `", pkg_name, "::cache_path()`, and cleared with `", pkg_name, "::cache_clear()`."),
+      text = paste0(
+        "The cache is stored in directory on your computer. It can be found with `",
+        .packageName,
+        "::cache_path()`, and cleared with `",
+        .packageName,
+        "::cache_clear()`."
+      ),
       file = cache_path()
     )
   }
@@ -188,7 +197,7 @@ extract_project_details <- function(project) {
   return(OUT)
 }
 #' @noRd
-add_project <- function(project, silent = TRUE) {
+add_project_to_cache <- function(project, silent = TRUE) {
   assert_setup_project(project)
   assert_logical(silent, len = 1)
   projects <- get_projects()
@@ -205,20 +214,15 @@ add_project <- function(project, silent = TRUE) {
         "{projects$project_id[bad_row]}] that you have already setup ",
         "[{projects$short_name[bad_row]} PID {OUT$project_id}] ",
         "You can load the old project or run ",
-        "`remove_project(\"{projects$short_name[bad_row]}\")`"
+        "`delete_project_by_name(\"{projects$short_name[bad_row]}\")`"
       )
     )
   }
-  OUT$R_object_size <- size(project)
-  OUT$file_size <- file.path(project$dir_path, "R_objects", paste0(project$short_name, "_REDCapSync.RData")) %>% file_size_mb()
   projects <- projects %>% dplyr::bind_rows(OUT)
-  if(!is.null(project$dir_path)){
-    saveRDS(OUT, file = file.path(project$dir_path, "R_objects", paste0(project$short_name, "_REDCapSync_cache.RData")))
-  }
   save_projects_to_cache(projects, silent = silent)
 }
 #' @noRd
-delete_project_from_name <- function(short_name) {
+delete_project_by_name <- function(short_name) {
   projects <- get_projects()
   ROW <- which(projects$short_name == short_name)
   OTHERS <- which(projects$short_name != short_name)

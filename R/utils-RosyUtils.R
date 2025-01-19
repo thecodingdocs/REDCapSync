@@ -838,3 +838,31 @@ is_nested_list <- function(x) {
 clean_num <- function(num) {
   formatC(num, format = "d", big.mark = ",")
 }
+date_imputation <- function(dates_in,date_imputation){
+  #followup add min max
+  z <- lapply(dates_in,is_date) %>% as.logical()
+  x <- which(z&!is_date_full(dates_in))
+  y <- which(!z)
+  date_out <- dates_in
+  if(length(y)>0){
+    date_out[y] <- NA
+  }
+  if(length(x)>0){
+    if(missing(date_imputation)) date_imputation <- NULL
+    if(is.null(date_imputation)){
+      date_out[x]<- NA
+    }
+    if(!is.null(date_imputation)){
+      date_out[x] <- dates_in[x] %>% lapply(function(date){
+        admiral::impute_dtc_dt(
+          date,
+          highest_imputation = "M", # "n" for normal date
+          date_imputation = date_imputation
+          # min_dates = min_dates %>% lubridate::ymd() %>% as.list(),
+          # max_dates = max_dates %>% lubridate::ymd() %>% as.list()
+        )
+      }) %>% unlist()
+    }
+  }
+  date_out
+}

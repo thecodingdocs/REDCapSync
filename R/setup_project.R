@@ -450,7 +450,7 @@ save_project <- function(project,silent = FALSE) {
     if(!check_set_equal(from$dir_path,to$dir_path)){
       cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
     }
-    if(!check_true(from$last_directory_save)){
+    if(!check_true(from$last_directory_save,to$last_directory_save)){
       cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
     }
     compare_project_details(

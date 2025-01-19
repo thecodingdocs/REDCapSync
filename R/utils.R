@@ -22,7 +22,7 @@ add_redcap_links_to_DF <- function(DF, project) { # add instance links
 }
 #' @noRd
 count_project_upload_cells <- function(project) {
-  project$data_update %>%
+  project$data_updates %>%
     lapply(function(x) {
       nrow(x) * ncol(x)
     }) %>%
@@ -43,7 +43,7 @@ husk_of_form <- function(project, FORM, field_names) {
 #' @noRd
 all_project_to_char_cols <- function(project) {
   project$data <- project$data %>% all_character_cols_list()
-  project$data_update <- project$data_update %>% all_character_cols_list()
+  project$data_updates <- project$data_updates %>% all_character_cols_list()
   return(project)
 }
 #' @noRd

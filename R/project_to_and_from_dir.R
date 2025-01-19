@@ -220,8 +220,8 @@ read_from_REDCap_upload <- function(project, allow_all = TRUE, drop_nonredcap_va
   if (!allow_all) {
     df <- df[which(!is.na(df$match)), ]
   }
-  if (project$data_update %>% is_something()) stop("Already files in project$data_update, clear that first")
-  project[["data_update"]] <- list()
+  if (project$data_updates %>% is_something()) stop("Already files in project$data_updates, clear that first")
+  project[["data_updates"]] <- list()
   for (i in seq_len(nrow(df))) { # not done yet
     the_file <- readxl::read_xlsx(file.path(redcap_upload_dir, df$file_name[i]), col_types = "text") %>% all_character_cols() # would
     drop_cols <- NULL
@@ -245,7 +245,7 @@ read_from_REDCap_upload <- function(project, allow_all = TRUE, drop_nonredcap_va
       if (stop_or_warn == "warn") warning(message1, immediate. = TRUE)
     }
     the_file <- the_file[, which(!colnames(the_file) %in% drop_cols)]
-    project[["data_update"]][[df$match[i]]] <- the_file
+    project[["data_updates"]][[df$match[i]]] <- the_file
   }
   project
 }
@@ -257,7 +257,7 @@ default_sheet_drops <- function(project) {
 }
 #' @noRd
 read_xl_to_project_for_upload <- function(project, file_path, drop_sheets = default_sheet_drops(project)) {
-  # add data_update check
+  # add data_updates check
   if (!endsWith(file_path, ".xlsx")) stop("File type must be '.xlsx' --> ", file_path)
   if (!file.exists(file_path)) stop("Path does not exist --> ", file_path)
   data_list <- file_path %>%
@@ -273,6 +273,6 @@ read_xl_to_project_for_upload <- function(project, file_path, drop_sheets = defa
     message("nothing to return")
     return(project)
   }
-  project$data_update <- data_list
+  project$data_updates <- data_list
   return(project)
 }

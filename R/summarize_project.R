@@ -217,7 +217,7 @@ fields_with_no_data <- function(project) {
 #' @noRd
 reverse_clean_project <- function(project) { # problematic because setting numeric would delete missing codes
   project$data <- all_character_cols_list(project$data)
-  project$data_update <- project$data_update %>% all_character_cols_list()
+  project$data_updates <- project$data_updates %>% all_character_cols_list()
   project$internals$is_clean <- FALSE
   return(project)
 }
@@ -1106,7 +1106,7 @@ construct_header_list <- function(DF_list, md_elements = c("form_name", "field_t
 stripped_project <- function(project) {
   project$redcap$log <- list()
   project$data <- list()
-  project$data_update <- list()
+  project$data_updates <- list()
   return(project)
 }
 #' @noRd

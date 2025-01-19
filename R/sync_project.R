@@ -140,7 +140,7 @@ sync_project <- function(
     project$internals$is_transformed <- FALSE
     if ( ! project$internals$metadata_only) {
       project$data <- list()
-      project$data_update <- list()
+      project$data_updates <- list()
       project$summary <- list()
       project$data <- project %>% get_REDCap_data(labelled = project$internals$labelled, batch_size = project$internals$batch_size_download)
       log <- project$redcap$log # in case there is a log already
@@ -200,7 +200,7 @@ sync_project <- function(
         project2$metadata$fields <- project2$transformation$original_fields
         project2$data <- data_list
         project2 <- transform_project(project2, ask = ask_about_overwrites)
-        if (!is.null(project2$data_update$from_transform)) {
+        if (!is.null(project2$data_updates$from_transform)) {
           project2 <- upload_transform_to_project(project2)
         }
         data_list <- project2$data %>%

@@ -556,7 +556,7 @@ internal_blank_project_new <- list(
     missing_codes = NULL
   ),
   data = NULL, # model
-  data_update = NULL,
+  data_updates = NULL,
   quality_checks = NULL,
   transformation = list(
     forms = NULL,
@@ -648,7 +648,7 @@ internal_blank_project <- list(
     missing_codes = NULL
   ),
   data = NULL, # model
-  data_update = NULL,
+  data_updates = NULL,
   quality_checks = NULL,
   transformation = list(
     forms = NULL,

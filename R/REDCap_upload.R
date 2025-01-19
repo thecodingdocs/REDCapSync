@@ -49,16 +49,16 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
   #   }
   # }
   warning("Right now this function only updates repeating forms. It WILL NOT clear repeating form instances past number 1. SO, you will have to delete manually on REDCap.", immediate. = TRUE)
-  if (!is_something(project$data_update)) stop("`project$data_update` is empty")
+  if (!is_something(project$data_updates)) stop("`project$data_updates` is empty")
   any_updates <- FALSE
-  entire_list <- project$data_update
+  entire_list <- project$data_updates
   for (TABLE in names(entire_list)) {
     to_be_uploaded <- entire_list[[TABLE]]
     if (is_something(to_be_uploaded)) {
-      project$data_update <- list()
-      project$data_update[[TABLE]] <- to_be_uploaded
+      project$data_updates <- list()
+      project$data_updates[[TABLE]] <- to_be_uploaded
       project <- find_upload_diff(project, view_old = view_old, n_row_view = n_row_view)
-      to_be_uploaded <- project$data_update[[TABLE]]
+      to_be_uploaded <- project$data_updates[[TABLE]]
       if (is_something(to_be_uploaded)) {
         if (project$internals$labelled) {
           to_be_uploaded <- to_be_uploaded %>% labelled_to_raw_form(project)
@@ -69,7 +69,7 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
         }
         if (do_it == 1) {
           upload_form_to_REDCap(to_be_uploaded = to_be_uploaded, project = project, batch_size = batch_size)
-          project$data_update[[TABLE]] <- NULL
+          project$data_updates[[TABLE]] <- NULL
           any_updates <- TRUE
           project$internals$last_data_update <- Sys.time()
         }
@@ -92,13 +92,13 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
 #' @return A list of differences between the new and old data (`upload_list`).
 #'
 #' @details
-#' The function compares the data in `project$data_update` (new data) with the current data in the database (`project$data`). If the form names in the new data do not match the `project$metadata$forms$form_name`, a warning is issued. The function goes through each table in the new data and compares it with the old data, recording the differences.
+#' The function compares the data in `project$data_updates` (new data) with the current data in the database (`project$data`). If the form names in the new data do not match the `project$metadata$forms$form_name`, a warning is issued. The function goes through each table in the new data and compares it with the old data, recording the differences.
 #'
 #' The `compare` and `to` parameters allow users to specify specific data choices to compare, though their exact usage will depend on how the function is fully implemented.
 #' @export
 find_upload_diff <- function(project, view_old = FALSE, n_row_view = 20) {
   project <- assert_blank_project(project)
-  new_list <- project$data_update
+  new_list <- project$data_updates
   old_list <- list()
   if (any(!names(new_list) %in% project$metadata$forms$form_name)) warning("All upload names should ideally match the project form names, `project$metadata$forms$form_name`", immediate. = TRUE)
   already_used <- NULL
@@ -122,11 +122,11 @@ find_upload_diff <- function(project, view_old = FALSE, n_row_view = 20) {
   }
   new_list <- find_df_list_diff(new_list = new_list, old_list = old_list, ref_col_list = project$metadata$form_key_cols[names(new_list)], view_old = view_old, n_row_view = n_row_view)
   if (is_something(new_list)) {
-    project$data_update <- new_list
+    project$data_updates <- new_list
     return(project)
   }
   message("No upload updates!")
-  project$data_update <- list()
+  project$data_updates <- list()
   return(project)
 }
 #' @noRd

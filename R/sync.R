@@ -46,6 +46,7 @@ sync <- function(
     cli::cli_progress_bar("Syncing REDCaps ...", total = project_names_length)
     projects$status <- NA
     # vector_of_due <- due_for_sync2()
+    #project_name <- project_names[1]
     for(project_name in project_names){
       project_row <- which(projects$short_name == project_name)
       then <- project$last_directory_save[project_row] #need to add sweep to check remote updates
@@ -63,28 +64,26 @@ sync <- function(
         )
         it_failed <- is.null(PROJ)
         if(it_failed){
-          cli::cli_alert_danger(c("{project_name} failed to load!"))
-        } else{
-          PROJ <- tryCatch(
-            expr = {
-              suppressWarnings({
-                PROJ %>% sync_project(
-                  set_token_if_fails = use_console,
-                  save_to_dir = TRUE
-                  #other params
-                )
-              })
-            },
-            error = function(e){NULL}
-          )
-          it_failed <- is.null(PROJ)
-          if(it_failed){
-            cli::cli_alert_danger(c("{project_name} failed to sync!"))
-          } else{
-            if(PROJ$internals$last_test_connection_outcome){
-              project_status <- "Updated"
-            }
-          }
+          #ADD DETAIL
+        }
+        PROJ <- tryCatch(
+          expr = {
+            suppressWarnings({
+              PROJ %>% sync_project(
+                set_token_if_fails = use_console,
+                save_to_dir = TRUE
+                #other params
+              )
+            })
+          },
+          error = function(e){NULL}
+        )
+        it_failed <- is.null(PROJ)
+        if(it_failed){
+          #ADD DETAIL
+        }
+        if(PROJ$internals$last_test_connection_outcome){
+          project_status <- "Updated"
         }
       }else{
         cli::cli_alert_info("No need to update {project_name}: {then} ({sync_frequency})")

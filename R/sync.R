@@ -46,10 +46,10 @@ sync <- function(
     cli::cli_progress_bar("Syncing REDCaps ...", total = project_names_length)
     projects$status <- NA
     # vector_of_due <- due_for_sync2()
-
     for(project_name in project_names){
       project_row <- which(projects$short_name == project_name)
       then <- project$last_directory_save[project_row] #need to add sweep to check remote updates
+      sync_frequency <- project$sync_frequency[project_row] #need to add sweep to check remote updates
       do_it <- due_for_sync(project_name)
       if(do_it){
         project_status <- "Failed"

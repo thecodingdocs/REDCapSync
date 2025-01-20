@@ -361,7 +361,8 @@ add_project_subset <- function(
     form_names = NULL,
     field_names = NULL,
     deidentify = TRUE,
-    reset = FALSE) {
+    reset = FALSE
+    ) {
   if (is.null(project$summary$subsets[[subset_name]]) || reset) {
     subset_records <- NULL
     if (filter_field == project$redcap$id_col) {
@@ -568,7 +569,8 @@ summarize_project <- function(
     include_users = TRUE,
     include_log = TRUE,
     separate = FALSE,
-    reset = FALSE) {
+    reset = FALSE
+) {
   project <- project %>% assert_blank_project()
   original_data <- project$data
   do_it <- is.null(project$internals$last_summary)
@@ -622,7 +624,7 @@ summarize_project <- function(
     }
   }
   project$data <- original_data
-  return(project)
+  return(invisible(project))
 }
 #' @title Run Quality Checks
 #' @inheritParams save_project

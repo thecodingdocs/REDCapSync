@@ -90,8 +90,9 @@ reference:
       - default_project_transformation
       - add_default_project_transformation
       - add_default_project_fields
-      - add_project_subset
+      - add_project_transformation
       - add_project_field
+      - add_project_subset
       - transform_project
       - untransform_project
   - subtitle: project Object Outputs

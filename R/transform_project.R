@@ -303,7 +303,8 @@ add_default_project_fields <- function(project) {
   }
   return(project)
 }
-#' @noRd
+#' @rdname default-transformations
+#' @export
 add_project_transformation <- function(project, forms_transformation, ask = TRUE) {
   if (missing(forms_transformation)) forms_transformation <- default_project_transformation(project)
   forms_tranformation_cols <- c(

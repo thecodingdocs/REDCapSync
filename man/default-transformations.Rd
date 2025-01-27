@@ -4,6 +4,7 @@
 \alias{add_default_project_transformation}
 \alias{default_project_transformation}
 \alias{add_default_project_fields}
+\alias{add_project_transformation}
 \title{Add Default Forms Transformation to the Database}
 \usage{
 add_default_project_transformation(project)
@@ -11,6 +12,8 @@ add_default_project_transformation(project)
 default_project_transformation(project)
 
 add_default_project_fields(project)
+
+add_project_transformation(project, forms_transformation, ask = TRUE)
 }
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data and

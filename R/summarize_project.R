@@ -362,7 +362,7 @@ add_project_subset <- function(
     field_names = NULL,
     deidentify = TRUE,
     reset = FALSE
-    ) {
+) {
   if (is.null(project$summary$subsets[[subset_name]]) || reset) {
     subset_records <- NULL
     if (filter_field == project$redcap$id_col) {
@@ -857,7 +857,7 @@ rmarkdown_project <- function(project, dir_other) {
   }
   filename <- paste0(project$short_name, "_full_summary_", gsub("-", "_", Sys.Date()), ".pdf")
   rmarkdown::render(
-    input = system.file("rmarkdown", "pdf.Rmd", package = .packageName),
+    input = system.file("rmarkdown", "pdf.Rmd", package = pkg_name),
     output_format = "pdf_document",
     output_file = dir %>% file.path(filename),
     output_dir = dir,

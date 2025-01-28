@@ -115,7 +115,7 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
     bullet_in_console(
       bullet_type = "v",
       text = paste0(
-        .packageName,
+        pkg_name,
         " saved ",
         nrow(projects),
         " project locations to the cache...",
@@ -125,9 +125,9 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
     bullet_in_console(
       text = paste0(
         "The cache is stored in directory on your computer. It can be found with `",
-        .packageName,
+        pkg_name,
         "::cache_path()`, and cleared with `",
-        .packageName,
+        pkg_name,
         "::cache_clear()`."
       ),
       file = cache_path()

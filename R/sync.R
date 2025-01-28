@@ -30,6 +30,7 @@ sync <- function(
     background_col = "brown"
     # float = "center"
   )
+  sweep_dirs_for_cache()
   #interactive TRUE FALSE
   projects <- get_projects()
   if(!is_something(projects)){
@@ -49,8 +50,8 @@ sync <- function(
     #project_name <- project_names[1]
     for(project_name in project_names){
       project_row <- which(projects$short_name == project_name)
-      then <- project$last_directory_save[project_row] #need to add sweep to check remote updates
-      sync_frequency <- project$sync_frequency[project_row] #need to add sweep to check remote updates
+      then <- projects$last_directory_save[project_row] #need to add sweep to check remote updates
+      sync_frequency <- projects$sync_frequency[project_row] #need to add sweep to check remote updates
       do_it <- due_for_sync(project_name)
       if(do_it){
         project_status <- "Failed"
@@ -64,7 +65,7 @@ sync <- function(
         )
         it_failed <- is.null(PROJ)
         if(it_failed){
-          #ADD DETAIL
+          # DETAIL <- "Did not load"
         }
         PROJ <- tryCatch(
           expr = {
@@ -203,6 +204,50 @@ due_for_sync2 <- function(){
     return(NULL)
   }
   return(project_names[result_rows])
+}
+sweep_dirs_for_cache <- function(){
+  projects <- get_projects()
+  # add_project_to_cache(project)
+  if(nrow(projects) > 0){
+    project_list <- projects %>% split(projects$short_name)
+    had_change <- FALSE
+    for(project_name in names(project_list)){
+      from_cache <- project_list[[project_name]]
+      expected_path <- file.path(
+        from_cache$dir_path,
+        "R_objects",
+        paste0(project_name, internal_project_cache_path_suffix)
+      ) %>% sanitize_path()
+      if(file.exists(expected_path)){
+        # if(!check_true((from$last_directory_save,to$last_directory_save),na.ok = TRUE)){
+        #   cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
+        # } error for dir verison later that save
+        # compare_project_details(
+        #   from = project_details,
+        #   to = project_cache_details
+        # )
+        to_cache <- readRDS(expected_path)
+        if(!is.na(from_cache$last_directory_save)){
+          if(to_cache$last_directory_save !=  from_cache$last_directory_save) {
+            project_list[[project_name]] <- to_cache
+            cli_alert_info(paste0("Updated cache for ",project_name))
+            had_change <- TRUE
+          }
+        }
+        # assert_cache_project(project_cache)
+
+      }
+      # else {
+      #   # project_list[[project_name]] <- NULL
+      #   # cli_alert_info(paste0("Dropped cache for ",project_name," because it didn't exist"))
+      #   # had_change <- TRUE
+      # }
+    }
+    if(had_change){
+      projects <- project_list %>% dplyr::bind_rows()
+      save_projects_to_cache(projects, silent = FALSE)
+    }
+  }
 }
 #' @title project_health_check
 #' @description

@@ -480,10 +480,6 @@ save_project <- function(project,silent = FALSE) {
   # nav_to_dir(project)
   return(invisible(project))
 }
-sweep_dirs_for_cache <- function(){
-  projects <- get_projects()
-  # add_project_to_cache(project)
-}
 #' @rdname save-deleteproject
 #' @export
 delete_project <- function(project) {

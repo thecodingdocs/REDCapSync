@@ -178,6 +178,8 @@ get_transformed_forms <- function(project) {
 #' involve adjustments, calculations, or reformatting of data in predefined forms.
 #'
 #' @inheritParams save_project
+#' @param forms_transformation a data.frame that matches instruments. See `default_project_transformation` for an example.
+#' @param ask logical for asking in console about changes to project forms_transformation
 #' @return
 #' The updated `project` object with default transformations applied to the specified forms.
 #'

@@ -18,6 +18,10 @@ add_project_transformation(project, forms_transformation, ask = TRUE)
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
+
+\item{forms_transformation}{a data.frame that matches instruments. See \code{default_project_transformation} for an example.}
+
+\item{ask}{logical for asking in console about changes to project forms_transformation}
 }
 \value{
 The updated \code{project} object with default transformations applied to the specified forms.

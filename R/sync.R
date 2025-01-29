@@ -55,6 +55,7 @@ sync <- function(
       then <- project_details_cache$last_directory_save
       sync_frequency <- project_details_cache$sync_frequency
       do_it <- due_for_sync(project_name) || hard_reset
+      if(!do_it)project_status <- "Not Needed"
       if(do_it){
         project_status <- "Failed"
         it_failed <- TRUE

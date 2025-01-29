@@ -53,7 +53,7 @@ sync <- function(
       project_details_cache <- project_list[[project_name]]
       then <- project_details_cache$last_directory_save
       sync_frequency <- project_details_cache$sync_frequency
-      do_it <- due_for_sync(project_name)
+      do_it <- due_for_sync(project_name) || hard_reset
       if(do_it){
         project_status <- "Failed"
         PROJ <- tryCatch(
@@ -67,13 +67,33 @@ sync <- function(
         it_failed <- is.null(PROJ)
         if(it_failed){
           DETAIL <- "Did not load properly..."
+          PROJ <- setup_project(
+            short_name = project_details_cache$short_name,
+            dir_path = project_details_cache$dir_path,
+            redcap_base = project_details_cache$redcap_base,
+            token_name = project_details_cache$token_name,
+            sync_frequency = project_details_cache$sync_frequency,
+            get_type = project_details_cache$get_type,
+            labelled = project_details_cache$labelled,
+            metadata_only = project_details_cache$metadata_only,
+            batch_size_download = project_details_cache$batch_size_download,
+            batch_size_upload = project_details_cache$batch_size_upload,
+            entire_log = project_details_cache$entire_log,
+            days_of_log = project_details_cache$days_of_log,
+            get_files = project_details_cache$get_files,
+            get_file_repository = project_details_cache$get_file_repository,
+            original_file_names = project_details_cache$original_file_names,
+            merge_form_name = project_details_cache$merge_form_name,
+            use_csv = project_details_cache$use_csv
+          )
         }
         PROJ <- tryCatch(
           expr = {
             suppressWarnings({
               PROJ %>% sync_project(
                 set_token_if_fails = use_console,
-                save_to_dir = TRUE
+                save_to_dir = TRUE,
+                reset = hard_reset
                 #other params
               )
             })

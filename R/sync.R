@@ -47,11 +47,12 @@ sync <- function(
     cli::cli_progress_bar("Syncing REDCaps ...", total = project_names_length)
     projects$status <- NA
     # vector_of_due <- due_for_sync2()
-    #project_name <- project_names[1]
-    for(project_name in project_names){
-      project_row <- which(projects$short_name == project_name)
-      then <- projects$last_directory_save[project_row] #need to add sweep to check remote updates
-      sync_frequency <- projects$sync_frequency[project_row] #need to add sweep to check remote updates
+    project_list <- projects %>% split(projects$short_name)
+    # are_due <- due_for_sync2()
+    for(project_name in names(project_list)){
+      project_details_cache <- project_list[[project_name]]
+      then <- project_details_cache$last_directory_save
+      sync_frequency <- project_details_cache$sync_frequency
       do_it <- due_for_sync(project_name)
       if(do_it){
         project_status <- "Failed"
@@ -65,7 +66,7 @@ sync <- function(
         )
         it_failed <- is.null(PROJ)
         if(it_failed){
-          # DETAIL <- "Did not load"
+          DETAIL <- "Did not load properly..."
         }
         PROJ <- tryCatch(
           expr = {
@@ -219,15 +220,8 @@ sweep_dirs_for_cache <- function(){
         paste0(project_name, internal_project_cache_path_suffix)
       ) %>% sanitize_path()
       if(file.exists(expected_path)){
-        # if(!check_true((from$last_directory_save,to$last_directory_save),na.ok = TRUE)){
-        #   cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
-        # } error for dir verison later that save
-        # compare_project_details(
-        #   from = project_details,
-        #   to = project_cache_details
-        # )
         to_cache <- readRDS(expected_path)
-        if(!is.na(from_cache$last_directory_save)){
+        if(!is.na(from_cache$last_directory_save)){ # should I compare?
           if(to_cache$last_directory_save !=  from_cache$last_directory_save) {
             project_list[[project_name]] <- to_cache
             cli_alert_info(paste0("Updated cache for ",project_name))
@@ -235,7 +229,6 @@ sweep_dirs_for_cache <- function(){
           }
         }
         # assert_cache_project(project_cache)
-
       }
       # else {
       #   # project_list[[project_name]] <- NULL

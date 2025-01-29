@@ -12,11 +12,11 @@ setup_project(
   dir_path,
   redcap_base,
   token_name = paste0("REDCapSync_", short_name),
+  sync_frequency = "daily",
   reset = FALSE,
   get_type = "identified",
   labelled = TRUE,
   metadata_only = FALSE,
-  sync_frequency = "daily",
   batch_size_download = 2000,
   batch_size_upload = 500,
   entire_log = FALSE,
@@ -49,6 +49,11 @@ server.}
 \item{token_name}{An optional character string for setting your token name.
 Default is \verb{REDCapSync_<short_name>}}
 
+\item{sync_frequency}{Frequency of sync. Options are "always", "hourly",
+'daily', 'weekly', "monthly",and "never". The check is only triggered by
+calling the function, but can be automated with other packages.
+Default is \code{daily}}
+
 \item{reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the \code{project}
 object already exists. Default is \code{FALSE}.}
 
@@ -60,11 +65,6 @@ raw coded data in output.}
 
 \item{metadata_only}{Logical (TRUE/FALSE). If TRUE, updates only the
 metadata. Default is \code{FALSE}.}
-
-\item{sync_frequency}{Frequency of sync. Options are "always", "hourly",
-'daily', 'weekly', "monthly",and "never". The check is only triggered by
-calling the function, but can be automated with other packages.
-Default is \code{daily}}
 
 \item{batch_size_download}{Integer. Number of records to process in each
 batch.

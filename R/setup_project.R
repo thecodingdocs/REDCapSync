@@ -86,11 +86,11 @@ setup_project <- function(
     dir_path,
     redcap_base,
     token_name = paste0("REDCapSync_", short_name),
+    sync_frequency = "daily",
     reset = FALSE,
     get_type = "identified",
     labelled = TRUE,
     metadata_only = FALSE,
-    sync_frequency = "daily",
     batch_size_download = 2000,
     batch_size_upload = 500,
     entire_log = FALSE,
@@ -183,11 +183,6 @@ setup_project <- function(
           dir_path,
           "R_objects",
           paste0(short_name, internal_project_path_suffix)
-        )
-        project_cache_path <- file.path(
-          dir_path,
-          "R_objects",
-          paste0(short_name, internal_project_cache_path_suffix)
         )
         if(file.exists(project_path)){
           # if(!file.exists(project_cache_path)){
@@ -314,22 +309,29 @@ load_project <- function(short_name, validate = TRUE) {
   if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_project()` and `sync_project()`?")
   dir_path <- projects$dir_path[which(projects$short_name == short_name)]
   if (!file.exists(dir_path)) stop("`dir_path` doesn't exist: '", dir_path, "'")
-  project_path <- file.path(
-    dir_path,
-    "R_objects",
-    paste0(short_name, internal_project_path_suffix)
+  project <- load_project_from_path(
+    project_path = file.path(
+      dir_path,
+      "R_objects",
+      paste0(short_name, internal_project_path_suffix)
+    ),
+    validate = validate
   )
+  return(project)
+}
+load_project_cache <- function(short_name, validate = TRUE) {
+  projects <- get_projects()
+  if (nrow(projects) == 0) stop("No projects in cache")
+  if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_project()` and `sync_project()`?")
+  dir_path <- projects$dir_path[which(projects$short_name == short_name)]
+  if (!file.exists(dir_path)) stop("`dir_path` doesn't exist: '", dir_path, "'")
   project_cache_path <- file.path(
     dir_path,
     "R_objects",
     paste0(short_name, internal_project_cache_path_suffix)
   )
   project_cache_details <- readRDS(file = project_cache_path)
-  project <- load_project_from_path(
-    project_path = project_path,
-    validate = validate
-  )
-  return(project)
+  return(project_cache_details)
 }
 compare_project_details <- function(from, to) {
   assert_cache_project(from)
@@ -363,6 +365,31 @@ load_project_from_path <- function(project_path, validate = TRUE) {
       cli_alert_warning("Cache mirror was missing. Regenerated it!")
     }
     add_project_to_cache(project)
+  }
+  # sub("_REDCapSync\\.RData$", "_REDCapSync_cache.RData", project_path)
+  return(project)
+}
+load_project_cache_from_path <- function(project_cache_path, validate = TRUE) {
+  if (!file.exists(project_cache_path)) stop("No file at path '", project_cache_path, "'. Did you use `setup_project()` and `sync_project()`?")
+  project_cache <- readRDS(file = project_cache_path)
+  # if failed through message like unlink to project_path
+  if (validate) {
+    assert_cache_project(project_cache, nrows = 1)
+    # expected_dir <- project_path %>% dirname() %>% dirname()
+    # assert_dir(expected_dir)
+    # # if(){
+    # #   check if in cache already and relation!
+    # # }
+    # project$dir_path <- expected_dir %>% sanitize_path()
+    # project_cache_path <- get_expected_project_cache_path(project)
+    # if(!file.exists(project_cache_path)){
+    #   saveRDS(
+    #     object = extract_project_details(project),
+    #     file = project_cache_path
+    #   )# add error check
+    #   cli_alert_warning("Cache mirror was missing. Regenerated it!")
+    # }
+    # add_project_to_cache(project)
   }
   # sub("_REDCapSync\\.RData$", "_REDCapSync_cache.RData", project_path)
   return(project)

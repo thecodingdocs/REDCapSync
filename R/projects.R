@@ -134,66 +134,59 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
     )
   }
 }
+na_if_null <- function(x){
+  return(ifelse(is.null(x),NA,x))
+}
 #' @noRd
 extract_project_details <- function(project) {
   assert_setup_project(project)
-  OUT <- data.frame(
-    short_name = project$short_name,
-    dir_path = project$dir_path %>%
-      is.null() %>%
-      ifelse(NA, sanitize_path(project$dir_path)),
-    last_directory_save = project$internals$last_directory_save %>%
-      is.null() %>%
-      ifelse(NA, project$internals$last_directory_save) %>%
-      as.POSIXct(),
-    last_metadata_update = project$internals$last_metadata_update %>%
-      is.null() %>%
-      ifelse(NA, project$internals$last_metadata_update) %>%
-      as.POSIXct(),
-    last_data_update = project$internals$last_data_update %>%
-      is.null() %>%
-      ifelse(NA, project$internals$last_data_update) %>%
-      as.POSIXct() ,
-    version = project$redcap$version %>%
-      is.null() %>%
-      ifelse(NA, project$redcap$version) ,
-    token_name = project$redcap$token_name,
-    project_id = project$redcap$project_id %>%
-      is.null() %>%
-      ifelse(NA, project$redcap$project_id),
-    project_title = project$redcap$project_title %>%
-      is.null() %>%
-      ifelse(NA, project$redcap$project_title) ,
-    id_col = project$redcap$id_col %>%
-      is.null() %>%
-      ifelse(NA, project$redcap$id_col) ,
-    is_longitudinal = project$redcap$is_longitudinal %>%
-      is.null() %>%
-      ifelse(NA, project$redcap$is_longitudinal) ,
-    has_repeating_forms_or_events =
-      project$redcap$has_repeating_forms_or_events %>%
-      is.null() %>% ifelse(NA, project$redcap$has_repeating_forms_or_events),
-    has_multiple_arms = project$redcap$has_multiple_arms %>%
-      is.null() %>%
-      ifelse(NA, project$redcap$has_multiple_arms) ,
-    n_records = ifelse(
-      is.null(project$summary$all_records[[project$redcap$id_col]]),
-      NA,
-      project$summary$all_records %>% nrow()
-    ),
-    R_object_size = NA,
-    file_size = NA,
-    # deidentified = NA,
-    sync_frequency =  project$internals$sync_frequency,
-    redcap_base = project$links$redcap_base,
-    redcap_home = project$links$redcap_home %>%
-      is.null() %>%
-      ifelse(NA, project$links$redcap_home) ,
-    redcap_API_playground = project$links$redcap_API_playground %>%
-      is.null() %>%
-      ifelse(NA, project$links$redcap_API_playground)
-  ) %>% all_character_cols()
-  rownames(OUT) <- NULL
+  OUT <- matrix(
+    data = NA,
+    ncol = length(internal_blank_project_cols),
+    nrow = 1,
+    dimnames = list(
+      NULL,
+      internal_blank_project_cols
+    )
+  ) %>% as.data.frame()
+
+
+  #top -----
+  OUT$short_name <- project$short_name
+  OUT$dir_path <- project$dir_path %>% na_if_null()
+  # settings -------
+  OUT$sync_frequency <- project$internals$sync_frequency
+  OUT$days_of_log <- project$internals$days_of_log
+  OUT$get_files <- project$internals$get_files
+  OUT$get_file_repository <- project$internals$get_file_repository
+  OUT$original_file_names <- project$internals$original_file_names
+  OUT$entire_log <- project$internals$entire_log
+  OUT$metadata_only <- project$internals$metadata_only
+  OUT$use_csv <- project$internals$use_csv
+  OUT$get_type <- project$internals$get_type
+  OUT$labelled <- project$internals$labelled
+  OUT$merge_form_name <- project$internals$merge_form_name
+  OUT$batch_size_download <- project$internals$batch_size_download
+  OUT$batch_size_upload <- project$internals$batch_size_upload
+  # redcap --------
+  OUT$version <-  project$redcap$version %>% na_if_null()
+  OUT$token_name <- project$redcap$token_name %>% na_if_null()
+  OUT$project_id <-  project$redcap$project_id %>% na_if_null()
+  OUT$project_title <-  project$redcap$project_title %>% na_if_null()
+  OUT$id_col <-  project$redcap$id_col %>% na_if_null()
+  OUT$is_longitudinal <-  project$redcap$is_longitudinal %>% na_if_null()
+  OUT$has_repeating_forms_or_events <-  project$redcap$has_repeating_forms_or_events %>% na_if_null()
+  OUT$has_multiple_arms <-  project$redcap$has_multiple_arms %>% na_if_null()
+  OUT$n_records <-  length(project$summary$all_records[[project$redcap$id_col]]) %>% na_if_null()
+  OUT$redcap_base <-  project$links$redcap_base %>% na_if_null()
+  OUT$redcap_home <-  project$links$redcap_home %>% na_if_null()
+  OUT$redcap_API_playground <-  project$links$redcap_API_playground %>% na_if_null()
+  # saving ----
+  OUT$last_directory_save <- project$internals$last_directory_save %>% na_if_null()
+  OUT$last_metadata_update <- project$internals$last_metadata_update %>% na_if_null()
+  OUT$last_data_update <- project$internals$last_data_update %>% na_if_null()
+  OUT$R_object_size <- NA
+  OUT$file_size <- NA
   return(OUT)
 }
 #' @noRd

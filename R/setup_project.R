@@ -317,7 +317,7 @@ load_project <- function(short_name, validate = TRUE) {
     ),
     validate = validate
   )
-  return(project)
+  return(invisible(project))
 }
 load_project_cache <- function(short_name, validate = TRUE) {
   projects <- get_projects()

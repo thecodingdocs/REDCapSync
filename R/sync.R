@@ -30,7 +30,7 @@ sync <- function(
     background_col = "brown"
     # float = "center"
   )
-  sweep_dirs_for_cache()
+  sweep_dirs_for_cache() # will overwrite new settings?
   #interactive TRUE FALSE
   projects <- get_projects()
   if(!is_something(projects)){

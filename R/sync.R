@@ -56,15 +56,18 @@ sync <- function(
       do_it <- due_for_sync(project_name) || hard_reset
       if(do_it){
         project_status <- "Failed"
-        PROJ <- tryCatch(
-          expr = {
-            suppressWarnings({
-              load_project(short_name = project_name)
-            })
-          },
-          error = function(e){NULL}
-        )
-        it_failed <- is.null(PROJ)
+        it_failed <- TRUE
+        if(!hard_reset){
+          PROJ <- tryCatch(
+            expr = {
+              suppressWarnings({
+                load_project(short_name = project_name)
+              })
+            },
+            error = function(e){NULL}
+          )
+          it_failed <- is.null(PROJ)
+        }
         if(it_failed){
           DETAIL <- "Did not load properly..."
           PROJ <- setup_project(

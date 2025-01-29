@@ -51,6 +51,7 @@ sync <- function(
     # are_due <- due_for_sync2()
     for(project_name in names(project_list)){
       project_details_cache <- project_list[[project_name]]
+      project_row <- which(project_details_cache$short_name ==project_name)
       then <- project_details_cache$last_directory_save
       sync_frequency <- project_details_cache$sync_frequency
       do_it <- due_for_sync(project_name) || hard_reset
@@ -113,7 +114,7 @@ sync <- function(
       }else{
         cli::cli_alert_info("No need to update {project_name}: {then} ({sync_frequency})")
       }
-      projects$status[project_row] <- project_status
+      projects$status <- project_status
       cli::cli_progress_update()
     }
     cli::cli_progress_done()

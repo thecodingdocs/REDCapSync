@@ -301,7 +301,7 @@ assert_collection <- function(collection){
   assert_names(names(collection), identical.to = names(makeAssertCollection()))
   return(invisible(collection))
 }
-assert_cache_project <- function(projects, nrows = NULL){
+assert_project_details <- function(projects, nrows = NULL){
   assert_data_frame(
     x = projects,
     nrows = nrows,

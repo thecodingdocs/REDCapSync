@@ -228,7 +228,7 @@ check_saved_REDCapSync_tokens <- function() {
   return(invisible())
 }
 internal_project_path_suffix <- "_REDCapSync.RData"
-internal_project_cache_path_suffix <- "_REDCapSync_cache.RData"
+internal_project_details_path_suffix <- "_REDCapSync_details.RData"
 #' @noRd
 internal_token_prefix <- "REDCapSync_"
 #' @noRd

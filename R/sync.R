@@ -50,52 +50,40 @@ sync <- function(
     project_list <- projects %>% split(projects$short_name)
     # are_due <- due_for_sync2()
     for(project_name in names(project_list)){
-      project_details_cache <- project_list[[project_name]]
-      project_row <- which(project_details_cache$short_name ==project_name)
-      then <- project_details_cache$last_directory_save
-      sync_frequency <- project_details_cache$sync_frequency
+      project_details <- project_list[[project_name]]
+      project_row <- which(projects$short_name == project_name)
+      then <- project_details$last_directory_save
+      sync_frequency <- project_details$sync_frequency
       do_it <- due_for_sync(project_name) || hard_reset
+      # what determines due if setting changed?
+      # add to due for sync?
       if(!do_it)project_status <- "Not Needed"
       if(do_it){
         project_status <- "Failed"
-        it_failed <- TRUE
-        if(!hard_reset){
-          PROJ <- tryCatch(
-            expr = {
-              suppressWarnings({
-                load_project(short_name = project_name)
-              })
-            },
-            error = function(e){NULL}
-          )
-          it_failed <- is.null(PROJ)
-        }
-        if(it_failed){
-          DETAIL <- "Did not load properly..."
-          PROJ <- setup_project(
-            short_name = project_details_cache$short_name,
-            dir_path = project_details_cache$dir_path,
-            redcap_base = project_details_cache$redcap_base,
-            token_name = project_details_cache$token_name,
-            sync_frequency = project_details_cache$sync_frequency,
-            get_type = project_details_cache$get_type,
-            labelled = project_details_cache$labelled,
-            metadata_only = project_details_cache$metadata_only,
-            batch_size_download = project_details_cache$batch_size_download,
-            batch_size_upload = project_details_cache$batch_size_upload,
-            entire_log = project_details_cache$entire_log,
-            days_of_log = project_details_cache$days_of_log,
-            get_files = project_details_cache$get_files,
-            get_file_repository = project_details_cache$get_file_repository,
-            original_file_names = project_details_cache$original_file_names,
-            merge_form_name = project_details_cache$merge_form_name,
-            use_csv = project_details_cache$use_csv
-          )
-        }
-        PROJ <- tryCatch(
+        project <- setup_project(
+          short_name = project_details$short_name,
+          dir_path = project_details$dir_path,
+          redcap_base = project_details$redcap_base,
+          token_name = project_details$token_name,
+          sync_frequency = project_details$sync_frequency,
+          get_type = project_details$get_type,
+          labelled = project_details$labelled,
+          metadata_only = project_details$metadata_only,
+          batch_size_download = project_details$batch_size_download,
+          batch_size_upload = project_details$batch_size_upload,
+          entire_log = project_details$entire_log,
+          days_of_log = project_details$days_of_log,
+          get_files = project_details$get_files,
+          get_file_repository = project_details$get_file_repository,
+          original_file_names = project_details$original_file_names,
+          merge_form_name = project_details$merge_form_name,
+          use_csv = project_details$use_csv,
+          reset = hard_reset
+        )
+        project <- tryCatch(
           expr = {
             suppressWarnings({
-              PROJ %>% sync_project(
+              project %>% sync_project(
                 set_token_if_fails = use_console,
                 save_to_dir = TRUE,
                 reset = hard_reset
@@ -105,11 +93,8 @@ sync <- function(
           },
           error = function(e){NULL}
         )
-        it_failed <- is.null(PROJ)
-        if(it_failed){
-          #ADD DETAIL
-        }
-        if(PROJ$internals$last_test_connection_outcome){
+        it_failed <- is.null(project)
+        if(project$internals$last_test_connection_outcome){
           project_status <- "Updated"
         }
       }else{
@@ -231,18 +216,23 @@ due_for_sync2 <- function(){
   }
   return(project_names[result_rows])
 }
-sweep_dirs_for_cache <- function(){
+sweep_dirs_for_cache <- function(project_names=NULL){
   projects <- get_projects()
   # add_project_to_cache(project)
   if(nrow(projects) > 0){
     project_list <- projects %>% split(projects$short_name)
     had_change <- FALSE
-    for(project_name in names(project_list)){
+    all_project_names <- names(project_list)
+    if(is.null(project_names)){
+      project_names <- all_project_names
+    }
+    project_names <- project_names[which(project_names %in% all_project_names)]
+    for(project_name in project_names){
       from_cache <- project_list[[project_name]]
       expected_path <- file.path(
         from_cache$dir_path,
         "R_objects",
-        paste0(project_name, internal_project_cache_path_suffix)
+        paste0(project_name, internal_project_details_path_suffix)
       ) %>% sanitize_path()
       if(file.exists(expected_path)){
         to_cache <- readRDS(expected_path)
@@ -253,7 +243,7 @@ sweep_dirs_for_cache <- function(){
             had_change <- TRUE
           }
         }
-        # assert_cache_project(project_cache)
+        # assert_project_details(project_details)
       }
       # else {
       #   # project_list[[project_name]] <- NULL

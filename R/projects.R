@@ -142,10 +142,10 @@ blank_project <- function() {
     batch_size_download = integer(0),
     batch_size_upload = integer(0)
   )
-# assert_names(
-#   internal_blank_project_cols
-# )
-return(x)
+  # assert_names(
+  #   internal_blank_project_cols
+  # )
+  return(x)
 }
 #' @noRd
 save_projects_to_cache <- function(projects, silent = TRUE) {

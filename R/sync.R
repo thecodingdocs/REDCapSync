@@ -116,18 +116,19 @@ sync <- function(
         cli::cli_alert_info("No need to update {project_name}: {then} ({sync_frequency})")
       }
       projects$status <- project_status
+      the_link <- projects$redcap_home[project_row]
+      if (is_something(the_link)){
+        bullet_in_console("{projects$short_name[project_row]}: ", url = the_link)
+      }
       cli::cli_progress_update()
     }
     cli::cli_progress_done()
-    the_link <- projects$redcap_home[project_row]
-    if (is_something(the_link)){
-      bullet_in_console("{projects$short_name[project_row]}: ", url = the_link)
-    }
   }
   not_needed <- sum(projects$status == "Not Needed")
   failed <- sum(projects$status == "Failed") # add why
   succeeded <- sum(projects$status == "Updated")
   not_failed <- succeeded + not_needed
+  print(projects[,c("short_name","sync_frequency","status")])
   if(not_needed>0){
     cli::cli_alert_info("{not_needed} REDCaps did not need syncing")
   }
@@ -140,7 +141,6 @@ sync <- function(
   if(not_failed>0){
     cli::cli_alert_success("{not_failed} REDCaps Synced!")
   }
-  print.table(projects[,c("short_name","sync_frequency","status")])
   cli::cli_h1("Done!")
   return(invisible())
 }

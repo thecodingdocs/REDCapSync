@@ -113,9 +113,7 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   #loading tests
   expect_error(load_project("a_project")) # wont load unknown project
   project2 <- load_project(short_name = short_name)#loads what we saved
-  project3 <- load_project_from_path(project_path = expected_save_location)#loads what we saved
   expect_identical(project,project2)
-  expect_identical(project,project3)
   #delete_project works...
   expect_no_warning(delete_project(project))
   expect_warning(delete_project(project))#warning for deleting twice

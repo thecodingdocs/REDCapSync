@@ -34,8 +34,6 @@
 #' Default is `daily`
 #' @param reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the `project`
 #' object already exists. Default is `FALSE`.
-#' @param validate Logical (TRUE/FALSE). If TRUE, validates project object based on
-#' current rules. Default is `TRUE`.
 #' @param merge_form_name A character string representing the name of the merged
 #' form. Default is "merged".
 #' @param use_csv Logical (TRUE/FALSE). If TRUE, uses CSV files for data
@@ -53,8 +51,6 @@
 #' Default is `FALSE`.
 #' @param metadata_only Logical (TRUE/FALSE). If TRUE, updates only the
 #' metadata. Default is `FALSE`.
-#' @param project_path A character string representing the file path of the exact
-#' `<short_name>_REDCapSync.RData` file to be loaded.
 #' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test project
 #' object with data included.
 #' @param get_type optional character of REDCap API call type.
@@ -158,7 +154,7 @@ setup_project <- function(
   }
   projects <- get_projects() # add short_name conflict check id-base url differs
   short_name <- assert_env_name(short_name)
-  sweep_dirs_for_cache(short_name)
+  sweep_dirs_for_cache(project_names = short_name)
   if (paste0(internal_token_prefix, short_name) != token_name) {
   } # maybe a message
   token_name <- assert_env_name(token_name)
@@ -167,41 +163,28 @@ setup_project <- function(
   is_a_test <- is_test_short_name(short_name = short_name)
   was_loaded <- FALSE
   original_details <- NULL
+  if (!in_proj_cache && !missing_dir_path) {
+    project_details_path <- file.path(
+      dir_path,
+      "R_objects",
+      paste0(short_name, internal_project_details_path_suffix)
+    )
+    if(file.exists(project_details_path)){
+      project_details <- readRDS(file = project_details_path) # add try
+      # add check for if it was loaded from right place
+      add_project_details_to_cache(project_details)
+    }
+  }
   if (!reset) {
-    if (in_proj_cache) {
-      project <- tryCatch(
-        expr = {
-          suppressWarnings({
-            load_project(short_name = short_name)
-          })
-        },
-        error = function(e){NULL}
-      )
-      was_loaded <- !  is.null(project)
-    }
-    if(! was_loaded){
-      if(!missing_dir_path){
-        project_path <- file.path(
-          dir_path,
-          "R_objects",
-          paste0(short_name, internal_project_path_suffix)
-        )
-        if(file.exists(project_path)){
-          # if(!file.exists(project_details_path)){
-          #   cli_abort("if project path exists so should cache path in same dir")
-          # }
-          project <- tryCatch(
-            expr = {
-              suppressWarnings({
-                load_project_from_path(project_path)
-              })
-            },
-            error = function(e){NULL}
-          )
-          was_loaded <- !  is.null(project)
-        }
-      }
-    }
+    project <- tryCatch(
+      expr = {
+        suppressWarnings({
+          load_project(short_name = short_name)
+        })
+      },
+      error = function(e){NULL}
+    )
+    was_loaded <- !  is.null(project)
     if (! was_loaded) {
       if (is_a_test) {
         project <- load_test_project(short_name = short_name, with_data = FALSE)
@@ -286,36 +269,7 @@ setup_project <- function(
     final_details <- project %>% extract_project_details()
     # message about changes compared to original
   }
-  project_details <- extract_project_details(project)
-  save_project_details_path <- get_expected_project_details_path(project = project)
-  if(is_something(save_project_details_path)){
-    if(file.exists(save_project_details_path)){
-      to <- readRDS(save_project_details_path)
-      from <- project_details
-      collected <- makeAssertCollection()
-      assert_set_equal(from$short_name, to$short_name, add = collected)
-      if(!is.na(from$project_id) && !is.na(to$project_id) ){
-        assert_set_equal(from$project_id, to$project_id, add = collected)
-      }
-      if(!is.na(from$redcap_base) && !is.na(to$redcap_base) ){
-        assert_set_equal(from$redcap_base, to$redcap_base, add = collected)
-      }
-      if(! collected$isEmpty()) {
-        info <- "Something critical doesn't match. You should run `delete_project_by_name(\"{project$short_name}\")"
-        message <- collected %>%
-          cli_message_maker(function_name = current_function, info = info) %>%
-          cli::cli_abort()
-      }
-      if(!check_set_equal(from$dir_path,to$dir_path)){
-        cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
-      }
-    }
-    saveRDS(
-      object = project_details,
-      file = save_project_details_path
-    )# add error check
-  }
-  add_project_to_cache(project)
+  save_project_details(project)
   return(invisible(project))
 }
 get_expected_project_path <- function(project){
@@ -336,35 +290,42 @@ get_expected_project_details_path <- function(project){
 }
 #' @rdname setup-load
 #' @export
-load_project <- function(short_name, validate = TRUE) {
+load_project <- function(short_name) {
   projects <- get_projects()
   if (nrow(projects) == 0) stop("No projects in cache")
   if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_project()` and `sync_project()`?")
   dir_path <- projects$dir_path[which(projects$short_name == short_name)]
   if (!file.exists(dir_path)) stop("`dir_path` doesn't exist: '", dir_path, "'")
-  project <- load_project_from_path(
-    project_path = file.path(
-      dir_path,
-      "R_objects",
-      paste0(short_name, internal_project_path_suffix)
-    ),
-    validate = validate
+  project_path <- file.path(
+    dir_path,
+    "R_objects",
+    paste0(short_name, internal_project_path_suffix)
   )
-  return(invisible(project))
-}
-load_project_details <- function(short_name, validate = TRUE) {
-  projects <- get_projects()
-  if (nrow(projects) == 0) stop("No projects in cache")
-  if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_project()` and `sync_project()`?")
-  dir_path <- projects$dir_path[which(projects$short_name == short_name)]
-  if (!file.exists(dir_path)) stop("`dir_path` doesn't exist: '", dir_path, "'")
+  if (!file.exists(project_path)) stop("No file at path '", project_path, "'. Did you use `setup_project()` and `sync_project()`?")
+  project <- readRDS(file = project_path)
+  # if failed through message like unlink to project_path
+  assert_project_path(project_path)
+  project <- project %>% assert_setup_project(silent = FALSE)
+  expected_dir <- project_path %>% dirname() %>% dirname()
+  assert_dir(expected_dir)
+  # if(){
+  #   check if in cache already and relation!
+  # }
+  project$dir_path <- expected_dir %>% sanitize_path()
+  project_details_path <- get_expected_project_details_path(project)
+  if(!file.exists(project_details_path)){
+    save_project_details(project)
+    cli_alert_warning("Project details missing from dir. Regenerated it!")
+  }
   project_details_path <- file.path(
     dir_path,
     "R_objects",
     paste0(short_name, internal_project_details_path_suffix)
   )
   project_details <- readRDS(file = project_details_path)
-  return(project_details)
+  # messaging about changes
+  save_project_details(project)
+  return(invisible(project))
 }
 compare_project_details <- function(from, to) {
   assert_project_details(from)
@@ -373,59 +334,6 @@ compare_project_details <- function(from, to) {
   assert_set_equal(from$short_name, to$short_name, add = collected)
   assert_set_equal(from$project_id, to$project_id, add = collected)
   assert_set_equal(from$redcap_base, to$redcap_base, add = collected)
-}
-#' @rdname setup-load
-#' @export
-load_project_from_path <- function(project_path, validate = TRUE) {
-  if (!file.exists(project_path)) stop("No file at path '", project_path, "'. Did you use `setup_project()` and `sync_project()`?")
-  project <- readRDS(file = project_path)
-  # if failed through message like unlink to project_path
-  if (validate) {
-    assert_project_path(project_path)
-    project <- project %>% assert_setup_project(silent = FALSE)
-    expected_dir <- project_path %>% dirname() %>% dirname()
-    assert_dir(expected_dir)
-    # if(){
-    #   check if in cache already and relation!
-    # }
-    project$dir_path <- expected_dir %>% sanitize_path()
-    project_details_path <- get_expected_project_details_path(project)
-    if(!file.exists(project_details_path)){
-      saveRDS(
-        object = extract_project_details(project),
-        file = project_details_path
-      )# add error check
-      cli_alert_warning("Cache mirror was missing. Regenerated it!")
-    }
-    add_project_to_cache(project)
-  }
-  # sub("_REDCapSync\\.RData$", "_REDCapSync_cache.RData", project_path)
-  return(project)
-}
-load_project_details_from_path <- function(project_details_path, validate = TRUE) {
-  if (!file.exists(project_details_path)) stop("No file at path '", project_details_path, "'. Did you use `setup_project()` and `sync_project()`?")
-  project_details <- readRDS(file = project_details_path)
-  # if failed through message like unlink to project_path
-  if (validate) {
-    assert_project_details(project_details, nrows = 1)
-    # expected_dir <- project_path %>% dirname() %>% dirname()
-    # assert_dir(expected_dir)
-    # # if(){
-    # #   check if in cache already and relation!
-    # # }
-    # project$dir_path <- expected_dir %>% sanitize_path()
-    # project_details_path <- get_expected_project_details_path(project)
-    # if(!file.exists(project_details_path)){
-    #   saveRDS(
-    #     object = extract_project_details(project),
-    #     file = project_details_path
-    #   )# add error check
-    #   cli_alert_warning("Cache mirror was missing. Regenerated it!")
-    # }
-    # add_project_to_cache(project)
-  }
-  # sub("_REDCapSync\\.RData$", "_REDCapSync_cache.RData", project_path)
-  return(project)
 }
 #' @rdname setup-load
 #' @export
@@ -491,52 +399,17 @@ save_project <- function(project,silent = FALSE) {
   save_project_path <- get_expected_project_path(project = project)
   save_project_details_path <- get_expected_project_details_path(project = project)
   current_function <- as.character(current_call()) %>% dplyr::first()
-  #check existing
-  if(file.exists(save_project_details_path)){
-    to <- readRDS(save_project_details_path)
-    from <- project_details
-    collected <- makeAssertCollection()
-    assert_set_equal(from$short_name, to$short_name, add = collected)
-    if(!is.na(from$project_id) && !is.na(to$project_id) ){
-      assert_set_equal(from$project_id, to$project_id, add = collected)
-    }
-    if(!is.na(from$redcap_base) && !is.na(to$redcap_base) ){
-      assert_set_equal(from$redcap_base, to$redcap_base, add = collected)
-    }
-    if(! collected$isEmpty()) {
-      info <- "Something critical doesn't match. You should run `delete_project_by_name(\"{project$short_name}\")"
-      message <- collected %>%
-        cli_message_maker(function_name = current_function, info = info) %>%
-        cli::cli_abort()
-    }
-    if(!check_set_equal(from$dir_path,to$dir_path)){
-      cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
-    }
-    # if(!check_true((from$last_directory_save,to$last_directory_save),na.ok = TRUE)){
-    #   cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
-    # } error for dir verison later that save
-    # compare_project_details(
-    #   from = project_details,
-    #   to = project_details
-    # )
-  }
   saveRDS(
     object = project,
     file = save_project_path
   )# add error check
-  saveRDS(
-    object = project_details,
-    file = save_project_details_path
-  )# add error check
+  save_project_details(project)
   bullet_in_console(
     paste0("Saved ", project$short_name ,"!"),
     url = save_project_path,
     bullet_type = "v",
     silent = silent
   )
-  add_project_to_cache(project)
-  # save_xls_wrapper(project)
-  # nav_to_dir(project)
   return(invisible(project))
 }
 #' @rdname save-deleteproject

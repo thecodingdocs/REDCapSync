@@ -15,11 +15,11 @@ get_projects <- function() {
       file.path("projects.rds") %>%
       readRDS()
     if (!does_exist) message("You have no projects cached. Try `setup_project()`")
-    is_ok <- all(colnames(blank_project() %in% colnames(projects)))
+    is_ok <- all(colnames(internal_blank_project_details() %in% colnames(projects)))
     if (!is_ok) cache_clear()
   }
   if (!does_exist || !is_ok) {
-    return(blank_project())
+    return(internal_blank_project_details())
   }
   return(projects)
 }
@@ -67,7 +67,6 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
 }
 #' @noRd
 internal_blank_project_cols <- c(
-  # core ------
   "short_name",
   "dir_path",
   "sync_frequency",
@@ -105,7 +104,7 @@ internal_blank_project_cols <- c(
   # "test_RC"
 )
 #' @noRd
-blank_project <- function() {
+internal_blank_project_details <- function() {
   x <- data.frame(
     # core -----
     short_name = character(0),
@@ -149,6 +148,7 @@ blank_project <- function() {
 }
 #' @noRd
 save_projects_to_cache <- function(projects, silent = TRUE) {
+  assert_project_details(projects)
   projects <- projects[order(projects$short_name), ]
   saveRDS(projects, file = cache_path() %>% file.path("projects.rds"))
   if (!silent) {
@@ -228,29 +228,126 @@ extract_project_details <- function(project) {
   return(OUT)
 }
 #' @noRd
-add_project_to_cache <- function(project, silent = TRUE) {
-  assert_setup_project(project)
-  assert_logical(silent, len = 1)
+add_project_details_to_cache <- function(project_details){
+  assert_project_details(project_details, nrows = 1)
   projects <- get_projects()
-  projects <- projects[which(projects$short_name != project$short_name), ]
-  OUT <- extract_project_details(project = project)
+  projects <- projects[which(projects$short_name != project_details$short_name), ]
   bad_row <- which(
-    projects$project_id == OUT$project_id &
-      basename(projects$redcap_base) == basename(OUT$redcap_base)
+    projects$project_id == project_details$project_id &
+      basename(projects$redcap_base) == basename(project_details$redcap_base)
   )
   if(length(bad_row)>0) {
     cli::cli_abort(
       paste0(
-        "You are trying to save from a project [{OUT$short_name} PID ",
+        "You are trying to save from a project [{project_details$short_name} PID ",
         "{projects$project_id[bad_row]}] that you have already setup ",
-        "[{projects$short_name[bad_row]} PID {OUT$project_id}] ",
+        "[{projects$short_name[bad_row]} PID {project_details$project_id}] ",
         "You can load the old project or run ",
         "`delete_project_by_name(\"{projects$short_name[bad_row]}\")`"
       )
     )
   }
-  projects <- projects %>% dplyr::bind_rows(OUT)
-  save_projects_to_cache(projects, silent = silent)
+  projects <- projects %>% dplyr::bind_rows(project_details)
+  save_projects_to_cache(projects)
+}
+#' @noRd
+add_project_details_to_project <- function(project,project_details){
+  assert_setup_project(project)
+  assert_project_details(project_details, nrows = 1)
+  #top -----
+  if(!identical(project$short_name, project_details$short_name)){
+    stop("project and project_details short_name must be identical!")
+  }
+  # if(!identical(project$dir_path, project_details$dir_path)){
+  #   stop("project and project_details short_name must be identical!")
+  # }
+  # project$dir_path <- project_details$dir_path
+  # settings -------
+  project$internals$sync_frequency <- project_details$sync_frequency
+  project$internals$days_of_log <- project_details$days_of_log %>% as.integer()
+  project$internals$get_files <- project_details$get_files
+  project$internals$get_file_repository <- project_details$get_file_repository
+  project$internals$original_file_names <- project_details$original_file_names
+  project$internals$entire_log <- project_details$entire_log
+  project$internals$metadata_only <- project_details$metadata_only
+  project$internals$use_csv <- project_details$use_csv
+  project$internals$get_type <- project_details$get_type # should trigger reset
+  project$internals$labelled <- project_details$labelled # should trigger reset
+  project$internals$merge_form_name <- project_details$merge_form_name
+  project$internals$batch_size_download <- project_details$batch_size_download %>% as.integer()
+  project$internals$batch_size_upload <- project_details$batch_size_upload %>% as.integer()
+  # redcap --------
+  # project$redcap$version <- project_details$version # check identical unless NA
+  # project$redcap$token_name <- project_details$token_name
+  # project$redcap$project_id <- project_details$project_id
+  # project$redcap$project_title <- project_details$project_title
+  # project$redcap$id_col <- project_details$id_col # check identical unless NA
+  # project$redcap$is_longitudinal <- project_details$is_longitudinal
+  # project$redcap$has_repeating_forms_or_events <- project_details$has_repeating_forms_or_events
+  # project$redcap$has_multiple_arms <- project_details$has_multiple_arms
+  # project$summary$all_records[[project$redcap$id_col]] <- project_details$n_records %>% as.integer()
+  # project$links$redcap_base <- project_details$redcap_base # check identical unless NA
+  # project$links$redcap_home <- project_details$redcap_home
+  # project$links$redcap_API_playground <- project_details$redcap_API_playground
+  # saving ----
+  # project$internals$last_directory_save <- project_details$last_directory_save %>% as.POSIXct()
+  # project$internals$last_metadata_update <- project_details$last_metadata_update %>% as.POSIXct()
+  # project$internals$last_data_update <- project_details$last_data_update %>% as.POSIXct()
+  # project_details$R_object_size <- NA
+  # project_details$file_size <- NA
+  # bad_row <- which(
+  #   projects$project_id == project_details$project_id &
+  #     basename(projects$redcap_base) == basename(project_details$redcap_base)
+  # )
+  # if(length(bad_row)>0) {
+  #   cli::cli_abort(
+  #     paste0(
+  #       "You are trying to save from a project [{project_details$short_name} PID ",
+  #       "{projects$project_id[bad_row]}] that you have already setup ",
+  #       "[{projects$short_name[bad_row]} PID {project_details$project_id}] ",
+  #       "You can load the old project or run ",
+  #       "`delete_project_by_name(\"{projects$short_name[bad_row]}\")`"
+  #     )
+  #   )
+  # }
+  return(project)
+}
+#' @noRd
+save_project_details <- function(project, silent = TRUE) {
+  assert_setup_project(project)
+  assert_logical(silent, len = 1)
+  project_details <- extract_project_details(project)
+  add_project_details_to_cache(project_details)
+  save_project_details_path <- get_expected_project_details_path(project = project)
+  current_function <- as.character(current_call())[[1]]
+  if(is_something(save_project_details_path)){
+    if(file.exists(save_project_details_path)){
+      to <- readRDS(save_project_details_path)
+      from <- project_details
+      collected <- makeAssertCollection()
+      assert_set_equal(from$short_name, to$short_name, add = collected)
+      if(!is.na(from$project_id) && !is.na(to$project_id) ){
+        assert_set_equal(from$project_id, to$project_id, add = collected)
+      }
+      if(!is.na(from$redcap_base) && !is.na(to$redcap_base) ){
+        assert_set_equal(from$redcap_base, to$redcap_base, add = collected)
+      }
+      if(! collected$isEmpty()) {
+        info <- "Something critical doesn't match. You should run `delete_project_by_name(\"{project$short_name}\")"
+        message <- collected %>%
+          cli_message_maker(function_name = current_function, info = info) %>%
+          cli::cli_abort()
+      }
+      if(!check_set_equal(from$dir_path,to$dir_path)){
+        cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
+      }
+    }
+    saveRDS(
+      object = project_details,
+      file = save_project_details_path
+    )# add error check
+  }
+  return(invisible())
 }
 #' @noRd
 delete_project_by_name <- function(short_name) {

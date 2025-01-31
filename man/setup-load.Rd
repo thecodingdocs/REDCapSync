@@ -3,7 +3,6 @@
 \name{setup_project}
 \alias{setup_project}
 \alias{load_project}
-\alias{load_project_from_path}
 \alias{load_test_project}
 \title{Setup or Load REDCapSync Project}
 \usage{
@@ -29,9 +28,7 @@ setup_project(
   silent = FALSE
 )
 
-load_project(short_name, validate = TRUE)
-
-load_project_from_path(project_path, validate = TRUE)
+load_project(short_name)
 
 load_test_project(short_name = "TEST_repeating", with_data = FALSE)
 }
@@ -96,12 +93,6 @@ form. Default is "merged".}
 storage. Default is \code{FALSE}.}
 
 \item{silent}{Logical (TRUE/FALSE). For messages.}
-
-\item{validate}{Logical (TRUE/FALSE). If TRUE, validates project object based on
-current rules. Default is \code{TRUE}.}
-
-\item{project_path}{A character string representing the file path of the exact
-\verb{<short_name>_REDCapSync.RData} file to be loaded.}
 
 \item{with_data}{Logical (TRUE/FALSE). If TRUE, loads the test project
 object with data included.}

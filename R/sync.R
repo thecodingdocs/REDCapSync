@@ -218,7 +218,7 @@ due_for_sync2 <- function(){
 }
 sweep_dirs_for_cache <- function(project_names=NULL){
   projects <- get_projects()
-  # add_project_to_cache(project)
+  # save_project_details(project)
   if(nrow(projects) > 0){
     project_list <- projects %>% split(projects$short_name)
     had_change <- FALSE

@@ -54,7 +54,6 @@ reference:
     contents:
       - setup_project
       - load_project
-      - load_project_from_path
       - delete_project
       - save_project
   - subtitle: Get from REDCap

@@ -76,9 +76,7 @@
 <span>  silent <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">load_project</span><span class="op">(</span><span class="va">short_name</span>, validate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">load_project_from_path</span><span class="op">(</span><span class="va">project_path</span>, validate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">load_project</span><span class="op">(</span><span class="va">short_name</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">load_test_project</span><span class="op">(</span>short_name <span class="op">=</span> <span class="st">"TEST_repeating"</span>, with_data <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -184,16 +182,6 @@ storage. Default is <code>FALSE</code>.</p></dd>
 
 <dt id="arg-silent">silent<a class="anchor" aria-label="anchor" href="#arg-silent"></a></dt>
 <dd><p>Logical (TRUE/FALSE). For messages.</p></dd>
-
-
-<dt id="arg-validate">validate<a class="anchor" aria-label="anchor" href="#arg-validate"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, validates project object based on
-current rules. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-project-path">project_path<a class="anchor" aria-label="anchor" href="#arg-project-path"></a></dt>
-<dd><p>A character string representing the file path of the exact
-<code>&lt;short_name&gt;_REDCapSync.RData</code> file to be loaded.</p></dd>
 
 
 <dt id="arg-with-data">with_data<a class="anchor" aria-label="anchor" href="#arg-with-data"></a></dt>

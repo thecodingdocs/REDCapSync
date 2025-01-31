@@ -174,6 +174,7 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
     )
   }
 }
+#' @noRd
 na_if_null <- function(x){
   return(ifelse(is.null(x),NA,x))
 }
@@ -254,6 +255,7 @@ add_project_details_to_cache <- function(project_details){
 add_project_details_to_project <- function(project,project_details){
   assert_setup_project(project)
   assert_project_details(project_details, nrows = 1)
+  # compare_project_details()
   #top -----
   if(!identical(project$short_name, project_details$short_name)){
     stop("project and project_details short_name must be identical!")
@@ -279,7 +281,9 @@ add_project_details_to_project <- function(project,project_details){
   # redcap --------
   # project$redcap$version <- project_details$version # check identical unless NA
   # project$redcap$token_name <- project_details$token_name
-  # project$redcap$project_id <- project_details$project_id
+  # if (!is.na(project$redcap$project_id)) {
+  #   project$redcap$project_id <- project_details$project_id
+  # }
   # project$redcap$project_title <- project_details$project_title
   # project$redcap$id_col <- project_details$id_col # check identical unless NA
   # project$redcap$is_longitudinal <- project_details$is_longitudinal
@@ -290,7 +294,7 @@ add_project_details_to_project <- function(project,project_details){
   # project$links$redcap_home <- project_details$redcap_home
   # project$links$redcap_API_playground <- project_details$redcap_API_playground
   # saving ----
-  # project$internals$last_directory_save <- project_details$last_directory_save %>% as.POSIXct()
+  project$internals$last_directory_save <- project_details$last_directory_save %>% as.POSIXct()
   # project$internals$last_metadata_update <- project_details$last_metadata_update %>% as.POSIXct()
   # project$internals$last_data_update <- project_details$last_data_update %>% as.POSIXct()
   # project_details$R_object_size <- NA

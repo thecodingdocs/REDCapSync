@@ -238,6 +238,10 @@ sweep_dirs_for_cache <- function(project_names=NULL){
         to_cache <- readRDS(expected_path)
         if(!is.na(from_cache$last_directory_save)){ # should I compare?
           if(to_cache$last_directory_save !=  from_cache$last_directory_save) {
+            if(!identical(to_cache$dir_path,from_cache$dir_path)){
+              to_cache$dir_path <- from_cache$dir_path
+              # SAVE
+            }
             project_list[[project_name]] <- to_cache
             cli_alert_info(paste0("Updated cache for ",project_name))
             had_change <- TRUE

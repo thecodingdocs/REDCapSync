@@ -205,7 +205,7 @@ setup_project <- function(
       )
     }
   }
-  if(was_loaded) {
+  if (was_loaded) {
     #compare current setting to previous settings...
     original_details <- project %>% extract_project_details()
     if (!is.null(project$internals$labelled)) {
@@ -294,36 +294,35 @@ load_project <- function(short_name) {
   projects <- get_projects()
   if (nrow(projects) == 0) stop("No projects in cache")
   if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_project()` and `sync_project()`?")
-  dir_path <- projects$dir_path[which(projects$short_name == short_name)]
+  dir_path <- projects$dir_path[which(projects$short_name == short_name)] %>% sanitize_path()
+  assert_dir(dir_path)
   if (!file.exists(dir_path)) stop("`dir_path` doesn't exist: '", dir_path, "'")
   project_path <- file.path(
     dir_path,
     "R_objects",
     paste0(short_name, internal_project_path_suffix)
   )
+  assert_project_path(project_path)
   if (!file.exists(project_path)) stop("No file at path '", project_path, "'. Did you use `setup_project()` and `sync_project()`?")
   project <- readRDS(file = project_path)
-  # if failed through message like unlink to project_path
-  assert_project_path(project_path)
   project <- project %>% assert_setup_project(silent = FALSE)
-  expected_dir <- project_path %>% dirname() %>% dirname()
-  assert_dir(expected_dir)
   # if(){
   #   check if in cache already and relation!
   # }
-  project$dir_path <- expected_dir %>% sanitize_path()
-  project_details_path <- get_expected_project_details_path(project)
-  if(!file.exists(project_details_path)){
-    save_project_details(project)
-    cli_alert_warning("Project details missing from dir. Regenerated it!")
+  # SAVE
+  loaded_dir <- project$dir_path %>% sanitize_path()
+  if(!identical(dir_path,loaded_dir)){
+    cli_alert_warning("loaded dir_path did not match your cached dir_path. This should only happen with cloud/shared directories.")
   }
-  project_details_path <- file.path(
-    dir_path,
-    "R_objects",
-    paste0(short_name, internal_project_details_path_suffix)
-  )
+  project$dir_path <- dir_path
+  project_details_path <- get_expected_project_details_path(project)
   project_details <- readRDS(file = project_details_path)
-  # messaging about changes
+  project <- add_project_details_to_project(
+    project = project,
+    project_details = project_details
+  )
+  project$dir_path <- dir_path
+
   save_project_details(project)
   return(invisible(project))
 }

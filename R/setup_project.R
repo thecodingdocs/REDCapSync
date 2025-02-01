@@ -269,6 +269,7 @@ setup_project <- function(
     final_details <- project %>% extract_project_details()
     # message about changes compared to original
   }
+  project$internals$last_directory_save <- now_time()
   save_project_details(project)
   return(invisible(project))
 }

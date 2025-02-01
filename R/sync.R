@@ -100,7 +100,7 @@ sync <- function(
       }else{
         cli::cli_alert_info("No need to update {project_name}: {then} ({sync_frequency})")
       }
-      projects$status <- project_status
+      projects$status[project_row] <- project_status
       the_link <- projects$redcap_home[project_row]
       if (is_something(the_link)){
         bullet_in_console(paste0(project_name, ": "), url = the_link)

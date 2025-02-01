@@ -241,12 +241,12 @@ setup_project <- function(
   project$internals$labelled <- labelled
   project$internals$original_file_names <- original_file_names
   project$internals$entire_log <- entire_log
-  project$internals$days_of_log <- days_of_log
+  project$internals$days_of_log <- days_of_log %>% assert_integerish() %>% as.integer()
   project$internals$get_files <- get_files
   project$internals$get_type <- get_type
   project$internals$metadata_only <- metadata_only
-  project$internals$batch_size_download <- batch_size_download %>% assert_integerish()
-  project$internals$batch_size_upload <- batch_size_upload %>% assert_integerish()
+  project$internals$batch_size_download <- batch_size_download %>% assert_integerish() %>% as.integer()
+  project$internals$batch_size_upload <- batch_size_upload %>% assert_integerish() %>% as.integer()
   project$internals$get_file_repository <- get_file_repository
   if (!is_a_test) {
     project$links$redcap_base <- assert_web_link(redcap_base)
@@ -322,7 +322,6 @@ load_project <- function(short_name) {
     project_details = project_details
   )
   project$dir_path <- dir_path
-
   save_project_details(project)
   return(invisible(project))
 }
@@ -392,7 +391,7 @@ save_project <- function(project,silent = FALSE) {
     )
     return(invisible(project))
   }
-  project$internals$last_directory_save <- Sys.time()
+  project$internals$last_directory_save <-  now_time()
   project_details <- extract_project_details(project = project)
   # project <- reverse_clean_project(project) # # problematic because setting numeric would delete missing codes
   save_project_path <- get_expected_project_path(project = project)

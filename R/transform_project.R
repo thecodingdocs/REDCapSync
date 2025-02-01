@@ -684,7 +684,7 @@ transform_project <- function(project, ask = TRUE) {
   project$metadata$fields <- fields
   bullet_in_console(paste0("Added mod fields to ", project$short_name, " `project$metadata$fields`"), bullet_type = "v")
   project$metadata$choices <- fields_to_choices(project$metadata$fields)
-  project$internals$last_data_transformation <- Sys.time()
+  project$internals$last_data_transformation <-  now_time()
   return(project)
 }
 #' @title Untransform project

@@ -1,3 +1,6 @@
+now_time <- function(){
+  return(as.POSIXct(Sys.time(), tz = Sys.timezone()))
+}
 process_df_list <- function(list, drop_empty = TRUE, silent = FALSE) {
   if (is_something(list)) {
     if (!is_df_list(list)) stop("list must be ...... a list :)")

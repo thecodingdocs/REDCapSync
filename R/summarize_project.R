@@ -603,7 +603,7 @@ summarize_project <- function(
       project$data <- original_data
       subset_list <- project$summary$subsets[[subset_name]]
       project$summary$subsets[[subset_name]]$subset_records <- get_subset_records(project = project, subset_name = subset_name)
-      project$summary$subsets[[subset_name]]$last_save_time <- Sys.time()
+      project$summary$subsets[[subset_name]]$last_save_time <-  now_time()
       to_save_list <- project %>% generate_summary_from_subset_name(
         subset_name = subset_name,
         clean = clean,

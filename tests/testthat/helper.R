@@ -6,8 +6,8 @@ mock_project <- function(){
     redcap_base = redcap_base
   )
   project$internals$ever_connected <- TRUE
-  fake_time <- Sys.time()
-  project$internals$last_data_dir_save <- fake_time
+  fake_time <- now_time()
+  project$internals$last_directory_save <- fake_time
   project$internals$last_metadata_update <- fake_time
   project$internals$last_data_update <- fake_time
   project$redcap$version <- "12.1.1"

@@ -87,7 +87,7 @@ get_REDCap_method <- function(project, method, error_action = "warn", additional
 }
 #' @noRd
 get_REDCap_metadata <- function(project, include_users = TRUE) {
-  project$internals$last_metadata_update <- Sys.time()
+  project$internals$last_metadata_update <-  now_time()
   project$metadata <- list()
   # info ----------
   project$redcap$project_info <- get_REDCap_method(project, method = "exp_proj")
@@ -320,23 +320,24 @@ get_REDCap_structure <- function(project) {
 }
 #' @noRd
 get_REDCap_log <- function(project, last = 24, user = "", units = "hours", begin_time = "", clean = TRUE, record = "") {
+  now <- now_time()
   if (units == "days") {
-    x <- (Sys.time() - lubridate::days(last)) %>%
+    x <- (now - lubridate::days(last)) %>%
       format("%Y-%m-%d %H:%M") %>%
       as.character()
   }
   if (units == "hours") {
-    x <- (Sys.time() - lubridate::hours(last)) %>%
+    x <- (now - lubridate::hours(last)) %>%
       format("%Y-%m-%d %H:%M") %>%
       as.character()
   }
   if (units == "mins") {
-    x <- (Sys.time() - lubridate::minutes(last)) %>%
+    x <- (now - lubridate::minutes(last)) %>%
       format("%Y-%m-%d %H:%M") %>%
       as.character()
   }
   if (units == "years") {
-    x <- (Sys.time() - lubridate::years(last)) %>%
+    x <- (now - lubridate::years(last)) %>%
       format("%Y-%m-%d %H:%M") %>%
       as.character()
   }

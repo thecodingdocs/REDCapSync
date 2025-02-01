@@ -71,7 +71,7 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
           upload_form_to_REDCap(to_be_uploaded = to_be_uploaded, project = project, batch_size = batch_size)
           project$data_updates[[TABLE]] <- NULL
           any_updates <- TRUE
-          project$internals$last_data_update <- Sys.time()
+          project$internals$last_data_update <-  now_time()
         }
       }
     }

@@ -130,7 +130,7 @@ sync <- function(
   return(invisible())
 }
 due_for_sync<- function (project_name) {
-  now <- Sys.time()
+  now <-  now_time()
   projects <- get_projects()
   #early escapes ----
   assert_data_frame(projects,min.rows = 1)
@@ -171,7 +171,7 @@ due_for_sync<- function (project_name) {
   return(TRUE)
 }
 due_for_sync2 <- function(){
-  now <- Sys.time()
+  now <-  now_time()
   projects <- get_projects()
   if(nrow(projects)==0){
     return(NULL)

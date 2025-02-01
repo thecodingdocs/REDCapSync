@@ -84,23 +84,8 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   )
   save_project(project)
   expect_false(file.exists(file.path(project$dir_path,"R_objects",paste0(short_name,"_REDCapSync.RData"))))
-  #fakeproject
   project$internals$ever_connected <- TRUE
-  fake_time <- Sys.time()
-  project$internals$last_data_dir_save <- fake_time
-  project$internals$last_metadata_update <- fake_time
-  project$internals$last_data_update <- fake_time
-  project$redcap$version <- "12.1.1"
-  project$redcap$token_name <- project$redcap$token_name
-  project$redcap$project_id <- "01234"
-  project$redcap$project_title <- "A Fake Project"
-  project$redcap$id_col <- "record_id"
-  project$redcap$is_longitudinal <- FALSE
-  project$redcap$has_repeating_forms_or_events <- FALSE
-  project$redcap$has_multiple_arms <- FALSE
-  project$links$redcap_home <- project$links$redcap_base
-  project$links$redcap_API_playground <- project$links$redcap_base
-  #saving
+  project$internals$last_directory_save <- now_time()
   project <- save_project(project)
   expected_save_location <- file.path(project$dir_path,"R_objects",paste0(short_name,"_REDCapSync.RData"))
   expect_true(file.exists(expected_save_location))
@@ -113,6 +98,8 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   #loading tests
   expect_error(load_project("a_project")) # wont load unknown project
   project2 <- load_project(short_name = short_name)#loads what we saved
+  project$internals$last_directory_save %>% attr("tzone")
+  project2$internals$last_directory_save %>% attr("tzone")
   expect_identical(project,project2)
   #delete_project works...
   expect_no_warning(delete_project(project))

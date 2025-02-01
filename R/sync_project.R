@@ -73,8 +73,8 @@ sync_project <- function(
     )
     return(project)
   }
-  # project$internals$last_metadata_update <- Sys.time()-lubridate::days(1)
-  # project$internals$last_data_update <- Sys.time()-lubridate::days(1)
+  # project$internals$last_metadata_update <-  now_time()-lubridate::days(1)
+  # project$internals$last_data_update <-  now_time()-lubridate::days(1)
   if (!is.null(project$transformation$data_updates)) {
     do_it <- TRUE
     bullet_in_console("There is data in 'project$transformation$data_updates' that has not been pushed to REDCap yet...")
@@ -161,7 +161,7 @@ sync_project <- function(
       project$summary$all_records$last_api_call <-
         project$internals$last_full_update <-
         project$internals$last_metadata_update <-
-        project$internals$last_data_update <- Sys.time()
+        project$internals$last_data_update <-  now_time()
       bullet_in_console(paste0("Full ", project$short_name, " update!"), bullet_type = "v")
       was_updated <- TRUE
     }
@@ -193,7 +193,7 @@ sync_project <- function(
       }
       project$summary$all_records$last_api_call[which(project$summary$all_records[[project$redcap$id_col]] %in% stale_records)] <-
         project$internals$last_data_update <-
-        Sys.time()
+         now_time()
       project$data <- remove_records_from_list(project = project, records = stale_records, silent = TRUE)
       if (project$internals$is_transformed) {
         project2 <- stripped_project(project)

@@ -139,10 +139,10 @@ due_for_sync<- function (project_name) {
   project_row <- which(projects$short_name == project_name)
   last_sync <- projects$last_sync[project_row]
   # assert_posixct(last_data_update, len = 1, any.missing = TRUE)
-  if(is.na(last_data_update)){
+  if(is.na(last_sync)){
     return(TRUE)
   }
-  then <- as.POSIXct(last_data_update, format = "%Y-%m-%d %H:%M:%OS",tz = Sys.timezone())
+  then <- last_sync
   if(is.na(then)){
     return(TRUE)
   }

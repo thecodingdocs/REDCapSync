@@ -85,7 +85,12 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   save_project(project)
   expect_false(file.exists(file.path(project$dir_path,"R_objects",paste0(short_name,"_REDCapSync.RData"))))
   project$internals$ever_connected <- TRUE
-  project$internals$last_directory_save <- now_time()
+  fake_time <- now_time()
+  project$internals$last_sync <- fake_time
+  project$internals$last_directory_save <- fake_time
+  project$internals$last_data_update <- fake_time
+  project$internals$last_metadata_update <- fake_time
+  project$internals$timezone <- Sys.timezone()
   project <- save_project(project)
   expected_save_location <- file.path(project$dir_path,"R_objects",paste0(short_name,"_REDCapSync.RData"))
   expect_true(file.exists(expected_save_location))
@@ -98,8 +103,8 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   #loading tests
   expect_error(load_project("a_project")) # wont load unknown project
   project2 <- load_project(short_name = short_name)#loads what we saved
-  project$internals$last_directory_save %>% attr("tzone")
-  project2$internals$last_directory_save %>% attr("tzone")
+  # project$internals$last_directory_save %>% attr("tzone")
+  # project2$internals$last_directory_save %>% attr("tzone")
   expect_identical(project,project2)
   #delete_project works...
   expect_no_warning(delete_project(project))

@@ -70,6 +70,8 @@ internal_blank_project_cols <- c(
   "short_name",
   "dir_path",
   "sync_frequency",
+  "last_sync",
+  "timezone",
   "last_directory_save",
   "last_metadata_update",
   "last_data_update",
@@ -111,6 +113,8 @@ internal_blank_project_details <- function() {
     dir_path = character(0),
     # settings -----
     sync_frequency = character(0),
+    last_sync = character(0) %>% as.POSIXct(tz=Sys.timezone()),
+    timezone = character(0),
     last_directory_save = character(0) %>% as.POSIXct(tz=Sys.timezone()),
     last_metadata_update = character(0)%>% as.POSIXct(tz=Sys.timezone()),
     last_data_update = character(0)%>% as.POSIXct(tz=Sys.timezone()),
@@ -221,6 +225,8 @@ extract_project_details <- function(project) {
   OUT$redcap_home <-  project$links$redcap_home %>% na_if_null()
   OUT$redcap_API_playground <-  project$links$redcap_API_playground %>% na_if_null()
   # saving ----
+  OUT$timezone <- project$internals$timezone %>% na_if_null()
+  OUT$last_sync <- project$internals$last_sync %>% na_if_null() %>% as.POSIXct(tz=Sys.timezone())
   OUT$last_directory_save <- project$internals$last_directory_save %>% na_if_null() %>% as.POSIXct(tz=Sys.timezone())
   OUT$last_metadata_update <- project$internals$last_metadata_update %>% na_if_null() %>% as.POSIXct(tz=Sys.timezone())
   OUT$last_data_update <- project$internals$last_data_update %>% na_if_null() %>% as.POSIXct(tz=Sys.timezone())
@@ -294,9 +300,11 @@ add_project_details_to_project <- function(project,project_details){
   # project$links$redcap_home <- project_details$redcap_home
   # project$links$redcap_API_playground <- project_details$redcap_API_playground
   # saving ----
+  project$internals$timezone <- project_details$timezone
+  project$internals$last_sync <- project_details$last_sync %>% as.POSIXct(tz=Sys.timezone())
   project$internals$last_directory_save <- project_details$last_directory_save %>% as.POSIXct(tz=Sys.timezone())
-  # project$internals$last_metadata_update <- project_details$last_metadata_update %>% as.POSIXct(tz=Sys.timezone())
-  # project$internals$last_data_update <- project_details$last_data_update %>% as.POSIXct(tz=Sys.timezone())
+  project$internals$last_metadata_update <- project_details$last_metadata_update %>% as.POSIXct(tz=Sys.timezone())
+  project$internals$last_data_update <- project_details$last_data_update %>% as.POSIXct(tz=Sys.timezone())
   # project_details$R_object_size <- NA
   # project_details$file_size <- NA
   # bad_row <- which(

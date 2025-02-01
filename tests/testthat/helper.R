@@ -10,6 +10,8 @@ mock_project <- function(){
   project$internals$last_directory_save <- fake_time
   project$internals$last_metadata_update <- fake_time
   project$internals$last_data_update <- fake_time
+  project$internals$last_sync <- fake_time
+  project$internals$timezone <- Sys.timezone()
   project$redcap$version <- "12.1.1"
   project$redcap$token_name <- project$redcap$token_name
   project$redcap$project_id <- "01234"

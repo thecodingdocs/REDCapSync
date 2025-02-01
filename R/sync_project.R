@@ -224,11 +224,12 @@ sync_project <- function(
   if (project$internals$get_files) { # test now
     get_REDCap_files(project, original_file_names = project$internals$original_file_names)
   }
+  project$internals$last_sync <- now_time()
   if (save_to_dir && !is.null(project$dir_path)) {
     if(was_updated){
       project <- save_project(project)
     } else {
-      project$internals$last_directory_save <- now_time()
+      project$internals$last_directory_save <- project$internals$last_sync
       save_project_details(project)
     }
   }

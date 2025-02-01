@@ -520,6 +520,8 @@ internal_blank_project_new <- list(
     last_quality_check = NULL,
     last_clean = NULL,
     last_directory_save = NULL,
+    last_sync = NULL,
+    timezone = NULL,
     is_blank = TRUE,
     is_test = FALSE,
     is_transformed = FALSE,
@@ -601,6 +603,8 @@ internal_blank_project <- list(
     last_quality_check = NULL,
     last_clean = NULL,
     last_directory_save = NULL,
+    last_sync = NULL,
+    timezone = NULL,
     get_files = NULL,
     get_file_repository = NULL,
     original_file_names = NULL,
@@ -615,8 +619,7 @@ internal_blank_project <- list(
     ever_connected = FALSE,
     is_transformed = FALSE,
     is_clean = FALSE,
-    use_csv = FALSE,
-    sync_freq = NULL
+    use_csv = FALSE
   ),
   links = list(
     redcap_base = NULL,

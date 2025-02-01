@@ -52,7 +52,7 @@ sync <- function(
     for(project_name in names(project_list)){
       project_details <- project_list[[project_name]]
       project_row <- which(projects$short_name == project_name)
-      then <- project_details$last_directory_save
+      then <- project_details$last_sync
       sync_frequency <- project_details$sync_frequency
       do_it <- due_for_sync(project_name) || hard_reset
       # what determines due if setting changed?
@@ -137,7 +137,7 @@ due_for_sync<- function (project_name) {
   assert_names(projects$short_name, must.include = project_name)
   #-----
   project_row <- which(projects$short_name == project_name)
-  last_data_update <- projects$last_data_update[project_row]
+  last_sync <- projects$last_sync[project_row]
   # assert_posixct(last_data_update, len = 1, any.missing = TRUE)
   if(is.na(last_data_update)){
     return(TRUE)

@@ -13,8 +13,9 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   assert_setup_project(project)
   project$internals$last_metadata_update <- now_time()
   project$metadata <- list()
+  rcon <- project_rcon(project)
   # info ----------
-  project$redcap$project_info <- rcon$projectInformation()
+  project$redcap$project_info <- redcapAPI::exportProjectInformation(rcon = rcon)
   project$redcap$project_title <- project$redcap$project_info$project_title
   project$redcap$project_id <- project$redcap$project_info$project_id
   project$redcap$is_longitudinal <- project$redcap$project_info$is_longitudinal == "1"
@@ -220,8 +221,9 @@ get_REDCap_files <- function(project, original_file_names = FALSE, overwrite = F
   }
   bullet_in_console("Checked for files! Stored at ...", file = out_dir, bullet_type = "v")
 }
-get_REDCap_users <- function(rcon) {
-  assert_class(rcon, classes = c("redcapApiConnection", "redcapConnection"))
+get_REDCap_users <- function(project) {
+  assert_setup_project(project)
+  rcon <- project_rcon(project)
   users<-  redcapAPI::exportUsers(rcon = rcon,labels = FALSE, form_rights = FALSE)
   user_roles <- redcapAPI::exportUserRoles(rcon = rcon,labels = FALSE, form_rights = FALSE)
   user_role_assignments <- redcapAPI::exportUserRoleAssignments(rcon = rcon)
@@ -230,6 +232,11 @@ get_REDCap_users <- function(rcon) {
 }
 #' @noRd
 get_REDCap_log <- function(project, last = 24, user = "", units = "hours", begin_time = NULL, clean = TRUE, record = "") {
+  assert_setup_project(project)
+  assert_integerish(last)
+  assert_choice(units, choices = c("days","hours","mins","years"))
+  assert_logical(clean)
+  rcon <- project_rcon(project)
   now <- now_time()
   if(is.null(begin_time)){
     if (units == "days") {

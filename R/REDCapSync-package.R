@@ -14,6 +14,7 @@
 #' @importFrom checkmate assert_data_frame
 #' @importFrom checkmate assert_path_for_output
 #' @importFrom checkmate assert_true
+#' @importFrom checkmate assert_class
 #' @importFrom checkmate assert_directory
 #' @importFrom checkmate assert_directory_exists
 #' @importFrom checkmate assert_set_equal

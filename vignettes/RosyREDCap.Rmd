@@ -56,9 +56,9 @@ Sys.getenv("REDCapSync_TEST")
 #And if your project object is setup properly...
 #3. Using the REDCap console
 project<-load_project("TEST")
-set_REDCap_token(project)
+set_project_token(project)
 # can see if it's set correctly
-view_REDCap_token(project)
+view_project_token(project)
 ```
 
 ## Run Core Functions

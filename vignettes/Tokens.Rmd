@@ -28,7 +28,7 @@ Sys.getenv("REDCapSync_TEST")
 #>[1] ""
 # Assuming you already setup or loaded a project object you can set the token like this...
 project <- load_project("TEST")
-set_REDCap_token(project)
+set_project_token(project)
 ```
 
 You can also set manually with base R. Unless you specifically set the token `Sys.getenv("REDCapSync_TEST")` will be blank.
@@ -70,13 +70,13 @@ The only reference to your token that is ever made or saved in REDCapSync is wit
 
 ## Testing Your Token (optional)
 
-If you are ever having any issues with your token, you can test your project object with `view_REDCap_token(project)` and/or `test_REDCap_token(project)`
+If you are ever having any issues with your token, you can test your project object with `view_project_token(project)` and/or `test_project_token(project)`
 
 ```{r, eval=FALSE}
 
-view_REDCap_token(project)
+view_project_token(project)
 
-test_REDCap_token(project)
+test_project_token(project)
 
 ```
 

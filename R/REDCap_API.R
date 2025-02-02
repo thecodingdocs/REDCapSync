@@ -165,7 +165,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   }
   # other-------
   if (include_users) {
-    project$redcap$users <- get_REDCap_users(rcon = rcon)
+    project$redcap$users <- get_REDCap_users(project)
     project$redcap$log <- get_REDCap_log(project, last = 2, units = "mins")
     project$redcap$users$current_user <- project$redcap$users$username == project$redcap$log$username[which(project$redcap$log$details == "Export REDCap version (API)") %>% dplyr::first()]
   }

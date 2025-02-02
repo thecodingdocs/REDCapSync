@@ -793,7 +793,10 @@ check_subsets <- function(project, subset_names) {
 }
 #' @title Select REDCap Records from project
 #' @description
-#' This function filters the records in the `project` object by specified criteria, such as field names, form names, and optional filtering based on a specific field and its values. It returns a modified `project` object containing only the records that match the filter criteria.
+#' This function filters the records in the `project` object by specified
+#' criteria, such as field names, form names, and optional filtering based on a
+#' specific field and its values. It returns a modified `project` object
+#' containing only the records that match the filter criteria.
 #'
 #' @inheritParams save_project
 #' @param field_names A character vector of field names to be included in the filtered data. If missing, all fields are included.
@@ -1220,16 +1223,16 @@ check_project_for_IDs <- function(project, required_percent_filled = 0.7) {
       DF <- project$data[[project$metadata$forms$form_name[which(!project$metadata$forms$repeating)][[1]]]]
       IN_length <- DF %>% nrow()
       cols <- colnames(DF)[DF %>%
-        lapply(function(IN) {
-          OUT <- FALSE
-          x <- IN %>% drop_nas()
-          if ((length(x) / IN_length) > required_percent_filled) {
-            OUT <- anyDuplicated(x) == 0
-          }
-          return(OUT)
-        }) %>%
-        unlist() %>%
-        which()]
+                             lapply(function(IN) {
+                               OUT <- FALSE
+                               x <- IN %>% drop_nas()
+                               if ((length(x) / IN_length) > required_percent_filled) {
+                                 OUT <- anyDuplicated(x) == 0
+                               }
+                               return(OUT)
+                             }) %>%
+                             unlist() %>%
+                             which()]
     }
   }
   return(cols)

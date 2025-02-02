@@ -404,11 +404,8 @@ save_project <- function(project, silent = FALSE) {
     return(invisible(project))
   }
   project$internals$last_directory_save <- now_time()
-  project_details <- extract_project_details(project = project)
   # project <- reverse_clean_project(project) # # problematic because setting numeric would delete missing codes
   save_project_path <- get_expected_project_path(project = project)
-  save_project_details_path <- get_expected_project_details_path(project = project)
-  current_function <- as.character(current_call()) %>% dplyr::first()
   saveRDS(
     object = project,
     file = save_project_path

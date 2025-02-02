@@ -34,7 +34,10 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 A modified \code{project} object with filtered records and columns based on the provided criteria.
 }
 \description{
-This function filters the records in the \code{project} object by specified criteria, such as field names, form names, and optional filtering based on a specific field and its values. It returns a modified \code{project} object containing only the records that match the filter criteria.
+This function filters the records in the \code{project} object by specified
+criteria, such as field names, form names, and optional filtering based on a
+specific field and its values. It returns a modified \code{project} object
+containing only the records that match the filter criteria.
 }
 \details{
 This function filters the data in the \code{project} object according to the specified form and field names and optional filter criteria. If no field names or form names are provided, it defaults to using all fields and forms in the database.

@@ -831,12 +831,12 @@ is_nested_list <- function(x) {
   if (is.data.frame(x)) {
     return(FALSE)
   }
-  OUT <- length(x) == 0
+  outcome <- length(x) == 0
   for (i in seq_along(x)) {
-    OUT <- OUT || is_nested_list(x[[i]])
-    # print(OUT)
+    outcome <- outcome || is_nested_list(x[[i]])
+    # print(outcome)
   }
-  return(OUT)
+  return(outcome)
 }
 clean_num <- function(num) {
   formatC(num, format = "d", big.mark = ",")
@@ -860,8 +860,7 @@ is_date <- function(date) {
     year <- year %>% as.integer()
     month <- OUT2[[2]] %>% as.integer()
     day <- OUT2[[3]] %>% as.integer()
-    this_year <-
-      OUT <- month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= lubridate::year(Sys.Date())
+    OUT <- month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= lubridate::year(Sys.Date())
   }
   OUT
 }

@@ -356,7 +356,7 @@ save_project_details <- function(project, silent = TRUE) {
       }
       if (!collected$isEmpty()) {
         info <- "Something critical doesn't match. You should run `delete_project_by_name(\"{project$short_name}\")"
-        message <- collected %>%
+        collected %>%
           cli_message_maker(function_name = current_function, info = info) %>%
           cli::cli_abort()
       }

@@ -387,6 +387,7 @@ clean_redcap_log <- function(log) {
   rows <- which(!is.na(log$record) & is.na(log$record_id))
   log$action_type[rows] <- "Users"
   log$record_id <- NULL
+  log$username[which(log$username =="[survey respondent]")] <- NA
   log <- sort_redcap_log(log)
   return(log)
 }

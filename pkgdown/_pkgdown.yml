@@ -32,7 +32,6 @@ reference:
       - sync_project
       - drop_REDCap_to_directory
       - summarize_project
-
   - title: Everything by Topic (Intermediate/Advanced)
     desc: Expands on functionality and breaksdown core feautures into more customizable parts
   - subtitle: Project Cache
@@ -46,9 +45,9 @@ reference:
   - subtitle: Tokens
     desc: Tokens are required to use the REDCap API. Never share your tokens.
     contents:
-      - set_REDCap_token
-      - view_REDCap_token
-      - test_REDCap_token
+      - set_project_token
+      - view_project_token
+      - test_project_token
   - subtitle: Setup/Load/Save/Delete project Object
     desc: project objects are R lists meant to store all metadata and data for a single REDCap project. They utilize the REDCap log to only fetch recent updates. The can be "mirrored" to a local/cloud directory to maintain file pipelines and/or used for an exploratory data analysis shiny app via `RosyREDCap::run_RosyREDCap`.
     contents:
@@ -56,10 +55,32 @@ reference:
       - load_project
       - delete_project
       - save_project
-  - subtitle: Get from REDCap
-    desc: For most project, even with tens-of-thousands records and hundreds of variables, this can be handeled with sync_project. This package is not presently intended for massive REDCap projects.
+  - subtitle: project setup Object Modifications
+    desc: One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
     contents:
-      - get_REDCap_report
+      - default_project_transformation
+      - add_default_project_transformation
+      - add_default_project_fields
+      - add_project_transformation
+      - add_project_field
+      - add_project_subset
+  - subtitle: Sync Functions
+    desc: Run Syncs on periodic bases; sync is "hands-free", while sync_project uses project object in the environment.
+    contents:
+      - sync
+      - sync_project
+  - subtitle: project Object Outputs
+    desc: Mirror your project object to a local/cloud file system. If you have subsets, will only update file if record beloning to that subset was updated.
+    contents:
+      - clean_project
+      - deidentify_project
+      - filter_project
+      - drop_REDCap_to_directory
+      - generate_horizontal_transform
+      - generate_summary_from_subset_name
+      - summarize_project
+      - transform_project
+      - untransform_project
   - subtitle: Data Helpers
     desc: Used for managing to-be-upload data
     contents:
@@ -68,45 +89,13 @@ reference:
       - raw_to_labelled_form
       - labelled_to_raw_form
       - read_from_REDCap_upload
-  - subtitle: Upload to and Delete from REDCap
+  - subtitle: Download from, Upload to, and Delete from REDCap
     desc: Always use with caution! Package takes several steps to test and confirm uploads but ultimately the user is responsible for data changes. Remember REDCap always keeps a log of changes.
     contents:
-      - add_REDCap_folder
+      - get_REDCap_report
       - upload_project_to_REDCap
-      - upload_file_to_REDCap
-      - upload_file_to_REDCap_file_repository
       - upload_form_to_REDCap
       - upload_transform_to_project
-      - delete_REDCap_file
-      - delete_REDCap_records
-      - delete_file_from_REDCap
-  - subtitle: project Object Modifications
-    desc: One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
-    contents:
-      - clean_project
-      - deidentify_project
-      - filter_project
-      - default_project_transformation
-      - add_default_project_transformation
-      - add_default_project_fields
-      - add_project_transformation
-      - add_project_field
-      - add_project_subset
-      - transform_project
-      - untransform_project
-  - subtitle: project Object Outputs
-    desc: Mirror your project object to a local/cloud file system. If you have subsets, will only update file if record beloning to that subset was updated.
-    contents:
-      - drop_REDCap_to_directory
-      - generate_horizontal_transform
-      - generate_summary_from_subset_name
-      - summarize_project
-  - subtitle: Sync Functions
-    desc: Run Syncs on periodic bases; sync is "hands-free", while sync_project uses project object in the environment.
-    contents:
-      - sync
-      - sync_project
-
   - subtitle: Experimental/Dev Functions
     desc: These functions are still in development and is subject to changes.
     contents:

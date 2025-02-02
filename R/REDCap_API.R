@@ -1,108 +1,32 @@
 #' @noRd
-redcap_api_request <- function(url, token, additional_args = NULL) {
-  body <- list(
-    "token" = token
+project_rcon <- function (project){
+  assert_setup_project(project)
+  rcon <- redcapAPI::redcapConnection(
+    url = project$links$redcap_uri,
+    token = assert_REDCap_token(project)
   )
-  if (!is.null(additional_args)) {
-    body <- body %>% append(additional_args)
-  }
-  httr::POST(
-    url = url,
-    body = body,
-    encode = "form"
-  )
-}
-#' @noRd
-process_redcap_response <- function(response, error_action = "warn", method, show_method_help = TRUE) {
-  bind <- TRUE
-  if (!missing(method)) {
-    if (method == "exp_rc_v") {
-      content <- response %>%
-        httr::content(as = "text") %>%
-        as.character()
-      bind <- FALSE
-    }
-  }
-  if (bind) {
-    content <- httr::content(response) %>%
-      dplyr::bind_rows() %>%
-      all_character_cols()
-  }
-  if (httr::http_error(response)) {
-    if (!error_action %in% c("stop", "warn")) stop("error_action must be 'stop' or 'warn'")
-    general_error <- response$status_code
-    specific_error <- http_errors$Description[which(http_errors$Value == response$status_code)]
-    message <- paste0("HTTP error ", general_error, ". ", specific_error, ". ")
-    if ("error" %in% names(content)) message <- paste0(message, content[["error"]])
-    if (error_action == "stop") stop(message)
-    warning(message, immediate. = TRUE)
-    if (!missing(method) && show_method_help) {
-      show_redcap_api_method_info(method)
-    }
-    return(NA)
-  }
-  return(content)
-}
-#' @noRd
-run_redcap_api_method <- function(project, url, token, method, error_action = "warn", additional_args = NULL, only_get = FALSE, show_method_help = TRUE) {
-  if (!missing(project)) {
-    url <- project$links$redcap_uri
-    token <- assert_REDCap_token(project)
-  }
-  allowed_methods <- REDCap_API$methods$method_short_name %>% sort()
-  if (only_get) {
-    allowed_methods <- REDCap_API$methods$method_short_name[which(REDCap_API$methods$action_type == "export")] %>% sort()
-  }
-  if (!method %in% allowed_methods) stop("Can only use the following methods... ", as_comma_string(allowed_methods))
-  method_param_df <- REDCap_API$params[which(REDCap_API$params$method_short_name == method), ]
-  method_param_df <- method_param_df[which(method_param_df$Parameter != "token"), ]
-  base_rows <- which(!method_param_df$non_base)
-  if (!is.null(additional_args)) {
-    if ("content" %in% names(additional_args)) stop("Do not supply default-defined content additional_args... This is automatically tied to method!")
-  }
-  for (i in base_rows) {
-    if (!method_param_df$Parameter[i] %in% names(additional_args)) {
-      additional_args <- additional_args %>% append(
-        stats::setNames(method_param_df$default[i], method_param_df$Parameter[i]) %>% as.list()
-      )
-    }
-  }
-  redcap_api_request(url = url, token = token, additional_args = additional_args) %>%
-    process_redcap_response(error_action = error_action, method = method, show_method_help = show_method_help) %>%
-    return()
-}
-#' @noRd
-get_REDCap_method <- function(project, method, error_action = "warn", additional_args = NULL, show_method_help = TRUE) {
-  return(
-    run_redcap_api_method(
-      url = project$links$redcap_uri,
-      token = assert_REDCap_token(project),
-      method = method,
-      additional_args = additional_args,
-      error_action = error_action,
-      only_get = TRUE,
-      show_method_help = show_method_help
-    )
-  )
+  # test connection
+  return(rcon)
 }
 #' @noRd
 get_REDCap_metadata <- function(project, include_users = TRUE) {
+  assert_setup_project(project)
   project$internals$last_metadata_update <- now_time()
   project$metadata <- list()
   # info ----------
-  project$redcap$project_info <- get_REDCap_method(project, method = "exp_proj")
+  project$redcap$project_info <- rcon$projectInformation()
   project$redcap$project_title <- project$redcap$project_info$project_title
   project$redcap$project_id <- project$redcap$project_info$project_id
   project$redcap$is_longitudinal <- project$redcap$project_info$is_longitudinal == "1"
   project$metadata$missing_codes <- missing_codes2(project)
   # instruments --------
-  project$metadata$forms <- get_REDCap_method(project, method = "exp_instr") %>% rename_forms_redcap_to_default()
+  project$metadata$forms <- redcapAPI::exportInstruments(rcon = rcon) %>% rename_forms_redcap_to_default()
   project$metadata$forms$repeating <- FALSE
   project$redcap$has_repeating_forms <- FALSE
   project$redcap$has_repeating_events <- FALSE
   project$redcap$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events == "1"
   # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
-  repeatingFormsEvents <- get_REDCap_method(project, method = "exp_repeating_forms_events")
+  repeatingFormsEvents <- redcapAPI::exportRepeatingInstrumentsEvents(rcon = rcon)
   if (is.data.frame(repeatingFormsEvents)) {
     project$metadata$forms$repeating <- project$metadata$forms$form_name %in% repeatingFormsEvents$form_name
   }
@@ -110,7 +34,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     project$redcap$has_repeating_forms <- TRUE
   }
   # metadata ----------
-  project$metadata$fields <- get_REDCap_method(project, method = "exp_metadata", error_action = "stop")
+  project$metadata$fields <- redcapAPI::exportMetaData(rcon = rcon)
   project$metadata$fields$section_header <- project$metadata$fields$section_header %>% remove_html_tags()
   project$metadata$fields$field_label <- project$metadata$fields$field_label %>% remove_html_tags()
   project$redcap$id_col <- project$metadata$fields[1, 1] %>% as.character() # RISKY?
@@ -179,12 +103,12 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   # is longitudinal ------
   if (project$redcap$is_longitudinal) {
     project$redcap$raw_structure_cols <- c(project$redcap$raw_structure_cols, "arm_num", "event_name") %>% unique()
-    project$metadata$arms <- get_REDCap_method(project, method = "exp_arms")
+    project$metadata$arms <- redcapAPI::exportArms(rcon = rcon)
     project$redcap$has_arms <- TRUE
     project$redcap$has_multiple_arms <- nrow(project$metadata$arms) > 1
     project$redcap$has_arms_that_matter <- project$redcap$has_multiple_arms
-    project$metadata$event_mapping <- get_REDCap_method(project, method = "exp_inst_event_maps")
-    project$metadata$events <- get_REDCap_method(project, method = "exp_events")
+    project$metadata$event_mapping <- redcapAPI::exportMappings(rcon = rcon)
+    project$metadata$events <- redcapAPI::exportEvents(rcon = rcon)
     project$metadata$events$repeating <- FALSE
     project$metadata$event_mapping$repeating <- FALSE
     if (is.data.frame(repeatingFormsEvents)) {
@@ -240,7 +164,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   }
   # other-------
   if (include_users) {
-    project$redcap$users <- get_REDCap_users(project)
+    project$redcap$users <- get_REDCap_users(rcon = rcon)
     project$redcap$log <- get_REDCap_log(project, last = 2, units = "mins")
     project$redcap$users$current_user <- project$redcap$users$username == project$redcap$log$username[which(project$redcap$log$details == "Export REDCap version (API)") %>% dplyr::first()]
   }
@@ -251,16 +175,6 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$links$redcap_API <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/API/project_api.php?pid=", project$redcap$project_id)
   project$links$redcap_API_playground <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/API/playground.php?pid=", project$redcap$project_id)
   return(project)
-}
-#' @noRd
-get_REDCap_version <- function(project, show_method_help = TRUE) {
-  return(
-    get_REDCap_method(
-      project = project,
-      method = "exp_rc_v",
-      show_method_help = show_method_help
-    )
-  )
 }
 #' @noRd
 get_REDCap_files <- function(project, original_file_names = FALSE, overwrite = FALSE) {
@@ -306,45 +220,32 @@ get_REDCap_files <- function(project, original_file_names = FALSE, overwrite = F
   }
   bullet_in_console("Checked for files! Stored at ...", file = out_dir, bullet_type = "v")
 }
-#' @noRd
-get_REDCap_users <- function(project) {
-  users <- get_REDCap_method(project, method = "exp_users")
-  userRole <- get_REDCap_method(project, method = "exp_user_roles") %>% dplyr::select("unique_role_name", "role_label")
-  userRoleMapping <- get_REDCap_method(project, method = "exp_user_role_maps")
-  final <- merge(merge(userRole, userRoleMapping, by = "unique_role_name"), users, by = "username", all.y = TRUE)
+get_REDCap_users <- function(rcon) {
+  assert_class(rcon, classes = c("redcapApiConnection", "redcapConnection"))
+  users<-  redcapAPI::exportUsers(rcon = rcon,labels = FALSE, form_rights = FALSE)
+  user_roles <- redcapAPI::exportUserRoles(rcon = rcon,labels = FALSE, form_rights = FALSE)
+  user_role_assignments <- redcapAPI::exportUserRoleAssignments(rcon = rcon)
+  final <- merge(merge(user_roles[,c("unique_role_name","role_label")], user_role_assignments, by = "unique_role_name"), users, by = "username", all.y = TRUE)
   return(final)
 }
 #' @noRd
-get_REDCap_structure <- function(project) {
-  get_REDCap_metadata(project, include_users = FALSE)
-}
-#' @noRd
-get_REDCap_log <- function(project, last = 24, user = "", units = "hours", begin_time = "", clean = TRUE, record = "") {
+get_REDCap_log <- function(project, last = 24, user = "", units = "hours", begin_time = NULL, clean = TRUE, record = "") {
   now <- now_time()
-  if (units == "days") {
-    x <- (now - lubridate::days(last)) %>%
-      format("%Y-%m-%d %H:%M") %>%
-      as.character()
+  if(is.null(begin_time)){
+    if (units == "days") {
+      begin_time <- now - lubridate::days(last)
+    }
+    if (units == "hours") {
+      begin_time <- now - lubridate::hours(last)
+    }
+    if (units == "mins") {
+      begin_time <- now - lubridate::minutes(last)
+    }
+    if (units == "years") {
+      begin_time <- now - lubridate::years(last)
+    }
   }
-  if (units == "hours") {
-    x <- (now - lubridate::hours(last)) %>%
-      format("%Y-%m-%d %H:%M") %>%
-      as.character()
-  }
-  if (units == "mins") {
-    x <- (now - lubridate::minutes(last)) %>%
-      format("%Y-%m-%d %H:%M") %>%
-      as.character()
-  }
-  if (units == "years") {
-    x <- (now - lubridate::years(last)) %>%
-      format("%Y-%m-%d %H:%M") %>%
-      as.character()
-  }
-  if (begin_time != "") {
-    x <- begin_time
-  }
-  log <- get_REDCap_method(project, "exp_logging", additional_args = list(beginTime = x, record = record, user = user))
+  log <- redcapAPI::exportLogging(rcon = rcon,beginTime = begin_time, record = record, user = user)
   if (is.data.frame(log)) {
     if (clean) {
       log <- log %>% clean_redcap_log()
@@ -353,7 +254,12 @@ get_REDCap_log <- function(project, last = 24, user = "", units = "hours", begin
   log # deal with if NA if user does not have log privileges.
 }
 #' @noRd
-get_REDCap_raw_data <- function(project, labelled = FALSE, records = NULL, batch_size = 1000) {
+get_REDCap_raw_data <- function(
+    project,
+    labelled = FALSE,
+    records = NULL,
+    batch_size = 1000
+) {
   raw <- REDCapR::redcap_read(
     redcap_uri = project$links$redcap_uri,
     token = assert_REDCap_token(project),
@@ -365,73 +271,6 @@ get_REDCap_raw_data <- function(project, labelled = FALSE, records = NULL, batch
     raw_or_label = ifelse(labelled, "label", "raw")
   )$data %>% all_character_cols()
   return(raw)
-}
-#' @title Delete Records from REDCap
-#' @description
-#' This function deletes one or more records from a REDCap project using the REDCap API. It sends a `delete` action request for each specified record and ensures that only records present in the database are processed.
-#'
-#' @inheritParams save_project
-#' @param records A character vector of record IDs to be deleted from the REDCap project.
-#' @return NULL. The function does not return a value but will print a message confirming deletion.
-#'
-#' @details
-#' The function checks whether the records to be deleted are included in the `project$summary$all_records` list. If any records are not found, an error is thrown. Otherwise, the function proceeds to delete each specified record from the REDCap project via the REDCap API.
-#' The `delete` action is executed using the `httr::POST` method, sending the necessary request to the REDCap server.
-#'
-#' @export
-delete_REDCap_records <- function(project, records) {
-  BAD <- records[which(!records %in% project$summary$all_records[[project$redcap$id_col]])]
-  if (length(BAD) > 0) stop("Records not included in project: ", records %>% paste0(collapse = ", "))
-  for (record in records) {
-    httr::POST(
-      url = project$links$redcap_uri,
-      body = list(
-        "token" = assert_REDCap_token(project),
-        content = "record",
-        action = "delete",
-        `records[0]` = record,
-        returnFormat = "json"
-      ),
-      encode = "form"
-    ) %>% process_redcap_response(error_action = "warn")
-  }
-  message("Records deleted!")
-}
-#' @noRd
-show_REDCap_API_methods <- function() {
-  show_REDCap_API_methods_table()[["method_short_name"]] %>% sort()
-}
-#' @noRd
-show_REDCap_API_methods_table <- function() {
-  return(REDCap_API$methods)
-}
-#' @noRd
-show_redcap_api_method_info <- function(method) {
-  if (missing(method)) {
-    bullet_in_console("Missing method, so one will be chosen at random!", bullet_type = "x")
-    method <- REDCap_API$methods$method_short_name %>% sample1()
-  }
-  if (!method %in% REDCap_API$methods$method_short_name) stop("Must use the following methods... ", as_comma_string(REDCap_API$methods$method_short_name))
-  method_df <- REDCap_API$methods[which(REDCap_API$methods$method_short_name == method), ]
-  method_param_df <- REDCap_API$params[which(REDCap_API$params$method_short_name == method), ]
-  method_param_df_base <- method_param_df[which(!method_param_df$non_base), ]
-  method_param_df_req <- method_param_df[which(method_param_df$non_base_req_by_user), ]
-  method_param_df_opt <- method_param_df[which(method_param_df$non_base_opt_by_user), ]
-  bullet_in_console(paste0("REDCap API method '", method, "'..."))
-  bullet_in_console("Help is here: ", url = method_df$help_url)
-  bullet_in_console(paste0(method_df$description))
-  if (nrow(method_param_df_base) > 0) {
-    bullet_in_console(paste0("Default: ", method_param_df_base$Parameter %>% as_comma_string()), bullet_type = "v")
-  }
-  if (nrow(method_param_df_req) > 0) {
-    x <- method_param_df_req$Parameter
-    x[which(method_param_df_req$is_longitudinal_only)] <- paste0(x[which(method_param_df_req$is_longitudinal_only)], " (if longitudinal)")
-    x[which(method_param_df_req$has_repeating_instruments_or_events_only)] <- paste0(x[which(method_param_df_req$has_repeating_instruments_or_events_only)], " (if has repeating)")
-    bullet_in_console(paste0("Required by User: ", as_comma_string(x)), bullet_type = ">")
-  }
-  if (nrow(method_param_df_opt) > 0) {
-    bullet_in_console(paste0("Optional by User: ", method_param_df_opt$Parameter %>% as_comma_string()), bullet_type = ">")
-  }
 }
 #' @noRd
 rename_forms_redcap_to_default <- function(forms) {

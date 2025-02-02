@@ -535,7 +535,9 @@ transform_project <- function(project, ask = TRUE) {
     })
   names(project$transformation$original_col_names) <- project$data %>% names()
   # if(any(!names(transformation)%in%names(project$data)))stop("must have all project$data names in transformation")
-  if (is_something(process_df_list(project$data, silent = TRUE))) project <- run_fields_transformation(project, ask = ask)
+  if (is_something(process_df_list(project$data, silent = TRUE))){
+    project <- run_fields_transformation(project, ask = ask)
+  }
   named_df_list <- project$data
   OUT <- NULL
   for (i in (seq_len(nrow(forms_transformation)))) {

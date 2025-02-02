@@ -19,7 +19,7 @@
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
-set_REDCap_token <- function(project, ask = TRUE) {
+set_project_token <- function(project, ask = TRUE) {
   project <- assert_blank_project(project)
   token_name <- get_REDCap_token_name(project)
   is_a_test <- is_test_project(project)
@@ -63,7 +63,7 @@ set_REDCap_token <- function(project, ask = TRUE) {
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
-view_REDCap_token <- function(project) {
+view_project_token <- function(project) {
   project <- assert_blank_project(project)
   token <- assert_REDCap_token(project, silent = FALSE)
   bullet_in_console(paste0("Never share your token: ", token), bullet_type = "!")
@@ -76,7 +76,7 @@ view_REDCap_token <- function(project) {
 #' This function tests whether the API token stored in the `project` object is valid by making a request to the REDCap server.
 #' If the token is invalid, the function can optionally open the REDCap login page in a browser (`launch_browser`) and/or reset the token (`set_if_fails`) using the console.
 #' @inheritParams save_project
-#' @param set_if_fails Logical (TRUE/FALSE). If TRUE and test connection fails, asks user to paster token into consult using `set_REDCap_token(project)` function. Default is `TRUE`.
+#' @param set_if_fails Logical (TRUE/FALSE). If TRUE and test connection fails, asks user to paster token into consult using `set_project_token(project)` function. Default is `TRUE`.
 #' @param launch_browser Logical (TRUE/FALSE). If TRUE, launches the REDCap login page in the default web browser when validation fails. Default is `TRUE`.
 #' @return Logical. Returns `TRUE` if the API token is valid, otherwise `FALSE`.
 #' @seealso
@@ -85,12 +85,20 @@ view_REDCap_token <- function(project) {
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
-test_REDCap_token <- function(project, set_if_fails = TRUE, launch_browser = TRUE) {
+test_project_token <- function(project, set_if_fails = TRUE, launch_browser = TRUE) {
   # token <- assert_REDCap_token(project, silent = FALSE)
-  version <- get_REDCap_version(project, show_method_help = FALSE) %>%
-    suppressWarnings()
+  assert_setup_project(project)
+  rcon <- project_rcon(project)
+  redcap_version <- tryCatch(
+    expr = {
+      redcapAPI::exportVersion(rcon)
+    },
+    error = function(e) {
+      NULL
+    }
+  )
   project$internals$last_test_connection_attempt <- now_time()
-  ERROR <- is.na(version)
+  ERROR <- is.null(redcap_version)
   project$internals$last_test_connection_outcome <- !ERROR
   if (!set_if_fails) {
     return(project)
@@ -102,15 +110,21 @@ test_REDCap_token <- function(project, set_if_fails = TRUE, launch_browser = TRU
   while (ERROR) {
     bullet_in_console("Your REDCap API token check failed. Invalid token or API privileges. Contact Admin!`", bullet_type = "x")
     if (set_if_fails) {
-      set_REDCap_token(project, ask = FALSE)
-      version <- get_REDCap_version(project, show_method_help = FALSE) %>%
-        suppressWarnings()
-      ERROR <- is.na(version)
+      set_project_token(project, ask = FALSE)
+      redcap_version <- tryCatch(
+        expr = {
+          redcapAPI::exportVersion(rcon)
+        },
+        error = function(e) {
+          NULL
+        }
+      )
+      ERROR <- is.null(redcap_version)
       project$internals$last_test_connection_outcome <- !ERROR
     }
   }
   bullet_in_console("Connected to REDCap!", bullet_type = "v")
-  project$redcap$version <- version
+  project$redcap$version <- redcap_version
   project$internals$ever_connected <- TRUE
   return(project)
 }

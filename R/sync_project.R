@@ -31,7 +31,8 @@ sync_project <- function(
     silent = FALSE,
     ask_about_overwrites = TRUE,
     summarize = TRUE,
-    save_to_dir = TRUE) {
+    save_to_dir = TRUE
+) {
   collected <- makeAssertCollection()
   assert_blank_project(project)
   assert_logical(
@@ -64,7 +65,7 @@ sync_project <- function(
   was_updated <- FALSE
   # project$internals$last_directory_save
   # project$internals$last_test_connection_attempt
-  project <- test_REDCap_token(project, set_if_fails = set_token_if_fails)
+  project <- test_project_token(project, set_if_fails = set_token_if_fails)
   connected <- project$internals$last_test_connection_outcome
   if (!connected) {
     bullet_in_console(
@@ -96,7 +97,7 @@ sync_project <- function(
     } else {
       interim_log <- get_REDCap_log(
         project,
-        begin_time = as.character(strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d %H:%M") - lubridate::days(1))
+        begin_time = (strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d %H:%M") - lubridate::days(1))
       ) %>% clean_redcap_log()
       if (nrow(interim_log) <= nrow(project$redcap$log)) {
         head_of_log <- project$redcap$log %>% utils::head(n = nrow(interim_log))
@@ -149,7 +150,7 @@ sync_project <- function(
       log <- project$redcap$log # in case there is a log already
       if (project$internals$entire_log) {
         project$redcap$log <- log %>% dplyr::bind_rows(
-          project %>% get_REDCap_log(begin_time = project$redcap$project_info$creation_time) %>% unique() # should add - lubridate::days(2)
+          project %>% get_REDCap_log(begin_time = as.POSIXct(project$redcap$project_info$creation_time)) %>% unique() # should add - lubridate::days(2)
         )
       } else {
         project$redcap$log <- log %>% dplyr::bind_rows(

@@ -27,7 +27,7 @@ assert_REDCap_token <- function(project, silent = TRUE) {
   if (!silent) {
     bullet_in_console(
       paste0(
-        "You can set REDCap tokens each session with `set_REDCap_token(project)` or `Sys.setenv(",
+        "You can set REDCap tokens each session with `set_project_token(project)` or `Sys.setenv(",
         token_name,
         "='",
         message_about_token,

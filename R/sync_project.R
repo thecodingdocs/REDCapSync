@@ -97,7 +97,7 @@ sync_project <- function(
     } else {
       interim_log <- get_REDCap_log(
         project,
-        begin_time = (strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d %H:%M") - lubridate::days(1))
+        begin_time = as.POSIXct(strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d %H:%M") - lubridate::days(1))
       ) %>% clean_redcap_log()
       if (nrow(interim_log) <= nrow(project$redcap$log)) {
         head_of_log <- project$redcap$log %>% utils::head(n = nrow(interim_log))

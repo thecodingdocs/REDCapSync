@@ -281,6 +281,7 @@ clean_redcap_log <- function(log) {
   log <- unique(log)
   log$record_id <- NA
   log$action_type <- NA
+  log <- log %>% lapply(function(x){x %>% trimws(whitespace = "[\\h\\v]")}) %>% as.data.frame()
   design_test <- log$action == "Manage/Design"
   design_rows <- which(design_test)
   not_design_rows <- which(!design_test)

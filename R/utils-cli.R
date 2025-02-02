@@ -15,7 +15,7 @@ cli_message_maker <- function(collected, function_name, info, internal = TRUE) {
     names(info) <- rep_len("i", length.out = length(info))
     message <- message %>% append(info)
   }
-  mistakes <- gsub("\\{","{{",collected$getMessages()) %>% gsub("\\}","}}",.)
+  mistakes <- gsub("\\}", "}}", gsub("\\{", "{{", collected$getMessages()))
   mistakes <- collected$getMessages()
   names(mistakes) <- rep_len(">", length.out = length(mistakes))
   message <- message %>% append(mistakes)

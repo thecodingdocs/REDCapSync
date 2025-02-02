@@ -21,8 +21,8 @@ assert_REDCap_token <- function(project, silent = TRUE) {
   is_a_test <- is_test_project(project)
   valid <- token %>% is_valid_REDCap_token(silent = silent, is_a_test = is_a_test)
   message_about_token <- ifelse(is_a_test,
-                                get_test_token(project$short_name),
-                                "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
+    get_test_token(project$short_name),
+    "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
   )
   if (!silent) {
     bullet_in_console(
@@ -86,8 +86,7 @@ assert_env_name <- function(
     arg_name = "env_name",
     max.chars = 26,
     underscore_allowed_first = FALSE,
-    add = NULL
-) {
+    add = NULL) {
   collected <- makeAssertCollection()
   assert_character(
     arg_name,
@@ -108,11 +107,11 @@ assert_env_name <- function(
     add = collected
   )
   standalone <- is.null(add)
-  if(! standalone) {
+  if (!standalone) {
     assert_collection(add)
   }
   current_function <- as.character(current_call())[[1]]
-  if( ! collected$isEmpty()){
+  if (!collected$isEmpty()) {
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
@@ -123,7 +122,7 @@ assert_env_name <- function(
     min.chars = 1,
     max.chars = max.chars,
     pattern = paste0(
-      ifelse(underscore_allowed_first,"","^[A-Za-z]"),
+      ifelse(underscore_allowed_first, "", "^[A-Za-z]"),
       "[A-Za-z0-9_]*$"
     ),
     fixed = NULL,
@@ -131,19 +130,20 @@ assert_env_name <- function(
     .var.name = arg_name,
     add = collected
   )
-  if(! collected$isEmpty()) {
-    if (standalone){
+  if (!collected$isEmpty()) {
+    if (standalone) {
       collected %>%
         cli_message_maker(
-          function_name = as.character(current_call())[[1]]) %>%
+          function_name = as.character(current_call())[[1]]
+        ) %>%
         cli::cli_abort(message)
-    }else{
+    } else {
       add$push(
         cli::format_message(
           paste0(
             "`{arg_name}` = \"{env_name}\" is not allowed. `{arg_name}`can ",
             "only contain letters, numbers, or underscores without spaces or ",
-            "symbols. ",ifelse(underscore_allowed_first,"","It must start "),
+            "symbols. ", ifelse(underscore_allowed_first, "", "It must start "),
             "with a letter. Maximum string length is {max.chars}."
           )
         )
@@ -157,17 +157,16 @@ assert_blank_project <- function(
     project,
     silent = TRUE,
     warn_only = FALSE,
-    add = NULL
-) {
+    add = NULL) {
   standalone <- is.null(add)
-  if ( ! standalone) {
+  if (!standalone) {
     assert_collection(add)
   }
   collected <- makeAssertCollection()
   assert_logical(silent, any.missing = FALSE, len = 1, add = collected)
   assert_logical(warn_only, any.missing = FALSE, len = 1, add = collected)
   current_function <- as.character(current_call())[[1]]
-  if( ! collected$isEmpty()){
+  if (!collected$isEmpty()) {
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
@@ -184,8 +183,8 @@ assert_blank_project <- function(
     identical.to = names(internal_blank_project),
     add = collected
   )
-  if(! collected$isEmpty()) {
-    if ( ! standalone){
+  if (!collected$isEmpty()) {
+    if (!standalone) {
       add$push(
         cli::format_message(
           paste0(
@@ -198,7 +197,7 @@ assert_blank_project <- function(
     }
     message <- collected %>%
       cli_message_maker(function_name = current_function)
-    if(warn_only){
+    if (warn_only) {
       cli::cli_warn(message)
       return(invisible(project))
     }
@@ -211,17 +210,16 @@ assert_setup_project <- function(
     project,
     silent = TRUE,
     warn_only = FALSE,
-    add = NULL
-) {
+    add = NULL) {
   standalone <- is.null(add)
-  if ( ! standalone) {
+  if (!standalone) {
     assert_collection(add)
   }
   collected <- makeAssertCollection()
   assert_logical(silent, any.missing = FALSE, len = 1, add = collected)
   assert_logical(warn_only, any.missing = FALSE, len = 1, add = collected)
   current_function <- as.character(current_call()) %>% dplyr::first()
-  if( ! collected$isEmpty()){
+  if (!collected$isEmpty()) {
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
@@ -238,7 +236,7 @@ assert_setup_project <- function(
     arg_name = "short_name",
     add = collected
   )
-  #DIRPATH
+  # DIRPATH
   assert_env_name(
     env_name = project$redcap$token_name,
     max.chars = 50,
@@ -246,35 +244,35 @@ assert_setup_project <- function(
     underscore_allowed_first = TRUE,
     add = collected
   )
-  #dirpath
-  assert_logical(project$internals$labelled, len = 1,add = collected)
+  # dirpath
+  assert_logical(project$internals$labelled, len = 1, add = collected)
   assert_choice(
     project$internals$sync_frequency,
     choices = c("always", "hourly", "daily", "weekly", "monthly", "never"),
     add = collected
   )
-  assert_integerish(project$internals$days_of_log, len = 1, lower = 1,add = collected)
-  assert_logical(project$internals$get_files, len = 1,add = collected)
-  assert_logical(project$internals$get_file_repository, len = 1,add = collected)
-  assert_logical(project$internals$original_file_names, len = 1,add = collected)
-  assert_logical(project$internals$entire_log, len = 1,add = collected)
-  assert_logical(project$internals$metadata_only, len = 1,add = collected)
+  assert_integerish(project$internals$days_of_log, len = 1, lower = 1, add = collected)
+  assert_logical(project$internals$get_files, len = 1, add = collected)
+  assert_logical(project$internals$get_file_repository, len = 1, add = collected)
+  assert_logical(project$internals$original_file_names, len = 1, add = collected)
+  assert_logical(project$internals$entire_log, len = 1, add = collected)
+  assert_logical(project$internals$metadata_only, len = 1, add = collected)
   assert_env_name(
     project$internals$merge_form_name,
     max.chars = 31,
     arg_name = "merge_form_name",
     add = collected
   )
-  assert_logical(project$internals$use_csv, len = 1,add = collected)
-  assert_integerish(project$internals$batch_size_download, len = 1, lower = 1,add = collected)
-  assert_integerish(project$internals$batch_size_upload, len = 1, lower = 1,add = collected)
+  assert_logical(project$internals$use_csv, len = 1, add = collected)
+  assert_integerish(project$internals$batch_size_download, len = 1, lower = 1, add = collected)
+  assert_integerish(project$internals$batch_size_upload, len = 1, lower = 1, add = collected)
   assert_choice(
     project$internals$get_type,
     choices = c("identified", "deidentified", "strict-deidentified")
   )
-  assert_web_link(project$links$redcap_base)#argName #collected
-  if(! collected$isEmpty()) {
-    if ( ! standalone){
+  assert_web_link(project$links$redcap_base) # argName #collected
+  if (!collected$isEmpty()) {
+    if (!standalone) {
       add$push(
         cli::format_message(
           paste0(
@@ -287,7 +285,7 @@ assert_setup_project <- function(
     }
     message <- collected %>%
       cli_message_maker(function_name = current_function)
-    if(warn_only){
+    if (warn_only) {
       cli::cli_warn(message)
       return(invisible(project))
     }
@@ -296,23 +294,23 @@ assert_setup_project <- function(
   return(invisible(project))
 }
 #' @noRd
-assert_collection <- function(collection){
+assert_collection <- function(collection) {
   assert_list(collection, any.missing = FALSE, len = 3, names = "unique")
   assert_names(names(collection), identical.to = names(makeAssertCollection()))
   return(invisible(collection))
 }
-assert_project_details <- function(projects, nrows = NULL){
+assert_project_details <- function(projects, nrows = NULL) {
   assert_data_frame(
     x = projects,
     nrows = nrows,
     ncols = length(internal_blank_project_cols)
   )
 }
-assert_project_path <- function(project_path){
+assert_project_path <- function(project_path) {
   assert_path_for_output(
     x = project_path,
     overwrite = TRUE,
     extension = ".Rdata"
   )
-  assert_true(endsWith(basename(project_path),internal_project_path_suffix))
+  assert_true(endsWith(basename(project_path), internal_project_path_suffix))
 }

@@ -89,7 +89,7 @@ test_REDCap_token <- function(project, set_if_fails = TRUE, launch_browser = TRU
   # token <- assert_REDCap_token(project, silent = FALSE)
   version <- get_REDCap_version(project, show_method_help = FALSE) %>%
     suppressWarnings()
-  project$internals$last_test_connection_attempt <-  now_time()
+  project$internals$last_test_connection_attempt <- now_time()
   ERROR <- is.na(version)
   project$internals$last_test_connection_outcome <- !ERROR
   if (!set_if_fails) {

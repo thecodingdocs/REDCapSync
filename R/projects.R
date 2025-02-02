@@ -113,11 +113,11 @@ internal_blank_project_details <- function() {
     dir_path = character(0),
     # settings -----
     sync_frequency = character(0),
-    last_sync = character(0) %>% as.POSIXct(tz=Sys.timezone()),
+    last_sync = character(0) %>% as.POSIXct(tz = Sys.timezone()),
     timezone = character(0),
-    last_directory_save = character(0) %>% as.POSIXct(tz=Sys.timezone()),
-    last_metadata_update = character(0)%>% as.POSIXct(tz=Sys.timezone()),
-    last_data_update = character(0)%>% as.POSIXct(tz=Sys.timezone()),
+    last_directory_save = character(0) %>% as.POSIXct(tz = Sys.timezone()),
+    last_metadata_update = character(0) %>% as.POSIXct(tz = Sys.timezone()),
+    last_data_update = character(0) %>% as.POSIXct(tz = Sys.timezone()),
     version = character(0),
     token_name = character(0),
     project_id = character(0),
@@ -179,8 +179,8 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
   }
 }
 #' @noRd
-na_if_null <- function(x){
-  return(ifelse(is.null(x),NA,x))
+na_if_null <- function(x) {
+  return(ifelse(is.null(x), NA, x))
 }
 #' @noRd
 extract_project_details <- function(project) {
@@ -194,7 +194,7 @@ extract_project_details <- function(project) {
       internal_blank_project_cols
     )
   ) %>% as.data.frame()
-  #top -----
+  # top -----
   OUT$short_name <- project$short_name
   OUT$dir_path <- project$dir_path %>% na_if_null()
   # settings -------
@@ -212,30 +212,40 @@ extract_project_details <- function(project) {
   OUT$batch_size_download <- project$internals$batch_size_download %>% as.integer()
   OUT$batch_size_upload <- project$internals$batch_size_upload %>% as.integer()
   # redcap --------
-  OUT$version <-  project$redcap$version %>% na_if_null()
+  OUT$version <- project$redcap$version %>% na_if_null()
   OUT$token_name <- project$redcap$token_name %>% na_if_null()
-  OUT$project_id <-  project$redcap$project_id %>% na_if_null()
-  OUT$project_title <-  project$redcap$project_title %>% na_if_null()
-  OUT$id_col <-  project$redcap$id_col %>% na_if_null()
-  OUT$is_longitudinal <-  project$redcap$is_longitudinal %>% na_if_null()
-  OUT$has_repeating_forms_or_events <-  project$redcap$has_repeating_forms_or_events %>% na_if_null()
-  OUT$has_multiple_arms <-  project$redcap$has_multiple_arms %>% na_if_null()
-  OUT$n_records <-  length(project$summary$all_records[[project$redcap$id_col]]) %>% na_if_null() %>% as.integer()
-  OUT$redcap_base <-  project$links$redcap_base %>% na_if_null()
-  OUT$redcap_home <-  project$links$redcap_home %>% na_if_null()
-  OUT$redcap_API_playground <-  project$links$redcap_API_playground %>% na_if_null()
+  OUT$project_id <- project$redcap$project_id %>% na_if_null()
+  OUT$project_title <- project$redcap$project_title %>% na_if_null()
+  OUT$id_col <- project$redcap$id_col %>% na_if_null()
+  OUT$is_longitudinal <- project$redcap$is_longitudinal %>% na_if_null()
+  OUT$has_repeating_forms_or_events <- project$redcap$has_repeating_forms_or_events %>% na_if_null()
+  OUT$has_multiple_arms <- project$redcap$has_multiple_arms %>% na_if_null()
+  OUT$n_records <- length(project$summary$all_records[[project$redcap$id_col]]) %>%
+    na_if_null() %>%
+    as.integer()
+  OUT$redcap_base <- project$links$redcap_base %>% na_if_null()
+  OUT$redcap_home <- project$links$redcap_home %>% na_if_null()
+  OUT$redcap_API_playground <- project$links$redcap_API_playground %>% na_if_null()
   # saving ----
   OUT$timezone <- project$internals$timezone %>% na_if_null()
-  OUT$last_sync <- project$internals$last_sync %>% na_if_null() %>% as.POSIXct(tz=Sys.timezone())
-  OUT$last_directory_save <- project$internals$last_directory_save %>% na_if_null() %>% as.POSIXct(tz=Sys.timezone())
-  OUT$last_metadata_update <- project$internals$last_metadata_update %>% na_if_null() %>% as.POSIXct(tz=Sys.timezone())
-  OUT$last_data_update <- project$internals$last_data_update %>% na_if_null() %>% as.POSIXct(tz=Sys.timezone())
+  OUT$last_sync <- project$internals$last_sync %>%
+    na_if_null() %>%
+    as.POSIXct(tz = Sys.timezone())
+  OUT$last_directory_save <- project$internals$last_directory_save %>%
+    na_if_null() %>%
+    as.POSIXct(tz = Sys.timezone())
+  OUT$last_metadata_update <- project$internals$last_metadata_update %>%
+    na_if_null() %>%
+    as.POSIXct(tz = Sys.timezone())
+  OUT$last_data_update <- project$internals$last_data_update %>%
+    na_if_null() %>%
+    as.POSIXct(tz = Sys.timezone())
   OUT$R_object_size <- NA
   OUT$file_size <- NA
   return(OUT)
 }
 #' @noRd
-add_project_details_to_cache <- function(project_details){
+add_project_details_to_cache <- function(project_details) {
   assert_project_details(project_details, nrows = 1)
   projects <- get_projects()
   projects <- projects[which(projects$short_name != project_details$short_name), ]
@@ -243,7 +253,7 @@ add_project_details_to_cache <- function(project_details){
     projects$project_id == project_details$project_id &
       basename(projects$redcap_base) == basename(project_details$redcap_base)
   )
-  if(length(bad_row)>0) {
+  if (length(bad_row) > 0) {
     cli::cli_abort(
       paste0(
         "You are trying to save from a project [{project_details$short_name} PID ",
@@ -258,12 +268,12 @@ add_project_details_to_cache <- function(project_details){
   save_projects_to_cache(projects)
 }
 #' @noRd
-add_project_details_to_project <- function(project,project_details){
+add_project_details_to_project <- function(project, project_details) {
   assert_setup_project(project)
   assert_project_details(project_details, nrows = 1)
   # compare_project_details()
-  #top -----
-  if(!identical(project$short_name, project_details$short_name)){
+  # top -----
+  if (!identical(project$short_name, project_details$short_name)) {
     stop("project and project_details short_name must be identical!")
   }
   # if(!identical(project$dir_path, project_details$dir_path)){
@@ -301,10 +311,10 @@ add_project_details_to_project <- function(project,project_details){
   # project$links$redcap_API_playground <- project_details$redcap_API_playground
   # saving ----
   project$internals$timezone <- project_details$timezone
-  project$internals$last_sync <- project_details$last_sync %>% as.POSIXct(tz=Sys.timezone())
-  project$internals$last_directory_save <- project_details$last_directory_save %>% as.POSIXct(tz=Sys.timezone())
-  project$internals$last_metadata_update <- project_details$last_metadata_update %>% as.POSIXct(tz=Sys.timezone())
-  project$internals$last_data_update <- project_details$last_data_update %>% as.POSIXct(tz=Sys.timezone())
+  project$internals$last_sync <- project_details$last_sync %>% as.POSIXct(tz = Sys.timezone())
+  project$internals$last_directory_save <- project_details$last_directory_save %>% as.POSIXct(tz = Sys.timezone())
+  project$internals$last_metadata_update <- project_details$last_metadata_update %>% as.POSIXct(tz = Sys.timezone())
+  project$internals$last_data_update <- project_details$last_data_update %>% as.POSIXct(tz = Sys.timezone())
   # project_details$R_object_size <- NA
   # project_details$file_size <- NA
   # bad_row <- which(
@@ -332,32 +342,32 @@ save_project_details <- function(project, silent = TRUE) {
   add_project_details_to_cache(project_details)
   save_project_details_path <- get_expected_project_details_path(project = project)
   current_function <- as.character(current_call())[[1]]
-  if(is_something(save_project_details_path)){
-    if(file.exists(save_project_details_path)){
+  if (is_something(save_project_details_path)) {
+    if (file.exists(save_project_details_path)) {
       to <- readRDS(save_project_details_path)
       from <- project_details
       collected <- makeAssertCollection()
       assert_set_equal(from$short_name, to$short_name, add = collected)
-      if(!is.na(from$project_id) && !is.na(to$project_id) ){
+      if (!is.na(from$project_id) && !is.na(to$project_id)) {
         assert_set_equal(from$project_id, to$project_id, add = collected)
       }
-      if(!is.na(from$redcap_base) && !is.na(to$redcap_base) ){
+      if (!is.na(from$redcap_base) && !is.na(to$redcap_base)) {
         assert_set_equal(from$redcap_base, to$redcap_base, add = collected)
       }
-      if(! collected$isEmpty()) {
+      if (!collected$isEmpty()) {
         info <- "Something critical doesn't match. You should run `delete_project_by_name(\"{project$short_name}\")"
         message <- collected %>%
           cli_message_maker(function_name = current_function, info = info) %>%
           cli::cli_abort()
       }
-      if(!check_set_equal(from$dir_path,to$dir_path)){
+      if (!check_set_equal(from$dir_path, to$dir_path)) {
         cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
       }
     }
     saveRDS(
       object = project_details,
       file = save_project_details_path
-    )# add error check
+    ) # add error check
   }
   return(invisible())
 }

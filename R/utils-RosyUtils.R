@@ -1,4 +1,4 @@
-now_time <- function(){
+now_time <- function() {
   return(as.POSIXct(Sys.time(), tz = Sys.timezone()))
 }
 process_df_list <- function(list, drop_empty = TRUE, silent = FALSE) {
@@ -841,30 +841,59 @@ is_nested_list <- function(x) {
 clean_num <- function(num) {
   formatC(num, format = "d", big.mark = ",")
 }
-date_imputation <- function(dates_in,date_imputation){
-  #followup add min max
-  z <- lapply(dates_in,is_date) %>% as.logical()
-  x <- which(z&!is_date_full(dates_in))
+is_date <- function(date) {
+  OUT <- grepl("^\\d{4}-\\d{2}-\\d{2}$|^\\d{4}-\\d{2}$|^\\d{4}$", date)
+  if (OUT) {
+    OUT2 <- date %>%
+      strsplit(split = "-") %>%
+      unlist()
+    year <- OUT2[[1]]
+    check_date <- year
+    if (length(OUT2) == 1) {
+      check_date <- check_date %>% paste0("-01")
+      OUT2[[2]] <- "01"
+    }
+    if (length(OUT2) == 2) {
+      check_date <- check_date %>% paste0("-01")
+      OUT2[[3]] <- "01"
+    }
+    year <- year %>% as.integer()
+    month <- OUT2[[2]] %>% as.integer()
+    day <- OUT2[[3]] %>% as.integer()
+    this_year <-
+      OUT <- month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= lubridate::year(Sys.Date())
+  }
+  OUT
+}
+is_date_full <- function(date) {
+  grepl("^\\d{4}-\\d{2}-\\d{2}$", date)
+}
+date_imputation <- function(dates_in, date_imputation) {
+  # followup add min max
+  z <- lapply(dates_in, is_date) %>% as.logical()
+  x <- which(z & !is_date_full(dates_in))
   y <- which(!z)
   date_out <- dates_in
-  if(length(y)>0){
+  if (length(y) > 0) {
     date_out[y] <- NA
   }
-  if(length(x)>0){
-    if(missing(date_imputation)) date_imputation <- NULL
-    if(is.null(date_imputation)){
-      date_out[x]<- NA
+  if (length(x) > 0) {
+    if (missing(date_imputation)) date_imputation <- NULL
+    if (is.null(date_imputation)) {
+      date_out[x] <- NA
     }
-    if(!is.null(date_imputation)){
-      date_out[x] <- dates_in[x] %>% lapply(function(date){
-        admiral::impute_dtc_dt(
-          date,
-          highest_imputation = "M", # "n" for normal date
-          date_imputation = date_imputation
-          # min_dates = min_dates %>% lubridate::ymd() %>% as.list(),
-          # max_dates = max_dates %>% lubridate::ymd() %>% as.list()
-        )
-      }) %>% unlist()
+    if (!is.null(date_imputation)) {
+      date_out[x] <- dates_in[x] %>%
+        lapply(function(date) {
+          admiral::impute_dtc_dt(
+            date,
+            highest_imputation = "M", # "n" for normal date
+            date_imputation = date_imputation
+            # min_dates = min_dates %>% lubridate::ymd() %>% as.list(),
+            # max_dates = max_dates %>% lubridate::ymd() %>% as.list()
+          )
+        }) %>%
+        unlist()
     }
   }
   date_out

@@ -15,7 +15,8 @@
 #' set the REDCap API token if the update fails. Default is `TRUE`.
 #' @param reset Logical that forces a fresh update if TRUE. Default is `FALSE`.
 #' @param ask_about_overwrites Logical (TRUE/FALSE). If TRUE, prompts the user
-#' before overwriting existing data. Default is `TRUE`.
+#' #' before overwriting existing data. Default is `TRUE`.
+#' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
 #' the directory. Default is `TRUE`.
 #' @return Messages for confirmation.
@@ -29,8 +30,8 @@ sync_project <- function(
     reset = FALSE,
     silent = FALSE,
     ask_about_overwrites = TRUE,
-    save_to_dir = TRUE
-) {
+    summarize = TRUE,
+    save_to_dir = TRUE) {
   collected <- makeAssertCollection()
   assert_blank_project(project)
   assert_logical(
@@ -49,12 +50,12 @@ sync_project <- function(
   assert_logical(save_to_dir, any.missing = FALSE, len = 1, add = collected)
   assert_logical(silent, any.missing = FALSE, len = 1, add = collected)
   current_function <- as.character(current_call())[[1]]
-  if( ! collected$isEmpty()){
+  if (!collected$isEmpty()) {
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
   do_it <- due_for_sync(project_name = project$short_name)
-  if( ! do_it){
+  if (!do_it) {
     cli::cli_alert_info("{project$short_name} not due for sync ({project$internals$sync_frequency})")
     return(project)
   }
@@ -88,8 +89,8 @@ sync_project <- function(
   if (!reset) { # check log interim
     if (
       is.null(project$internals$last_metadata_update) ||
-      is.null(project$internals$last_data_update) ||
-      is.null(project$internals$last_full_update)
+        is.null(project$internals$last_data_update) ||
+        is.null(project$internals$last_full_update)
     ) {
       reset <- TRUE
     } else {
@@ -138,9 +139,9 @@ sync_project <- function(
     }
   }
   if (reset) {
-    project <- project %>% get_REDCap_metadata(include_users = ! project$internals$metadata_only)
+    project <- project %>% get_REDCap_metadata(include_users = !project$internals$metadata_only)
     project$internals$is_transformed <- FALSE
-    if ( ! project$internals$metadata_only) {
+    if (!project$internals$metadata_only) {
       project$data <- list()
       project$data_updates <- list()
       project$summary <- list()
@@ -161,7 +162,7 @@ sync_project <- function(
       project$summary$all_records$last_api_call <-
         project$internals$last_full_update <-
         project$internals$last_metadata_update <-
-        project$internals$last_data_update <-  now_time()
+        project$internals$last_data_update <- now_time()
       bullet_in_console(paste0("Full ", project$short_name, " update!"), bullet_type = "v")
       was_updated <- TRUE
     }
@@ -226,7 +227,37 @@ sync_project <- function(
   }
   project$internals$last_sync <- now_time()
   if (save_to_dir && !is.null(project$dir_path)) {
-    if(was_updated){
+    project <- drop_REDCap_to_directory(
+      project = project,
+      smart = TRUE,
+      deidentify = FALSE,
+      include_metadata = TRUE,
+      include_other = TRUE,
+      separate = TRUE
+    ) # add params
+    # vars
+    # transform
+    # if(transform) {
+    #   project <- transform_project(
+    #   )
+    # }
+    if (summarize) {
+      project <- summarize_project(
+        project = project,
+        with_links = TRUE,
+        deidentify = TRUE,
+        clean = TRUE,
+        drop_blanks = TRUE,
+        include_metadata = TRUE,
+        annotate_metadata = TRUE,
+        include_record_summary = TRUE,
+        include_users = TRUE,
+        include_log = TRUE,
+        separate = FALSE,
+        reset = FALSE
+      )
+    }
+    if (was_updated) {
       project <- save_project(project)
     } else {
       project$internals$last_directory_save <- project$internals$last_sync

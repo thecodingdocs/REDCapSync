@@ -200,22 +200,10 @@ add_default_project_transformation <- function(project) {
 }
 #' @rdname default-transformations
 #' @export
-default_project_transformation <- function (project) {
-  forms_transformation <- get_original_forms(project)
-  if ("repeating_via_events" %in% colnames(forms_transformation)) {
-    forms_transformation <- forms_transformation[order(forms_transformation$repeating_via_events), ]
-  }
-  forms_transformation <- forms_transformation[order(forms_transformation$repeating), ]
-  merge_form_name <- project$internals$merge_form_name
-  forms_transformation$form_name_remap <- forms_transformation$form_name
-  forms_transformation$form_label_remap <- forms_transformation$form_label
-  forms_transformation$form_name_remap[which(!forms_transformation$repeating)] <- merge_form_name
-  merge_form_name_label <- merge_form_name
-  if (merge_form_name %in% forms_transformation$form_name) {
-    merge_form_name_label <- forms_transformation$form_label[which(forms_transformation$form_name == merge_form_name)]
-  }
-  forms_transformation$form_label_remap[which(!forms_transformation$repeating)] <- merge_form_name_label
-  forms_transformation$merge_to <- merge_form_name
+default_project_transformation <- function(project) {
+  assert_setup_project(project)
+  forms_transformation <- merge_non_repeating_project_transformation(project)
+  forms_transformation$merge_to <- project$internals$merge_form_name
   forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to %>%
     lapply(function(form_name) {
       if (form_name %in% names(project$metadata$form_key_cols)) {
@@ -332,7 +320,7 @@ add_project_transformation <- function(project, forms_transformation, ask = TRUE
     if (!identical(project$transformation$forms, forms_transformation)) {
       if (ask) {
         choice <- utils::askYesNo("Do you want to add transformation? (it doesn't match previous transform)")
-        if( ! choice){
+        if (!choice) {
           stop("Stopped as you asked.")
         }
       }
@@ -684,7 +672,7 @@ transform_project <- function(project, ask = TRUE) {
   project$metadata$fields <- fields
   bullet_in_console(paste0("Added mod fields to ", project$short_name, " `project$metadata$fields`"), bullet_type = "v")
   project$metadata$choices <- fields_to_choices(project$metadata$fields)
-  project$internals$last_data_transformation <-  now_time()
+  project$internals$last_data_transformation <- now_time()
   return(project)
 }
 #' @title Untransform project

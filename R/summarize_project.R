@@ -361,8 +361,7 @@ add_project_subset <- function(
     form_names = NULL,
     field_names = NULL,
     deidentify = TRUE,
-    reset = FALSE
-) {
+    reset = FALSE) {
   if (is.null(project$summary$subsets[[subset_name]]) || reset) {
     subset_records <- NULL
     if (filter_field == project$redcap$id_col) {
@@ -569,8 +568,7 @@ summarize_project <- function(
     include_users = TRUE,
     include_log = TRUE,
     separate = FALSE,
-    reset = FALSE
-) {
+    reset = FALSE) {
   project <- project %>% assert_blank_project()
   original_data <- project$data
   do_it <- is.null(project$internals$last_summary)
@@ -603,7 +601,7 @@ summarize_project <- function(
       project$data <- original_data
       subset_list <- project$summary$subsets[[subset_name]]
       project$summary$subsets[[subset_name]]$subset_records <- get_subset_records(project = project, subset_name = subset_name)
-      project$summary$subsets[[subset_name]]$last_save_time <-  now_time()
+      project$summary$subsets[[subset_name]]$last_save_time <- now_time()
       to_save_list <- project %>% generate_summary_from_subset_name(
         subset_name = subset_name,
         clean = clean,
@@ -1222,16 +1220,16 @@ check_project_for_IDs <- function(project, required_percent_filled = 0.7) {
       DF <- project$data[[project$metadata$forms$form_name[which(!project$metadata$forms$repeating)][[1]]]]
       IN_length <- DF %>% nrow()
       cols <- colnames(DF)[DF %>%
-                             lapply(function(IN) {
-                               OUT <- FALSE
-                               x <- IN %>% drop_nas()
-                               if ((length(x) / IN_length) > required_percent_filled) {
-                                 OUT <- anyDuplicated(x) == 0
-                               }
-                               return(OUT)
-                             }) %>%
-                             unlist() %>%
-                             which()]
+        lapply(function(IN) {
+          OUT <- FALSE
+          x <- IN %>% drop_nas()
+          if ((length(x) / IN_length) > required_percent_filled) {
+            OUT <- anyDuplicated(x) == 0
+          }
+          return(OUT)
+        }) %>%
+        unlist() %>%
+        which()]
     }
   }
   return(cols)

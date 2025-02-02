@@ -14,7 +14,7 @@ drop_REDCap_to_directory(
   with_links = TRUE,
   forms,
   merge_non_repeating = TRUE,
-  separate = FALSE,
+  separate = TRUE,
   str_trunc_length = 32000,
   file_name,
   dir_other

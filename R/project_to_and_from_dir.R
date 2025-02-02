@@ -33,7 +33,7 @@ drop_REDCap_to_directory <- function(
     with_links = TRUE,
     forms,
     merge_non_repeating = TRUE,
-    separate = FALSE,
+    separate = TRUE,
     str_trunc_length = 32000,
     file_name,
     dir_other) {
@@ -150,19 +150,21 @@ drop_REDCap_to_directory <- function(
   }
   if (due_for_save_data) {
     project$internals$last_data_dir_save <- project$internals$last_data_update
-    # if(merge_non_repeating) project <- merge_non_repeating_project(project)
+    # if(merge_non_repeating) {
+    #   project <- merge_non_repeating_project(project)
+    # }
     to_save_list <- project[["data"]]
     if (!missing(records)) to_save_list <- filter_project(project, filter_field = project$redcap$id_col, filter_choices = records) %>% process_df_list()
     link_col_list <- list()
-    if (with_links) {
-      to_save_list <- to_save_list %>% lapply(function(DF) {
-        add_redcap_links_to_DF(DF, project)
-      })
-      link_col_list <- list(
-        "redcap_link"
-      )
-      names(link_col_list) <- project$redcap$id_col
-    }
+    # if (with_links) {
+    #   to_save_list <- to_save_list %>% lapply(function(DF) {
+    #     add_redcap_links_to_DF(DF, project)
+    #   })
+    #   link_col_list <- list(
+    #     "redcap_link"
+    #   )
+    #   names(link_col_list) <- project$redcap$id_col
+    # }
     if (missing(file_name)) file_name <- project$short_name
     if (project$internals$use_csv) {
       list_to_csv(
@@ -185,7 +187,28 @@ drop_REDCap_to_directory <- function(
     }
     # if(merge_non_repeating) project <- unmerge_non_repeating_project(project)
   }
-  return(project)
+  return(invisible(project))
+}
+merge_non_repeating_project_transformation <- function(project) {
+  assert_setup_project(project)
+  forms_transformation <- get_original_forms(project)
+  if ("repeating_via_events" %in% colnames(forms_transformation)) {
+    forms_transformation <- forms_transformation[order(forms_transformation$repeating_via_events), ]
+  }
+  forms_transformation <- forms_transformation[order(forms_transformation$repeating), ]
+  merge_form_name <- project$internals$merge_form_name
+  forms_transformation$form_name_remap <- forms_transformation$form_name
+  forms_transformation$form_label_remap <- forms_transformation$form_label
+  forms_transformation$form_name_remap[which(!forms_transformation$repeating)] <- merge_form_name
+  merge_form_name_label <- merge_form_name
+  if (merge_form_name %in% forms_transformation$form_name) {
+    merge_form_name_label <- forms_transformation$form_label[which(forms_transformation$form_name == merge_form_name)]
+  }
+  forms_transformation$form_label_remap[which(!forms_transformation$repeating)] <- merge_form_name_label
+  forms_transformation$merge_to <- NA
+  forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to
+  forms_transformation$x_first <- FALSE
+  return(forms_transformation)
 }
 #' @title Reads project from the dropped REDCap files in dir/REDCap/upload
 #' @inheritParams save_project

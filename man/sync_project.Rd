@@ -10,6 +10,7 @@ sync_project(
   reset = FALSE,
   silent = FALSE,
   ask_about_overwrites = TRUE,
+  summarize = TRUE,
   save_to_dir = TRUE
 )
 }
@@ -25,7 +26,9 @@ set the REDCap API token if the update fails. Default is \code{TRUE}.}
 \item{silent}{Logical (TRUE/FALSE). For messages.}
 
 \item{ask_about_overwrites}{Logical (TRUE/FALSE). If TRUE, prompts the user
-before overwriting existing data. Default is \code{TRUE}.}
+#' before overwriting existing data. Default is \code{TRUE}.}
+
+\item{summarize}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
 
 \item{save_to_dir}{Logical (TRUE/FALSE). If TRUE, saves the updated data to
 the directory. Default is \code{TRUE}.}

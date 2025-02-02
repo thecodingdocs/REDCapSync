@@ -96,8 +96,7 @@ setup_project <- function(
     original_file_names = FALSE,
     merge_form_name = "merged",
     use_csv = FALSE,
-    silent = FALSE
-) {
+    silent = FALSE) {
   collected <- makeAssertCollection()
   assert_env_name(
     env_name = short_name,
@@ -105,7 +104,7 @@ setup_project <- function(
     arg_name = "short_name",
     add = collected
   )
-  #DIRPATH
+  # DIRPATH
   assert_env_name(
     env_name = token_name,
     max.chars = 50,
@@ -113,21 +112,21 @@ setup_project <- function(
     underscore_allowed_first = TRUE,
     add = collected
   )
-  assert_logical(reset, len = 1,add = collected)
-  assert_logical(labelled, len = 1,add = collected)
-  assert_integerish(days_of_log, len = 1, lower = 1,add = collected)
-  assert_logical(get_files, len = 1,add = collected)
-  assert_logical(get_file_repository, len = 1,add = collected)
-  assert_logical(original_file_names, len = 1,add = collected)
-  assert_logical(entire_log, len = 1,add = collected)
-  assert_logical(metadata_only, len = 1,add = collected)
+  assert_logical(reset, len = 1, add = collected)
+  assert_logical(labelled, len = 1, add = collected)
+  assert_integerish(days_of_log, len = 1, lower = 1, add = collected)
+  assert_logical(get_files, len = 1, add = collected)
+  assert_logical(get_file_repository, len = 1, add = collected)
+  assert_logical(original_file_names, len = 1, add = collected)
+  assert_logical(entire_log, len = 1, add = collected)
+  assert_logical(metadata_only, len = 1, add = collected)
   assert_env_name(
     merge_form_name,
     max.chars = 31,
     arg_name = "merge_form_name",
     add = collected
   )
-  assert_logical(use_csv, len = 1,add = collected)
+  assert_logical(use_csv, len = 1, add = collected)
   assert_choice(
     get_type,
     choices = c("identified", "deidentified", "strict-deidentified"),
@@ -138,17 +137,17 @@ setup_project <- function(
     choices = c("always", "hourly", "daily", "weekly", "monthly", "never"),
     add = collected
   )
-  assert_integerish(batch_size_download, len = 1, lower = 1,add = collected)
-  assert_integerish(batch_size_upload, len = 1, lower = 1,add = collected)
-  assert_logical(silent, len = 1,add = collected)
-  if(missing(redcap_base)){
+  assert_integerish(batch_size_download, len = 1, lower = 1, add = collected)
+  assert_integerish(batch_size_upload, len = 1, lower = 1, add = collected)
+  assert_logical(silent, len = 1, add = collected)
+  if (missing(redcap_base)) {
     REDCapSync_REDCAP_BASE <- Sys.getenv("REDCapSync_REDCAP_BASE")
-    if(is_something(REDCapSync_REDCAP_BASE)) {
+    if (is_something(REDCapSync_REDCAP_BASE)) {
       redcap_base <- REDCapSync_REDCAP_BASE
     }
   }
   current_function <- as.character(current_call())[[1]]
-  if( ! collected$isEmpty()){
+  if (!collected$isEmpty()) {
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
@@ -169,7 +168,7 @@ setup_project <- function(
       "R_objects",
       paste0(short_name, internal_project_details_path_suffix)
     )
-    if(file.exists(project_details_path)){
+    if (file.exists(project_details_path)) {
       project_details <- readRDS(file = project_details_path) # add try
       # add check for if it was loaded from right place
       add_project_details_to_cache(project_details)
@@ -182,10 +181,12 @@ setup_project <- function(
           load_project(short_name = short_name)
         })
       },
-      error = function(e){NULL}
+      error = function(e) {
+        NULL
+      }
     )
-    was_loaded <- !  is.null(project)
-    if (! was_loaded) {
+    was_loaded <- !is.null(project)
+    if (!was_loaded) {
       if (is_a_test) {
         project <- load_test_project(short_name = short_name, with_data = FALSE)
       } else {
@@ -206,7 +207,7 @@ setup_project <- function(
     }
   }
   if (was_loaded) {
-    #compare current setting to previous settings...
+    # compare current setting to previous settings...
     original_details <- project %>% extract_project_details()
     if (!is.null(project$internals$labelled)) {
       if (project$internals$labelled != labelled) {
@@ -241,12 +242,18 @@ setup_project <- function(
   project$internals$labelled <- labelled
   project$internals$original_file_names <- original_file_names
   project$internals$entire_log <- entire_log
-  project$internals$days_of_log <- days_of_log %>% assert_integerish() %>% as.integer()
+  project$internals$days_of_log <- days_of_log %>%
+    assert_integerish() %>%
+    as.integer()
   project$internals$get_files <- get_files
   project$internals$get_type <- get_type
   project$internals$metadata_only <- metadata_only
-  project$internals$batch_size_download <- batch_size_download %>% assert_integerish() %>% as.integer()
-  project$internals$batch_size_upload <- batch_size_upload %>% assert_integerish() %>% as.integer()
+  project$internals$batch_size_download <- batch_size_download %>%
+    assert_integerish() %>%
+    as.integer()
+  project$internals$batch_size_upload <- batch_size_upload %>%
+    assert_integerish() %>%
+    as.integer()
   project$internals$get_file_repository <- get_file_repository
   if (!is_a_test) {
     project$links$redcap_base <- assert_web_link(redcap_base)
@@ -265,7 +272,7 @@ setup_project <- function(
     cli::cli_alert_warning(paste0("No valid token in session: Sys.getenv('", token_name, "')"))
   }
   project <- assert_setup_project(project, silent = silent)
-  if(!is.null(original_details)){
+  if (!is.null(original_details)) {
     final_details <- project %>% extract_project_details()
     # message about changes compared to original
   }
@@ -273,21 +280,25 @@ setup_project <- function(
   save_project_details(project)
   return(invisible(project))
 }
-get_expected_project_path <- function(project){
+get_expected_project_path <- function(project) {
   assert_setup_project(project)
   file.path(
     project$dir_path,
     "R_objects",
     paste0(project$short_name, internal_project_path_suffix)
-  ) %>% sanitize_path() %>% return()
+  ) %>%
+    sanitize_path() %>%
+    return()
 }
-get_expected_project_details_path <- function(project){
+get_expected_project_details_path <- function(project) {
   assert_setup_project(project)
   file.path(
     project$dir_path,
     "R_objects",
     paste0(project$short_name, internal_project_details_path_suffix)
-  ) %>% sanitize_path() %>% return()
+  ) %>%
+    sanitize_path() %>%
+    return()
 }
 #' @rdname setup-load
 #' @export
@@ -312,7 +323,7 @@ load_project <- function(short_name) {
   # }
   # SAVE
   loaded_dir <- project$dir_path %>% sanitize_path()
-  if(!identical(dir_path,loaded_dir)){
+  if (!identical(dir_path, loaded_dir)) {
     cli_alert_warning("loaded dir_path did not match your cached dir_path. This should only happen with cloud/shared directories.")
   }
   project$dir_path <- dir_path
@@ -379,7 +390,7 @@ is_test_project <- function(project) {
 #' @return Message
 #' @family project object
 #' @export
-save_project <- function(project,silent = FALSE) {
+save_project <- function(project, silent = FALSE) {
   assert_setup_project(project)
   # assert_setup_project(project)
   if (!project$internals$ever_connected) {
@@ -392,7 +403,7 @@ save_project <- function(project,silent = FALSE) {
     )
     return(invisible(project))
   }
-  project$internals$last_directory_save <-  now_time()
+  project$internals$last_directory_save <- now_time()
   project_details <- extract_project_details(project = project)
   # project <- reverse_clean_project(project) # # problematic because setting numeric would delete missing codes
   save_project_path <- get_expected_project_path(project = project)
@@ -401,10 +412,10 @@ save_project <- function(project,silent = FALSE) {
   saveRDS(
     object = project,
     file = save_project_path
-  )# add error check
+  ) # add error check
   save_project_details(project)
   bullet_in_console(
-    paste0("Saved ", project$short_name ,"!"),
+    paste0("Saved ", project$short_name, "!"),
     url = save_project_path,
     bullet_type = "v",
     silent = silent

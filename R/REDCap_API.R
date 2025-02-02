@@ -87,7 +87,7 @@ get_REDCap_method <- function(project, method, error_action = "warn", additional
 }
 #' @noRd
 get_REDCap_metadata <- function(project, include_users = TRUE) {
-  project$internals$last_metadata_update <-  now_time()
+  project$internals$last_metadata_update <- now_time()
   project$metadata <- list()
   # info ----------
   project$redcap$project_info <- get_REDCap_method(project, method = "exp_proj")

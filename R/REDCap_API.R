@@ -20,7 +20,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     token = get_project_token(project)
   )[["data"]]# remove at some point
   project$redcap$project_title <- project$redcap$project_info$project_title
-  project$redcap$project_id <- project$redcap$project_info$project_id
+  project$redcap$project_id <- project$redcap$project_info$project_id %>% as.character()
   project$redcap$is_longitudinal <- project$redcap$project_info$is_longitudinal
   project$metadata$missing_codes <- missing_codes2(project)
   # instruments --------

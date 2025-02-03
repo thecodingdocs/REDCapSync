@@ -120,7 +120,7 @@ internal_blank_project_details <- function() {
     last_data_update = character(0) %>% as.POSIXct(tz = Sys.timezone()),
     version = character(0),
     token_name = character(0),
-    project_id = integer(0),
+    project_id = character(0),
     project_title = character(0),
     labelled = logical(0),
     id_col = character(0),

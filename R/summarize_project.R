@@ -650,7 +650,7 @@ sum_records <- function(project) {
     cols <- project$redcap$id_col
     if (is.data.frame(project$metadata$arms)) {
       if (nrow(project$metadata$arms) > 1) {
-        cols <- project$redcap$id_col %>% append("arm_num")
+        cols <- project$redcap$id_col %>% append("arm_number")
       }
     }
     if (length(cols) == 1) {
@@ -1166,7 +1166,7 @@ filter_DF_list <- function(DF_list, project, filter_field, filter_choices, form_
 field_names_metadata <- function(project, field_names, col_names) {
   fields <- get_original_fields(project) # project$metadata$fields
   # if(!deparse(substitute(FORM))%in%project$metadata$forms$form_name)stop("To avoid potential issues the form name should match one of the instrument names" )
-  BAD <- field_names[which(!field_names %in% c(project$metadata$fields$field_name, project$redcap$raw_structure_cols, "arm_num", "event_name"))]
+  BAD <- field_names[which(!field_names %in% c(project$metadata$fields$field_name, project$redcap$raw_structure_cols, "arm_number", "event_name"))]
   if (length(BAD) > 0) stop("All column names in your form must match items in your metadata, `project$metadata$fields$field_name`... ", paste0(BAD, collapse = ", "))
   # metadata <- project$metadata$fields[which(project$metadata$fields$form_name%in%instruments),]
   fields <- fields[which(fields$field_name %in% field_names), ]

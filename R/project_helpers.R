@@ -154,8 +154,8 @@ link_REDCap_record <- function(project, record, page, instance, text_only = FALS
   link <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/DataEntry/record_home.php?pid=", project$redcap$project_id)
   if (!missing(record)) {
     if (!record %in% project$summary$all_records[[project$redcap$id_col]]) stop(record, " is not one of the records inside project")
-    if ("arm_num" %in% colnames(project$summary$all_records)) {
-      link <- link %>% paste0("&arm=", project$summary$all_records$arm_num[which(project$summary$all_records$participant_id == record)])
+    if ("arm_number" %in% colnames(project$summary$all_records)) {
+      link <- link %>% paste0("&arm=", project$summary$all_records$arm_number[which(project$summary$all_records$participant_id == record)])
     }
     link <- link %>% paste0("&id=", record)
   }
@@ -203,7 +203,7 @@ get_key_col_list <- function(project) {
 #' @noRd
 raw_process_redcap <- function(raw, project, labelled) {
   # key_cols <-project$redcap$raw_structure_cols
-  # key_cols <- key_cols[which(!key_cols%in%c("arm_num","event_name"))]
+  # key_cols <- key_cols[which(!key_cols%in%c("arm_number","event_name"))]
   # paste0(raw[[project$redcap$id_col]],"_",raw$redcap_event_name,"_",raw$redcap_repeat_instrument,"_",raw$redcap_repeat_instance)
   forms <- get_original_forms(project)
   fields <- get_original_fields(project)
@@ -213,10 +213,10 @@ raw_process_redcap <- function(raw, project, labelled) {
   data_list <- list()
   if (nrow(raw) > 0) {
     raw <- raw %>% all_character_cols()
-    add_ons <- c(project$redcap$id_col, "arm_num", "event_name", "redcap_event_name", "redcap_repeat_instrument", "redcap_repeat_instance")
+    add_ons <- c(project$redcap$id_col, "arm_number", "event_name", "redcap_event_name", "redcap_repeat_instrument", "redcap_repeat_instance")
     if (project$redcap$is_longitudinal) {
       raw$id_temp <- seq_len(nrow(raw))
-      raw <- merge(raw, events[, c("arm_num", "event_name", "unique_event_name")], by.x = "redcap_event_name", by.y = "unique_event_name", sort = FALSE, all.x = TRUE)
+      raw <- merge(raw, events[, c("arm_number", "event_name", "unique_event_name")], by.x = "redcap_event_name", by.y = "unique_event_name", sort = FALSE, all.x = TRUE)
       add_ons <- add_ons[which(add_ons %in% colnames(raw))]
       cols <- c(add_ons, colnames(raw)) %>% unique()
       raw <- raw[order(raw$id_temp), cols %>% lapply(function(c) {

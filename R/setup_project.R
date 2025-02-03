@@ -425,9 +425,11 @@ delete_project <- function(project) {
   project <- assert_blank_project(project)
   dir_path <- project$dir_path
   dir_path <- assert_dir(dir_path, silent = FALSE)
-  delete_this <- file.path(dir_path, "R_objects", paste0(project$short_name, "_REDCapSync.RData"))
+  delete_this <- get_expected_project_path(project)
+  delete_this_too <-  get_expected_project_details_path(project)
   if (file.exists(delete_this)) {
     unlink(delete_this)
+    unlink(delete_this_too)
     bullet_in_console("Deleted saved project", bullet_type = "v")
   } else {
     warning("The project object you wanted to is not there. Did you delete already? ", delete_this)

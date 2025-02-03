@@ -101,7 +101,7 @@ upload_transform_to_project <- function(project) {
 extract_form_from_merged <- function(project, form_name) {
   merged <- project$data[[project$internals$merge_form_name]]
   if (nrow(merged) > 0) {
-    add_ons <- c(project$redcap$id_col, "arm_num", "event_name", "redcap_event_name", "redcap_repeat_instrument", "redcap_repeat_instance")
+    add_ons <- c(project$redcap$id_col, "arm_number", "event_name", "redcap_event_name", "redcap_repeat_instrument", "redcap_repeat_instance")
     add_ons <- add_ons[which(add_ons %in% colnames(merged))]
     if (!form_name %in% project$metadata$forms$form_name) stop("form_name must be included in set of project$metadata$forms$form_name")
     # form_name <-  project$metadata$forms$form_name %>% sample(1)

@@ -114,7 +114,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$metadata$choices <- fields_to_choices(fields = project$metadata$fields)
   # is longitudinal ------
   if (project$redcap$is_longitudinal) {
-    project$redcap$raw_structure_cols <- c(project$redcap$raw_structure_cols, "arm_num", "event_name") %>% unique()
+    project$redcap$raw_structure_cols <- c(project$redcap$raw_structure_cols, "arm_number", "event_name") %>% unique()
     project$metadata$arms <- REDCapR::redcap_arm_export(
       redcap_uri = project$links$redcap_uri,
       token = get_project_token(project)
@@ -152,9 +152,9 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
       }) %>%
       unlist()
     if (project$redcap$has_arms_that_matter) {
-      project$redcap$has_arms_that_matter <- project$metadata$arms$arm_num %>%
+      project$redcap$has_arms_that_matter <- project$metadata$arms$arm_number %>%
         lapply(function(arm) {
-          project$metadata$event_mapping$form[which(project$metadata$event_mapping$arm_num == arm)]
+          project$metadata$event_mapping$form[which(project$metadata$event_mapping$arm_number == arm)]
         }) %>%
         check_match() %>%
         magrittr::not()
@@ -163,7 +163,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     #   project$metadata$events <- data.frame(
     #     event_name = unique(project$unique_events$event_name),
     #     arms = unique(project$unique_events$event_name) %>% lapply(function(event_name){
-    #       project$unique_events$arm_num[which(project$unique_events$event_name==event_name)] %>% unique() %>% paste0(collapse = " | ")
+    #       project$unique_events$arm_number[which(project$unique_events$event_name==event_name)] %>% unique() %>% paste0(collapse = " | ")
     #     })
     #   )
     # }
@@ -172,7 +172,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
       which(
         project$metadata$forms$form_name %>% lapply(function(form_name) {
           # form_name <- forms$form_name %>% sample(1)
-          anyDuplicated(project$metadata$event_mapping$arm_num[which(project$metadata$event_mapping$form == form_name)]) > 0
+          anyDuplicated(project$metadata$event_mapping$arm_number[which(project$metadata$event_mapping$form == form_name)]) > 0
         }) %>% unlist()
       )
     ] <- TRUE

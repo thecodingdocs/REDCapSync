@@ -14,8 +14,8 @@ add_redcap_links_to_DF <- function(DF, project) { # add instance links
       link_tail <- link_tail %>% paste0("&instance=", DF[["redcap_repeat_instance"]])
     }
     DF$redcap_link <- paste0(link_head, link_tail)
-    if ("arm_num" %in% colnames(DF)) {
-      DF$redcap_link <- DF$redcap_link %>% paste0("&arm=", DF[["arm_num"]])
+    if ("arm_number" %in% colnames(DF)) {
+      DF$redcap_link <- DF$redcap_link %>% paste0("&arm=", DF[["arm_number"]])
     }
   }
   return(DF)

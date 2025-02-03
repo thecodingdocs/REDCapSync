@@ -7,7 +7,8 @@
 sync <- function(
     use_console = TRUE,
     hard_reset = FALSE,
-    project_names = NULL) {
+    project_names = NULL
+    ) {
   collected <- makeAssertCollection()
   assert_logical(use_console, any.missing = FALSE, len = 1, add = collected)
   assert_logical(hard_reset, any.missing = FALSE, len = 1, add = collected)

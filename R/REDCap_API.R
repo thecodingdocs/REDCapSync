@@ -3,7 +3,7 @@ project_rcon <- function (project){
   assert_setup_project(project)
   rcon <- redcapAPI::redcapConnection(
     url = project$links$redcap_uri,
-    token = assert_REDCap_token(project)
+    token = get_project_token(project)
   )
   # test connection
   return(rcon)
@@ -17,7 +17,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   # info ----------
   project$redcap$project_info <- REDCapR::redcap_project_info_read(
     redcap_uri = project$links$redcap_uri,
-    token = assert_REDCap_token(project)
+    token = get_project_token(project)
   )[["data"]]# remove at some point
   project$redcap$project_title <- project$redcap$project_info$project_title
   project$redcap$project_id <- project$redcap$project_info$project_id
@@ -26,7 +26,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   # instruments --------
   project$metadata$forms <- REDCapR::redcap_instruments(
     redcap_uri = project$links$redcap_uri,
-    token = assert_REDCap_token(project)
+    token = get_project_token(project)
   )[["data"]] %>% rename_forms_redcap_to_default()
   project$metadata$forms$repeating <- FALSE
   project$redcap$has_repeating_forms <- FALSE
@@ -45,7 +45,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   # metadata ----------
   project$metadata$fields <- REDCapR::redcap_metadata_read(
     redcap_uri = project$links$redcap_uri,
-    token = assert_REDCap_token(project)
+    token = get_project_token(project)
   )[["data"]]
   project$metadata$fields$section_header <- project$metadata$fields$section_header %>% remove_html_tags()
   project$metadata$fields$field_label <- project$metadata$fields$field_label %>% remove_html_tags()
@@ -117,18 +117,18 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     project$redcap$raw_structure_cols <- c(project$redcap$raw_structure_cols, "arm_num", "event_name") %>% unique()
     project$metadata$arms <- REDCapR::redcap_arm_export(
       redcap_uri = project$links$redcap_uri,
-      token = assert_REDCap_token(project)
+      token = get_project_token(project)
     )[["data"]]
     project$redcap$has_arms <- TRUE
     project$redcap$has_multiple_arms <- nrow(project$metadata$arms) > 1
     project$redcap$has_arms_that_matter <- project$redcap$has_multiple_arms
     project$metadata$event_mapping <- REDCapR::redcap_event_instruments(
       redcap_uri = project$links$redcap_uri,
-      token = assert_REDCap_token(project)
+      token = get_project_token(project)
     )[["data"]]
     project$metadata$events <- REDCapR::redcap_event_read(
       redcap_uri = project$links$redcap_uri,
-      token = assert_REDCap_token(project)
+      token = get_project_token(project)
     )[["data"]]
     project$metadata$events$repeating <- FALSE
     project$metadata$event_mapping$repeating <- FALSE
@@ -225,7 +225,7 @@ get_REDCap_files <- function(project, original_file_names = FALSE, overwrite = F
         if (!file.exists(file.path(out_dir_folder, file_name)) || overwrite) {
           REDCapR::redcap_file_download_oneshot(
             redcap_uri = project$links$redcap_uri,
-            token = assert_REDCap_token(project),
+            token = get_project_token(project),
             field = field_name,
             record = form[[project$redcap$id_col]][i],
             directory = out_dir_folder,
@@ -271,7 +271,13 @@ get_REDCap_log <- function(project, last = 24, user = "", units = "hours", begin
       begin_time <- now - lubridate::years(last)
     }
   }
-  log <- REDCapR::redcap_log_read(log_begin_date = begin_time,record = record, user = user)
+  log <- REDCapR::redcap_log_read(
+    redcap_uri = project$links$redcap_uri,
+    token = get_project_token(project),
+    log_begin_date = begin_time,
+    record = record,
+    user = user
+  )
   if (is.data.frame(log)) {
     if (clean) {
       log <- log %>% clean_redcap_log()
@@ -288,7 +294,7 @@ get_REDCap_raw_data <- function(
 ) {
   raw <- REDCapR::redcap_read(
     redcap_uri = project$links$redcap_uri,
-    token = assert_REDCap_token(project),
+    token = get_project_token(project),
     # forms = forms,
     # events = events,
     batch_size = batch_size,

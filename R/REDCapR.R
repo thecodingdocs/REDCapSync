@@ -7,7 +7,7 @@ get_REDCap_report <- function(project, report_id, silent = TRUE) {
   report_id <- as.integer(report_id)
   report <- REDCapR::redcap_report(
     redcap_uri = project$links$redcap_uri,
-    token = assert_REDCap_token(project),
+    token = get_project_token(project),
     report_id = report_id,
     verbose = !silent
   )

@@ -15,7 +15,7 @@ upload_form_to_REDCap <- function(to_be_uploaded, project, batch_size = 500) {
     interbatch_delay = 0.2,
     continue_on_error = FALSE,
     redcap_uri = project$links$redcap_uri,
-    token = assert_REDCap_token(project),
+    token = get_project_token(project),
     overwrite_with_blanks = TRUE
   )
 }

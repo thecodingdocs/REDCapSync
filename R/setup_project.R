@@ -268,7 +268,7 @@ setup_project <- function(
   project$internals$use_csv <- use_csv
   project$internals$is_blank <- FALSE
   project$data <- project$data %>% all_character_cols_list()
-  if (!is_valid_REDCap_token(assert_REDCap_token(project), is_a_test = is_a_test)) {
+  if (!is_valid_REDCap_token(get_project_token(project), is_a_test = is_a_test)) {
     cli::cli_alert_warning(paste0("No valid token in session: Sys.getenv('", token_name, "')"))
   }
   project <- assert_setup_project(project, silent = silent)

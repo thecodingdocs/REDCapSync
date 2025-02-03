@@ -626,7 +626,9 @@ transform_project <- function(project, ask = TRUE) {
     }
   }
   if (any(!names(OUT) %in% unique(forms_transformation$form_name_remap))) stop("not all names in OUT objext. Something wrong with transform_project()")
-  project$data <- OUT
+  if(is_something(OUT)){
+    project$data <- OUT
+  }
   # forms_transformation <- annotate_forms(project,summarize_data = FALSE)
   if (!is.null(project$metadata$form_key_cols)) {
     forms_transformation$key_cols <- forms_transformation$form_name %>%

@@ -643,8 +643,7 @@ transform_project <- function(project, ask = TRUE) {
           return(project$metadata$form_key_cols[[IN]])
         }
         return(paste0(forms_transformation$form_name[row_match], "_key"))
-      }) %>%
-      unlist()
+      })
   }
   project$internals$is_transformed <- TRUE
   bullet_in_console(paste0(project$short_name, " transformed according to `project$transformation`"), bullet_type = "v")

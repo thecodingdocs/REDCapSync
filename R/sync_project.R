@@ -255,7 +255,7 @@ sync_project <- function(
         include_users = TRUE,
         include_log = TRUE,
         separate = FALSE,
-        reset = FALSE
+        reset = TRUE
       )
     }
     if (was_updated) {

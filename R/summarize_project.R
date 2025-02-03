@@ -696,6 +696,9 @@ summarize_users_from_log <- function(project, records) {
   summary_users <- project$redcap$users %>% dplyr::select(c("username", "role_label", "email", "firstname", "lastname"))
   user_groups <- log %>% split(log$username)
   summary_users <- summary_users[which(summary_users$username %in% names(user_groups)), ]
+  if(nrow(summary_users)==0){
+    return(NULL)
+  }
   user_groups <- user_groups[drop_nas(match(summary_users$username, names(user_groups)))]
   summary_users$last_timestamp <- user_groups %>%
     lapply(function(group) {

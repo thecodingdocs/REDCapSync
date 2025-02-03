@@ -186,7 +186,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   # other-------
   if (include_users) {
     project$redcap$users <- get_REDCap_users(project)
-    project$redcap$log <- get_REDCap_log(project, last = 2, units = "mins")
+    project$redcap$log <- get_REDCap_log(project, log_begin_date = Sys.Date())
     project$redcap$users$current_user <- project$redcap$users$username == project$redcap$log$username[which(project$redcap$log$details == "Export REDCap version (API)") %>% dplyr::first()]
   }
   project$links$redcap_home <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/index.php?pid=", project$redcap$project_id)
@@ -251,30 +251,13 @@ get_REDCap_users <- function(project) {
   return(final)
 }
 #' @noRd
-get_REDCap_log <- function(project, last = 24, user = "", units = "hours", begin_time = NULL, clean = TRUE, record = "") {
+get_REDCap_log <- function(project, log_begin_date = Sys.Date() - 10L, clean = TRUE, record = NULL, user = NULL) {
   assert_setup_project(project)
-  assert_integerish(last)
-  assert_choice(units, choices = c("days","hours","mins","years"))
   assert_logical(clean)
-  now <- now_time()
-  if(is.null(begin_time)){
-    if (units == "days") {
-      begin_time <- now - lubridate::days(last)
-    }
-    if (units == "hours") {
-      begin_time <- now - lubridate::hours(last)
-    }
-    if (units == "mins") {
-      begin_time <- now - lubridate::minutes(last)
-    }
-    if (units == "years") {
-      begin_time <- now - lubridate::years(last)
-    }
-  }
   log <- REDCapR::redcap_log_read(
     redcap_uri = project$links$redcap_uri,
     token = get_project_token(project),
-    log_begin_date = begin_time,
+    log_begin_date = log_begin_date,
     record = record,
     user = user
   )

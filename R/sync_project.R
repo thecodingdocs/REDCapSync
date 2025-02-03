@@ -97,7 +97,7 @@ sync_project <- function(
     } else {
       interim_log <- get_REDCap_log(
         project,
-        log_begin_date = as.POSIXct(strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d"))
+        log_begin_date = as.Date(strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d"))
       ) %>% clean_redcap_log()
       if (nrow(interim_log) <= nrow(project$redcap$log)) {
         head_of_log <- project$redcap$log %>% utils::head(n = nrow(interim_log))
@@ -146,15 +146,22 @@ sync_project <- function(
       project$data <- list()
       project$data_updates <- list()
       project$summary <- list()
-      project$data <- project %>% get_REDCap_data(labelled = project$internals$labelled, batch_size = project$internals$batch_size_download)
+      project$data <- project %>% get_REDCap_data(
+        labelled = project$internals$labelled,
+        batch_size = project$internals$batch_size_download
+      )
       log <- project$redcap$log # in case there is a log already
       if (project$internals$entire_log) {
         project$redcap$log <- log %>% dplyr::bind_rows(
-          project %>% get_REDCap_log(log_begin_date = as.POSIXct(project$redcap$project_info$creation_time) %>% as.Date()) %>% unique() # should add - lubridate::days(2)
+          project %>% get_REDCap_log(
+            log_begin_date = as.POSIXct(project$redcap$project_info$creation_time) %>% as.Date()
+          ) %>% unique() # should add - lubridate::days(2)
         )
       } else {
         project$redcap$log <- log %>% dplyr::bind_rows(
-          project %>% get_REDCap_log(log_begin_date = Sys.Date()-project$internals$days_of_log) %>% unique()
+          project %>% get_REDCap_log(
+            log_begin_date = Sys.Date()-project$internals$days_of_log
+          ) %>% unique()
         )
       }
       # project <- annotate_fields(project)

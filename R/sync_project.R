@@ -55,7 +55,7 @@ sync_project <- function(
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
-  do_it <- due_for_sync(project_name = project$short_name)
+  do_it <- due_for_sync(project_name = project$short_name) || reset
   if (!do_it) {
     cli::cli_alert_info("{project$short_name} not due for sync ({project$internals$sync_frequency})")
     return(project)
@@ -255,7 +255,7 @@ sync_project <- function(
         include_users = TRUE,
         include_log = TRUE,
         separate = FALSE,
-        reset = TRUE
+        reset = reset
       )
     }
     if (was_updated) {
@@ -265,5 +265,5 @@ sync_project <- function(
       save_project_details(project)
     }
   }
-  project
+  return(invisible(project))
 }

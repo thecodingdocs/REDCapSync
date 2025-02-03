@@ -676,13 +676,13 @@ sum_records <- function(project) {
   return(records)
 }
 #' @noRd
-get_log <- function(project, records, drop_exports = TRUE) {
+get_log <- function(project, records) {
   log <- project$redcap$log
   log <- log[which(!is.na(log$username)), ]
   log <- log[which(!is.na(log$record)), ]
-  if(drop_exports){
-    log <- log[which(log$action_type == "Exports" | is.na(log$action_type)), ]
-  }
+  # if(drop_exports){
+  #   log <- log[which(log$action_type != "Exports" | is.na(log$action_type)), ]
+  # }
   if (!missing(records)) {
     if (!is.null(records)) {
       log <- log[which(log$record %in% records), ]

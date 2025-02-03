@@ -424,7 +424,9 @@ generate_summary_save_list <- function(
     # }
   }
   if (include_record_summary) {
-    to_save_list$records <- summarize_records_from_log(project, records = records)
+    if(!is.null(records)){
+      to_save_list$records <- summarize_records_from_log(project, records = records)
+    }
   }
   if (include_users) {
     to_save_list$users <- summarize_users_from_log(project, records = records)
@@ -568,7 +570,8 @@ summarize_project <- function(
     include_users = TRUE,
     include_log = TRUE,
     separate = FALSE,
-    reset = FALSE) {
+    reset = FALSE
+    ) {
   project <- project %>% assert_blank_project()
   original_data <- project$data
   do_it <- is.null(project$internals$last_summary)
@@ -673,10 +676,13 @@ sum_records <- function(project) {
   return(records)
 }
 #' @noRd
-get_log <- function(project, records) {
+get_log <- function(project, records, drop_exports = TRUE) {
   log <- project$redcap$log
   log <- log[which(!is.na(log$username)), ]
   log <- log[which(!is.na(log$record)), ]
+  if(drop_exports){
+    log <- log[which(log$action_type == "Exports" | is.na(log$action_type)), ]
+  }
   if (!missing(records)) {
     if (!is.null(records)) {
       log <- log[which(log$record %in% records), ]

@@ -54,8 +54,12 @@ drop_REDCap_to_directory <- function(
   due_for_save_metadata <- TRUE
   due_for_save_data <- TRUE
   if (smart) {
-    if (!is.null(project$internals$last_metadata_dir_save)) due_for_save_metadata <- project$internals$last_metadata_update > project$internals$last_metadata_dir_save
-    if (!is.null(project$internals$last_data_dir_save)) due_for_save_data <- project$internals$last_data_update > project$internals$last_data_dir_save
+    if (!is.null(project$internals$last_metadata_dir_save)){
+      due_for_save_metadata <- project$internals$last_metadata_update > project$internals$last_metadata_dir_save
+    }
+    if (!is.null(project$internals$last_data_dir_save)){
+      due_for_save_data <- project$internals$last_data_update > project$internals$last_data_dir_save
+    }
   }
   redcap_dir %>% dir.create(showWarnings = FALSE)
   redcap_metadata_dir %>% dir.create(showWarnings = FALSE)

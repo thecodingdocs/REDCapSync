@@ -15,27 +15,38 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$metadata <- list()
   rcon <- project_rcon(project)
   # info ----------
-  project$redcap$project_info <- redcapAPI::exportProjectInformation(rcon = rcon) %>% all_character_cols()
+  project$redcap$project_info <- REDCapR::redcap_project_info_read(
+    redcap_uri = project$links$redcap_uri,
+    token = assert_REDCap_token(project)
+  )[["data"]]# remove at some point
   project$redcap$project_title <- project$redcap$project_info$project_title
   project$redcap$project_id <- project$redcap$project_info$project_id
-  project$redcap$is_longitudinal <- project$redcap$project_info$is_longitudinal == "1"
+  project$redcap$is_longitudinal <- project$redcap$project_info$is_longitudinal
   project$metadata$missing_codes <- missing_codes2(project)
   # instruments --------
-  project$metadata$forms <- redcapAPI::exportInstruments(rcon = rcon) %>% rename_forms_redcap_to_default()
+  project$metadata$forms <- REDCapR::redcap_instruments(
+    redcap_uri = project$links$redcap_uri,
+    token = assert_REDCap_token(project)
+  )[["data"]] %>% rename_forms_redcap_to_default()
   project$metadata$forms$repeating <- FALSE
   project$redcap$has_repeating_forms <- FALSE
   project$redcap$has_repeating_events <- FALSE
-  project$redcap$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events == "1"
+  project$redcap$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events
   # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
   repeatingFormsEvents <- redcapAPI::exportRepeatingInstrumentsEvents(rcon = rcon)
   if (is.data.frame(repeatingFormsEvents)) {
-    project$metadata$forms$repeating <- project$metadata$forms$form_name %in% repeatingFormsEvents$form_name
+    if(nrow(repeatingFormsEvents)> 0){
+      project$metadata$forms$repeating <- project$metadata$forms$form_name %in% repeatingFormsEvents$form_name
+    }
   }
   if (any(project$metadata$forms$repeating)) {
     project$redcap$has_repeating_forms <- TRUE
   }
   # metadata ----------
-  project$metadata$fields <- redcapAPI::exportMetaData(rcon = rcon)
+  project$metadata$fields <- REDCapR::redcap_metadata_read(
+    redcap_uri = project$links$redcap_uri,
+    token = assert_REDCap_token(project)
+  )[["data"]]
   project$metadata$fields$section_header <- project$metadata$fields$section_header %>% remove_html_tags()
   project$metadata$fields$field_label <- project$metadata$fields$field_label %>% remove_html_tags()
   project$redcap$id_col <- project$metadata$fields[1, 1] %>% as.character() # RISKY?
@@ -104,12 +115,21 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   # is longitudinal ------
   if (project$redcap$is_longitudinal) {
     project$redcap$raw_structure_cols <- c(project$redcap$raw_structure_cols, "arm_num", "event_name") %>% unique()
-    project$metadata$arms <- redcapAPI::exportArms(rcon = rcon)
+    project$metadata$arms <- REDCapR::redcap_arm_export(
+      redcap_uri = project$links$redcap_uri,
+      token = assert_REDCap_token(project)
+    )[["data"]]
     project$redcap$has_arms <- TRUE
     project$redcap$has_multiple_arms <- nrow(project$metadata$arms) > 1
     project$redcap$has_arms_that_matter <- project$redcap$has_multiple_arms
-    project$metadata$event_mapping <- redcapAPI::exportMappings(rcon = rcon)
-    project$metadata$events <- redcapAPI::exportEvents(rcon = rcon)
+    project$metadata$event_mapping <- REDCapR::redcap_event_instruments(
+      redcap_uri = project$links$redcap_uri,
+      token = assert_REDCap_token(project)
+    )[["data"]]
+    project$metadata$events <- REDCapR::redcap_event_read(
+      redcap_uri = project$links$redcap_uri,
+      token = assert_REDCap_token(project)
+    )[["data"]]
     project$metadata$events$repeating <- FALSE
     project$metadata$event_mapping$repeating <- FALSE
     if (is.data.frame(repeatingFormsEvents)) {
@@ -236,7 +256,6 @@ get_REDCap_log <- function(project, last = 24, user = "", units = "hours", begin
   assert_integerish(last)
   assert_choice(units, choices = c("days","hours","mins","years"))
   assert_logical(clean)
-  rcon <- project_rcon(project)
   now <- now_time()
   if(is.null(begin_time)){
     if (units == "days") {
@@ -252,7 +271,7 @@ get_REDCap_log <- function(project, last = 24, user = "", units = "hours", begin
       begin_time <- now - lubridate::years(last)
     }
   }
-  log <- redcapAPI::exportLogging(rcon = rcon,beginTime = begin_time, record = record, user = user)
+  log <- REDCapR::redcap_log_read(log_begin_date = begin_time,record = record, user = user)
   if (is.data.frame(log)) {
     if (clean) {
       log <- log %>% clean_redcap_log()

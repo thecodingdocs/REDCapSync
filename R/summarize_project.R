@@ -571,7 +571,7 @@ summarize_project <- function(
     include_log = TRUE,
     separate = FALSE,
     reset = FALSE
-    ) {
+) {
   project <- project %>% assert_blank_project()
   original_data <- project$data
   do_it <- is.null(project$internals$last_summary)

@@ -15,7 +15,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$metadata <- list()
   rcon <- project_rcon(project)
   # info ----------
-  project$redcap$project_info <- redcapAPI::exportProjectInformation(rcon = rcon)
+  project$redcap$project_info <- redcapAPI::exportProjectInformation(rcon = rcon) %>% all_character_cols()
   project$redcap$project_title <- project$redcap$project_info$project_title
   project$redcap$project_id <- project$redcap$project_info$project_id
   project$redcap$is_longitudinal <- project$redcap$project_info$is_longitudinal == "1"

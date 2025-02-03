@@ -260,7 +260,7 @@ get_REDCap_log <- function(project, log_begin_date = Sys.Date() - 10L, clean = T
     log_begin_date = log_begin_date,
     record = record,
     user = user
-  )
+  )[["data"]]
   if (is.data.frame(log)) {
     if (clean) {
       log <- log %>% clean_redcap_log()

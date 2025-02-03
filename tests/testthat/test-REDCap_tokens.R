@@ -30,7 +30,7 @@ test_that("is_valid_REDCap_token respects the rules of 32L hexidecimal", {
   expect_true(is_valid_REDCap_token(internal_TEST_multiarm_token,is_a_test = TRUE))
   expect_false(is_valid_REDCap_token(generate_hex(32),is_a_test = TRUE))
 })
-test_that("assert_REDCap_token checks_env", {
+test_that("get_project_token checks_env", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir,"fake_cache")
   local_mocked_bindings(
@@ -45,15 +45,15 @@ test_that("assert_REDCap_token checks_env", {
   token_name <- get_REDCap_token_name(project)
   token <- generate_hex(32)
   withr::with_envvar(c(REDCapSync_TEST_PROJECT=token),{
-    expect_equal(assert_REDCap_token(project),token)
-    expect_no_error(assert_REDCap_token(project))
+    expect_equal(get_project_token(project),token)
+    expect_no_error(get_project_token(project))
   })
   token <- generate_hex(2)
   withr::with_envvar(c(REDCapSync_TEST_PROJECT=token),{
-    expect_equal(assert_REDCap_token(project),token)
+    expect_equal(get_project_token(project),token)
   })
   withr::with_envvar(c(REDCapSync_TEST_PROJECT=NULL),{
-    expect_equal(assert_REDCap_token(project),"")
+    expect_equal(get_project_token(project),"")
   })
 })
 test_that("get_REDCap_token_name works", {

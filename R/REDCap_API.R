@@ -118,18 +118,18 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     project$metadata$arms <- REDCapR::redcap_arm_export(
       redcap_uri = project$links$redcap_uri,
       token = get_project_token(project)
-    )[["data"]]
+    )[["data"]] %>% all_character_cols()
     project$redcap$has_arms <- TRUE
     project$redcap$has_multiple_arms <- nrow(project$metadata$arms) > 1
     project$redcap$has_arms_that_matter <- project$redcap$has_multiple_arms
     project$metadata$event_mapping <- REDCapR::redcap_event_instruments(
       redcap_uri = project$links$redcap_uri,
       token = get_project_token(project)
-    )[["data"]]
+    )[["data"]] %>% all_character_cols()
     project$metadata$events <- REDCapR::redcap_event_read(
       redcap_uri = project$links$redcap_uri,
       token = get_project_token(project)
-    )[["data"]]
+    )[["data"]] %>% all_character_cols()
     project$metadata$events$repeating <- FALSE
     project$metadata$event_mapping$repeating <- FALSE
     if (is.data.frame(repeatingFormsEvents)) {

@@ -254,13 +254,20 @@ get_REDCap_users <- function(project) {
 get_REDCap_log <- function(project, log_begin_date = Sys.Date() - 10L, clean = TRUE, record = NULL, user = NULL) {
   assert_setup_project(project)
   assert_logical(clean)
-  log <- REDCapR::redcap_log_read(
-    redcap_uri = project$links$redcap_uri,
-    token = get_project_token(project),
-    log_begin_date = log_begin_date,
-    record = record,
-    user = user
-  )[["data"]]
+  log <- tryCatch(
+    expr = {
+      REDCapR::redcap_log_read(
+        redcap_uri = project$links$redcap_uri,
+        token = get_project_token(project),
+        log_begin_date = log_begin_date,
+        record = record,
+        user = user
+      )[["data"]]
+    },
+    error = function(e) {
+      NULL
+    }
+  )
   if (is.data.frame(log)) {
     if (clean) {
       log <- log %>% clean_redcap_log()

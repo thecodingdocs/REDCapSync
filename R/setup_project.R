@@ -169,9 +169,22 @@ setup_project <- function(
       paste0(short_name, internal_project_details_path_suffix)
     )
     if (file.exists(project_details_path)) {
-      project_details <- readRDS(file = project_details_path) # add try
+      project_details <- tryCatch(
+        expr = {
+          suppressWarnings({
+            readRDS(file = project_details_path)
+          })
+        },
+        error = function(e) {
+          NULL
+        }
+      )
+      if(!is.null(project_details)){
+        add_project_details_to_cache(project_details)
+      }else{
+        cli_alert_warning("currupted project_details so will be overwritten")
+      }
       # add check for if it was loaded from right place
-      add_project_details_to_cache(project_details)
     }
   }
   if (!reset) {

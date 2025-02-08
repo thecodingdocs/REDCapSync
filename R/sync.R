@@ -250,6 +250,7 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
           cli_alert_warning(paste0("issue loading project_details: ",project_name))
           to_cache <- from_cache
           had_change <- TRUE
+          unlink(expected_path)
         }
         if(!had_change){
           if (!is.na(from_cache$last_directory_save)) { # should I compare?

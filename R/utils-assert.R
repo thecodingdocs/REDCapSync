@@ -309,7 +309,7 @@ assert_project_path <- function(project_path) {
   assert_path_for_output(
     x = project_path,
     overwrite = TRUE,
-    extension = ".Rdata"
+    extension = "RData"
   )
   assert_true(endsWith(basename(project_path), internal_project_path_suffix))
 }

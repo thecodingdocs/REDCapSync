@@ -1183,6 +1183,7 @@ filter_fields_from_form <- function(FORM, project) {
   fields <- project %>% field_names_metadata(field_names = colnames(FORM))
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
+  fields$has_choices[which(fields$field_type=="calc")] <- FALSE
   return(fields)
 }
 #' @noRd

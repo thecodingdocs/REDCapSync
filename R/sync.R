@@ -237,19 +237,34 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
         paste0(project_name, internal_project_details_path_suffix)
       ) %>% sanitize_path()
       if (file.exists(expected_path)) {
-        to_cache <- readRDS(expected_path)
-        if (!is.na(from_cache$last_directory_save)) { # should I compare?
-          if (to_cache$last_directory_save != from_cache$last_directory_save) {
-            if (!identical(to_cache$dir_path, from_cache$dir_path)) {
-              to_cache$dir_path <- from_cache$dir_path
-              # SAVE
-            }
-            project_list[[project_name]] <- to_cache
-            cli_alert_info(paste0("Updated cache for ", project_name))
-            had_change <- TRUE
+        to_cache <- tryCatch(
+          expr = {
+            suppressWarnings({
+              readRDS(expected_path)            })
+          },
+          error = function(e) {
+            NULL
           }
+        )
+        if(is.null(to_cache)){
+          cli_alert_warning(paste0("issue loading project_details: ",project_name))
+          to_cache <- from_cache
+          had_change <- TRUE
         }
-        # assert_project_details(project_details)
+        if(!had_change){
+          if (!is.na(from_cache$last_directory_save)) { # should I compare?
+            if (to_cache$last_directory_save != from_cache$last_directory_save) {
+              if (!identical(to_cache$dir_path, from_cache$dir_path)) {
+                to_cache$dir_path <- from_cache$dir_path
+                # SAVE
+              }
+              project_list[[project_name]] <- to_cache
+              cli_alert_info(paste0("Updated cache for ", project_name))
+              had_change <- TRUE
+            }
+          }
+          # assert_project_details(project_details)
+        }
       }
       # else {
       #   # project_list[[project_name]] <- NULL

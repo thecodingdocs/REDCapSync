@@ -130,6 +130,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
       redcap_uri = project$links$redcap_uri,
       token = get_project_token(project)
     )[["data"]] %>% all_character_cols()
+    colnames(project$metadata$events)[which(colnames(project$metadata$events)=="arm_num")] <- "arm_number"
     project$metadata$events$repeating <- FALSE
     project$metadata$event_mapping$repeating <- FALSE
     if (is.data.frame(repeatingFormsEvents)) {

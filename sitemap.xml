@@ -21,7 +21,6 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/news/index.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/Links.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync-package.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/reference/add_ID_to_DF.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/add_project_field.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/add_project_subset.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/cache_clear.html</loc></url>
@@ -37,7 +36,6 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/generate_horizontal_transform.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/generate_summary_from_subset_name.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/get_REDCap_report.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/reference/get_dir.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/get_projects.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/index.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/labelled_to_raw_form.html</loc></url>
@@ -56,7 +54,6 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/sync_project.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/test_project_token.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/transform_project.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/reference/untransform_project.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/upload_form_to_REDCap.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/upload_project_to_REDCap.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/upload_transform_to_project.html</loc></url>

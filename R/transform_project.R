@@ -458,18 +458,17 @@ combine_original_transformed_fields <- function(project) {
   return(fields)
 }
 #' @noRd
-run_fields_transformation <- function(project, ask = TRUE) {
+run_fields_transformation <- function(project) {
   the_names <- project$transformation$fields$field_name
   if (is.null(the_names)) {
     bullet_in_console("Nothing to run. Use `add_project_field()`", bullet_type = "x")
     return(project)
   }
-  original_fields <- get_original_fields(project)
+  original_fields <- project$metadata$fields
   the_names_existing <- the_names[which(the_names %in% original_fields$field_name)]
   the_names_new <- the_names[which(!the_names %in% original_fields$field_name)]
   # fields_to_update <- NULL
   field_names <- c(the_names_existing, the_names_new)
-  field_name <- field_names[[1]]
   for (field_name in field_names) {
     OUT <- NA
     row_of_interest <- project$transformation$fields[which(project$transformation$fields$field_name == field_name), ]
@@ -491,7 +490,7 @@ run_fields_transformation <- function(project, ask = TRUE) {
           new = new,
           old = old,
           ref_cols = ref_cols,
-          view_old = ask,
+          view_old = FALSE,
           message_pass = paste0(form_name, " - ", field_name, ": ")
         )
         if (is_something(DF)) {
@@ -500,7 +499,7 @@ run_fields_transformation <- function(project, ask = TRUE) {
       }
     }
     if (form_name %in% names(project$data)) {
-      project$data[[form_name]][[field_name]] <- OUT
+      project$transformation$data[[form_name]][[field_name]] <- OUT
     }
   }
   bullet_in_console(paste0("Added new fields to ", project$short_name, " `project$data`"), bullet_type = "v")
@@ -527,153 +526,154 @@ transform_project <- function(project, ask = TRUE) {
     return(project)
   }
   forms_transformation <- project$transformation$forms
-  project$transformation$original_col_names <- project$data %>%
-    names() %>%
-    lapply(function(l) {
-      project$data[[l]] %>% colnames()
-    })
-  names(project$transformation$original_col_names) <- project$data %>% names()
+  # project$transformation$original_col_names <- project$data %>%
+  #   names() %>%
+  #   lapply(function(l) {
+  #     project$data[[l]] %>% colnames()
+  #   })
+  # names(project$transformation$original_col_names) <- project$data %>% names()
   # if(any(!names(transformation)%in%names(project$data)))stop("must have all project$data names in transformation")
   if (is_something(process_df_list(project$data, silent = TRUE))) {
-    project <- run_fields_transformation(project, ask = ask)
-  }
-  named_df_list <- project$data
-  OUT <- NULL
-  for (i in (seq_len(nrow(forms_transformation)))) {
-    TABLE <- forms_transformation$form_name[i]
-    ref <- named_df_list[[TABLE]]
-    if (!is.null(ref)) {
-      if (is_something(ref)) {
-        a <- forms_transformation[i, ]
-        z <- as.list(a)
-        ref <- named_df_list[[TABLE]]
-        rownames(ref) <- NULL
-        by.x <- z$by.x <- z$by.x %>%
-          strsplit("\\+") %>%
-          unlist()
-        by.y <- z$by.y <- z$by.y %>%
-          strsplit("\\+") %>%
-          unlist()
-        if (length(z$by.x) != length(z$by.y)) stop("by.x and by.y must be same length... [", z$form_name, "] (", z$by.x %>% as_comma_string(), ") AND (", z$by.y %>% as_comma_string(), ")")
-        if (TABLE == z$merge_to) {
-          OUT[[z$form_name_remap]] <- ref
-        } else {
-          mer <- named_df_list[[z$merge_to]]
-          if (z$merge_to %in% names(OUT)) {
-            mer <- OUT[[z$merge_to]]
-          }
-          ref_names <- names(ref)
-          mer_names <- names(mer)
-          # new_name <- by.x %>% vec1_not_in_vec2(by.y)
-          new_names <- ref_names %>%
-            vec1_in_vec2(mer_names) %>%
-            vec1_not_in_vec2(by.x)
-          for (new_name in new_names) {
-            COL <- which(colnames(mer) == new_name)
-            replace_name <- paste0(new_name, "_merged")
-            a <- mer[, 1:COL]
-            a[[replace_name]] <- a[[COL]]
-            b <- mer[, (COL + 1):ncol(mer)]
-            mer <- cbind(a, b)
-          }
-          bad_cols <- which(!by.x %in% by.y)
-          z$by.x[bad_cols]
-          z$by.y[bad_cols]
-          if (length(bad_cols) > 0) {
-            for (col in bad_cols) {
-              new_col_name <- paste0(z$by.y[col], "_merged")
-              ref[[new_col_name]] <- ref[[z$by.x[col]]]
-              z$by.x[col] <- new_col_name
-            }
-          }
-          by.x <- z$by.x
-          by.y <- z$by.y
-          ref_names <- names(ref) %>% vec1_not_in_vec2(
-            by.x %>% vec1_not_in_vec2(by.y)
-          )
-          mer_names <- names(mer)
-          # new_name <- by.x %>% vec1_not_in_vec2(by.y)
-          del_names <- mer_names %>%
-            vec1_in_vec2(ref_names) %>%
-            vec1_not_in_vec2(by.y)
-          mer[, del_names] <- NULL
-          ref$sort_me_ftlog <- seq_len(nrow(ref))
-          if (is.null(mer)) {
-            a <- ref
+    project$transformation$data <- project$data
+    project <- run_fields_transformation(project)
+    named_df_list <- project$transformation$data
+    OUT <- NULL
+    for (i in (seq_len(nrow(forms_transformation)))) {
+      TABLE <- forms_transformation$form_name[i]
+      ref <- named_df_list[[TABLE]]
+      if (!is.null(ref)) {
+        if (is_something(ref)) {
+          a <- forms_transformation[i, ]
+          z <- as.list(a)
+          ref <- named_df_list[[TABLE]]
+          rownames(ref) <- NULL
+          by.x <- z$by.x <- z$by.x %>%
+            strsplit("\\+") %>%
+            unlist()
+          by.y <- z$by.y <- z$by.y %>%
+            strsplit("\\+") %>%
+            unlist()
+          if (length(z$by.x) != length(z$by.y)) stop("by.x and by.y must be same length... [", z$form_name, "] (", z$by.x %>% as_comma_string(), ") AND (", z$by.y %>% as_comma_string(), ")")
+          if (TABLE == z$merge_to) {
+            OUT[[z$form_name_remap]] <- ref
           } else {
-            a <- merge(
-              x = ref,
-              y = mer,
-              by.x = by.x,
-              by.y = by.y,
-              all.x = TRUE,
-              sort = FALSE
-            )
-          }
-          a <- a[order(a$sort_me_ftlog), ]
-          all_names <- c(ref_names, names(mer)) %>% unique()
-          if (is_something(z$x_first)) {
-            if (!z$x_first) {
-              all_names <- c(by.y %>% vec1_in_vec2(by.x), names(mer) %>% vec1_not_in_vec2(by.y), ref_names) %>% unique()
+            mer <- named_df_list[[z$merge_to]]
+            if (z$merge_to %in% names(OUT)) {
+              mer <- OUT[[z$merge_to]]
             }
+            ref_names <- names(ref)
+            mer_names <- names(mer)
+            # new_name <- by.x %>% vec1_not_in_vec2(by.y)
+            new_names <- ref_names %>%
+              vec1_in_vec2(mer_names) %>%
+              vec1_not_in_vec2(by.x)
+            for (new_name in new_names) {
+              COL <- which(colnames(mer) == new_name)
+              replace_name <- paste0(new_name, "_merged")
+              a <- mer[, 1:COL]
+              a[[replace_name]] <- a[[COL]]
+              b <- mer[, (COL + 1):ncol(mer)]
+              mer <- cbind(a, b)
+            }
+            bad_cols <- which(!by.x %in% by.y)
+            z$by.x[bad_cols]
+            z$by.y[bad_cols]
+            if (length(bad_cols) > 0) {
+              for (col in bad_cols) {
+                new_col_name <- paste0(z$by.y[col], "_merged")
+                ref[[new_col_name]] <- ref[[z$by.x[col]]]
+                z$by.x[col] <- new_col_name
+              }
+            }
+            by.x <- z$by.x
+            by.y <- z$by.y
+            ref_names <- names(ref) %>% vec1_not_in_vec2(
+              by.x %>% vec1_not_in_vec2(by.y)
+            )
+            mer_names <- names(mer)
+            # new_name <- by.x %>% vec1_not_in_vec2(by.y)
+            del_names <- mer_names %>%
+              vec1_in_vec2(ref_names) %>%
+              vec1_not_in_vec2(by.y)
+            mer[, del_names] <- NULL
+            ref$sort_me_ftlog <- seq_len(nrow(ref))
+            if (is.null(mer)) {
+              a <- ref
+            } else {
+              a <- merge(
+                x = ref,
+                y = mer,
+                by.x = by.x,
+                by.y = by.y,
+                all.x = TRUE,
+                sort = FALSE
+              )
+            }
+            a <- a[order(a$sort_me_ftlog), ]
+            all_names <- c(ref_names, names(mer)) %>% unique()
+            if (is_something(z$x_first)) {
+              if (!z$x_first) {
+                all_names <- c(by.y %>% vec1_in_vec2(by.x), names(mer) %>% vec1_not_in_vec2(by.y), ref_names) %>% unique()
+              }
+            }
+            a <- a[, match(all_names, names(a))]
+            rownames(a) <- NULL
+            OUT[[z$form_name_remap]] <- a
           }
-          a <- a[, match(all_names, names(a))]
-          rownames(a) <- NULL
-          OUT[[z$form_name_remap]] <- a
         }
       }
     }
+    if (any(!names(OUT) %in% unique(forms_transformation$form_name_remap))) stop("not all names in OUT objext. Something wrong with transform_project()")
+    if (is_something(OUT)) {
+      project$transformation$data <- OUT
+    }
+    # forms_transformation <- annotate_forms(project,summarize_data = FALSE)
+    if (!is.null(project$metadata$form_key_cols)) {
+      forms_transformation$key_cols <- forms_transformation$form_name %>%
+        lapply(function(IN) {
+          project$metadata$form_key_cols[[IN]] %>% paste0(collapse = "+")
+        }) %>%
+        unlist()
+      forms_transformation$key_names <- forms_transformation$form_name %>%
+        lapply(function(IN) {
+          row_match <- which(forms_transformation$form_name == IN)
+          if (!forms_transformation$repeating[row_match]) {
+            return(project$metadata$form_key_cols[[IN]])
+          }
+          return(paste0(forms_transformation$form_name[row_match], "_key"))
+        })
+    }
+    project$internals$is_transformed <- TRUE
+    bullet_in_console(paste0(project$short_name, " transformed according to `project$transformation`"), bullet_type = "v")
   }
-  if (any(!names(OUT) %in% unique(forms_transformation$form_name_remap))) stop("not all names in OUT objext. Something wrong with transform_project()")
-  if (is_something(OUT)) {
-    project$data <- OUT
-  }
-  # forms_transformation <- annotate_forms(project,summarize_data = FALSE)
-  if (!is.null(project$metadata$form_key_cols)) {
-    forms_transformation$key_cols <- forms_transformation$form_name %>%
-      lapply(function(IN) {
-        project$metadata$form_key_cols[[IN]] %>% paste0(collapse = "+")
-      }) %>%
-      unlist()
-    forms_transformation$key_names <- forms_transformation$form_name %>%
-      lapply(function(IN) {
-        row_match <- which(forms_transformation$form_name == IN)
-        if (!forms_transformation$repeating[row_match]) {
-          return(project$metadata$form_key_cols[[IN]])
-        }
-        return(paste0(forms_transformation$form_name[row_match], "_key"))
-      })
-  }
-  project$internals$is_transformed <- TRUE
-  bullet_in_console(paste0(project$short_name, " transformed according to `project$transformation`"), bullet_type = "v")
   # forms ---------
-  project$transformation$original_forms <- project$metadata$forms
-  # new function RosyUtils
-  cols_to_keep <- c("form_name_remap", "form_label_remap", "repeating", "repeating_via_events", "key_cols", "key_names")
-  cols_to_keep <- cols_to_keep[which(cols_to_keep %in% colnames(forms_transformation))]
-  project$metadata$forms <- forms_transformation[, cols_to_keep] %>% unique()
-  colnames(project$metadata$forms)[which(colnames(project$metadata$forms) == "form_name_remap")] <- "form_name"
-  colnames(project$metadata$forms)[which(colnames(project$metadata$forms) == "form_label_remap")] <- "form_label"
-  project$metadata$forms$original_form_name <- project$metadata$forms$form_name %>%
-    lapply(function(form_name) {
-      forms_transformation$form_name[which(forms_transformation$form_name_remap == form_name)] %>% paste0(collapse = " | ")
-    }) %>%
-    unlist() %>%
-    as.character()
-  # fields------------
-  project$transformation$original_fields <- project$metadata$fields
-  fields <- combine_original_transformed_fields(project)
-  fields$original_form_name <- fields$form_name
-  fields$form_name <- forms_transformation$form_name_remap[match(fields$form_name, forms_transformation$form_name)]
-  fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]
-  # new function RosyUtils
-  first <- 1:which(colnames(fields) == "form_name")
-  move <- which(colnames(fields) == "original_form_name")
-  last <- which(colnames(fields) != "original_form_name")[-first]
-  fields <- fields[, c(first, move, last)]
-  project$metadata$fields <- fields
-  bullet_in_console(paste0("Added mod fields to ", project$short_name, " `project$metadata$fields`"), bullet_type = "v")
-  project$metadata$choices <- fields_to_choices(project$metadata$fields)
+  # project$transformation$original_forms <- project$metadata$forms
+  # # new function RosyUtils
+  # cols_to_keep <- c("form_name_remap", "form_label_remap", "repeating", "repeating_via_events", "key_cols", "key_names")
+  # cols_to_keep <- cols_to_keep[which(cols_to_keep %in% colnames(forms_transformation))]
+  # project$transformation$metadata$forms <- forms_transformation[, cols_to_keep] %>% unique()
+  # colnames(project$metadata$forms)[which(colnames(project$metadata$forms) == "form_name_remap")] <- "form_name"
+  # colnames(project$metadata$forms)[which(colnames(project$metadata$forms) == "form_label_remap")] <- "form_label"
+  # project$metadata$forms$original_form_name <- project$metadata$forms$form_name %>%
+  #   lapply(function(form_name) {
+  #     forms_transformation$form_name[which(forms_transformation$form_name_remap == form_name)] %>% paste0(collapse = " | ")
+  #   }) %>%
+  #   unlist() %>%
+  #   as.character()
+  # # fields------------
+  # project$transformation$original_fields <- project$metadata$fields
+  # fields <- combine_original_transformed_fields(project)
+  # fields$original_form_name <- fields$form_name
+  # fields$form_name <- forms_transformation$form_name_remap[match(fields$form_name, forms_transformation$form_name)]
+  # fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]
+  # # new function RosyUtils
+  # first <- 1:which(colnames(fields) == "form_name")
+  # move <- which(colnames(fields) == "original_form_name")
+  # last <- which(colnames(fields) != "original_form_name")[-first]
+  # fields <- fields[, c(first, move, last)]
+  # project$metadata$fields <- fields
+  # bullet_in_console(paste0("Added mod fields to ", project$short_name, " `project$metadata$fields`"), bullet_type = "v")
+  # project$metadata$choices <- fields_to_choices(project$metadata$fields)
   project$internals$last_data_transformation <- now_time()
   return(project)
 }

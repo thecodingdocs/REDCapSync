@@ -370,7 +370,7 @@ add_project_subset <- function(
     include_record_summary = TRUE,
     include_users = TRUE,
     include_log = TRUE
-    ) {
+) {
   if (is.null(project$summary$subsets[[subset_name]]) || reset) {
     project$summary$subsets[[subset_name]] <- list(
       subset_name = subset_name,
@@ -414,7 +414,7 @@ generate_summary_save_list <- function(
     project <- deidentify_project(project)
   }
   if(transform){
-    # project <-
+    project <- transform_project(project, ask = FALSE)
   }
   if (clean) {
     project <- project %>% clean_project(drop_blanks = drop_blanks, other_drops = other_drops) # problematic because setting numeric would delete missing codes
@@ -1235,16 +1235,16 @@ check_project_for_IDs <- function(project, required_percent_filled = 0.7) {
       DF <- project$data[[project$metadata$forms$form_name[which(!project$metadata$forms$repeating)][[1]]]]
       IN_length <- DF %>% nrow()
       cols <- colnames(DF)[DF %>%
-        lapply(function(IN) {
-          OUT <- FALSE
-          x <- IN %>% drop_nas()
-          if ((length(x) / IN_length) > required_percent_filled) {
-            OUT <- anyDuplicated(x) == 0
-          }
-          return(OUT)
-        }) %>%
-        unlist() %>%
-        which()]
+                             lapply(function(IN) {
+                               OUT <- FALSE
+                               x <- IN %>% drop_nas()
+                               if ((length(x) / IN_length) > required_percent_filled) {
+                                 OUT <- anyDuplicated(x) == 0
+                               }
+                               return(OUT)
+                             }) %>%
+                             unlist() %>%
+                             which()]
     }
   }
   return(cols)

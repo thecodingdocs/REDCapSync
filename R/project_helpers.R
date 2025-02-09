@@ -196,7 +196,7 @@ raw_process_redcap <- function(raw, project, labelled) {
         cols %>% lapply(function(c) {which(colnames(raw) == c)}) %>%
           unlist() %>%
           as.integer()
-        ]
+      ]
       raw$id_temp <- NULL
     }
     add_ons <- add_ons[which(add_ons %in% colnames(raw))]

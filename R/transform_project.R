@@ -503,6 +503,7 @@ transform_project <- function(project, reset = FALSE) {
   }
   if (! is_transformed || reset) {
     forms_transformation <- project$transformation$forms
+    forms_transformation_original <- forms_transformation
     project$transformation$data <- project$data
     project <- run_fields_transformation(project)
     named_df_list <- project$transformation$data
@@ -616,7 +617,6 @@ transform_project <- function(project, reset = FALSE) {
     bullet_in_console(paste0(project$short_name, " transformed according to `project$transformation`"), bullet_type = "v")
     # forms ---------
     # new function RosyUtils
-    forms_transformation2 <- forms_transformation
     cols_to_keep <- c("form_name_remap", "form_label_remap", "repeating", "repeating_via_events", "key_cols", "key_names")
     cols_to_keep <- cols_to_keep[which(cols_to_keep %in% colnames(forms_transformation))]
     forms_transformation <- forms_transformation[, cols_to_keep] %>% unique()
@@ -624,7 +624,7 @@ transform_project <- function(project, reset = FALSE) {
     colnames(forms_transformation)[which(colnames(forms_transformation) == "form_label_remap")] <- "form_label"
     forms_transformation$original_form_name <- forms_transformation$form_name %>%
       lapply(function(form_name) {
-        forms_transformation2$form_name[which(forms_transformation2$form_name_remap == form_name)] %>% paste0(collapse = " | ")
+        forms_transformation_original$form_name[which(forms_transformation_original$form_name_remap == form_name)] %>% paste0(collapse = " | ")
       }) %>%
       unlist() %>%
       as.character()
@@ -632,16 +632,16 @@ transform_project <- function(project, reset = FALSE) {
     # fields------------
     fields <- combine_original_transformed_fields(project)
     fields$original_form_name <- fields$form_name
-    fields$form_name <- forms_transformation$form_name_remap[match(fields$form_name, forms_transformation$form_name)]
+    fields$form_name <- forms_transformation_original$form_name_remap[match(fields$form_name, forms_transformation_original$form_name)]
     fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]
     # new function RosyUtils
     first <- 1:which(colnames(fields) == "form_name")
     move <- which(colnames(fields) == "original_form_name")
     last <- which(colnames(fields) != "original_form_name")[-first]
     fields <- fields[, c(first, move, last)]
-    project$metadata$fields <- fields
-    bullet_in_console(paste0("Added mod fields to ", project$short_name, " `project$metadata$fields`"), bullet_type = "v")
-    project$metadata$choices <- fields_to_choices(project$metadata$fields)
+    project$transformation$metadata$fields <- fields
+    bullet_in_console(paste0("Added mod fields to ", project$short_name, " `project$transformation`"), bullet_type = "v")
+    project$transformation$metadata$choices <- fields_to_choices(fields)
     project$internals$last_data_transformation <- now_time()
   }
   return(invisible(project))

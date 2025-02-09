@@ -217,7 +217,7 @@ sync_project <- function(
           process_df_list(silent = TRUE) %>%
           all_character_cols_list()
       }
-      if (any(!names(data_list) %in% names(project$data))) stop("Imported data names doesn't match project$data names. If this happens run `untransform_project()` or `sync_project(project, reset = TRUE)`")
+      if (any(!names(data_list) %in% names(project$data))) stop("Imported data names doesn't match project$data names. If this happens run `sync_project(project, reset = TRUE)`")
       for (TABLE in names(data_list)) {
         project$data[[TABLE]] <- project$data[[TABLE]] %>%
           all_character_cols() %>%

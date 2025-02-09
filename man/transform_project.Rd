@@ -24,7 +24,6 @@ This function checks if the database has already been transformed and applies th
 }
 \seealso{
 \code{\link[REDCapSync]{save_project}} for saving the transformed database object.
-\code{\link[REDCapSync]{untransform_project}} for reverting the transformation.
 
 Other db_functions: 
 \code{\link{rmarkdown_project}()},

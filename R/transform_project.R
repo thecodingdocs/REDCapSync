@@ -519,7 +519,6 @@ run_fields_transformation <- function(project, ask = TRUE) {
 #' @return The transformed `project` object.
 #' @seealso
 #' \code{\link[REDCapSync]{save_project}} for saving the transformed database object.
-#' \code{\link[REDCapSync]{untransform_project}} for reverting the transformation.
 #' @family db_functions
 #' @export
 transform_project <- function(project, ask = TRUE) {

@@ -713,32 +713,11 @@ summarize_users_from_log <- function(project, records) {
 #' @noRd
 summarize_comments_from_log <- function(project, records) {
   log <- get_log(project, records)
-  summary_users <- project$redcap$users %>% dplyr::select(c("username", "role_label", "email", "firstname", "lastname"))
-  user_groups <- log %>% split(log$username)
-  summary_users <- summary_users[which(summary_users$username %in% names(user_groups)), ]
-  if (nrow(summary_users) == 0) {
+  # log$action_type == "Comment"
+  if (nrow(log) == 0) {
     return(NULL)
   }
-  user_groups <- user_groups[drop_nas(match(summary_users$username, names(user_groups)))]
-  summary_users$last_timestamp <- user_groups %>%
-    lapply(function(group) {
-      group$timestamp[[1]]
-    }) %>%
-    unlist()
-  summary_users$first_timestamp <- user_groups %>%
-    lapply(function(group) {
-      group$timestamp %>% dplyr::last()
-    }) %>%
-    unlist()
-  summary_users$last_user <- user_groups %>% lapply(function(group) {
-    group$username[[1]]
-  })
-  summary_users$unique_records_n <- user_groups %>%
-    lapply(function(group) {
-      ul(group$record)
-    }) %>%
-    unlist()
-  return(summary_comments)
+  return(log)
 }
 #' @noRd
 summarize_records_from_log <- function(project, records) {

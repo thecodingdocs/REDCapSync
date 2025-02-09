@@ -158,18 +158,24 @@ construct_key_col_list <- function(project) {
   return(key_cols_list)
 }
 #' @noRd
-get_key_col_list <- function(project) {
-  if (!is_something(project$metadata$forms)) stop("Empty --> `project$metadata$forms`")
-  out_list <- seq_len(nrow(project$metadata$forms)) %>% lapply(function(i) {
+get_key_col_list <- function(project,transform = FALSE) {
+  forms <- project$metadata$forms
+  if (transform){
+    forms <- project$transformation$metadata$forms
+  }
+  if (!is_something(forms)) {
+    stop("Empty --> `project$metadata$forms`")
+  }
+  out_list <- seq_len(nrow(forms)) %>% lapply(function(i) {
     out <- project$redcap$id_col
     if (project$redcap$is_longitudinal) out <- append(out, "redcap_event_name")
-    if (project$metadata$forms$repeating[i]) {
+    if (forms$repeating[i]) {
       out <- append(out, "redcap_repeat_instrument")
       out <- append(out, "redcap_repeat_instance")
     }
     return(out)
   })
-  names(out_list) <- project$metadata$forms$form_name
+  names(out_list) <- forms$form_name
   return(out_list)
 }
 #' @noRd

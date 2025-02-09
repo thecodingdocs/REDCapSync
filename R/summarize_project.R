@@ -363,22 +363,13 @@ add_project_subset <- function(
     deidentify = TRUE,
     reset = FALSE) {
   if (is.null(project$summary$subsets[[subset_name]]) || reset) {
-    subset_records <- NULL
-    if (filter_field == project$redcap$id_col) {
-      records <- unique(filter_choices)
-      filter_choices <- NULL
-    } else {
-      form_name <- field_names_to_form_names(project, field_names = filter_field)
-      records <- project$data[[form_name]][[project$redcap$id_col]][which(project$data[[form_name]][[filter_field]] %in% filter_choices)] %>% unique()
-    }
-    subset_records <- project$summary$all_records[which(project$summary$all_records[[project$redcap$id_col]] %in% records), ]
     project$summary$subsets[[subset_name]] <- list(
       subset_name = subset_name,
       filter_field = filter_field,
       filter_choices = filter_choices,
       form_names = form_names,
       field_names = field_names,
-      subset_records = subset_records,
+      subset_records = NULL,
       dir_other = dir_other,
       file_name = file_name,
       last_save_time = NULL,
@@ -721,6 +712,36 @@ summarize_users_from_log <- function(project, records) {
   return(summary_users)
 }
 #' @noRd
+summarize_comments_from_log <- function(project, records) {
+  log <- get_log(project, records)
+  summary_users <- project$redcap$users %>% dplyr::select(c("username", "role_label", "email", "firstname", "lastname"))
+  user_groups <- log %>% split(log$username)
+  summary_users <- summary_users[which(summary_users$username %in% names(user_groups)), ]
+  if(nrow(summary_users)==0){
+    return(NULL)
+  }
+  user_groups <- user_groups[drop_nas(match(summary_users$username, names(user_groups)))]
+  summary_users$last_timestamp <- user_groups %>%
+    lapply(function(group) {
+      group$timestamp[[1]]
+    }) %>%
+    unlist()
+  summary_users$first_timestamp <- user_groups %>%
+    lapply(function(group) {
+      group$timestamp %>% dplyr::last()
+    }) %>%
+    unlist()
+  summary_users$last_user <- user_groups %>% lapply(function(group) {
+    group$username[[1]]
+  })
+  summary_users$unique_records_n <- user_groups %>%
+    lapply(function(group) {
+      ul(group$record)
+    }) %>%
+    unlist()
+  return(summary_comments)
+}
+#' @noRd
 summarize_records_from_log <- function(project, records) {
   log <- project$redcap$log
   log <- log[which(!is.na(log$username)), ]
@@ -763,14 +784,9 @@ summarize_records_from_log <- function(project, records) {
 #' @noRd
 get_subset_records <- function(project, subset_name) {
   subset_list <- project$summary$subsets[[subset_name]]
-  subset_records <- NULL
-  if (subset_list$filter_field == project$redcap$id_col) {
-    records <- unique(subset_list$subset_records[[project$redcap$id_col]])
-  } else {
-    filter_choices <- subset_list$filter_choices
-    form_name <- field_names_to_form_names(project, field_names = subset_list$filter_field)
-    records <- project$data[[form_name]][[project$redcap$id_col]][which(project$data[[form_name]][[subset_list$filter_field]] %in% filter_choices)] %>% unique()
-  }
+  filter_choices <- subset_list$filter_choices
+  form_name <- field_names_to_form_names(project, field_names = subset_list$filter_field)
+  records <- project$data[[form_name]][[project$redcap$id_col]][which(project$data[[form_name]][[subset_list$filter_field]] %in% filter_choices)] %>% unique()
   subset_records <- project$summary$all_records[which(project$summary$all_records[[project$redcap$id_col]] %in% records), ]
   return(subset_records)
 }

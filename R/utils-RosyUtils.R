@@ -304,6 +304,9 @@ wl <- function(x) {
   length(which(x))
 }
 drop_nas <- function(x) {
+  if(length(x)==0){
+    return(x)
+  }
   x[!unlist(lapply(x, is.na))]
 }
 excel_to_list <- function(path) {

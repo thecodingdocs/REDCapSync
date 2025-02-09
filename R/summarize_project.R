@@ -515,7 +515,6 @@ generate_summary_from_subset_name <- function(
     project,
     subset_name) {
   subset_list <- project$summary$subsets[[subset_name]]
-
   project$data <- filter_project(
     project = project,
     transform = subset_list$transform,
@@ -600,7 +599,9 @@ summarize_project <- function(
     project$internals$last_summary <- last_data_update
   }
   subset_names <- check_subsets(project)
-  if (reset) subset_names <- project$summary$subsets %>% names()
+  if (reset) {
+    subset_names <- project$summary$subsets %>% names()
+  }
   if (is_something(subset_names)) {
     for (subset_name in subset_names) {
       project$data <- original_data

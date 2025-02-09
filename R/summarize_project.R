@@ -515,12 +515,7 @@ generate_summary_from_subset_name <- function(
     project,
     subset_name) {
   subset_list <- project$summary$subsets[[subset_name]]
-  if (subset_list$transform) {
-    if (!project$internals$is_transformed) {
-      # transform if not already
-    }
-    project$data <- project$data
-  }
+
   project$data <- filter_project(
     project = project,
     transform = subset_list$transform,
@@ -828,10 +823,6 @@ check_subsets <- function(project, subset_names) {
 #'
 #' @export
 filter_project <- function(project, transform, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE) { # , ignore_incomplete=FALSE, ignore_unverified = FALSE
-  if (missing(field_names)) field_names <- project %>% get_all_field_names()
-  if (is.null(field_names)) field_names <- project %>% get_all_field_names()
-  if (missing(form_names)) form_names <- names(project$data)
-  if (is.null(form_names)) form_names <- names(project$data)
   if (missing(transform)) {
     transform <- project$internals$is_transformed
   }
@@ -839,6 +830,10 @@ filter_project <- function(project, transform, filter_field, filter_choices, for
     project$metadata <- project$transformation$metadata
     project$data <- project$transformation$data
   }
+  if (missing(field_names)) field_names <- project %>% get_all_field_names()
+  if (is.null(field_names)) field_names <- project %>% get_all_field_names()
+  if (missing(form_names)) form_names <- names(project$data)
+  if (is.null(form_names)) form_names <- names(project$data)
   return(
     filter_DF_list(
       DF_list = project$data,

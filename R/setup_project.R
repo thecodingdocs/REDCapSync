@@ -286,7 +286,7 @@ setup_project <- function(
   }
   project <- assert_setup_project(project, silent = silent)
   if (!is.null(original_details)) {
-    final_details <- project %>% extract_project_details()
+    # final_details <- project %>% extract_project_details()
     # message about changes compared to original
   }
   project$internals$last_directory_save <- now_time()
@@ -448,10 +448,7 @@ delete_project <- function(project) {
     warning("The project object you wanted to is not there. Did you delete already? ", delete_this)
   }
 }
-#' @title get your directory
-#' @inheritParams save_project
-#' @return file path of directory
-#' @export
+#' @noRd
 get_dir <- function(project) {
   dir_path <- project$dir_path
   stop_mes <- "Did you use `set_dir()`?"

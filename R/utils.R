@@ -82,9 +82,8 @@ remove_records_from_list <- function(project, records, silent = FALSE) {
   forms <- names(data_list)[
     which(
       names(data_list) %>%
-        lapply(function(form) {
-          nrow(data_list[[form]]) > 0
-        }) %>% unlist()
+        lapply(function(form) {nrow(data_list[[form]]) > 0}) %>%
+        unlist()
     )
   ]
   for (TABLE in forms) {

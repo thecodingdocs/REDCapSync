@@ -9,6 +9,8 @@ transform_project(project, reset = FALSE)
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
+
+\item{reset}{Logical that forces transformation if TRUE. Default is \code{FALSE}.}
 }
 \value{
 The transformed \code{project} object.

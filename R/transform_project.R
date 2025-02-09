@@ -479,6 +479,7 @@ run_fields_transformation <- function(project) {
 #' This function checks if the database has already been transformed and applies the transformation if not. It stores the original column names before transforming the data. The transformation process can include modifying field values and renaming columns based on predefined transformation rules.
 #'
 #' @inheritParams save_project
+#' @param reset Logical that forces transformation if TRUE. Default is `FALSE`.
 #' @return The transformed `project` object.
 #' @seealso
 #' \code{\link[REDCapSync]{save_project}} for saving the transformed database object.
@@ -619,7 +620,6 @@ transform_project <- function(project, reset = FALSE) {
     cols_to_keep <- c("form_name_remap", "form_label_remap", "repeating", "repeating_via_events", "key_cols", "key_names")
     cols_to_keep <- cols_to_keep[which(cols_to_keep %in% colnames(forms_transformation))]
     forms_transformation <- forms_transformation[, cols_to_keep] %>% unique()
-
     colnames(forms_transformation)[which(colnames(forms_transformation) == "form_name_remap")] <- "form_name"
     colnames(forms_transformation)[which(colnames(forms_transformation) == "form_label_remap")] <- "form_label"
     forms_transformation$original_form_name <- forms_transformation$form_name %>%

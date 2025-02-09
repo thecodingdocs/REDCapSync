@@ -209,7 +209,7 @@ sync_project <- function(
         project2$metadata$forms <- project2$transformation$original_forms
         project2$metadata$fields <- project2$transformation$original_fields
         project2$data <- data_list
-        project2 <- transform_project(project2, ask = ask_about_overwrites)
+        project2 <- transform_project(project2)
         if (!is.null(project2$data_updates$from_transform)) {
           project2 <- upload_transform_to_project(project2)
         }

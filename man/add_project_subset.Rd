@@ -14,7 +14,15 @@ add_project_subset(
   form_names = NULL,
   field_names = NULL,
   deidentify = TRUE,
-  reset = FALSE
+  reset = FALSE,
+  clean = TRUE,
+  transform = TRUE,
+  drop_blanks = TRUE,
+  include_metadata = TRUE,
+  annotate_metadata = TRUE,
+  include_record_summary = TRUE,
+  include_users = TRUE,
+  include_log = TRUE
 )
 }
 \arguments{

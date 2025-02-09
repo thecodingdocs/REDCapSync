@@ -361,7 +361,16 @@ add_project_subset <- function(
     form_names = NULL,
     field_names = NULL,
     deidentify = TRUE,
-    reset = FALSE) {
+    reset = FALSE,
+    clean = TRUE,
+    transform = TRUE,
+    drop_blanks = TRUE,
+    include_metadata = TRUE,
+    annotate_metadata = TRUE,
+    include_record_summary = TRUE,
+    include_users = TRUE,
+    include_log = TRUE
+    ) {
   if (is.null(project$summary$subsets[[subset_name]]) || reset) {
     project$summary$subsets[[subset_name]] <- list(
       subset_name = subset_name,
@@ -374,6 +383,14 @@ add_project_subset <- function(
       file_name = file_name,
       last_save_time = NULL,
       deidentify = deidentify,
+      clean = clean,
+      transform = transform,
+      drop_blanks = drop_blanks,
+      include_metadata = include_metadata,
+      annotate_metadata = annotate_metadata,
+      include_record_summary = include_record_summary,
+      include_users = include_users,
+      include_log = include_log,
       file_path = file.path(dir_other, paste0(file_name, ".xlsx"))
     )
   }
@@ -382,6 +399,7 @@ add_project_subset <- function(
 #' @noRd
 generate_summary_save_list <- function(
     project,
+    transform = TRUE,
     deidentify = TRUE,
     clean = TRUE,
     drop_blanks = TRUE,
@@ -394,6 +412,9 @@ generate_summary_save_list <- function(
   records <- sum_records(project)[[1]]
   if (deidentify) {
     project <- deidentify_project(project)
+  }
+  if(transform){
+    # project <-
   }
   if (clean) {
     project <- project %>% clean_project(drop_blanks = drop_blanks, other_drops = other_drops) # problematic because setting numeric would delete missing codes
@@ -493,14 +514,8 @@ save_REDCapSync_list <- function(
 #' @export
 generate_summary_from_subset_name <- function(
     project,
-    subset_name,
-    clean = TRUE,
-    drop_blanks = TRUE,
-    include_metadata = TRUE,
-    annotate_metadata = TRUE,
-    include_record_summary = TRUE,
-    include_users = TRUE,
-    include_log = TRUE) {
+    subset_name
+) {
   subset_list <- project$summary$subsets[[subset_name]]
   if (subset_list$filter_field == project$redcap$id_col) {
     subset_list$filter_choices <- subset_list$subset_records[[project$redcap$id_col]]
@@ -514,13 +529,13 @@ generate_summary_from_subset_name <- function(
   )
   to_save_list <- project %>% generate_summary_save_list(
     deidentify = subset_list$deidentify,
-    clean = clean,
-    drop_blanks = drop_blanks,
-    include_metadata = include_metadata,
-    annotate_metadata = annotate_metadata,
-    include_record_summary = include_record_summary,
-    include_users = include_users,
-    include_log = include_log
+    clean = subset_list$clean,
+    drop_blanks = subset_list$drop_blanks,
+    include_metadata = subset_list$include_metadata,
+    annotate_metadata = subset_list$annotate_metadata,
+    include_record_summary = subset_list$include_record_summary,
+    include_users = subset_list$include_users,
+    include_log = subset_list$include_log
   )
   return(to_save_list)
 }

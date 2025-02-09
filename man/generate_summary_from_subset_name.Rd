@@ -4,17 +4,7 @@
 \alias{generate_summary_from_subset_name}
 \title{Generate a Summary from a Subset Name}
 \usage{
-generate_summary_from_subset_name(
-  project,
-  subset_name,
-  clean = TRUE,
-  drop_blanks = TRUE,
-  include_metadata = TRUE,
-  annotate_metadata = TRUE,
-  include_record_summary = TRUE,
-  include_users = TRUE,
-  include_log = TRUE
-)
+generate_summary_from_subset_name(project, subset_name)
 }
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data and

@@ -377,8 +377,7 @@ add_project_subset <- function(
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
     include_users = TRUE,
-    include_log = TRUE
-) {
+    include_log = TRUE) {
   if (is.null(project$summary$subsets[[subset_name]]) || reset) {
     project$summary$subsets[[subset_name]] <- list(
       subset_name = subset_name,
@@ -421,7 +420,7 @@ generate_summary_save_list <- function(
   if (deidentify) {
     project <- deidentify_project(project)
   }
-  if(transform){
+  if (transform) {
     project <- transform_project(project)
   }
   if (clean) {
@@ -514,14 +513,13 @@ save_REDCapSync_list <- function(
 #' @export
 generate_summary_from_subset_name <- function(
     project,
-    subset_name
-) {
+    subset_name) {
   subset_list <- project$summary$subsets[[subset_name]]
-  if(subset_list$transform){
-    if(!project$internals$is_transformed) {
+  if (subset_list$transform) {
+    if (!project$internals$is_transformed) {
       # transform if not already
     }
-    project$data <-  project$data
+    project$data <- project$data
   }
   project$data <- filter_project(
     project = project,
@@ -829,15 +827,15 @@ check_subsets <- function(project, subset_names) {
 #' The function uses the helper `filter_DF_list` to apply the filtering logic to the `project$data` list.
 #'
 #' @export
-filter_project <- function(project,transform, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE) { # , ignore_incomplete=FALSE, ignore_unverified = FALSE
+filter_project <- function(project, transform, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE) { # , ignore_incomplete=FALSE, ignore_unverified = FALSE
   if (missing(field_names)) field_names <- project %>% get_all_field_names()
   if (is.null(field_names)) field_names <- project %>% get_all_field_names()
   if (missing(form_names)) form_names <- names(project$data)
   if (is.null(form_names)) form_names <- names(project$data)
-  if(missing(transform)){
+  if (missing(transform)) {
     transform <- project$internals$is_transformed
   }
-  if(transform){
+  if (transform) {
     project$metadata <- project$transformation$metadata
     project$data <- project$transformation$data
   }

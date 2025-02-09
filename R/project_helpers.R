@@ -158,9 +158,9 @@ construct_key_col_list <- function(project) {
   return(key_cols_list)
 }
 #' @noRd
-get_key_col_list <- function(project,transform = FALSE) {
+get_key_col_list <- function(project, transform = FALSE) {
   forms <- project$metadata$forms
-  if (transform){
+  if (transform) {
     forms <- project$transformation$metadata$forms
   }
   if (!is_something(forms)) {
@@ -199,7 +199,9 @@ raw_process_redcap <- function(raw, project, labelled) {
       cols <- c(add_ons, colnames(raw)) %>% unique()
       raw <- raw[
         order(raw$id_temp),
-        cols %>% lapply(function(c) {which(colnames(raw) == c)}) %>%
+        cols %>% lapply(function(c) {
+          which(colnames(raw) == c)
+        }) %>%
           unlist() %>%
           as.integer()
       ]

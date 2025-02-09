@@ -501,7 +501,7 @@ transform_project <- function(project, reset = FALSE) {
     bullet_in_console("Already transformed... nothing to do!", bullet_type = "x")
     return(invisible(project))
   }
-  if (! is_transformed || reset) {
+  if (!is_transformed || reset) {
     forms_transformation <- project$transformation$forms
     forms_transformation_original <- forms_transformation
     project$transformation$data <- project$data
@@ -642,7 +642,7 @@ transform_project <- function(project, reset = FALSE) {
     project$transformation$metadata$fields <- fields
     bullet_in_console(paste0("Added mod fields to ", project$short_name, " `project$transformation`"), bullet_type = "v")
     project$transformation$metadata$choices <- fields_to_choices(fields)
-    project$transformation$metadata$form_key_cols <- get_key_col_list(project = project,transform = TRUE)
+    project$transformation$metadata$form_key_cols <- get_key_col_list(project = project, transform = TRUE)
     project$transformation$metadata$missing_codes <- project$metadata$missing_codes
     project$internals$last_data_transformation <- now_time()
   }

@@ -517,9 +517,6 @@ generate_summary_from_subset_name <- function(
     subset_name
 ) {
   subset_list <- project$summary$subsets[[subset_name]]
-  if (subset_list$filter_field == project$redcap$id_col) {
-    subset_list$filter_choices <- subset_list$subset_records[[project$redcap$id_col]]
-  }
   project$data <- filter_project(
     project = project,
     field_names = subset_list$field_names,

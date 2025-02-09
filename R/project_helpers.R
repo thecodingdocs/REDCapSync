@@ -281,7 +281,11 @@ clean_redcap_log <- function(log) {
   log <- unique(log)
   log$record_id <- NA
   log$action_type <- NA
-  log <- log %>% lapply(function(x){x %>% trimws(whitespace = "[\\h\\v]")}) %>% as.data.frame()
+  log <- log %>%
+    lapply(function(x) {
+      x %>% trimws(whitespace = "[\\h\\v]")
+    }) %>%
+    as.data.frame()
   design_test <- log$action == "Manage/Design"
   design_rows <- which(design_test)
   not_design_rows <- which(!design_test)
@@ -387,7 +391,7 @@ clean_redcap_log <- function(log) {
   rows <- which(!is.na(log$record) & is.na(log$record_id))
   log$action_type[rows] <- "Users"
   log$record_id <- NULL
-  log$username[which(log$username =="[survey respondent]")] <- NA
+  log$username[which(log$username == "[survey respondent]")] <- NA
   log <- sort_redcap_log(log)
   return(log)
 }

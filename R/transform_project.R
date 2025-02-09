@@ -535,7 +535,7 @@ transform_project <- function(project, ask = TRUE) {
     })
   names(project$transformation$original_col_names) <- project$data %>% names()
   # if(any(!names(transformation)%in%names(project$data)))stop("must have all project$data names in transformation")
-  if (is_something(process_df_list(project$data, silent = TRUE))){
+  if (is_something(process_df_list(project$data, silent = TRUE))) {
     project <- run_fields_transformation(project, ask = ask)
   }
   named_df_list <- project$data
@@ -626,7 +626,7 @@ transform_project <- function(project, ask = TRUE) {
     }
   }
   if (any(!names(OUT) %in% unique(forms_transformation$form_name_remap))) stop("not all names in OUT objext. Something wrong with transform_project()")
-  if(is_something(OUT)){
+  if (is_something(OUT)) {
     project$data <- OUT
   }
   # forms_transformation <- annotate_forms(project,summarize_data = FALSE)

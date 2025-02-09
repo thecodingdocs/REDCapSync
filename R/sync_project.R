@@ -31,8 +31,7 @@ sync_project <- function(
     silent = FALSE,
     ask_about_overwrites = TRUE,
     summarize = TRUE,
-    save_to_dir = TRUE
-) {
+    save_to_dir = TRUE) {
   collected <- makeAssertCollection()
   assert_blank_project(project)
   assert_logical(
@@ -90,8 +89,8 @@ sync_project <- function(
   if (!reset) { # check log interim
     if (
       !is_something(project$internals$last_metadata_update) ||
-      !is_something(project$internals$last_data_update) ||
-      !is_something(project$internals$last_full_update)
+        !is_something(project$internals$last_data_update) ||
+        !is_something(project$internals$last_full_update)
     ) {
       reset <- TRUE
     } else {
@@ -160,7 +159,7 @@ sync_project <- function(
       } else {
         project$redcap$log <- log %>% dplyr::bind_rows(
           project %>% get_REDCap_log(
-            log_begin_date = Sys.Date()-project$internals$days_of_log
+            log_begin_date = Sys.Date() - project$internals$days_of_log
           ) %>% unique()
         )
       }

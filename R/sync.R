@@ -7,8 +7,7 @@
 sync <- function(
     use_console = TRUE,
     hard_reset = FALSE,
-    project_names = NULL
-) {
+    project_names = NULL) {
   collected <- makeAssertCollection()
   assert_logical(use_console, any.missing = FALSE, len = 1, add = collected)
   assert_logical(hard_reset, any.missing = FALSE, len = 1, add = collected)
@@ -240,19 +239,20 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
         to_cache <- tryCatch(
           expr = {
             suppressWarnings({
-              readRDS(expected_path)            })
+              readRDS(expected_path)
+            })
           },
           error = function(e) {
             NULL
           }
         )
-        if(is.null(to_cache)){
-          cli_alert_warning(paste0("issue loading project_details: ",project_name))
+        if (is.null(to_cache)) {
+          cli_alert_warning(paste0("issue loading project_details: ", project_name))
           to_cache <- from_cache
           had_change <- TRUE
           unlink(expected_path)
         }
-        if(!had_change){
+        if (!had_change) {
           if (!is.na(from_cache$last_directory_save)) { # should I compare?
             if (to_cache$last_directory_save != from_cache$last_directory_save) {
               if (!identical(to_cache$dir_path, from_cache$dir_path)) {

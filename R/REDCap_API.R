@@ -1,5 +1,5 @@
 #' @noRd
-project_rcon <- function (project){
+project_rcon <- function(project) {
   assert_setup_project(project)
   rcon <- redcapAPI::redcapConnection(
     url = project$links$redcap_uri,
@@ -18,7 +18,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$redcap$project_info <- REDCapR::redcap_project_info_read(
     redcap_uri = project$links$redcap_uri,
     token = get_project_token(project)
-  )[["data"]]# remove at some point
+  )[["data"]] # remove at some point
   project$redcap$project_title <- project$redcap$project_info$project_title
   project$redcap$project_id <- project$redcap$project_info$project_id %>% as.character()
   project$redcap$is_longitudinal <- project$redcap$project_info$is_longitudinal
@@ -35,7 +35,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
   repeatingFormsEvents <- redcapAPI::exportRepeatingInstrumentsEvents(rcon = rcon)
   if (is.data.frame(repeatingFormsEvents)) {
-    if(nrow(repeatingFormsEvents)> 0){
+    if (nrow(repeatingFormsEvents) > 0) {
       project$metadata$forms$repeating <- project$metadata$forms$form_name %in% repeatingFormsEvents$form_name
     }
   }
@@ -130,7 +130,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
       redcap_uri = project$links$redcap_uri,
       token = get_project_token(project)
     )[["data"]] %>% all_character_cols()
-    colnames(project$metadata$events)[which(colnames(project$metadata$events)=="arm_num")] <- "arm_number"
+    colnames(project$metadata$events)[which(colnames(project$metadata$events) == "arm_num")] <- "arm_number"
     project$metadata$events$repeating <- FALSE
     project$metadata$event_mapping$repeating <- FALSE
     if (is.data.frame(repeatingFormsEvents)) {
@@ -245,10 +245,10 @@ get_REDCap_files <- function(project, original_file_names = FALSE, overwrite = F
 get_REDCap_users <- function(project) {
   assert_setup_project(project)
   rcon <- project_rcon(project)
-  users<-  redcapAPI::exportUsers(rcon = rcon,labels = FALSE, form_rights = FALSE)
-  user_roles <- redcapAPI::exportUserRoles(rcon = rcon,labels = FALSE, form_rights = FALSE)
+  users <- redcapAPI::exportUsers(rcon = rcon, labels = FALSE, form_rights = FALSE)
+  user_roles <- redcapAPI::exportUserRoles(rcon = rcon, labels = FALSE, form_rights = FALSE)
   user_role_assignments <- redcapAPI::exportUserRoleAssignments(rcon = rcon)
-  final <- merge(merge(user_roles[,c("unique_role_name","role_label")], user_role_assignments, by = "unique_role_name"), users, by = "username", all.y = TRUE)
+  final <- merge(merge(user_roles[, c("unique_role_name", "role_label")], user_role_assignments, by = "unique_role_name"), users, by = "username", all.y = TRUE)
   return(final)
 }
 #' @noRd
@@ -281,8 +281,7 @@ get_REDCap_raw_data <- function(
     project,
     labelled = FALSE,
     records = NULL,
-    batch_size = 1000
-) {
+    batch_size = 1000) {
   raw <- REDCapR::redcap_read(
     redcap_uri = project$links$redcap_uri,
     token = get_project_token(project),

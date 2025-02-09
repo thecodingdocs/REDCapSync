@@ -415,7 +415,7 @@ generate_summary_save_list <- function(
     # }
   }
   if (include_record_summary) {
-    if(!is.null(records)){
+    if (!is.null(records)) {
       to_save_list$records <- summarize_records_from_log(project, records = records)
     }
   }
@@ -561,8 +561,7 @@ summarize_project <- function(
     include_users = TRUE,
     include_log = TRUE,
     separate = FALSE,
-    reset = FALSE
-) {
+    reset = FALSE) {
   project <- project %>% assert_blank_project()
   original_data <- project$data
   do_it <- is.null(project$internals$last_summary)
@@ -687,7 +686,7 @@ summarize_users_from_log <- function(project, records) {
   summary_users <- project$redcap$users %>% dplyr::select(c("username", "role_label", "email", "firstname", "lastname"))
   user_groups <- log %>% split(log$username)
   summary_users <- summary_users[which(summary_users$username %in% names(user_groups)), ]
-  if(nrow(summary_users)==0){
+  if (nrow(summary_users) == 0) {
     return(NULL)
   }
   user_groups <- user_groups[drop_nas(match(summary_users$username, names(user_groups)))]
@@ -717,7 +716,7 @@ summarize_comments_from_log <- function(project, records) {
   summary_users <- project$redcap$users %>% dplyr::select(c("username", "role_label", "email", "firstname", "lastname"))
   user_groups <- log %>% split(log$username)
   summary_users <- summary_users[which(summary_users$username %in% names(user_groups)), ]
-  if(nrow(summary_users)==0){
+  if (nrow(summary_users) == 0) {
     return(NULL)
   }
   user_groups <- user_groups[drop_nas(match(summary_users$username, names(user_groups)))]
@@ -1199,7 +1198,7 @@ filter_fields_from_form <- function(FORM, project) {
   fields <- project %>% field_names_metadata(field_names = colnames(FORM))
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
-  fields$has_choices[which(fields$field_type=="calc")] <- FALSE
+  fields$has_choices[which(fields$field_type == "calc")] <- FALSE
   return(fields)
 }
 #' @noRd
@@ -1249,16 +1248,16 @@ check_project_for_IDs <- function(project, required_percent_filled = 0.7) {
       DF <- project$data[[project$metadata$forms$form_name[which(!project$metadata$forms$repeating)][[1]]]]
       IN_length <- DF %>% nrow()
       cols <- colnames(DF)[DF %>%
-                             lapply(function(IN) {
-                               OUT <- FALSE
-                               x <- IN %>% drop_nas()
-                               if ((length(x) / IN_length) > required_percent_filled) {
-                                 OUT <- anyDuplicated(x) == 0
-                               }
-                               return(OUT)
-                             }) %>%
-                             unlist() %>%
-                             which()]
+        lapply(function(IN) {
+          OUT <- FALSE
+          x <- IN %>% drop_nas()
+          if ((length(x) / IN_length) > required_percent_filled) {
+            OUT <- anyDuplicated(x) == 0
+          }
+          return(OUT)
+        }) %>%
+        unlist() %>%
+        which()]
     }
   }
   return(cols)

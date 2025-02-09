@@ -179,9 +179,9 @@ setup_project <- function(
           NULL
         }
       )
-      if(!is.null(project_details)){
+      if (!is.null(project_details)) {
         add_project_details_to_cache(project_details)
-      }else{
+      } else {
         cli_alert_warning("currupted project_details so will be overwritten")
       }
       # add check for if it was loaded from right place
@@ -439,7 +439,7 @@ delete_project <- function(project) {
   dir_path <- project$dir_path
   dir_path <- assert_dir(dir_path, silent = FALSE)
   delete_this <- get_expected_project_path(project)
-  delete_this_too <-  get_expected_project_details_path(project)
+  delete_this_too <- get_expected_project_details_path(project)
   if (file.exists(delete_this)) {
     unlink(delete_this)
     unlink(delete_this_too)

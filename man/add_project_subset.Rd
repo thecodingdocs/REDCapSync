@@ -48,6 +48,22 @@ Default is \verb{<project$short_name>_<subset_name>}.}
 \item{deidentify}{Logical. Whether to deidentify the data in the subset. Default is \code{TRUE}.}
 
 \item{reset}{Logical. If \code{TRUE}, overwrite existing subset files with the same name. Default is \code{FALSE}.}
+
+\item{clean}{Logical. If \code{TRUE}, the data will be cleaned before summarizing. Default is \code{TRUE}.}
+
+\item{transform}{Logical. Whether to transform the data in the subset. Default is \code{TRUE}.}
+
+\item{drop_blanks}{Logical. If \code{TRUE}, records with blank fields will be dropped. Default is \code{TRUE}.}
+
+\item{include_metadata}{Logical. If \code{TRUE}, metadata will be included in the summary. Default is \code{TRUE}.}
+
+\item{annotate_metadata}{Logical. If \code{TRUE}, metadata will be annotated in the summary. Default is \code{TRUE}.}
+
+\item{include_record_summary}{Logical. If \code{TRUE}, a record summary will be included in the generated summary. Default is \code{TRUE}.}
+
+\item{include_users}{Logical. If \code{TRUE}, user-related information will be included in the summary. Default is \code{TRUE}.}
+
+\item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in the summary. Default is \code{TRUE}.}
 }
 \value{
 A modified \code{project} object that includes the newly created subset.

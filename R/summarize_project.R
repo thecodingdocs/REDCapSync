@@ -335,7 +335,15 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 #' Default is `<project$short_name>_<subset_name>`.
 #' @param form_names Character vector. Names of forms to include in the subset. Default is `NULL`, which includes all forms.
 #' @param field_names Character vector. Names of specific fields to include in the subset. Default is `NULL`, which includes all fields.
+#' @param transform Logical. Whether to transform the data in the subset. Default is `TRUE`.
 #' @param deidentify Logical. Whether to deidentify the data in the subset. Default is `TRUE`.
+#' @param clean Logical. If `TRUE`, the data will be cleaned before summarizing. Default is `TRUE`.
+#' @param drop_blanks Logical. If `TRUE`, records with blank fields will be dropped. Default is `TRUE`.
+#' @param include_metadata Logical. If `TRUE`, metadata will be included in the summary. Default is `TRUE`.
+#' @param annotate_metadata Logical. If `TRUE`, metadata will be annotated in the summary. Default is `TRUE`.
+#' @param include_record_summary Logical. If `TRUE`, a record summary will be included in the generated summary. Default is `TRUE`.
+#' @param include_users Logical. If `TRUE`, user-related information will be included in the summary. Default is `TRUE`.
+#' @param include_log Logical. If `TRUE`, the log of changes will be included in the summary. Default is `TRUE`.
 #' @param reset Logical. If `TRUE`, overwrite existing subset files with the same name. Default is `FALSE`.
 #'
 #' @return
@@ -498,14 +506,6 @@ save_REDCapSync_list <- function(
 #'
 #' @inheritParams save_project
 #' @param subset_name Character. The name of the subset from which to generate the summary.
-#' @param clean Logical. If `TRUE`, the data will be cleaned before summarizing. Default is `TRUE`.
-#' @param drop_blanks Logical. If `TRUE`, records with blank fields will be dropped. Default is `TRUE`.
-#' @param include_metadata Logical. If `TRUE`, metadata will be included in the summary. Default is `TRUE`.
-#' @param annotate_metadata Logical. If `TRUE`, metadata will be annotated in the summary. Default is `TRUE`.
-#' @param include_record_summary Logical. If `TRUE`, a record summary will be included in the generated summary. Default is `TRUE`.
-#' @param include_users Logical. If `TRUE`, user-related information will be included in the summary. Default is `TRUE`.
-#' @param include_log Logical. If `TRUE`, the log of changes will be included in the summary. Default is `TRUE`.
-#'
 #' @return
 #' A list containing the generated summary based on the specified options. The list includes filtered and cleaned data, metadata, and other summary details.
 #'

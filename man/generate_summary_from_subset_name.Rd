@@ -11,20 +11,6 @@ generate_summary_from_subset_name(project, subset_name)
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{subset_name}{Character. The name of the subset from which to generate the summary.}
-
-\item{clean}{Logical. If \code{TRUE}, the data will be cleaned before summarizing. Default is \code{TRUE}.}
-
-\item{drop_blanks}{Logical. If \code{TRUE}, records with blank fields will be dropped. Default is \code{TRUE}.}
-
-\item{include_metadata}{Logical. If \code{TRUE}, metadata will be included in the summary. Default is \code{TRUE}.}
-
-\item{annotate_metadata}{Logical. If \code{TRUE}, metadata will be annotated in the summary. Default is \code{TRUE}.}
-
-\item{include_record_summary}{Logical. If \code{TRUE}, a record summary will be included in the generated summary. Default is \code{TRUE}.}
-
-\item{include_users}{Logical. If \code{TRUE}, user-related information will be included in the summary. Default is \code{TRUE}.}
-
-\item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in the summary. Default is \code{TRUE}.}
 }
 \value{
 A list containing the generated summary based on the specified options. The list includes filtered and cleaned data, metadata, and other summary details.

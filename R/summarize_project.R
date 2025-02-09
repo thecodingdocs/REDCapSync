@@ -611,14 +611,7 @@ summarize_project <- function(
       project$summary$subsets[[subset_name]]$subset_records <- get_subset_records(project = project, subset_name = subset_name)
       project$summary$subsets[[subset_name]]$last_save_time <- now_time()
       to_save_list <- project %>% generate_summary_from_subset_name(
-        subset_name = subset_name,
-        clean = clean,
-        drop_blanks = drop_blanks,
-        include_metadata = include_metadata,
-        annotate_metadata = annotate_metadata,
-        include_record_summary = include_record_summary,
-        include_users = include_users,
-        include_log = include_log
+        subset_name = subset_name
       )
       project %>% save_REDCapSync_list(
         to_save_list = to_save_list,

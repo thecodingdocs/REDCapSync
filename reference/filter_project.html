@@ -65,6 +65,7 @@ containing only the records that match the filter criteria.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">filter_project</span><span class="op">(</span></span>
 <span>  <span class="va">project</span>,</span>
+<span>  <span class="va">transform</span>,</span>
 <span>  <span class="va">filter_field</span>,</span>
 <span>  <span class="va">filter_choices</span>,</span>
 <span>  <span class="va">form_names</span>,</span>
@@ -81,6 +82,10 @@ containing only the records that match the filter criteria.</p>
 <dl><dt id="arg-project">project<a class="anchor" aria-label="anchor" href="#arg-project"></a></dt>
 <dd><p>A validated <code>project</code> object containing REDCap project data and
 settings. Generated using <a href="setup-load.html">load_project</a> or <a href="setup-load.html">setup_project</a></p></dd>
+
+
+<dt id="arg-transform">transform<a class="anchor" aria-label="anchor" href="#arg-transform"></a></dt>
+<dd><p>A logical flag (<code>TRUE</code> or <code>FALSE</code>). If <code>TRUE</code>, filter using transformation. Defaults to <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-filter-field">filter_field<a class="anchor" aria-label="anchor" href="#arg-filter-field"></a></dt>

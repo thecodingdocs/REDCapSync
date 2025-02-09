@@ -82,7 +82,7 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
       }
     }
   }
-  return(project)
+  return(invisible(project))
 }
 #' @rdname Links
 #' @title Open Links to REDCap Pages
@@ -177,8 +177,8 @@ raw_process_redcap <- function(raw, project, labelled) {
   # key_cols <-project$redcap$raw_structure_cols
   # key_cols <- key_cols[which(!key_cols%in%c("arm_number","event_name"))]
   # paste0(raw[[project$redcap$id_col]],"_",raw$redcap_event_name,"_",raw$redcap_repeat_instrument,"_",raw$redcap_repeat_instance)
-  forms <- get_original_forms(project)
-  fields <- get_original_fields(project)
+  forms <- project$metadata$forms
+  fields <- project$metadata$fields
   # arms <- project$metadata$arms
   events <- project$metadata$events
   event_mapping <- project$metadata$event_mapping

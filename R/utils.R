@@ -44,7 +44,7 @@ husk_of_form <- function(project, FORM, field_names) {
 all_project_to_char_cols <- function(project) {
   project$data <- project$data %>% all_character_cols_list()
   project$data_updates <- project$data_updates %>% all_character_cols_list()
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 add_redcap_links_table <- function(DF, project) {

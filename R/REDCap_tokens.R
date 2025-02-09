@@ -101,7 +101,7 @@ test_project_token <- function(project, set_if_fails = TRUE, launch_browser = TR
   ERROR <- is.null(redcap_version)
   project$internals$last_test_connection_outcome <- !ERROR
   if (!set_if_fails) {
-    return(project)
+    return(invisible(project))
   }
   if (ERROR && launch_browser) {
     utils::browseURL(url = ifelse(is_something(project$redcap$version), project$links$redcap_API, project$links$redcap_base))
@@ -126,7 +126,7 @@ test_project_token <- function(project, set_if_fails = TRUE, launch_browser = TR
   bullet_in_console("Connected to REDCap!", bullet_type = "v")
   project$redcap$version <- redcap_version
   project$internals$ever_connected <- TRUE
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 is_valid_REDCap_token <- function(token, silent = TRUE, is_a_test = FALSE) {

@@ -17,14 +17,14 @@
 clean_project <- function(project, drop_blanks = FALSE, other_drops = NULL) { # problematic because setting numeric would delete missing codes
   # project <-  project %>% annotate_fields(skim = FALSE)
   if (!is_something(project)) {
-    return(project)
+    return(invisible(project))
   }
   if (!is_something(project$data)) {
-    return(project)
+    return(invisible(project))
   }
   if (project$internals$is_clean) {
     bullet_in_console("Already Clean", bullet_type = "v")
-    return(project)
+    return(invisible(project))
   }
   project$data <- clean_DF_list(
     DF_list = project$data,
@@ -33,7 +33,7 @@ clean_project <- function(project, drop_blanks = FALSE, other_drops = NULL) { # 
     other_drops = other_drops
   )
   project$internals$is_clean <- TRUE
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 fields_to_choices <- function(fields) {
@@ -81,7 +81,7 @@ add_labels_to_checkbox <- function(fields) {
 }
 #' @noRd
 annotate_fields <- function(project, summarize_data = TRUE) {
-  fields <- project$metadata$fields # [,colnames(get_original_fields(project))]
+  fields <- project$metadata$fields # [,colnames(project$metadata$fields)]
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields <- add_labels_to_checkbox(fields)
   fields <- fields[which(fields$field_type != "checkbox"), ]
@@ -128,7 +128,7 @@ annotate_fields <- function(project, summarize_data = TRUE) {
 #' @noRd
 annotate_forms <- function(project, summarize_data = TRUE) {
   forms <- project$metadata$forms
-  # forms <- get_original_forms(project)
+  # forms <- project$metadata$forms
   # if(!is.null(project$metadata$form_key_cols)){
   #   forms$key_cols <- forms$form_name %>% lapply(function(IN){
   #     project$metadata$form_key_cols[[IN]] %>% paste0(collapse = "+")
@@ -219,7 +219,7 @@ reverse_clean_project <- function(project) { # problematic because setting numer
   project$data <- all_character_cols_list(project$data)
   project$data_updates <- project$data_updates %>% all_character_cols_list()
   project$internals$is_clean <- FALSE
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 clean_DF_list <- function(DF_list, fields, drop_blanks = TRUE, other_drops = NULL) {
@@ -402,7 +402,7 @@ add_project_subset <- function(
       file_path = file.path(dir_other, paste0(file_name, ".xlsx"))
     )
   }
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 generate_summary_save_list <- function(
@@ -422,7 +422,7 @@ generate_summary_save_list <- function(
     project <- deidentify_project(project)
   }
   if(transform){
-    project <- transform_project(project, ask = FALSE)
+    project <- transform_project(project)
   }
   if (clean) {
     project <- project %>% clean_project(drop_blanks = drop_blanks, other_drops = other_drops) # problematic because setting numeric would delete missing codes
@@ -636,7 +636,7 @@ run_quality_checks <- function(project) {
       }
     }
   }
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 sum_records <- function(project) {
@@ -1048,7 +1048,7 @@ field_names_to_form_names <- function(project, field_names) {
 form_names_to_field_names <- function(form_names, project, original_only = FALSE) {
   field_names <- NULL
   if (original_only) {
-    fields <- get_original_fields(project)
+    fields <- project$metadata$fields
   } else {
     fields <- project$metadata$fields
   }
@@ -1118,7 +1118,7 @@ stripped_project <- function(project) {
   project$redcap$log <- list()
   project$data <- list()
   project$data_updates <- list()
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 filter_DF_list <- function(DF_list, project, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE) {
@@ -1163,7 +1163,7 @@ filter_DF_list <- function(DF_list, project, filter_field, filter_choices, form_
 }
 #' @noRd
 field_names_metadata <- function(project, field_names, col_names) {
-  fields <- get_original_fields(project) # project$metadata$fields
+  fields <- project$metadata$fields # project$metadata$fields
   # if(!deparse(substitute(FORM))%in%project$metadata$forms$form_name)stop("To avoid potential issues the form name should match one of the instrument names" )
   BAD <- field_names[which(!field_names %in% c(project$metadata$fields$field_name, project$redcap$raw_structure_cols, "arm_number", "event_name"))]
   if (length(BAD) > 0) stop("All column names in your form must match items in your metadata, `project$metadata$fields$field_name`... ", paste0(BAD, collapse = ", "))
@@ -1178,7 +1178,7 @@ field_names_metadata <- function(project, field_names, col_names) {
 #' @noRd
 filter_fields_from_form <- function(FORM, project) {
   forms <- project %>% field_names_to_form_names(field_names = colnames(FORM))
-  if (any(forms %in% get_original_forms(project)$repeating)) stop("All column names in your form must match only one form in your metadata, `project$metadata$forms$form_name`, unless they are all non-repeating")
+  if (any(forms %in% project$metadata$forms$repeating)) stop("All column names in your form must match only one form in your metadata, `project$metadata$forms$form_name`, unless they are all non-repeating")
   fields <- project %>% field_names_metadata(field_names = colnames(FORM))
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)

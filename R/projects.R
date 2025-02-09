@@ -332,7 +332,7 @@ add_project_details_to_project <- function(project, project_details) {
   #     )
   #   )
   # }
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 save_project_details <- function(project, silent = TRUE) {

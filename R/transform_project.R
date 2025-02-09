@@ -95,7 +95,7 @@ upload_transform_to_project <- function(project) {
   } else {
     bullet_in_console("Nothing to upload!")
   }
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 extract_form_from_merged <- function(project, form_name) {
@@ -135,41 +135,6 @@ extract_form_from_merged <- function(project, form_name) {
     return(merged[rows, cols])
   }
 }
-#' @noRd
-get_original_forms <- function(project) {
-  forms <- project$metadata$forms
-  if (project$internals$is_transformed) {
-    forms <- project$transformation$original_forms
-  }
-  return(forms)
-}
-#' @noRd
-get_original_fields <- function(project) {
-  fields <- project$metadata$fields
-  if (project$internals$is_transformed) {
-    fields <- project$transformation$original_fields
-  }
-  return(fields)
-}
-#' @noRd
-get_transformed_fields <- function(project) {
-  fields <- NULL
-  if (project$internals$is_transformed) {
-    fields <- project$metadata$fields
-  }
-  return(fields)
-}
-#' @noRd
-get_transformed_forms <- function(project) {
-  forms <- NULL
-  if (project$internals$is_transformed) {
-    forms <- project$metadata$forms
-    forms$form_name <- forms$form_name_remap
-    forms$form_label <- forms$form_label_remap
-    forms <- forms[, which(colnames(forms) %in% c("form_name", "form_label", "repeating", "repeating_via_events"))] %>% unique()
-  }
-  return(forms)
-}
 #' @rdname default-transformations
 #' @title Add Default Forms Transformation to the Database
 #' @description
@@ -196,7 +161,7 @@ add_default_project_transformation <- function(project) {
     project = project,
     forms_transformation = default_project_transformation(project = project)
   )
-  return(project)
+  return(invisible(project))
 }
 #' @rdname default-transformations
 #' @export
@@ -242,7 +207,7 @@ add_default_project_fields <- function(project) {
     lapply(function(form_name) {
       project$metadata$form_key_cols[[form_name]]
     })
-  forms <- get_original_forms(project)
+  forms <- project$metadata$forms
   last_non_rep <- forms$form_name[which(!forms$repeating)] %>% dplyr::last()
   form_names <- forms$form_name[which(forms$repeating)]
   # id_col <- project$metadata$form_key_cols[[last_non_rep]]
@@ -291,7 +256,7 @@ add_default_project_fields <- function(project) {
       }
     )
   }
-  return(project)
+  return(invisible(project))
 }
 #' @rdname default-transformations
 #' @export
@@ -328,7 +293,7 @@ add_project_transformation <- function(project, forms_transformation, ask = TRUE
   }
   # add more checks
   project$transformation$forms <- forms_transformation
-  return(project)
+  return(invisible(project))
 }
 #' @title Add Field Transformation to the Database
 #' @description
@@ -373,7 +338,7 @@ add_project_field <- function(
     project$transformation$fields <- project$transformation$fields[which(project$transformation$fields$field_name != field_name), ]
   }
   # if(!project$data %>% is_something())stop("Must have transformed data to add new vars.")
-  fields <- get_original_fields(project)
+  fields <- project$metadata$fields
   in_original_redcap <- field_name %in% fields$field_name
   if (is_something(select_choices_or_calculations)) select_choices_or_calculations <- choice_vector_string(select_choices_or_calculations)
   if (in_original_redcap) {
@@ -413,12 +378,12 @@ add_project_field <- function(
   project$transformation$fields <- project$transformation$fields %>% dplyr::bind_rows(field_row)
   project$transformation$field_functions[[field_name]] <- data_func %>% clean_function()
   message("added '", field_name, "' column")
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 combine_original_transformed_fields <- function(project) {
   the_names <- project$transformation$fields$field_name
-  fields <- get_original_fields(project)
+  fields <- project$metadata$fields
   if (is.null(the_names)) {
     bullet_in_console("Nothing to add. Use `add_project_field()`", bullet_type = "x")
     return(fields)
@@ -462,7 +427,7 @@ run_fields_transformation <- function(project) {
   the_names <- project$transformation$fields$field_name
   if (is.null(the_names)) {
     bullet_in_console("Nothing to run. Use `add_project_field()`", bullet_type = "x")
-    return(project)
+    return(invisible(project))
   }
   original_fields <- project$metadata$fields
   the_names_existing <- the_names[which(the_names %in% original_fields$field_name)]
@@ -503,7 +468,7 @@ run_fields_transformation <- function(project) {
     }
   }
   bullet_in_console(paste0("Added new fields to ", project$short_name, " `project$data`"), bullet_type = "v")
-  return(project)
+  return(invisible(project))
 }
 #' @title transform_project
 #' @description
@@ -514,26 +479,29 @@ run_fields_transformation <- function(project) {
 #' This function checks if the database has already been transformed and applies the transformation if not. It stores the original column names before transforming the data. The transformation process can include modifying field values and renaming columns based on predefined transformation rules.
 #'
 #' @inheritParams save_project
-#' @param ask Logical (TRUE/FALSE). If TRUE, prompts the user for confirmation before proceeding with the transformation. Default is `TRUE`.
 #' @return The transformed `project` object.
 #' @seealso
 #' \code{\link[REDCapSync]{save_project}} for saving the transformed database object.
 #' @family db_functions
 #' @export
-transform_project <- function(project, ask = TRUE) {
-  if (project$internals$is_transformed) {
-    bullet_in_console("Already transformed... nothing to do!", bullet_type = "x")
-    return(project)
+transform_project <- function(project, reset = FALSE) {
+  has_transformation <- is_something(project$transformation$forms)
+  has_data <- is_something(process_df_list(project$data, silent = TRUE))
+  is_transformed <- project$internals$is_transformed
+  if (!has_data) {
+    bullet_in_console("No data... nothing to do!", bullet_type = "x")
+    return(invisible(project))
   }
-  forms_transformation <- project$transformation$forms
-  # project$transformation$original_col_names <- project$data %>%
-  #   names() %>%
-  #   lapply(function(l) {
-  #     project$data[[l]] %>% colnames()
-  #   })
-  # names(project$transformation$original_col_names) <- project$data %>% names()
-  # if(any(!names(transformation)%in%names(project$data)))stop("must have all project$data names in transformation")
-  if (is_something(process_df_list(project$data, silent = TRUE))) {
+  if (!has_transformation) {
+    bullet_in_console("Nothing to run. Use `add_project_field()`", bullet_type = "x")
+    return(invisible(project))
+  }
+  if (is_transformed && !reset) {
+    bullet_in_console("Already transformed... nothing to do!", bullet_type = "x")
+    return(invisible(project))
+  }
+  if (! is_transformed || reset) {
+    forms_transformation <- project$transformation$forms
     project$transformation$data <- project$data
     project <- run_fields_transformation(project)
     named_df_list <- project$transformation$data
@@ -645,37 +613,38 @@ transform_project <- function(project, ask = TRUE) {
     }
     project$internals$is_transformed <- TRUE
     bullet_in_console(paste0(project$short_name, " transformed according to `project$transformation`"), bullet_type = "v")
+    # forms ---------
+    # new function RosyUtils
+    forms_transformation2 <- forms_transformation
+    cols_to_keep <- c("form_name_remap", "form_label_remap", "repeating", "repeating_via_events", "key_cols", "key_names")
+    cols_to_keep <- cols_to_keep[which(cols_to_keep %in% colnames(forms_transformation))]
+    forms_transformation <- forms_transformation[, cols_to_keep] %>% unique()
+
+    colnames(forms_transformation)[which(colnames(forms_transformation) == "form_name_remap")] <- "form_name"
+    colnames(forms_transformation)[which(colnames(forms_transformation) == "form_label_remap")] <- "form_label"
+    forms_transformation$original_form_name <- forms_transformation$form_name %>%
+      lapply(function(form_name) {
+        forms_transformation2$form_name[which(forms_transformation2$form_name_remap == form_name)] %>% paste0(collapse = " | ")
+      }) %>%
+      unlist() %>%
+      as.character()
+    project$transformation$metadata$forms <- forms_transformation
+    # fields------------
+    fields <- combine_original_transformed_fields(project)
+    fields$original_form_name <- fields$form_name
+    fields$form_name <- forms_transformation$form_name_remap[match(fields$form_name, forms_transformation$form_name)]
+    fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]
+    # new function RosyUtils
+    first <- 1:which(colnames(fields) == "form_name")
+    move <- which(colnames(fields) == "original_form_name")
+    last <- which(colnames(fields) != "original_form_name")[-first]
+    fields <- fields[, c(first, move, last)]
+    project$metadata$fields <- fields
+    bullet_in_console(paste0("Added mod fields to ", project$short_name, " `project$metadata$fields`"), bullet_type = "v")
+    project$metadata$choices <- fields_to_choices(project$metadata$fields)
+    project$internals$last_data_transformation <- now_time()
   }
-  # forms ---------
-  # project$transformation$original_forms <- project$metadata$forms
-  # # new function RosyUtils
-  # cols_to_keep <- c("form_name_remap", "form_label_remap", "repeating", "repeating_via_events", "key_cols", "key_names")
-  # cols_to_keep <- cols_to_keep[which(cols_to_keep %in% colnames(forms_transformation))]
-  # project$transformation$metadata$forms <- forms_transformation[, cols_to_keep] %>% unique()
-  # colnames(project$metadata$forms)[which(colnames(project$metadata$forms) == "form_name_remap")] <- "form_name"
-  # colnames(project$metadata$forms)[which(colnames(project$metadata$forms) == "form_label_remap")] <- "form_label"
-  # project$metadata$forms$original_form_name <- project$metadata$forms$form_name %>%
-  #   lapply(function(form_name) {
-  #     forms_transformation$form_name[which(forms_transformation$form_name_remap == form_name)] %>% paste0(collapse = " | ")
-  #   }) %>%
-  #   unlist() %>%
-  #   as.character()
-  # # fields------------
-  # project$transformation$original_fields <- project$metadata$fields
-  # fields <- combine_original_transformed_fields(project)
-  # fields$original_form_name <- fields$form_name
-  # fields$form_name <- forms_transformation$form_name_remap[match(fields$form_name, forms_transformation$form_name)]
-  # fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]
-  # # new function RosyUtils
-  # first <- 1:which(colnames(fields) == "form_name")
-  # move <- which(colnames(fields) == "original_form_name")
-  # last <- which(colnames(fields) != "original_form_name")[-first]
-  # fields <- fields[, c(first, move, last)]
-  # project$metadata$fields <- fields
-  # bullet_in_console(paste0("Added mod fields to ", project$short_name, " `project$metadata$fields`"), bullet_type = "v")
-  # project$metadata$choices <- fields_to_choices(project$metadata$fields)
-  project$internals$last_data_transformation <- now_time()
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 missing_form_names <- function(project) {

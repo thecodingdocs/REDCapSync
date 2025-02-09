@@ -378,7 +378,7 @@ load_test_project <- function(short_name = "TEST_repeating", with_data = FALSE) 
     if (short_name == "TEST_multiarm") {
     }
   }
-  return(project)
+  return(invisible(project))
 }
 #' @noRd
 is_test_short_name <- function(short_name) {

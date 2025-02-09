@@ -4,13 +4,11 @@
 \alias{transform_project}
 \title{transform_project}
 \usage{
-transform_project(project, ask = TRUE)
+transform_project(project, reset = FALSE)
 }
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
-
-\item{ask}{Logical (TRUE/FALSE). If TRUE, prompts the user for confirmation before proceeding with the transformation. Default is \code{TRUE}.}
 }
 \value{
 The transformed \code{project} object.

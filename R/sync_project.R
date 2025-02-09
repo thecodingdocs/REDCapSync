@@ -57,7 +57,7 @@ sync_project <- function(
   do_it <- due_for_sync(project_name = project$short_name) || reset
   if (!do_it) {
     cli::cli_alert_info("{project$short_name} not due for sync ({project$internals$sync_frequency})")
-    return(project)
+    return(invisible(project))
   }
   stale_records <- NULL
   will_update <- TRUE
@@ -72,7 +72,7 @@ sync_project <- function(
       bullet_type = "x",
       silent = silent
     )
-    return(project)
+    return(invisible(project))
   }
   # project$internals$last_metadata_update <-  now_time()-lubridate::days(1)
   # project$internals$last_data_update <-  now_time()-lubridate::days(1)

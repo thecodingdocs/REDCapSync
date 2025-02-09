@@ -195,7 +195,7 @@ drop_REDCap_to_directory <- function(
 }
 merge_non_repeating_project_transformation <- function(project) {
   assert_setup_project(project)
-  forms_transformation <- get_original_forms(project)
+  forms_transformation <- project$metadata$forms
   if ("repeating_via_events" %in% colnames(forms_transformation)) {
     forms_transformation <- forms_transformation[order(forms_transformation$repeating_via_events), ]
   }
@@ -298,8 +298,8 @@ read_xl_to_project_for_upload <- function(project, file_path, drop_sheets = defa
   }
   if (length(data_list) == 0) {
     message("nothing to return")
-    return(project)
+    return(invisible(project))
   }
   project$data_updates <- data_list
-  return(project)
+  return(invisible(project))
 }

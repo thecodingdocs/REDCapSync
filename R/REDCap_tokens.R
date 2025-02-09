@@ -216,31 +216,6 @@ get_REDCap_token_name <- function(project) {
   }
   return(token_name)
 }
-#' @noRd
-check_saved_REDCapSync_tokens <- function() {
-  the_names <- Sys.getenv() %>% names()
-  the_names <- the_names[
-    which(startsWith(the_names, internal_token_prefix))
-  ]
-  if (length(the_names) == 0) {
-    bullet_in_console(
-      "No known REDCap tokens saved in session...",
-      bullet_type = "x"
-    )
-    return(invisible())
-  }
-  the_names <- gsub(internal_token_prefix, "", the_names)
-  ltn <- length(the_names)
-  bullet_in_console(
-    paste0(
-      "There are ", ltn,
-      " known REDCap tokens saved in the session: ",
-      as_comma_string(the_names)
-    ),
-    bullet_type = "x"
-  )
-  return(invisible())
-}
 internal_project_path_suffix <- "_REDCapSync.RData"
 internal_project_details_path_suffix <- "_REDCapSync_details.RData"
 #' @noRd

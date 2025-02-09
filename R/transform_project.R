@@ -678,61 +678,6 @@ transform_project <- function(project, ask = TRUE) {
   project$internals$last_data_transformation <- now_time()
   return(project)
 }
-#' @title Untransform project
-#' @description
-#' This function reverses any transformations applied to a REDCap database object.
-#' If the database is not transformed, it will return the original project without changes.
-#' The function can optionally allow partial transformations if specified.
-#'
-#' @inheritParams save_project
-#' @param allow_partial Logical. If TRUE, allows filtered projects with less than original field names. Default is FALSE.
-#'
-#' @return The original, untransformed project object.
-#'
-#' @export
-untransform_project <- function(project, allow_partial = FALSE) {
-  if (!project$internals$is_transformed) {
-    bullet_in_console("Already not transformed... nothing to do!", bullet_type = "x")
-    return(project)
-  }
-  named_df_list <- project$data
-  forms_transformation <- project$transformation$forms
-  original_form_names <- project$transformation$original_forms$form_name
-  original_fields <- project$metadata$fields
-  original_forms <- project$metadata$forms
-  # keys <- project$metadata$form_key_cols
-  OUT <- NULL
-  if (!allow_partial) {
-    if (any(!original_form_names %in% forms_transformation$form_name)) stop("Must have all original form names in transformation!")
-  }
-  # TABLE <- original_form_names%>%sample1()
-  for (TABLE in original_form_names) {
-    is_in_project <- TABLE %in% names(named_df_list)
-    if (!is_in_project && !allow_partial) {
-      stop("Must have all original form names in transformation!")
-    }
-    if (is_in_project) {
-      DF <- named_df_list[[forms_transformation$form_name_remap[which(forms_transformation$form_name == TABLE)]]]
-      COLS <- c(
-        project$metadata$form_key_cols[[TABLE]],
-        project$transformation$original_col_names[[TABLE]]
-      ) %>% unique()
-      if (allow_partial) {
-        COLS <- colnames(DF) %>% vec1_in_vec2(COLS)
-      } else {
-        if (any(!COLS %in% colnames(DF))) stop("Missing cols from orginal DF transformation... ", TABLE)
-      }
-      DF <- DF[, COLS]
-      OUT[[TABLE]] <- DF
-    }
-  }
-  project$data <- OUT
-  project$internals$is_transformed <- FALSE
-  project$metadata$forms <- original_forms
-  project$metadata$fields <- original_fields
-  bullet_in_console(paste0(project$short_name, " untransformed according to `project$transformation`"), bullet_type = "v")
-  return(project)
-}
 #' @noRd
 missing_form_names <- function(project) {
   form_names <- names(project$data)

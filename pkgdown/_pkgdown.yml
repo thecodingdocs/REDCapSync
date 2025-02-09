@@ -80,11 +80,9 @@ reference:
       - generate_summary_from_subset_name
       - summarize_project
       - transform_project
-      - untransform_project
   - subtitle: Data Helpers
     desc: Used for managing to-be-upload data
     contents:
-      - add_ID_to_DF
       - find_upload_diff
       - raw_to_labelled_form
       - labelled_to_raw_form
@@ -105,7 +103,6 @@ reference:
   - subtitle: Other Helpers
     contents:
       - "%>%"
-      - get_dir
       - nav_to_dir
       - link_API_playground
       - link_API_token

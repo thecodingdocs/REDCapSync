@@ -1,31 +1,3 @@
-#' @title add REDCap ID to any dataframe using a ref_id
-#' @description
-#'  add REDCap ID to any dataframe using a ref_id
-#' @inheritParams save_project
-#' @param DF dataframe
-#' @param ref_id column name that matches a REDCap variable name that could be
-#' an ALT id such as MRN
-#' @return original dataframe with REDCap id_col added as the first column
-#' @export
-add_ID_to_DF <- function(DF, project, ref_id) {
-  if (!ref_id %in% project$metadata$fields$field_name) {
-    stop("The ref_id not valid. Must be a REDCap raw colname")
-  }
-  form <- project$metadata$fields$form_name[
-    which(project$metadata$fields$field_name == ref_id)
-  ]
-  id_col <- DF[[ref_id]] %>%
-    lapply(function(ID) {
-      project$data[[form]][[project$redcap$id_col]][
-        which(project$data[[form]][[ref_id]] == ID)
-      ]
-    }) %>%
-    unlist() %>%
-    as.data.frame()
-  colnames(id_col) <- project$redcap$id_col
-  DF <- cbind(id_col, DF)
-  DF
-}
 #' @title Deidentify the REDCap Database
 #' @description
 #' Removes or masks identifying information from the REDCap database (`project`).
@@ -219,9 +191,12 @@ raw_process_redcap <- function(raw, project, labelled) {
       raw <- merge(raw, events[, c("arm_number", "event_name", "unique_event_name")], by.x = "redcap_event_name", by.y = "unique_event_name", sort = FALSE, all.x = TRUE)
       add_ons <- add_ons[which(add_ons %in% colnames(raw))]
       cols <- c(add_ons, colnames(raw)) %>% unique()
-      raw <- raw[order(raw$id_temp), cols %>% lapply(function(c) {
-        which(colnames(raw) == c)
-      }) %>% unlist() %>% as.integer()]
+      raw <- raw[
+        order(raw$id_temp),
+        cols %>% lapply(function(c) {which(colnames(raw) == c)}) %>%
+          unlist() %>%
+          as.integer()
+        ]
       raw$id_temp <- NULL
     }
     add_ons <- add_ons[which(add_ons %in% colnames(raw))]

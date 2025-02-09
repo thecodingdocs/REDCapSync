@@ -367,6 +367,7 @@ clean_redcap_log <- function(log) {
   log$action_type[rows] <- "Users"
   log$record_id <- NULL
   log$username[which(log$username == "[survey respondent]")] <- NA
+  # add drop exports?
   log <- sort_redcap_log(log)
   return(log)
 }

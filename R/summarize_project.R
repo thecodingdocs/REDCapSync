@@ -814,6 +814,7 @@ check_subsets <- function(project, subset_names) {
 #' containing only the records that match the filter criteria.
 #'
 #' @inheritParams save_project
+#' @param transform A logical flag (`TRUE` or `FALSE`). If `TRUE`, filter using transformation. Defaults to `FALSE`.
 #' @param field_names A character vector of field names to be included in the filtered data. If missing, all fields are included.
 #' @param form_names A character vector of form names to be included in the filtered data. If missing, all forms are included.
 #' @param filter_field A character string representing an extra variable name to be filtered by. This field must be present in the data frame.

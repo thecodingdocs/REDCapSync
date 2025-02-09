@@ -19,6 +19,8 @@ filter_project(
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
+\item{transform}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, filter using transformation. Defaults to \code{FALSE}.}
+
 \item{filter_field}{A character string representing an extra variable name to be filtered by. This field must be present in the data frame.}
 
 \item{filter_choices}{A character vector of values to filter by for the \code{filter_field}. Only records with these values in the specified field will be included.}

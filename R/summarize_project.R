@@ -772,17 +772,28 @@ get_subset_records <- function(project, subset_name) {
   if(subset_list$filter_field == project$redcap$id_col){
     records <- subset_list$filter_choices
   }else{
-    form_name <- field_names_to_form_names(
-      project,
-      field_names = subset_list$filter_field
-    )
-    records <- project$data[[form_name]][[project$redcap$id_col]][
-      which(
-        project$data[[form_name]][[subset_list$filter_field]] %in%
-          subset_list$filter_choices
+    if( subset_list$transform){
+      form_name <- project$transformation$fields$form_name[which(project$transformation$fields$field_name==subset_list$filter_field)]
+      records <- project$transformation$data[[form_name]][[project$redcap$id_col]][
+        which(
+          project$transformation$data[[form_name]][[subset_list$filter_field]] %in%
+            subset_list$filter_choices
+        )
+      ] %>%
+        unique()
+    }else{
+      form_name <- field_names_to_form_names(
+        project,
+        field_names = subset_list$filter_field
       )
-    ] %>%
-      unique()
+      records <- project$data[[form_name]][[project$redcap$id_col]][
+        which(
+          project$data[[form_name]][[subset_list$filter_field]] %in%
+            subset_list$filter_choices
+        )
+      ] %>%
+        unique()
+    }
   }
   subset_records <- project$summary$all_records[which(project$summary$all_records[[project$redcap$id_col]] %in% records), ]
   return(subset_records)
@@ -808,7 +819,9 @@ check_subsets <- function(project, subset_names) {
   needs_refresh <- NULL
   if (is.null(subset_names)) bullet_in_console("There are no subsets at `project$summary$subsets` which can be added with `add_project_subset()`!")
   for (subset_name in subset_names) {
-    if (subset_records_due(project = project, subset_name = subset_name)) needs_refresh <- needs_refresh %>% append(subset_name)
+    if (subset_records_due(project = project, subset_name = subset_name)){
+      needs_refresh <- needs_refresh %>% append(subset_name)
+    }
   }
   if (is.null(needs_refresh)) bullet_in_console("Refresh of subsets not needed!", bullet_type = "v")
   return(needs_refresh)

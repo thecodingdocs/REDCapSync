@@ -603,8 +603,6 @@ internal_blank_project <- list(
     forms = NULL,
     fields = NULL,
     field_functions = NULL,
-    original_forms = NULL,
-    original_fields = NULL,
     data_updates = NULL
   ),
   summary = list(

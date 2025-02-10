@@ -194,19 +194,6 @@ default_project_transformation <- function(project) {
 #' @rdname default-transformations
 #' @export
 add_default_project_fields <- function(project) {
-  # project$transformation <- list(
-  #   forms = NULL,
-  #   fields = NULL,
-  #   # original_forms = NULL,
-  #   # original_fields = NULL,
-  #   data_updates = NULL
-  # )
-  # fields_transformation <- NULL
-  project$metadata$form_key_cols %>%
-    names() %>%
-    lapply(function(form_name) {
-      project$metadata$form_key_cols[[form_name]]
-    })
   forms <- project$metadata$forms
   last_non_rep <- forms$form_name[which(!forms$repeating)] %>% dplyr::last()
   form_names <- forms$form_name[which(forms$repeating)]

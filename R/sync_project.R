@@ -212,20 +212,27 @@ sync_project <- function(
         project$internals$last_data_update <-
         now_time()
       project$data <- remove_records_from_list(project = project, records = stale_records, silent = TRUE)
-      if (project$internals$is_transformed) {
-        project2 <- stripped_project(project)
-        project2$internals$is_transformed <- FALSE
-        project2$metadata$forms <- project2$transformation$original_forms
-        project2$metadata$fields <- project2$transformation$original_fields
-        project2$data <- data_list
-        project2 <- transform_project(project2)
-        if (!is.null(project2$data_updates$from_transform)) {
-          project2 <- upload_transform_to_project(project2)
-        }
-        data_list <- project2$data %>%
-          process_df_list(silent = TRUE) %>%
-          all_character_cols_list()
-      }
+      # if (project$internals$is_transformed) {
+      #   project2 <- stripped_project(project)
+      #   project2$internals$is_transformed <- FALSE
+      #   project2$data <- data_list
+      #   # add remove records from list equivalant
+      #   project2 <- transform_project(project2)
+      #   if (!is.null(project2$data_updates$from_transform)) {
+      #     do_it <- TRUE
+      #     bullet_in_console("There is data in 'project$transformation$data_updates' that has not been pushed to REDCap yet...")
+      #     print(project2$transformation$data_updates)
+      #     if (ask_about_overwrites) {
+      #       do_it <- utils::menu(choices = c("Yes", "No and stop the function!"), title = "Would you like to push these updates now?") == 1
+      #     }
+      #     if (!do_it) stop("Stopped as requested!")
+      #     # account for uploads in process
+      #     project2 <- upload_transform_to_project(project2)
+      #   }
+      #   data_list <- project2$data %>%
+      #     process_df_list(silent = TRUE) %>%
+      #     all_character_cols_list()
+      # }
       if (any(!names(data_list) %in% names(project$data))) stop("Imported data names doesn't match project$data names. If this happens run `sync_project(project, reset = TRUE)`")
       for (TABLE in names(data_list)) {
         project$data[[TABLE]] <- project$data[[TABLE]] %>%

@@ -525,6 +525,7 @@ generate_summary_from_subset_name <- function(
   )
   to_save_list <- project %>% generate_summary_save_list(
     deidentify = subset_list$deidentify,
+    transform = subset_list$transform,
     clean = subset_list$clean,
     drop_blanks = subset_list$drop_blanks,
     include_metadata = subset_list$include_metadata,
@@ -580,7 +581,7 @@ summarize_project <- function(
   if (!do_it) {
     do_it <- project$internals$last_summary < last_data_update
   }
-  if (reset || do_it) {
+  if (do_it || reset) {
     to_save_list <- project %>% generate_summary_save_list(
       deidentify = deidentify,
       clean = clean,
@@ -605,19 +606,19 @@ summarize_project <- function(
   if (is_something(subset_names)) {
     for (subset_name in subset_names) {
       project$data <- original_data
-      subset_list <- project$summary$subsets[[subset_name]]
       project$summary$subsets[[subset_name]]$subset_records <- get_subset_records(project = project, subset_name = subset_name)
-      project$summary$subsets[[subset_name]]$last_save_time <- now_time()
-      to_save_list <- project %>% generate_summary_from_subset_name(
-        subset_name = subset_name
-      )
+      subset_list <- project$summary$subsets[[subset_name]]
       project %>% save_REDCapSync_list(
-        to_save_list = to_save_list,
+        to_save_list = project %>%
+          generate_summary_from_subset_name(
+            subset_name = subset_name
+          ),
         dir_other = subset_list$dir_other,
         file_name = subset_list$file_name,
         separate = separate,
         with_links = with_links
       )
+      project$summary$subsets[[subset_name]]$last_save_time <- now_time()
     }
   }
   project$data <- original_data
@@ -706,14 +707,11 @@ summarize_users_from_log <- function(project, records) {
       group$timestamp %>% dplyr::last()
     }) %>%
     unlist()
-  summary_users$last_user <- user_groups %>% lapply(function(group) {
-    group$username[[1]]
-  })
   summary_users$unique_records_n <- user_groups %>%
     lapply(function(group) {
       ul(group$record)
     }) %>%
-    unlist()
+    unlist() %>% as.integer()
   return(summary_users)
 }
 #' @noRd
@@ -758,19 +756,36 @@ summarize_records_from_log <- function(project, records) {
       group$username[[1]]
     }) %>%
     unlist()
+  user_rows <- match(summary_records$last_user,project$redcap$users$username)
+  summary_records$last_user_name <- paste(
+    project$redcap$users$firstname[user_rows],
+    project$redcap$users$lastname[user_rows]
+  )
   summary_records$unique_users_n <- record_groups %>%
     lapply(function(group) {
       ul(group$username)
     }) %>%
-    unlist()
+    unlist() %>% as.integer()
   return(summary_records)
 }
 #' @noRd
 get_subset_records <- function(project, subset_name) {
   subset_list <- project$summary$subsets[[subset_name]]
-  filter_choices <- subset_list$filter_choices
-  form_name <- field_names_to_form_names(project, field_names = subset_list$filter_field)
-  records <- project$data[[form_name]][[project$redcap$id_col]][which(project$data[[form_name]][[subset_list$filter_field]] %in% filter_choices)] %>% unique()
+  if(subset_list$filter_field == project$redcap$id_col){
+    records <- subset_list$filter_choices
+  }else{
+    form_name <- field_names_to_form_names(
+      project,
+      field_names = subset_list$filter_field
+    )
+    records <- project$data[[form_name]][[project$redcap$id_col]][
+      which(
+        project$data[[form_name]][[subset_list$filter_field]] %in%
+          subset_list$filter_choices
+      )
+    ] %>%
+      unique()
+  }
   subset_records <- project$summary$all_records[which(project$summary$all_records[[project$redcap$id_col]] %in% records), ]
   return(subset_records)
 }

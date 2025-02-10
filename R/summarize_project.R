@@ -80,91 +80,93 @@ add_labels_to_checkbox <- function(fields) {
   return(fields)
 }
 #' @noRd
-annotate_fields <- function(project, summarize_data = TRUE) {
+annotate_fields <- function(project, summarize_data = TRUE, drop_missing = TRUE) {
   fields <- project$metadata$fields # [,colnames(project$metadata$fields)]
-  fields <- fields[which(fields$field_type != "descriptive"), ]
-  fields <- add_labels_to_checkbox(fields)
-  fields <- fields[which(fields$field_type != "checkbox"), ]
-  fields$field_label[which(is.na(fields$field_label))] <- fields$field_name[which(is.na(fields$field_label))]
-  fields <- unique(fields$form_name) %>%
-    lapply(function(IN) {
-      fields[which(fields$form_name == IN), ]
-    }) %>%
-    dplyr::bind_rows()
-  if (!"field_type_R" %in% colnames(fields)) fields$field_type_R <- "character"
-  fields$field_type_R[which(fields$field_type %in% c("radio", "yesno", "dropdown", "checkbox_choice"))] <- "factor"
-  fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "integer")] <- "integer"
-  fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "date_mdy")] <- "date"
-  fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "date_ymd")] <- "date"
-  fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "datetime_dmy")] <- "datetime"
-  fields$in_original_redcap <- TRUE
-  fields$original_form_name <- fields$form_name
-  if (project$internals$is_transformed) {
-    fields$in_original_redcap <- fields$field_name %in% project$transformation$original_fields$field_name
-    fields$original_form_name <- project$transformation$original_fields$form_name[match(fields$field_name, project$transformation$original_fields$field_name)]
+  if(drop_missing){
+    fields <-  fields[which(fields$field_name %in% get_all_field_names(project)),]
   }
-  if (!"units" %in% colnames(fields)) fields$units <- NA
-  if (!"field_label_short" %in% colnames(fields)) fields$field_label_short <- fields$field_label
-  # if(!"field_label_short" %in% colnames(fields))fields$ <- fields$field_label
-  if (summarize_data) {
-    skimmed <- NULL
-    for (form in unique(fields$form_name)) {
-      COLS <- fields$field_name[which(fields$form_name == form)]
-      CHECK_THIS <- project$data[[form]]
-      COLS <- COLS[which(COLS %in% colnames(CHECK_THIS))]
-      skimmed <- skimmed %>% dplyr::bind_rows(CHECK_THIS[, COLS] %>% skimr::skim())
-    }
-    FOR_ORDERING <- fields$field_name
-    fields <- fields %>% merge(skimmed, by.x = "field_name", by.y = "skim_variable", all = TRUE)
-    fields <- FOR_ORDERING %>%
+  if(nrow(fields)>0){
+    fields <- fields[which(fields$field_type != "descriptive"), ]
+    fields <- add_labels_to_checkbox(fields)
+    fields <- fields[which(fields$field_type != "checkbox"), ]
+    fields$field_label[which(is.na(fields$field_label))] <- fields$field_name[which(is.na(fields$field_label))]
+    fields <- unique(fields$form_name) %>%
       lapply(function(IN) {
-        fields[which(fields$field_name == IN), ]
+        fields[which(fields$form_name == IN), ]
       }) %>%
       dplyr::bind_rows()
+    if (!"field_type_R" %in% colnames(fields)) fields$field_type_R <- "character"
+    fields$field_type_R[which(fields$field_type %in% c("radio", "yesno", "dropdown", "checkbox_choice"))] <- "factor"
+    fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "integer")] <- "integer"
+    fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "date_mdy")] <- "date"
+    fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "date_ymd")] <- "date"
+    fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "datetime_dmy")] <- "datetime"
+    fields$in_original_redcap <- TRUE
+    fields$original_form_name <- fields$form_name
+    if (project$internals$is_transformed) {
+      fields$in_original_redcap <- fields$field_name %in% project$transformation$original_fields$field_name
+      fields$original_form_name <- project$transformation$original_fields$form_name[match(fields$field_name, project$transformation$original_fields$field_name)]
+    }
+    if (!"units" %in% colnames(fields)) fields$units <- NA
+    if (!"field_label_short" %in% colnames(fields)) fields$field_label_short <- fields$field_label
+    # if(!"field_label_short" %in% colnames(fields))fields$ <- fields$field_label
+    if (summarize_data) {
+      skimmed <- NULL
+      for (form in unique(fields$form_name)) {
+        COLS <- fields$field_name[which(fields$form_name == form)]
+        CHECK_THIS <- project$data[[form]]
+        COLS <- COLS[which(COLS %in% colnames(CHECK_THIS))]
+        skimmed <- skimmed %>% dplyr::bind_rows(CHECK_THIS[, COLS] %>% skimr::skim())
+      }
+      FOR_ORDERING <- fields$field_name
+      fields <- fields %>% merge(skimmed, by.x = "field_name", by.y = "skim_variable", all = TRUE)
+      fields <- FOR_ORDERING %>%
+        lapply(function(IN) {
+          fields[which(fields$field_name == IN), ]
+        }) %>%
+        dplyr::bind_rows()
+    }
+    # bullet_in_console("Annotated `project$metadata$fields`",bullet_type = "v")
   }
-  # bullet_in_console("Annotated `project$metadata$fields`",bullet_type = "v")
   return(fields)
 }
 #' @noRd
-annotate_forms <- function(project, summarize_data = TRUE) {
+annotate_forms <- function(project, summarize_data = TRUE,drop_missing = TRUE) {
   forms <- project$metadata$forms
-  # forms <- project$metadata$forms
-  # if(!is.null(project$metadata$form_key_cols)){
-  #   forms$key_cols <- forms$form_name %>% lapply(function(IN){
-  #     project$metadata$form_key_cols[[IN]] %>% paste0(collapse = "+")
-  #   })
-  #   forms$key_names <- forms$form_name %>% lapply(function(IN){
-  #     row_match <- which(forms$form_name==IN)
-  #     if(!forms$repeating[row_match])return(project$metadata$form_key_cols[[IN]])
-  #     return(paste0(forms$form_name[row_match],"_key"))
-  #   })
-  # }
-  # add metadata info like n fields
-  if (summarize_data) {
-    for (status in c("Incomplete", "Unverified", "Complete")) {
-      forms[[tolower(status)]] <- forms$form_name %>%
-        lapply(function(form_name) {
-          form_name %>%
-            strsplit(" [:|:] ") %>%
-            unlist() %>%
-            lapply(function(form_name) {
-              (project$data[[form_name]][[paste0(form_name, "_complete")]] == status) %>%
-                which() %>%
-                length()
-            }) %>%
-            unlist() %>%
-            paste0(collapse = " | ")
-        }) %>%
-        unlist()
+  if(drop_missing){
+    forms <-  forms[which(forms$form_name %in% names(project$data)),]
+  }
+  if(nrow(forms)>0){
+    # add metadata info like n fields
+    if (summarize_data) {
+      for (status in c("Incomplete", "Unverified", "Complete")) {
+        forms[[tolower(status)]] <- forms$form_name %>%
+          lapply(function(form_name) {
+            form_name %>%
+              strsplit(" [:|:] ") %>%
+              unlist() %>%
+              lapply(function(form_name) {
+                (project$data[[form_name]][[paste0(form_name, "_complete")]] == status) %>%
+                  which() %>%
+                  length()
+              }) %>%
+              unlist() %>%
+              paste0(collapse = " | ")
+          }) %>%
+          unlist()
+      }
     }
   }
   return(forms)
 }
 #' @noRd
-annotate_choices <- function(project, summarize_data = TRUE) {
+annotate_choices <- function(project, summarize_data = TRUE,drop_missing = TRUE) {
   # forms <- project$metadata$forms
   # fields <- project$metadata$fields
   choices <- project$metadata$choices
+  if(drop_missing){
+    choices <-  choices[which(choices$field_name %in% get_all_field_names(project)),]
+  }
   # choices$field_name_raw <- choices$field_name
   # choices$field_name_raw[which(choices$field_type=="checkbox_choice")] <- choices$field_name[which(choices$field_type=="checkbox_choice")] %>%
   #   strsplit("___") %>%
@@ -437,10 +439,6 @@ generate_summary_save_list <- function(
       to_save_list$fields <- project$metadata$fields
       to_save_list$choices <- project$metadata$choices
     }
-    # if(project$internals$is_transformed){
-    #   to_save_list$original_forms <- project$transformation$original_forms
-    #   to_save_list$original_fields <- project$transformation$original_fields
-    # }
   }
   if (include_record_summary) {
     if (!is.null(records)) {

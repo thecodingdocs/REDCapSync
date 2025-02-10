@@ -151,17 +151,26 @@ sync_project <- function(
       )
       log <- project$redcap$log # in case there is a log already
       if (project$internals$entire_log) {
+        log_begin_date <- as.POSIXct(project$redcap$project_info$creation_time) %>% as.Date()
+        if(is_something(log)){
+          log_begin_date <- (log$timestamp[1] %>% as.Date())-1
+          #account for renames in log would have to get entire log again, should separate reset from going to get one new variable etc
+        }
         project$redcap$log <- log %>% dplyr::bind_rows(
           project %>% get_REDCap_log(
-            log_begin_date = as.POSIXct(project$redcap$project_info$creation_time) %>% as.Date()
-          ) %>% unique() # should add - lubridate::days(2)
-        )
+            log_begin_date = log_begin_date
+          ) %>%
+            unique() # should add - lubridate::days(2)
+        ) %>%
+          sort_redcap_log()
       } else {
         project$redcap$log <- log %>% dplyr::bind_rows(
           project %>% get_REDCap_log(
             log_begin_date = Sys.Date() - project$internals$days_of_log
-          ) %>% unique()
-        )
+          ) %>%
+            unique()
+        ) %>%
+          sort_redcap_log()
       }
       # project <- annotate_fields(project)
       # project <- annotate_choices(project)
@@ -251,16 +260,6 @@ sync_project <- function(
     if (summarize) {
       project <- summarize_project(
         project = project,
-        with_links = TRUE,
-        deidentify = TRUE,
-        clean = TRUE,
-        drop_blanks = TRUE,
-        include_metadata = TRUE,
-        annotate_metadata = TRUE,
-        include_record_summary = TRUE,
-        include_users = TRUE,
-        include_log = TRUE,
-        separate = FALSE,
         reset = reset
       )
     }

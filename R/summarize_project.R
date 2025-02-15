@@ -238,12 +238,15 @@ clean_DF_list <- function(DF_list, fields, drop_blanks = TRUE, other_drops = NUL
 }
 #' @noRd
 clean_DF <- function(DF, fields, drop_blanks = TRUE, other_drops = NULL) {
+  has_units <- "units" %in% colnames(fields)
   for (COLUMN in colnames(DF)) {
     if (COLUMN %in% fields$field_name) {
       ROW <- which(fields$field_name == COLUMN)
       units <- NULL
-      if (!is.na(fields$units[ROW])) {
-        units <- fields$units[ROW]
+      if(has_units){
+        if (!is.na(fields$units[ROW])) {
+          units <- fields$units[ROW]
+        }
       }
       class <- fields$field_type_R[ROW][[1]]
       label <- ifelse(is.na(fields$field_label[ROW]), COLUMN, fields$field_label[ROW])[[1]]

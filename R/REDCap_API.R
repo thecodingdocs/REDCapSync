@@ -110,6 +110,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   if (any(project$metadata$fields$field_type == "yesno")) {
     project$metadata$fields$select_choices_or_calculations[which(project$metadata$fields$field_type == "yesno")] <- c("0, No | 1, Yes")
   }
+  project$metadata$fields <- project %>% annotate_fields(summarize_data = FALSE, drop_missing = FALSE)
   project$metadata$choices <- fields_to_choices(fields = project$metadata$fields)
   # is longitudinal ------
   if (project$redcap$is_longitudinal) {

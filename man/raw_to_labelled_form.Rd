@@ -4,10 +4,10 @@
 \alias{raw_to_labelled_form}
 \title{Raw to Labelled REDCap forms}
 \usage{
-raw_to_labelled_form(FORM, project)
+raw_to_labelled_form(data_form, project)
 }
 \arguments{
-\item{FORM}{data.frame of raw REDCap to be converted to labelled REDCap}
+\item{data_form}{data.frame of raw REDCap to be converted to labelled REDCap}
 
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}

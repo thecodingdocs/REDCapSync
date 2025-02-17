@@ -4,7 +4,7 @@
 #' Because this is the only function that can mess up your data, use it at your own risk.
 #' Remember all changes are saved in the redcap log if there's an issue. Missing rows and columns are fine!
 #' @inheritParams save_project
-#' @param to_be_uploaded data.frame in raw coded form. If you worked with clean data pass your data to `labelled_to_raw_form(FORM,project)` first.
+#' @param to_be_uploaded data.frame in raw coded form. If you worked with clean data pass your data to `labelled_to_raw_form(data_form,project)` first.
 #' @param batch_size numeric of how big the REDCap batch upload is. Default 500.
 #' @return messages
 #' @export

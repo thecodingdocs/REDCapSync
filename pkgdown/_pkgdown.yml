@@ -63,7 +63,7 @@ reference:
       - add_default_project_fields
       - add_project_transformation
       - add_project_field
-      - add_project_subset
+      - add_project_summary
   - subtitle: Sync Functions
     desc: Run Syncs on periodic bases; sync is "hands-free", while sync_project uses project object in the environment.
     contents:
@@ -74,10 +74,10 @@ reference:
     contents:
       - clean_project
       - deidentify_project
-      - filter_project
       - drop_REDCap_to_directory
       - generate_horizontal_transform
-      - generate_summary_from_subset_name
+      - generate_summary_by_name
+      - generate_summary
       - summarize_project
       - transform_project
   - subtitle: Data Helpers

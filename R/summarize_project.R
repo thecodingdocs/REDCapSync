@@ -479,15 +479,12 @@ generate_summary_by_name <- function(
   subset_list <- project$summary$subsets[[subset_name]]
   to_save_list <- generate_summary(
     project = project,
-    filter_field = subset_list$filter_field,
-    filter_choices = subset_list$filter_choices,
     filter_list = subset_list$filter_list,
     filter_strict = subset_list$filter_strict,
     form_names = subset_list$form_names,
     field_names = subset_list$field_names,
     deidentify = subset_list$deidentify,
     drop_free_text = subset_list$drop_free_text,
-    reset = subset_list$reset,
     clean = subset_list$clean,
     transform = subset_list$transform,
     drop_blanks = subset_list$drop_blanks,
@@ -534,7 +531,6 @@ generate_summary <- function(
     field_names = NULL,
     deidentify = TRUE,
     drop_free_text = FALSE,
-    reset = FALSE,
     clean = TRUE,
     drop_blanks = TRUE,
     include_metadata = TRUE,
@@ -590,13 +586,13 @@ generate_summary <- function(
       for(filter_field_name in filter_field_names){
         filter_field_final <- filter_field_name
         filter_choices_final <- filter_list[[filter_field_name]]
-        if (!is_key) {
-          if (is_repeating_filter) {
-            if (!is_repeating_form) {
-              if(!filter_strict){
-                filter_field_final <- project$redcap$id_col
-                filter_choices_final <- project$data[[filter_form]][[filter_field_final]][which(project$data[[filter_form]][[filter_field_name]] %in% filter_choices_final)] %>% unique()
-              }
+        if(!filter_strict){
+          if (!is_key) {#need to account for instances
+            # if (is_repeating_filter) {
+            # if (!is_repeating_form) {
+            if(form_name != filter_form){
+              filter_field_final <- project$redcap$id_col
+              filter_choices_final <- project$data[[filter_form]][[filter_field_final]][which(project$data[[filter_form]][[filter_field_name]] %in% filter_choices_final)] %>% unique()
             }
           }
         }

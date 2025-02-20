@@ -166,7 +166,7 @@ drop_REDCap_to_directory <- function(
       include_metadata = FALSE,
       include_record_summary = FALSE,
       include_users = FALSE
-      ) %>% process_df_list()
+    ) %>% process_df_list()
     link_col_list <- list()
     # if (with_links) {
     #   to_save_list <- to_save_list %>% lapply(function(DF) {

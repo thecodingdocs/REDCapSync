@@ -15,7 +15,6 @@ generate_summary(
   field_names = NULL,
   deidentify = TRUE,
   drop_free_text = FALSE,
-  reset = FALSE,
   clean = TRUE,
   drop_blanks = TRUE,
   include_metadata = TRUE,
@@ -48,8 +47,6 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{drop_free_text}{Logical. If \code{TRUE}, columns containing free text
 will also be excluded from the \code{project}. Default is \code{FALSE}.}
-
-\item{reset}{Logical. If \code{TRUE}, overwrite existing subset files with the same name. Default is \code{FALSE}.}
 
 \item{clean}{Logical. If \code{TRUE}, the data will be cleaned before summarizing. Default is \code{TRUE}.}
 

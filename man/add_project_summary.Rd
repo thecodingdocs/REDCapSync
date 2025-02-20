@@ -16,6 +16,8 @@ add_project_summary(
   form_names = NULL,
   field_names = NULL,
   deidentify = TRUE,
+  drop_free_text = FALSE,
+  no_duplicate_cols = FALSE,
   reset = FALSE,
   clean = TRUE,
   transform = TRUE,
@@ -52,6 +54,8 @@ Default is \verb{<project$short_name>_<subset_name>}.}
 \item{field_names}{Character vector. Names of specific fields to include in the subset. Default is \code{NULL}, which includes all fields.}
 
 \item{deidentify}{Logical. Whether to deidentify the data in the subset. Default is \code{TRUE}.}
+
+\item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the function will avoid including duplicate columns in the output. Defaults to \code{FALSE}.}
 
 \item{reset}{Logical. If \code{TRUE}, overwrite existing subset files with the same name. Default is \code{FALSE}.}
 

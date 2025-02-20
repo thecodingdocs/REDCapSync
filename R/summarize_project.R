@@ -348,6 +348,8 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 #' @param include_record_summary Logical. If `TRUE`, a record summary will be included in the generated summary. Default is `TRUE`.
 #' @param include_users Logical. If `TRUE`, user-related information will be included in the summary. Default is `TRUE`.
 #' @param include_log Logical. If `TRUE`, the log of changes will be included in the summary. Default is `TRUE`.
+#' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the function will avoid including duplicate columns in the output. Defaults to `FALSE`.
+
 #' @param reset Logical. If `TRUE`, overwrite existing subset files with the same name. Default is `FALSE`.
 #' @return
 #' A modified `project` object that includes the newly created subset.
@@ -374,6 +376,8 @@ add_project_summary <- function(
     form_names = NULL,
     field_names = NULL,
     deidentify = TRUE,
+    drop_free_text = FALSE,
+    no_duplicate_cols = FALSE,
     reset = FALSE,
     clean = TRUE,
     transform = TRUE,
@@ -399,6 +403,8 @@ add_project_summary <- function(
       file_name = file_name,
       last_save_time = NULL,
       deidentify = deidentify,
+      drop_free_text = drop_free_text,
+      no_duplicate_cols = no_duplicate_cols,
       clean = clean,
       transform = transform,
       drop_blanks = drop_blanks,
@@ -509,7 +515,6 @@ generate_summary_by_name <- function(
 #' @param form_names A character vector of form names to be included in the filtered data. If missing, all forms are included.
 #' @param filter_field A character string representing an extra variable name to be filtered by. This field must be present in the data frame.
 #' @param filter_choices A character vector of values to filter by for the `filter_field`. Only records with these values in the specified field will be included.
-#' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the function will avoid including duplicate columns in the output. Defaults to `FALSE`.
 #'
 #' @return A modified `project` object with filtered records and columns based on the provided criteria.
 #'

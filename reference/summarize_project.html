@@ -54,20 +54,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">summarize_project</span><span class="op">(</span></span>
-<span>  <span class="va">project</span>,</span>
-<span>  with_links <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  deidentify <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  clean <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  drop_blanks <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  include_metadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  annotate_metadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  include_record_summary <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  include_users <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  include_log <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  separate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  reset <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">summarize_project</span><span class="op">(</span><span class="va">project</span>, reset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -77,46 +64,6 @@
 <dl><dt id="arg-project">project<a class="anchor" aria-label="anchor" href="#arg-project"></a></dt>
 <dd><p>A validated <code>project</code> object containing REDCap project data and
 settings. Generated using <a href="setup-load.html">load_project</a> or <a href="setup-load.html">setup_project</a></p></dd>
-
-
-<dt id="arg-with-links">with_links<a class="anchor" aria-label="anchor" href="#arg-with-links"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, includes links in the summary. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-deidentify">deidentify<a class="anchor" aria-label="anchor" href="#arg-deidentify"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, deidentifies the summary data. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-clean">clean<a class="anchor" aria-label="anchor" href="#arg-clean"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, cleans the summary data. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-drop-blanks">drop_blanks<a class="anchor" aria-label="anchor" href="#arg-drop-blanks"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, drops blank entries from the summary. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-include-metadata">include_metadata<a class="anchor" aria-label="anchor" href="#arg-include-metadata"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, includes metadata in the summary. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-annotate-metadata">annotate_metadata<a class="anchor" aria-label="anchor" href="#arg-annotate-metadata"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, annotates metadata in the summary. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-include-record-summary">include_record_summary<a class="anchor" aria-label="anchor" href="#arg-include-record-summary"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, includes a summary of records in the summary. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-include-users">include_users<a class="anchor" aria-label="anchor" href="#arg-include-users"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, includes user information in the summary. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-include-log">include_log<a class="anchor" aria-label="anchor" href="#arg-include-log"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, includes logs in the summary. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-separate">separate<a class="anchor" aria-label="anchor" href="#arg-separate"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, separates the summary into different sections. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-reset">reset<a class="anchor" aria-label="anchor" href="#arg-reset"></a></dt>

@@ -595,23 +595,29 @@ generate_summary <- function(
             }
           }
         }
-        index_test <- project$data[[form_name]][[filter_field_final]] %in% filter_choices_final
-        if(is.null(row_logic)){
-          row_logic <- index_test
-        }
-        field_index <- which(names(filter_list)==filter_field_name)
-        if(field_index!=1){
-          is_and <- filter_list[[field_index-1]] == "and"
-          if(is_and){
-            row_logic <- row_logic & index_test
-          }else{
-            row_logic <- row_logic | index_test
+        if(filter_field_final %in% colnames(project$data[[form_name]])){
+          index_test <- project$data[[form_name]][[filter_field_final]] %in% filter_choices_final
+          if(is.null(row_logic)){
+            row_logic <- index_test
+          }
+          field_index <- which(names(filter_list)==filter_field_name)
+          op_index <-  (field_index-1)
+          if(op_index <= length(filter_list)){
+            if(field_index!=1){
+              is_and <- filter_list[[op_index]] == "and"
+              if(is_and){
+                row_logic <- row_logic & index_test
+              }else{
+                row_logic <- row_logic | index_test
+              }
+            }
           }
         }
       }
+      if(is.null(row_logic))row_logic<- NA
       rows <- which(row_logic)
       field_names_adj <- field_names
-      if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(form_name, project, original_only = FALSE))
+      # if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(form_name, project, original_only = FALSE))
       cols <- colnames(DF)[which(colnames(DF) %in% field_names_adj)]
       if (length(rows) > 0 && length(cols) > 0) {
         cols <- colnames(DF)[which(colnames(DF) %in% unique(c(project$metadata$form_key_cols[[form_name]], field_names_adj)))]

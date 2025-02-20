@@ -55,6 +55,9 @@ Default is \verb{<project$short_name>_<subset_name>}.}
 
 \item{deidentify}{Logical. Whether to deidentify the data in the subset. Default is \code{TRUE}.}
 
+\item{drop_free_text}{Logical. If \code{TRUE}, columns containing free text
+will also be excluded from the \code{project}. Default is \code{FALSE}.}
+
 \item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the function will avoid including duplicate columns in the output. Defaults to \code{FALSE}.}
 
 \item{reset}{Logical. If \code{TRUE}, overwrite existing subset files with the same name. Default is \code{FALSE}.}

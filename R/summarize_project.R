@@ -328,6 +328,7 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 #' additional forms, fields, and deidentification options.
 #'
 #' @inheritParams save_project
+#' @inheritParams deidentify_project
 #' @param subset_name Character. The name of the subset to create.
 #' @param filter_field Character. The name of the field in the database to filter on.
 #' @param filter_choices Vector. The values of `filter_field` used to define the subset.
@@ -349,7 +350,6 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 #' @param include_users Logical. If `TRUE`, user-related information will be included in the summary. Default is `TRUE`.
 #' @param include_log Logical. If `TRUE`, the log of changes will be included in the summary. Default is `TRUE`.
 #' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the function will avoid including duplicate columns in the output. Defaults to `FALSE`.
-
 #' @param reset Logical. If `TRUE`, overwrite existing subset files with the same name. Default is `FALSE`.
 #' @return
 #' A modified `project` object that includes the newly created subset.

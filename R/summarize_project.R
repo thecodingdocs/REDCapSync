@@ -331,6 +331,8 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 #' @param subset_name Character. The name of the subset to create.
 #' @param filter_field Character. The name of the field in the database to filter on.
 #' @param filter_choices Vector. The values of `filter_field` used to define the subset.
+#' @param filter_list Vector. The values of `filter_field` used to define the subset.
+#' @param filter_strict Logical. If `TRUE`, all forms will be filtered by criteria. If `FALSE`, will convert original filter to id column and filter all other forms by that ID. Default is `TRUE`.
 #' @param dir_other Character. The directory where the subset file will be saved.
 #' Default is the `output` folder within the database directory.
 #' @param file_name Character. The base name of the file where the subset will be saved.
@@ -347,7 +349,6 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 #' @param include_users Logical. If `TRUE`, user-related information will be included in the summary. Default is `TRUE`.
 #' @param include_log Logical. If `TRUE`, the log of changes will be included in the summary. Default is `TRUE`.
 #' @param reset Logical. If `TRUE`, overwrite existing subset files with the same name. Default is `FALSE`.
-#'
 #' @return
 #' A modified `project` object that includes the newly created subset.
 #' The subset is also saved as a file in the specified directory.
@@ -361,11 +362,13 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 #' @seealso
 #' \code{\link{save_project}} for saving the main database or subsets.
 #' @export
-add_project_subset <- function(
+add_project_summary <- function(
     project,
     subset_name,
     filter_field,
     filter_choices,
+    filter_list = NULL,
+    filter_strict = TRUE,
     dir_other = file.path(project$dir_path, "output"),
     file_name = paste0(project$short_name, "_", subset_name),
     form_names = NULL,
@@ -381,10 +384,14 @@ add_project_subset <- function(
     include_users = TRUE,
     include_log = TRUE) {
   if (is.null(project$summary$subsets[[subset_name]]) || reset) {
+    if(is.null(filter_list)){
+      filter_list <- list(filter_choices)
+      names(filter_list) <- filter_field
+    }
     project$summary$subsets[[subset_name]] <- list(
       subset_name = subset_name,
-      filter_field = filter_field,
-      filter_choices = filter_choices,
+      filter_list = filter_list,
+      filter_strict = filter_strict,
       form_names = form_names,
       field_names = field_names,
       subset_records = NULL,
@@ -404,56 +411,6 @@ add_project_subset <- function(
     )
   }
   return(invisible(project))
-}
-#' @noRd
-generate_summary_save_list <- function(
-    project,
-    transform = TRUE,
-    deidentify = TRUE,
-    clean = TRUE,
-    drop_blanks = TRUE,
-    other_drops = NULL,
-    include_metadata = TRUE,
-    annotate_metadata = TRUE,
-    include_record_summary = TRUE,
-    include_users = TRUE,
-    include_log = TRUE) {
-  records <- sum_records(project)[[1]]
-  if (deidentify) {
-    project <- deidentify_project(project)
-  }
-  if (transform) {
-    project <- transform_project(project)
-  }
-  if (clean) {
-    project <- project %>% clean_project(drop_blanks = drop_blanks, other_drops = other_drops) # problematic because setting numeric would delete missing codes
-  }
-  to_save_list <- project$data
-  if (include_metadata) {
-    if (annotate_metadata && is_something(project$data)) {
-      to_save_list$forms <- annotate_forms(project)
-      to_save_list$fields <- annotate_fields(project)
-      to_save_list$choices <- annotate_choices(project)
-    } else {
-      to_save_list$forms <- project$metadata$forms
-      to_save_list$fields <- project$metadata$fields
-      to_save_list$choices <- project$metadata$choices
-    }
-  }
-  if (include_record_summary) {
-    if (!is.null(records)) {
-      to_save_list$records <- summarize_records_from_log(project, records = records)
-    }
-  }
-  if (include_users) {
-    to_save_list$users <- summarize_users_from_log(project, records = records)
-  }
-  if (include_log) {
-    to_save_list$log <- get_log(project, records = records)
-  }
-  # to_save_list$choices <- annotate_choices(project)
-  # to_save_list$choices <- annotate_choices(project)
-  return(to_save_list)
 }
 #' @noRd
 save_REDCapSync_list <- function(
@@ -509,29 +466,190 @@ save_REDCapSync_list <- function(
 #' @details
 #' This function allows you to generate a summary of data from a specific subset of records within the REDCap project. The function provides flexible options for cleaning, annotating, and including metadata, as well as controlling whether to include record summaries, user information, and logs.
 #' @export
-generate_summary_from_subset_name <- function(
+generate_summary_by_name <- function(
     project,
-    subset_name) {
+    subset_name
+) {
   subset_list <- project$summary$subsets[[subset_name]]
-  project$data <- filter_project(
+  to_save_list <- generate_summary(
     project = project,
-    transform = subset_list$transform,
-    field_names = subset_list$field_names,
-    form_names = subset_list$form_names,
     filter_field = subset_list$filter_field,
-    filter_choices = subset_list$filter_choices
-  )
-  to_save_list <- project %>% generate_summary_save_list(
+    filter_choices = subset_list$filter_choices,
+    filter_list = subset_list$filter_list,
+    filter_strict = subset_list$filter_strict,
+    form_names = subset_list$form_names,
+    field_names = subset_list$field_names,
     deidentify = subset_list$deidentify,
-    transform = subset_list$transform,
+    drop_free_text = subset_list$drop_free_text,
+    reset = subset_list$reset,
     clean = subset_list$clean,
+    transform = subset_list$transform,
     drop_blanks = subset_list$drop_blanks,
     include_metadata = subset_list$include_metadata,
     annotate_metadata = subset_list$annotate_metadata,
     include_record_summary = subset_list$include_record_summary,
     include_users = subset_list$include_users,
-    include_log = subset_list$include_log
+    include_log = subset_list$include_log,
+    no_duplicate_cols = subset_list$no_duplicate_cols
   )
+  return(to_save_list)
+}
+#' @title Select REDCap Records from project
+#' @description
+#' This function filters the records in the `project` object by specified
+#' criteria, such as field names, form names, and optional filtering based on a
+#' specific field and its values. It returns a modified `project` object
+#' containing only the records that match the filter criteria.
+#'
+#' @inheritParams save_project
+#' @inheritParams add_project_summary
+#' @inheritParams deidentify_project
+#' @param transform A logical flag (`TRUE` or `FALSE`). If `TRUE`, filter using transformation. Defaults to `FALSE`.
+#' @param field_names A character vector of field names to be included in the filtered data. If missing, all fields are included.
+#' @param form_names A character vector of form names to be included in the filtered data. If missing, all forms are included.
+#' @param filter_field A character string representing an extra variable name to be filtered by. This field must be present in the data frame.
+#' @param filter_choices A character vector of values to filter by for the `filter_field`. Only records with these values in the specified field will be included.
+#' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the function will avoid including duplicate columns in the output. Defaults to `FALSE`.
+#'
+#' @return A modified `project` object with filtered records and columns based on the provided criteria.
+#'
+#' @details
+#' This function filters the data in the `project` object according to the specified form and field names and optional filter criteria. If no field names or form names are provided, it defaults to using all fields and forms in the database.
+#' The function uses the helper `filter_DF_list` to apply the filtering logic to the `project$data` list.
+#'
+#' @export
+generate_summary <- function(
+    project,
+    transform,
+    filter_field,
+    filter_choices,
+    filter_list = NULL,
+    filter_strict = TRUE,
+    form_names = NULL,
+    field_names = NULL,
+    deidentify = TRUE,
+    drop_free_text = FALSE,
+    reset = FALSE,
+    clean = TRUE,
+    drop_blanks = TRUE,
+    include_metadata = TRUE,
+    annotate_metadata = TRUE,
+    include_record_summary = TRUE,
+    include_users = TRUE,
+    include_log = TRUE,
+    no_duplicate_cols = FALSE
+){
+  if (missing(transform)) {
+    transform <- project$internals$is_transformed
+  }
+  if (transform) {
+    project$metadata <- project$transformation$metadata
+    project$data <- project$transformation$data
+  }
+  if (missing(field_names)) field_names <- project %>% get_all_field_names()
+  if (is.null(field_names)) field_names <- project %>% get_all_field_names()
+  if (missing(form_names)) form_names <- names(project$data)
+  if (is.null(form_names)) form_names <- names(project$data)
+  if(is.null(filter_list)){
+    filter_list <- list(filter_choices)
+    names(filter_list) <- filter_field
+  }else{
+    if(!missing(filter_field)||!missing(filter_choices)){
+      #warning
+    }
+  }
+  filter_field_names <- filter_list %>% names() %>% drop_if("")
+  # should be unique
+  # filter_field_names %>% vec1_not_in_vec2(project$metadata$fields$field_name) # should be empty
+  filter_form <- project%>% field_names_to_form_names(field_names = filter_field_names)
+  # should be length 1
+  if(length(filter_form)>1){
+    stop("You can only filter_list by multiple columns part of one single reference form")
+  }
+  filter_ops <- filter_list[which(names(filter_list)=="")] %>% unlist()
+  # filter ops must be "and" or "or"
+  out_list <- list()
+  form_key_cols <- project$metadata$form_key_cols %>%
+    unlist() %>%
+    unique()
+  is_key <- all(filter_field_names %in% form_key_cols)
+  if (!is_key) {
+    # form_name <- field_names_to_form_names(project, field_names = filter_field)
+    is_repeating_filter <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == filter_form)]
+  }
+  for (form_name in form_names) {
+    DF <- project$data[[form_name]]
+    is_repeating_form <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == form_name)]
+    if (is_something(DF)) {
+      row_logic <- NULL
+      for(filter_field_name in filter_field_names){
+        filter_field_final <- filter_field_name
+        filter_choices_final <- filter_list[[filter_field_name]]
+        if (!is_key) {
+          if (is_repeating_filter) {
+            if (!is_repeating_form) {
+              if(!filter_strict){
+                filter_field_final <- project$redcap$id_col
+                filter_choices_final <- project$data[[filter_form]][[filter_field_final]][which(project$data[[filter_form]][[filter_field_name]] %in% filter_choices_final)] %>% unique()
+              }
+            }
+          }
+        }
+        index_test <- project$data[[form_name]][[filter_field_final]] %in% filter_choices_final
+        if(is.null(row_logic)){
+          row_logic <- index_test
+        }
+        field_index <- which(names(filter_list)==filter_field_name)
+        if(field_index!=1){
+          is_and <- filter_list[[field_index-1]] == "and"
+          if(is_and){
+            row_logic <- row_logic & index_test
+          }else{
+            row_logic <- row_logic | index_test
+          }
+        }
+      }
+      rows <- which(row_logic)
+      field_names_adj <- field_names
+      if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(form_name, project, original_only = FALSE))
+      cols <- colnames(DF)[which(colnames(DF) %in% field_names_adj)]
+      if (length(rows) > 0 && length(cols) > 0) {
+        cols <- colnames(DF)[which(colnames(DF) %in% unique(c(project$metadata$form_key_cols[[form_name]], field_names_adj)))]
+        out_list[[form_name]] <- DF[rows, cols]
+      }
+    }
+  }
+  project$data <- out_list
+  if (deidentify) {
+    project <- deidentify_project(project, drop_free_text = drop_free_text)
+  }
+  if (clean) {
+    project <- project %>% clean_project(drop_blanks = drop_blanks) # problematic because setting numeric would delete missing codes
+  }
+  to_save_list <- project$data
+  if (include_metadata) {
+    if (annotate_metadata && is_something(to_save_list)) {
+      to_save_list$forms <- annotate_forms(project)
+      to_save_list$fields <- annotate_fields(project)
+      to_save_list$choices <- annotate_choices(project)
+    } else {
+      to_save_list$forms <- project$metadata$forms
+      to_save_list$fields <- project$metadata$fields
+      to_save_list$choices <- project$metadata$choices
+    }
+  }
+  if (include_record_summary) {
+    records <- sum_records(project)[[1]]
+    if (!is.null(records)) {
+      to_save_list$records <- summarize_records_from_log(project, records = records)
+    }
+  }
+  if (include_users) {
+    to_save_list$users <- summarize_users_from_log(project, records = records)
+  }
+  if (include_log) {
+    to_save_list$log <- get_log(project, records = records)
+  }
   return(to_save_list)
 }
 #' @title Summarize REDCap Database
@@ -542,16 +660,6 @@ generate_summary_from_subset_name <- function(
 #' This function filters the REDCap database based on the provided parameters and generates a summary list. The summary can include metadata, record summaries, user information, and logs. The function also supports deidentification and cleaning of the data.
 #'
 #' @inheritParams save_project
-#' @param with_links Logical (TRUE/FALSE). If TRUE, includes links in the summary. Default is `TRUE`.
-#' @param deidentify Logical (TRUE/FALSE). If TRUE, deidentifies the summary data. Default is `TRUE`.
-#' @param clean Logical (TRUE/FALSE). If TRUE, cleans the summary data. Default is `TRUE`.
-#' @param drop_blanks Logical (TRUE/FALSE). If TRUE, drops blank entries from the summary. Default is `TRUE`.
-#' @param include_metadata Logical (TRUE/FALSE). If TRUE, includes metadata in the summary. Default is `TRUE`.
-#' @param annotate_metadata Logical (TRUE/FALSE). If TRUE, annotates metadata in the summary. Default is `TRUE`.
-#' @param include_record_summary Logical (TRUE/FALSE). If TRUE, includes a summary of records in the summary. Default is `TRUE`.
-#' @param include_users Logical (TRUE/FALSE). If TRUE, includes user information in the summary. Default is `TRUE`.
-#' @param include_log Logical (TRUE/FALSE). If TRUE, includes logs in the summary. Default is `TRUE`.
-#' @param separate Logical (TRUE/FALSE). If TRUE, separates the summary into different sections. Default is `FALSE`.
 #' @param reset Logical (TRUE/FALSE). If TRUE, forces the summary generation even if there are issues. Default is `FALSE`.
 #' @return List. Returns a list containing the summarized data, including records, metadata, users, logs, and any other specified data.
 #' @seealso
@@ -561,41 +669,13 @@ generate_summary_from_subset_name <- function(
 #' @export
 summarize_project <- function(
     project,
-    with_links = TRUE,
-    deidentify = TRUE,
-    clean = TRUE,
-    drop_blanks = TRUE,
-    include_metadata = TRUE,
-    annotate_metadata = TRUE,
-    include_record_summary = TRUE,
-    include_users = TRUE,
-    include_log = TRUE,
-    separate = FALSE,
-    reset = FALSE) {
+    reset = FALSE
+) {
   project <- project %>% assert_blank_project()
-  original_data <- project$data
   do_it <- is.null(project$internals$last_summary)
   last_data_update <- project$internals$last_data_update
   if (!do_it) {
     do_it <- project$internals$last_summary < last_data_update
-  }
-  if (do_it || reset) {
-    to_save_list <- project %>% generate_summary_save_list(
-      deidentify = deidentify,
-      clean = clean,
-      drop_blanks = drop_blanks,
-      include_metadata = include_metadata,
-      annotate_metadata = annotate_metadata,
-      include_record_summary = include_record_summary,
-      include_users = include_users,
-      include_log = include_log
-    )
-    project %>% save_REDCapSync_list(
-      to_save_list = to_save_list,
-      separate = separate,
-      with_links = with_links
-    )
-    project$internals$last_summary <- last_data_update
   }
   subset_names <- check_subsets(project)
   if (reset) {
@@ -603,23 +683,22 @@ summarize_project <- function(
   }
   if (is_something(subset_names)) {
     for (subset_name in subset_names) {
-      project$data <- original_data
-      project$summary$subsets[[subset_name]]$subset_records <- get_subset_records(project = project, subset_name = subset_name)
       subset_list <- project$summary$subsets[[subset_name]]
+      to_save_list <- project %>%
+        generate_summary_by_name(
+          subset_name = subset_name
+        )
       project %>% save_REDCapSync_list(
-        to_save_list = project %>%
-          generate_summary_from_subset_name(
-            subset_name = subset_name
-          ),
+        to_save_list =  to_save_list,
         dir_other = subset_list$dir_other,
         file_name = subset_list$file_name,
-        separate = separate,
-        with_links = with_links
+        separate = subset_list$separate,
+        with_links = subset_list$with_links
       )
-      project$summary$subsets[[subset_name]]$last_save_time <- now_time()
+      project$summary$subsets[[subset_name]]$subset_records <- #get_records(project = project, subset_name = subset_name)
+        project$summary$subsets[[subset_name]]$last_save_time <- now_time()
     }
   }
-  project$data <- original_data
   return(invisible(project))
 }
 #' @title Run Quality Checks
@@ -767,33 +846,25 @@ summarize_records_from_log <- function(project, records) {
   return(summary_records)
 }
 #' @noRd
-get_subset_records <- function(project, subset_name) {
+get_records <- function(project, subset_name) {
+  if(missing(subset_name)){
+    return(project$summary$all_records)
+  }
   subset_list <- project$summary$subsets[[subset_name]]
   if(subset_list$filter_field == project$redcap$id_col){
     records <- subset_list$filter_choices
   }else{
-    if( subset_list$transform){
-      form_name <- project$transformation$fields$form_name[which(project$transformation$fields$field_name==subset_list$filter_field)]
-      records <- project$transformation$data[[form_name]][[project$redcap$id_col]][
-        which(
-          project$transformation$data[[form_name]][[subset_list$filter_field]] %in%
-            subset_list$filter_choices
-        )
-      ] %>%
-        unique()
-    }else{
-      form_name <- field_names_to_form_names(
-        project,
-        field_names = subset_list$filter_field
+    form_name <- field_names_to_form_names(
+      project,
+      field_names = subset_list$filter_field
+    )
+    records <- project$data[[form_name]][[project$redcap$id_col]][
+      which(
+        project$data[[form_name]][[subset_list$filter_field]] %in%
+          subset_list$filter_choices
       )
-      records <- project$data[[form_name]][[project$redcap$id_col]][
-        which(
-          project$data[[form_name]][[subset_list$filter_field]] %in%
-            subset_list$filter_choices
-        )
-      ] %>%
-        unique()
-    }
+    ] %>%
+      unique()
   }
   subset_records <- project$summary$all_records[which(project$summary$all_records[[project$redcap$id_col]] %in% records), ]
   return(subset_records)
@@ -807,17 +878,21 @@ subset_records_due <- function(project, subset_name) {
   if (!file.exists(subset_list$file_path)) {
     return(TRUE)
   }
-  subset_records <- get_subset_records(
+  subset_records <- get_records(
     project = project,
     subset_name = subset_name
   )
-  return(!identical(unname(subset_list$subset_records), unname(subset_records)))
+  is_due <- !identical(
+    unname(subset_list$subset_records),
+    unname(subset_records)
+  )
+  return(is_due)
 }
 #' @noRd
 check_subsets <- function(project, subset_names) {
   if (missing(subset_names)) subset_names <- project$summary$subsets %>% names()
   needs_refresh <- NULL
-  if (is.null(subset_names)) bullet_in_console("There are no subsets at `project$summary$subsets` which can be added with `add_project_subset()`!")
+  if (is.null(subset_names)) bullet_in_console("There are no subsets at `project$summary$subsets` which can be added with `add_project_summary()`!")
   for (subset_name in subset_names) {
     if (subset_records_due(project = project, subset_name = subset_name)){
       needs_refresh <- needs_refresh %>% append(subset_name)
@@ -825,54 +900,6 @@ check_subsets <- function(project, subset_names) {
   }
   if (is.null(needs_refresh)) bullet_in_console("Refresh of subsets not needed!", bullet_type = "v")
   return(needs_refresh)
-}
-#' @title Select REDCap Records from project
-#' @description
-#' This function filters the records in the `project` object by specified
-#' criteria, such as field names, form names, and optional filtering based on a
-#' specific field and its values. It returns a modified `project` object
-#' containing only the records that match the filter criteria.
-#'
-#' @inheritParams save_project
-#' @param transform A logical flag (`TRUE` or `FALSE`). If `TRUE`, filter using transformation. Defaults to `FALSE`.
-#' @param field_names A character vector of field names to be included in the filtered data. If missing, all fields are included.
-#' @param form_names A character vector of form names to be included in the filtered data. If missing, all forms are included.
-#' @param filter_field A character string representing an extra variable name to be filtered by. This field must be present in the data frame.
-#' @param filter_choices A character vector of values to filter by for the `filter_field`. Only records with these values in the specified field will be included.
-#' @param warn_only A logical flag (`TRUE` or `FALSE`). If `TRUE`, the function will issue a warning instead of stopping if the filtering criteria do not match any records. Defaults to `FALSE`.
-#' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the function will avoid including duplicate columns in the output. Defaults to `FALSE`.
-#'
-#' @return A modified `project` object with filtered records and columns based on the provided criteria.
-#'
-#' @details
-#' This function filters the data in the `project` object according to the specified form and field names and optional filter criteria. If no field names or form names are provided, it defaults to using all fields and forms in the database.
-#' The function uses the helper `filter_DF_list` to apply the filtering logic to the `project$data` list.
-#'
-#' @export
-filter_project <- function(project, transform, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE) { # , ignore_incomplete=FALSE, ignore_unverified = FALSE
-  if (missing(transform)) {
-    transform <- project$internals$is_transformed
-  }
-  if (transform) {
-    project$metadata <- project$transformation$metadata
-    project$data <- project$transformation$data
-  }
-  if (missing(field_names)) field_names <- project %>% get_all_field_names()
-  if (is.null(field_names)) field_names <- project %>% get_all_field_names()
-  if (missing(form_names)) form_names <- names(project$data)
-  if (is.null(form_names)) form_names <- names(project$data)
-  return(
-    filter_DF_list(
-      DF_list = project$data,
-      project = project,
-      filter_field = filter_field,
-      filter_choices = filter_choices,
-      form_names = form_names,
-      field_names = field_names,
-      warn_only = warn_only,
-      no_duplicate_cols = no_duplicate_cols
-    )
-  )
 }
 #' @title rmarkdown_project
 #' @description
@@ -910,18 +937,18 @@ rmarkdown_project <- function(project, dir_other) {
 }
 #' @title Clean to Raw REDCap forms
 #' @inheritParams save_project
-#' @param FORM data.frame of labelled REDCap to be converted to raw REDCap (for uploads)
+#' @param data_form data.frame of labelled REDCap to be converted to raw REDCap (for uploads)
 #' @return project object that has been filtered to only include the specified records
 #' @export
-labelled_to_raw_form <- function(FORM, project) {
+labelled_to_raw_form <- function(data_form, project) {
   use_missing_codes <- is.data.frame(project$metadata$missing_codes)
-  fields <- filter_fields_from_form(FORM = FORM, project = project)
+  fields <- filter_fields_from_form(data_form = data_form, project = project)
   for (i in seq_len(nrow(fields))) { # i <-  seq_len(nrow(fields) %>% sample(1)
     COL_NAME <- fields$field_name[i]
     has_choices <- fields$has_choices[i]
     if (has_choices) {
       z <- fields$select_choices_or_calculations[i] %>% split_choices()
-      FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>%
+      data_form[[COL_NAME]] <- data_form[[COL_NAME]] %>%
         lapply(function(C) {
           OUT <- NA
           if (!is.na(C)) {
@@ -947,7 +974,7 @@ labelled_to_raw_form <- function(FORM, project) {
         as.character()
     } else {
       if (use_missing_codes) {
-        FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>%
+        data_form[[COL_NAME]] <- data_form[[COL_NAME]] %>%
           lapply(function(C) {
             OUT <- C
             if (!is.na(C)) {
@@ -963,23 +990,23 @@ labelled_to_raw_form <- function(FORM, project) {
       }
     }
   }
-  FORM
+  data_form
 }
 #' @title Raw to Labelled REDCap forms
-#' @param FORM data.frame of raw REDCap to be converted to labelled REDCap
+#' @param data_form data.frame of raw REDCap to be converted to labelled REDCap
 #' @inheritParams save_project
 #' @return project object
 #' @export
-raw_to_labelled_form <- function(FORM, project) {
-  if (nrow(FORM) > 0) {
+raw_to_labelled_form <- function(data_form, project) {
+  if (nrow(data_form) > 0) {
     use_missing_codes <- is.data.frame(project$metadata$missing_codes)
-    metadata <- filter_fields_from_form(FORM = FORM, project = project)
+    metadata <- filter_fields_from_form(data_form = data_form, project = project)
     for (i in seq_len(nrow(metadata))) { # i <-  seq_len(nrow(metadata)) %>% sample(1)
       COL_NAME <- metadata$field_name[i]
       has_choices <- metadata$has_choices[i]
       if (has_choices) {
         z <- metadata$select_choices_or_calculations[i] %>% split_choices()
-        FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>%
+        data_form[[COL_NAME]] <- data_form[[COL_NAME]] %>%
           lapply(function(C) {
             OUT <- NA
             if (!is.na(C)) {
@@ -1006,7 +1033,7 @@ raw_to_labelled_form <- function(FORM, project) {
       } else {
         if (use_missing_codes) {
           z <- project$metadata$missing_codes
-          FORM[[COL_NAME]] <- FORM[[COL_NAME]] %>%
+          data_form[[COL_NAME]] <- data_form[[COL_NAME]] %>%
             lapply(function(C) {
               OUT <- C
               if (!is.na(C)) {
@@ -1023,7 +1050,7 @@ raw_to_labelled_form <- function(FORM, project) {
       }
     }
   }
-  FORM
+  data_form
 }
 #' @noRd
 stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
@@ -1032,7 +1059,14 @@ stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
   if (!all(vars %in% fields$field_name)) stop("all vars must be in metadata.")
   the_stack <- NULL
   for (var in vars) { # var <- vars %>% sample1()
-    DF <- filter_project(project, field_names = var)[[1]]
+    DF <- generate_summary(
+      project,
+      field_names = var,
+      include_log = FALSE,
+      include_metadata = FALSE,
+      include_record_summary = FALSE,
+      include_users = FALSE
+    )[[1]]
     colnames(DF)[which(colnames(DF) == var)] <- new_name
     the_stack <- the_stack %>% dplyr::bind_rows(DF)
   }
@@ -1040,13 +1074,6 @@ stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
     the_stack <- the_stack[which(!is.na(the_stack[[new_name]])), ]
   }
   return(the_stack)
-}
-#' @noRd
-get_original_field_names <- function(project) {
-  if (project$internals$is_transformed) {
-    return(project$transformation$original_fields$field_name)
-  }
-  return(project$metadata$fields$field_name)
 }
 #' @noRd
 get_all_field_names <- function(project) {
@@ -1062,11 +1089,11 @@ field_names_to_form_names <- function(project, field_names) {
     lapply(function(field_name) {
       project$metadata$form_key_cols %>%
         names() %>%
-        lapply(function(FORM) {
-          if (!field_name %in% project$metadata$form_key_cols[[FORM]]) {
+        lapply(function(form_name) {
+          if (!field_name %in% project$metadata$form_key_cols[[form_name]]) {
             return(NULL)
           }
-          return(FORM)
+          return(form_name)
         }) %>%
         unlist()
     }) %>%
@@ -1156,50 +1183,9 @@ stripped_project <- function(project) {
   return(invisible(project))
 }
 #' @noRd
-filter_DF_list <- function(DF_list, project, filter_field, filter_choices, form_names, field_names, warn_only = FALSE, no_duplicate_cols = FALSE) {
-  if (missing(field_names)) field_names <- project %>% get_all_field_names()
-  if (is.null(field_names)) field_names <- project %>% get_all_field_names()
-  if (missing(form_names)) form_names <- names(DF_list)
-  if (is.null(form_names)) form_names <- names(DF_list)
-  out_list <- list()
-  form_key_cols <- project$metadata$form_key_cols %>%
-    unlist() %>%
-    unique()
-  is_key <- filter_field %in% form_key_cols
-  if (!is_key) {
-    form_name <- field_names_to_form_names(project, field_names = filter_field)
-    is_repeating_filter <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == form_name)]
-  }
-  for (FORM in form_names) {
-    DF <- DF_list[[FORM]]
-    is_repeating_form <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == FORM)]
-    if (is_something(DF)) {
-      filter_field_final <- filter_field
-      filter_choices_final <- filter_choices
-      if (!is_key) {
-        if (is_repeating_filter) {
-          if (!is_repeating_form) {
-            filter_field_final <- project$metadata$form_key_cols[[FORM]]
-            filter_choices_final <- DF_list[[form_name]][[filter_field_final]][which(DF_list[[form_name]][[filter_field]] %in% filter_choices)] %>% unique()
-          }
-        }
-      }
-      rows <- which(DF_list[[FORM]][[filter_field_final]] %in% filter_choices_final)
-      field_names_adj <- field_names
-      if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(FORM, project, original_only = FALSE))
-      cols <- colnames(DF)[which(colnames(DF) %in% field_names_adj)]
-      if (length(rows) > 0 && length(cols) > 0) {
-        cols <- colnames(DF)[which(colnames(DF) %in% unique(c(project$metadata$form_key_cols[[FORM]], field_names_adj)))]
-        out_list[[FORM]] <- DF[rows, cols]
-      }
-    }
-  }
-  return(out_list)
-}
-#' @noRd
 field_names_metadata <- function(project, field_names, col_names) {
   fields <- project$metadata$fields # project$metadata$fields
-  # if(!deparse(substitute(FORM))%in%project$metadata$forms$form_name)stop("To avoid potential issues the form name should match one of the instrument names" )
+  # if(!deparse(substitute(form_name))%in%project$metadata$forms$form_name)stop("To avoid potential issues the form name should match one of the instrument names" )
   BAD <- field_names[which(!field_names %in% c(project$metadata$fields$field_name, project$redcap$raw_structure_cols, "arm_number", "event_name"))]
   if (length(BAD) > 0) stop("All column names in your form must match items in your metadata, `project$metadata$fields$field_name`... ", paste0(BAD, collapse = ", "))
   # metadata <- project$metadata$fields[which(project$metadata$fields$form_name%in%instruments),]
@@ -1211,10 +1197,10 @@ field_names_metadata <- function(project, field_names, col_names) {
   return(fields)
 }
 #' @noRd
-filter_fields_from_form <- function(FORM, project) {
-  forms <- project %>% field_names_to_form_names(field_names = colnames(FORM))
+filter_fields_from_form <- function(data_form, project) {
+  forms <- project %>% field_names_to_form_names(field_names = colnames(data_form))
   if (any(forms %in% project$metadata$forms$repeating)) stop("All column names in your form must match only one form in your metadata, `project$metadata$forms$form_name`, unless they are all non-repeating")
-  fields <- project %>% field_names_metadata(field_names = colnames(FORM))
+  fields <- project %>% field_names_metadata(field_names = colnames(data_form))
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
   fields$has_choices[which(fields$field_type == "calc")] <- FALSE
@@ -1225,7 +1211,7 @@ labelled_to_raw_project <- function(project) {
   project <- assert_blank_project(project)
   if (!project$internals$labelled) stop("project is already raw/coded (not labelled values)")
   for (TABLE in names(project$data)) {
-    project$data[[TABLE]] <- labelled_to_raw_form(FORM = project$data[[TABLE]], project = project)
+    project$data[[TABLE]] <- labelled_to_raw_form(data_form = project$data[[TABLE]], project = project)
   }
   project$internals$labelled <- FALSE
   project

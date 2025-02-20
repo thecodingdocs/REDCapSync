@@ -6,6 +6,7 @@
 \usage{
 generate_summary(
   project,
+  transform,
   filter_field,
   filter_choices,
   filter_list = NULL,
@@ -13,33 +14,56 @@ generate_summary(
   form_names = NULL,
   field_names = NULL,
   deidentify = TRUE,
+  drop_free_text = FALSE,
   reset = FALSE,
   clean = TRUE,
-  transform,
   drop_blanks = TRUE,
   include_metadata = TRUE,
   annotate_metadata = TRUE,
   include_record_summary = TRUE,
   include_users = TRUE,
   include_log = TRUE,
-  no_duplic
+  no_duplicate_cols = FALSE
 )
 }
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
+\item{transform}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, filter using transformation. Defaults to \code{FALSE}.}
+
 \item{filter_field}{A character string representing an extra variable name to be filtered by. This field must be present in the data frame.}
 
 \item{filter_choices}{A character vector of values to filter by for the \code{filter_field}. Only records with these values in the specified field will be included.}
+
+\item{filter_list}{Vector. The values of \code{filter_field} used to define the subset.}
+
+\item{filter_strict}{Logical. If \code{TRUE}, all forms will be filtered by criteria. If \code{FALSE}, will convert original filter to id column and filter all other forms by that ID. Default is \code{TRUE}.}
 
 \item{form_names}{A character vector of form names to be included in the filtered data. If missing, all forms are included.}
 
 \item{field_names}{A character vector of field names to be included in the filtered data. If missing, all fields are included.}
 
-\item{transform}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, filter using transformation. Defaults to \code{FALSE}.}
+\item{deidentify}{Logical. Whether to deidentify the data in the subset. Default is \code{TRUE}.}
 
-\item{warn_only}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the function will issue a warning instead of stopping if the filtering criteria do not match any records. Defaults to \code{FALSE}.}
+\item{drop_free_text}{Logical. If \code{TRUE}, columns containing free text
+will also be excluded from the \code{project}. Default is \code{FALSE}.}
+
+\item{reset}{Logical. If \code{TRUE}, overwrite existing subset files with the same name. Default is \code{FALSE}.}
+
+\item{clean}{Logical. If \code{TRUE}, the data will be cleaned before summarizing. Default is \code{TRUE}.}
+
+\item{drop_blanks}{Logical. If \code{TRUE}, records with blank fields will be dropped. Default is \code{TRUE}.}
+
+\item{include_metadata}{Logical. If \code{TRUE}, metadata will be included in the summary. Default is \code{TRUE}.}
+
+\item{annotate_metadata}{Logical. If \code{TRUE}, metadata will be annotated in the summary. Default is \code{TRUE}.}
+
+\item{include_record_summary}{Logical. If \code{TRUE}, a record summary will be included in the generated summary. Default is \code{TRUE}.}
+
+\item{include_users}{Logical. If \code{TRUE}, user-related information will be included in the summary. Default is \code{TRUE}.}
+
+\item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in the summary. Default is \code{TRUE}.}
 
 \item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the function will avoid including duplicate columns in the output. Defaults to \code{FALSE}.}
 }

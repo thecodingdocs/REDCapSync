@@ -30,8 +30,8 @@ count_project_upload_cells <- function(project) {
     sum()
 }
 #' @noRd
-husk_of_form <- function(project, FORM, field_names) {
-  DF <- project$data[[FORM]]
+husk_of_form <- function(project, data_form, field_names) {
+  DF <- project$data[[data_form]]
   cols <- colnames(DF)[which(colnames(DF) %in% project$redcap$raw_structure_cols)]
   DF2 <- NULL
   for (col in cols) {

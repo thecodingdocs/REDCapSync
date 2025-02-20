@@ -75,10 +75,10 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
     } else {
       bullet_in_console(paste0("Deidentified ", project$short_name), bullet_type = "v")
     }
-    for (FORM in names(drop_list)) {
-      for (DROP in drop_list[[FORM]]) {
-        project$data[[FORM]][[DROP]] <- NULL
-        # message("Dropped '",DROP,"' from '",data_choice,"' --> '", FORM,"'")
+    for (form_name in names(drop_list)) {
+      for (DROP in drop_list[[form_name]]) {
+        project$data[[form_name]][[DROP]] <- NULL
+        # message("Dropped '",DROP,"' from '",data_choice,"' --> '", form_name,"'")
       }
     }
   }
@@ -246,7 +246,7 @@ raw_process_redcap <- function(raw, project, labelled) {
           cols <- unique(c(add_ons_x, form_field_names))
           raw_subset <- raw[rows, cols]
           if (labelled) {
-            raw_subset <- raw_to_labelled_form(FORM = raw_subset, project = project)
+            raw_subset <- raw_to_labelled_form(data_form = raw_subset, project = project)
           }
           data_list[[form_name]] <- raw_subset
         }

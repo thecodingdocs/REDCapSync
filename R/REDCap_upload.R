@@ -268,7 +268,16 @@ edit_REDCap_while_viewing <- function(project, optional_DF, records, field_name_
       VIEW_simp %>%
         t() %>%
         print()
-      CHANGE <- filter_project(project, filter_field = project$redcap$id_col, filter_choices = records, form_names = change_form)[[1]]
+      CHANGE <- generate_summary(
+        project,
+        filter_field = project$redcap$id_col,
+        filter_choices = records,
+        form_names = change_form,
+        include_log = FALSE,
+        include_metadata = FALSE,
+        include_record_summary = FALSE,
+        include_users = FALSE
+      )[[1]]
       row.names(CHANGE) <- NULL
       CHANGE <- CHANGE[, unique(c(ref_cols_change, field_name_to_change))]
       if (nrow(CHANGE) == 0) {

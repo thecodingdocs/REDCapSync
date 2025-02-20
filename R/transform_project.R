@@ -16,7 +16,15 @@
 generate_horizontal_transform <- function(project, records) {
   project <- assert_blank_project(project)
   if (missing(records)) records <- project$summary$all_records[[project$redcap$id_col]]
-  data <- filter_project(project, filter_field = project$redcap$id_col, filter_choices = records)
+  data <- generate_summary(
+    project,
+    filter_field = project$redcap$id_col,
+    filter_choices = records,
+    include_log = FALSE,
+    include_metadata = FALSE,
+    include_record_summary = FALSE,
+    include_users = FALSE
+  )
   FINAL_out <- NULL
   forms <- names(data)
   col_names <- NULL

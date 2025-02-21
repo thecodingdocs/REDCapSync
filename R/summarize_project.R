@@ -391,7 +391,7 @@ add_project_summary <- function(
     include_log = TRUE,
     with_links = TRUE,
     separate = FALSE
-    ) {
+) {
   if (is.null(project$summary$subsets[[subset_name]]) || reset) {
     if(is.null(filter_list)){
       filter_list <- list(filter_choices)
@@ -634,7 +634,7 @@ generate_summary <- function(
       cols <- colnames(DF)[which(colnames(DF) %in% field_names_adj)]
       if (length(rows) > 0 && length(cols) > 0) {
         cols <- colnames(DF)[which(colnames(DF) %in% unique(c(project$metadata$form_key_cols[[form_name]], field_names_adj)))]
-        out_list[[form_name]] <- DF[rows, cols]
+        out_list[[form_name]] <- DF[rows, cols,drop = FALSE]
       }
     }
   }
@@ -870,21 +870,25 @@ get_records <- function(project, subset_name) {
     return(project$summary$all_records)
   }
   subset_list <- project$summary$subsets[[subset_name]]
-  if(subset_list$filter_field == project$redcap$id_col){
-    records <- subset_list$filter_choices
-  }else{
-    form_name <- field_names_to_form_names(
-      project,
-      field_names = subset_list$filter_field
-    )
-    records <- project$data[[form_name]][[project$redcap$id_col]][
-      which(
-        project$data[[form_name]][[subset_list$filter_field]] %in%
-          subset_list$filter_choices
-      )
-    ] %>%
-      unique()
-  }
+  to_save_list <- generate_summary(
+    project = project,
+    filter_list = subset_list$filter_list,
+    filter_strict = subset_list$filter_strict,
+    form_names = subset_list$form_names,
+    field_names = project$redcap$id_col,
+    deidentify = subset_list$deidentify,
+    drop_free_text = subset_list$drop_free_text,
+    clean = subset_list$clean,
+    transform = subset_list$transform,
+    drop_blanks = subset_list$drop_blanks,
+    include_metadata = FALSE,
+    annotate_metadata = FALSE,
+    include_record_summary = FALSE,
+    include_users = FALSE,
+    include_log = FALSE,
+    no_duplicate_cols = TRUE
+  )
+  records <- to_save_list %>% lapply(function(DF){DF[[project$redcap$id_col]]}) %>% unlist() %>% unique()
   subset_records <- project$summary$all_records[which(project$summary$all_records[[project$redcap$id_col]] %in% records), ]
   return(subset_records)
 }

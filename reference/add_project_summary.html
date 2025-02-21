@@ -82,7 +82,9 @@ additional forms, fields, and deidentification options.</p>
 <span>  annotate_metadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_record_summary <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_users <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  include_log <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  include_log <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  with_links <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  separate <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -180,6 +182,14 @@ will also be excluded from the <code>project</code>. Default is <code>FALSE</cod
 
 <dt id="arg-include-log">include_log<a class="anchor" aria-label="anchor" href="#arg-include-log"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, the log of changes will be included in the summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-with-links">with_links<a class="anchor" aria-label="anchor" href="#arg-with-links"></a></dt>
+<dd><p>Optional logical (TRUE/FALSE) for including links in Excel sheets. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-separate">separate<a class="anchor" aria-label="anchor" href="#arg-separate"></a></dt>
+<dd><p>Optional logical (TRUE/FALSE) separating each form into separate files as opposed to multi-tab Excel. Default is <code>FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

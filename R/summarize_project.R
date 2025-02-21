@@ -351,6 +351,8 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 #' @param include_log Logical. If `TRUE`, the log of changes will be included in the summary. Default is `TRUE`.
 #' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the function will avoid including duplicate columns in the output. Defaults to `FALSE`.
 #' @param reset Logical. If `TRUE`, overwrite existing subset files with the same name. Default is `FALSE`.
+#' @param with_links Optional logical (TRUE/FALSE) for including links in Excel sheets. Default is `FALSE`.
+#' @param separate Optional logical (TRUE/FALSE) separating each form into separate files as opposed to multi-tab Excel. Default is `FALSE`.
 #' @return
 #' A modified `project` object that includes the newly created subset.
 #' The subset is also saved as a file in the specified directory.
@@ -386,7 +388,10 @@ add_project_summary <- function(
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
     include_users = TRUE,
-    include_log = TRUE) {
+    include_log = TRUE,
+    with_links = TRUE,
+    separate = FALSE
+    ) {
   if (is.null(project$summary$subsets[[subset_name]]) || reset) {
     if(is.null(filter_list)){
       filter_list <- list(filter_choices)
@@ -413,7 +418,9 @@ add_project_summary <- function(
       include_record_summary = include_record_summary,
       include_users = include_users,
       include_log = include_log,
-      file_path = file.path(dir_other, paste0(file_name, ".xlsx"))
+      file_path = file.path(dir_other, paste0(file_name, ".xlsx")),
+      with_links = with_links,
+      separate = separate
     )
   }
   return(invisible(project))

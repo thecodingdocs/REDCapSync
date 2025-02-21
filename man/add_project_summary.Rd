@@ -26,7 +26,9 @@ add_project_summary(
   annotate_metadata = TRUE,
   include_record_summary = TRUE,
   include_users = TRUE,
-  include_log = TRUE
+  include_log = TRUE,
+  with_links = TRUE,
+  separate = FALSE
 )
 }
 \arguments{
@@ -77,6 +79,10 @@ will also be excluded from the \code{project}. Default is \code{FALSE}.}
 \item{include_users}{Logical. If \code{TRUE}, user-related information will be included in the summary. Default is \code{TRUE}.}
 
 \item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in the summary. Default is \code{TRUE}.}
+
+\item{with_links}{Optional logical (TRUE/FALSE) for including links in Excel sheets. Default is \code{FALSE}.}
+
+\item{separate}{Optional logical (TRUE/FALSE) separating each form into separate files as opposed to multi-tab Excel. Default is \code{FALSE}.}
 }
 \value{
 A modified \code{project} object that includes the newly created subset.

@@ -570,6 +570,11 @@ generate_summary <- function(
   # should be unique
   # filter_field_names %>% vec1_not_in_vec2(project$metadata$fields$field_name) # should be empty
   filter_form <- project%>% field_names_to_form_names(field_names = filter_field_names)
+  if(length(filter_field_names)==1){
+    if(filter_field_names ==project$redcap$id_col){
+      filter_form <- project$metadata$forms$form_name[1] # RISKY?
+    }
+  }
   # should be length 1
   if(length(filter_form)>1){
     stop("You can only filter_list by multiple columns part of one single reference form")

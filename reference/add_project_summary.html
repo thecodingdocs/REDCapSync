@@ -63,20 +63,17 @@ additional forms, fields, and deidentification options.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_project_summary</span><span class="op">(</span></span>
 <span>  <span class="va">project</span>,</span>
 <span>  <span class="va">subset_name</span>,</span>
-<span>  <span class="va">filter_field</span>,</span>
-<span>  <span class="va">filter_choices</span>,</span>
+<span>  transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  filter_field <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_choices <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  filter_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  filter_strict <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  dir_other <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">project</span><span class="op">$</span><span class="va">dir_path</span>, <span class="st">"output"</span><span class="op">)</span>,</span>
-<span>  file_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">project</span><span class="op">$</span><span class="va">short_name</span>, <span class="st">"_"</span>, <span class="va">subset_name</span><span class="op">)</span>,</span>
-<span>  form_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  field_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  form_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  no_duplicate_cols <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  deidentify <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  drop_free_text <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  no_duplicate_cols <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  reset <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  clean <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  drop_blanks <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_metadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  annotate_metadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -84,7 +81,11 @@ additional forms, fields, and deidentification options.</p>
 <span>  include_users <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_log <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  with_links <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  separate <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  separate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">use_csv</span>,</span>
+<span>  dir_other <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">project</span><span class="op">$</span><span class="va">dir_path</span>, <span class="st">"output"</span><span class="op">)</span>,</span>
+<span>  file_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">project</span><span class="op">$</span><span class="va">short_name</span>, <span class="st">"_"</span>, <span class="va">subset_name</span><span class="op">)</span>,</span>
+<span>  reset <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -99,6 +100,10 @@ settings. Generated using <a href="setup-load.html">load_project</a> or <a href=
 
 <dt id="arg-subset-name">subset_name<a class="anchor" aria-label="anchor" href="#arg-subset-name"></a></dt>
 <dd><p>Character. The name of the subset to create.</p></dd>
+
+
+<dt id="arg-transform">transform<a class="anchor" aria-label="anchor" href="#arg-transform"></a></dt>
+<dd><p>Logical. Whether to transform the data in the subset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-filter-field">filter_field<a class="anchor" aria-label="anchor" href="#arg-filter-field"></a></dt>
@@ -117,22 +122,16 @@ settings. Generated using <a href="setup-load.html">load_project</a> or <a href=
 <dd><p>Logical. If <code>TRUE</code>, all forms will be filtered by criteria. If <code>FALSE</code>, will convert original filter to id column and filter all other forms by that ID. Default is <code>TRUE</code>.</p></dd>
 
 
-<dt id="arg-dir-other">dir_other<a class="anchor" aria-label="anchor" href="#arg-dir-other"></a></dt>
-<dd><p>Character. The directory where the subset file will be saved.
-Default is the <code>output</code> folder within the database directory.</p></dd>
-
-
-<dt id="arg-file-name">file_name<a class="anchor" aria-label="anchor" href="#arg-file-name"></a></dt>
-<dd><p>Character. The base name of the file where the subset will be saved.
-Default is <code>&lt;project$short_name&gt;_&lt;subset_name&gt;</code>.</p></dd>
+<dt id="arg-field-names">field_names<a class="anchor" aria-label="anchor" href="#arg-field-names"></a></dt>
+<dd><p>Character vector. Names of specific fields to include in the subset. Default is <code>NULL</code>, which includes all fields.</p></dd>
 
 
 <dt id="arg-form-names">form_names<a class="anchor" aria-label="anchor" href="#arg-form-names"></a></dt>
 <dd><p>Character vector. Names of forms to include in the subset. Default is <code>NULL</code>, which includes all forms.</p></dd>
 
 
-<dt id="arg-field-names">field_names<a class="anchor" aria-label="anchor" href="#arg-field-names"></a></dt>
-<dd><p>Character vector. Names of specific fields to include in the subset. Default is <code>NULL</code>, which includes all fields.</p></dd>
+<dt id="arg-no-duplicate-cols">no_duplicate_cols<a class="anchor" aria-label="anchor" href="#arg-no-duplicate-cols"></a></dt>
+<dd><p>A logical flag (<code>TRUE</code> or <code>FALSE</code>). If <code>TRUE</code>, the function will avoid including duplicate columns in the output. Defaults to <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-deidentify">deidentify<a class="anchor" aria-label="anchor" href="#arg-deidentify"></a></dt>
@@ -144,20 +143,8 @@ Default is <code>&lt;project$short_name&gt;_&lt;subset_name&gt;</code>.</p></dd>
 will also be excluded from the <code>project</code>. Default is <code>FALSE</code>.</p></dd>
 
 
-<dt id="arg-no-duplicate-cols">no_duplicate_cols<a class="anchor" aria-label="anchor" href="#arg-no-duplicate-cols"></a></dt>
-<dd><p>A logical flag (<code>TRUE</code> or <code>FALSE</code>). If <code>TRUE</code>, the function will avoid including duplicate columns in the output. Defaults to <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-reset">reset<a class="anchor" aria-label="anchor" href="#arg-reset"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, overwrite existing subset files with the same name. Default is <code>FALSE</code>.</p></dd>
-
-
 <dt id="arg-clean">clean<a class="anchor" aria-label="anchor" href="#arg-clean"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, the data will be cleaned before summarizing. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-transform">transform<a class="anchor" aria-label="anchor" href="#arg-transform"></a></dt>
-<dd><p>Logical. Whether to transform the data in the subset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-drop-blanks">drop_blanks<a class="anchor" aria-label="anchor" href="#arg-drop-blanks"></a></dt>
@@ -190,6 +177,25 @@ will also be excluded from the <code>project</code>. Default is <code>FALSE</cod
 
 <dt id="arg-separate">separate<a class="anchor" aria-label="anchor" href="#arg-separate"></a></dt>
 <dd><p>Optional logical (TRUE/FALSE) separating each form into separate files as opposed to multi-tab Excel. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-use-csv">use_csv<a class="anchor" aria-label="anchor" href="#arg-use-csv"></a></dt>
+<dd><p>Logical (TRUE/FALSE). If TRUE, uses CSV files for data
+storage. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-dir-other">dir_other<a class="anchor" aria-label="anchor" href="#arg-dir-other"></a></dt>
+<dd><p>Character. The directory where the subset file will be saved.
+Default is the <code>output</code> folder within the database directory.</p></dd>
+
+
+<dt id="arg-file-name">file_name<a class="anchor" aria-label="anchor" href="#arg-file-name"></a></dt>
+<dd><p>Character. The base name of the file where the subset will be saved.
+Default is <code>&lt;project$short_name&gt;_&lt;subset_name&gt;</code>.</p></dd>
+
+
+<dt id="arg-reset">reset<a class="anchor" aria-label="anchor" href="#arg-reset"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, overwrite existing subset files with the same name. Default is <code>FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

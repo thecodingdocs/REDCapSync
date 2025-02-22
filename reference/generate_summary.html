@@ -70,8 +70,9 @@ containing only the records that match the filter criteria.</p>
 <span>  <span class="va">filter_choices</span>,</span>
 <span>  filter_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  filter_strict <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  form_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  field_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  form_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  no_duplicate_cols <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  deidentify <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  drop_free_text <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  clean <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -80,8 +81,7 @@ containing only the records that match the filter criteria.</p>
 <span>  annotate_metadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_record_summary <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_users <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  include_log <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  no_duplicate_cols <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  include_log <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -95,15 +95,15 @@ settings. Generated using <a href="setup-load.html">load_project</a> or <a href=
 
 
 <dt id="arg-transform">transform<a class="anchor" aria-label="anchor" href="#arg-transform"></a></dt>
-<dd><p>A logical flag (<code>TRUE</code> or <code>FALSE</code>). If <code>TRUE</code>, filter using transformation. Defaults to <code>FALSE</code>.</p></dd>
+<dd><p>Logical. Whether to transform the data in the subset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-filter-field">filter_field<a class="anchor" aria-label="anchor" href="#arg-filter-field"></a></dt>
-<dd><p>A character string representing an extra variable name to be filtered by. This field must be present in the data frame.</p></dd>
+<dd><p>Character. The name of the field in the database to filter on.</p></dd>
 
 
 <dt id="arg-filter-choices">filter_choices<a class="anchor" aria-label="anchor" href="#arg-filter-choices"></a></dt>
-<dd><p>A character vector of values to filter by for the <code>filter_field</code>. Only records with these values in the specified field will be included.</p></dd>
+<dd><p>Vector. The values of <code>filter_field</code> used to define the subset.</p></dd>
 
 
 <dt id="arg-filter-list">filter_list<a class="anchor" aria-label="anchor" href="#arg-filter-list"></a></dt>
@@ -114,12 +114,16 @@ settings. Generated using <a href="setup-load.html">load_project</a> or <a href=
 <dd><p>Logical. If <code>TRUE</code>, all forms will be filtered by criteria. If <code>FALSE</code>, will convert original filter to id column and filter all other forms by that ID. Default is <code>TRUE</code>.</p></dd>
 
 
-<dt id="arg-form-names">form_names<a class="anchor" aria-label="anchor" href="#arg-form-names"></a></dt>
-<dd><p>A character vector of form names to be included in the filtered data. If missing, all forms are included.</p></dd>
-
-
 <dt id="arg-field-names">field_names<a class="anchor" aria-label="anchor" href="#arg-field-names"></a></dt>
-<dd><p>A character vector of field names to be included in the filtered data. If missing, all fields are included.</p></dd>
+<dd><p>Character vector. Names of specific fields to include in the subset. Default is <code>NULL</code>, which includes all fields.</p></dd>
+
+
+<dt id="arg-form-names">form_names<a class="anchor" aria-label="anchor" href="#arg-form-names"></a></dt>
+<dd><p>Character vector. Names of forms to include in the subset. Default is <code>NULL</code>, which includes all forms.</p></dd>
+
+
+<dt id="arg-no-duplicate-cols">no_duplicate_cols<a class="anchor" aria-label="anchor" href="#arg-no-duplicate-cols"></a></dt>
+<dd><p>A logical flag (<code>TRUE</code> or <code>FALSE</code>). If <code>TRUE</code>, the function will avoid including duplicate columns in the output. Defaults to <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-deidentify">deidentify<a class="anchor" aria-label="anchor" href="#arg-deidentify"></a></dt>
@@ -157,10 +161,6 @@ will also be excluded from the <code>project</code>. Default is <code>FALSE</cod
 
 <dt id="arg-include-log">include_log<a class="anchor" aria-label="anchor" href="#arg-include-log"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, the log of changes will be included in the summary. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-no-duplicate-cols">no_duplicate_cols<a class="anchor" aria-label="anchor" href="#arg-no-duplicate-cols"></a></dt>
-<dd><p>A logical flag (<code>TRUE</code> or <code>FALSE</code>). If <code>TRUE</code>, the function will avoid including duplicate columns in the output. Defaults to <code>FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

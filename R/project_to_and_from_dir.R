@@ -158,15 +158,17 @@ drop_REDCap_to_directory <- function(
     #   project <- merge_non_repeating_project(project)
     # }
     to_save_list <- project[["data"]]
-    if (!missing(records)) to_save_list <- generate_summary(
-      project,
-      filter_field = project$redcap$id_col,
-      filter_choices = records,
-      include_log = FALSE,
-      include_metadata = FALSE,
-      include_record_summary = FALSE,
-      include_users = FALSE
-    ) %>% process_df_list()
+    if (!missing(records)) {
+      to_save_list <- generate_summary(
+        project,
+        filter_field = project$redcap$id_col,
+        filter_choices = records,
+        include_log = FALSE,
+        include_metadata = FALSE,
+        include_record_summary = FALSE,
+        include_users = FALSE
+      ) %>% process_df_list()
+    }
     link_col_list <- list()
     # if (with_links) {
     #   to_save_list <- to_save_list %>% lapply(function(DF) {

@@ -89,8 +89,8 @@ sync_project <- function(
   if (!reset) { # check log interim
     if (
       !is_something(project$internals$last_metadata_update) ||
-      !is_something(project$internals$last_data_update) ||
-      !is_something(project$internals$last_full_update)
+        !is_something(project$internals$last_data_update) ||
+        !is_something(project$internals$last_full_update)
     ) {
       reset <- TRUE
     } else {
@@ -156,20 +156,22 @@ sync_project <- function(
         #   log_begin_date <- (log$timestamp[1] %>% as.Date())-1
         #   #account for renames in log would have to get entire log again, should separate reset from going to get one new variable etc
         # } # need log check for what is missing
-        project$redcap$log <- log %>% dplyr::bind_rows(
-          project %>% get_REDCap_log(
-            log_begin_date = log_begin_date
+        project$redcap$log <- log %>%
+          dplyr::bind_rows(
+            project %>% get_REDCap_log(
+              log_begin_date = log_begin_date
+            ) %>%
+              unique() # should add - lubridate::days(2)
           ) %>%
-            unique() # should add - lubridate::days(2)
-        ) %>%
           sort_redcap_log()
       } else {
-        project$redcap$log <- log %>% dplyr::bind_rows(
-          project %>% get_REDCap_log(
-            log_begin_date = Sys.Date() - project$internals$days_of_log
+        project$redcap$log <- log %>%
+          dplyr::bind_rows(
+            project %>% get_REDCap_log(
+              log_begin_date = Sys.Date() - project$internals$days_of_log
+            ) %>%
+              unique()
           ) %>%
-            unique()
-        ) %>%
           sort_redcap_log()
       }
       # project <- annotate_fields(project)

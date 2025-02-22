@@ -16,7 +16,9 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 A list containing the generated summary based on the specified options. The list includes filtered and cleaned data, metadata, and other summary details.
 }
 \description{
-Generates a summary from a predefined subset of data within a REDCap project. The summary can be customized based on various options, such as cleaning the data, including metadata, and annotating metadata.
+Generates a summary from a predefined subset of data within a REDCap project.
+The summary can be customized based on various options, such as cleaning the
+data, including metadata, and annotating metadata.
 }
 \details{
 This function allows you to generate a summary of data from a specific subset of records within the REDCap project. The function provides flexible options for cleaning, annotating, and including metadata, as well as controlling whether to include record summaries, user information, and logs.

@@ -11,8 +11,9 @@ generate_summary(
   filter_choices,
   filter_list = NULL,
   filter_strict = TRUE,
-  form_names = NULL,
   field_names = NULL,
+  form_names = NULL,
+  no_duplicate_cols = FALSE,
   deidentify = TRUE,
   drop_free_text = FALSE,
   clean = TRUE,
@@ -21,27 +22,28 @@ generate_summary(
   annotate_metadata = TRUE,
   include_record_summary = TRUE,
   include_users = TRUE,
-  include_log = TRUE,
-  no_duplicate_cols = FALSE
+  include_log = TRUE
 )
 }
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{transform}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, filter using transformation. Defaults to \code{FALSE}.}
+\item{transform}{Logical. Whether to transform the data in the subset. Default is \code{TRUE}.}
 
-\item{filter_field}{A character string representing an extra variable name to be filtered by. This field must be present in the data frame.}
+\item{filter_field}{Character. The name of the field in the database to filter on.}
 
-\item{filter_choices}{A character vector of values to filter by for the \code{filter_field}. Only records with these values in the specified field will be included.}
+\item{filter_choices}{Vector. The values of \code{filter_field} used to define the subset.}
 
 \item{filter_list}{Vector. The values of \code{filter_field} used to define the subset.}
 
 \item{filter_strict}{Logical. If \code{TRUE}, all forms will be filtered by criteria. If \code{FALSE}, will convert original filter to id column and filter all other forms by that ID. Default is \code{TRUE}.}
 
-\item{form_names}{A character vector of form names to be included in the filtered data. If missing, all forms are included.}
+\item{field_names}{Character vector. Names of specific fields to include in the subset. Default is \code{NULL}, which includes all fields.}
 
-\item{field_names}{A character vector of field names to be included in the filtered data. If missing, all fields are included.}
+\item{form_names}{Character vector. Names of forms to include in the subset. Default is \code{NULL}, which includes all forms.}
+
+\item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the function will avoid including duplicate columns in the output. Defaults to \code{FALSE}.}
 
 \item{deidentify}{Logical. Whether to deidentify the data in the subset. Default is \code{TRUE}.}
 
@@ -61,8 +63,6 @@ will also be excluded from the \code{project}. Default is \code{FALSE}.}
 \item{include_users}{Logical. If \code{TRUE}, user-related information will be included in the summary. Default is \code{TRUE}.}
 
 \item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in the summary. Default is \code{TRUE}.}
-
-\item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the function will avoid including duplicate columns in the output. Defaults to \code{FALSE}.}
 }
 \value{
 A modified \code{project} object with filtered records and columns based on the provided criteria.

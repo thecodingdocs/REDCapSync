@@ -7,20 +7,17 @@
 add_project_summary(
   project,
   subset_name,
-  filter_field,
-  filter_choices,
+  transform = TRUE,
+  filter_field = NULL,
+  filter_choices = NULL,
   filter_list = NULL,
   filter_strict = TRUE,
-  dir_other = file.path(project$dir_path, "output"),
-  file_name = paste0(project$short_name, "_", subset_name),
-  form_names = NULL,
   field_names = NULL,
+  form_names = NULL,
+  no_duplicate_cols = FALSE,
   deidentify = TRUE,
   drop_free_text = FALSE,
-  no_duplicate_cols = FALSE,
-  reset = FALSE,
   clean = TRUE,
-  transform = TRUE,
   drop_blanks = TRUE,
   include_metadata = TRUE,
   annotate_metadata = TRUE,
@@ -28,7 +25,11 @@ add_project_summary(
   include_users = TRUE,
   include_log = TRUE,
   with_links = TRUE,
-  separate = FALSE
+  separate = FALSE,
+  use_csv,
+  dir_other = file.path(project$dir_path, "output"),
+  file_name = paste0(project$short_name, "_", subset_name),
+  reset = FALSE
 )
 }
 \arguments{
@@ -36,6 +37,8 @@ add_project_summary(
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{subset_name}{Character. The name of the subset to create.}
+
+\item{transform}{Logical. Whether to transform the data in the subset. Default is \code{TRUE}.}
 
 \item{filter_field}{Character. The name of the field in the database to filter on.}
 
@@ -45,28 +48,18 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{filter_strict}{Logical. If \code{TRUE}, all forms will be filtered by criteria. If \code{FALSE}, will convert original filter to id column and filter all other forms by that ID. Default is \code{TRUE}.}
 
-\item{dir_other}{Character. The directory where the subset file will be saved.
-Default is the \code{output} folder within the database directory.}
-
-\item{file_name}{Character. The base name of the file where the subset will be saved.
-Default is \verb{<project$short_name>_<subset_name>}.}
+\item{field_names}{Character vector. Names of specific fields to include in the subset. Default is \code{NULL}, which includes all fields.}
 
 \item{form_names}{Character vector. Names of forms to include in the subset. Default is \code{NULL}, which includes all forms.}
 
-\item{field_names}{Character vector. Names of specific fields to include in the subset. Default is \code{NULL}, which includes all fields.}
+\item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the function will avoid including duplicate columns in the output. Defaults to \code{FALSE}.}
 
 \item{deidentify}{Logical. Whether to deidentify the data in the subset. Default is \code{TRUE}.}
 
 \item{drop_free_text}{Logical. If \code{TRUE}, columns containing free text
 will also be excluded from the \code{project}. Default is \code{FALSE}.}
 
-\item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the function will avoid including duplicate columns in the output. Defaults to \code{FALSE}.}
-
-\item{reset}{Logical. If \code{TRUE}, overwrite existing subset files with the same name. Default is \code{FALSE}.}
-
 \item{clean}{Logical. If \code{TRUE}, the data will be cleaned before summarizing. Default is \code{TRUE}.}
-
-\item{transform}{Logical. Whether to transform the data in the subset. Default is \code{TRUE}.}
 
 \item{drop_blanks}{Logical. If \code{TRUE}, records with blank fields will be dropped. Default is \code{TRUE}.}
 
@@ -83,6 +76,17 @@ will also be excluded from the \code{project}. Default is \code{FALSE}.}
 \item{with_links}{Optional logical (TRUE/FALSE) for including links in Excel sheets. Default is \code{FALSE}.}
 
 \item{separate}{Optional logical (TRUE/FALSE) separating each form into separate files as opposed to multi-tab Excel. Default is \code{FALSE}.}
+
+\item{use_csv}{Logical (TRUE/FALSE). If TRUE, uses CSV files for data
+storage. Default is \code{FALSE}.}
+
+\item{dir_other}{Character. The directory where the subset file will be saved.
+Default is the \code{output} folder within the database directory.}
+
+\item{file_name}{Character. The base name of the file where the subset will be saved.
+Default is \verb{<project$short_name>_<subset_name>}.}
+
+\item{reset}{Logical. If \code{TRUE}, overwrite existing subset files with the same name. Default is \code{FALSE}.}
 }
 \value{
 A modified \code{project} object that includes the newly created subset.

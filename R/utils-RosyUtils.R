@@ -304,7 +304,7 @@ wl <- function(x) {
   length(which(x))
 }
 drop_nas <- function(x) {
-  if(length(x)==0){
+  if (length(x) == 0) {
     return(x)
   }
   x[!unlist(lapply(x, is.na))]

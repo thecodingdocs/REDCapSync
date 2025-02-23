@@ -202,7 +202,7 @@ drop_REDCap_to_directory <- function(
       )
     }
   }
-  return(invisible(project))
+  invisible(project)
 }
 merge_non_rep_project_transformation <- function(project) {
   assert_setup_project(project)
@@ -313,5 +313,5 @@ read_xl_to_project_for_upload <- function(project, file_path, drop_sheets = defa
     return(invisible(project))
   }
   project$data_updates <- data_list
-  return(invisible(project))
+  invisible(project)
 }

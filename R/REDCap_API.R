@@ -195,7 +195,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$links$redcap_records_dashboard <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/DataEntry/record_status_dashboard.php?pid=", project$redcap$project_id)
   project$links$redcap_API <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/API/project_api.php?pid=", project$redcap$project_id)
   project$links$redcap_API_playground <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/API/playground.php?pid=", project$redcap$project_id)
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 get_REDCap_files <- function(project, original_file_names = FALSE, overwrite = FALSE) {

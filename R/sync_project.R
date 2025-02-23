@@ -287,5 +287,5 @@ sync_project <- function(
       save_project_details(project)
     }
   }
-  return(invisible(project))
+  invisible(project)
 }

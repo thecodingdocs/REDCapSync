@@ -58,7 +58,7 @@ husk_of_form <- function(project, form_name, field_names) {
 all_project_to_char_cols <- function(project) {
   project$data <- project$data %>% all_character_cols_list()
   project$data_updates <- project$data_updates %>% all_character_cols_list()
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 add_redcap_links_to_form <- function(form, project) {

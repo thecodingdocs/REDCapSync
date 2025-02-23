@@ -14,7 +14,7 @@ upload_transform_to_project <- function(project) {
   } else {
     bullet_in_console("Nothing to upload!")
   }
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 extract_form_from_merged <- function(project, form_name) {
@@ -86,7 +86,7 @@ add_default_project_transformation <- function(project) {
     project = project,
     forms_transformation = default_project_transformation(project = project)
   )
-  return(invisible(project))
+  invisible(project)
 }
 #' @rdname default-transformations
 #' @export
@@ -168,7 +168,7 @@ add_default_project_fields <- function(project) {
       }
     )
   }
-  return(invisible(project))
+  invisible(project)
 }
 #' @rdname default-transformations
 #' @export
@@ -205,7 +205,7 @@ add_project_transformation <- function(project, forms_transformation, ask = TRUE
   }
   # add more checks
   project$transformation$forms <- forms_transformation
-  return(invisible(project))
+  invisible(project)
 }
 #' @title Add Field Transformation to the Database
 #' @description
@@ -307,7 +307,7 @@ add_project_field <- function(
   project$transformation$fields <- project$transformation$fields %>% dplyr::bind_rows(field_row)
   project$transformation$field_functions[[field_name]] <- data_func %>% clean_function()
   message("added '", field_name, "' column")
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 combine_original_transformed_fields <- function(project) {
@@ -397,7 +397,7 @@ run_fields_transformation <- function(project) {
     }
   }
   bullet_in_console(paste0("Added new fields to ", project$short_name, " `project$data`"), bullet_type = "v")
-  return(invisible(project))
+  invisible(project)
 }
 #' @title transform_project
 #' @description
@@ -580,7 +580,7 @@ transform_project <- function(project, reset = FALSE) {
     project$transformation$metadata$missing_codes <- project$metadata$missing_codes
     project$internals$last_data_transformation <- now_time()
   }
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 missing_form_names <- function(project) {

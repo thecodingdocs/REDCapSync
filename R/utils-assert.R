@@ -202,7 +202,7 @@ assert_blank_project <- function(
     }
     cli::cli_abort(message)
   }
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 assert_setup_project <- function(
@@ -290,7 +290,7 @@ assert_setup_project <- function(
     }
     cli::cli_abort(message)
   }
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 assert_collection <- function(collection) {

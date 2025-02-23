@@ -16,8 +16,7 @@
 #'
 #' @details
 #' This function modifies the `project` object to exclude specified identifiers
-#' or
-#' any columns flagged as identifiers in the metadata. Free-text fields can
+#' or any columns flagged as identifiers in the metadata. Free-text fields can
 #' also be optionally removed, ensuring the resulting dataset complies with
 #' deidentification standards.
 #'
@@ -82,7 +81,7 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
       }
     }
   }
-  return(invisible(project))
+  invisible(project)
 }
 #' @rdname Links
 #' @title Open Links to REDCap Pages
@@ -163,7 +162,7 @@ construct_key_col_list <- function(project) {
     df_col_list[[form]][which(df_col_list[[form]] %in% project$redcap$raw_structure_cols)]
   })
   names(key_cols_list) <- forms
-  return(key_cols_list)
+  key_cols_list
 }
 #' @noRd
 get_key_col_list <- function(project, transform = FALSE) {
@@ -181,10 +180,10 @@ get_key_col_list <- function(project, transform = FALSE) {
       out <- append(out, "redcap_repeat_instrument")
       out <- append(out, "redcap_repeat_instance")
     }
-    return(out)
+    out
   })
   names(out_list) <- forms$form_name
-  return(out_list)
+  out_list
 }
 #' @noRd
 raw_process_redcap <- function(raw, project, labelled) {
@@ -256,7 +255,7 @@ raw_process_redcap <- function(raw, project, labelled) {
       }
     }
   }
-  return(data_list)
+  data_list
 }
 #' @noRd
 sort_redcap_log <- function(log) {
@@ -373,8 +372,7 @@ clean_redcap_log <- function(log) {
   log$record_id <- NULL
   log$username[which(log$username == "[survey respondent]")] <- NA
   # add drop exports?
-  log <- sort_redcap_log(log)
-  return(log)
+sort_redcap_log(log)
 }
 #' @noRd
 internal_log_action_exports <- c(
@@ -544,11 +542,7 @@ missing_codes2 <- function(project) {
     if (!is_na) {
       return(project$redcap$project_info$missing_data_codes %>% split_choices())
     }
-    if (is_na) {
-      return(NA)
-    }
-  }
-  if (!included) {
     return(NA)
   }
+  NA
 }

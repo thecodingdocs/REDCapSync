@@ -98,7 +98,7 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
   if (any_updates) {
     project <- sync_project(project)
   }
-  return(invisible(project))
+  invisible(project)
 }
 #' @title Find the project_import and project differences
 #' @description
@@ -161,7 +161,7 @@ find_upload_diff <- function(project, view_old = FALSE, n_row_view = 20) {
   }
   message("No upload updates!")
   project$data_updates <- list()
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 check_field <- function(project, form, field_name, autofill_new = TRUE) {

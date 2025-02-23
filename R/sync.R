@@ -127,7 +127,7 @@ sync <- function(
     cli::cli_alert_success("{not_failed} REDCaps Synced!")
   }
   cli::cli_h1("Done!")
-  return(invisible())
+  invisible()
 }
 due_for_sync <- function(project_name) {
   now <- now_time()

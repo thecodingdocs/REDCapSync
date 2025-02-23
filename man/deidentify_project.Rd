@@ -28,8 +28,7 @@ by specifying custom identifiers.
 }
 \details{
 This function modifies the \code{project} object to exclude specified identifiers
-or
-any columns flagged as identifiers in the metadata. Free-text fields can
+or any columns flagged as identifiers in the metadata. Free-text fields can
 also be optionally removed, ensuring the resulting dataset complies with
 deidentification standards.
 }

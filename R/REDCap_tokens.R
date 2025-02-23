@@ -55,7 +55,7 @@ set_project_token <- function(project, ask = TRUE) {
     do.call(Sys.setenv, stats::setNames(list(token), token_name))
   }
   get_project_token(project, silent = FALSE)
-  return(invisible())
+  invisible()
 }
 #' @title View the REDCap API Token Stored in the Session
 #' @description
@@ -78,7 +78,7 @@ view_project_token <- function(project) {
   project <- assert_blank_project(project)
   token <- get_project_token(project, silent = FALSE)
   bullet_in_console(paste0("Never share your token: ", token), bullet_type = "!")
-  return(invisible())
+  invisible()
 }
 #' @title Test REDCap API Token linked to a project Object
 #' @description
@@ -147,7 +147,7 @@ test_project_token <- function(project, set_if_fails = TRUE, launch_browser = TR
   bullet_in_console("Connected to REDCap!", bullet_type = "v")
   project$redcap$version <- redcap_version
   project$internals$ever_connected <- TRUE
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 is_valid_REDCap_token <- function(token, silent = TRUE, is_a_test = FALSE) {

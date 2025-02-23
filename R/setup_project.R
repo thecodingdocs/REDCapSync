@@ -298,7 +298,7 @@ setup_project <- function(
   }
   project$internals$last_directory_save <- now_time()
   save_project_details(project)
-  return(invisible(project))
+  invisible(project)
 }
 get_expected_project_path <- function(project) {
   assert_setup_project(project)
@@ -355,7 +355,7 @@ load_project <- function(short_name) {
   )
   project$dir_path <- dir_path
   save_project_details(project)
-  return(invisible(project))
+  invisible(project)
 }
 compare_project_details <- function(from, to) {
   assert_project_details(from)
@@ -385,7 +385,7 @@ load_test_project <- function(short_name = "TEST_repeating", with_data = FALSE) 
     if (short_name == "TEST_multiarm") {
     }
   }
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 is_test_short_name <- function(short_name) {
@@ -440,7 +440,7 @@ save_project <- function(project, silent = FALSE) {
     bullet_type = "v",
     silent = silent
   )
-  return(invisible(project))
+  invisible(project)
 }
 #' @rdname save-deleteproject
 #' @export

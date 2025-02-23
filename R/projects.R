@@ -71,7 +71,7 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
   if (nrow(df) == 0) {
     return(character(0))
   }
-  return(df$file_path)
+  df$file_path
 }
 #' @noRd
 internal_blank_project_cols <- c(
@@ -112,7 +112,7 @@ internal_blank_project_cols <- c(
 )
 #' @noRd
 internal_blank_project_details <- function() {
-  x <- data.frame(
+  project_details <- data.frame(
     short_name = character(0),
     dir_path = character(0),
     sync_frequency = character(0),
@@ -148,7 +148,7 @@ internal_blank_project_details <- function() {
     batch_size_download = integer(0),
     batch_size_upload = integer(0)
   )
-  return(x)
+  project_details
 }
 #' @noRd
 save_projects_to_cache <- function(projects, silent = TRUE) {
@@ -180,7 +180,7 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
 }
 #' @noRd
 na_if_null <- function(x) {
-  return(ifelse(is.null(x), NA, x))
+  ifelse(is.null(x), NA, x)
 }
 #' @noRd
 extract_project_details <- function(project) {
@@ -255,7 +255,7 @@ extract_project_details <- function(project) {
     as.POSIXct(tz = Sys.timezone())
   project_details$R_object_size <- NA
   project_details$file_size <- NA
-  return(project_details)
+  project_details
 }
 #' @noRd
 add_project_details_to_cache <- function(project_details) {
@@ -345,7 +345,7 @@ add_project_details_to_project <- function(project, project_details) {
   #     )
   #   )
   # }
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 save_project_details <- function(project, silent = TRUE) {

@@ -23,7 +23,7 @@
 cache_path <- function() {
   cache <- get_cache()
   path <- sanitize_path(cache$cache_path_get())
-  return(path)
+  path
 }
 #' @title Clear your cached projects
 #' @description
@@ -48,28 +48,29 @@ cache_clear <- function() {
     file = cache$cache_path_get(),
     bullet_type = "v"
   )
+  invisible()
 }
 #' @noRd
 cache_exists <- function() {
   cache <- get_cache()
-  return(file.exists(cache$cache_path_get()))
+  file.exists(cache$cache_path_get())
 }
 #' @noRd
 cache_projects_exists <- function() {
   if (cache_exists()) {
-    cache_path() %>%
+    outcome <- cache_path() %>%
       file.path("projects.rds") %>%
-      file.exists() %>%
-      return()
+      file.exists()
   } else {
     bullet_in_console("Cache doesn't exist", bullet_type = "x")
-    return(FALSE)
+    outcome <- FALSE
   }
+  outcome
 }
 #' @noRd
 get_cache <- function() {
   cache <- hoardr::hoard()
   cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
   cache$mkdir()
-  return(cache)
+  cache
 }

@@ -44,7 +44,7 @@ clean_project <- function(project, drop_blanks = FALSE, other_drops = NULL) { # 
     other_drops = other_drops
   )
   project$internals$is_clean <- TRUE
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 fields_to_choices <- function(fields) {
@@ -229,7 +229,7 @@ reverse_clean_project <- function(project) { # problematic because setting numer
   project$data <- all_character_cols_list(project$data)
   project$data_updates <- project$data_updates %>% all_character_cols_list()
   project$internals$is_clean <- FALSE
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 clean_form_list <- function(form_list, fields, drop_blanks = TRUE, other_drops = NULL) {
@@ -463,7 +463,7 @@ add_project_summary <- function(
       last_save_time = NULL
     )
   }
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 save_REDCapSync_list <- function(
@@ -771,7 +771,7 @@ summarize_project <- function(
         project$summary$subsets[[subset_name]]$last_save_time <- now_time()
     }
   }
-  return(invisible(project))
+  invisible(project)
 }
 #' @title Run Quality Checks
 #' @inheritParams save_project
@@ -787,7 +787,7 @@ run_quality_checks <- function(project) {
       }
     }
   }
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 sum_records <- function(project) {
@@ -1269,7 +1269,7 @@ stripped_project <- function(project) {
   project$redcap$log <- list()
   project$data <- list()
   project$data_updates <- list()
-  return(invisible(project))
+  invisible(project)
 }
 #' @noRd
 field_names_metadata <- function(project, field_names, col_names) {

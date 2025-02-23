@@ -46,10 +46,10 @@ bullet_in_console <- function(text = "",
   for (i in seq_along(url_if)) text[i] <- paste0(text[i], url_if[i])
   for (i in seq_along(file_if)) text[i] <- paste0(text[i], file_if[i])
   names(text)[seq_along(text)] <- bullet_type
-  return(cli::cli_bullets(text))
+  cli::cli_bullets(text)
 }
 now_time <- function() {
-  return(as.POSIXct(Sys.time(), tz = Sys.timezone()))
+  as.POSIXct(Sys.time(), tz = Sys.timezone())
 }
 process_df_list <- function(list, drop_empty = TRUE, silent = FALSE) {
   if (is_something(list)) {
@@ -81,7 +81,7 @@ process_df_list <- function(list, drop_empty = TRUE, silent = FALSE) {
       }
     }
   }
-  return(list)
+  list
 }
 is_something <- function(thing, row = 0) {
   out <- FALSE
@@ -115,7 +115,7 @@ is_something <- function(thing, row = 0) {
       }
     }
   }
-  return(out)
+  out
 }
 sanitize_path <- function(path) {
   sanitized <- gsub("\\\\", "/", path)
@@ -309,7 +309,7 @@ find_df_list_diff <- function(new_list, old_list, ref_col_list, view_old = TRUE,
       n_row_view = n_row_view
     )
   }
-  return(new_list)
+  new_list
 }
 all_character_cols <- function(form) {
   as.data.frame(lapply(form, as.character))
@@ -346,7 +346,7 @@ excel_to_list <- function(path) {
     out[[i]] <- rio::import(path, col_types = "text", sheet = i)
   }
   names(out) <- clean_sheets
-  return(out)
+  out
 }
 csv_to_list <- function(paths) {
   paths <- sanitize_path(paths)
@@ -361,14 +361,14 @@ csv_to_list <- function(paths) {
                                       na.strings = c("", "NA"))
   }
   names(form_list) <- clean_names
-  return(form_list)
+  form_list
 }
 csv_folder_to_list <- function(folder) {
   folder <- sanitize_path(folder)
   if (!dir.exists(folder)) stop("Folder does not exist: ", folder)
   paths <- list_files_real(folder)
   paths <- paths[which(paths %>% endsWith(".csv"))]
-  return(csv_to_list(paths = paths))
+  csv_to_list(paths = paths)
 }
 is_named_df_list <- function(x, strict = FALSE) {
   is_named_list(x) && is_df_list(x, strict = strict)
@@ -390,7 +390,7 @@ is_named_list <- function(x, silent = TRUE, recursive = FALSE) {
       }
     }
   }
-  return(named_all) # Return the result
+  named_all
 }
 wb_to_list <- function(wb) {
   # wb <- openxlsx::loadWorkbook(file = path)
@@ -413,7 +413,7 @@ wb_to_list <- function(wb) {
     out[[i]] <- openxlsx::read.xlsx(wb, sheet = i, startRow = col_row)
   }
   names(out) <- clean_sheets
-  return(out)
+  out
 }
 form_to_wb <- function(
     form,
@@ -619,7 +619,7 @@ list_to_wb <- function(
       key_cols = key_cols
     )
   }
-  return(wb)
+  wb
 }
 unique_trimmed_strings <- function(strings, max_length) {
   trim_string <- function(s, max_length) {

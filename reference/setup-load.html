@@ -152,7 +152,8 @@ Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-days-of-log">days_of_log<a class="anchor" aria-label="anchor" href="#arg-days-of-log"></a></dt>
-<dd><p>Integer. Number of days to be checked in the log if a reset
+<dd><p>Integer. Number of days to be checked in the log if a
+reset
 or new project is setup. Default is <code>10</code>.</p></dd>
 
 
@@ -198,7 +199,8 @@ object with data included.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function sets up the <code>project</code> object by storing the REDCap API token and
+    <p>This function sets up the <code>project</code> object by storing the REDCap API token
+and
 other configurations required for interacting with the REDCap server.
 It ensures that the token is valid and ready for use in subsequent API calls.
 Neither function directly attempts communication with REDCap.</p>
@@ -207,7 +209,8 @@ Mainly, it sets your unique <code>short_name</code> and your intended directory.
 Unless you run <code>reset = TRUE</code> the default will first try load_project.
 dir_path is technically optional but without it the user cannot
 save/load/update projects.</p>
-<p><code>load_project</code> can be used with just the <code>short_name</code> parameter after you have
+<p><code>load_project</code> can be used with just the <code>short_name</code> parameter after you
+have
 already run <code>setup_project</code> in the past with an established directory.
 <code>dir_path</code>
 is optional for this function but can be used if you relocated the directory.</p>

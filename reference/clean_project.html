@@ -71,7 +71,8 @@ of missing values and optional removal of certain codes based on user input.</p>
 
 
 <dl><dt id="arg-project">project<a class="anchor" aria-label="anchor" href="#arg-project"></a></dt>
-<dd><p>A validated <code>project</code> object containing REDCap project data and
+<dd><p>A validated <code>project</code> object containing REDCap project data
+and
 settings. Generated using <a href="setup-load.html">load_project</a> or <a href="setup-load.html">setup_project</a></p></dd>
 
 
@@ -94,14 +95,14 @@ data. Defaults to NULL.</p></dd>
     <p>The function works by cleaning up the data frame list (<code>project$data</code>)
 according to the metadata (<code>project$metadata$fields</code>). It converts choice
 fields into factors, numeric fields are treated appropriately, and any
-unwanted or missing codes can be dropped based on the parameters provided. The
-function also ensures that the data is only cleaned once by checking the
+unwanted or missing codes can be dropped based on the parameters provided.
+The function also ensures that the data is only cleaned once by checking the
 internal <code>is_clean</code> flag.</p>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
-    <p>The function will not proceed with cleaning if <code>project$internals$is_clean</code> is
-already TRUE, signaling that the project has already been cleaned.</p>
+    <p>The function will not proceed with cleaning if <code>project$internals$is_clean</code>
+is already TRUE, signaling that the project has already been cleaned.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

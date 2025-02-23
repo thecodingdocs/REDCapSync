@@ -90,18 +90,20 @@ containing only the records that match the filter criteria.</p>
 
 
 <dl><dt id="arg-project">project<a class="anchor" aria-label="anchor" href="#arg-project"></a></dt>
-<dd><p>A validated <code>project</code> object containing REDCap project data and
+<dd><p>A validated <code>project</code> object containing REDCap project data
+and
 settings. Generated using <a href="setup-load.html">load_project</a> or <a href="setup-load.html">setup_project</a></p></dd>
 
 
 <dt id="arg-transform">transform<a class="anchor" aria-label="anchor" href="#arg-transform"></a></dt>
-<dd><p>Logical. Whether to transform the data in the subset. Default
+<dd><p>Logical. Whether to transform the data in the subset.
+Default
 is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-filter-field">filter_field<a class="anchor" aria-label="anchor" href="#arg-filter-field"></a></dt>
-<dd><p>Character. The name of the field in the database to filter
-on.</p></dd>
+<dd><p>Character. The name of the field in the database to
+filter on.</p></dd>
 
 
 <dt id="arg-filter-choices">filter_choices<a class="anchor" aria-label="anchor" href="#arg-filter-choices"></a></dt>
@@ -116,8 +118,8 @@ subset.</p></dd>
 
 <dt id="arg-filter-strict">filter_strict<a class="anchor" aria-label="anchor" href="#arg-filter-strict"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, all forms will be filtered by
-criteria. If <code>FALSE</code>, will convert original filter to id column and filter all
-other forms by that ID. Default is <code>TRUE</code>.</p></dd>
+criteria. If <code>FALSE</code>, will convert original filter to id column and filter
+all other forms by that ID. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-field-names">field_names<a class="anchor" aria-label="anchor" href="#arg-field-names"></a></dt>
@@ -162,8 +164,8 @@ summary. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-annotate-metadata">annotate_metadata<a class="anchor" aria-label="anchor" href="#arg-annotate-metadata"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, metadata will be annotated in the
-summary. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, metadata will be annotated in
+the summary. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-include-record-summary">include_record_summary<a class="anchor" aria-label="anchor" href="#arg-include-record-summary"></a></dt>
@@ -191,10 +193,8 @@ on the provided criteria.</p>
     <p>This function filters the data in the <code>project</code> object according to the
 specified form and field names and optional filter criteria. If no field
 names or form names are provided, it defaults to using all fields and forms
-in the
-database.
-The function uses the helper <code>filter_form_list</code> to apply the filtering logic
-to the <code>project$data</code> list.</p>
+in the database. The function uses the helper <code>filter_form_list</code> to apply the
+filtering logic to the <code>project$data</code> list.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -70,9 +70,9 @@
 
 
 <dl><dt id="arg-project">project<a class="anchor" aria-label="anchor" href="#arg-project"></a></dt>
-<dd><p>A validated <code>project</code> object containing REDCap project data and
-settings. Generated using <code>project &lt;- <a href="setup-load.html">load_project</a>("PROJ")</code> or
-<a href="setup-load.html">setup_project</a>()</p></dd>
+<dd><p>A validated <code>project</code> object containing REDCap project data
+and settings. Generated using <code>project &lt;- <a href="setup-load.html">load_project</a>("PROJ")</code>
+or <a href="setup-load.html">setup_project</a>()</p></dd>
 
 
 <dt id="arg-record">record<a class="anchor" aria-label="anchor" href="#arg-record"></a></dt>
@@ -102,7 +102,7 @@ settings. Generated using <code>project &lt;- <a href="setup-load.html">load_pro
     <p>Uses <code><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">utils::browseURL()</a></code> to open the specified REDCap page.
 In order for the function to work you must have ran
 <code>project &lt;- sync_project(project)</code> successfully at least once.
-If the link brings you to a page that doesn't work check the url. It's
+If the link brings you to a page that doesn't work check the URL. It's
 possible your institution may have changed redcap versions, which is part of
 the URL. In that case run <code>project &lt;- sync_project(project)</code> again.
 You may have to be signed into REDCap for it to work properly.

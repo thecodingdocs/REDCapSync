@@ -95,39 +95,50 @@ settings. Generated using <a href="setup-load.html">load_project</a> or <a href=
 
 
 <dt id="arg-transform">transform<a class="anchor" aria-label="anchor" href="#arg-transform"></a></dt>
-<dd><p>Logical. Whether to transform the data in the subset. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. Whether to transform the data in the subset. Default
+is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-filter-field">filter_field<a class="anchor" aria-label="anchor" href="#arg-filter-field"></a></dt>
-<dd><p>Character. The name of the field in the database to filter on.</p></dd>
+<dd><p>Character. The name of the field in the database to filter
+on.</p></dd>
 
 
 <dt id="arg-filter-choices">filter_choices<a class="anchor" aria-label="anchor" href="#arg-filter-choices"></a></dt>
-<dd><p>Vector. The values of <code>filter_field</code> used to define the subset.</p></dd>
+<dd><p>Vector. The values of <code>filter_field</code> used to define the
+subset.</p></dd>
 
 
 <dt id="arg-filter-list">filter_list<a class="anchor" aria-label="anchor" href="#arg-filter-list"></a></dt>
-<dd><p>Vector. The values of <code>filter_field</code> used to define the subset.</p></dd>
+<dd><p>Vector. The values of <code>filter_field</code> used to define the
+subset.</p></dd>
 
 
 <dt id="arg-filter-strict">filter_strict<a class="anchor" aria-label="anchor" href="#arg-filter-strict"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, all forms will be filtered by criteria. If <code>FALSE</code>, will convert original filter to id column and filter all other forms by that ID. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, all forms will be filtered by
+criteria. If <code>FALSE</code>, will convert original filter to id column and filter all
+other forms by that ID. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-field-names">field_names<a class="anchor" aria-label="anchor" href="#arg-field-names"></a></dt>
-<dd><p>Character vector. Names of specific fields to include in the subset. Default is <code>NULL</code>, which includes all fields.</p></dd>
+<dd><p>Character vector. Names of specific fields to include in
+the subset. Default is <code>NULL</code>, which includes all fields.</p></dd>
 
 
 <dt id="arg-form-names">form_names<a class="anchor" aria-label="anchor" href="#arg-form-names"></a></dt>
-<dd><p>Character vector. Names of forms to include in the subset. Default is <code>NULL</code>, which includes all forms.</p></dd>
+<dd><p>Character vector. Names of forms to include in the subset.
+Default is <code>NULL</code>, which includes all forms.</p></dd>
 
 
 <dt id="arg-no-duplicate-cols">no_duplicate_cols<a class="anchor" aria-label="anchor" href="#arg-no-duplicate-cols"></a></dt>
-<dd><p>A logical flag (<code>TRUE</code> or <code>FALSE</code>). If <code>TRUE</code>, the function will avoid including duplicate columns in the output. Defaults to <code>FALSE</code>.</p></dd>
+<dd><p>A logical flag (<code>TRUE</code> or <code>FALSE</code>). If <code>TRUE</code>, the
+function will avoid including duplicate columns in the output. Defaults to
+<code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-deidentify">deidentify<a class="anchor" aria-label="anchor" href="#arg-deidentify"></a></dt>
-<dd><p>Logical. Whether to deidentify the data in the subset. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. Whether to deidentify the data in the subset.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-drop-free-text">drop_free_text<a class="anchor" aria-label="anchor" href="#arg-drop-free-text"></a></dt>
@@ -136,41 +147,53 @@ will also be excluded from the <code>project</code>. Default is <code>FALSE</cod
 
 
 <dt id="arg-clean">clean<a class="anchor" aria-label="anchor" href="#arg-clean"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, the data will be cleaned before summarizing. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, the data will be cleaned before summarizing.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-drop-blanks">drop_blanks<a class="anchor" aria-label="anchor" href="#arg-drop-blanks"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, records with blank fields will be dropped. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, records with blank fields will be
+dropped. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-include-metadata">include_metadata<a class="anchor" aria-label="anchor" href="#arg-include-metadata"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, metadata will be included in the summary. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, metadata will be included in the
+summary. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-annotate-metadata">annotate_metadata<a class="anchor" aria-label="anchor" href="#arg-annotate-metadata"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, metadata will be annotated in the summary. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, metadata will be annotated in the
+summary. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-include-record-summary">include_record_summary<a class="anchor" aria-label="anchor" href="#arg-include-record-summary"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, a record summary will be included in the generated summary. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, a record summary will be
+included in the generated summary. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-include-users">include_users<a class="anchor" aria-label="anchor" href="#arg-include-users"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, user-related information will be included in the summary. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, user-related information will be
+included in the summary. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-include-log">include_log<a class="anchor" aria-label="anchor" href="#arg-include-log"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, the log of changes will be included in the summary. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, the log of changes will be included in
+the summary. Default is <code>TRUE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A modified <code>project</code> object with filtered records and columns based on the provided criteria.</p>
+    <p>A modified <code>project</code> object with filtered records and columns based on
+the provided criteria.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function filters the data in the <code>project</code> object according to the specified form and field names and optional filter criteria. If no field names or form names are provided, it defaults to using all fields and forms in the database.
-The function uses the helper <code>filter_DF_list</code> to apply the filtering logic to the <code>project$data</code> list.</p>
+    <p>This function filters the data in the <code>project</code> object according to the
+specified form and field names and optional filter criteria. If no field names
+or form names are provided, it defaults to using all fields and forms in the
+database.
+The function uses the helper <code>filter_DF_list</code> to apply the filtering logic to
+the <code>project$data</code> list.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

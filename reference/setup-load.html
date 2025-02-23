@@ -92,7 +92,8 @@ the unique short name for the REDCap project.</p></dd>
 
 <dt id="arg-dir-path">dir_path<a class="anchor" aria-label="anchor" href="#arg-dir-path"></a></dt>
 <dd><p>Optional character string representing the directory path
-where you want the REDCap project data to be stored. If missing, project object
+where you want the REDCap project data to be stored. If missing, project
+object
 will only be in current R session.</p></dd>
 
 
@@ -114,7 +115,8 @@ Default is <code>daily</code></p></dd>
 
 
 <dt id="arg-reset">reset<a class="anchor" aria-label="anchor" href="#arg-reset"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, forces the setup even if the <code>project</code>
+<dd><p>Logical (TRUE/FALSE). If TRUE, forces the setup even if the
+<code>project</code>
 object already exists. Default is <code>FALSE</code>.</p></dd>
 
 
@@ -160,7 +162,8 @@ Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-get-file-repository">get_file_repository<a class="anchor" aria-label="anchor" href="#arg-get-file-repository"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, retrieves file repository
+<dd><p>Logical (TRUE/FALSE). If TRUE, retrieves file
+repository
 from REDCap.
 Default is <code>FALSE</code>.</p></dd>
 
@@ -205,7 +208,8 @@ Unless you run <code>reset = TRUE</code> the default will first try load_project
 dir_path is technically optional but without it the user cannot
 save/load/update projects.</p>
 <p><code>load_project</code> can be used with just the <code>short_name</code> parameter after you have
-already run <code>setup_project</code> in the past with an established directory. <code>dir_path</code>
+already run <code>setup_project</code> in the past with an established directory.
+<code>dir_path</code>
 is optional for this function but can be used if you relocated the directory.</p>
     </div>
     <div class="section level2">

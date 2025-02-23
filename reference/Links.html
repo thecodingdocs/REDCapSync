@@ -70,15 +70,19 @@
 
 
 <dl><dt id="arg-project">project<a class="anchor" aria-label="anchor" href="#arg-project"></a></dt>
-<dd><p>A validated <code>project</code> object containing REDCap project data and settings. Generated using <code>project &lt;- <a href="setup-load.html">load_project</a>("PROJ")</code> or <a href="setup-load.html">setup_project</a>()</p></dd>
+<dd><p>A validated <code>project</code> object containing REDCap project data and
+settings. Generated using <code>project &lt;- <a href="setup-load.html">load_project</a>("PROJ")</code> or
+<a href="setup-load.html">setup_project</a>()</p></dd>
 
 
 <dt id="arg-record">record<a class="anchor" aria-label="anchor" href="#arg-record"></a></dt>
-<dd><p>REDCap record id or study id etc, any column names that match <code>project$redcap$id_col</code></p></dd>
+<dd><p>REDCap record id or study id etc, any column names that match
+<code>project$redcap$id_col</code></p></dd>
 
 
 <dt id="arg-page">page<a class="anchor" aria-label="anchor" href="#arg-page"></a></dt>
-<dd><p>REDCap page for the record. Must be one of <code>project$metadata$forms$form_name</code></p></dd>
+<dd><p>REDCap page for the record. Must be one of
+<code>project$metadata$forms$form_name</code></p></dd>
 
 
 <dt id="arg-instance">instance<a class="anchor" aria-label="anchor" href="#arg-instance"></a></dt>
@@ -96,10 +100,14 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Uses <code><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">utils::browseURL()</a></code> to open the specified REDCap page.
-In order for the function to work you must have ran <code>project &lt;- sync_project(project)</code> successfully at least once.
-If the link brings you to a page that doesn't work check the url. It's possible your institution may have changed redcap versions, which is part of the URL. In that case run <code>project &lt;- sync_project(project)</code> again.
+In order for the function to work you must have ran
+<code>project &lt;- sync_project(project)</code> successfully at least once.
+If the link brings you to a page that doesn't work check the url. It's
+possible your institution may have changed redcap versions, which is part of
+the URL. In that case run <code>project &lt;- sync_project(project)</code> again.
 You may have to be signed into REDCap for it to work properly.
-When in doubt, just seek out the page by navigating on your own in REDCap. Report issues if you can.</p>
+When in doubt, just seek out the page by navigating on your own in REDCap.
+Report issues if you can.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

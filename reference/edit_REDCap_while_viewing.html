@@ -62,7 +62,7 @@ viewing and updating records individually, with flexible field selection.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">edit_REDCap_while_viewing</span><span class="op">(</span></span>
 <span>  <span class="va">project</span>,</span>
-<span>  <span class="va">optional_DF</span>,</span>
+<span>  <span class="va">optional_form</span>,</span>
 <span>  <span class="va">records</span>,</span>
 <span>  <span class="va">field_name_to_change</span>,</span>
 <span>  field_names_to_view <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -79,7 +79,7 @@ viewing and updating records individually, with flexible field selection.</p>
 settings. Generated using <a href="setup-load.html">load_project</a> or <a href="setup-load.html">setup_project</a></p></dd>
 
 
-<dt id="arg-optional-df">optional_DF<a class="anchor" aria-label="anchor" href="#arg-optional-df"></a></dt>
+<dt id="arg-optional-form">optional_form<a class="anchor" aria-label="anchor" href="#arg-optional-form"></a></dt>
 <dd><p>Optional data frame. A data frame containing the data to be
 edited. If not provided, the function will pull the data from the REDCap
 database using the specified <code>field_name_to_change</code>.</p></dd>
@@ -116,7 +116,7 @@ REDCap project.</p>
     <p>This function is useful when you want to edit specific fields in a REDCap
 project while also reviewing related data from other forms in the project. The
 <code>field_name_to_change</code> must be provided, and you can also specify additional
-fields to view while editing. The data is either passed through <code>optional_DF</code>
+fields to view while editing. The data is either passed through <code>optional_form</code>
 or pulled from the project based on the provided field names.</p>
     </div>
     <div class="section level2">

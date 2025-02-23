@@ -116,7 +116,7 @@ sanitize_path <- function(path) {
   sanitized <- normalizePath(sanitized, winslash = "/", mustWork = FALSE)
   return(sanitized)
 }
-find_df_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
+find_form_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
   new <- all_character_cols(new)
   old <- all_character_cols(old)
   if (!all(colnames(new) %in% colnames(old))) {
@@ -175,15 +175,15 @@ find_df_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
       unique() %>%
       sort()
     cols <- which(colnames(new) %in% ref_cols) %>% append(indices$col %>% unique() %>% sort())
-    OUT <- new[rows, cols]
-    message(message_pass, nrow(OUT), " rows have updates")
+    out_form <- new[rows, cols]
+    message(message_pass, nrow(out_form), " rows have updates")
   } else {
-    OUT <- NULL
+    out_form <- NULL
     message(message_pass, "No changes!")
   }
-  OUT
+  out_form
 }
-find_df_diff2 <- function(new, old, ref_cols = NULL, message_pass = "", view_old = TRUE, n_row_view = 20) {
+find_form_diff2 <- function(new, old, ref_cols = NULL, message_pass = "", view_old = TRUE, n_row_view = 20) {
   new <- all_character_cols(new)
   old <- all_character_cols(old)
   if (!all(colnames(new) %in% colnames(old))) {
@@ -278,7 +278,7 @@ find_df_list_diff <- function(new_list, old_list, ref_col_list, view_old = TRUE,
     names(ref_col_list) <- names(new_list)
   }
   for (df_name in names(new_list)) {
-    new_list[[df_name]] <- find_df_diff2(new = new_list[[df_name]], old = old_list[[df_name]], ref_cols = ref_col_list[[df_name]], message_pass = paste0(df_name, ": "), view_old = view_old, n_row_view = n_row_view)
+    new_list[[df_name]] <- find_form_diff2(new = new_list[[df_name]], old = old_list[[df_name]], ref_cols = ref_col_list[[df_name]], message_pass = paste0(df_name, ": "), view_old = view_old, n_row_view = n_row_view)
   }
   return(new_list)
 }
@@ -321,16 +321,16 @@ excel_to_list <- function(path) {
 }
 csv_to_list <- function(paths) {
   paths <- sanitize_path(paths)
-  OUT <- list()
+  form_list <- list()
   clean_names <- paths %>%
     basename() %>%
     tools::file_path_sans_ext() %>%
     clean_env_names()
   for (i in seq_along(paths)) {
-    OUT[[i]] <- utils::read.csv(paths[i], stringsAsFactors = FALSE, na.strings = c("", "NA"))
+    form_list[[i]] <- utils::read.csv(paths[i], stringsAsFactors = FALSE, na.strings = c("", "NA"))
   }
-  names(OUT) <- clean_names
-  return(OUT)
+  names(form_list) <- clean_names
+  return(form_list)
 }
 csv_folder_to_list <- function(folder) {
   folder <- sanitize_path(folder)
@@ -700,14 +700,11 @@ default_header_style <-
     fontSize = 14,
     fontColour = "black",
     border = "TopBottomLeftRight",
-    # borderColour = "black"
   )
 default_body_style <-
   openxlsx::createStyle(
     halign = "left",
     valign = "center",
-    # border = "Bottom",
-    # fontColour = "black",
     fontSize = 12
   )
 dw <- function(x) {
@@ -892,27 +889,27 @@ clean_num <- function(num) {
   formatC(num, format = "d", big.mark = ",")
 }
 is_date <- function(date) {
-  OUT <- grepl("^\\d{4}-\\d{2}-\\d{2}$|^\\d{4}-\\d{2}$|^\\d{4}$", date)
-  if (OUT) {
-    OUT2 <- date %>%
+  out <- grepl("^\\d{4}-\\d{2}-\\d{2}$|^\\d{4}-\\d{2}$|^\\d{4}$", date)
+  if (out) {
+    out2 <- date %>%
       strsplit(split = "-") %>%
       unlist()
-    year <- OUT2[[1]]
+    year <- out2[[1]]
     check_date <- year
-    if (length(OUT2) == 1) {
+    if (length(out2) == 1) {
       check_date <- check_date %>% paste0("-01")
-      OUT2[[2]] <- "01"
+      out2[[2]] <- "01"
     }
-    if (length(OUT2) == 2) {
+    if (length(out2) == 2) {
       check_date <- check_date %>% paste0("-01")
-      OUT2[[3]] <- "01"
+      out2[[3]] <- "01"
     }
     year <- year %>% as.integer()
-    month <- OUT2[[2]] %>% as.integer()
-    day <- OUT2[[3]] %>% as.integer()
-    OUT <- month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= lubridate::year(Sys.Date())
+    month <- out2[[2]] %>% as.integer()
+    day <- out2[[3]] %>% as.integer()
+    out <- month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= lubridate::year(Sys.Date())
   }
-  OUT
+  return(out)
 }
 is_date_full <- function(date) {
   grepl("^\\d{4}-\\d{2}-\\d{2}$", date)
@@ -936,10 +933,8 @@ date_imputation <- function(dates_in, date_imputation) {
         lapply(function(date) {
           admiral::impute_dtc_dt(
             date,
-            highest_imputation = "M", # "n" for normal date
+            highest_imputation = "M",
             date_imputation = date_imputation
-            # min_dates = min_dates %>% lubridate::ymd() %>% as.list(),
-            # max_dates = max_dates %>% lubridate::ymd() %>% as.list()
           )
         }) %>%
         unlist()

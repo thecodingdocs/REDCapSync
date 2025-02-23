@@ -252,16 +252,16 @@ add_default_project_fields <- function(project) {
       field_label = paste(form_label, "Compound Key"),
       data_func = function(project, field_name, form_name) {
         cols <- project$metadata$form_key_cols[[form_name]]
-        OUT <- NULL
+        form <- NULL
         while (length(cols) > 0) {
-          if (is.null(OUT)) {
-            OUT <- project$data[[form_name]][[cols[1]]]
+          if (is.null(form)) {
+            form <- project$data[[form_name]][[cols[1]]]
           } else {
-            OUT <- OUT %>% paste0("_", project$data[[form_name]][[cols[1]]])
+            form <- form %>% paste0("_", project$data[[form_name]][[cols[1]]])
           }
           cols <- cols[-1]
         }
-        return(OUT)
+        return(form)
       }
     )
   }
@@ -456,23 +456,23 @@ run_fields_transformation <- function(project) {
   # fields_to_update <- NULL
   field_names <- c(the_names_existing, the_names_new)
   for (field_name in field_names) {
-    OUT <- NA
+    field <- NA
     row_of_interest <- project$transformation$fields[which(project$transformation$fields$field_name == field_name), ]
     form_name <- row_of_interest$form_name
     field_func <- project$transformation$field_functions[[field_name]]
     environment(field_func) <- environment()
     if (is_something(field_func)) {
       if (form_name %in% names(project$data)) {
-        OUT <- field_func(project = project, field_name = field_name, form_name = form_name)
+        field <- field_func(project = project, field_name = field_name, form_name = form_name)
       }
     }
     if (field_name %in% the_names_existing) {
       OLD <- project$data[[form_name]][[field_name]]
-      if (!identical(OUT, OLD)) {
+      if (!identical(field, OLD)) {
         ref_cols <- project$metadata$form_key_cols[[form_name]]
         new <- old <- project$data[[form_name]][, c(ref_cols, field_name)]
-        new[[field_name]] <- OUT
-        form <- find_df_diff2(
+        new[[field_name]] <- field
+        form <- find_form_diff2(
           new = new,
           old = old,
           ref_cols = ref_cols,
@@ -485,7 +485,7 @@ run_fields_transformation <- function(project) {
       }
     }
     if (form_name %in% names(project$data)) {
-      project$transformation$data[[form_name]][[field_name]] <- OUT
+      project$transformation$data[[form_name]][[field_name]] <- field
     }
   }
   bullet_in_console(paste0("Added new fields to ", project$short_name, " `project$data`"), bullet_type = "v")
@@ -534,7 +534,7 @@ transform_project <- function(project, reset = FALSE) {
     project$transformation$data <- project$data
     project <- run_fields_transformation(project)
     named_df_list <- project$transformation$data
-    OUT <- NULL
+    form_list <- NULL
     for (i in (seq_len(nrow(forms_transformation)))) {
       form_name <- forms_transformation$form_name[i]
       ref <- named_df_list[[form_name]]
@@ -552,11 +552,11 @@ transform_project <- function(project, reset = FALSE) {
             unlist()
           if (length(z$by.x) != length(z$by.y)) stop("by.x and by.y must be same length... [", z$form_name, "] (", z$by.x %>% as_comma_string(), ") AND (", z$by.y %>% as_comma_string(), ")")
           if (form_name == z$merge_to) {
-            OUT[[z$form_name_remap]] <- ref
+            form_list[[z$form_name_remap]] <- ref
           } else {
             mer <- named_df_list[[z$merge_to]]
-            if (z$merge_to %in% names(OUT)) {
-              mer <- OUT[[z$merge_to]]
+            if (z$merge_to %in% names(form_list)) {
+              mer <- form_list[[z$merge_to]]
             }
             ref_names <- names(ref)
             mer_names <- names(mer)
@@ -615,14 +615,14 @@ transform_project <- function(project, reset = FALSE) {
             }
             a <- a[, match(all_names, names(a))]
             rownames(a) <- NULL
-            OUT[[z$form_name_remap]] <- a
+            form_list[[z$form_name_remap]] <- a
           }
         }
       }
     }
-    if (any(!names(OUT) %in% unique(forms_transformation$form_name_remap))) stop("not all names in OUT objext. Something wrong with transform_project()")
-    if (is_something(OUT)) {
-      project$transformation$data <- OUT
+    if (any(!names(form_list) %in% unique(forms_transformation$form_name_remap))) stop("not all names in form_list objext. Something wrong with transform_project()")
+    if (is_something(form_list)) {
+      project$transformation$data <- form_list
     }
     # forms_transformation <- annotate_forms(project,summarize_data = FALSE)
     if (!is.null(project$metadata$form_key_cols)) {

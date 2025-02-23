@@ -55,14 +55,12 @@ fields_to_choices <- function(fields) {
   for (i in seq_len(nrow(fields))) {
     field_name <- fields$field_name[i]
     form_name <- fields$form_name[i]
-    # form_label <- fields$form_label[i]
     field_label <- fields$field_label[i]
     field_type <- fields$field_type[i]
     selections <- fields$select_choices_or_calculations[i] %>% split_choices()
     choices <- choices %>% dplyr::bind_rows(
       data.frame(
         form_name = form_name,
-        # form_label = form_label,
         field_name = field_name,
         field_type = field_type,
         field_label = ifelse(!is.na(field_label), field_label, field_name),
@@ -72,7 +70,6 @@ fields_to_choices <- function(fields) {
     )
   }
   choices$label <- paste(choices$form_name, "-", choices$field_label, "-", choices$name)
-  # choices$label2 <- paste(choices$form_label,"-",choices$field_label,"-",choices$name)
   rownames(choices) <- NULL
   return(choices)
 }
@@ -508,7 +505,6 @@ save_REDCapSync_list <- function(
       separate = separate,
       link_col_list = link_col_list,
       file_name = file_name,
-      # str_trunc_length = 10000,
       header_df_list = to_save_list %>%
         construct_header_list(fields = project$metadata$fields) %>%
         process_df_list(silent = TRUE),
@@ -775,7 +771,7 @@ summarize_project <- function(
         separate = subset_list$separate,
         with_links = subset_list$with_links
       )
-      project$summary$subsets[[subset_name]]$subset_records <- # get_records(project = project, subset_name = subset_name)
+      project$summary$subsets[[subset_name]]$subset_records <-
         project$summary$subsets[[subset_name]]$last_save_time <- now_time()
     }
   }
@@ -1050,16 +1046,16 @@ labelled_to_raw_form <- function(data_form, project) {
       z <- fields$select_choices_or_calculations[i] %>% split_choices()
       data_form[[field_name]] <- data_form[[field_name]] %>%
         lapply(function(x) {
-          OUT <- NA
+          form <- NA
           if (!is.na(x)) {
             coded_redcap <- which(z$name == x)
             if (length(coded_redcap) > 0) {
-              OUT <- z$code[coded_redcap]
+              form <- z$code[coded_redcap]
             } else {
               if (use_missing_codes) {
                 coded_redcap2 <- which(project$metadata$missing_codes$name == x)
                 if (length(coded_redcap2) > 0) {
-                  OUT <- project$metadata$missing_codes$code[coded_redcap2]
+                  form <- project$metadata$missing_codes$code[coded_redcap2]
                 } else {
                   stop("Mismatch in choices compared to REDCap (above)! Column: ", field_name, ", Choice: ", x)
                 }
@@ -1068,7 +1064,7 @@ labelled_to_raw_form <- function(data_form, project) {
               }
             }
           }
-          OUT
+          form
         }) %>%
         unlist() %>%
         as.character()
@@ -1076,14 +1072,14 @@ labelled_to_raw_form <- function(data_form, project) {
       if (use_missing_codes) {
         data_form[[field_name]] <- data_form[[field_name]] %>%
           lapply(function(x) {
-            OUT <- x
+            form <- x
             if (!is.na(x)) {
               D <- which(project$metadata$missing_codes$name == x)
               if (length(D) > 0) {
-                OUT <- project$metadata$missing_codes$code[D]
+                form <- project$metadata$missing_codes$code[D]
               }
             }
-            OUT
+            form
           }) %>%
           unlist() %>%
           as.character()
@@ -1108,16 +1104,16 @@ raw_to_labelled_form <- function(data_form, project) {
         z <- metadata$select_choices_or_calculations[i] %>% split_choices()
         data_form[[field_name]] <- data_form[[field_name]] %>%
           lapply(function(x) {
-            OUT <- NA
+            form <- NA
             if (!is.na(x)) {
               coded_redcap <- which(z$code == x)
               if (length(coded_redcap) > 0) {
-                OUT <- z$name[coded_redcap]
+                form <- z$name[coded_redcap]
               } else {
                 if (use_missing_codes) {
                   coded_redcap2 <- which(project$metadata$missing_codes$code == x)
                   if (length(coded_redcap2) > 0) {
-                    OUT <- project$metadata$missing_codes$name[coded_redcap2]
+                    form <- project$metadata$missing_codes$name[coded_redcap2]
                   } else {
                     warning("Mismatch in choices compared to REDCap (above)! Column: ", field_name, ", Choice: ", x, ". Also not a missing code.")
                   }
@@ -1126,7 +1122,7 @@ raw_to_labelled_form <- function(data_form, project) {
                 }
               }
             }
-            OUT
+            form
           }) %>%
           unlist() %>%
           as.character()
@@ -1135,14 +1131,14 @@ raw_to_labelled_form <- function(data_form, project) {
           z <- project$metadata$missing_codes
           data_form[[field_name]] <- data_form[[field_name]] %>%
             lapply(function(x) {
-              OUT <- x
+              form <- x
               if (!is.na(x)) {
                 D <- which(z$code == x)
                 if (length(D) > 0) {
-                  OUT <- z$name[D]
+                  form <- z$name[D]
                 }
               }
-              OUT
+              form
             }) %>%
             unlist() %>%
             as.character()
@@ -1354,12 +1350,12 @@ check_project_for_IDs <- function(project, required_percent_filled = 0.7) {
       IN_length <- form %>% nrow()
       cols <- colnames(form)[form %>%
                              lapply(function(IN) {
-                               OUT <- FALSE
+                               form <- FALSE
                                x <- IN %>% drop_nas()
                                if ((length(x) / IN_length) > required_percent_filled) {
-                                 OUT <- anyDuplicated(x) == 0
+                                 form <- anyDuplicated(x) == 0
                                }
-                               return(OUT)
+                               return(form)
                              }) %>%
                              unlist() %>%
                              which()]

@@ -145,7 +145,7 @@ find_upload_diff <- function(project, view_old = FALSE, n_row_view = 20) {
       message("Dropping field_names that aren't part of REDCap metadata: ", paste0(drop, collapse = ", "))
       old <- old[, which(!colnames(old) %in% drop)]
     }
-    old_list[[form_name]] <- old # find_df_diff2(new= new , old =  old, ref_cols = ref_cols, message_pass = paste0(form_name,": "))
+    old_list[[form_name]] <- old # find_form_diff2(new= new , old =  old, ref_cols = ref_cols, message_pass = paste0(form_name,": "))
     already_used <- already_used %>%
       append(form_names) %>%
       unique()
@@ -193,7 +193,7 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
     }
     # add event?
   }
-  z <- new %>% find_df_diff2(old, ref_cols = cols_mandatory_structure)
+  z <- new %>% find_form_diff2(old, ref_cols = cols_mandatory_structure)
   if (!is.null(z)) {
     i_of_old_name_change <- which(!colnames(old) %in% cols_mandatory_structure)
     colnames(old)[i_of_old_name_change] <- paste0(colnames(old)[i_of_old_name_change], "_old")
@@ -303,7 +303,7 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
       choices2 <- c("Do Nothing", "Manual Entry", "Launch Redcap Link Only")
     }
     is_repeating_form <- change_form %in% project$metadata$forms$form_name[which(project$metadata$forms$repeating)]
-    OUT <- NULL
+    form <- NULL
     for (record in records) { # record <- records%>% sample(1)
       record_was_updated <- FALSE
       VIEW <- optional_form[which(optional_form[[project$redcap$id_col]] == record), ]
@@ -348,36 +348,36 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
           message("Old answer (", field_name_to_change, "): ", CHANGE[j, field_name_to_change])
           choice2 <- utils::menu(choices2, title = paste0("What would you like to do?"))
           choice <- choices2[choice2]
-          OUT_sub <- CHANGE[j, ]
+          form_sub <- CHANGE[j, ]
           if (choice %in% c("Manual Entry", "Do Nothing", "Launch Redcap Link Only")) {
             if (choice == "Do Nothing") {
               message("Did not change anything")
             }
             if (choice == "Manual Entry") {
-              OUT_sub[[field_name_to_change]] <- readline("What would you like it to be? ")
+              form_sub[[field_name_to_change]] <- readline("What would you like it to be? ")
               if (upload_individually) {
-                OUT_sub %>%
+                form_sub %>%
                   labelled_to_raw_form(project) %>%
                   upload_form_to_REDCap(project)
-                message("Uploaded: ", OUT_sub %>% paste0(collapse = " | "))
+                message("Uploaded: ", form_sub %>% paste0(collapse = " | "))
                 record_was_updated <- TRUE
               } else {
-                OUT <- OUT %>% dplyr::bind_rows(OUT_sub)
+                form <- form %>% dplyr::bind_rows(form_sub)
               }
             }
             if (choice == "Launch Redcap Link Only") { # account for repeat? instance
               project %>% link_REDCap_record(record = record, page = change_form, instance = CHANGE[j, "redcap_repeat_instance"])
             }
           } else {
-            OUT_sub[[field_name_to_change]] <- choice
+            form_sub[[field_name_to_change]] <- choice
             if (upload_individually) {
-              OUT_sub %>%
+              form_sub %>%
                 labelled_to_raw_form(project) %>%
                 upload_form_to_REDCap(project)
-              message("Uploaded: ", OUT_sub %>% paste0(collapse = " | "))
+              message("Uploaded: ", form_sub %>% paste0(collapse = " | "))
               record_was_updated <- TRUE
             } else {
-              OUT <- OUT %>% dplyr::bind_rows(OUT_sub)
+              form <- form %>% dplyr::bind_rows(form_sub)
             }
           }
         }
@@ -392,12 +392,12 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
           while (choice3 == 2) {
             choice3 <- utils::menu(c("No", "Yes"), title = paste0("Would you like to add an additional instance?"))
             if (choice3 == 2) {
-              OUT_sub <- data.frame(
+              form_sub <- data.frame(
                 record_id = record,
                 redcap_repeat_instrument = change_form,
                 redcap_repeat_instance = as.character(the_max + 1)
               )
-              colnames(OUT_sub)[1] <- project$redcap$id_col
+              colnames(form_sub)[1] <- project$redcap$id_col
               choice2 <- utils::menu(choices2, title = paste0("What would you like to do?"))
               choice <- choices2[choice2]
               if (choice %in% c("Manual Entry", "Do Nothing", "Launch Redcap Link Only")) {
@@ -405,15 +405,15 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
                   message("Did not change anything")
                 }
                 if (choice == "Manual Entry") {
-                  OUT_sub[[field_name_to_change]] <- readline("What would you like it to be? ")
+                  form_sub[[field_name_to_change]] <- readline("What would you like it to be? ")
                   if (upload_individually) {
-                    OUT_sub %>%
+                    form_sub %>%
                       labelled_to_raw_form(project) %>%
                       upload_form_to_REDCap(project)
-                    message("Uploaded: ", OUT_sub %>% paste0(collapse = " | "))
+                    message("Uploaded: ", form_sub %>% paste0(collapse = " | "))
                     record_was_updated <- TRUE
                   } else {
-                    OUT <- OUT %>% dplyr::bind_rows(OUT_sub)
+                    form <- form %>% dplyr::bind_rows(form_sub)
                   }
                   the_max <- the_max + 1
                 }
@@ -421,15 +421,15 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
                   project %>% link_REDCap_record(record = record, page = change_form, instance = CHANGE[j, "redcap_repeat_instance"])
                 }
               } else {
-                OUT_sub[[field_name_to_change]] <- choice
+                form_sub[[field_name_to_change]] <- choice
                 if (upload_individually) {
-                  OUT_sub %>%
+                  form_sub %>%
                     labelled_to_raw_form(project) %>%
                     upload_form_to_REDCap(project)
-                  message("Uploaded: ", OUT_sub %>% paste0(collapse = " | "))
+                  message("Uploaded: ", form_sub %>% paste0(collapse = " | "))
                   record_was_updated <- TRUE
                 } else {
-                  OUT <- OUT %>% dplyr::bind_rows(OUT_sub)
+                  form <- form %>% dplyr::bind_rows(form_sub)
                 }
                 the_max <- the_max + 1
               }
@@ -441,7 +441,7 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
     if (record_was_updated) project <- sync_project(project)
   }
   if (!upload_individually) {
-    OUT %>%
+    form %>%
       labelled_to_raw_form(project) %>%
       upload_form_to_REDCap(project)
   }

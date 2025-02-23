@@ -143,11 +143,7 @@ drop_REDCap_to_directory <- function(
           }
         }
       }
-      for (x in c(
-        "project_info",
-        # "log",
-        "users"
-      )) { # ,"log" #taking too long
+      for (x in c("project_info","users")) { # ,"log" #taking too long
         if (project$internals$use_csv) {
           list_to_csv(
             list = project$redcap[x],
@@ -198,13 +194,10 @@ drop_REDCap_to_directory <- function(
         link_col_list = link_col_list,
         file_name = file_name,
         separate = separate,
-        # header_df_list = to_save_list %>% construct_header_list(metadata = project$metadata$fields),
-        # key_cols_list = construct_key_col_list(project,data_choice = "data"),
         str_trunc_length = str_trunc_length,
         overwrite = TRUE
       )
     }
-    # if(merge_non_repeating) project <- unmerge_non_repeating_project(project)
   }
   return(invisible(project))
 }

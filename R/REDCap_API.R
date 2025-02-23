@@ -87,7 +87,6 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
         field_name = paste0(field_name, "___", x$code),
         form_name = project$metadata$fields$form_name[which(project$metadata$fields$field_name == field_name)],
         field_label = x$name,
-        # field_label_full=paste0(project$metadata$fields$field_label[which(project$metadata$fields$field_name==field_name)]," - ",x$name),
         field_type = "checkbox_choice",
         select_choices_or_calculations = c("0, Unchecked | 1, Checked")
       )
@@ -285,8 +284,6 @@ get_REDCap_raw_data <- function(
   raw <- REDCapR::redcap_read(
     redcap_uri = project$links$redcap_uri,
     token = get_project_token(project),
-    # forms = forms,
-    # events = events,
     batch_size = batch_size,
     interbatch_delay = 0.1,
     records = records,

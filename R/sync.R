@@ -29,7 +29,6 @@ sync <- function(
     "REDCapSync",
     padding = 1,
     background_col = "brown"
-    # float = "center"
   )
   sweep_dirs_for_cache() # will overwrite new settings?
   # interactive TRUE FALSE
@@ -88,7 +87,6 @@ sync <- function(
                 set_token_if_fails = use_console,
                 save_to_dir = TRUE,
                 reset = hard_reset
-                # other params
               )
             })
           },
@@ -297,42 +295,42 @@ project_health_check <- function() {
   # if(nrow(projects)>0){
   #   # DROPS<- projects[which(is.na(projects$project_id)),]
   #   for(i in seq_len(nrow(projects_old))){#i <- seq_len(nrow(projects))%>%  sample1()
-  #     OUT <- NULL
-  #     OUT <- projects_old[i,]
-  #     if(file.exists(OUT$dir_path)){
-  #       OUT$test_dir <- TRUE
+  #     form <- NULL
+  #     form <- projects_old[i,]
+  #     if(file.exists(form$dir_path)){
+  #       form$test_dir <- TRUE
   #       project <- tryCatch({
-  #         load_project(OUT$dir_path)
+  #         load_project(form$dir_path)
   #       },error = function(e) {NULL})
-  #       OUT$test_project <- !is.null(project)
-  #       if(!OUT$test_project){
+  #       form$test_project <- !is.null(project)
+  #       if(!form$test_project){
   #         project <- tryCatch({
   #           setup_project(
-  #             short_name = OUT$short_name,
-  #             dir_path = OUT$dir_path,
-  #             token_name = OUT$token_name,
+  #             short_name = form$short_name,
+  #             dir_path = form$dir_path,
+  #             token_name = form$token_name,
   #             redcap_base = "https://redcap.miami.edu/",
   #             reset = TRUE,
   #             merge_form_name = "merged"
   #           )
   #         },error = function(e) {NULL})
-  #         OUT$test_project <- !is.null(project)
+  #         form$test_project <- !is.null(project)
   #       }
-  #       if(OUT$test_project){
-  #         OUT$test_RC <- redcap_token_works(project)
-  #         if(OUT$test_RC){
+  #       if(form$test_project){
+  #         form$test_RC <- redcap_token_works(project)
+  #         if(form$test_RC){
   #           if(update)project <- sync_project(project)
   #         }
   #       }
-  #       if(OUT$test_project){
-  #         OUT_project <- extract_project_details(project = project)
-  #         OUT_project$test_dir <- OUT$test_dir
-  #         OUT_project$test_project <- OUT$test_project
-  #         OUT_project$test_RC <- OUT$test_RC
-  #         OUT <- OUT_project
+  #       if(form$test_project){
+  #         form_project <- extract_project_details(project = project)
+  #         form_project$test_dir <- form$test_dir
+  #         form_project$test_project <- form$test_project
+  #         form_project$test_RC <- form$test_RC
+  #         form <- form_project
   #       }
-  #       projects <- projects[which(projects$short_name!=OUT$short_name),]
-  #       projects <- projects %>% dplyr::bind_rows(OUT)
+  #       projects <- projects[which(projects$short_name!=form$short_name),]
+  #       projects <- projects %>% dplyr::bind_rows(form)
   #     }
   #   }
   #   save_projects_to_cache(projects,silent = FALSE)

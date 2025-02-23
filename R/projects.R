@@ -109,17 +109,12 @@ internal_blank_project_cols <- c(
   "get_type",
   "batch_size_download",
   "batch_size_upload"
-  # "test_dir"
-  # "test_project",
-  # "test_RC"
 )
 #' @noRd
 internal_blank_project_details <- function() {
   x <- data.frame(
-    # core -----
     short_name = character(0),
     dir_path = character(0),
-    # settings -----
     sync_frequency = character(0),
     last_sync = character(0) %>% as.POSIXct(tz = Sys.timezone()),
     timezone = character(0),
@@ -153,9 +148,6 @@ internal_blank_project_details <- function() {
     batch_size_download = integer(0),
     batch_size_upload = integer(0)
   )
-  # assert_names(
-  #   internal_blank_project_cols
-  # )
   return(x)
 }
 #' @noRd

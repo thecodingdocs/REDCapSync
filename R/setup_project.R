@@ -498,7 +498,7 @@ internal_blank_project_new <- list(
     has_repeating_events = NULL,
     project_type = "redcap"
   ),
-  metadata = list( # model
+  metadata = list(
     forms = NULL,
     fields = NULL,
     choices = NULL,
@@ -508,7 +508,7 @@ internal_blank_project_new <- list(
     event_mapping = NULL,
     missing_codes = NULL
   ),
-  data = NULL, # model
+  data = NULL,
   data_updates = NULL,
   quality_checks = NULL,
   transformation = list(
@@ -592,7 +592,7 @@ internal_blank_project <- list(
     has_repeating_forms = NULL,
     has_repeating_events = NULL
   ),
-  metadata = list( # model
+  metadata = list(
     forms = NULL,
     fields = NULL,
     choices = NULL,
@@ -602,7 +602,7 @@ internal_blank_project <- list(
     event_mapping = NULL,
     missing_codes = NULL
   ),
-  data = NULL, # model
+  data = NULL,
   data_updates = NULL,
   quality_checks = NULL,
   transformation = list(

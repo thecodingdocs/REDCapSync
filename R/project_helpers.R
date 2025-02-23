@@ -77,9 +77,8 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
       bullet_in_console(paste0("Deidentified ", project$short_name), bullet_type = "v")
     }
     for (form_name in names(drop_list)) {
-      for (DROP in drop_list[[form_name]]) {
-        project$data[[form_name]][[DROP]] <- NULL
-        # message("Dropped '",DROP,"' from '",data_choice,"' --> '", form_name,"'")
+      for (field_name in drop_list[[form_name]]) {
+        project$data[[form_name]][[field_name]] <- NULL
       }
     }
   }
@@ -189,12 +188,8 @@ get_key_col_list <- function(project, transform = FALSE) {
 }
 #' @noRd
 raw_process_redcap <- function(raw, project, labelled) {
-  # key_cols <-project$redcap$raw_structure_cols
-  # key_cols <- key_cols[which(!key_cols%in%c("arm_number","event_name"))]
-  # paste0(raw[[project$redcap$id_col]],"_",raw$redcap_event_name,"_",raw$redcap_repeat_instrument,"_",raw$redcap_repeat_instance)
   forms <- project$metadata$forms
   fields <- project$metadata$fields
-  # arms <- project$metadata$arms
   events <- project$metadata$events
   event_mapping <- project$metadata$event_mapping
   data_list <- list()
@@ -228,7 +223,6 @@ raw_process_redcap <- function(raw, project, labelled) {
       }
       if (length(form_field_names) > 0) {
         add_ons_x <- add_ons
-        # form_name <-  forms$form_name %>% sample(1)
         is_repeating_form <- form_name %in% forms$form_name[which(forms$repeating)]
         is_longitudinal <- project$redcap$is_longitudinal
         rows <- seq_len(nrow(raw))
@@ -290,9 +284,6 @@ clean_redcap_log <- function(log) {
       A[[1]]
     }) %>%
     unlist()
-  # record_rows2 <- not_design_rows[which(!is.na(log$record[not_design_rows]))]
-  # record_rows %>% vec1_not_in_vec2(record_rows2)
-  # log$record[record_rows2 %>% vec1_not_in_vec2(record_rows)]# users
   log$action_type[
     not_design_rows[
       dplyr::starts_with(
@@ -317,9 +308,6 @@ clean_redcap_log <- function(log) {
       )
     ]
   ] <- "No Changes"
-  # x <- log[not_design_rows,]
-  # x <- x[which(is.na(x$action_type)),]
-  # x$action %>% table() %>% sort(decreasing = T)
   # design details  -------------------
   comment_rows <- design_rows[
     dplyr::starts_with(

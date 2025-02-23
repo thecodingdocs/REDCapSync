@@ -193,7 +193,7 @@ na_if_null <- function(x) {
 #' @noRd
 extract_project_details <- function(project) {
   assert_setup_project(project)
-  OUT <- matrix(
+  project_details <- matrix(
     data = NA,
     ncol = length(internal_blank_project_cols),
     nrow = 1,
@@ -203,54 +203,67 @@ extract_project_details <- function(project) {
     )
   ) %>% as.data.frame()
   # top -----
-  OUT$short_name <- project$short_name
-  OUT$dir_path <- project$dir_path %>% na_if_null()
+  project_details$short_name <- project$short_name
+  project_details$dir_path <- project$dir_path %>% na_if_null()
   # settings -------
-  OUT$sync_frequency <- project$internals$sync_frequency
-  OUT$days_of_log <- project$internals$days_of_log %>% as.integer()
-  OUT$get_files <- project$internals$get_files
-  OUT$get_file_repository <- project$internals$get_file_repository
-  OUT$original_file_names <- project$internals$original_file_names
-  OUT$entire_log <- project$internals$entire_log
-  OUT$metadata_only <- project$internals$metadata_only
-  OUT$use_csv <- project$internals$use_csv
-  OUT$get_type <- project$internals$get_type
-  OUT$labelled <- project$internals$labelled
-  OUT$merge_form_name <- project$internals$merge_form_name
-  OUT$batch_size_download <- project$internals$batch_size_download %>% as.integer()
-  OUT$batch_size_upload <- project$internals$batch_size_upload %>% as.integer()
+  project_details$sync_frequency <- project$internals$sync_frequency
+  project_details$days_of_log <- project$internals$days_of_log %>% as.integer()
+  project_details$get_files <- project$internals$get_files
+  project_details$get_file_repository <- project$internals$get_file_repository
+  project_details$original_file_names <- project$internals$original_file_names
+  project_details$entire_log <- project$internals$entire_log
+  project_details$metadata_only <- project$internals$metadata_only
+  project_details$use_csv <- project$internals$use_csv
+  project_details$get_type <- project$internals$get_type
+  project_details$labelled <- project$internals$labelled
+  project_details$merge_form_name <- project$internals$merge_form_name
+  project_details$batch_size_download <-
+    project$internals$batch_size_download %>%
+    as.integer()
+  project_details$batch_size_upload <-
+    project$internals$batch_size_upload %>%
+    as.integer()
   # redcap --------
-  OUT$version <- project$redcap$version %>% na_if_null()
-  OUT$token_name <- project$redcap$token_name %>% na_if_null()
-  OUT$project_id <- project$redcap$project_id %>% na_if_null()
-  OUT$project_title <- project$redcap$project_title %>% na_if_null()
-  OUT$id_col <- project$redcap$id_col %>% na_if_null()
-  OUT$is_longitudinal <- project$redcap$is_longitudinal %>% na_if_null()
-  OUT$has_repeating_forms_or_events <- project$redcap$has_repeating_forms_or_events %>% na_if_null()
-  OUT$has_multiple_arms <- project$redcap$has_multiple_arms %>% na_if_null()
-  OUT$n_records <- length(project$summary$all_records[[project$redcap$id_col]]) %>%
+  project_details$version <- project$redcap$version %>% na_if_null()
+  project_details$token_name <- project$redcap$token_name %>% na_if_null()
+  project_details$project_id <- project$redcap$project_id %>% na_if_null()
+  project_details$project_title <- project$redcap$project_title %>% na_if_null()
+  project_details$id_col <- project$redcap$id_col %>% na_if_null()
+  project_details$is_longitudinal <- project$redcap$is_longitudinal %>%
+    na_if_null()
+  project_details$has_repeating_forms_or_events <-
+    project$redcap$has_repeating_forms_or_events %>%
+    na_if_null()
+  project_details$has_multiple_arms <-
+    project$redcap$has_multiple_arms %>% na_if_null()
+  project_details$n_records <-
+    length(project$summary$all_records[[project$redcap$id_col]]) %>%
     na_if_null() %>%
     as.integer()
-  OUT$redcap_base <- project$links$redcap_base %>% na_if_null()
-  OUT$redcap_home <- project$links$redcap_home %>% na_if_null()
-  OUT$redcap_API_playground <- project$links$redcap_API_playground %>% na_if_null()
+  project_details$redcap_base <- project$links$redcap_base %>% na_if_null()
+  project_details$redcap_home <- project$links$redcap_home %>% na_if_null()
+  project_details$redcap_API_playground <-
+    project$links$redcap_API_playground %>%
+    na_if_null()
   # saving ----
-  OUT$timezone <- project$internals$timezone %>% na_if_null()
-  OUT$last_sync <- project$internals$last_sync %>%
+  project_details$timezone <- project$internals$timezone %>% na_if_null()
+  project_details$last_sync <- project$internals$last_sync %>%
     na_if_null() %>%
     as.POSIXct(tz = Sys.timezone())
-  OUT$last_directory_save <- project$internals$last_directory_save %>%
+  project_details$last_directory_save <-
+    project$internals$last_directory_save %>%
     na_if_null() %>%
     as.POSIXct(tz = Sys.timezone())
-  OUT$last_metadata_update <- project$internals$last_metadata_update %>%
+  project_details$last_metadata_update <-
+    project$internals$last_metadata_update %>%
     na_if_null() %>%
     as.POSIXct(tz = Sys.timezone())
-  OUT$last_data_update <- project$internals$last_data_update %>%
+  project_details$last_data_update <- project$internals$last_data_update %>%
     na_if_null() %>%
     as.POSIXct(tz = Sys.timezone())
-  OUT$R_object_size <- NA
-  OUT$file_size <- NA
-  return(OUT)
+  project_details$R_object_size <- NA
+  project_details$file_size <- NA
+  return(project_details)
 }
 #' @noRd
 add_project_details_to_cache <- function(project_details) {

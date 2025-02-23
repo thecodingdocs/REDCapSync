@@ -189,7 +189,7 @@ add_default_project_transformation <- function(project) {
 #' @export
 default_project_transformation <- function(project) {
   assert_setup_project(project)
-  forms_transformation <- merge_non_repeating_project_transformation(project)
+  forms_transformation <- merge_non_rep_project_transformation(project)
   forms_transformation$merge_to <- project$internals$merge_form_name
   forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to %>%
     lapply(function(form_name) {

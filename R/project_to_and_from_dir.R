@@ -208,7 +208,7 @@ drop_REDCap_to_directory <- function(
   }
   return(invisible(project))
 }
-merge_non_repeating_project_transformation <- function(project) {
+merge_non_rep_project_transformation <- function(project) {
   assert_setup_project(project)
   forms_transformation <- project$metadata$forms
   if ("repeating_via_events" %in% colnames(forms_transformation)) {
@@ -242,7 +242,6 @@ merge_non_repeating_project_transformation <- function(project) {
 read_from_REDCap_upload <- function(project, allow_all = TRUE, drop_nonredcap_vars = TRUE, drop_non_form_vars = TRUE, stop_or_warn = "warn") {
   project <- assert_blank_project(project)
   root_dir <- get_dir(project)
-  # output_dir <- file.path(root_dir, "output")
   redcap_dir <- file.path(root_dir, "REDCap", project$short_name)
   redcap_upload_dir <- file.path(redcap_dir, "upload")
   if (!file.exists(redcap_upload_dir)) stop("Did you forget to run `setup_project()`? No upload folder --> ", redcap_upload_dir)

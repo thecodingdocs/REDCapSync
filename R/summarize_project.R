@@ -1,18 +1,29 @@
 #' @title Clean project columns for plotting using the metadata
 #' @description
-#' This function cleans the columns of a `project` object, transforming choice fields into factors and ensuring numeric columns are set correctly for table processing or plotting (e.g., using `table1`). It handles the transformation of missing values and optional removal of certain codes based on user input.
+#' This function cleans the columns of a `project` object, transforming choice
+#' fields into factors and ensuring numeric columns are set correctly for table
+#' processing or plotting (e.g., using `table1`). It handles the transformation
+#' of missing values and optional removal of certain codes based on user input.
 #'
 #' @inheritParams save_project
-#' @param drop_blanks Logical. If TRUE, will drop choice fields with zero occurrences (n = 0). Default is FALSE.
-#' @param other_drops A list of additional fields or choices to drop from the data. Defaults to NULL.
+#' @param drop_blanks Logical. If TRUE, will drop choice fields with zero
+#' occurrences (n = 0). Default is FALSE.
+#' @param other_drops A list of additional fields or choices to drop from the
+#' data. Defaults to NULL.
 #'
 #' @return A cleaned `project` object ready for table or plot processing.
 #'
 #' @details
-#' The function works by cleaning up the data frame list (`project$data`) according to the metadata (`project$metadata$fields`). It converts choice fields into factors, numeric fields are treated appropriately, and any unwanted or missing codes can be dropped based on the parameters provided. The function also ensures that the data is only cleaned once by checking the internal `is_clean` flag.
+#' The function works by cleaning up the data frame list (`project$data`)
+#' according to the metadata (`project$metadata$fields`). It converts choice
+#' fields into factors, numeric fields are treated appropriately, and any
+#' unwanted or missing codes can be dropped based on the parameters provided. The
+#' function also ensures that the data is only cleaned once by checking the
+#' internal `is_clean` flag.
 #'
 #' @note
-#' The function will not proceed with cleaning if `project$internals$is_clean` is already TRUE, signaling that the project has already been cleaned.
+#' The function will not proceed with cleaning if `project$internals$is_clean` is
+#' already TRUE, signaling that the project has already been cleaned.
 #' @export
 clean_project <- function(project, drop_blanks = FALSE, other_drops = NULL) { # problematic because setting numeric would delete missing codes
   # project <-  project %>% annotate_fields(skim = FALSE)
@@ -323,45 +334,72 @@ clean_column_for_table <- function(col, class, label, units, levels) {
 }
 #' @title Add a Subset to a REDCap Database
 #' @description
-#' Creates a subset of the main REDCap database (`project`) based on specific filter criteria
-#' and saves it to a specified directory. The subset can be further customized with
+#' Creates a subset of the main REDCap database (`project`) based on specific
+#' filter criteria
+#' and saves it to a specified directory. The subset can be further customized
+#' with
 #' additional forms, fields, and deidentification options.
 #'
 #' @inheritParams save_project
 #' @inheritParams deidentify_project
 #' @inheritParams setup_project
 #' @param subset_name Character. The name of the subset to create.
-#' @param transform Logical. Whether to transform the data in the subset. Default is `TRUE`.
-#' @param filter_field Character. The name of the field in the database to filter on.
-#' @param filter_choices Vector. The values of `filter_field` used to define the subset.
-#' @param filter_list Vector. The values of `filter_field` used to define the subset.
-#' @param filter_strict Logical. If `TRUE`, all forms will be filtered by criteria. If `FALSE`, will convert original filter to id column and filter all other forms by that ID. Default is `TRUE`.
+#' @param transform Logical. Whether to transform the data in the subset. Default
+#' is `TRUE`.
+#' @param filter_field Character. The name of the field in the database to filter
+#' on.
+#' @param filter_choices Vector. The values of `filter_field` used to define the
+#' subset.
+#' @param filter_list Vector. The values of `filter_field` used to define the
+#' subset.
+#' @param filter_strict Logical. If `TRUE`, all forms will be filtered by
+#' criteria. If `FALSE`, will convert original filter to id column and filter all
+#' other forms by that ID. Default is `TRUE`.
 #' @param dir_other Character. The directory where the subset file will be saved.
 #' Default is the `output` folder within the database directory.
-#' @param file_name Character. The base name of the file where the subset will be saved.
+#' @param file_name Character. The base name of the file where the subset will be
+#' saved.
 #' Default is `<project$short_name>_<subset_name>`.
-#' @param form_names Character vector. Names of forms to include in the subset. Default is `NULL`, which includes all forms.
-#' @param field_names Character vector. Names of specific fields to include in the subset. Default is `NULL`, which includes all fields.
-#' @param deidentify Logical. Whether to deidentify the data in the subset. Default is `TRUE`.
-#' @param clean Logical. If `TRUE`, the data will be cleaned before summarizing. Default is `TRUE`.
-#' @param drop_blanks Logical. If `TRUE`, records with blank fields will be dropped. Default is `TRUE`.
-#' @param include_metadata Logical. If `TRUE`, metadata will be included in the summary. Default is `TRUE`.
-#' @param annotate_metadata Logical. If `TRUE`, metadata will be annotated in the summary. Default is `TRUE`.
-#' @param include_record_summary Logical. If `TRUE`, a record summary will be included in the generated summary. Default is `TRUE`.
-#' @param include_users Logical. If `TRUE`, user-related information will be included in the summary. Default is `TRUE`.
-#' @param include_log Logical. If `TRUE`, the log of changes will be included in the summary. Default is `TRUE`.
-#' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the function will avoid including duplicate columns in the output. Defaults to `FALSE`.
-#' @param reset Logical. If `TRUE`, overwrite existing subset files with the same name. Default is `FALSE`.
-#' @param with_links Optional logical (TRUE/FALSE) for including links in Excel sheets. Default is `FALSE`.
-#' @param separate Optional logical (TRUE/FALSE) separating each form into separate files as opposed to multi-tab Excel. Default is `FALSE`.
+#' @param form_names Character vector. Names of forms to include in the subset.
+#' Default is `NULL`, which includes all forms.
+#' @param field_names Character vector. Names of specific fields to include in
+#' the subset. Default is `NULL`, which includes all fields.
+#' @param deidentify Logical. Whether to deidentify the data in the subset.
+#' Default is `TRUE`.
+#' @param clean Logical. If `TRUE`, the data will be cleaned before summarizing.
+#' Default is `TRUE`.
+#' @param drop_blanks Logical. If `TRUE`, records with blank fields will be
+#' dropped. Default is `TRUE`.
+#' @param include_metadata Logical. If `TRUE`, metadata will be included in the
+#' summary. Default is `TRUE`.
+#' @param annotate_metadata Logical. If `TRUE`, metadata will be annotated in the
+#' summary. Default is `TRUE`.
+#' @param include_record_summary Logical. If `TRUE`, a record summary will be
+#' included in the generated summary. Default is `TRUE`.
+#' @param include_users Logical. If `TRUE`, user-related information will be
+#' included in the summary. Default is `TRUE`.
+#' @param include_log Logical. If `TRUE`, the log of changes will be included in
+#' the summary. Default is `TRUE`.
+#' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the
+#' function will avoid including duplicate columns in the output. Defaults to
+#' `FALSE`.
+#' @param reset Logical. If `TRUE`, overwrite existing subset files with the same
+#' name. Default is `FALSE`.
+#' @param with_links Optional logical (TRUE/FALSE) for including links in Excel
+#' sheets. Default is `FALSE`.
+#' @param separate Optional logical (TRUE/FALSE) separating each form into
+#' separate files as opposed to multi-tab Excel. Default is `FALSE`.
 #' @return
 #' A modified `project` object that includes the newly created subset.
 #' The subset is also saved as a file in the specified directory.
 #'
 #' @details
-#' This function filters the main REDCap database using the specified `filter_field`
-#' and `filter_choices`, then creates a new subset with optional deidentification.
-#' It can be customized to include only specific forms or fields. The resulting subset
+#' This function filters the main REDCap database using the specified
+#' `filter_field`
+#' and `filter_choices`, then creates a new subset with optional
+#' deidentification.
+#' It can be customized to include only specific forms or fields. The resulting
+#' subset
 #' is saved to a file for future use.
 #'
 #' @seealso
@@ -486,12 +524,17 @@ save_REDCapSync_list <- function(
 #' data, including metadata, and annotating metadata.
 #'
 #' @inheritParams save_project
-#' @param subset_name Character. The name of the subset from which to generate the summary.
+#' @param subset_name Character. The name of the subset from which to generate
+#' the summary.
 #' @return
-#' A list containing the generated summary based on the specified options. The list includes filtered and cleaned data, metadata, and other summary details.
+#' A list containing the generated summary based on the specified options. The
+#' list includes filtered and cleaned data, metadata, and other summary details.
 #'
 #' @details
-#' This function allows you to generate a summary of data from a specific subset of records within the REDCap project. The function provides flexible options for cleaning, annotating, and including metadata, as well as controlling whether to include record summaries, user information, and logs.
+#' This function allows you to generate a summary of data from a specific subset
+#' of records within the REDCap project. The function provides flexible options
+#' for cleaning, annotating, and including metadata, as well as controlling
+#' whether to include record summaries, user information, and logs.
 #' @export
 generate_summary_by_name <- function(
     project,
@@ -527,11 +570,16 @@ generate_summary_by_name <- function(
 #' @inheritParams save_project
 #' @inheritParams add_project_summary
 #' @inheritParams deidentify_project#'
-#' @return A modified `project` object with filtered records and columns based on the provided criteria.
+#' @return A modified `project` object with filtered records and columns based on
+#' the provided criteria.
 #'
 #' @details
-#' This function filters the data in the `project` object according to the specified form and field names and optional filter criteria. If no field names or form names are provided, it defaults to using all fields and forms in the database.
-#' The function uses the helper `filter_DF_list` to apply the filtering logic to the `project$data` list.
+#' This function filters the data in the `project` object according to the
+#' specified form and field names and optional filter criteria. If no field names
+#' or form names are provided, it defaults to using all fields and forms in the
+#' database.
+#' The function uses the helper `filter_DF_list` to apply the filtering logic to
+#' the `project$data` list.
 #'
 #' @export
 generate_summary <- function(
@@ -681,14 +729,20 @@ generate_summary <- function(
 }
 #' @title Summarize REDCap Database
 #' @description
-#' Summarizes the REDCap database (`project` object) by filtering and generating a summary list.
+#' Summarizes the REDCap database (`project` object) by filtering and generating
+#' a summary list.
 #'
 #' @details
-#' This function filters the REDCap database based on the provided parameters and generates a summary list. The summary can include metadata, record summaries, user information, and logs. The function also supports deidentification and cleaning of the data.
+#' This function filters the REDCap database based on the provided parameters and
+#' generates a summary list. The summary can include metadata, record summaries,
+#' user information, and logs. The function also supports deidentification and
+#' cleaning of the data.
 #'
 #' @inheritParams save_project
-#' @param reset Logical (TRUE/FALSE). If TRUE, forces the summary generation even if there are issues. Default is `FALSE`.
-#' @return List. Returns a list containing the summarized data, including records, metadata, users, logs, and any other specified data.
+#' @param reset Logical (TRUE/FALSE). If TRUE, forces the summary generation even
+#' if there are issues. Default is `FALSE`.
+#' @return List. Returns a list containing the summarized data, including
+#' records, metadata, users, logs, and any other specified data.
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.
 #' \link{sync_project} for updating the `project` object.
@@ -940,19 +994,26 @@ check_subsets <- function(project, subset_names) {
 }
 #' @title rmarkdown_project
 #' @description
-#' Generates an RMarkdown report for the given REDCap database (`project` object).
-#' This function creates an RMarkdown file in the specified directory or default directory,
+#' Generates an RMarkdown report for the given REDCap database (`project`
+#' object).
+#' This function creates an RMarkdown file in the specified directory or default
+#' directory,
 #' allowing users to create custom reports based on the database content.
 #'
 #' @details
-#' This function checks if a directory is specified, and if not, defaults to the `output` folder
-#' within the project's directory. It generates the RMarkdown file that can then be used for further
+#' This function checks if a directory is specified, and if not, defaults to the
+#' `output` folder
+#' within the project's directory. It generates the RMarkdown file that can then
+#' be used for further
 #' processing or rendering into HTML, PDF, or other formats.
 #'
 #' @inheritParams save_project
-#' @param dir_other Character string specifying the directory where the RMarkdown report will be saved.
-#' If not provided, it defaults to the `output` directory inside the project's main directory.
-#' @return A message indicating the creation of the RMarkdown report and the path to the generated file.
+#' @param dir_other Character string specifying the directory where the RMarkdown
+#' report will be saved.
+#' If not provided, it defaults to the `output` directory inside the project's
+#' main directory.
+#' @return A message indicating the creation of the RMarkdown report and the path
+#' to the generated file.
 #' @seealso
 #' \code{\link[REDCapSync]{save_project}} for saving the `project` object.
 #' @family db_functions
@@ -974,8 +1035,10 @@ rmarkdown_project <- function(project, dir_other) {
 }
 #' @title Clean to Raw REDCap forms
 #' @inheritParams save_project
-#' @param data_form data.frame of labelled REDCap to be converted to raw REDCap (for uploads)
-#' @return project object that has been filtered to only include the specified records
+#' @param data_form data.frame of labelled REDCap to be converted to raw REDCap
+#' (for uploads)
+#' @return project object that has been filtered to only include the specified
+#' records
 #' @export
 labelled_to_raw_form <- function(data_form, project) {
   use_missing_codes <- is.data.frame(project$metadata$missing_codes)

@@ -7,11 +7,13 @@
 sync(use_console = TRUE, hard_reset = FALSE, project_names = NULL)
 }
 \arguments{
-\item{use_console}{Whether or not to use console to guide through sync vs just running}
+\item{use_console}{Whether or not to use console to guide through sync vs just
+running}
 
 \item{hard_reset}{Will go get all projects from scratch if TRUE.}
 
-\item{project_names}{character vector of project short_names to check for sync.
+\item{project_names}{character vector of project short_names to check for
+sync.
 Default is NULL which will check every project in cache.}
 }
 \description{

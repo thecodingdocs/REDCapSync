@@ -10,18 +10,30 @@ find_upload_diff(project, view_old = FALSE, n_row_view = 20)
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{view_old}{Logical. If TRUE, it will display a preview of the old data (default is FALSE).}
+\item{view_old}{Logical. If TRUE, it will display a preview of the old data
+(default is FALSE).}
 
-\item{n_row_view}{Numeric. Defines how many rows of the old data to view (default is 20).}
+\item{n_row_view}{Numeric. Defines how many rows of the old data to view
+(default is 20).}
 }
 \value{
 A list of differences between the new and old data (\code{upload_list}).
 }
 \description{
-This function compares the data in the \code{project} object (new data) with the previous or reference data to identify differences. It returns a list of differences for upload. The function ensures that the new data matches the structure defined by the metadata and provides warnings when discrepancies are found.
+This function compares the data in the \code{project} object (new data) with the
+previous or reference data to identify differences. It returns a list of
+differences for upload. The function ensures that the new data matches the
+structure defined by the metadata and provides warnings when discrepancies are
+found.
 }
 \details{
-The function compares the data in \code{project$data_updates} (new data) with the current data in the database (\code{project$data}). If the form names in the new data do not match the \code{project$metadata$forms$form_name}, a warning is issued. The function goes through each table in the new data and compares it with the old data, recording the differences.
+The function compares the data in \code{project$data_updates} (new data) with the
+current data in the database (\code{project$data}). If the form names in the new
+data do not match the \code{project$metadata$forms$form_name}, a warning is issued.
+The function goes through each table in the new data and compares it with the
+old data, recording the differences.
 
-The \code{compare} and \code{to} parameters allow users to specify specific data choices to compare, though their exact usage will depend on how the function is fully implemented.
+The \code{compare} and \code{to} parameters allow users to specify specific data choices
+to compare, though their exact usage will depend on how the function is fully
+implemented.
 }

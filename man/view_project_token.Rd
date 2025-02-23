@@ -17,9 +17,11 @@ Invisible. Prints a message displaying the stored token.
 Displays the REDCap API token currently stored in the session as an environment variable. It's essentially a wrapper for Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is formatted like a REDCap token and provides messgaes if not valid.
 }
 \details{
-This function retrieves the REDCap API token associated with the specified \code{project} object and displays it as a message.
+This function retrieves the REDCap API token associated with the specified
+\code{project} object and displays it as a message.
 The token is not returned as an R object to maintain security.
-Use this function to confirm the token currently in use without exposing it unnecessarily.
+Use this function to confirm the token currently in use without exposing it
+unnecessarily.
 }
 \seealso{
 Other Token Functions: 

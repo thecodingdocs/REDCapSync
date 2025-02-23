@@ -15,7 +15,8 @@
 #' A `project` object with deidentified forms.
 #'
 #' @details
-#' This function modifies the `project` object to exclude specified identifiers or
+#' This function modifies the `project` object to exclude specified identifiers
+#' or
 #' any columns flagged as identifiers in the metadata. Free-text fields can
 #' also be optionally removed, ensuring the resulting dataset complies with
 #' deidentification standards.
@@ -90,11 +91,17 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
 #' Opens browser page for a given project object.
 #' @details
 #' Uses [utils::browseURL()] to open the specified REDCap page.
-#' In order for the function to work you must have ran \code{project <- sync_project(project)} successfully at least once.
-#' If the link brings you to a page that doesn't work check the url. It's possible your institution may have changed redcap versions, which is part of the URL. In that case run \code{project <- sync_project(project)} again.
+#' In order for the function to work you must have ran
+#' \code{project <- sync_project(project)} successfully at least once.
+#' If the link brings you to a page that doesn't work check the url. It's
+#' possible your institution may have changed redcap versions, which is part of
+#' the URL. In that case run \code{project <- sync_project(project)} again.
 #' You may have to be signed into REDCap for it to work properly.
-#' When in doubt, just seek out the page by navigating on your own in REDCap. Report issues if you can.
-#' @param project A validated `project` object containing REDCap project data and settings. Generated using \code{project <- \link{load_project}("PROJ")} or \link{setup_project}()
+#' When in doubt, just seek out the page by navigating on your own in REDCap.
+#' Report issues if you can.
+#' @param project A validated `project` object containing REDCap project data and
+#' settings. Generated using \code{project <- \link{load_project}("PROJ")} or
+#' \link{setup_project}()
 #' @return Nothing will be returned in R. Instead, a browser link
 #' @family Link Functions
 #' @export
@@ -116,8 +123,10 @@ link_REDCap_home <- function(project) {
 link_REDCap_project <- function(project) {
   project$links$redcap_home %>% utils::browseURL()
 }
-#' @param record REDCap record id or study id etc, any column names that match `project$redcap$id_col`
-#' @param page REDCap page for the record. Must be one of `project$metadata$forms$form_name`
+#' @param record REDCap record id or study id etc, any column names that match
+#' `project$redcap$id_col`
+#' @param page REDCap page for the record. Must be one of
+#' `project$metadata$forms$form_name`
 #' @param instance REDCap instance if it's a repeating instrument
 #' @param text_only logical for only returning text
 #' @rdname Links

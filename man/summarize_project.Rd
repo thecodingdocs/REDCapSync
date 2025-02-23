@@ -10,16 +10,22 @@ summarize_project(project, reset = FALSE)
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{reset}{Logical (TRUE/FALSE). If TRUE, forces the summary generation even if there are issues. Default is \code{FALSE}.}
+\item{reset}{Logical (TRUE/FALSE). If TRUE, forces the summary generation even
+if there are issues. Default is \code{FALSE}.}
 }
 \value{
-List. Returns a list containing the summarized data, including records, metadata, users, logs, and any other specified data.
+List. Returns a list containing the summarized data, including
+records, metadata, users, logs, and any other specified data.
 }
 \description{
-Summarizes the REDCap database (\code{project} object) by filtering and generating a summary list.
+Summarizes the REDCap database (\code{project} object) by filtering and generating
+a summary list.
 }
 \details{
-This function filters the REDCap database based on the provided parameters and generates a summary list. The summary can include metadata, record summaries, user information, and logs. The function also supports deidentification and cleaning of the data.
+This function filters the REDCap database based on the provided parameters and
+generates a summary list. The summary can include metadata, record summaries,
+user information, and logs. The function also supports deidentification and
+cleaning of the data.
 }
 \seealso{
 \link{setup_project} for initializing the \code{project} object.

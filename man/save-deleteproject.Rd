@@ -19,12 +19,14 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 Message
 }
 \description{
-This will save/delete the "<short_name>_REDCapSync.RData" file in the given project
+This will save/delete the "<short_name>_REDCapSync.RData" file in the given
+project
 directories R_objects folder. These are optional functions given that
 \code{save_project} is a also handled by a default parameter in \code{sync_project.}
 }
 \details{
-delete_project will not delete any other files from that directory. The
+delete_project will not delete any other files from that directory.
+The
 user must delete any other files manually.
 }
 \seealso{

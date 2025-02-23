@@ -1,7 +1,9 @@
 #' @title Get your REDCap projects used by REDCapSync
 #' @description
-#' Everytime a setup or update is performed REDCapSync stores the most basic information
-#' about that project to the cache so the user has a running log of everywhere there project information is stored,
+#' Everytime a setup or update is performed REDCapSync stores the most basic
+#' information
+#' about that project to the cache so the user has a running log of everywhere
+#' there project information is stored,
 #' which can be used to find, move, edit, delete that data.
 #' @return data.frame of projects from the cache
 #' @family Project Cache Functions
@@ -25,18 +27,24 @@ get_projects <- function() {
 }
 #' @title List File Paths of REDCapSync Projects in a Folder
 #' @description
-#' Searches a specified folder for files related to REDCapSync projects and returns their file paths.
-#' Optionally validates the folder to ensure it was previously set up using `setup_project()`.
+#' Searches a specified folder for files related to REDCapSync projects and
+#' returns their file paths.
+#' Optionally validates the folder to ensure it was previously set up using
+#' `setup_project()`.
 #'
 #' @param file_path Character. The path to the folder to search.
-#' @param validate Logical. If `TRUE`, the function will only accept valid directories previously set up with `setup_project()`. Default is `TRUE`.
+#' @param validate Logical. If `TRUE`, the function will only accept valid
+#' directories previously set up with `setup_project()`. Default is `TRUE`.
 #'
 #' @return
-#' A character vector of file paths for valid REDCapSync project files in the folder. Returns an empty character vector if no valid files are found.
+#' A character vector of file paths for valid REDCapSync project files in the
+#' folder. Returns an empty character vector if no valid files are found.
 #'
 #' @details
-#' This function checks a folder (and optionally validates its setup) for `.RData` files that correspond to REDCapSync projects.
-#' It identifies files with the extension `.RData` and names ending in `_REDCapSync`, filtering out any unrelated files.
+#' This function checks a folder (and optionally validates its setup) for
+#' `.RData` files that correspond to REDCapSync projects.
+#' It identifies files with the extension `.RData` and names ending in
+#' `_REDCapSync`, filtering out any unrelated files.
 #'
 #' @seealso
 #' \link{setup_project} for setting up valid directories.

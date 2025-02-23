@@ -37,7 +37,8 @@ the directory. Default is \code{TRUE}.}
 Messages for confirmation.
 }
 \description{
-Updates the REDCap database (\code{project} object) by fetching the latest data from
+Updates the REDCap database (\code{project} object) by fetching the latest data
+from
 the REDCap server.
 }
 \details{

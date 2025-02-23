@@ -29,43 +29,62 @@ generate_summary(
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{transform}{Logical. Whether to transform the data in the subset. Default is \code{TRUE}.}
+\item{transform}{Logical. Whether to transform the data in the subset. Default
+is \code{TRUE}.}
 
-\item{filter_field}{Character. The name of the field in the database to filter on.}
+\item{filter_field}{Character. The name of the field in the database to filter
+on.}
 
-\item{filter_choices}{Vector. The values of \code{filter_field} used to define the subset.}
+\item{filter_choices}{Vector. The values of \code{filter_field} used to define the
+subset.}
 
-\item{filter_list}{Vector. The values of \code{filter_field} used to define the subset.}
+\item{filter_list}{Vector. The values of \code{filter_field} used to define the
+subset.}
 
-\item{filter_strict}{Logical. If \code{TRUE}, all forms will be filtered by criteria. If \code{FALSE}, will convert original filter to id column and filter all other forms by that ID. Default is \code{TRUE}.}
+\item{filter_strict}{Logical. If \code{TRUE}, all forms will be filtered by
+criteria. If \code{FALSE}, will convert original filter to id column and filter all
+other forms by that ID. Default is \code{TRUE}.}
 
-\item{field_names}{Character vector. Names of specific fields to include in the subset. Default is \code{NULL}, which includes all fields.}
+\item{field_names}{Character vector. Names of specific fields to include in
+the subset. Default is \code{NULL}, which includes all fields.}
 
-\item{form_names}{Character vector. Names of forms to include in the subset. Default is \code{NULL}, which includes all forms.}
+\item{form_names}{Character vector. Names of forms to include in the subset.
+Default is \code{NULL}, which includes all forms.}
 
-\item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the function will avoid including duplicate columns in the output. Defaults to \code{FALSE}.}
+\item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the
+function will avoid including duplicate columns in the output. Defaults to
+\code{FALSE}.}
 
-\item{deidentify}{Logical. Whether to deidentify the data in the subset. Default is \code{TRUE}.}
+\item{deidentify}{Logical. Whether to deidentify the data in the subset.
+Default is \code{TRUE}.}
 
 \item{drop_free_text}{Logical. If \code{TRUE}, columns containing free text
 will also be excluded from the \code{project}. Default is \code{FALSE}.}
 
-\item{clean}{Logical. If \code{TRUE}, the data will be cleaned before summarizing. Default is \code{TRUE}.}
+\item{clean}{Logical. If \code{TRUE}, the data will be cleaned before summarizing.
+Default is \code{TRUE}.}
 
-\item{drop_blanks}{Logical. If \code{TRUE}, records with blank fields will be dropped. Default is \code{TRUE}.}
+\item{drop_blanks}{Logical. If \code{TRUE}, records with blank fields will be
+dropped. Default is \code{TRUE}.}
 
-\item{include_metadata}{Logical. If \code{TRUE}, metadata will be included in the summary. Default is \code{TRUE}.}
+\item{include_metadata}{Logical. If \code{TRUE}, metadata will be included in the
+summary. Default is \code{TRUE}.}
 
-\item{annotate_metadata}{Logical. If \code{TRUE}, metadata will be annotated in the summary. Default is \code{TRUE}.}
+\item{annotate_metadata}{Logical. If \code{TRUE}, metadata will be annotated in the
+summary. Default is \code{TRUE}.}
 
-\item{include_record_summary}{Logical. If \code{TRUE}, a record summary will be included in the generated summary. Default is \code{TRUE}.}
+\item{include_record_summary}{Logical. If \code{TRUE}, a record summary will be
+included in the generated summary. Default is \code{TRUE}.}
 
-\item{include_users}{Logical. If \code{TRUE}, user-related information will be included in the summary. Default is \code{TRUE}.}
+\item{include_users}{Logical. If \code{TRUE}, user-related information will be
+included in the summary. Default is \code{TRUE}.}
 
-\item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in the summary. Default is \code{TRUE}.}
+\item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in
+the summary. Default is \code{TRUE}.}
 }
 \value{
-A modified \code{project} object with filtered records and columns based on the provided criteria.
+A modified \code{project} object with filtered records and columns based on
+the provided criteria.
 }
 \description{
 This function filters the records in the \code{project} object by specified
@@ -74,6 +93,10 @@ specific field and its values. It returns a modified \code{project} object
 containing only the records that match the filter criteria.
 }
 \details{
-This function filters the data in the \code{project} object according to the specified form and field names and optional filter criteria. If no field names or form names are provided, it defaults to using all fields and forms in the database.
-The function uses the helper \code{filter_DF_list} to apply the filtering logic to the \code{project$data} list.
+This function filters the data in the \code{project} object according to the
+specified form and field names and optional filter criteria. If no field names
+or form names are provided, it defaults to using all fields and forms in the
+database.
+The function uses the helper \code{filter_DF_list} to apply the filtering logic to
+the \code{project$data} list.
 }

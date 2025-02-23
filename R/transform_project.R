@@ -6,12 +6,18 @@
 #' or pivot the data for further analysis or presentation.
 #'
 #' @inheritParams save_project
-#' @param records A vector of records to be transformed. The transformation applies only to the specified records from the `project` object.
+#' @param records A vector of records to be transformed. The transformation
+#' applies only to the specified records from the `project` object.
 #'
-#' @return A transformed version of the `project` object, where the data is rearranged horizontally, typically in a format where columns represent different variables or field values for each record.
+#' @return A transformed version of the `project` object, where the data is
+#' rearranged horizontally, typically in a format where columns represent
+#' different variables or field values for each record.
 #'
 #' @details
-#' The function begins by validating the `project` object and checking that the records to be transformed exist. It then reshapes the data from a vertical to a horizontal format, allowing for easier access and analysis, especially when dealing with wide datasets.
+#' The function begins by validating the `project` object and checking that the
+#' records to be transformed exist. It then reshapes the data from a vertical to
+#' a horizontal format, allowing for easier access and analysis, especially when
+#' dealing with wide datasets.
 #' @export
 generate_horizontal_transform <- function(project, records) {
   project <- assert_blank_project(project)
@@ -146,19 +152,27 @@ extract_form_from_merged <- function(project, form_name) {
 #' @rdname default-transformations
 #' @title Add Default Forms Transformation to the Database
 #' @description
-#' Applies default transformations to specific forms within the REDCap database (`project`).
-#' This function modifies the `project` object to include default transformations, which may
-#' involve adjustments, calculations, or reformatting of data in predefined forms.
+#' Applies default transformations to specific forms within the REDCap database
+#' (`project`).
+#' This function modifies the `project` object to include default
+#' transformations, which may
+#' involve adjustments, calculations, or reformatting of data in predefined
+#' forms.
 #'
 #' @inheritParams save_project
-#' @param forms_transformation a data.frame that matches instruments. See `default_project_transformation` for an example.
-#' @param ask logical for asking in console about changes to project forms_transformation
+#' @param forms_transformation a data.frame that matches instruments. See
+#' `default_project_transformation` for an example.
+#' @param ask logical for asking in console about changes to project
+#' forms_transformation
 #' @return
-#' The updated `project` object with default transformations applied to the specified forms.
+#' The updated `project` object with default transformations applied to the
+#' specified forms.
 #'
 #' @details
-#' This function is designed to streamline and standardize data processing by applying
-#' default transformations to the database forms. The transformations are predefined
+#' This function is designed to streamline and standardize data processing by
+#' applying
+#' default transformations to the database forms. The transformations are
+#' predefined
 #' within the function and ensure consistency across datasets.
 #'
 #' @seealso
@@ -292,19 +306,31 @@ add_project_transformation <- function(project, forms_transformation, ask = TRUE
 }
 #' @title Add Field Transformation to the Database
 #' @description
-#' Adds a new field transformation to the REDCap database (`project`). This allows users to define custom transformations for a specific field in a form, including its type, label, choices, and associated function for data manipulation.
+#' Adds a new field transformation to the REDCap database (`project`). This
+#' allows users to define custom transformations for a specific field in a form,
+#' including its type, label, choices, and associated function for data
+#' manipulation.
 #'
 #' @inheritParams save_project
-#' @param field_name Character. The name of the field to which the transformation will be applied.
+#' @param field_name Character. The name of the field to which the transformation
+#' will be applied.
 #' @param form_name Character. The name of the form containing the field.
-#' @param field_type Character. The type of the field in REDCap (e.g., "text", "checkbox", "dropdown").
-#' @param field_type_R Character. The corresponding R data type for the field. Default is `NA`.
+#' @param field_type Character. The type of the field in REDCap (e.g., "text",
+#' "checkbox", "dropdown").
+#' @param field_type_R Character. The corresponding R data type for the field.
+#' Default is `NA`.
 #' @param field_label Character. The label for the field. Default is `NA`.
-#' @param select_choices_or_calculations Character. A string specifying the choices (for dropdown, radio, or checkbox fields) or calculations (for calculated fields). Default is `NA`.
-#' @param field_note Character. An optional note or comment for the field. Default is `NA`.
-#' @param identifier Character. A string indicating whether the field is an identifier (e.g., "Y" for yes). Default is an empty string (`""`).
-#' @param units Character. The units of measurement for the field, if applicable. Default is `NA`.
-#' @param data_func Function or NA. An optional function to transform or validate the data in the field. Default is `NA`.
+#' @param select_choices_or_calculations Character. A string specifying the
+#' choices (for dropdown, radio, or checkbox fields) or calculations (for
+#' calculated fields). Default is `NA`.
+#' @param field_note Character. An optional note or comment for the field.
+#' Default is `NA`.
+#' @param identifier Character. A string indicating whether the field is an
+#' identifier (e.g., "Y" for yes). Default is an empty string (`""`).
+#' @param units Character. The units of measurement for the field, if applicable.
+#' Default is `NA`.
+#' @param data_func Function or NA. An optional function to transform or validate
+#' the data in the field. Default is `NA`.
 #'
 #' @return
 #' The updated `project` object with the field transformation added.
@@ -467,17 +493,23 @@ run_fields_transformation <- function(project) {
 }
 #' @title transform_project
 #' @description
-#' Transforms the REDCap database (`project` object) by applying the necessary field transformations.
-#' This function modifies the structure of the data and records according to the transformation rules specified.
+#' Transforms the REDCap database (`project` object) by applying the necessary
+#' field transformations.
+#' This function modifies the structure of the data and records according to the
+#' transformation rules specified.
 #'
 #' @details
-#' This function checks if the database has already been transformed and applies the transformation if not. It stores the original column names before transforming the data. The transformation process can include modifying field values and renaming columns based on predefined transformation rules.
+#' This function checks if the database has already been transformed and applies
+#' the transformation if not. It stores the original column names before
+#' transforming the data. The transformation process can include modifying field
+#' values and renaming columns based on predefined transformation rules.
 #'
 #' @inheritParams save_project
 #' @param reset Logical that forces transformation if TRUE. Default is `FALSE`.
 #' @return The transformed `project` object.
 #' @seealso
-#' \code{\link[REDCapSync]{save_project}} for saving the transformed database object.
+#' \code{\link[REDCapSync]{save_project}} for saving the transformed database
+#' object.
 #' @family db_functions
 #' @export
 transform_project <- function(project, reset = FALSE) {

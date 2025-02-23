@@ -37,7 +37,8 @@ load_test_project(short_name = "TEST_repeating", with_data = FALSE)
 the unique short name for the REDCap project.}
 
 \item{dir_path}{Optional character string representing the directory path
-where you want the REDCap project data to be stored. If missing, project object
+where you want the REDCap project data to be stored. If missing, project
+object
 will only be in current R session.}
 
 \item{redcap_base}{A character string representing the base URL of the REDCap
@@ -51,7 +52,8 @@ Default is \verb{REDCapSync_<short_name>}}
 calling the function, but can be automated with other packages.
 Default is \code{daily}}
 
-\item{reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the \code{project}
+\item{reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the
+\code{project}
 object already exists. Default is \code{FALSE}.}
 
 \item{get_type}{optional character of REDCap API call type.
@@ -79,7 +81,8 @@ or new project is setup. Default is \code{10}.}
 \item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
 Default is \code{FALSE}.}
 
-\item{get_file_repository}{Logical (TRUE/FALSE). If TRUE, retrieves file repository
+\item{get_file_repository}{Logical (TRUE/FALSE). If TRUE, retrieves file
+repository
 from REDCap.
 Default is \code{FALSE}.}
 
@@ -116,7 +119,8 @@ dir_path is technically optional but without it the user cannot
 save/load/update projects.
 
 \code{load_project} can be used with just the \code{short_name} parameter after you have
-already run \code{setup_project} in the past with an established directory. \code{dir_path}
+already run \code{setup_project} in the past with an established directory.
+\code{dir_path}
 is optional for this function but can be used if you relocated the directory.
 }
 \examples{

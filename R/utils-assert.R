@@ -21,7 +21,8 @@ get_project_token <- function(project, silent = TRUE) {
   valid <- token %>% is_valid_REDCap_token(silent = silent, is_a_test = is_a_test)
   message_about_token <- ifelse(is_a_test,
                                 get_test_token(project$short_name),
-                                "YoUrNevErShaReToKeNfRoMREDCapWebsiTe")
+                                "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
+  )
   if (!silent) {
     bullet_in_console(
       paste0(

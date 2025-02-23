@@ -10,10 +10,13 @@ generate_horizontal_transform(project, records)
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{records}{A vector of records to be transformed. The transformation applies only to the specified records from the \code{project} object.}
+\item{records}{A vector of records to be transformed. The transformation
+applies only to the specified records from the \code{project} object.}
 }
 \value{
-A transformed version of the \code{project} object, where the data is rearranged horizontally, typically in a format where columns represent different variables or field values for each record.
+A transformed version of the \code{project} object, where the data is
+rearranged horizontally, typically in a format where columns represent
+different variables or field values for each record.
 }
 \description{
 This function performs a horizontal transformation on the data in the
@@ -22,5 +25,8 @@ represented in a horizontal layout. It is useful when you want to reshape
 or pivot the data for further analysis or presentation.
 }
 \details{
-The function begins by validating the \code{project} object and checking that the records to be transformed exist. It then reshapes the data from a vertical to a horizontal format, allowing for easier access and analysis, especially when dealing with wide datasets.
+The function begins by validating the \code{project} object and checking that the
+records to be transformed exist. It then reshapes the data from a vertical to
+a horizontal format, allowing for easier access and analysis, especially when
+dealing with wide datasets.
 }

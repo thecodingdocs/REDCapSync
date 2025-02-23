@@ -16,14 +16,20 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 The transformed \code{project} object.
 }
 \description{
-Transforms the REDCap database (\code{project} object) by applying the necessary field transformations.
-This function modifies the structure of the data and records according to the transformation rules specified.
+Transforms the REDCap database (\code{project} object) by applying the necessary
+field transformations.
+This function modifies the structure of the data and records according to the
+transformation rules specified.
 }
 \details{
-This function checks if the database has already been transformed and applies the transformation if not. It stores the original column names before transforming the data. The transformation process can include modifying field values and renaming columns based on predefined transformation rules.
+This function checks if the database has already been transformed and applies
+the transformation if not. It stores the original column names before
+transforming the data. The transformation process can include modifying field
+values and renaming columns based on predefined transformation rules.
 }
 \seealso{
-\code{\link[REDCapSync]{save_project}} for saving the transformed database object.
+\code{\link[REDCapSync]{save_project}} for saving the transformed database
+object.
 
 Other db_functions: 
 \code{\link{rmarkdown_project}()},

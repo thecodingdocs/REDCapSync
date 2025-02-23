@@ -10,19 +10,30 @@ clean_project(project, drop_blanks = FALSE, other_drops = NULL)
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{drop_blanks}{Logical. If TRUE, will drop choice fields with zero occurrences (n = 0). Default is FALSE.}
+\item{drop_blanks}{Logical. If TRUE, will drop choice fields with zero
+occurrences (n = 0). Default is FALSE.}
 
-\item{other_drops}{A list of additional fields or choices to drop from the data. Defaults to NULL.}
+\item{other_drops}{A list of additional fields or choices to drop from the
+data. Defaults to NULL.}
 }
 \value{
 A cleaned \code{project} object ready for table or plot processing.
 }
 \description{
-This function cleans the columns of a \code{project} object, transforming choice fields into factors and ensuring numeric columns are set correctly for table processing or plotting (e.g., using \code{table1}). It handles the transformation of missing values and optional removal of certain codes based on user input.
+This function cleans the columns of a \code{project} object, transforming choice
+fields into factors and ensuring numeric columns are set correctly for table
+processing or plotting (e.g., using \code{table1}). It handles the transformation
+of missing values and optional removal of certain codes based on user input.
 }
 \details{
-The function works by cleaning up the data frame list (\code{project$data}) according to the metadata (\code{project$metadata$fields}). It converts choice fields into factors, numeric fields are treated appropriately, and any unwanted or missing codes can be dropped based on the parameters provided. The function also ensures that the data is only cleaned once by checking the internal \code{is_clean} flag.
+The function works by cleaning up the data frame list (\code{project$data})
+according to the metadata (\code{project$metadata$fields}). It converts choice
+fields into factors, numeric fields are treated appropriately, and any
+unwanted or missing codes can be dropped based on the parameters provided. The
+function also ensures that the data is only cleaned once by checking the
+internal \code{is_clean} flag.
 }
 \note{
-The function will not proceed with cleaning if \code{project$internals$is_clean} is already TRUE, signaling that the project has already been cleaned.
+The function will not proceed with cleaning if \code{project$internals$is_clean} is
+already TRUE, signaling that the project has already been cleaned.
 }

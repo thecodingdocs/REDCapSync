@@ -17,24 +17,38 @@ edit_REDCap_while_viewing(
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{optional_DF}{Optional data frame. A data frame containing the data to be edited. If not provided, the function will pull the data from the REDCap database using the specified \code{field_name_to_change}.}
+\item{optional_DF}{Optional data frame. A data frame containing the data to be
+edited. If not provided, the function will pull the data from the REDCap
+database using the specified \code{field_name_to_change}.}
 
-\item{records}{Character or numeric vector. The records to be edited. If not provided, the function will use the unique values from the specified forms.}
+\item{records}{Character or numeric vector. The records to be edited. If not
+provided, the function will use the unique values from the specified forms.}
 
-\item{field_name_to_change}{Character. The field name to be changed in the REDCap database.}
+\item{field_name_to_change}{Character. The field name to be changed in the
+REDCap database.}
 
-\item{field_names_to_view}{Optional character vector. A list of field names to view alongside the field being edited. Defaults to \code{NULL}, in which case only the field being changed will be viewed.}
+\item{field_names_to_view}{Optional character vector. A list of field names to
+view alongside the field being edited. Defaults to \code{NULL}, in which case only
+the field being changed will be viewed.}
 
-\item{upload_individually}{Logical. If \code{TRUE}, each change is uploaded individually. Default is \code{TRUE}.}
+\item{upload_individually}{Logical. If \code{TRUE}, each change is uploaded
+individually. Default is \code{TRUE}.}
 }
 \value{
-A modified \code{project} object with changes to the specified field(s) in the REDCap project.
+A modified \code{project} object with changes to the specified field(s) in the
+REDCap project.
 }
 \description{
-Allows for editing a specific field in a REDCap project while simultaneously viewing the corresponding records and fields from other forms. Supports viewing and updating records individually, with flexible field selection.
+Allows for editing a specific field in a REDCap project while simultaneously
+viewing the corresponding records and fields from other forms. Supports
+viewing and updating records individually, with flexible field selection.
 }
 \details{
-This function is useful when you want to edit specific fields in a REDCap project while also reviewing related data from other forms in the project. The \code{field_name_to_change} must be provided, and you can also specify additional fields to view while editing. The data is either passed through \code{optional_DF} or pulled from the project based on the provided field names.
+This function is useful when you want to edit specific fields in a REDCap
+project while also reviewing related data from other forms in the project. The
+\code{field_name_to_change} must be provided, and you can also specify additional
+fields to view while editing. The data is either passed through \code{optional_DF}
+or pulled from the project based on the provided field names.
 }
 \seealso{
 \code{\link{save_project}} for saving the modified database.

@@ -26,36 +26,50 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{records}{Character vector of records you want dropped to your directory.}
 
-\item{smart}{Logical (TRUE/FALSE). If TRUE, only saves when data is new. Default is \code{TRUE}.}
+\item{smart}{Logical (TRUE/FALSE). If TRUE, only saves when data is new.
+Default is \code{TRUE}.}
 
-\item{deidentify}{Logical (TRUE/FALSE). If TRUE, deidentifies the data. Default is \code{FALSE}.}
+\item{deidentify}{Logical (TRUE/FALSE). If TRUE, deidentifies the data.
+Default is \code{FALSE}.}
 
-\item{include_metadata}{Logical (TRUE/FALSE). If TRUE, includes metadata in the export. Default is \code{TRUE}.}
+\item{include_metadata}{Logical (TRUE/FALSE). If TRUE, includes metadata in
+the export. Default is \code{TRUE}.}
 
-\item{include_other}{Logical (TRUE/FALSE). If TRUE, includes other data in the export. Default is \code{TRUE}.}
+\item{include_other}{Logical (TRUE/FALSE). If TRUE, includes other data in the
+export. Default is \code{TRUE}.}
 
-\item{with_links}{Optional logical (TRUE/FALSE) for including links in Excel sheets. Default is \code{FALSE}.}
+\item{with_links}{Optional logical (TRUE/FALSE) for including links in Excel
+sheets. Default is \code{FALSE}.}
 
 \item{forms}{Optional character vector for selecting specific forms to export.}
 
-\item{merge_non_repeating}{Optional logical (TRUE/FALSE) for merging non-repeating instruments. Default is \code{FALSE}.}
+\item{merge_non_repeating}{Optional logical (TRUE/FALSE) for merging
+non-repeating instruments. Default is \code{FALSE}.}
 
-\item{separate}{Optional logical (TRUE/FALSE) separating each form into separate files as opposed to multi-tab Excel. Default is \code{FALSE}.}
+\item{separate}{Optional logical (TRUE/FALSE) separating each form into
+separate files as opposed to multi-tab Excel. Default is \code{FALSE}.}
 
 \item{str_trunc_length}{Optional integer for truncation of strings.}
 
-\item{file_name}{Optional character string for adding to the front of file names.}
+\item{file_name}{Optional character string for adding to the front of file
+names.}
 
-\item{dir_other}{Optional character string a different folder than project$dir_path.}
+\item{dir_other}{Optional character string a different folder than
+project$dir_path.}
 }
 \value{
 Messages for confirmation.
 }
 \description{
-Exports specified records from the REDCap database (\code{project} object) to the specified directory.
+Exports specified records from the REDCap database (\code{project} object) to the
+specified directory.
 }
 \details{
-This function exports the specified records from the REDCap database to the specified directory. It supports various options such as deidentification, including metadata, and merging non-repeating instruments. The function can also save the data only when it is new, and it allows for customization of file names and truncation of strings.
+This function exports the specified records from the REDCap database to the
+specified directory. It supports various options such as deidentification,
+including metadata, and merging non-repeating instruments. The function can
+also save the data only when it is new, and it allows for customization of
+file names and truncation of strings.
 }
 \seealso{
 \link{setup_project} for initializing the \code{project} object.

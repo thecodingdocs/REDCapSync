@@ -7,13 +7,15 @@
 labelled_to_raw_form(data_form, project)
 }
 \arguments{
-\item{data_form}{data.frame of labelled REDCap to be converted to raw REDCap (for uploads)}
+\item{data_form}{data.frame of labelled REDCap to be converted to raw REDCap
+(for uploads)}
 
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 }
 \value{
-project object that has been filtered to only include the specified records
+project object that has been filtered to only include the specified
+records
 }
 \description{
 Clean to Raw REDCap forms

@@ -1,22 +1,36 @@
 #' @title Drop REDCap Data to Directory
 #' @description
-#' Exports specified records from the REDCap database (`project` object) to the specified directory.
+#' Exports specified records from the REDCap database (`project` object) to the
+#' specified directory.
 #'
 #' @details
-#' This function exports the specified records from the REDCap database to the specified directory. It supports various options such as deidentification, including metadata, and merging non-repeating instruments. The function can also save the data only when it is new, and it allows for customization of file names and truncation of strings.
+#' This function exports the specified records from the REDCap database to the
+#' specified directory. It supports various options such as deidentification,
+#' including metadata, and merging non-repeating instruments. The function can
+#' also save the data only when it is new, and it allows for customization of
+#' file names and truncation of strings.
 #'
 #' @inheritParams save_project
 #' @param records Character vector of records you want dropped to your directory.
-#' @param deidentify Logical (TRUE/FALSE). If TRUE, deidentifies the data. Default is `FALSE`.
-#' @param smart Logical (TRUE/FALSE). If TRUE, only saves when data is new. Default is `TRUE`.
-#' @param include_metadata Logical (TRUE/FALSE). If TRUE, includes metadata in the export. Default is `TRUE`.
-#' @param include_other Logical (TRUE/FALSE). If TRUE, includes other data in the export. Default is `TRUE`.
-#' @param file_name Optional character string for adding to the front of file names.
+#' @param deidentify Logical (TRUE/FALSE). If TRUE, deidentifies the data.
+#' Default is `FALSE`.
+#' @param smart Logical (TRUE/FALSE). If TRUE, only saves when data is new.
+#' Default is `TRUE`.
+#' @param include_metadata Logical (TRUE/FALSE). If TRUE, includes metadata in
+#' the export. Default is `TRUE`.
+#' @param include_other Logical (TRUE/FALSE). If TRUE, includes other data in the
+#' export. Default is `TRUE`.
+#' @param file_name Optional character string for adding to the front of file
+#' names.
 #' @param str_trunc_length Optional integer for truncation of strings.
-#' @param with_links Optional logical (TRUE/FALSE) for including links in Excel sheets. Default is `FALSE`.
-#' @param separate Optional logical (TRUE/FALSE) separating each form into separate files as opposed to multi-tab Excel. Default is `FALSE`.
-#' @param merge_non_repeating Optional logical (TRUE/FALSE) for merging non-repeating instruments. Default is `FALSE`.
-#' @param dir_other Optional character string a different folder than project$dir_path.
+#' @param with_links Optional logical (TRUE/FALSE) for including links in Excel
+#' sheets. Default is `FALSE`.
+#' @param separate Optional logical (TRUE/FALSE) separating each form into
+#' separate files as opposed to multi-tab Excel. Default is `FALSE`.
+#' @param merge_non_repeating Optional logical (TRUE/FALSE) for merging
+#' non-repeating instruments. Default is `FALSE`.
+#' @param dir_other Optional character string a different folder than
+#' project$dir_path.
 #' @param forms Optional character vector for selecting specific forms to export.
 #' @return Messages for confirmation.
 #' @seealso
@@ -226,10 +240,12 @@ merge_non_repeating_project_transformation <- function(project) {
 }
 #' @title Reads project from the dropped REDCap files in dir/REDCap/upload
 #' @inheritParams save_project
-#' @param allow_all logical TF for allowing project$data names that are not also form names
+#' @param allow_all logical TF for allowing project$data names that are not also
+#' form names
 #' @param drop_nonredcap_vars logical TF for dropping non-redcap variable names
 #' @param drop_non_form_vars logical TF for dropping non-form variable names
-#' @param stop_or_warn character string of whether to stop, warn, or do nothing when forbidden cols are present
+#' @param stop_or_warn character string of whether to stop, warn, or do nothing
+#' when forbidden cols are present
 #' @return messages for confirmation
 #' @export
 read_from_REDCap_upload <- function(project, allow_all = TRUE, drop_nonredcap_vars = TRUE, drop_non_form_vars = TRUE, stop_or_warn = "warn") {

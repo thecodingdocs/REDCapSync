@@ -16,13 +16,15 @@
 #' save/load/update projects.
 #'
 #' `load_project` can be used with just the `short_name` parameter after you have
-#' already run `setup_project` in the past with an established directory. `dir_path`
+#' already run `setup_project` in the past with an established directory.
+#' `dir_path`
 #' is optional for this function but can be used if you relocated the directory.
 #'
 #' @param short_name A character string with no spaces or symbols representing
 #' the unique short name for the REDCap project.
 #' @param dir_path Optional character string representing the directory path
-#' where you want the REDCap project data to be stored. If missing, project object
+#' where you want the REDCap project data to be stored. If missing, project
+#' object
 #' will only be in current R session.
 #' @param redcap_base A character string representing the base URL of the REDCap
 #' server.
@@ -32,7 +34,8 @@
 #' 'daily', 'weekly', "monthly",and "never". The check is only triggered by
 #' calling the function, but can be automated with other packages.
 #' Default is `daily`
-#' @param reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the `project`
+#' @param reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the
+#' `project`
 #' object already exists. Default is `FALSE`.
 #' @param merge_form_name A character string representing the name of the merged
 #' form. Default is "merged".
@@ -42,7 +45,8 @@
 #' or new project is setup. Default is `10`.
 #' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
 #' Default is `FALSE`.
-#' @param get_file_repository Logical (TRUE/FALSE). If TRUE, retrieves file repository
+#' @param get_file_repository Logical (TRUE/FALSE). If TRUE, retrieves file
+#' repository
 #' from REDCap.
 #' Default is `FALSE`.
 #' @param original_file_names Logical (TRUE/FALSE). If TRUE, uses original file
@@ -394,11 +398,13 @@ is_test_project <- function(project) {
 #' settings. Generated using \link{load_project} or \link{setup_project}
 #' @inheritParams setup_project
 #' @description
-#' This will save/delete the "<short_name>_REDCapSync.RData" file in the given project
+#' This will save/delete the "<short_name>_REDCapSync.RData" file in the given
+#' project
 #' directories R_objects folder. These are optional functions given that
 #' `save_project` is a also handled by a default parameter in `sync_project.`
 #'
-#' @details delete_project will not delete any other files from that directory. The
+#' @details delete_project will not delete any other files from that directory.
+#' The
 #' user must delete any other files manually.
 #' @return Message
 #' @family project object

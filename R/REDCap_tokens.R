@@ -3,7 +3,8 @@
 #' Prompts the user to input a valid REDCap API token and stores it as an
 #' environment variable for the current R session.
 #' Instead of using this function you should consider setting your token within
-#' your REnviron file which can be edited with \code{\link[usethis]{edit_r_environ}}.
+#' your REnviron file which can be edited with
+#' \code{\link[usethis]{edit_r_environ}}.
 #' @details
 #' If a valid token already exists in the R session, the function notifies the
 #' user and asks whether they want to replace it.
@@ -11,11 +12,15 @@
 #' It is strongly discouraged to include API tokens directly within R scripts.
 #' The token is validated internally and stored using `Sys.setenv()`.
 #' @inheritParams save_project
-#' @param ask Logical (TRUE/FALSE). If TRUE, asks the user for confirmation before overwriting an existing valid token. Default is `TRUE`.
-#' @return Invisible. A message is printed to confirm the token is successfully set.
+#' @param ask Logical (TRUE/FALSE). If TRUE, asks the user for confirmation
+#' before overwriting an existing valid token. Default is `TRUE`.
+#' @return Invisible. A message is printed to confirm the token is successfully
+#' set.
 #' @seealso
-#' For the function to work you need to have a valid project object from \code{\link{setup_project}()}.
-#' See our \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
+#' For the function to work you need to have a valid project object from
+#' \code{\link{setup_project}()}.
+#' See our
+#' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
@@ -55,9 +60,11 @@ set_project_token <- function(project, ask = TRUE) {
 #' @description
 #' Displays the REDCap API token currently stored in the session as an environment variable. It's essentially a wrapper for Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is formatted like a REDCap token and provides messgaes if not valid.
 #' @details
-#' This function retrieves the REDCap API token associated with the specified `project` object and displays it as a message.
+#' This function retrieves the REDCap API token associated with the specified
+#' `project` object and displays it as a message.
 #' The token is not returned as an R object to maintain security.
-#' Use this function to confirm the token currently in use without exposing it unnecessarily.
+#' Use this function to confirm the token currently in use without exposing it
+#' unnecessarily.
 #' @inheritParams save_project
 #' @return Invisible. Prints a message displaying the stored token.
 #' @family Token Functions
@@ -71,16 +78,24 @@ view_project_token <- function(project) {
 }
 #' @title Test REDCap API Token linked to a project Object
 #' @description
-#' Validates the REDCap API token stored in the `project` object by attempting a connection to the REDCap server.
+#' Validates the REDCap API token stored in the `project` object by attempting a
+#' connection to the REDCap server.
 #' @details
-#' This function tests whether the API token stored in the `project` object is valid by making a request to the REDCap server.
-#' If the token is invalid, the function can optionally open the REDCap login page in a browser (`launch_browser`) and/or reset the token (`set_if_fails`) using the console.
+#' This function tests whether the API token stored in the `project` object is
+#' valid by making a request to the REDCap server.
+#' If the token is invalid, the function can optionally open the REDCap login
+#' page in a browser (`launch_browser`) and/or reset the token (`set_if_fails`)
+#' using the console.
 #' @inheritParams save_project
-#' @param set_if_fails Logical (TRUE/FALSE). If TRUE and test connection fails, asks user to paster token into consult using `set_project_token(project)` function. Default is `TRUE`.
-#' @param launch_browser Logical (TRUE/FALSE). If TRUE, launches the REDCap login page in the default web browser when validation fails. Default is `TRUE`.
+#' @param set_if_fails Logical (TRUE/FALSE). If TRUE and test connection fails,
+#' asks user to paster token into consult using `set_project_token(project)`
+#' function. Default is `TRUE`.
+#' @param launch_browser Logical (TRUE/FALSE). If TRUE, launches the REDCap login
+#' page in the default web browser when validation fails. Default is `TRUE`.
 #' @return Logical. Returns `TRUE` if the API token is valid, otherwise `FALSE`.
 #' @seealso
 #' \href{../articles/Tokens.html}{pkgdown article on tokens}
+#'
 #' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{pkgdown article on tokens}
 #' @family Token Functions
 #' @keywords Token Functions

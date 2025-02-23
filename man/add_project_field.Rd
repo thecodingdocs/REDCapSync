@@ -22,31 +22,43 @@ add_project_field(
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{field_name}{Character. The name of the field to which the transformation will be applied.}
+\item{field_name}{Character. The name of the field to which the transformation
+will be applied.}
 
 \item{form_name}{Character. The name of the form containing the field.}
 
-\item{field_type}{Character. The type of the field in REDCap (e.g., "text", "checkbox", "dropdown").}
+\item{field_type}{Character. The type of the field in REDCap (e.g., "text",
+"checkbox", "dropdown").}
 
-\item{field_type_R}{Character. The corresponding R data type for the field. Default is \code{NA}.}
+\item{field_type_R}{Character. The corresponding R data type for the field.
+Default is \code{NA}.}
 
 \item{field_label}{Character. The label for the field. Default is \code{NA}.}
 
-\item{select_choices_or_calculations}{Character. A string specifying the choices (for dropdown, radio, or checkbox fields) or calculations (for calculated fields). Default is \code{NA}.}
+\item{select_choices_or_calculations}{Character. A string specifying the
+choices (for dropdown, radio, or checkbox fields) or calculations (for
+calculated fields). Default is \code{NA}.}
 
-\item{field_note}{Character. An optional note or comment for the field. Default is \code{NA}.}
+\item{field_note}{Character. An optional note or comment for the field.
+Default is \code{NA}.}
 
-\item{identifier}{Character. A string indicating whether the field is an identifier (e.g., "Y" for yes). Default is an empty string (\code{""}).}
+\item{identifier}{Character. A string indicating whether the field is an
+identifier (e.g., "Y" for yes). Default is an empty string (\code{""}).}
 
-\item{units}{Character. The units of measurement for the field, if applicable. Default is \code{NA}.}
+\item{units}{Character. The units of measurement for the field, if applicable.
+Default is \code{NA}.}
 
-\item{data_func}{Function or NA. An optional function to transform or validate the data in the field. Default is \code{NA}.}
+\item{data_func}{Function or NA. An optional function to transform or validate
+the data in the field. Default is \code{NA}.}
 }
 \value{
 The updated \code{project} object with the field transformation added.
 }
 \description{
-Adds a new field transformation to the REDCap database (\code{project}). This allows users to define custom transformations for a specific field in a form, including its type, label, choices, and associated function for data manipulation.
+Adds a new field transformation to the REDCap database (\code{project}). This
+allows users to define custom transformations for a specific field in a form,
+including its type, label, choices, and associated function for data
+manipulation.
 }
 \details{
 This function facilitates the addition of a new field transformation to a REDCap database. The transformation includes metadata such as the field's type, label, and choices, along with an optional function to process the data. This is particularly useful for customizing or extending the functionality of existing REDCap forms and fields.

@@ -10,16 +10,19 @@ set_project_token(project, ask = TRUE)
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{ask}{Logical (TRUE/FALSE). If TRUE, asks the user for confirmation before overwriting an existing valid token. Default is \code{TRUE}.}
+\item{ask}{Logical (TRUE/FALSE). If TRUE, asks the user for confirmation
+before overwriting an existing valid token. Default is \code{TRUE}.}
 }
 \value{
-Invisible. A message is printed to confirm the token is successfully set.
+Invisible. A message is printed to confirm the token is successfully
+set.
 }
 \description{
 Prompts the user to input a valid REDCap API token and stores it as an
 environment variable for the current R session.
 Instead of using this function you should consider setting your token within
-your REnviron file which can be edited with \code{\link[usethis]{edit_r_environ}}.
+your REnviron file which can be edited with
+\code{\link[usethis]{edit_r_environ}}.
 }
 \details{
 If a valid token already exists in the R session, the function notifies the
@@ -29,8 +32,10 @@ It is strongly discouraged to include API tokens directly within R scripts.
 The token is validated internally and stored using \code{Sys.setenv()}.
 }
 \seealso{
-For the function to work you need to have a valid project object from \code{\link{setup_project}()}.
-See our \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
+For the function to work you need to have a valid project object from
+\code{\link{setup_project}()}.
+See our
+\href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
 
 Other Token Functions: 
 \code{\link{test_project_token}()},

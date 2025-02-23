@@ -10,22 +10,30 @@ test_project_token(project, set_if_fails = TRUE, launch_browser = TRUE)
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{set_if_fails}{Logical (TRUE/FALSE). If TRUE and test connection fails, asks user to paster token into consult using \code{set_project_token(project)} function. Default is \code{TRUE}.}
+\item{set_if_fails}{Logical (TRUE/FALSE). If TRUE and test connection fails,
+asks user to paster token into consult using \code{set_project_token(project)}
+function. Default is \code{TRUE}.}
 
-\item{launch_browser}{Logical (TRUE/FALSE). If TRUE, launches the REDCap login page in the default web browser when validation fails. Default is \code{TRUE}.}
+\item{launch_browser}{Logical (TRUE/FALSE). If TRUE, launches the REDCap login
+page in the default web browser when validation fails. Default is \code{TRUE}.}
 }
 \value{
 Logical. Returns \code{TRUE} if the API token is valid, otherwise \code{FALSE}.
 }
 \description{
-Validates the REDCap API token stored in the \code{project} object by attempting a connection to the REDCap server.
+Validates the REDCap API token stored in the \code{project} object by attempting a
+connection to the REDCap server.
 }
 \details{
-This function tests whether the API token stored in the \code{project} object is valid by making a request to the REDCap server.
-If the token is invalid, the function can optionally open the REDCap login page in a browser (\code{launch_browser}) and/or reset the token (\code{set_if_fails}) using the console.
+This function tests whether the API token stored in the \code{project} object is
+valid by making a request to the REDCap server.
+If the token is invalid, the function can optionally open the REDCap login
+page in a browser (\code{launch_browser}) and/or reset the token (\code{set_if_fails})
+using the console.
 }
 \seealso{
 \href{../articles/Tokens.html}{pkgdown article on tokens}
+
 \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{pkgdown article on tokens}
 
 Other Token Functions: 

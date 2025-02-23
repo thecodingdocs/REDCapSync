@@ -26,7 +26,8 @@ This can be done either based on the \code{identifier} field in the metadata or
 by specifying custom identifiers.
 }
 \details{
-This function modifies the \code{project} object to exclude specified identifiers or
+This function modifies the \code{project} object to exclude specified identifiers
+or
 any columns flagged as identifiers in the metadata. Free-text fields can
 also be optionally removed, ensuring the resulting dataset complies with
 deidentification standards.

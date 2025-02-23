@@ -1,7 +1,9 @@
 #' @title Syncronize your REDCaps
-#' @param use_console Whether or not to use console to guide through sync vs just running
+#' @param use_console Whether or not to use console to guide through sync vs just
+#' running
 #' @param hard_reset Will go get all projects from scratch if TRUE.
-#' @param project_names character vector of project short_names to check for sync.
+#' @param project_names character vector of project short_names to check for
+#' sync.
 #' Default is NULL which will check every project in cache.
 #' @export
 sync <- function(

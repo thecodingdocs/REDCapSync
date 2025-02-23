@@ -7,7 +7,8 @@
 upload_form_to_REDCap(to_be_uploaded, project, batch_size = 500)
 }
 \arguments{
-\item{to_be_uploaded}{data.frame in raw coded form. If you worked with clean data pass your data to \code{labelled_to_raw_form(data_form,project)} first.}
+\item{to_be_uploaded}{data.frame in raw coded form. If you worked with clean
+data pass your data to \code{labelled_to_raw_form(data_form,project)} first.}
 
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
@@ -19,6 +20,8 @@ messages
 }
 \description{
 This will only overwrite and new data. It will not directly delete and data.
-Because this is the only function that can mess up your data, use it at your own risk.
-Remember all changes are saved in the redcap log if there's an issue. Missing rows and columns are fine!
+Because this is the only function that can mess up your data, use it at your
+own risk.
+Remember all changes are saved in the redcap log if there's an issue. Missing
+rows and columns are fine!
 }

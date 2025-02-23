@@ -95,7 +95,7 @@ clean_form_to_field_labels <- function(form, project) {
   return(form)
 }
 #' @noRd
-clean_form <- function(form, project) {
+clean_form2 <- function(form, project) {
   form %>%
     add_redcap_links_to_form(project) %>%
     clean_form_to_field_labels(project) %>%

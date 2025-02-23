@@ -466,16 +466,17 @@ add_project_summary <- function(
   invisible(project)
 }
 #' @noRd
-save_REDCapSync_list <- function(
+save_subset <- function(
     project,
-    to_save_list,
-    dir_other = file.path(project$dir_path, "output"),
-    file_name = paste0(project$short_name, "_REDCapSync"),
-    separate,
-    with_links,
-    use_csv) {
+    subset_name
+) {
+  subset_list <- project$summary$subsets[[subset_name]]
+  to_save_list <- project %>%
+    generate_summary_by_name(
+      subset_name = subset_name
+    )
   link_col_list <- list()
-  if (with_links) {
+  if (subset_list$with_links) {
     if (project$internals$project_type == "redcap") {
       add_links <- which(names(to_save_list) %in% names(project$data))
       if (length(add_links) > 0) {
@@ -490,18 +491,18 @@ save_REDCapSync_list <- function(
       }
     }
   }
-  if (use_csv) {
+  if (subset_list$use_csv) {
     to_save_list %>% list_to_csv(
-      dir = dir_other,
-      file_name = file_name,
+      dir = subset_list$dir_other,
+      file_name = subset_list$file_name,
       overwrite = TRUE
     ) # account for links with CSV like new column
   } else {
     to_save_list %>% list_to_excel(
-      dir = dir_other,
-      separate = separate,
+      dir = subset_list$dir_other,
+      separate = subset_list$separate,
       link_col_list = link_col_list,
-      file_name = file_name,
+      file_name = subset_list$file_name,
       header_df_list = to_save_list %>%
         construct_header_list(fields = project$metadata$fields) %>%
         process_df_list(silent = TRUE),
@@ -509,6 +510,18 @@ save_REDCapSync_list <- function(
       overwrite = TRUE
     )
   }
+  records <- to_save_list %>%
+    lapply(function(form) {
+      form[[id_col]]
+    }) %>%
+    unlist() %>%
+    sort() %>%
+    unique()
+  record_rows <- which(project$summary$all_records[[id_col]] %in% records)
+  subset_records <- project$summary$all_records[record_rows,]
+  project$summary$subsets[[subset_name]]$subset_records <- subset_records
+  project$summary$subsets[[subset_name]]$last_save_time <- now_time()
+  invisible(project)
 }
 #' @title Generate a Summary from a Subset Name
 #' @description
@@ -755,20 +768,7 @@ summarize_project <- function(
   }
   if (is_something(subset_names)) {
     for (subset_name in subset_names) {
-      subset_list <- project$summary$subsets[[subset_name]]
-      to_save_list <- project %>%
-        generate_summary_by_name(
-          subset_name = subset_name
-        )
-      project %>% save_REDCapSync_list(
-        to_save_list = to_save_list,
-        dir_other = subset_list$dir_other,
-        file_name = subset_list$file_name,
-        separate = subset_list$separate,
-        with_links = subset_list$with_links
-      )
-      project$summary$subsets[[subset_name]]$subset_records <-
-        project$summary$subsets[[subset_name]]$last_save_time <- now_time()
+
     }
   }
   invisible(project)
@@ -920,9 +920,10 @@ summarize_records_from_log <- function(project, records) {
   summary_records
 }
 #' @noRd
-get_records <- function(project, subset_name) {
+get_subset_records <- function(project, subset_name) {
+  id_col <- project$redcap$id_col
   if (missing(subset_name)) {
-    return(project$summary$all_records)
+    return(project$summary$all_records[[id_col]])
   }
   subset_list <- project$summary$subsets[[subset_name]]
   to_save_list <- generate_summary(
@@ -931,11 +932,11 @@ get_records <- function(project, subset_name) {
     filter_strict = subset_list$filter_strict,
     form_names = subset_list$form_names,
     field_names = project$redcap$id_col,
-    deidentify = subset_list$deidentify,
-    drop_free_text = subset_list$drop_free_text,
-    clean = subset_list$clean,
+    deidentify = FALSE,
+    drop_free_text = FALSE,
+    clean = FALSE,
     transform = subset_list$transform,
-    drop_blanks = subset_list$drop_blanks,
+    drop_blanks = FALSE,
     include_metadata = FALSE,
     annotate_metadata = FALSE,
     include_record_summary = FALSE,
@@ -945,11 +946,13 @@ get_records <- function(project, subset_name) {
   )
   records <- to_save_list %>%
     lapply(function(form) {
-      form[[project$redcap$id_col]]
+      form[[id_col]]
     }) %>%
     unlist() %>%
+    sort() %>%
     unique()
-  subset_records <- project$summary$all_records[which(project$summary$all_records[[project$redcap$id_col]] %in% records), ]
+  record_rows <- which(project$summary$all_records[[id_col]] %in% records)
+  subset_records <- project$summary$all_records[record_rows,]
   subset_records
 }
 #' @noRd
@@ -961,7 +964,7 @@ subset_records_due <- function(project, subset_name) {
   if (!file.exists(subset_list$file_path)) {
     return(TRUE)
   }
-  subset_records <- get_records(
+  subset_records <- get_subset_records(
     project = project,
     subset_name = subset_name
   )
@@ -973,15 +976,21 @@ subset_records_due <- function(project, subset_name) {
 }
 #' @noRd
 check_subsets <- function(project, subset_names) {
-  if (missing(subset_names)) subset_names <- project$summary$subsets %>% names()
+  if (missing(subset_names)){
+    subset_names <- project$summary$subsets %>% names()
+  }
   needs_refresh <- NULL
-  if (is.null(subset_names)) bullet_in_console("There are no subsets at `project$summary$subsets` which can be added with `add_project_summary()`!")
+  if (is.null(subset_names)){
+    bullet_in_console("No subsets. Use `add_project_summary()`!")
+  }
   for (subset_name in subset_names) {
     if (subset_records_due(project = project, subset_name = subset_name)) {
       needs_refresh <- needs_refresh %>% append(subset_name)
     }
   }
-  if (is.null(needs_refresh)) bullet_in_console("Refresh of subsets not needed!", bullet_type = "v")
+  if (is.null(needs_refresh)) {
+    bullet_in_console("Refresh of subsets not needed!", bullet_type = "v")
+  }
   needs_refresh
 }
 #' @title rmarkdown_project

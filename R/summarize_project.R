@@ -805,16 +805,16 @@ sum_records <- function(project) {
     }
     if (length(cols) == 1) {
       records <- data.frame(
-        records = names(project$data) %>% lapply(function(IN) {
-          project$data[[IN]][, cols]
+        records = names(project$data) %>% lapply(function(form_name) {
+          project$data[[form_name]][, cols]
         }) %>% unlist() %>% unique()
       )
       colnames(records) <- cols
     }
     if (length(cols) == 2) {
       records <- names(project$data) %>%
-        lapply(function(IN) {
-          project$data[[IN]][, cols]
+        lapply(function(form_name) {
+          project$data[[form_name]][, cols]
         }) %>%
         dplyr::bind_rows() %>%
         unique()
@@ -1349,9 +1349,9 @@ check_project_for_IDs <- function(project, required_percent_filled = 0.7) {
       form <- project$data[[project$metadata$forms$form_name[which(!project$metadata$forms$repeating)][[1]]]]
       IN_length <- form %>% nrow()
       cols <- colnames(form)[form %>%
-        lapply(function(IN) {
+        lapply(function(field) {
           form <- FALSE
-          x <- IN %>% drop_nas()
+          x <- field %>% drop_nas()
           if ((length(x) / IN_length) > required_percent_filled) {
             form <- anyDuplicated(x) == 0
           }

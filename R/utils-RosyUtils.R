@@ -155,9 +155,9 @@ find_form_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
       )
     )
   }
-  for (KEY in new$key[which(new$key %in% old$key)]) {
-    row <- which(new$key == KEY)
-    row_old <- which(old$key == KEY)
+  for (key in new$key[which(new$key %in% old$key)]) {
+    row <- which(new$key == key)
+    row_old <- which(old$key == key)
     for (col in colnames(new)[which(!colnames(new) %in% c(ref_cols, "key"))]) {
       col <- which(colnames(new) == col)
       if (!identical(new[row, col], old[row_old, col])) {

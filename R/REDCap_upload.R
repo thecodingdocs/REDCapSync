@@ -203,7 +203,7 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
       # message("fix these in REDCap --> ",paste0(out,collapse = " | "))
       choices <- c("upload new", "keep old", "manual entry", "launch redcap link only")
       for (i in seq_len(nrow(z))) {
-        OUT <- z[i, ]
+        form <- z[i, ]
         IN <- z_old[i, ]
         new_answer <- IN[[field_name]]
         old_answer <- IN[[paste0(field_name, "_old")]]
@@ -220,24 +220,24 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
           choice <- 1
         }
         if (choice == 1) {
-          OUT %>%
+          form %>%
             labelled_to_raw_form(project) %>%
             upload_form_to_REDCap(project)
-          message("Uploaded: ", OUT %>% paste0(collapse = " | "))
+          message("Uploaded: ", form %>% paste0(collapse = " | "))
         }
         if (choice == 2) {
           message("Did not change anything")
         }
         if (choice == 3) {
-          project %>% link_REDCap_record(OUT[[project$redcap$id_col]])
-          OUT[[field_name]] <- readline("What would you like it to be? ")
-          print.data.frame(OUT)
-          OUT %>%
+          project %>% link_REDCap_record(form[[project$redcap$id_col]])
+          form[[field_name]] <- readline("What would you like it to be? ")
+          print.data.frame(form)
+          form %>%
             labelled_to_raw_form(project) %>%
             upload_form_to_REDCap(project)
         }
         if (choice == 4) { # account for repeat? instance
-          project %>% link_REDCap_record(OUT[[project$redcap$id_col]], form, instance = OUT[["redcap_repeat_instance"]])
+          project %>% link_REDCap_record(form[[project$redcap$id_col]], form, instance = form[["redcap_repeat_instance"]])
         }
       }
     }
@@ -306,13 +306,13 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
     form <- NULL
     for (record in records) { # record <- records%>% sample(1)
       record_was_updated <- FALSE
-      VIEW <- optional_form[which(optional_form[[project$redcap$id_col]] == record), ]
-      VIEW_simp <- VIEW[, unique(c(project$redcap$id_col, field_names_to_view))] %>% unique()
-      row.names(VIEW_simp) <- NULL
-      VIEW_simp %>%
+      form_view <- optional_form[which(optional_form[[project$redcap$id_col]] == record), ]
+      form_view_simp <- form_view[, unique(c(project$redcap$id_col, field_names_to_view))] %>% unique()
+      row.names(form_view_simp) <- NULL
+      form_view_simp %>%
         t() %>%
         print()
-      CHANGE <- generate_summary(
+      form_change <- generate_summary(
         project,
         filter_field = project$redcap$id_col,
         filter_choices = records,
@@ -322,10 +322,10 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
         include_record_summary = FALSE,
         include_users = FALSE
       )[[1]]
-      row.names(CHANGE) <- NULL
-      CHANGE <- CHANGE[, unique(c(ref_cols_change, field_name_to_change))]
-      if (nrow(CHANGE) == 0) {
-        print("Nothing in CHANGE. If you choose edit it will add an instance...")
+      row.names(form_change) <- NULL
+      form_change <- form_change[, unique(c(ref_cols_change, field_name_to_change))]
+      if (nrow(form_change) == 0) {
+        print("Nothing in form_change. If you choose edit it will add an instance...")
         blank_row <- data.frame(
           record
         )
@@ -336,19 +336,19 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
         }
         blank_row[[field_name_to_change]] <- NA
       } else {
-        print(CHANGE)
+        print(form_change)
       }
       choice1 <- utils::menu(choices1, title = paste0("What would you like to do?"))
       if (choice1 == 3) {
         project %>% link_REDCap_record(record = record)
       }
       if (choice1 == 2) {
-        if (nrow(CHANGE) == 0) CHANGE <- blank_row
-        for (j in seq_len(nrow(CHANGE))) {
-          message("Old answer (", field_name_to_change, "): ", CHANGE[j, field_name_to_change])
+        if (nrow(form_change) == 0) form_change <- blank_row
+        for (j in seq_len(nrow(form_change))) {
+          message("Old answer (", field_name_to_change, "): ", form_change[j, field_name_to_change])
           choice2 <- utils::menu(choices2, title = paste0("What would you like to do?"))
           choice <- choices2[choice2]
-          form_sub <- CHANGE[j, ]
+          form_sub <- form_change[j, ]
           if (choice %in% c("Manual Entry", "Do Nothing", "Launch Redcap Link Only")) {
             if (choice == "Do Nothing") {
               message("Did not change anything")
@@ -366,7 +366,7 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
               }
             }
             if (choice == "Launch Redcap Link Only") { # account for repeat? instance
-              project %>% link_REDCap_record(record = record, page = change_form, instance = CHANGE[j, "redcap_repeat_instance"])
+              project %>% link_REDCap_record(record = record, page = change_form, instance = form_change[j, "redcap_repeat_instance"])
             }
           } else {
             form_sub[[field_name_to_change]] <- choice
@@ -384,8 +384,8 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
         if (is_repeating_form) {
           choice3 <- 2
           the_max <- 0
-          if (nrow(CHANGE) > 0) {
-            the_max <- CHANGE$redcap_repeat_instance %>%
+          if (nrow(form_change) > 0) {
+            the_max <- form_change$redcap_repeat_instance %>%
               as.integer() %>%
               max()
           }
@@ -418,7 +418,7 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
                   the_max <- the_max + 1
                 }
                 if (choice == "Launch Redcap Link Only") { # account for repeat? instance
-                  project %>% link_REDCap_record(record = record, page = change_form, instance = CHANGE[j, "redcap_repeat_instance"])
+                  project %>% link_REDCap_record(record = record, page = change_form, instance = form_change[j, "redcap_repeat_instance"])
                 }
               } else {
                 form_sub[[field_name_to_change]] <- choice

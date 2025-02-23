@@ -75,7 +75,6 @@ reference:
       - clean_project
       - deidentify_project
       - drop_REDCap_to_directory
-      - generate_horizontal_transform
       - generate_summary_by_name
       - generate_summary
       - summarize_project

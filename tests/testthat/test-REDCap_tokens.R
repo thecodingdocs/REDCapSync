@@ -12,7 +12,7 @@ test_that("get_test_token works correctly", {
   expect_equal(get_test_token("TEST_multiarm"), internal_TEST_multiarm_token)
   expect_error(get_test_token("INVALID_SHORT_NAME"))
   expect_error(get_test_token(1213123))
-  expect_error(get_test_token(c("TEST_classic","TEST_repeating")))
+  expect_error(get_test_token(c("TEST_classic", "TEST_repeating")))
 })
 test_that("is_valid_REDCap_token respects the rules of 32L hexidecimal", {
   expect_true(is_valid_REDCap_token(generate_hex(32)))
@@ -20,21 +20,21 @@ test_that("is_valid_REDCap_token respects the rules of 32L hexidecimal", {
   expect_false(is_valid_REDCap_token(NULL))
   expect_false(is_valid_REDCap_token(generate_hex(31)))
   expect_false(is_valid_REDCap_token(generate_hex(33)))
-  expect_false(is_valid_REDCap_token(paste0(" ",generate_hex(31))))
-  expect_false(is_valid_REDCap_token(paste0("J",generate_hex(31))))
-  expect_false(is_valid_REDCap_token(paste0("_",generate_hex(31))))
+  expect_false(is_valid_REDCap_token(paste0(" ", generate_hex(31))))
+  expect_false(is_valid_REDCap_token(paste0("J", generate_hex(31))))
+  expect_false(is_valid_REDCap_token(paste0("_", generate_hex(31))))
   expect_false(is_valid_REDCap_token(internal_TEST_classic_token))
-  expect_true(is_valid_REDCap_token(internal_TEST_classic_token,is_a_test = TRUE))
-  expect_true(is_valid_REDCap_token(internal_TEST_repeating_token,is_a_test = TRUE))
-  expect_true(is_valid_REDCap_token(internal_TEST_longitudinal_token,is_a_test = TRUE))
-  expect_true(is_valid_REDCap_token(internal_TEST_multiarm_token,is_a_test = TRUE))
-  expect_false(is_valid_REDCap_token(generate_hex(32),is_a_test = TRUE))
+  expect_true(is_valid_REDCap_token(internal_TEST_classic_token, is_a_test = TRUE))
+  expect_true(is_valid_REDCap_token(internal_TEST_repeating_token, is_a_test = TRUE))
+  expect_true(is_valid_REDCap_token(internal_TEST_longitudinal_token, is_a_test = TRUE))
+  expect_true(is_valid_REDCap_token(internal_TEST_multiarm_token, is_a_test = TRUE))
+  expect_false(is_valid_REDCap_token(generate_hex(32), is_a_test = TRUE))
 })
 test_that("get_project_token checks_env", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
-  fake_cache_location <- file.path(test_dir,"fake_cache")
+  fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
-    get_cache = function(...){
+    get_cache = function(...) {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
@@ -44,23 +44,23 @@ test_that("get_project_token checks_env", {
   project <- mock_project()
   token_name <- get_REDCap_token_name(project)
   token <- generate_hex(32)
-  withr::with_envvar(c(REDCapSync_TEST_PROJECT=token),{
-    expect_equal(get_project_token(project),token)
+  withr::with_envvar(c(REDCapSync_TEST_PROJECT = token), {
+    expect_equal(get_project_token(project), token)
     expect_no_error(get_project_token(project))
   })
   token <- generate_hex(2)
-  withr::with_envvar(c(REDCapSync_TEST_PROJECT=token),{
-    expect_equal(get_project_token(project),token)
+  withr::with_envvar(c(REDCapSync_TEST_PROJECT = token), {
+    expect_equal(get_project_token(project), token)
   })
-  withr::with_envvar(c(REDCapSync_TEST_PROJECT=NULL),{
-    expect_equal(get_project_token(project),"")
+  withr::with_envvar(c(REDCapSync_TEST_PROJECT = NULL), {
+    expect_equal(get_project_token(project), "")
   })
 })
 test_that("get_REDCap_token_name works", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
-  fake_cache_location <- file.path(test_dir,"fake_cache")
+  fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
-    get_cache = function(...){
+    get_cache = function(...) {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
@@ -68,7 +68,7 @@ test_that("get_REDCap_token_name works", {
     }
   )
   project <- mock_project()
-  expect_equal(get_REDCap_token_name(project),"REDCapSync_TEST_PROJECT")
+  expect_equal(get_REDCap_token_name(project), "REDCapSync_TEST_PROJECT")
 })
 # test_that("set_REDCap_token sets a new token", {
 #   project <- mock_project()

@@ -1,4 +1,4 @@
-test_that("test_dir works",{
+test_that("test_dir works", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   expect_true(file.exists(test_dir))
   test_file <- file.path(test_dir, "projects.rds")
@@ -6,13 +6,13 @@ test_that("test_dir works",{
   file.create(test_file)
   expect_true(file.exists(test_file))
 })
-##test-setup_project
+## test-setup_project
 test_that("setup_project creates a valid project object and valid directory", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   expect_error(assert_dir(dir_path = test_dir))
   short_name <- "TEST_PROJECT"
   redcap_base <- "https://redcap.miami.edu/"
-  #test_short_names
+  # test_short_names
   expect_error(assert_env_name("A project"))
   expect_error(assert_env_name("project$]"))
   expect_error(assert_env_name("1"))
@@ -21,12 +21,12 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_no_error(assert_env_name("expected_name"))
   expect_no_error(assert_env_name("expected_name2"))
   expect_no_error(assert_env_name("EXPECTED_NAME"))
-  #test_redcap_base
+  # test_redcap_base
   expect_error(assert_web_link("https://redcap.blah"))
   expect_no_error(assert_web_link("https://redcap.miami.edu/"))
   expect_no_error(assert_web_link("https://redcap.miami.edu"))
   expect_no_error(assert_web_link("https://redcap.edu"))
-  #test db
+  # test db
   expect_no_error(assert_blank_project(internal_blank_project))
   expect_error(assert_setup_project(internal_blank_project))
   expect_error(assert_blank_project(internal_blank_project[[-1]]))
@@ -44,7 +44,7 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_no_error(assert_blank_project(project = project))
   expect_no_error(get_dir(project))
   check_dir <- get_dir(project)
-  expect_identical(test_dir,check_dir)
+  expect_identical(test_dir, check_dir)
   expect_true(is.list(project))
   expect_named(project)
   expect_true("short_name" %in% names(project))
@@ -55,20 +55,20 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_equal(project$short_name, short_name)
   test_dir_files <- list.files(test_dir)
   expect_true(all(internal_dir_folders %in% test_dir_files))
-  project$dir_path <- file.path(test_dir,"another_fake_folder") %>% sanitize_path()
+  project$dir_path <- file.path(test_dir, "another_fake_folder") %>% sanitize_path()
   expect_error(get_dir(project))
 })
-##test-load_test_project
-test_that("works",{
+## test-load_test_project
+test_that("works", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   expect_error(assert_dir(test_dir))
 })
-##test-save_project
+## test-save_project
 test_that("save_project doesn't save if it's blank but will save and cache if valid, also loads", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
-  fake_cache_location <- file.path(test_dir,"fake_cache")
+  fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
-    get_cache = function(...){
+    get_cache = function(...) {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
@@ -83,7 +83,7 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
     redcap_base = redcap_base
   )
   save_project(project)
-  expect_false(file.exists(file.path(project$dir_path,"R_objects",paste0(short_name,"_REDCapSync.RData"))))
+  expect_false(file.exists(file.path(project$dir_path, "R_objects", paste0(short_name, "_REDCapSync.RData"))))
   project$internals$ever_connected <- TRUE
   fake_time <- now_time()
   project$internals$last_sync <- fake_time
@@ -92,23 +92,23 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   project$internals$last_metadata_update <- fake_time
   project$internals$timezone <- Sys.timezone()
   project <- save_project(project)
-  expected_save_location <- file.path(project$dir_path,"R_objects",paste0(short_name,"_REDCapSync.RData"))
+  expected_save_location <- file.path(project$dir_path, "R_objects", paste0(short_name, "_REDCapSync.RData"))
   expect_true(file.exists(expected_save_location))
-  #check cached proj
+  # check cached proj
   projects <- get_projects()
-  expect_equal(nrow(get_projects()),1)
+  expect_equal(nrow(get_projects()), 1)
   expect_equal(projects$short_name, short_name)
   expect_equal(projects$redcap_base, redcap_base)
   expect_equal(projects$dir_path, test_dir)
-  #loading tests
+  # loading tests
   expect_error(load_project("a_project")) # wont load unknown project
-  project2 <- load_project(short_name = short_name)#loads what we saved
+  project2 <- load_project(short_name = short_name) # loads what we saved
   # project$internals$last_directory_save %>% attr("tzone")
   # project2$internals$last_directory_save %>% attr("tzone")
-  expect_identical(project,project2)
-  #delete_project works...
+  expect_identical(project, project2)
+  # delete_project works...
   expect_no_warning(delete_project(project))
-  expect_warning(delete_project(project))#warning for deleting twice
+  expect_warning(delete_project(project)) # warning for deleting twice
   expect_error(load_project(short_name = short_name)) # wont load deleted project
 })
 test_that("set_dir creates a new directory if it does not exist", {

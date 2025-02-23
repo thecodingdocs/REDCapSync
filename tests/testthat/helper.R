@@ -1,4 +1,4 @@
-mock_project <- function(){
+mock_project <- function() {
   short_name <- "TEST_PROJECT"
   redcap_base <- "https://redcap.miami.edu/"
   project <- setup_project(

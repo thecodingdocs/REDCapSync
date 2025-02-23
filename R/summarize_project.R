@@ -1166,7 +1166,10 @@ stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
 }
 #' @noRd
 get_all_field_names <- function(project) {
-  project$data %>% lapply(colnames) %>% unlist() %>% unique()
+  project$data %>%
+    lapply(colnames) %>%
+    unlist() %>%
+    unique()
 }
 #' @noRd
 field_names_to_form_names <- function(project, field_names) {

@@ -36,7 +36,7 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
     ]
     if (length(bad_identifiers) > 0) {
       stop(
-        "There is a bad identifier... see `project$metadata$fields$field_name`: ",
+        "There is a bad identifier. see `project$metadata$fields$field_name`: ",
         bad_identifiers %>% paste0(collapse = ", ")
       )
     }
@@ -55,14 +55,22 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
       which(project$metadata$fields$identifier == "y")
     ]
     if (length(identifiers) == 0) {
-      warning("You have no identifiers marked in `project$metadata$fields$identifier`. You can set it in REDCap Project Setup and update project OR define your idenitifiers in this functions `identifiers` argument.", immediate. = TRUE)
+      warning(
+        paste0(
+          "You have no identifiers marked in ",
+          "`project$metadata$fields$identifier`. ",
+          "You can set it in REDCap Project Setup and update ",
+          "project OR define your idenitifiers in this functions ",
+          "`identifiers` argument."
+        ),
+        immediate. = TRUE
+      )
     }
   }
   if (drop_free_text) { # placeholder
+    note_rows <- which(project$metadata$fields$field_type == "notes")
     identifiers <- identifiers %>%
-      append(
-        project$metadata$fields$field_name[which(project$metadata$fields$field_type == "notes")]
-      ) %>%
+      append(project$metadata$fields$field_name[note_rows]) %>%
       unique()
   }
   if (is_something(project$data)) {
@@ -71,9 +79,17 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
     }, names(project$data), lapply(project$data, colnames))
     drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0]
     if (length(drop_list) == 0) {
-      bullet_in_console(paste0("Nothing to deidentify from --> ", identifiers %>% paste0(collapse = ", ")), bullet_type = "x")
+      bullet_in_console(
+        paste0(
+          "Nothing to deidentify from --> ",
+          identifiers %>% paste0(collapse = ", ")
+        ),
+        bullet_type = "x"
+      )
     } else {
-      bullet_in_console(paste0("Deidentified ", project$short_name), bullet_type = "v")
+      bullet_in_console(paste0("Deidentified ", project$short_name),
+        bullet_type = "v"
+      )
     }
     for (form_name in names(drop_list)) {
       for (field_name in drop_list[[form_name]]) {
@@ -129,12 +145,30 @@ link_REDCap_project <- function(project) {
 #' @param text_only logical for only returning text
 #' @rdname Links
 #' @export
-link_REDCap_record <- function(project, record, page, instance, text_only = FALSE) {
-  link <- paste0(project$links$redcap_base, "redcap_v", project$redcap$version, "/DataEntry/record_home.php?pid=", project$redcap$project_id)
+link_REDCap_record <- function(project,
+                               record,
+                               page,
+                               instance,
+                               text_only = FALSE) {
+  link <- paste0(
+    project$links$redcap_base,
+    "redcap_v",
+    project$redcap$version,
+    "/DataEntry/record_home.php?pid=",
+    project$redcap$project_id
+  )
+  id_col <- project$redcap$id_col
   if (!missing(record)) {
-    if (!record %in% project$summary$all_records[[project$redcap$id_col]]) stop(record, " is not one of the records inside project")
+    if (!record %in% project$summary$all_records[[id_col]]) {
+      stop(record, " is not one of the records inside project")
+    }
     if ("arm_number" %in% colnames(project$summary$all_records)) {
-      link <- link %>% paste0("&arm=", project$summary$all_records$arm_number[which(project$summary$all_records$participant_id == record)])
+      arm_row <- which(project$summary$all_records[[id_col]] == record)
+      link <- link %>%
+        paste0(
+          "&arm=",
+          project$summary$all_records$arm_number[arm_row]
+        )
     }
     link <- link %>% paste0("&id=", record)
   }

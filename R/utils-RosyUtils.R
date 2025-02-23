@@ -20,11 +20,13 @@ bullet_in_console <- function(text = "",
     }
     if (is.null(url_names)) url_names <- url
     if (collapse) url_if <- paste0(url_if, collapse = " and ")
-    url_if <- paste0(" {cli::col_blue(cli::style_hyperlink('",
-                     url_names,
-                     "', '",
-                     url,
-                     "'))}")
+    url_if <- paste0(
+      " {cli::col_blue(cli::style_hyperlink('",
+      url_names,
+      "', '",
+      url,
+      "'))}"
+    )
   }
   if (length(file) > 0) {
     file_names <- names(file)
@@ -68,9 +70,11 @@ process_df_list <- function(list, drop_empty = TRUE, silent = FALSE) {
       keeps <- which(is_a_df_with_rows)
       drops <- which(!is_a_df_with_rows)
       if (length(drops) > 0) {
-        if (!silent){
-          bullet_in_console("Dropping non-data.frames and empties... ",
-                            paste0(names(drops), collapse = ", "))
+        if (!silent) {
+          bullet_in_console(
+            "Dropping non-data.frames and empties... ",
+            paste0(names(drops), collapse = ", ")
+          )
         }
       }
       list <- list[keeps]
@@ -217,7 +221,7 @@ find_form_diff2 <- function(new,
     stop("Keys must lead to unique rows! (new form)")
   }
   appended_old_col_suffix <- "__old"
-  if (any(endsWith(unique(colnames(old), colnames(new)), appended_old_col_suffix))){
+  if (any(endsWith(unique(colnames(old), colnames(new)), appended_old_col_suffix))) {
     stop("colnames cant end with '", appended_old_col_suffix, "'")
   }
   merged_df <- merge(new, old, by = ref_cols, suffixes = c("", appended_old_col_suffix), all.x = TRUE)
@@ -290,7 +294,7 @@ find_df_list_diff <- function(new_list, old_list, ref_col_list, view_old = TRUE,
   }
   if (!is_df_list(new_list)) stop("new_list must be a list of data.frames")
   if (!is_df_list(old_list)) stop("old_list must be a list of data.frames")
-  if (any(!names(new_list) %in% names(old_list))){
+  if (any(!names(new_list) %in% names(old_list))) {
     stop("All new_list names must be included in the set of old_list names.")
   }
   if (!is.list(ref_col_list)) {
@@ -357,8 +361,9 @@ csv_to_list <- function(paths) {
     clean_env_names()
   for (i in seq_along(paths)) {
     form_list[[i]] <- utils::read.csv(paths[i],
-                                      stringsAsFactors = FALSE,
-                                      na.strings = c("", "NA"))
+      stringsAsFactors = FALSE,
+      na.strings = c("", "NA")
+    )
   }
   names(form_list) <- clean_names
   form_list
@@ -541,13 +546,15 @@ form_to_wb <- function(
             firstActiveCol <- firstActiveCol + freeze_key_cols[length(freeze_key_cols)]
           } else {
             warning("key_cols must be consecutive and start from the left most column.",
-                    immediate. = TRUE)
+              immediate. = TRUE
+            )
           }
         }
         openxlsx::freezePane(wb,
-                             form_name,
-                             firstActiveRow = firstActiveRow,
-                             firstActiveCol = firstActiveCol)
+          form_name,
+          firstActiveRow = firstActiveRow,
+          firstActiveCol = firstActiveCol
+        )
       }
     }
     return(wb)
@@ -581,9 +588,10 @@ list_to_wb <- function(
     }
   }
   list_names_rename <- stringr::str_trunc(list_names,
-                                          width = 31,
-                                          side = "right",
-                                          ellipsis = "")
+    width = 31,
+    side = "right",
+    ellipsis = ""
+  )
   bad_names <- dw(list_names_rename)
   if (length(bad_names) > 0) {
     warning(
@@ -863,7 +871,9 @@ clean_function <- function(func) {
   environment(func) <- emptyenv()
   func
 }
-object_size <- function(x) {format(utils::object.size(x), units = "auto")}
+object_size <- function(x) {
+  format(utils::object.size(x), units = "auto")
+}
 file_size <- function(path) {
   format(structure(file.size(path), class = "object_size"), units = "auto")
 }
@@ -877,7 +887,8 @@ list_files_real <- function(path, full_names = TRUE, recursive = FALSE) {
   grep(
     "~$",
     sanitize_path(list.files(
-      path, full.names = full_names, recursive = recursive
+      path,
+      full.names = full_names, recursive = recursive
     )),
     fixed = TRUE,
     value = TRUE,
@@ -945,7 +956,7 @@ check_match <- function(vec_list) {
   sorted_vecs <- lapply(vec_list, sort)
   all(
     unlist(
-      lapply(sorted_vecs[-1], function(x){
+      lapply(sorted_vecs[-1], function(x) {
         identical(sorted_vecs[[1]], x)
       })
     )

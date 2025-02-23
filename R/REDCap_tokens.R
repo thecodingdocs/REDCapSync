@@ -235,7 +235,7 @@ get_REDCap_token_name <- function(project) {
   if (is_something(project$redcap$token_name)) {
     token_name <- project$redcap$token_name
   }
-  return(token_name)
+  token_name
 }
 internal_project_path_suffix <- "_REDCapSync.RData"
 internal_project_details_path_suffix <- "_REDCapSync_details.RData"
@@ -269,5 +269,5 @@ get_test_token <- function(short_name) {
   if (short_name == "TEST_multiarm") {
     token <- internal_TEST_multiarm_token
   }
-  return(token)
+  token
 }

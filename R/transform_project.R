@@ -51,7 +51,7 @@ extract_form_from_merged <- function(project, form_name) {
     #   add_ons <- add_ons[which(!add_ons%in%c("redcap_repeat_instrument","redcap_repeat_instance"))]
     # }
     cols <- unique(c(add_ons, project$metadata$fields$field_name[which(project$metadata$fields$form_name == form_name & project$metadata$fields$field_name %in% colnames(merged))]))
-    return(merged[rows, cols])
+    merged[rows, cols]
   }
 }
 #' @rdname default-transformations
@@ -114,7 +114,7 @@ default_project_transformation <- function(project) {
     unlist()
   forms_transformation$x_first <- FALSE
   forms_transformation$x_first[which(forms_transformation$repeating)] <- TRUE
-  return(forms_transformation)
+  forms_transformation
 }
 #' @rdname default-transformations
 #' @export
@@ -164,7 +164,7 @@ add_default_project_fields <- function(project) {
           }
           cols <- cols[-1]
         }
-        return(form)
+        form
       }
     )
   }
@@ -349,7 +349,7 @@ combine_original_transformed_fields <- function(project) {
       dplyr::bind_rows(field_row) %>%
       dplyr::bind_rows(bottom)
   }
-  return(fields)
+  fields
 }
 #' @noRd
 run_fields_transformation <- function(project) {
@@ -544,7 +544,7 @@ transform_project <- function(project, reset = FALSE) {
           if (!forms_transformation$repeating[row_match]) {
             return(project$metadata$form_key_cols[[x]])
           }
-          return(paste0(forms_transformation$form_name[row_match], "_key"))
+          paste0(forms_transformation$form_name[row_match], "_key")
         })
     }
     project$internals$is_transformed <- TRUE
@@ -586,7 +586,7 @@ transform_project <- function(project, reset = FALSE) {
 missing_form_names <- function(project) {
   form_names <- names(project$data)
   form_names <- form_names[which(!form_names %in% project$metadata$forms$form_name)]
-  return(form_names)
+  form_names
 }
 #' @noRd
 missing_field_names <- function(project) {

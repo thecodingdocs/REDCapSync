@@ -23,7 +23,7 @@ get_projects <- function() {
   if (!does_exist || !is_ok) {
     return(internal_blank_project_details())
   }
-  return(projects)
+  projects
 }
 #' @title List File Paths of REDCapSync Projects in a Folder
 #' @description
@@ -393,7 +393,7 @@ delete_project_by_name <- function(short_name) {
   projects <- projects[other_projects, ]
   message("Deleted: ", short_name)
   save_projects_to_cache(projects)
-  return(projects)
+  projects
 }
 #' @noRd
 internal_field_colnames <- c(

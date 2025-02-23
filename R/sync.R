@@ -168,7 +168,7 @@ due_for_sync <- function(project_name) {
       return(now >= (then + lubridate::dmonths(1)))
     }
   }
-  return(TRUE)
+  TRUE
 }
 due_for_sync2 <- function() {
   now <- now_time()
@@ -214,7 +214,7 @@ due_for_sync2 <- function() {
   if (length(result_rows) == 0) {
     return(NULL)
   }
-  return(project_names[result_rows])
+  project_names[result_rows]
 }
 sweep_dirs_for_cache <- function(project_names = NULL) {
   projects <- get_projects()

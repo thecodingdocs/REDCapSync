@@ -372,7 +372,7 @@ clean_redcap_log <- function(log) {
   log$record_id <- NULL
   log$username[which(log$username == "[survey respondent]")] <- NA
   # add drop exports?
-sort_redcap_log(log)
+  sort_redcap_log(log)
 }
 #' @noRd
 internal_log_action_exports <- c(

@@ -10,7 +10,7 @@ assert_dir <- function(dir_path, silent = TRUE) {
   }
   # if ( ! file.exists(file.path(dir_path,"ref_tables"))) stop("'",dir_path,"/ref_tables' missing! ",stop_mes)
   if (!silent) bullet_in_console("Directory is Valid!", url = dir_path, bullet_type = "v")
-  return(dir_path)
+  dir_path
 }
 #' @noRd
 get_project_token <- function(project, silent = TRUE) {
@@ -60,7 +60,7 @@ get_project_token <- function(project, silent = TRUE) {
       )
     }
   }
-  return(token)
+  token
 }
 #' @noRd
 assert_web_link <- function(link) {
@@ -77,7 +77,7 @@ assert_web_link <- function(link) {
   }
   # Add a trailing slash
   link <- paste0(link, "/")
-  return(link)
+  link
 }
 #' @noRd
 assert_env_name <- function(
@@ -149,7 +149,7 @@ assert_env_name <- function(
       )
     }
   }
-  return(invisible(env_name))
+  invisible(env_name)
 }
 #' @noRd
 assert_blank_project <- function(
@@ -296,7 +296,7 @@ assert_setup_project <- function(
 assert_collection <- function(collection) {
   assert_list(collection, any.missing = FALSE, len = 3, names = "unique")
   assert_names(names(collection), identical.to = names(makeAssertCollection()))
-  return(invisible(collection))
+  invisible(collection)
 }
 assert_project_details <- function(projects, nrows = NULL) {
   assert_data_frame(

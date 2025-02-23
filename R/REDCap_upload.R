@@ -190,7 +190,7 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
           if (record %in% included_records) {
             return(old$redcap_repeat_instance[which(old[[project$redcap$id_col]] == record)])
           }
-          return("1")
+          "1"
         }) %>%
         unlist()
     }

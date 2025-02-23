@@ -58,11 +58,11 @@ process_df_list <- function(list, drop_empty = TRUE, silent = FALSE) {
       is_a_df_with_rows <- list %>%
         lapply(function(x) {
           is_df <- is.data.frame(x)
+          out <- FALSE
           if (is_df) {
-            return(nrow(x) > 0)
-          } else {
-            return(FALSE)
+            out <- nrow(x) > 0
           }
+          out
         }) %>%
         unlist()
       keeps <- which(is_a_df_with_rows)
@@ -120,7 +120,7 @@ is_something <- function(thing, row = 0) {
 sanitize_path <- function(path) {
   sanitized <- gsub("\\\\", "/", path)
   sanitized <- normalizePath(sanitized, winslash = "/", mustWork = FALSE)
-  return(sanitized)
+  sanitized
 }
 find_form_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
   new <- all_character_cols(new)
@@ -651,7 +651,7 @@ unique_trimmed_strings <- function(strings, max_length) {
     unique_strings[i] <- new_string
     counts[i] <- counter
   }
-  return(unique_strings)
+  unique_strings
 }
 list_to_excel <- function(
     list,
@@ -805,14 +805,14 @@ is_consecutive_srt_1 <- function(vec) {
       }
     }
   }
-  return(TRUE)
+  TRUE
 }
 remove_html_tags <- function(text_vector) {
   # Regular expression to match HTML tags
   html_pattern <- "<[^>]+>"
   # Use gsub to remove the HTML tags from each element in the vector
   cleaned_vector <- gsub(html_pattern, "", text_vector)
-  return(cleaned_vector)
+  cleaned_vector
 }
 matches <- function(x, ref, count_only = FALSE) {
   final_match <- list()
@@ -822,11 +822,13 @@ matches <- function(x, ref, count_only = FALSE) {
   while (length(next_match_index) > 0) {
     final_match[next_match_index] <-
       next_match_index %>% lapply(function(index) {
+        out <- NULL
         if (all(is.na(final_match[[index]]))) {
-          return(next_match[index])
+          out <- next_match[index]
         } else {
-          return(c(final_match[[index]], next_match[index]))
+          out <- c(final_match[[index]], next_match[index])
         }
+        out
       })
     ref[next_match[which(!is.na(next_match))]] <- NA
     next_match <- match(x, ref)
@@ -838,17 +840,17 @@ matches <- function(x, ref, count_only = FALSE) {
         if (is.na(x[1])) {
           return(NA)
         }
-        return(length(x))
+        length(x)
       }) %>%
       unlist()
   }
-  return(final_match)
+  final_match
 }
 choice_vector_string <- function(vec) {
   if (!is_something(vec)) {
     return(NA)
   }
-  return(paste0(paste0(seq_along(vec), ", ", vec), collapse = " | "))
+  paste0(paste0(seq_along(vec), ", ", vec), collapse = " | ")
 }
 function_to_string <- function(func) {
   # Deparse the function and collapse into a single string using "\n"
@@ -859,11 +861,9 @@ clean_function <- function(func) {
     stop("Input must be a function")
   }
   environment(func) <- emptyenv()
-  return(func)
+  func
 }
-object_size <- function(x) {
-  return(format(utils::object.size(x), units = "auto"))
-}
+object_size <- function(x) {format(utils::object.size(x), units = "auto")}
 file_size <- function(path) {
   format(structure(file.size(path), class = "object_size"), units = "auto")
 }
@@ -967,11 +967,13 @@ is_env_name <- function(env_name, silent = FALSE) {
       return(TRUE)
     },
     error = function(e) {
-      if (!silent) message(e$message)
-      return(FALSE)
+      if (!silent) {
+        message(e$message)
+      }
+      FALSE
     }
   )
-  return(result)
+  result
 }
 is_nested_list <- function(x) {
   if (!is.list(x)) {
@@ -984,7 +986,7 @@ is_nested_list <- function(x) {
   for (i in seq_along(x)) {
     outcome <- outcome || is_nested_list(x[[i]])
   }
-  return(outcome)
+  outcome
 }
 clean_num <- function(num) {
   formatC(num, format = "d", big.mark = ",")
@@ -1013,7 +1015,7 @@ is_date <- function(date) {
       day >= 1 &&
       day <= 31 && year >= 1900 && year <= lubridate::year(Sys.Date())
   }
-  return(out)
+  out
 }
 is_date_full <- function(date) {
   grepl("^\\d{4}-\\d{2}-\\d{2}$", date)

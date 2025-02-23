@@ -223,7 +223,7 @@ merge_non_rep_project_transformation <- function(project) {
   forms_transformation$merge_to <- NA
   forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to
   forms_transformation$x_first <- FALSE
-  return(forms_transformation)
+  forms_transformation
 }
 #' @title Reads project from the dropped REDCap files in dir/REDCap/upload
 #' @inheritParams save_project

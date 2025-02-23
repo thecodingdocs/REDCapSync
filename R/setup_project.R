@@ -389,11 +389,11 @@ load_test_project <- function(short_name = "TEST_repeating", with_data = FALSE) 
 }
 #' @noRd
 is_test_short_name <- function(short_name) {
-  return(short_name %in% internal_allowed_test_short_names)
+  short_name %in% internal_allowed_test_short_names
 }
 #' @noRd
 is_test_project <- function(project) {
-  return((project$short_name %in% internal_allowed_test_short_names) && project$internals$is_test)
+  (project$short_name %in% internal_allowed_test_short_names) && project$internals$is_test
 }
 #' @rdname save-deleteproject
 #' @title Save or Delete project file from the directory
@@ -466,7 +466,7 @@ get_dir <- function(project) {
     bullet_in_console("Searched for directory --> '", file = dir_path, bullet_type = "x")
     stop(paste0("Does not exist. ", stop_mes))
   }
-  return(assert_dir(dir_path, silent = TRUE))
+  assert_dir(dir_path, silent = TRUE)
 }
 #' @title nav_to_dir
 #' @inheritParams save_project
@@ -679,7 +679,7 @@ set_dir <- function(dir_path) {
       dir.create(file.path(dir_path, folder), showWarnings = FALSE)
     }
   }
-  return(assert_dir(dir_path, silent = FALSE))
+  assert_dir(dir_path, silent = FALSE)
 }
 #' @noRd
 internal_dir_folders <- c("R_objects", "output", "scripts", "input", "REDCap")
@@ -689,5 +689,5 @@ clean_dir_path <- function(dir_path) {
   dir_path <- dir_path %>%
     trimws(whitespace = "[\\h\\v]") %>%
     sanitize_path()
-  return(dir_path)
+  dir_path
 }

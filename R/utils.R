@@ -30,7 +30,7 @@ add_redcap_links_to_form <- function(form, project) { # add instance links
         paste0("&arm=", form[["arm_number"]])
     }
   }
-  return(form)
+  form
 }
 #' @noRd
 count_project_upload_cells <- function(project) {
@@ -52,7 +52,7 @@ husk_of_form <- function(project, form_name, field_names) {
     form2[[col]] <- form[[col]]
   }
   form2 <- as.data.frame(form2)
-  return(form2)
+  form2
 }
 #' @noRd
 all_project_to_char_cols <- function(project) {
@@ -92,7 +92,7 @@ clean_form_to_field_labels <- function(form, project) {
       ifelse(length(x) > 0, x, field_name)
     }) %>%
     unlist()
-  return(form)
+  form
 }
 #' @noRd
 clean_form2 <- function(form, project) {

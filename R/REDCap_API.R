@@ -6,7 +6,7 @@ project_rcon <- function(project) {
     token = get_project_token(project)
   )
   # test connection
-  return(rcon)
+  rcon
 }
 #' @noRd
 get_REDCap_metadata <- function(project, include_users = TRUE) {
@@ -248,7 +248,7 @@ get_REDCap_users <- function(project) {
   user_roles <- redcapAPI::exportUserRoles(rcon = rcon, labels = FALSE, form_rights = FALSE)
   user_role_assignments <- redcapAPI::exportUserRoleAssignments(rcon = rcon)
   final <- merge(merge(user_roles[, c("unique_role_name", "role_label")], user_role_assignments, by = "unique_role_name"), users, by = "username", all.y = TRUE)
-  return(final)
+  final
 }
 #' @noRd
 get_REDCap_log <- function(project, log_begin_date = Sys.Date() - 10L, clean = TRUE, record = NULL, user = NULL) {
@@ -325,7 +325,7 @@ rename_forms_redcap_to_default <- function(forms) {
   the_names[which(the_names == "instrument_name")] <- "form_name"
   the_names[which(the_names == "instrument_label")] <- "form_label"
   colnames(forms) <- the_names
-  return(forms)
+  forms
 }
 #' @noRd
 rename_forms_default_to_redcap <- function(forms) {
@@ -333,5 +333,5 @@ rename_forms_default_to_redcap <- function(forms) {
   the_names[which(the_names == "form_name")] <- "instrument_name"
   the_names[which(the_names == "form_label")] <- "instrument_label"
   colnames(forms) <- the_names
-  return(forms)
+  forms
 }

@@ -19,9 +19,9 @@ link_REDCap_project(project)
 link_REDCap_record(project, record, page, instance, text_only = FALSE)
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
-settings. Generated using \code{project <- \link{load_project}("PROJ")} or
-\link{setup_project}()}
+\item{project}{A validated \code{project} object containing REDCap project data
+and settings. Generated using \code{project <- \link{load_project}("PROJ")}
+or \link{setup_project}()}
 
 \item{record}{REDCap record id or study id etc, any column names that match
 \code{project$redcap$id_col}}
@@ -43,7 +43,7 @@ Opens browser page for a given project object.
 Uses \code{\link[utils:browseURL]{utils::browseURL()}} to open the specified REDCap page.
 In order for the function to work you must have ran
 \code{project <- sync_project(project)} successfully at least once.
-If the link brings you to a page that doesn't work check the url. It's
+If the link brings you to a page that doesn't work check the URL. It's
 possible your institution may have changed redcap versions, which is part of
 the URL. In that case run \code{project <- sync_project(project)} again.
 You may have to be signed into REDCap for it to work properly.

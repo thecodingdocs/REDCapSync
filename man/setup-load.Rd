@@ -75,7 +75,8 @@ Default is \code{500}.}
 \item{entire_log}{Logical (TRUE/FALSE). If TRUE, retrieves the entire log.
 Default is \code{FALSE}.}
 
-\item{days_of_log}{Integer. Number of days to be checked in the log if a reset
+\item{days_of_log}{Integer. Number of days to be checked in the log if a
+reset
 or new project is setup. Default is \code{10}.}
 
 \item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
@@ -107,7 +108,8 @@ REDCapSync \code{project} list object.
 Setup or Load the \code{project} object for pipeline.
 }
 \details{
-This function sets up the \code{project} object by storing the REDCap API token and
+This function sets up the \code{project} object by storing the REDCap API token
+and
 other configurations required for interacting with the REDCap server.
 It ensures that the token is valid and ready for use in subsequent API calls.
 Neither function directly attempts communication with REDCap.
@@ -118,7 +120,8 @@ Unless you run \code{reset = TRUE} the default will first try load_project.
 dir_path is technically optional but without it the user cannot
 save/load/update projects.
 
-\code{load_project} can be used with just the \code{short_name} parameter after you have
+\code{load_project} can be used with just the \code{short_name} parameter after you
+have
 already run \code{setup_project} in the past with an established directory.
 \code{dir_path}
 is optional for this function but can be used if you relocated the directory.

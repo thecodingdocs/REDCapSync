@@ -13,7 +13,8 @@ read_from_REDCap_upload(
 )
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{allow_all}{logical TF for allowing project$data names that are not also

@@ -15,7 +15,8 @@ sync_project(
 )
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{set_token_if_fails}{Logical (TRUE/FALSE). If TRUE, prompts the user to
@@ -38,8 +39,7 @@ Messages for confirmation.
 }
 \description{
 Updates the REDCap database (\code{project} object) by fetching the latest data
-from
-the REDCap server.
+from the REDCap server.
 }
 \details{
 This function updates the REDCap database by fetching the latest data from

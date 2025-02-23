@@ -4,7 +4,8 @@
 #' Setup or Load the `project` object for pipeline.
 #'
 #' @details
-#' This function sets up the `project` object by storing the REDCap API token and
+#' This function sets up the `project` object by storing the REDCap API token
+#' and
 #' other configurations required for interacting with the REDCap server.
 #' It ensures that the token is valid and ready for use in subsequent API calls.
 #' Neither function directly attempts communication with REDCap.
@@ -15,7 +16,8 @@
 #' dir_path is technically optional but without it the user cannot
 #' save/load/update projects.
 #'
-#' `load_project` can be used with just the `short_name` parameter after you have
+#' `load_project` can be used with just the `short_name` parameter after you
+#' have
 #' already run `setup_project` in the past with an established directory.
 #' `dir_path`
 #' is optional for this function but can be used if you relocated the directory.
@@ -41,7 +43,8 @@
 #' form. Default is "merged".
 #' @param use_csv Logical (TRUE/FALSE). If TRUE, uses CSV files for data
 #' storage. Default is `FALSE`.
-#' @param days_of_log Integer. Number of days to be checked in the log if a reset
+#' @param days_of_log Integer. Number of days to be checked in the log if a
+#' reset
 #' or new project is setup. Default is `10`.
 #' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
 #' Default is `FALSE`.
@@ -394,7 +397,8 @@ is_test_project <- function(project) {
 }
 #' @rdname save-deleteproject
 #' @title Save or Delete project file from the directory
-#' @param project A validated `project` object containing REDCap project data and
+#' @param project A validated `project` object containing REDCap project data
+#' and
 #' settings. Generated using \link{load_project} or \link{setup_project}
 #' @inheritParams setup_project
 #' @description

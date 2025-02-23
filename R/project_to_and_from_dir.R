@@ -11,14 +11,16 @@
 #' file names and truncation of strings.
 #'
 #' @inheritParams save_project
-#' @param records Character vector of records you want dropped to your directory.
+#' @param records Character vector of records you want dropped to your
+#' directory.
 #' @param deidentify Logical (TRUE/FALSE). If TRUE, deidentifies the data.
 #' Default is `FALSE`.
 #' @param smart Logical (TRUE/FALSE). If TRUE, only saves when data is new.
 #' Default is `TRUE`.
 #' @param include_metadata Logical (TRUE/FALSE). If TRUE, includes metadata in
 #' the export. Default is `TRUE`.
-#' @param include_other Logical (TRUE/FALSE). If TRUE, includes other data in the
+#' @param include_other Logical (TRUE/FALSE). If TRUE, includes other data in
+#' the
 #' export. Default is `TRUE`.
 #' @param file_name Optional character string for adding to the front of file
 #' names.
@@ -31,7 +33,8 @@
 #' non-repeating instruments. Default is `FALSE`.
 #' @param dir_other Optional character string a different folder than
 #' project$dir_path.
-#' @param forms Optional character vector for selecting specific forms to export.
+#' @param forms Optional character vector for selecting specific forms to
+#' export.
 #' @return Messages for confirmation.
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.

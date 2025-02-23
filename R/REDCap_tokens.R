@@ -19,7 +19,9 @@
 #' @seealso
 #' For the function to work you need to have a valid project object from
 #' \code{\link{setup_project}()}.
-#' See our \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
+#' See our
+#'
+#' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
@@ -92,11 +94,14 @@ view_project_token <- function(project) {
 #' @param set_if_fails Logical (TRUE/FALSE). If TRUE and test connection fails,
 #' asks user to paster token into consult using `set_project_token(project)`
 #' function. Default is `TRUE`.
-#' @param launch_browser Logical (TRUE/FALSE). If TRUE, launches the REDCap login
-#' page in the default web browser when validation fails. Default is `TRUE`.
+#' @param launch_browser Logical (TRUE/FALSE). If TRUE, launches the REDCap
+#' login page in the default web browser when validation fails. Default is
+#' `TRUE`.
 #' @return Logical. Returns `TRUE` if the API token is valid, otherwise `FALSE`.
 #' @seealso
 #' \href{../articles/Tokens.html}{pkgdown article on tokens}
+#'
+#'
 #' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{pkgdown article on tokens}
 #' @family Token Functions
 #' @keywords Token Functions

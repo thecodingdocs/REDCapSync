@@ -7,7 +7,8 @@
 deidentify_project(project, identifiers, drop_free_text = FALSE)
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{identifiers}{Optional character vector of column names that should be
@@ -21,7 +22,7 @@ will also be excluded from the \code{project}. Default is \code{FALSE}.}
 A \code{project} object with deidentified forms.
 }
 \description{
-Removes or masks identifying information from the REDCap database (\code{project}).
+Removes identifying information from the REDCap object (\code{project}).
 This can be done either based on the \code{identifier} field in the metadata or
 by specifying custom identifiers.
 }

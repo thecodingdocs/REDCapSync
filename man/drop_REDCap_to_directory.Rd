@@ -21,10 +21,12 @@ drop_REDCap_to_directory(
 )
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{records}{Character vector of records you want dropped to your directory.}
+\item{records}{Character vector of records you want dropped to your
+directory.}
 
 \item{smart}{Logical (TRUE/FALSE). If TRUE, only saves when data is new.
 Default is \code{TRUE}.}
@@ -35,13 +37,15 @@ Default is \code{FALSE}.}
 \item{include_metadata}{Logical (TRUE/FALSE). If TRUE, includes metadata in
 the export. Default is \code{TRUE}.}
 
-\item{include_other}{Logical (TRUE/FALSE). If TRUE, includes other data in the
+\item{include_other}{Logical (TRUE/FALSE). If TRUE, includes other data in
+the
 export. Default is \code{TRUE}.}
 
 \item{with_links}{Optional logical (TRUE/FALSE) for including links in Excel
 sheets. Default is \code{FALSE}.}
 
-\item{forms}{Optional character vector for selecting specific forms to export.}
+\item{forms}{Optional character vector for selecting specific forms to
+export.}
 
 \item{merge_non_repeating}{Optional logical (TRUE/FALSE) for merging
 non-repeating instruments. Default is \code{FALSE}.}

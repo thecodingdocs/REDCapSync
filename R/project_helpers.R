@@ -1,6 +1,6 @@
 #' @title Deidentify the REDCap Database
 #' @description
-#' Removes or masks identifying information from the REDCap database (`project`).
+#' Removes identifying information from the REDCap object (`project`).
 #' This can be done either based on the `identifier` field in the metadata or
 #' by specifying custom identifiers.
 #'
@@ -92,15 +92,15 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
 #' Uses [utils::browseURL()] to open the specified REDCap page.
 #' In order for the function to work you must have ran
 #' \code{project <- sync_project(project)} successfully at least once.
-#' If the link brings you to a page that doesn't work check the url. It's
+#' If the link brings you to a page that doesn't work check the URL. It's
 #' possible your institution may have changed redcap versions, which is part of
 #' the URL. In that case run \code{project <- sync_project(project)} again.
 #' You may have to be signed into REDCap for it to work properly.
 #' When in doubt, just seek out the page by navigating on your own in REDCap.
 #' Report issues if you can.
-#' @param project A validated `project` object containing REDCap project data and
-#' settings. Generated using \code{project <- \link{load_project}("PROJ")} or
-#' \link{setup_project}()
+#' @param project A validated `project` object containing REDCap project data
+#' and settings. Generated using \code{project <- \link{load_project}("PROJ")}
+#' or \link{setup_project}()
 #' @return Nothing will be returned in R. Instead, a browser link
 #' @family Link Functions
 #' @export

@@ -7,31 +7,29 @@
 rmarkdown_project(project, dir_other)
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{dir_other}{Character string specifying the directory where the RMarkdown
-report will be saved.
-If not provided, it defaults to the \code{output} directory inside the project's
-main directory.}
+\item{dir_other}{Character string specifying the directory where the
+RMarkdown report will be saved. If not provided, it defaults to the \code{output}
+directory inside the project's main directory.}
 }
 \value{
-A message indicating the creation of the RMarkdown report and the path
-to the generated file.
+A message indicating the creation of the RMarkdown report and the
+path to the generated file.
 }
 \description{
 Generates an RMarkdown report for the given REDCap database (\code{project}
-object).
-This function creates an RMarkdown file in the specified directory or default
-directory,
-allowing users to create custom reports based on the database content.
+object). This function creates an RMarkdown file in the specified directory
+or default directory, allowing users to create custom reports based on the
+database content.
 }
 \details{
 This function checks if a directory is specified, and if not, defaults to the
-\code{output} folder
-within the project's directory. It generates the RMarkdown file that can then
-be used for further
-processing or rendering into HTML, PDF, or other formats.
+\code{output} folder within the project's directory. It generates the RMarkdown
+file that can then be used for further processing or rendering into HTML,
+PDF, or other formats.
 }
 \seealso{
 \code{\link[REDCapSync]{save_project}} for saving the \code{project} object.

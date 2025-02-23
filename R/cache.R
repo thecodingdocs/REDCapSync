@@ -1,10 +1,11 @@
 #' @title Get your Get Cache Path
 #' @description
 #' Included for transparency and confirmation/testing. This is where the basic
-#' information about your projects is cached when you use the REDCapSync package.
+#' information about your projects is cached when you use the REDCapSync
+#' package.
 #' @details
-#' This function checks the location of the cache established
-#' by \code{\link[hoardr]{hoard}}.
+#' This function checks the location of the cache established by
+#' \code{\link[hoardr]{hoard}}.
 #' \emph{No project data is stored here. Tokens are not stored here either.}
 #' Key information stored here is `short_name` (primary key for REDCapSync
 #' projects) and other details about project information.

@@ -13,7 +13,8 @@ upload_project_to_REDCap(
 )
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{batch_size}{Numeric. The number of records to upload in each batch.
@@ -29,7 +30,8 @@ records before upload. Defaults to TRUE.}
 data. Default is 20.}
 }
 \value{
-A series of messages indicating the progress and status of the upload.
+A series of messages indicating the progress and status of the
+upload.
 }
 \description{
 This function is designed to upload changes from a locally modified \code{project}
@@ -38,6 +40,7 @@ object to REDCap. It should be run after using
 The function compares the imported data (\code{project_import}) to the existing
 data in \code{project} and only uploads new or changed data. It will not directly
 delete any data.
+
 This function has the potential to modify your data, so it should be used
 cautiously. Any changes made through this function will be logged in the
 REDCap log.
@@ -48,8 +51,7 @@ between the locally imported data (\code{project_import}) and the existing data
 (\code{project}).
 It uploads changes in batches as specified by \code{batch_size} and allows you to
 preview the changes before the upload if \code{ask} is set to TRUE.
-It will not delete any data from REDCap, and it is intended to only upload new
-or modified records.
-This function is not fully ready for production use and should be used with
-caution. Any issues during the upload will be logged in the REDCap system log.
+It will not delete any data from REDCap, and it is intended to only upload
+new or modified records. This function should be used with caution. Any
+changes during the upload will be logged in the REDCap system log.
 }

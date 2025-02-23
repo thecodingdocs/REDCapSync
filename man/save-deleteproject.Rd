@@ -10,7 +10,8 @@ save_project(project, silent = FALSE)
 delete_project(project)
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{silent}{Logical (TRUE/FALSE). For messages.}

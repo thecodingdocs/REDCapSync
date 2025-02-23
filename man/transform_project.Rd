@@ -7,7 +7,8 @@
 transform_project(project, reset = FALSE)
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{reset}{Logical that forces transformation if TRUE. Default is \code{FALSE}.}
@@ -17,9 +18,8 @@ The transformed \code{project} object.
 }
 \description{
 Transforms the REDCap database (\code{project} object) by applying the necessary
-field transformations.
-This function modifies the structure of the data and records according to the
-transformation rules specified.
+field transformations. This function modifies the structure of the data and
+records according to the transformation rules specified.
 }
 \details{
 This function checks if the database has already been transformed and applies

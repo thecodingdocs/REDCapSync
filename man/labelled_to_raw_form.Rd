@@ -10,7 +10,8 @@ labelled_to_raw_form(form, project)
 \item{form}{data.frame of labelled REDCap to be converted to raw REDCap
 (for uploads)}
 
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 }
 \value{

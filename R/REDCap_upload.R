@@ -30,6 +30,7 @@ upload_form_to_REDCap <- function(to_be_uploaded, project, batch_size = 500) {
 #' The function compares the imported data (`project_import`) to the existing
 #' data in `project` and only uploads new or changed data. It will not directly
 #' delete any data.
+#'
 #' This function has the potential to modify your data, so it should be used
 #' cautiously. Any changes made through this function will be logged in the
 #' REDCap log.
@@ -44,7 +45,8 @@ upload_form_to_REDCap <- function(to_be_uploaded, project, batch_size = 500) {
 #' @param n_row_view Numeric. The number of rows to display when previewing old
 #' data. Default is 20.
 #'
-#' @return A series of messages indicating the progress and status of the upload.
+#' @return A series of messages indicating the progress and status of the
+#' upload.
 #'
 #' @details
 #' This function uploads changes to a REDCap project, based on the differences
@@ -52,10 +54,9 @@ upload_form_to_REDCap <- function(to_be_uploaded, project, batch_size = 500) {
 #' (`project`).
 #' It uploads changes in batches as specified by `batch_size` and allows you to
 #' preview the changes before the upload if `ask` is set to TRUE.
-#' It will not delete any data from REDCap, and it is intended to only upload new
-#' or modified records.
-#' This function is not fully ready for production use and should be used with
-#' caution. Any issues during the upload will be logged in the REDCap system log.
+#' It will not delete any data from REDCap, and it is intended to only upload
+#' new or modified records. This function should be used with caution. Any
+#' changes during the upload will be logged in the REDCap system log.
 #' @export
 upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view_old = TRUE, n_row_view = 20) {
   warning("This function is not ready for primetime yet! Use at your own risk!", immediate. = TRUE)
@@ -115,8 +116,8 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
 #' @details
 #' The function compares the data in `project$data_updates` (new data) with the
 #' current data in the database (`project$data`). If the form names in the new
-#' data do not match the `project$metadata$forms$form_name`, a warning is issued.
-#' The function goes through each table in the new data and compares it with the
+#' data do not match the `project$metadata$forms$form_name`, a warning is
+#' issued. The function goes through each table in the new data and compares it with the
 #' old data, recording the differences.
 #'
 #' The `compare` and `to` parameters allow users to specify specific data
@@ -253,15 +254,14 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
 #'
 #' @inheritParams save_project
 #' @param optional_form Optional data frame. A data frame containing the data to
-#' be
-#' edited. If not provided, the function will pull the data from the REDCap
+#' be edited. If not provided, the function will pull the data from the REDCap
 #' database using the specified `field_name_to_change`.
 #' @param records Character or numeric vector. The records to be edited. If not
 #' provided, the function will use the unique values from the specified forms.
 #' @param field_name_to_change Character. The field name to be changed in the
 #' REDCap database.
-#' @param field_names_to_view Optional character vector. A list of field names to
-#' view alongside the field being edited. Defaults to `NULL`, in which case only
+#' @param field_names_to_view Optional character vector. A list of field names
+#' to view alongside the field being edited. Defaults to `NULL`, in which case only
 #' the field being changed will be viewed.
 #' @param upload_individually Logical. If `TRUE`, each change is uploaded
 #' individually. Default is `TRUE`.
@@ -272,11 +272,10 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
 #'
 #' @details
 #' This function is useful when you want to edit specific fields in a REDCap
-#' project while also reviewing related data from other forms in the project. The
-#' `field_name_to_change` must be provided, and you can also specify additional
-#' fields to view while editing. The data is either passed through
-#' `optional_form`
-#' or pulled from the project based on the provided field names.
+#' project while also reviewing related data from other forms in the project.
+#' The `field_name_to_change` must be provided, and you can also specify
+#' additional fields to view while editing. The data is either passed through
+#' `optional_form` or pulled from the project based on the provided field names.
 #'
 #' @seealso
 #' \code{\link{save_project}} for saving the modified database.

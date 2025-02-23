@@ -75,10 +75,8 @@ extract_form_from_merged <- function(project, form_name) {
 #'
 #' @details
 #' This function is designed to streamline and standardize data processing by
-#' applying
-#' default transformations to the database forms. The transformations are
-#' predefined
-#' within the function and ensure consistency across datasets.
+#' applying default transformations to the database forms. The transformations
+#' are predefined within the function and ensure consistency across datasets.
 #'
 #' @seealso
 #' \code{\link{save_project}} for saving the database or subsets.
@@ -217,7 +215,8 @@ add_project_transformation <- function(project, forms_transformation, ask = TRUE
 #' manipulation.
 #'
 #' @inheritParams save_project
-#' @param field_name Character. The name of the field to which the transformation
+#' @param field_name Character. The name of the field to which the
+#' transformation
 #' will be applied.
 #' @param form_name Character. The name of the form containing the field.
 #' @param field_type Character. The type of the field in REDCap (e.g., "text",
@@ -232,10 +231,10 @@ add_project_transformation <- function(project, forms_transformation, ask = TRUE
 #' Default is `NA`.
 #' @param identifier Character. A string indicating whether the field is an
 #' identifier (e.g., "Y" for yes). Default is an empty string (`""`).
-#' @param units Character. The units of measurement for the field, if applicable.
-#' Default is `NA`.
-#' @param data_func Function or NA. An optional function to transform or validate
-#' the data in the field. Default is `NA`.
+#' @param units Character. The units of measurement for the field, if
+#' applicable. Default is `NA`.
+#' @param data_func Function or NA. An optional function to transform or
+#' validate the data in the field. Default is `NA`.
 #'
 #' @return
 #' The updated `project` object with the field transformation added.
@@ -243,9 +242,9 @@ add_project_transformation <- function(project, forms_transformation, ask = TRUE
 #' @details
 #' This function facilitates the addition of a new field transformation to a
 #' REDCap database. The transformation includes metadata such as the field's
-#' type, label, and choices, along with an optional function to process the data.
-#' This is particularly useful for customizing or extending the functionality of
-#' existing REDCap forms and fields.
+#' type, label, and choices, along with an optional function to process the
+#' data. This is particularly useful for customizing or extending the
+#' functionality of existing REDCap forms and fields.
 #'
 #' @seealso
 #' \code{\link{save_project}} for saving the database or subsets.
@@ -403,9 +402,8 @@ run_fields_transformation <- function(project) {
 #' @title transform_project
 #' @description
 #' Transforms the REDCap database (`project` object) by applying the necessary
-#' field transformations.
-#' This function modifies the structure of the data and records according to the
-#' transformation rules specified.
+#' field transformations. This function modifies the structure of the data and
+#' records according to the transformation rules specified.
 #'
 #' @details
 #' This function checks if the database has already been transformed and applies

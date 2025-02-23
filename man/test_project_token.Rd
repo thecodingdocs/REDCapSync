@@ -7,15 +7,17 @@
 test_project_token(project, set_if_fails = TRUE, launch_browser = TRUE)
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{set_if_fails}{Logical (TRUE/FALSE). If TRUE and test connection fails,
 asks user to paster token into consult using \code{set_project_token(project)}
 function. Default is \code{TRUE}.}
 
-\item{launch_browser}{Logical (TRUE/FALSE). If TRUE, launches the REDCap login
-page in the default web browser when validation fails. Default is \code{TRUE}.}
+\item{launch_browser}{Logical (TRUE/FALSE). If TRUE, launches the REDCap
+login page in the default web browser when validation fails. Default is
+\code{TRUE}.}
 }
 \value{
 Logical. Returns \code{TRUE} if the API token is valid, otherwise \code{FALSE}.
@@ -33,6 +35,7 @@ using the console.
 }
 \seealso{
 \href{../articles/Tokens.html}{pkgdown article on tokens}
+
 \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{pkgdown article on tokens}
 
 Other Token Functions: 

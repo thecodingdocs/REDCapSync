@@ -16,7 +16,8 @@ add_default_project_fields(project)
 add_project_transformation(project, forms_transformation, ask = TRUE)
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{forms_transformation}{a data.frame that matches instruments. See
@@ -39,10 +40,8 @@ forms.
 }
 \details{
 This function is designed to streamline and standardize data processing by
-applying
-default transformations to the database forms. The transformations are
-predefined
-within the function and ensure consistency across datasets.
+applying default transformations to the database forms. The transformations
+are predefined within the function and ensure consistency across datasets.
 }
 \seealso{
 \code{\link{save_project}} for saving the database or subsets.

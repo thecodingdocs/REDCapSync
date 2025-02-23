@@ -19,10 +19,12 @@ add_project_field(
 )
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{field_name}{Character. The name of the field to which the transformation
+\item{field_name}{Character. The name of the field to which the
+transformation
 will be applied.}
 
 \item{form_name}{Character. The name of the form containing the field.}
@@ -45,11 +47,11 @@ Default is \code{NA}.}
 \item{identifier}{Character. A string indicating whether the field is an
 identifier (e.g., "Y" for yes). Default is an empty string (\code{""}).}
 
-\item{units}{Character. The units of measurement for the field, if applicable.
-Default is \code{NA}.}
+\item{units}{Character. The units of measurement for the field, if
+applicable. Default is \code{NA}.}
 
-\item{data_func}{Function or NA. An optional function to transform or validate
-the data in the field. Default is \code{NA}.}
+\item{data_func}{Function or NA. An optional function to transform or
+validate the data in the field. Default is \code{NA}.}
 }
 \value{
 The updated \code{project} object with the field transformation added.
@@ -63,9 +65,9 @@ manipulation.
 \details{
 This function facilitates the addition of a new field transformation to a
 REDCap database. The transformation includes metadata such as the field's
-type, label, and choices, along with an optional function to process the data.
-This is particularly useful for customizing or extending the functionality of
-existing REDCap forms and fields.
+type, label, and choices, along with an optional function to process the
+data. This is particularly useful for customizing or extending the
+functionality of existing REDCap forms and fields.
 }
 \seealso{
 \code{\link{save_project}} for saving the database or subsets.

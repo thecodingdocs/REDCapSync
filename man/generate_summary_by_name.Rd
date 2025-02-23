@@ -7,7 +7,8 @@
 generate_summary_by_name(project, subset_name)
 }
 \arguments{
-\item{project}{A validated \code{project} object containing REDCap project data and
+\item{project}{A validated \code{project} object containing REDCap project data
+and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{subset_name}{Character. The name of the subset from which to generate

@@ -1,8 +1,7 @@
 #' @title Syncronize REDCap Data
 #' @description
 #' Updates the REDCap database (`project` object) by fetching the latest data
-#' from
-#' the REDCap server.
+#' from the REDCap server.
 #'
 #' @details
 #' This function updates the REDCap database by fetching the latest data from

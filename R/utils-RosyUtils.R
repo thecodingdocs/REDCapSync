@@ -371,7 +371,8 @@ wb_to_list <- function(wb) {
     col_row <- 1
     x <- openxlsx::getTables(wb, sheet = i)
     if (length(x) > 0) {
-      col_row <- as.integer(gsub("[A-Za-z]", "", unlist(x %>% attr("refs") %>% strsplit(":"))[[1]])) # test for xlsx without letters for cols
+      # test for xlsx without letters for cols
+      col_row <- as.integer(gsub("[A-Za-z]", "", unlist(x %>% attr("refs") %>% strsplit(":"))[[1]]))
     }
     out[[i]] <- openxlsx::read.xlsx(wb, sheet = i, startRow = col_row)
   }

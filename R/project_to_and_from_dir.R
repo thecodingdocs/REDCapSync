@@ -143,7 +143,7 @@ drop_REDCap_to_directory <- function(
           }
         }
       }
-      for (x in c("project_info","users")) { # ,"log" #taking too long
+      for (x in c("project_info", "users")) { # ,"log" #taking too long
         if (project$internals$use_csv) {
           list_to_csv(
             list = project$redcap[x],

@@ -6,7 +6,7 @@
 \usage{
 edit_REDCap_while_viewing(
   project,
-  optional_DF,
+  optional_form,
   records,
   field_name_to_change,
   field_names_to_view = NULL,
@@ -17,7 +17,7 @@ edit_REDCap_while_viewing(
 \item{project}{A validated \code{project} object containing REDCap project data and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{optional_DF}{Optional data frame. A data frame containing the data to be
+\item{optional_form}{Optional data frame. A data frame containing the data to be
 edited. If not provided, the function will pull the data from the REDCap
 database using the specified \code{field_name_to_change}.}
 
@@ -47,7 +47,7 @@ viewing and updating records individually, with flexible field selection.
 This function is useful when you want to edit specific fields in a REDCap
 project while also reviewing related data from other forms in the project. The
 \code{field_name_to_change} must be provided, and you can also specify additional
-fields to view while editing. The data is either passed through \code{optional_DF}
+fields to view while editing. The data is either passed through \code{optional_form}
 or pulled from the project based on the provided field names.
 }
 \seealso{

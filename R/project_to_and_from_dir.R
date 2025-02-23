@@ -184,15 +184,6 @@ drop_REDCap_to_directory <- function(
       ) %>% process_df_list()
     }
     link_col_list <- list()
-    # if (with_links) {
-    #   to_save_list <- to_save_list %>% lapply(function(form) {
-    #     add_redcap_links_to_DF(form, project)
-    #   })
-    #   link_col_list <- list(
-    #     "redcap_link"
-    #   )
-    #   names(link_col_list) <- project$redcap$id_col
-    # }
     if (missing(file_name)) file_name <- project$short_name
     if (project$internals$use_csv) {
       list_to_csv(

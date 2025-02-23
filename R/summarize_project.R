@@ -37,8 +37,8 @@ clean_project <- function(project, drop_blanks = FALSE, other_drops = NULL) { # 
     bullet_in_console("Already Clean", bullet_type = "v")
     return(invisible(project))
   }
-  project$data <- clean_DF_list(
-    DF_list = project$data,
+  project$data <- clean_form_list(
+    form_list = project$data,
     fields = project$metadata$fields,
     drop_blanks = drop_blanks,
     other_drops = other_drops
@@ -235,20 +235,20 @@ reverse_clean_project <- function(project) { # problematic because setting numer
   return(invisible(project))
 }
 #' @noRd
-clean_DF_list <- function(DF_list, fields, drop_blanks = TRUE, other_drops = NULL) {
-  # add check for DF_list#
-  for (form_name in names(DF_list)) {
-    DF_list[[form_name]] <- clean_DF(
-      form = DF_list[[form_name]],
+clean_form_list <- function(form_list, fields, drop_blanks = TRUE, other_drops = NULL) {
+  # add check for form_list#
+  for (form_name in names(form_list)) {
+    form_list[[form_name]] <- clean_form(
+      form = form_list[[form_name]],
       fields = fields,
       drop_blanks = drop_blanks,
       other_drops = other_drops
     )
   }
-  return(DF_list)
+  return(form_list)
 }
 #' @noRd
-clean_DF <- function(form, fields, drop_blanks = TRUE, other_drops = NULL) {
+clean_form <- function(form, fields, drop_blanks = TRUE, other_drops = NULL) {
   for (field_name in colnames(form)) {
     if (field_name %in% fields$field_name) {
       row <- which(fields$field_name == field_name)
@@ -487,7 +487,7 @@ save_REDCapSync_list <- function(
       if (length(add_links) > 0) {
         to_save_list[add_links] <- to_save_list[add_links] %>%
           lapply(function(form) {
-            add_redcap_links_to_DF(form, project)
+            add_redcap_links_to_form(form, project)
           })
         link_col_list <- list(
           "redcap_link"
@@ -578,7 +578,7 @@ generate_summary_by_name <- function(
 #' specified form and field names and optional filter criteria. If no field names
 #' or form names are provided, it defaults to using all fields and forms in the
 #' database.
-#' The function uses the helper `filter_DF_list` to apply the filtering logic to
+#' The function uses the helper `filter_form_list` to apply the filtering logic to
 #' the `project$data` list.
 #'
 #' @export
@@ -1253,9 +1253,9 @@ field_names_to_field_labels <- function(field_names, project) {
   )
 }
 #' @noRd
-construct_header_list <- function(DF_list, md_elements = c("form_name", "field_type", "field_label"), fields) {
+construct_header_list <- function(form_list, md_elements = c("form_name", "field_type", "field_label"), fields) {
   if (anyDuplicated(fields$field_name) > 0) stop("dup names not allowed in fields")
-  df_col_list <- DF_list %>% lapply(colnames)
+  df_col_list <- form_list %>% lapply(colnames)
   header_df_list <- df_col_list %>% lapply(function(field_names) {
     x <- field_names %>%
       lapply(function(field_name) {
@@ -1317,11 +1317,11 @@ labelled_to_raw_project <- function(project) {
   project
 }
 #' @noRd
-DF_list_to_text <- function(DF_list, project, drop_nas = TRUE, clean_names = TRUE) {
+form_list_to_text <- function(form_list, project, drop_nas = TRUE, clean_names = TRUE) {
   output_list <- c()
-  for (i in seq_along(DF_list)) {
-    form <- DF_list[[i]]
-    the_raw_name <- names(DF_list)[[i]]
+  for (i in seq_along(form_list)) {
+    form <- form_list[[i]]
+    the_raw_name <- names(form_list)[[i]]
     the_name <- the_raw_name
     if (clean_names) the_name <- project$metadata$forms$form_label[which(project$metadata$forms$form_name == the_raw_name)]
     df_name <- paste0("----- ", the_name, " Table -----")

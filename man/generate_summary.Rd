@@ -97,6 +97,6 @@ This function filters the data in the \code{project} object according to the
 specified form and field names and optional filter criteria. If no field names
 or form names are provided, it defaults to using all fields and forms in the
 database.
-The function uses the helper \code{filter_DF_list} to apply the filtering logic to
+The function uses the helper \code{filter_form_list} to apply the filtering logic to
 the \code{project$data} list.
 }

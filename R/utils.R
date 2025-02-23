@@ -1,15 +1,15 @@
 #' @noRd
-add_redcap_links_to_DF <- function(form, project) { # add instance links
+add_redcap_links_to_form <- function(form, project) { # add instance links
   if (project$redcap$id_col %in% colnames(form)) {
-    DF_structure_cols <- project$redcap$raw_structure_cols[which(project$redcap$raw_structure_cols %in% colnames(form))]
-    DF_structure_cols <- project$redcap$raw_structure_cols[which(project$redcap$raw_structure_cols %in% colnames(form) & project$redcap$raw_structure_cols != project$redcap$id_col)]
+    form_structure_cols <- project$redcap$raw_structure_cols[which(project$redcap$raw_structure_cols %in% colnames(form))]
+    form_structure_cols <- project$redcap$raw_structure_cols[which(project$redcap$raw_structure_cols %in% colnames(form) & project$redcap$raw_structure_cols != project$redcap$id_col)]
     link_head <- project$links$redcap_record_home
     link_tail <- "&id=" %>% paste0(form[[project$redcap$id_col]])
-    if ("redcap_repeat_instrument" %in% DF_structure_cols) {
+    if ("redcap_repeat_instrument" %in% form_structure_cols) {
       link_head <- project$links$redcap_record_subpage
       link_tail <- link_tail %>% paste0("&page=", form[["redcap_repeat_instrument"]])
     }
-    if ("redcap_repeat_instance" %in% DF_structure_cols) {
+    if ("redcap_repeat_instance" %in% form_structure_cols) {
       link_head <- project$links$redcap_record_subpage
       link_tail <- link_tail %>% paste0("&instance=", form[["redcap_repeat_instance"]])
     }
@@ -33,12 +33,12 @@ count_project_upload_cells <- function(project) {
 husk_of_form <- function(project, data_form, field_names) {
   form <- project$data[[data_form]]
   cols <- colnames(form)[which(colnames(form) %in% project$redcap$raw_structure_cols)]
-  DF2 <- NULL
+  form2 <- NULL
   for (col in cols) {
-    DF2[[col]] <- form[[col]]
+    form2[[col]] <- form[[col]]
   }
-  DF2 <- as.data.frame(DF2)
-  return(DF2)
+  form2 <- as.data.frame(form2)
+  return(form2)
 }
 #' @noRd
 all_project_to_char_cols <- function(project) {

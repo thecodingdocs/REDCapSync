@@ -378,9 +378,9 @@ wb_to_list <- function(wb) {
   names(out) <- clean_sheets
   return(out)
 }
-DF_to_wb <- function(
+form_to_wb <- function(
     form,
-    DF_name,
+    form_name,
     wb = openxlsx::createWorkbook(),
     link_col_list = list(),
     str_trunc_length = 32000,
@@ -393,18 +393,18 @@ DF_to_wb <- function(
     pad_cols = 0,
     freeze_keys = TRUE,
     key_cols = NULL) {
-  if (nchar(DF_name) > 31) stop(DF_name, " is longer than 31 char")
+  if (nchar(form_name) > 31) stop(form_name, " is longer than 31 char")
   form <- form %>%
     lapply(stringr::str_trunc, str_trunc_length, ellipsis = "") %>%
     as.data.frame()
   hyperlink_col <- NULL
   if (freeze_keys) {
     all_cols <- colnames(form)
-    if (any(!key_cols %in% all_cols)) stop("all key_cols must be in the DFs")
+    if (any(!key_cols %in% all_cols)) stop("all key_cols must be in the forms")
     freeze_key_cols <- which(all_cols %in% key_cols)
     if (length(freeze_key_cols) > 0) {
       if (!is_consecutive_srt_1(freeze_key_cols)) {
-        warning("please keep your key cols on the left consecutively. Fixing ", DF_name, ": ", paste0(key_cols, collapse = ", "), ".", immediate. = TRUE)
+        warning("please keep your key cols on the left consecutively. Fixing ", form_name, ": ", paste0(key_cols, collapse = ", "), ".", immediate. = TRUE)
         non_key_cols <- seq_len(ncol(form))
         non_key_cols <- non_key_cols[which(!non_key_cols %in% freeze_key_cols)]
         new_col_order <- c(freeze_key_cols, non_key_cols)
@@ -416,14 +416,14 @@ DF_to_wb <- function(
     }
   }
   if (nrow(form) > 0) {
-    openxlsx::addWorksheet(wb, DF_name)
+    openxlsx::addWorksheet(wb, form_name)
     startRow_header <- pad_rows + 1
     startRow_table <- startRow_header
     startCol <- pad_cols + 1
     if (is_something(header_df)) {
       openxlsx::writeData(
         wb,
-        sheet = DF_name,
+        sheet = form_name,
         x = header_df,
         startRow = startRow_header,
         startCol = startCol,
@@ -442,7 +442,7 @@ DF_to_wb <- function(
         if (has_names) {
           if (names(link_col_list)[i] %in% colnames(form)) {
             hyperlink_col <- which(colnames(form) == names(link_col_list)[i])
-            openxlsx::writeData(wb, sheet = DF_name, x = form[[link_col_list[[i]]]], startRow = startRow_table + 1, startCol = hyperlink_col + pad_cols)
+            openxlsx::writeData(wb, sheet = form_name, x = form[[link_col_list[[i]]]], startRow = startRow_table + 1, startCol = hyperlink_col + pad_cols)
             form[[link_col_list[[i]]]] <- NULL
           } else {
             # warning("",immediate. = TRUE)
@@ -450,11 +450,11 @@ DF_to_wb <- function(
         }
       }
     }
-    openxlsx::writeDataTable(wb, sheet = DF_name, x = form, startRow = startRow_table, startCol = startCol, tableStyle = tableStyle)
+    openxlsx::writeDataTable(wb, sheet = form_name, x = form, startRow = startRow_table, startCol = startCol, tableStyle = tableStyle)
     style_cols <- seq_len(ncol(form)) + pad_cols
     openxlsx::addStyle(
       wb,
-      sheet = DF_name,
+      sheet = form_name,
       style = header_style,
       rows = seq(from = startRow_header, to = startRow_table),
       cols = style_cols,
@@ -463,7 +463,7 @@ DF_to_wb <- function(
     )
     openxlsx::addStyle(
       wb,
-      sheet = DF_name,
+      sheet = form_name,
       style = body_style,
       rows = seq_len(nrow(form)) + startRow_table,
       cols = style_cols,
@@ -486,7 +486,7 @@ DF_to_wb <- function(
             warning("key_cols must be consecutive and start from the left most column.", immediate. = TRUE)
           }
         }
-        openxlsx::freezePane(wb, DF_name, firstActiveRow = firstActiveRow, firstActiveCol = firstActiveCol)
+        openxlsx::freezePane(wb, form_name, firstActiveRow = firstActiveRow, firstActiveCol = firstActiveCol)
       }
     }
     return(wb)
@@ -529,9 +529,9 @@ list_to_wb <- function(
   for (i in seq_along(list_names)) {
     header_df <- header_df_list[[list_names[i]]]
     key_cols <- key_cols_list[[list_names[i]]]
-    wb <- DF_to_wb(
+    wb <- form_to_wb(
       form = list[[list_names[i]]],
-      DF_name = list_names_rename[i],
+      form_name = list_names_rename[i],
       wb = wb,
       link_col_list = list_link_names[[list_names[i]]],
       str_trunc_length = str_trunc_length,

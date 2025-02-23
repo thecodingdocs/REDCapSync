@@ -250,7 +250,7 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
 #' viewing and updating records individually, with flexible field selection.
 #'
 #' @inheritParams save_project
-#' @param optional_DF Optional data frame. A data frame containing the data to be
+#' @param optional_form Optional data frame. A data frame containing the data to be
 #' edited. If not provided, the function will pull the data from the REDCap
 #' database using the specified `field_name_to_change`.
 #' @param records Character or numeric vector. The records to be edited. If not
@@ -271,14 +271,14 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
 #' This function is useful when you want to edit specific fields in a REDCap
 #' project while also reviewing related data from other forms in the project. The
 #' `field_name_to_change` must be provided, and you can also specify additional
-#' fields to view while editing. The data is either passed through `optional_DF`
+#' fields to view while editing. The data is either passed through `optional_form`
 #' or pulled from the project based on the provided field names.
 #'
 #' @seealso
 #' \code{\link{save_project}} for saving the modified database.
 #'
 #' @export
-edit_REDCap_while_viewing <- function(project, optional_DF, records, field_name_to_change, field_names_to_view = NULL, upload_individually = TRUE) {
+edit_REDCap_while_viewing <- function(project, optional_form, records, field_name_to_change, field_names_to_view = NULL, upload_individually = TRUE) {
   change_form <- field_names_to_form_names(project, field_name_to_change)
   view_forms <- field_names_to_form_names(project, field_names_to_view)
   field_names_to_view <- c(field_name_to_change, field_names_to_view) %>% unique()
@@ -287,10 +287,10 @@ edit_REDCap_while_viewing <- function(project, optional_DF, records, field_name_
   # all_forms <- c(change_form, view_forms) %>% unique()
   ref_cols_change <- project$metadata$form_key_cols[[change_form]]
   # ref_cols_view <- project$metadata$form_key_cols[[view_forms]]
-  if (missing(optional_DF)) {
-    optional_DF <- project[["data"]][[change_form]][, unique(c(ref_cols_change, field_names_to_view))]
+  if (missing(optional_form)) {
+    optional_form <- project[["data"]][[change_form]][, unique(c(ref_cols_change, field_names_to_view))]
   }
-  if (is.null(field_names_to_view)) field_names_to_view <- colnames(optional_DF)
+  if (is.null(field_names_to_view)) field_names_to_view <- colnames(optional_form)
   # if(any(!ref_cols%in%colnames(form)))stop("form must contain all ref_cols")
   if (length(records) > 0) {
     # message("fix these in REDCap --> ",paste0(out,collapse = " | "))
@@ -306,7 +306,7 @@ edit_REDCap_while_viewing <- function(project, optional_DF, records, field_name_
     OUT <- NULL
     for (record in records) { # record <- records%>% sample(1)
       record_was_updated <- FALSE
-      VIEW <- optional_DF[which(optional_DF[[project$redcap$id_col]] == record), ]
+      VIEW <- optional_form[which(optional_form[[project$redcap$id_col]] == record), ]
       VIEW_simp <- VIEW[, unique(c(project$redcap$id_col, field_names_to_view))] %>% unique()
       row.names(VIEW_simp) <- NULL
       VIEW_simp %>%

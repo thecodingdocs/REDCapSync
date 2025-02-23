@@ -82,7 +82,7 @@ add_redcap_links_to_form <- function(form, project) {
 #' @noRd
 clean_form_to_field_labels <- function(form, project) {
   colnames(form) <- colnames(form) %>%
-    lapply(function(form_name) {
+    lapply(function(field_name) {
       x <- project$metadata$fields$field_label[which(
         project$metadata$fields$field_name == field_name
       )]

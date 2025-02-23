@@ -536,15 +536,15 @@ transform_project <- function(project, reset = FALSE) {
     # forms_transformation <- annotate_forms(project,summarize_data = FALSE)
     if (!is.null(project$metadata$form_key_cols)) {
       forms_transformation$key_cols <- forms_transformation$form_name %>%
-        lapply(function(IN) {
-          project$metadata$form_key_cols[[IN]] %>% paste0(collapse = "+")
+        lapply(function(x) {
+          project$metadata$form_key_cols[[x]] %>% paste0(collapse = "+")
         }) %>%
         unlist()
       forms_transformation$key_names <- forms_transformation$form_name %>%
-        lapply(function(IN) {
-          row_match <- which(forms_transformation$form_name == IN)
+        lapply(function(x) {
+          row_match <- which(forms_transformation$form_name == x)
           if (!forms_transformation$repeating[row_match]) {
-            return(project$metadata$form_key_cols[[IN]])
+            return(project$metadata$form_key_cols[[x]])
           }
           return(paste0(forms_transformation$form_name[row_match], "_key"))
         })

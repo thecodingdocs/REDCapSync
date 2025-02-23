@@ -206,9 +206,9 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
       choices <- c("upload new", "keep old", "manual entry", "launch redcap link only")
       for (i in seq_len(nrow(z))) {
         form <- z[i, ]
-        IN <- z_old[i, ]
-        new_answer <- IN[[field_name]]
-        old_answer <- IN[[paste0(field_name, "_old")]]
+        x <- z_old[i, ]
+        new_answer <- x[[field_name]]
+        old_answer <- x[[paste0(field_name, "_old")]]
         ask <- TRUE
         if (autofill_new) {
           if (is.na(old_answer) && !is.na(new_answer)) {

@@ -79,10 +79,15 @@ sync_project <- function(
   # project$internals$last_data_update <-  now_time()-lubridate::days(1)
   if (!is.null(project$transformation$data_updates)) {
     do_it <- TRUE
-    bullet_in_console("There is data in 'project$transformation$data_updates' that has not been pushed to REDCap yet...")
+    bullet_in_console(
+      "There is data in 'project$transformation$data_updates' that has not been pushed to REDCap yet..."
+    )
     print(project$transformation$data_updates)
     if (ask_about_overwrites) {
-      do_it <- utils::menu(choices = c("Yes", "No and stop the function!"), title = "Would you like to push these updates now?") == 1
+      do_it <- utils::menu(
+        choices = c("Yes", "No and stop the function!"),
+        title = "Would you like to push these updates now?"
+      ) == 1
     }
     if (!do_it) stop("Stopped as requested!")
     project <- upload_transform_to_project(project)
@@ -249,7 +254,10 @@ sync_project <- function(
     }
   }
   if (project$internals$get_files) { # test now
-    get_REDCap_files(project, original_file_names = project$internals$original_file_names)
+    get_REDCap_files(
+      project,
+      original_file_names = project$internals$original_file_names
+    )
   }
   project$internals$last_sync <- now_time()
   if (save_to_dir && !is.null(project$dir_path)) {

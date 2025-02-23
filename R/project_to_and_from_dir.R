@@ -248,8 +248,8 @@ read_from_REDCap_upload <- function(project, allow_all = TRUE, drop_nonredcap_va
     match = NA
   )
   df$match <- strsplit(df$file_name_no_ext, "_") %>%
-    lapply(function(IN) {
-      IN[length(IN)]
+    lapply(function(x) {
+      x[length(x)]
     }) %>%
     unlist()
   df$match[which(!df$match %in% c(project$internals$merge_form_name, project$metadata$forms$form_name))] <- NA

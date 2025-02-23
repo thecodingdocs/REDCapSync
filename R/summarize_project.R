@@ -99,8 +99,8 @@ annotate_fields <- function(project, summarize_data = TRUE, drop_missing = TRUE)
     fields <- fields[which(fields$field_type != "checkbox"), ]
     fields$field_label[which(is.na(fields$field_label))] <- fields$field_name[which(is.na(fields$field_label))]
     fields <- unique(fields$form_name) %>%
-      lapply(function(IN) {
-        fields[which(fields$form_name == IN), ]
+      lapply(function(x) {
+        fields[which(fields$form_name == x), ]
       }) %>%
       dplyr::bind_rows()
     if (!"field_type_R" %in% colnames(fields)) fields$field_type_R <- "character"
@@ -129,8 +129,8 @@ annotate_fields <- function(project, summarize_data = TRUE, drop_missing = TRUE)
       FOR_ORDERING <- fields$field_name
       fields <- fields %>% merge(skimmed, by.x = "field_name", by.y = "skim_variable", all = TRUE)
       fields <- FOR_ORDERING %>%
-        lapply(function(IN) {
-          fields[which(fields$field_name == IN), ]
+        lapply(function(x) {
+          fields[which(fields$field_name == x), ]
         }) %>%
         dplyr::bind_rows()
     }

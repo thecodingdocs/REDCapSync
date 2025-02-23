@@ -10,7 +10,7 @@ bullet_in_console <- function(text = "",
   url_if <- ""
   file_if <- ""
   if (length(url) > 0) {
-    # url %>% lapply(function(IN){assert_web_link(IN)}) # doesnt work for /subheaders/
+    # url %>% lapply(function(x){assert_web_link(x)}) # doesnt work for /subheaders/
     # url_if <- " {.url {url}}"
     url_names <- names(url)
     if (is.list(url)) {
@@ -47,12 +47,6 @@ bullet_in_console <- function(text = "",
   for (i in seq_along(file_if)) text[i] <- paste0(text[i], file_if[i])
   names(text)[seq_along(text)] <- bullet_type
   return(cli::cli_bullets(text))
-  # * = • = bullet
-  # > = → = arrow
-  # v = ✔ = success
-  # x = ✖ = danger
-  # ! = ! = warning
-  # i = ℹ = info
 }
 now_time <- function() {
   return(as.POSIXct(Sys.time(), tz = Sys.timezone()))
@@ -62,10 +56,10 @@ process_df_list <- function(list, drop_empty = TRUE, silent = FALSE) {
     if (!is_df_list(list)) stop("list must be ...... a list :)")
     if (drop_empty) {
       is_a_df_with_rows <- list %>%
-        lapply(function(IN) {
-          is_df <- is.data.frame(IN)
+        lapply(function(x) {
+          is_df <- is.data.frame(x)
           if (is_df) {
-            return(nrow(IN) > 0)
+            return(nrow(x) > 0)
           } else {
             return(FALSE)
           }
@@ -300,7 +294,7 @@ find_df_list_diff <- function(new_list, old_list, ref_col_list, view_old = TRUE,
     stop("All new_list names must be included in the set of old_list names.")
   }
   if (!is.list(ref_col_list)) {
-    ref_col_list <- names(new_list) %>% lapply(function(IN) {
+    ref_col_list <- names(new_list) %>% lapply(function(x) {
       ref_col_list
     })
     names(ref_col_list) <- names(new_list)
@@ -409,7 +403,11 @@ wb_to_list <- function(wb) {
     x <- openxlsx::getTables(wb, sheet = i)
     if (length(x) > 0) {
       # test for xlsx without letters for cols
-      col_row <- gsub("[A-Za-z]", "", unlist(x %>% attr("refs") %>% strsplit(":"))[[1]]) %>%
+      col_row <- gsub(
+        "[A-Za-z]",
+        "",
+        unlist(x %>% attr("refs") %>% strsplit(":"))[[1]]
+      ) %>%
         as.integer()
     }
     out[[i]] <- openxlsx::read.xlsx(wb, sheet = i, startRow = col_row)
@@ -673,7 +671,6 @@ list_to_excel <- function(
     freeze_keys = TRUE,
     key_cols_list = NULL,
     drop_empty = TRUE) {
-  # wb <- openxlsx::createWorkbook()
   list <- process_df_list(list, drop_empty = drop_empty)
   list_names <- names(list)
   if (length(list) == 0) {
@@ -736,7 +733,6 @@ list_to_csv <- function(list,
                         overwrite = TRUE,
                         drop_empty = TRUE) {
   list <- process_df_list(list, drop_empty = drop_empty)
-  # list_names <- names(list)
   for (i in seq_along(list)) {
     sub_list <- list[i]
     file_name2 <- names(sub_list)
@@ -838,11 +834,11 @@ matches <- function(x, ref, count_only = FALSE) {
   }
   if (count_only) {
     final_match <- final_match %>%
-      lapply(function(IN) {
-        if (is.na(IN[1])) {
+      lapply(function(x) {
+        if (is.na(x[1])) {
           return(NA)
         }
-        return(length(IN))
+        return(length(x))
       }) %>%
       unlist()
   }
@@ -918,7 +914,7 @@ clean_env_names <- function(env_names, silent = FALSE, lowercase = TRUE) {
       cleaned_name <- gsub("__", "_", gsub(" ", "_", gsub("-", "", name)))
       if (lowercase) cleaned_name <- tolower(cleaned_name)
       if (cleaned_name %in% cleaned_names) {
-        if (!silent){
+        if (!silent) {
           message("Non-unique environment name: '", name, "', added numbers...")
         }
         cleaned_name <- cleaned_name %>%
@@ -947,8 +943,13 @@ is_df_list <- function(x, strict = FALSE) {
 }
 check_match <- function(vec_list) {
   sorted_vecs <- lapply(vec_list, sort)
-  all(unlist(lapply(sorted_vecs[-1], function(x)
-    identical(sorted_vecs[[1]], x))))
+  all(
+    unlist(
+      lapply(sorted_vecs[-1], function(x){
+        identical(sorted_vecs[[1]], x)
+      })
+    )
+  )
 }
 is_env_name <- function(env_name, silent = FALSE) {
   result <- tryCatch(
@@ -963,11 +964,11 @@ is_env_name <- function(env_name, silent = FALSE) {
       if (grepl("[^A-Za-z0-9_]", env_name)) {
         stop("Short name can only contain letters, numbers, and underscores.")
       }
-      return(TRUE) # Return TRUE if all checks pass
+      return(TRUE)
     },
     error = function(e) {
       if (!silent) message(e$message)
-      return(FALSE) # Return FALSE if any error occurs
+      return(FALSE)
     }
   )
   return(result)
@@ -982,7 +983,6 @@ is_nested_list <- function(x) {
   outcome <- length(x) == 0
   for (i in seq_along(x)) {
     outcome <- outcome || is_nested_list(x[[i]])
-    # print(outcome)
   }
   return(outcome)
 }

@@ -103,9 +103,9 @@ clean_form2 <- function(form, project) {
 }
 #' @noRd
 remove_records_from_list <- function(project, records, silent = FALSE) {
-  data_list <- project$data
-  if (!is_df_list(data_list)) {
-    stop("data_list is not a list of data.frames as expected.")
+  form_list <- project$data
+  if (!is_df_list(form_list)) {
+    stop("form_list is not a list of data.frames as expected.")
   }
   if (length(records) == 0) {
     stop(
@@ -115,21 +115,21 @@ remove_records_from_list <- function(project, records, silent = FALSE) {
       )
     )
   }
-  forms <- names(data_list)[
+  form_names <- names(form_list)[
     which(
-      names(data_list) %>%
-        lapply(function(form) {
-          nrow(data_list[[form]]) > 0
+      names(form_list) %>%
+        lapply(function(form_name) {
+          nrow(form_list[[form_name]]) > 0
         }) %>%
         unlist()
     )
   ]
-  for (form_name in forms) {
-    rows <- which(!data_list[[form_name]][[project$redcap$id_col]] %in% records)
-    data_list[[form_name]] <- data_list[[form_name]][rows, ]
+  for (form_name in form_names) {
+    rows <- which(!form_list[[form_name]][[project$redcap$id_col]] %in% records)
+    form_list[[form_name]] <- form_list[[form_name]][rows, ]
   }
   if (!silent) message("Removed: ", paste0(records, collapse = ", "))
-  return(data_list)
+  form_list
 }
 #' @noRd
 other_drops <- function(ignore = FALSE) {

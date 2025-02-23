@@ -1241,8 +1241,8 @@ field_names_to_field_labels <- function(field_names, project) {
 #' @noRd
 construct_header_list <- function(form_list, md_elements = c("form_name", "field_type", "field_label"), fields) {
   if (anyDuplicated(fields$field_name) > 0) stop("dup names not allowed in fields")
-  df_col_list <- form_list %>% lapply(colnames)
-  header_df_list <- df_col_list %>% lapply(function(field_names) {
+  data_field_list <- form_list %>% lapply(colnames)
+  header_df_list <- data_field_list %>% lapply(function(field_names) {
     x <- field_names %>%
       lapply(function(field_name) {
         row <- which(fields$field_name == field_name)

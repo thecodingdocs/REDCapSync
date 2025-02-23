@@ -361,8 +361,8 @@ csv_to_list <- function(paths) {
     clean_env_names()
   for (i in seq_along(paths)) {
     form_list[[i]] <- utils::read.csv(paths[i],
-      stringsAsFactors = FALSE,
-      na.strings = c("", "NA")
+                                      stringsAsFactors = FALSE,
+                                      na.strings = c("", "NA")
     )
   }
   names(form_list) <- clean_names
@@ -546,14 +546,14 @@ form_to_wb <- function(
             firstActiveCol <- firstActiveCol + freeze_key_cols[length(freeze_key_cols)]
           } else {
             warning("key_cols must be consecutive and start from the left most column.",
-              immediate. = TRUE
+                    immediate. = TRUE
             )
           }
         }
         openxlsx::freezePane(wb,
-          form_name,
-          firstActiveRow = firstActiveRow,
-          firstActiveCol = firstActiveCol
+                             form_name,
+                             firstActiveRow = firstActiveRow,
+                             firstActiveCol = firstActiveCol
         )
       }
     }
@@ -588,9 +588,9 @@ list_to_wb <- function(
     }
   }
   list_names_rename <- stringr::str_trunc(list_names,
-    width = 31,
-    side = "right",
-    ellipsis = ""
+                                          width = 31,
+                                          side = "right",
+                                          ellipsis = ""
   )
   bad_names <- dw(list_names_rename)
   if (length(bad_names) > 0) {

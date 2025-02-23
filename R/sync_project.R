@@ -94,8 +94,8 @@ sync_project <- function(
   if (!reset) { # check log interim
     if (
       !is_something(project$internals$last_metadata_update) ||
-        !is_something(project$internals$last_data_update) ||
-        !is_something(project$internals$last_full_update)
+      !is_something(project$internals$last_data_update) ||
+      !is_something(project$internals$last_full_update)
     ) {
       reset <- TRUE
     } else {
@@ -204,7 +204,7 @@ sync_project <- function(
         stale_records <- stale_records[which(!stale_records %in% deleted_records)]
         project$data <- remove_records_from_list(project = project, records = deleted_records, silent = TRUE)
       }
-      data_list <- project %>% get_REDCap_data(labelled = project$internals$labelled, records = stale_records)
+      form_list <- project %>% get_REDCap_data(labelled = project$internals$labelled, records = stale_records)
       missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[project$redcap$id_col]])]
       if (length(missing_from_summary) > 0) {
         x <- data.frame(
@@ -222,7 +222,7 @@ sync_project <- function(
       # if (project$internals$is_transformed) {
       #   project2 <- stripped_project(project)
       #   project2$internals$is_transformed <- FALSE
-      #   project2$data <- data_list
+      #   project2$data <- form_list
       #   # add remove records from list equivalant
       #   project2 <- transform_project(project2)
       #   if (!is.null(project2$data_updates$from_transform)) {
@@ -236,15 +236,15 @@ sync_project <- function(
       #     # account for uploads in process
       #     project2 <- upload_transform_to_project(project2)
       #   }
-      #   data_list <- project2$data %>%
+      #   form_list <- project2$data %>%
       #     process_df_list(silent = TRUE) %>%
       #     all_character_cols_list()
       # }
-      if (any(!names(data_list) %in% names(project$data))) stop("Imported data names doesn't match project$data names. If this happens run `sync_project(project, reset = TRUE)`")
-      for (form_name in names(data_list)) {
+      if (any(!names(form_list) %in% names(project$data))) stop("Imported data names doesn't match project$data names. If this happens run `sync_project(project, reset = TRUE)`")
+      for (form_name in names(form_list)) {
         project$data[[form_name]] <- project$data[[form_name]] %>%
           all_character_cols() %>%
-          dplyr::bind_rows(data_list[[form_name]])
+          dplyr::bind_rows(form_list[[form_name]])
       }
       message("Updated: ", paste0(stale_records, collapse = ", "))
       was_updated <- TRUE

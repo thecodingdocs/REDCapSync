@@ -88,7 +88,7 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
       )
     } else {
       bullet_in_console(paste0("Deidentified ", project$short_name),
-        bullet_type = "v"
+                        bullet_type = "v"
       )
     }
     for (form_name in names(drop_list)) {
@@ -174,10 +174,24 @@ link_REDCap_record <- function(project,
   }
   if (!missing(page)) {
     link <- gsub("record_home", "index", link)
-    if (!page %in% project$metadata$forms$form_name) stop(page, " has to be one of the instrument names: ", paste0(project$metadata$forms$form_name, collapse = ", "))
+    if (!page %in% project$metadata$forms$form_name) {
+      stop(
+        page,
+        " has to be one of the instrument names: ",
+        paste0(project$metadata$forms$form_name, collapse = ", ")
+      )
+    }
     link <- link %>% paste0("&page=", page)
     if (!missing(instance)) {
-      if (!page %in% project$metadata$forms$form_name[which(project$metadata$forms$repeating)]) stop("If you provide an instance, it has to be one of the repeating instrument names: ", paste0(project$metadata$forms$form_name[which(project$metadata$forms$repeating)], collapse = ", "))
+      repeating_form_names <- project$metadata$forms$form_name[
+        which(project$metadata$forms$repeating)
+      ]
+      if (!page %in% repeating_form_names) {
+        stop(
+          "If you provide an instance, it has to be a repeating instrument: ",
+          repeating_form_names %>% as_comma_string()
+        )
+      }
       link <- link %>% paste0("&instance=", instance)
     }
   }
@@ -189,13 +203,14 @@ link_REDCap_record <- function(project,
 #' @noRd
 construct_key_col_list <- function(project) {
   # fields <- project$metadata$fields
-  df_list <- project$data
-  df_col_list <- df_list %>% lapply(colnames)
-  forms <- names(df_list)
-  key_cols_list <- forms %>% lapply(function(form) {
-    df_col_list[[form]][which(df_col_list[[form]] %in% project$redcap$raw_structure_cols)]
+  form_list <- project$data
+  data_field_list <- form_list %>% lapply(colnames)
+  form_names <- names(form_list)
+  key_cols_list <- form_names %>% lapply(function(form_name) {
+    key_cols <- which(data_field_list[[form_name]] %in% project$redcap$raw_structure_cols)
+    data_field_list[[field]][key_cols]
   })
-  names(key_cols_list) <- forms
+  names(key_cols_list) <- form_names
   key_cols_list
 }
 #' @noRd
@@ -225,7 +240,7 @@ raw_process_redcap <- function(raw, project, labelled) {
   fields <- project$metadata$fields
   events <- project$metadata$events
   event_mapping <- project$metadata$event_mapping
-  data_list <- list()
+  form_list <- list()
   if (nrow(raw) > 0) {
     raw <- raw %>% all_character_cols()
     add_ons <- c(project$redcap$id_col, "arm_number", "event_name", "redcap_event_name", "redcap_repeat_instrument", "redcap_repeat_instance")
@@ -284,12 +299,12 @@ raw_process_redcap <- function(raw, project, labelled) {
           if (labelled) {
             raw_subset <- raw_to_labelled_form(form = raw_subset, project = project)
           }
-          data_list[[form_name]] <- raw_subset
+          form_list[[form_name]] <- raw_subset
         }
       }
     }
   }
-  data_list
+  form_list
 }
 #' @noRd
 sort_redcap_log <- function(log) {

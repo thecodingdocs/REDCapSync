@@ -248,8 +248,8 @@ get_REDCap_files <- function(project,
     for (field_name in project$metadata$fields$field_name[file_rows]) {
       out_dir_folder <- file.path(out_dir, field_name)
       dir.create(out_dir_folder,
-        showWarnings = FALSE,
-        recursive = TRUE
+                 showWarnings = FALSE,
+                 recursive = TRUE
       )
       form_name <- project$metadata$fields$form_name[which(project$metadata$fields$field_name == field_name)]
       is_repeating <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == form_name)]
@@ -292,7 +292,7 @@ get_REDCap_files <- function(project,
           )
         )
         if (!file.exists(file.path(out_dir_folder, file_name)) ||
-          overwrite) {
+            overwrite) {
           REDCapR::redcap_file_download_oneshot(
             redcap_uri = project$links$redcap_uri,
             token = get_project_token(project),
@@ -310,8 +310,8 @@ get_REDCap_files <- function(project,
     }
   }
   bullet_in_console("Checked for files! Stored at ...",
-    file = out_dir,
-    bullet_type = "v"
+                    file = out_dir,
+                    bullet_type = "v"
   )
 }
 get_REDCap_users <- function(project) {
@@ -389,15 +389,15 @@ get_REDCap_data <- function(project,
                             labelled = TRUE,
                             records = NULL,
                             batch_size = 2000) {
-  data_list <- list()
+  form_list <- list()
   raw <- get_REDCap_raw_data(
     project = project,
     labelled = FALSE,
     records = records,
     batch_size = batch_size
   )
-  data_list <- raw %>% raw_process_redcap(project = project, labelled = labelled)
-  return(data_list)
+  form_list <- raw %>% raw_process_redcap(project = project, labelled = labelled)
+  return(form_list)
 }
 #' @noRd
 rename_forms_redcap_to_default <- function(forms) {

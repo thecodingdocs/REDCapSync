@@ -341,19 +341,19 @@ read_xl_to_project_for_upload <- function(project, file_path, drop_sheets = defa
   # add data_updates check
   if (!endsWith(file_path, ".xlsx")) stop("File type must be '.xlsx' --> ", file_path)
   if (!file.exists(file_path)) stop("Path does not exist --> ", file_path)
-  data_list <- file_path %>%
+  form_list <- file_path %>%
     openxlsx::loadWorkbook() %>%
     wb_to_list()
   if (is_something(drop_sheets)) {
     message("dropping sheets from `drop_sheets` (Default is names from project$summary)... ", paste0(drop_sheets, collapse = ", "))
     for (drop_sheet in drop_sheets) {
-      data_list[[drop_sheet]] <- NULL
+      form_list[[drop_sheet]] <- NULL
     }
   }
-  if (length(data_list) == 0) {
+  if (length(form_list) == 0) {
     message("nothing to return")
     return(invisible(project))
   }
-  project$data_updates <- data_list
+  project$data_updates <- form_list
   invisible(project)
 }

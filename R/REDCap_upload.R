@@ -7,7 +7,7 @@
 #' rows and columns are fine!
 #' @inheritParams save_project
 #' @param to_be_uploaded data.frame in raw coded form. If you worked with clean
-#' data pass your data to `labelled_to_raw_form(data_form,project)` first.
+#' data pass your data to `labelled_to_raw_form(form,project)` first.
 #' @param batch_size numeric of how big the REDCap batch upload is. Default 500.
 #' @return messages
 #' @export

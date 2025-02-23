@@ -4,10 +4,10 @@
 \alias{labelled_to_raw_form}
 \title{Clean to Raw REDCap forms}
 \usage{
-labelled_to_raw_form(data_form, project)
+labelled_to_raw_form(form, project)
 }
 \arguments{
-\item{data_form}{data.frame of labelled REDCap to be converted to raw REDCap
+\item{form}{data.frame of labelled REDCap to be converted to raw REDCap
 (for uploads)}
 
 \item{project}{A validated \code{project} object containing REDCap project data and

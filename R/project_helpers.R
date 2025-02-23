@@ -249,7 +249,7 @@ raw_process_redcap <- function(raw, project, labelled) {
           cols <- unique(c(add_ons_x, form_field_names))
           raw_subset <- raw[rows, cols]
           if (labelled) {
-            raw_subset <- raw_to_labelled_form(data_form = raw_subset, project = project)
+            raw_subset <- raw_to_labelled_form(form = raw_subset, project = project)
           }
           data_list[[form_name]] <- raw_subset
         }

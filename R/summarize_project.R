@@ -1031,20 +1031,20 @@ rmarkdown_project <- function(project, dir_other) {
 }
 #' @title Clean to Raw REDCap forms
 #' @inheritParams save_project
-#' @param data_form data.frame of labelled REDCap to be converted to raw REDCap
+#' @param form data.frame of labelled REDCap to be converted to raw REDCap
 #' (for uploads)
 #' @return project object that has been filtered to only include the specified
 #' records
 #' @export
-labelled_to_raw_form <- function(data_form, project) {
+labelled_to_raw_form <- function(form, project) {
   use_missing_codes <- is.data.frame(project$metadata$missing_codes)
-  fields <- filter_fields_from_form(data_form = data_form, project = project)
+  fields <- filter_fields_from_form(form = form, project = project)
   for (i in seq_len(nrow(fields))) { # i <-  seq_len(nrow(fields) %>% sample(1)
     field_name <- fields$field_name[i]
     has_choices <- fields$has_choices[i]
     if (has_choices) {
       z <- fields$select_choices_or_calculations[i] %>% split_choices()
-      data_form[[field_name]] <- data_form[[field_name]] %>%
+      form[[field_name]] <- form[[field_name]] %>%
         lapply(function(x) {
           form <- NA
           if (!is.na(x)) {
@@ -1070,7 +1070,7 @@ labelled_to_raw_form <- function(data_form, project) {
         as.character()
     } else {
       if (use_missing_codes) {
-        data_form[[field_name]] <- data_form[[field_name]] %>%
+        form[[field_name]] <- form[[field_name]] %>%
           lapply(function(x) {
             form <- x
             if (!is.na(x)) {
@@ -1086,23 +1086,23 @@ labelled_to_raw_form <- function(data_form, project) {
       }
     }
   }
-  data_form
+  return(form)
 }
 #' @title Raw to Labelled REDCap forms
-#' @param data_form data.frame of raw REDCap to be converted to labelled REDCap
+#' @param form data.frame of raw REDCap to be converted to labelled REDCap
 #' @inheritParams save_project
 #' @return project object
 #' @export
-raw_to_labelled_form <- function(data_form, project) {
-  if (nrow(data_form) > 0) {
+raw_to_labelled_form <- function(form, project) {
+  if (nrow(form) > 0) {
     use_missing_codes <- is.data.frame(project$metadata$missing_codes)
-    metadata <- filter_fields_from_form(data_form = data_form, project = project)
+    metadata <- filter_fields_from_form(form = form, project = project)
     for (i in seq_len(nrow(metadata))) { # i <-  seq_len(nrow(metadata)) %>% sample(1)
       field_name <- metadata$field_name[i]
       has_choices <- metadata$has_choices[i]
       if (has_choices) {
         z <- metadata$select_choices_or_calculations[i] %>% split_choices()
-        data_form[[field_name]] <- data_form[[field_name]] %>%
+        form[[field_name]] <- form[[field_name]] %>%
           lapply(function(x) {
             form <- NA
             if (!is.na(x)) {
@@ -1129,7 +1129,7 @@ raw_to_labelled_form <- function(data_form, project) {
       } else {
         if (use_missing_codes) {
           z <- project$metadata$missing_codes
-          data_form[[field_name]] <- data_form[[field_name]] %>%
+          form[[field_name]] <- form[[field_name]] %>%
             lapply(function(x) {
               form <- x
               if (!is.na(x)) {
@@ -1146,7 +1146,7 @@ raw_to_labelled_form <- function(data_form, project) {
       }
     }
   }
-  data_form
+  return(form)
 }
 #' @noRd
 stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
@@ -1293,10 +1293,10 @@ field_names_metadata <- function(project, field_names, col_names) {
   return(fields)
 }
 #' @noRd
-filter_fields_from_form <- function(data_form, project) {
-  forms <- project %>% field_names_to_form_names(field_names = colnames(data_form))
+filter_fields_from_form <- function(form, project) {
+  forms <- project %>% field_names_to_form_names(field_names = colnames(form))
   if (any(forms %in% project$metadata$forms$repeating)) stop("All column names in your form must match only one form in your metadata, `project$metadata$forms$form_name`, unless they are all non-repeating")
-  fields <- project %>% field_names_metadata(field_names = colnames(data_form))
+  fields <- project %>% field_names_metadata(field_names = colnames(form))
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
   fields$has_choices[which(fields$field_type == "calc")] <- FALSE
@@ -1307,7 +1307,7 @@ labelled_to_raw_project <- function(project) {
   project <- assert_blank_project(project)
   if (!project$internals$labelled) stop("project is already raw/coded (not labelled values)")
   for (form_name in names(project$data)) {
-    project$data[[form_name]] <- labelled_to_raw_form(data_form = project$data[[form_name]], project = project)
+    project$data[[form_name]] <- labelled_to_raw_form(form = project$data[[form_name]], project = project)
   }
   project$internals$labelled <- FALSE
   project

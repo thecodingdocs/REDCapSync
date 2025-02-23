@@ -566,16 +566,17 @@ generate_summary_by_name <- function(
 #' @inheritParams save_project
 #' @inheritParams add_project_summary
 #' @inheritParams deidentify_project#'
-#' @return A modified `project` object with filtered records and columns based on
-#' the provided criteria.
+#' @return A modified `project` object with filtered records and columns based
+#' on the provided criteria.
 #'
 #' @details
 #' This function filters the data in the `project` object according to the
-#' specified form and field names and optional filter criteria. If no field names
-#' or form names are provided, it defaults to using all fields and forms in the
+#' specified form and field names and optional filter criteria. If no field
+#' names or form names are provided, it defaults to using all fields and forms
+#' in the
 #' database.
-#' The function uses the helper `filter_form_list` to apply the filtering logic to
-#' the `project$data` list.
+#' The function uses the helper `filter_form_list` to apply the filtering logic
+#' to the `project$data` list.
 #'
 #' @export
 generate_summary <- function(

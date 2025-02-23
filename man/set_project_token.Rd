@@ -34,8 +34,7 @@ The token is validated internally and stored using \code{Sys.setenv()}.
 \seealso{
 For the function to work you need to have a valid project object from
 \code{\link{setup_project}()}.
-See our
-\href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
+See our \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
 
 Other Token Functions: 
 \code{\link{test_project_token}()},

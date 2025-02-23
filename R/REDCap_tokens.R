@@ -19,8 +19,7 @@
 #' @seealso
 #' For the function to work you need to have a valid project object from
 #' \code{\link{setup_project}()}.
-#' See our
-#' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
+#' See our \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
@@ -58,7 +57,10 @@ set_project_token <- function(project, ask = TRUE) {
 }
 #' @title View the REDCap API Token Stored in the Session
 #' @description
-#' Displays the REDCap API token currently stored in the session as an environment variable. It's essentially a wrapper for Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is formatted like a REDCap token and provides messgaes if not valid.
+#' Displays the REDCap API token currently stored in the session as an
+#' environment variable. It's essentially a wrapper for
+#' Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
+#' formatted like a REDCap token and provides messgaes if not valid.
 #' @details
 #' This function retrieves the REDCap API token associated with the specified
 #' `project` object and displays it as a message.
@@ -95,7 +97,6 @@ view_project_token <- function(project) {
 #' @return Logical. Returns `TRUE` if the API token is valid, otherwise `FALSE`.
 #' @seealso
 #' \href{../articles/Tokens.html}{pkgdown article on tokens}
-#'
 #' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{pkgdown article on tokens}
 #' @family Token Functions
 #' @keywords Token Functions

@@ -61,7 +61,11 @@ including its type, label, choices, and associated function for data
 manipulation.
 }
 \details{
-This function facilitates the addition of a new field transformation to a REDCap database. The transformation includes metadata such as the field's type, label, and choices, along with an optional function to process the data. This is particularly useful for customizing or extending the functionality of existing REDCap forms and fields.
+This function facilitates the addition of a new field transformation to a
+REDCap database. The transformation includes metadata such as the field's
+type, label, and choices, along with an optional function to process the data.
+This is particularly useful for customizing or extending the functionality of
+existing REDCap forms and fields.
 }
 \seealso{
 \code{\link{save_project}} for saving the database or subsets.

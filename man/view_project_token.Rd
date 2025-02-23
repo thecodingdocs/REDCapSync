@@ -14,7 +14,10 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 Invisible. Prints a message displaying the stored token.
 }
 \description{
-Displays the REDCap API token currently stored in the session as an environment variable. It's essentially a wrapper for Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is formatted like a REDCap token and provides messgaes if not valid.
+Displays the REDCap API token currently stored in the session as an
+environment variable. It's essentially a wrapper for
+Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
+formatted like a REDCap token and provides messgaes if not valid.
 }
 \details{
 This function retrieves the REDCap API token associated with the specified

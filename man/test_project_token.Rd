@@ -33,7 +33,6 @@ using the console.
 }
 \seealso{
 \href{../articles/Tokens.html}{pkgdown article on tokens}
-
 \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{pkgdown article on tokens}
 
 Other Token Functions: 

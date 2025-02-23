@@ -83,8 +83,8 @@ included in the summary. Default is \code{TRUE}.}
 the summary. Default is \code{TRUE}.}
 }
 \value{
-A modified \code{project} object with filtered records and columns based on
-the provided criteria.
+A modified \code{project} object with filtered records and columns based
+on the provided criteria.
 }
 \description{
 This function filters the records in the \code{project} object by specified
@@ -94,9 +94,10 @@ containing only the records that match the filter criteria.
 }
 \details{
 This function filters the data in the \code{project} object according to the
-specified form and field names and optional filter criteria. If no field names
-or form names are provided, it defaults to using all fields and forms in the
+specified form and field names and optional filter criteria. If no field
+names or form names are provided, it defaults to using all fields and forms
+in the
 database.
-The function uses the helper \code{filter_form_list} to apply the filtering logic to
-the \code{project$data} list.
+The function uses the helper \code{filter_form_list} to apply the filtering logic
+to the \code{project$data} list.
 }

@@ -536,13 +536,13 @@ transform_project <- function(project, reset = FALSE) {
     named_df_list <- project$transformation$data
     OUT <- NULL
     for (i in (seq_len(nrow(forms_transformation)))) {
-      TABLE <- forms_transformation$form_name[i]
-      ref <- named_df_list[[TABLE]]
+      form_name <- forms_transformation$form_name[i]
+      ref <- named_df_list[[form_name]]
       if (!is.null(ref)) {
         if (is_something(ref)) {
           a <- forms_transformation[i, ]
           z <- as.list(a)
-          ref <- named_df_list[[TABLE]]
+          ref <- named_df_list[[form_name]]
           rownames(ref) <- NULL
           by.x <- z$by.x <- z$by.x %>%
             strsplit("\\+") %>%
@@ -551,7 +551,7 @@ transform_project <- function(project, reset = FALSE) {
             strsplit("\\+") %>%
             unlist()
           if (length(z$by.x) != length(z$by.y)) stop("by.x and by.y must be same length... [", z$form_name, "] (", z$by.x %>% as_comma_string(), ") AND (", z$by.y %>% as_comma_string(), ")")
-          if (TABLE == z$merge_to) {
+          if (form_name == z$merge_to) {
             OUT[[z$form_name_remap]] <- ref
           } else {
             mer <- named_df_list[[z$merge_to]]
@@ -565,11 +565,11 @@ transform_project <- function(project, reset = FALSE) {
               vec1_in_vec2(mer_names) %>%
               vec1_not_in_vec2(by.x)
             for (new_name in new_names) {
-              COL <- which(colnames(mer) == new_name)
+              col <- which(colnames(mer) == new_name)
               replace_name <- paste0(new_name, "_merged")
-              a <- mer[, 1:COL]
-              a[[replace_name]] <- a[[COL]]
-              b <- mer[, (COL + 1):ncol(mer)]
+              a <- mer[, 1:col]
+              a[[replace_name]] <- a[[col]]
+              b <- mer[, (col + 1):ncol(mer)]
               mer <- cbind(a, b)
             }
             bad_cols <- which(!by.x %in% by.y)

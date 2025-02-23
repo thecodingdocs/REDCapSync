@@ -158,9 +158,9 @@ find_df_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
   for (KEY in new$key[which(new$key %in% old$key)]) {
     row <- which(new$key == KEY)
     row_old <- which(old$key == KEY)
-    for (COL in colnames(new)[which(!colnames(new) %in% c(ref_cols, "key"))]) {
-      col <- which(colnames(new) == COL)
-      if (!identical(new[row, COL], old[row_old, COL])) {
+    for (col in colnames(new)[which(!colnames(new) %in% c(ref_cols, "key"))]) {
+      col <- which(colnames(new) == col)
+      if (!identical(new[row, col], old[row_old, col])) {
         indices <- indices %>% dplyr::bind_rows(
           data.frame(
             row = row,
@@ -211,10 +211,10 @@ find_df_diff2 <- function(new, old, ref_cols = NULL, message_pass = "", view_old
   placeholder <- "NA_placeholder"
   rows_to_keep <- NULL
   cols_to_view <- cols_to_keep <- which(colnames(merged_df) %in% ref_cols)
-  COLS <- colnames(new)[which(!colnames(new) %in% ref_cols)]
-  for (COL in COLS) {
-    vector1 <- merged_df[[COL]]
-    compare_COL <- paste0(COL, appended_old_col_suffix)
+  cols <- colnames(new)[which(!colnames(new) %in% ref_cols)]
+  for (col in cols) {
+    vector1 <- merged_df[[col]]
+    compare_COL <- paste0(col, appended_old_col_suffix)
     vector2 <- merged_df[[compare_COL]]
     vector1_no_na <- ifelse(is.na(vector1), placeholder, vector1)
     vector2_no_na <- ifelse(is.na(vector2), placeholder, vector2)
@@ -222,7 +222,7 @@ find_df_diff2 <- function(new, old, ref_cols = NULL, message_pass = "", view_old
     are_not_equal <- which(vector1_no_na != vector2_no_na)
     if (length(are_not_equal) > 0) {
       rows_to_keep <- rows_to_keep %>% append(are_not_equal)
-      additional_cols <- which(colnames(merged_df) == COL)
+      additional_cols <- which(colnames(merged_df) == col)
       cols_to_keep <- cols_to_keep %>% append(additional_cols)
       if (view_old) {
         cols_to_view <- cols_to_view %>%

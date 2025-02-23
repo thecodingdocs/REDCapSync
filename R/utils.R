@@ -56,12 +56,12 @@ add_redcap_links_table <- function(DF, project) {
 #' @noRd
 clean_RC_col_names <- function(DF, project) {
   colnames(DF) <- colnames(DF) %>%
-    lapply(function(COL) {
-      x <- project$metadata$fields$field_label[which(project$metadata$fields$field_name == COL)]
+    lapply(function(col) {
+      x <- project$metadata$fields$field_label[which(project$metadata$fields$field_name == col)]
       if (length(x) > 1) {
         x <- x[[1]]
       }
-      ifelse(length(x) > 0, x, COL)
+      ifelse(length(x) > 0, x, col)
     }) %>%
     unlist() %>%
     return()
@@ -77,8 +77,17 @@ clean_RC_df_for_DT <- function(DF, project) {
 #' @noRd
 remove_records_from_list <- function(project, records, silent = FALSE) {
   data_list <- project$data
-  if (!is_df_list(data_list)) stop("data_list is not a list of data.frames as expected.")
-  if (length(records) == 0) stop("no records supplied to remove_records_from_list, but it's used in update which depends on records.")
+  if (!is_df_list(data_list)) {
+    stop("data_list is not a list of data.frames as expected.")
+  }
+  if (length(records) == 0) {
+    stop(
+      paste0(
+        "no records supplied to remove_records_from_list, but it's used in",
+        "update which depends on records."
+      )
+    )
+  }
   forms <- names(data_list)[
     which(
       names(data_list) %>%
@@ -88,8 +97,9 @@ remove_records_from_list <- function(project, records, silent = FALSE) {
         unlist()
     )
   ]
-  for (TABLE in forms) {
-    data_list[[TABLE]] <- data_list[[TABLE]][which(!data_list[[TABLE]][[project$redcap$id_col]] %in% records), ]
+  for (form_name in forms) {
+    rows <- which(!data_list[[form_name]][[project$redcap$id_col]] %in% records)
+    data_list[[form_name]] <- data_list[[form_name]][rows, ]
   }
   if (!silent) message("Removed: ", paste0(records, collapse = ", "))
   return(data_list)
@@ -145,18 +155,13 @@ sidebar_choices <- function(project, n_threshold = 1) {
 #' @noRd
 split_choices <- function(x) {
   oops <- x
-  x <- gsub("\n", " | ", x) # added this to account for redcap metadata output if not a number
+  # added this to account for redcap metadata output if not a number
+  x <- gsub("\n", " | ", x)
   x <- x %>%
     strsplit(" [:|:] ") %>%
     unlist()
   check_length <- length(x)
-  # code <- x %>% stringr::str_extract("^[^,]+(?=, )")
-  # name <- x %>% stringr::str_extract("(?<=, ).*$")
   result <- x %>% stringr::str_match("([^,]+), (.*)")
-  # x <- data.frame(
-  #   code=x %>% strsplit(", ") %>% lapply(`[`, 1),
-  #   name=x %>% strsplit(", ")%>% lapply(`[`, -1) %>% lapply(function(y){paste0(y,collapse = ", ")})
-  # )
   x <- data.frame(
     code = result[, 2],
     name = result[, 3]

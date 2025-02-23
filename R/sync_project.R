@@ -237,10 +237,10 @@ sync_project <- function(
       #     all_character_cols_list()
       # }
       if (any(!names(data_list) %in% names(project$data))) stop("Imported data names doesn't match project$data names. If this happens run `sync_project(project, reset = TRUE)`")
-      for (TABLE in names(data_list)) {
-        project$data[[TABLE]] <- project$data[[TABLE]] %>%
+      for (form_name in names(data_list)) {
+        project$data[[form_name]] <- project$data[[form_name]] %>%
           all_character_cols() %>%
-          dplyr::bind_rows(data_list[[TABLE]])
+          dplyr::bind_rows(data_list[[form_name]])
       }
       message("Updated: ", paste0(stale_records, collapse = ", "))
       was_updated <- TRUE

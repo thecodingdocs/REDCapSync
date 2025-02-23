@@ -382,9 +382,9 @@ save_project_details <- function(project, silent = TRUE) {
 #' @noRd
 delete_project_by_name <- function(short_name) {
   projects <- get_projects()
-  ROW <- which(projects$short_name == short_name)
+  row <- which(projects$short_name == short_name)
   OTHERS <- which(projects$short_name != short_name)
-  if (!is_something(ROW)) message("Nothing to delete named: ", short_name) %>% return()
+  if (!is_something(row)) message("Nothing to delete named: ", short_name) %>% return()
   projects <- projects[OTHERS, ]
   message("Deleted: ", short_name)
   save_projects_to_cache(projects)

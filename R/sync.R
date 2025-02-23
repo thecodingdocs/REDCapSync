@@ -96,7 +96,7 @@ sync <- function(
             NULL
           }
         )
-        it_failed <- is.null(project)
+        # it_failed <- is.null(project)
         if (project$internals$last_test_connection_outcome) {
           project_status <- "Updated"
         }

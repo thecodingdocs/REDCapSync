@@ -67,8 +67,8 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
       unique()
   }
   if (is_something(project$data)) {
-    drop_list <- Map(function(NAME, COLS) {
-      identifiers[which(identifiers %in% COLS)]
+    drop_list <- Map(function(NAME, cols) {
+      identifiers[which(identifiers %in% cols)]
     }, names(project$data), lapply(project$data, colnames))
     drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0]
     if (length(drop_list) == 0) {

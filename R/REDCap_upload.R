@@ -70,13 +70,13 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
   if (!is_something(project$data_updates)) stop("`project$data_updates` is empty")
   any_updates <- FALSE
   entire_list <- project$data_updates
-  for (TABLE in names(entire_list)) {
-    to_be_uploaded <- entire_list[[TABLE]]
+  for (form_name in names(entire_list)) {
+    to_be_uploaded <- entire_list[[form_name]]
     if (is_something(to_be_uploaded)) {
       project$data_updates <- list()
-      project$data_updates[[TABLE]] <- to_be_uploaded
+      project$data_updates[[form_name]] <- to_be_uploaded
       project <- find_upload_diff(project, view_old = view_old, n_row_view = n_row_view)
-      to_be_uploaded <- project$data_updates[[TABLE]]
+      to_be_uploaded <- project$data_updates[[form_name]]
       if (is_something(to_be_uploaded)) {
         if (project$internals$labelled) {
           to_be_uploaded <- to_be_uploaded %>% labelled_to_raw_form(project)
@@ -87,7 +87,7 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
         }
         if (do_it == 1) {
           upload_form_to_REDCap(to_be_uploaded = to_be_uploaded, project = project, batch_size = batch_size)
-          project$data_updates[[TABLE]] <- NULL
+          project$data_updates[[form_name]] <- NULL
           any_updates <- TRUE
           project$internals$last_data_update <- now_time()
         }
@@ -132,8 +132,8 @@ find_upload_diff <- function(project, view_old = FALSE, n_row_view = 20) {
   old_list <- list()
   if (any(!names(new_list) %in% project$metadata$forms$form_name)) warning("All upload names should ideally match the project form names, `project$metadata$forms$form_name`", immediate. = TRUE)
   already_used <- NULL
-  for (TABLE in names(new_list)) { # TABLE <- names(new_list) %>% sample(1)
-    new <- new_list[[TABLE]]
+  for (form_name in names(new_list)) { # form_name <- names(new_list) %>% sample(1)
+    new <- new_list[[form_name]]
     ref_cols <- project$redcap$raw_structure_cols
     ref_cols <- ref_cols[which(ref_cols %in% colnames(new))]
     data_cols <- colnames(new)[which(!colnames(new) %in% ref_cols)]
@@ -145,7 +145,7 @@ find_upload_diff <- function(project, view_old = FALSE, n_row_view = 20) {
       message("Dropping field_names that aren't part of REDCap metadata: ", paste0(drop, collapse = ", "))
       old <- old[, which(!colnames(old) %in% drop)]
     }
-    old_list[[TABLE]] <- old # find_df_diff2(new= new , old =  old, ref_cols = ref_cols, message_pass = paste0(TABLE,": "))
+    old_list[[form_name]] <- old # find_df_diff2(new= new , old =  old, ref_cols = ref_cols, message_pass = paste0(form_name,": "))
     already_used <- already_used %>%
       append(form_names) %>%
       unique()

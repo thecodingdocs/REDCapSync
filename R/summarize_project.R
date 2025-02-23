@@ -123,11 +123,11 @@ annotate_fields <- function(project, summarize_data = TRUE, drop_missing = TRUE)
     # if(!"field_label_short" %in% colnames(fields))fields$ <- fields$field_label
     if (summarize_data) {
       skimmed <- NULL
-      for (form in unique(fields$form_name)) {
-        COLS <- fields$field_name[which(fields$form_name == form)]
-        CHECK_THIS <- project$data[[form]]
-        COLS <- COLS[which(COLS %in% colnames(CHECK_THIS))]
-        skimmed <- skimmed %>% dplyr::bind_rows(CHECK_THIS[, COLS] %>% skimr::skim())
+      for (form_name in unique(fields$form_name)) {
+        cols <- fields$field_name[which(fields$form_name == form_name)]
+        form <- project$data[[form_name]]
+        cols <- cols[which(cols %in% colnames(form))]
+        skimmed <- skimmed %>% dplyr::bind_rows(form[, cols] %>% skimr::skim())
       }
       FOR_ORDERING <- fields$field_name
       fields <- fields %>% merge(skimmed, by.x = "field_name", by.y = "skim_variable", all = TRUE)
@@ -237,9 +237,9 @@ reverse_clean_project <- function(project) { # problematic because setting numer
 #' @noRd
 clean_DF_list <- function(DF_list, fields, drop_blanks = TRUE, other_drops = NULL) {
   # add check for DF_list#
-  for (TABLE in names(DF_list)) {
-    DF_list[[TABLE]] <- clean_DF(
-      DF = DF_list[[TABLE]],
+  for (form_name in names(DF_list)) {
+    DF_list[[form_name]] <- clean_DF(
+      DF = DF_list[[form_name]],
       fields = fields,
       drop_blanks = drop_blanks,
       other_drops = other_drops
@@ -251,17 +251,17 @@ clean_DF_list <- function(DF_list, fields, drop_blanks = TRUE, other_drops = NUL
 clean_DF <- function(DF, fields, drop_blanks = TRUE, other_drops = NULL) {
   for (COLUMN in colnames(DF)) {
     if (COLUMN %in% fields$field_name) {
-      ROW <- which(fields$field_name == COLUMN)
+      row <- which(fields$field_name == COLUMN)
       units <- NULL
-      if (!is.na(fields$units[ROW])) {
-        units <- fields$units[ROW]
+      if (!is.na(fields$units[row])) {
+        units <- fields$units[row]
       }
-      class <- fields$field_type_R[ROW][[1]]
-      label <- ifelse(is.na(fields$field_label[ROW]), COLUMN, fields$field_label[ROW])[[1]]
+      class <- fields$field_type_R[row][[1]]
+      label <- ifelse(is.na(fields$field_label[row]), COLUMN, fields$field_label[row])[[1]]
       levels <- NULL
       if (!is.na(class)) {
         if (class == "factor") {
-          select_choices <- fields$select_choices_or_calculations[ROW]
+          select_choices <- fields$select_choices_or_calculations[row]
           if (!is.na(select_choices)) {
             levels <- split_choices(select_choices)[[2]]
           } else {
@@ -635,7 +635,7 @@ generate_summary <- function(
   if (length(filter_form) > 1) {
     stop("You can only filter_list by multiple columns part of one single reference form")
   }
-  filter_ops <- filter_list[which(names(filter_list) == "")] %>% unlist()
+  # filter_ops <- filter_list[which(names(filter_list) == "")] %>% unlist()
   # filter ops must be "and" or "or"
   out_list <- list()
   form_key_cols <- project$metadata$form_key_cols %>%
@@ -644,11 +644,11 @@ generate_summary <- function(
   is_key <- all(filter_field_names %in% form_key_cols)
   if (!is_key) {
     # form_name <- field_names_to_form_names(project, field_names = filter_field)
-    is_repeating_filter <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == filter_form)]
+    # is_repeating_filter <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == filter_form)]
   }
   for (form_name in form_names) {
     DF <- project$data[[form_name]]
-    is_repeating_form <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == form_name)]
+    # is_repeating_form <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == form_name)]
     if (is_something(DF)) {
       row_logic <- NULL
       for (filter_field_name in filter_field_names) {
@@ -1044,27 +1044,27 @@ labelled_to_raw_form <- function(data_form, project) {
   use_missing_codes <- is.data.frame(project$metadata$missing_codes)
   fields <- filter_fields_from_form(data_form = data_form, project = project)
   for (i in seq_len(nrow(fields))) { # i <-  seq_len(nrow(fields) %>% sample(1)
-    COL_NAME <- fields$field_name[i]
+    field_name <- fields$field_name[i]
     has_choices <- fields$has_choices[i]
     if (has_choices) {
       z <- fields$select_choices_or_calculations[i] %>% split_choices()
-      data_form[[COL_NAME]] <- data_form[[COL_NAME]] %>%
-        lapply(function(C) {
+      data_form[[field_name]] <- data_form[[field_name]] %>%
+        lapply(function(x) {
           OUT <- NA
-          if (!is.na(C)) {
-            coded_redcap <- which(z$name == C)
+          if (!is.na(x)) {
+            coded_redcap <- which(z$name == x)
             if (length(coded_redcap) > 0) {
               OUT <- z$code[coded_redcap]
             } else {
               if (use_missing_codes) {
-                coded_redcap2 <- which(project$metadata$missing_codes$name == C)
+                coded_redcap2 <- which(project$metadata$missing_codes$name == x)
                 if (length(coded_redcap2) > 0) {
                   OUT <- project$metadata$missing_codes$code[coded_redcap2]
                 } else {
-                  stop("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME, ", Choice: ", C)
+                  stop("Mismatch in choices compared to REDCap (above)! Column: ", field_name, ", Choice: ", x)
                 }
               } else {
-                stop("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME, ", Choice: ", C, ". Also not a missing code.")
+                stop("Mismatch in choices compared to REDCap (above)! Column: ", field_name, ", Choice: ", x, ". Also not a missing code.")
               }
             }
           }
@@ -1074,11 +1074,11 @@ labelled_to_raw_form <- function(data_form, project) {
         as.character()
     } else {
       if (use_missing_codes) {
-        data_form[[COL_NAME]] <- data_form[[COL_NAME]] %>%
-          lapply(function(C) {
-            OUT <- C
-            if (!is.na(C)) {
-              D <- which(project$metadata$missing_codes$name == C)
+        data_form[[field_name]] <- data_form[[field_name]] %>%
+          lapply(function(x) {
+            OUT <- x
+            if (!is.na(x)) {
+              D <- which(project$metadata$missing_codes$name == x)
               if (length(D) > 0) {
                 OUT <- project$metadata$missing_codes$code[D]
               }
@@ -1102,27 +1102,27 @@ raw_to_labelled_form <- function(data_form, project) {
     use_missing_codes <- is.data.frame(project$metadata$missing_codes)
     metadata <- filter_fields_from_form(data_form = data_form, project = project)
     for (i in seq_len(nrow(metadata))) { # i <-  seq_len(nrow(metadata)) %>% sample(1)
-      COL_NAME <- metadata$field_name[i]
+      field_name <- metadata$field_name[i]
       has_choices <- metadata$has_choices[i]
       if (has_choices) {
         z <- metadata$select_choices_or_calculations[i] %>% split_choices()
-        data_form[[COL_NAME]] <- data_form[[COL_NAME]] %>%
-          lapply(function(C) {
+        data_form[[field_name]] <- data_form[[field_name]] %>%
+          lapply(function(x) {
             OUT <- NA
-            if (!is.na(C)) {
-              coded_redcap <- which(z$code == C)
+            if (!is.na(x)) {
+              coded_redcap <- which(z$code == x)
               if (length(coded_redcap) > 0) {
                 OUT <- z$name[coded_redcap]
               } else {
                 if (use_missing_codes) {
-                  coded_redcap2 <- which(project$metadata$missing_codes$code == C)
+                  coded_redcap2 <- which(project$metadata$missing_codes$code == x)
                   if (length(coded_redcap2) > 0) {
                     OUT <- project$metadata$missing_codes$name[coded_redcap2]
                   } else {
-                    warning("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME, ", Choice: ", C, ". Also not a missing code.")
+                    warning("Mismatch in choices compared to REDCap (above)! Column: ", field_name, ", Choice: ", x, ". Also not a missing code.")
                   }
                 } else {
-                  warning("Mismatch in choices compared to REDCap (above)! Column: ", COL_NAME, ", Choice: ", C)
+                  warning("Mismatch in choices compared to REDCap (above)! Column: ", field_name, ", Choice: ", x)
                 }
               }
             }
@@ -1133,11 +1133,11 @@ raw_to_labelled_form <- function(data_form, project) {
       } else {
         if (use_missing_codes) {
           z <- project$metadata$missing_codes
-          data_form[[COL_NAME]] <- data_form[[COL_NAME]] %>%
-            lapply(function(C) {
-              OUT <- C
-              if (!is.na(C)) {
-                D <- which(z$code == C)
+          data_form[[field_name]] <- data_form[[field_name]] %>%
+            lapply(function(x) {
+              OUT <- x
+              if (!is.na(x)) {
+                D <- which(z$code == x)
                 if (length(D) > 0) {
                   OUT <- z$name[D]
                 }
@@ -1310,8 +1310,8 @@ filter_fields_from_form <- function(data_form, project) {
 labelled_to_raw_project <- function(project) {
   project <- assert_blank_project(project)
   if (!project$internals$labelled) stop("project is already raw/coded (not labelled values)")
-  for (TABLE in names(project$data)) {
-    project$data[[TABLE]] <- labelled_to_raw_form(data_form = project$data[[TABLE]], project = project)
+  for (form_name in names(project$data)) {
+    project$data[[form_name]] <- labelled_to_raw_form(data_form = project$data[[form_name]], project = project)
   }
   project$internals$labelled <- FALSE
   project

@@ -1,4 +1,9 @@
-bullet_in_console <- function(text = "", url = NULL, bullet_type = "i", collapse = TRUE, file = NULL, silent = FALSE) {
+bullet_in_console <- function(text = "",
+                              url = NULL,
+                              bullet_type = "i",
+                              collapse = TRUE,
+                              file = NULL,
+                              silent = FALSE) {
   if (silent) {
     return(invisible())
   }
@@ -15,7 +20,11 @@ bullet_in_console <- function(text = "", url = NULL, bullet_type = "i", collapse
     }
     if (is.null(url_names)) url_names <- url
     if (collapse) url_if <- paste0(url_if, collapse = " and ")
-    url_if <- paste0(" {cli::col_blue(cli::style_hyperlink('", url_names, "', '", url, "'))}")
+    url_if <- paste0(" {cli::col_blue(cli::style_hyperlink('",
+                     url_names,
+                     "', '",
+                     url,
+                     "'))}")
   }
   if (length(file) > 0) {
     file_names <- names(file)
@@ -65,7 +74,10 @@ process_df_list <- function(list, drop_empty = TRUE, silent = FALSE) {
       keeps <- which(is_a_df_with_rows)
       drops <- which(!is_a_df_with_rows)
       if (length(drops) > 0) {
-        if (!silent) bullet_in_console("Dropping non-data.frames and empties... ", paste0(names(drops), collapse = ", "))
+        if (!silent){
+          bullet_in_console("Dropping non-data.frames and empties... ",
+                            paste0(names(drops), collapse = ", "))
+        }
       }
       list <- list[keeps]
     }
@@ -183,7 +195,12 @@ find_form_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
   }
   out_form
 }
-find_form_diff2 <- function(new, old, ref_cols = NULL, message_pass = "", view_old = TRUE, n_row_view = 20) {
+find_form_diff2 <- function(new,
+                            old,
+                            ref_cols = NULL,
+                            message_pass = "",
+                            view_old = TRUE,
+                            n_row_view = 20) {
   new <- all_character_cols(new)
   old <- all_character_cols(old)
   if (!all(colnames(new) %in% colnames(old))) {
@@ -206,7 +223,9 @@ find_form_diff2 <- function(new, old, ref_cols = NULL, message_pass = "", view_o
     stop("Keys must lead to unique rows! (new form)")
   }
   appended_old_col_suffix <- "__old"
-  if (any(endsWith(unique(colnames(old), colnames(new)), appended_old_col_suffix))) stop("colnames cant end with '", appended_old_col_suffix, "'")
+  if (any(endsWith(unique(colnames(old), colnames(new)), appended_old_col_suffix))){
+    stop("colnames cant end with '", appended_old_col_suffix, "'")
+  }
   merged_df <- merge(new, old, by = ref_cols, suffixes = c("", appended_old_col_suffix), all.x = TRUE)
   placeholder <- "NA_placeholder"
   rows_to_keep <- NULL
@@ -245,7 +264,14 @@ find_form_diff2 <- function(new, old, ref_cols = NULL, message_pass = "", view_o
           indices <- 1:ifelse(length_of_rows_to_keep < n_row_view, length_of_rows_to_keep, n_row_view)
           rows_to_keep3 <- rows_to_keep2[indices]
           print.data.frame(merged_df[rows_to_keep3, unique(cols_to_view)])
-          choice <- utils::menu(choices = c("Check more rows", "Proceed with no more checking", "Stop the function"), title = "What would you like to do?")
+          choice <- utils::menu(
+            choices = c(
+              "Check more rows",
+              "Proceed with no more checking",
+              "Stop the function"
+            ),
+            title = "What would you like to do?"
+          )
           if (choice == 3) stop("Stopped as requested!")
           if (choice == 2) done <- TRUE
           if (choice == 1) rows_to_keep2 <- rows_to_keep2[-indices]
@@ -270,7 +296,9 @@ find_df_list_diff <- function(new_list, old_list, ref_col_list, view_old = TRUE,
   }
   if (!is_df_list(new_list)) stop("new_list must be a list of data.frames")
   if (!is_df_list(old_list)) stop("old_list must be a list of data.frames")
-  if (any(!names(new_list) %in% names(old_list))) stop("All new_list names must be included in the set of old_list names.")
+  if (any(!names(new_list) %in% names(old_list))){
+    stop("All new_list names must be included in the set of old_list names.")
+  }
   if (!is.list(ref_col_list)) {
     ref_col_list <- names(new_list) %>% lapply(function(IN) {
       ref_col_list
@@ -278,7 +306,14 @@ find_df_list_diff <- function(new_list, old_list, ref_col_list, view_old = TRUE,
     names(ref_col_list) <- names(new_list)
   }
   for (df_name in names(new_list)) {
-    new_list[[df_name]] <- find_form_diff2(new = new_list[[df_name]], old = old_list[[df_name]], ref_cols = ref_col_list[[df_name]], message_pass = paste0(df_name, ": "), view_old = view_old, n_row_view = n_row_view)
+    new_list[[df_name]] <- find_form_diff2(
+      new = new_list[[df_name]],
+      old = old_list[[df_name]],
+      ref_cols = ref_col_list[[df_name]],
+      message_pass = paste0(df_name, ": "),
+      view_old = view_old,
+      n_row_view = n_row_view
+    )
   }
   return(new_list)
 }
@@ -327,7 +362,9 @@ csv_to_list <- function(paths) {
     tools::file_path_sans_ext() %>%
     clean_env_names()
   for (i in seq_along(paths)) {
-    form_list[[i]] <- utils::read.csv(paths[i], stringsAsFactors = FALSE, na.strings = c("", "NA"))
+    form_list[[i]] <- utils::read.csv(paths[i],
+                                      stringsAsFactors = FALSE,
+                                      na.strings = c("", "NA"))
   }
   names(form_list) <- clean_names
   return(form_list)
@@ -372,7 +409,8 @@ wb_to_list <- function(wb) {
     x <- openxlsx::getTables(wb, sheet = i)
     if (length(x) > 0) {
       # test for xlsx without letters for cols
-      col_row <- as.integer(gsub("[A-Za-z]", "", unlist(x %>% attr("refs") %>% strsplit(":"))[[1]]))
+      col_row <- gsub("[A-Za-z]", "", unlist(x %>% attr("refs") %>% strsplit(":"))[[1]]) %>%
+        as.integer()
     }
     out[[i]] <- openxlsx::read.xlsx(wb, sheet = i, startRow = col_row)
   }
@@ -405,7 +443,14 @@ form_to_wb <- function(
     freeze_key_cols <- which(all_cols %in% key_cols)
     if (length(freeze_key_cols) > 0) {
       if (!is_consecutive_srt_1(freeze_key_cols)) {
-        warning("please keep your key cols on the left consecutively. Fixing ", form_name, ": ", paste0(key_cols, collapse = ", "), ".", immediate. = TRUE)
+        warning(
+          "please keep your key cols on the left consecutively. Fixing ",
+          form_name,
+          ": ",
+          paste0(key_cols, collapse = ", "),
+          ".",
+          immediate. = TRUE
+        )
         non_key_cols <- seq_len(ncol(form))
         non_key_cols <- non_key_cols[which(!non_key_cols %in% freeze_key_cols)]
         new_col_order <- c(freeze_key_cols, non_key_cols)
@@ -443,7 +488,13 @@ form_to_wb <- function(
         if (has_names) {
           if (names(link_col_list)[i] %in% colnames(form)) {
             hyperlink_col <- which(colnames(form) == names(link_col_list)[i])
-            openxlsx::writeData(wb, sheet = form_name, x = form[[link_col_list[[i]]]], startRow = startRow_table + 1, startCol = hyperlink_col + pad_cols)
+            openxlsx::writeData(
+              wb,
+              sheet = form_name,
+              x = form[[link_col_list[[i]]]],
+              startRow = startRow_table + 1,
+              startCol = hyperlink_col + pad_cols
+            )
             form[[link_col_list[[i]]]] <- NULL
           } else {
             # warning("",immediate. = TRUE)
@@ -451,7 +502,14 @@ form_to_wb <- function(
         }
       }
     }
-    openxlsx::writeDataTable(wb, sheet = form_name, x = form, startRow = startRow_table, startCol = startCol, tableStyle = tableStyle)
+    openxlsx::writeDataTable(
+      wb,
+      sheet = form_name,
+      x = form,
+      startRow = startRow_table,
+      startCol = startCol,
+      tableStyle = tableStyle
+    )
     style_cols <- seq_len(ncol(form)) + pad_cols
     openxlsx::addStyle(
       wb,
@@ -484,10 +542,14 @@ form_to_wb <- function(
           if (is_consecutive_srt_1(freeze_key_cols)) {
             firstActiveCol <- firstActiveCol + freeze_key_cols[length(freeze_key_cols)]
           } else {
-            warning("key_cols must be consecutive and start from the left most column.", immediate. = TRUE)
+            warning("key_cols must be consecutive and start from the left most column.",
+                    immediate. = TRUE)
           }
         }
-        openxlsx::freezePane(wb, form_name, firstActiveRow = firstActiveRow, firstActiveCol = firstActiveCol)
+        openxlsx::freezePane(wb,
+                             form_name,
+                             firstActiveRow = firstActiveRow,
+                             firstActiveCol = firstActiveCol)
       }
     }
     return(wb)
@@ -520,12 +582,24 @@ list_to_wb <- function(
       }
     }
   }
-  list_names_rename <- stringr::str_trunc(list_names, width = 31, side = "right", ellipsis = "")
+  list_names_rename <- stringr::str_trunc(list_names,
+                                          width = 31,
+                                          side = "right",
+                                          ellipsis = "")
   BAD <- dw(list_names_rename)
   if (length(BAD) > 0) {
-    warning("Duplicated names when trimmed from right 31 max in Excel: ", list_names[BAD] %>% paste0(collapse = ", "), immediate. = TRUE)
-    message("Use CSV or shorten the names and make sure they are unique if they are trimmed to 31 char. For now will make unique by adding number.")
-    list_names_rename <- unique_trimmed_strings(list_names_rename, max_length = 31)
+    warning(
+      "Duplicated names when trimmed from right 31 max in Excel: ",
+      list_names[BAD] %>% paste0(collapse = ", "),
+      immediate. = TRUE
+    )
+    message(
+      "Use CSV or shorten the names and make sure they are unique if they are trimmed to 31 char. For now will make unique by adding number."
+    )
+    list_names_rename <- unique_trimmed_strings(
+      list_names_rename,
+      max_length = 31
+    )
   }
   for (i in seq_along(list_names)) {
     header_df <- header_df_list[[list_names[i]]]
@@ -553,7 +627,8 @@ unique_trimmed_strings <- function(strings, max_length) {
   trim_string <- function(s, max_length) {
     substr(s, 1, max_length)
   }
-  trimmed_strings <- lapply(strings, trim_string, max_length = max_length) %>% unlist()
+  trimmed_strings <- lapply(strings, trim_string, max_length = max_length) %>%
+    unlist()
   # Initialize a vector to store unique strings
   unique_strings <- character(length(trimmed_strings))
   # Initialize a counter to keep track of occurrences
@@ -564,7 +639,15 @@ unique_trimmed_strings <- function(strings, max_length) {
     counter <- 1
     # Keep adjusting the string until it's unique
     while (new_string %in% unique_strings) {
-      new_string <- paste0(stringr::str_trunc(base_string, width = max_length - (counter), side = "right", ellipsis = ""), counter)
+      new_string <- paste0(
+        stringr::str_trunc(
+          base_string,
+          width = max_length - (counter),
+          side = "right",
+          ellipsis = ""
+        ),
+        counter
+      )
       counter <- counter + 1
     }
     unique_strings[i] <- new_string
@@ -647,7 +730,11 @@ list_to_excel <- function(
     )
   }
 }
-list_to_csv <- function(list, dir, file_name = NULL, overwrite = TRUE, drop_empty = TRUE) {
+list_to_csv <- function(list,
+                        dir,
+                        file_name = NULL,
+                        overwrite = TRUE,
+                        drop_empty = TRUE) {
   list <- process_df_list(list, drop_empty = drop_empty)
   # list_names <- names(list)
   for (i in seq_along(list)) {
@@ -737,13 +824,14 @@ matches <- function(x, ref, count_only = FALSE) {
   next_match <- match(x, ref)
   next_match_index <- which(!is.na(next_match))
   while (length(next_match_index) > 0) {
-    final_match[next_match_index] <- next_match_index %>% lapply(function(index) {
-      if (all(is.na(final_match[[index]]))) {
-        return(next_match[index])
-      } else {
-        return(c(final_match[[index]], next_match[index]))
-      }
-    })
+    final_match[next_match_index] <-
+      next_match_index %>% lapply(function(index) {
+        if (all(is.na(final_match[[index]]))) {
+          return(next_match[index])
+        } else {
+          return(c(final_match[[index]], next_match[index]))
+        }
+      })
     ref[next_match[which(!is.na(next_match))]] <- NA
     next_match <- match(x, ref)
     next_match_index <- which(!is.na(next_match))
@@ -790,7 +878,15 @@ sample1 <- function(x) {
   sample(x, 1)
 }
 list.files.real <- function(path, full.names = TRUE, recursive = FALSE) {
-  grep("~$", sanitize_path(list.files(path, full.names = full.names, recursive = recursive)), fixed = TRUE, value = TRUE, invert = TRUE)
+  grep(
+    "~$",
+    sanitize_path(list.files(
+      path, full.names = full.names, recursive = recursive
+    )),
+    fixed = TRUE,
+    value = TRUE,
+    invert = TRUE
+  )
 }
 wrap_text <- function(text, max_length = 40, spacer = "\n") {
   words <- unlist(strsplit(text, " "))
@@ -822,8 +918,11 @@ clean_env_names <- function(env_names, silent = FALSE, lowercase = TRUE) {
       cleaned_name <- gsub("__", "_", gsub(" ", "_", gsub("-", "", name)))
       if (lowercase) cleaned_name <- tolower(cleaned_name)
       if (cleaned_name %in% cleaned_names) {
-        if (!silent) message("Non-unique environment name: '", name, "', added numbers...")
-        cleaned_name <- cleaned_name %>% paste0("_", max(wl(cleaned_name %in% cleaned_names)) + 1)
+        if (!silent){
+          message("Non-unique environment name: '", name, "', added numbers...")
+        }
+        cleaned_name <- cleaned_name %>%
+          paste0("_", max(wl(cleaned_name %in% cleaned_names)) + 1)
       }
       cleaned_names[i] <- cleaned_name
     }
@@ -848,7 +947,8 @@ is_df_list <- function(x, strict = FALSE) {
 }
 check_match <- function(vec_list) {
   sorted_vecs <- lapply(vec_list, sort)
-  all(unlist(lapply(sorted_vecs[-1], function(x) identical(sorted_vecs[[1]], x))))
+  all(unlist(lapply(sorted_vecs[-1], function(x)
+    identical(sorted_vecs[[1]], x))))
 }
 is_env_name <- function(env_name, silent = FALSE) {
   result <- tryCatch(
@@ -908,7 +1008,10 @@ is_date <- function(date) {
     year <- year %>% as.integer()
     month <- out2[[2]] %>% as.integer()
     day <- out2[[3]] %>% as.integer()
-    out <- month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= lubridate::year(Sys.Date())
+    out <- month >= 1 &&
+      month <= 12 &&
+      day >= 1 &&
+      day <= 31 && year >= 1900 && year <= lubridate::year(Sys.Date())
   }
   return(out)
 }

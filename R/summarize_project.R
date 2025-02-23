@@ -1350,16 +1350,16 @@ check_project_for_IDs <- function(project, required_percent_filled = 0.7) {
       form <- project$data[[project$metadata$forms$form_name[which(!project$metadata$forms$repeating)][[1]]]]
       IN_length <- form %>% nrow()
       cols <- colnames(form)[form %>%
-        lapply(function(field) {
-          form <- FALSE
-          x <- field %>% drop_nas()
-          if ((length(x) / IN_length) > required_percent_filled) {
-            form <- anyDuplicated(x) == 0
-          }
-          return(form)
-        }) %>%
-        unlist() %>%
-        which()]
+                               lapply(function(field) {
+                                 form <- FALSE
+                                 x <- field %>% drop_nas()
+                                 if ((length(x) / IN_length) > required_percent_filled) {
+                                   form <- anyDuplicated(x) == 0
+                                 }
+                                 return(form)
+                               }) %>%
+                               unlist() %>%
+                               which()]
     }
   }
   return(cols)

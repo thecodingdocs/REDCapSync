@@ -227,8 +227,8 @@ find_form_diff2 <- function(new,
   cols <- colnames(new)[which(!colnames(new) %in% ref_cols)]
   for (col in cols) {
     vector1 <- merged_df[[col]]
-    compare_COL <- paste0(col, appended_old_col_suffix)
-    vector2 <- merged_df[[compare_COL]]
+    compare_column <- paste0(col, appended_old_col_suffix)
+    vector2 <- merged_df[[compare_column]]
     vector1_no_na <- ifelse(is.na(vector1), placeholder, vector1)
     vector2_no_na <- ifelse(is.na(vector2), placeholder, vector2)
     # Compare vectors element-wise
@@ -240,7 +240,7 @@ find_form_diff2 <- function(new,
       if (view_old) {
         cols_to_view <- cols_to_view %>%
           append(additional_cols) %>%
-          append(which(colnames(merged_df) == compare_COL))
+          append(which(colnames(merged_df) == compare_column))
       }
     }
   }
@@ -366,7 +366,7 @@ csv_to_list <- function(paths) {
 csv_folder_to_list <- function(folder) {
   folder <- sanitize_path(folder)
   if (!dir.exists(folder)) stop("Folder does not exist: ", folder)
-  paths <- list.files.real(folder)
+  paths <- list_files_real(folder)
   paths <- paths[which(paths %>% endsWith(".csv"))]
   return(csv_to_list(paths = paths))
 }
@@ -461,19 +461,19 @@ form_to_wb <- function(
   }
   if (nrow(form) > 0) {
     openxlsx::addWorksheet(wb, form_name)
-    startRow_header <- pad_rows + 1
-    startRow_table <- startRow_header
+    start_row_header <- pad_rows + 1
+    start_row_table <- start_row_header
     startCol <- pad_cols + 1
     if (is_something(header_df)) {
       openxlsx::writeData(
         wb,
         sheet = form_name,
         x = header_df,
-        startRow = startRow_header,
+        startRow = start_row_header,
         startCol = startCol,
         colNames = FALSE
       )
-      startRow_table <- startRow_header + nrow(header_df)
+      start_row_table <- start_row_header + nrow(header_df)
     }
     if (length(link_col_list) > 0) {
       has_names <- !is.null(names(link_col_list))
@@ -490,7 +490,7 @@ form_to_wb <- function(
               wb,
               sheet = form_name,
               x = form[[link_col_list[[i]]]],
-              startRow = startRow_table + 1,
+              startRow = start_row_table + 1,
               startCol = hyperlink_col + pad_cols
             )
             form[[link_col_list[[i]]]] <- NULL
@@ -504,7 +504,7 @@ form_to_wb <- function(
       wb,
       sheet = form_name,
       x = form,
-      startRow = startRow_table,
+      startRow = start_row_table,
       startCol = startCol,
       tableStyle = tableStyle
     )
@@ -513,7 +513,7 @@ form_to_wb <- function(
       wb,
       sheet = form_name,
       style = header_style,
-      rows = seq(from = startRow_header, to = startRow_table),
+      rows = seq(from = start_row_header, to = start_row_table),
       cols = style_cols,
       gridExpand = TRUE,
       stack = TRUE
@@ -522,7 +522,7 @@ form_to_wb <- function(
       wb,
       sheet = form_name,
       style = body_style,
-      rows = seq_len(nrow(form)) + startRow_table,
+      rows = seq_len(nrow(form)) + start_row_table,
       cols = style_cols,
       gridExpand = TRUE,
       stack = TRUE
@@ -530,7 +530,7 @@ form_to_wb <- function(
     if (freeze_header || freeze_keys) {
       firstActiveRow <- NULL
       if (freeze_header) {
-        firstActiveRow <- startRow_table + 1
+        firstActiveRow <- start_row_table + 1
       }
       firstActiveCol <- NULL
       if (freeze_keys) {
@@ -584,11 +584,11 @@ list_to_wb <- function(
                                           width = 31,
                                           side = "right",
                                           ellipsis = "")
-  BAD <- dw(list_names_rename)
-  if (length(BAD) > 0) {
+  bad_names <- dw(list_names_rename)
+  if (length(bad_names) > 0) {
     warning(
       "Duplicated names when trimmed from right 31 max in Excel: ",
-      list_names[BAD] %>% paste0(collapse = ", "),
+      list_names[bad_names] %>% paste0(collapse = ", "),
       immediate. = TRUE
     )
     message(
@@ -873,11 +873,11 @@ drop_if <- function(x, drops) {
 sample1 <- function(x) {
   sample(x, 1)
 }
-list.files.real <- function(path, full.names = TRUE, recursive = FALSE) {
+list_files_real <- function(path, full_names = TRUE, recursive = FALSE) {
   grep(
     "~$",
     sanitize_path(list.files(
-      path, full.names = full.names, recursive = recursive
+      path, full.names = full_names, recursive = recursive
     )),
     fixed = TRUE,
     value = TRUE,

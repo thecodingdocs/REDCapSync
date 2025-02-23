@@ -33,10 +33,10 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$redcap$has_repeating_events <- FALSE
   project$redcap$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events
   # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
-  repeatingFormsEvents <- redcapAPI::exportRepeatingInstrumentsEvents(rcon = rcon)
-  if (is.data.frame(repeatingFormsEvents)) {
-    if (nrow(repeatingFormsEvents) > 0) {
-      project$metadata$forms$repeating <- project$metadata$forms$form_name %in% repeatingFormsEvents$form_name
+  repeating_forms_events <- redcapAPI::exportRepeatingInstrumentsEvents(rcon = rcon)
+  if (is.data.frame(repeating_forms_events)) {
+    if (nrow(repeating_forms_events) > 0) {
+      project$metadata$forms$repeating <- project$metadata$forms$form_name %in% repeating_forms_events$form_name
     }
   }
   if (any(project$metadata$forms$repeating)) {
@@ -132,9 +132,9 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     colnames(project$metadata$events)[which(colnames(project$metadata$events) == "arm_num")] <- "arm_number"
     project$metadata$events$repeating <- FALSE
     project$metadata$event_mapping$repeating <- FALSE
-    if (is.data.frame(repeatingFormsEvents)) {
-      project$metadata$events$repeating <- project$metadata$events$unique_event_name %in% repeatingFormsEvents$event_name[which(is.na(repeatingFormsEvents$form_name))]
-      repeatingFormsEvents_ind <- repeatingFormsEvents[which(!is.na(repeatingFormsEvents$event_name) & !is.na(repeatingFormsEvents$form_name)), ]
+    if (is.data.frame(repeating_forms_events)) {
+      project$metadata$events$repeating <- project$metadata$events$unique_event_name %in% repeating_forms_events$event_name[which(is.na(repeating_forms_events$form_name))]
+      repeatingFormsEvents_ind <- repeating_forms_events[which(!is.na(repeating_forms_events$event_name) & !is.na(repeating_forms_events$form_name)), ]
       if (nrow(repeatingFormsEvents_ind) > 0) {
         rows_event_mapping <- seq_len(nrow(repeatingFormsEvents_ind)) %>%
           lapply(function(i) {

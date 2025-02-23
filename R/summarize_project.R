@@ -126,9 +126,9 @@ annotate_fields <- function(project, summarize_data = TRUE, drop_missing = TRUE)
         cols <- cols[which(cols %in% colnames(form))]
         skimmed <- skimmed %>% dplyr::bind_rows(form[, cols] %>% skimr::skim())
       }
-      FOR_ORDERING <- fields$field_name
+      field_names <- fields$field_name
       fields <- fields %>% merge(skimmed, by.x = "field_name", by.y = "skim_variable", all = TRUE)
-      fields <- FOR_ORDERING %>%
+      fields <- field_names %>%
         lapply(function(x) {
           fields[which(fields$field_name == x), ]
         }) %>%
@@ -265,10 +265,10 @@ clean_form <- function(form, fields, drop_blanks = TRUE, other_drops = NULL) {
             levels <- unique(form[[field_name]]) %>% drop_nas()
           }
           if (any(duplicated(levels))) {
-            DUPS <- levels %>%
+            duplicate_levels <- levels %>%
               duplicated() %>%
               which()
-            warning("You have a variable (", field_name, ") with dupplicate names (", levels[DUPS] %>% paste0(collapse = ", "), "). This is not great but for this proccess they will be merged and treated as identical responses.")
+            warning("You have a variable (", field_name, ") with dupplicate names (", levels[duplicate_levels] %>% paste0(collapse = ", "), "). This is not great but for this proccess they will be merged and treated as identical responses.")
             levels <- levels %>% unique()
           }
           if (drop_blanks) {
@@ -351,7 +351,7 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' subset.
 #' @param filter_strict Logical. If `TRUE`, all forms will be filtered by
 #' criteria. If `FALSE`, will convert original filter to id column and filter
-#' all other forms by that ID. Default is `TRUE`.
+#' all other forms by that record. Default is `TRUE`.
 #' @param dir_other Character. The directory where the subset file will be
 #' saved. Default is the `output` folder within the database directory.
 #' @param file_name Character. The base name of the file where the subset will
@@ -1065,14 +1065,14 @@ labelled_to_raw_form <- function(form, project) {
       if (use_missing_codes) {
         form[[field_name]] <- form[[field_name]] %>%
           lapply(function(x) {
-            form <- x
+            field <- x
             if (!is.na(x)) {
-              D <- which(project$metadata$missing_codes$name == x)
-              if (length(D) > 0) {
-                form <- project$metadata$missing_codes$code[D]
+              code_row <- which(project$metadata$missing_codes$name == x)
+              if (length(code_row) > 0) {
+                field <- project$metadata$missing_codes$code[code_row]
               }
             }
-            form
+            field
           }) %>%
           unlist() %>%
           as.character()
@@ -1124,14 +1124,14 @@ raw_to_labelled_form <- function(form, project) {
           z <- project$metadata$missing_codes
           form[[field_name]] <- form[[field_name]] %>%
             lapply(function(x) {
-              form <- x
+              field <- x
               if (!is.na(x)) {
-                D <- which(z$code == x)
-                if (length(D) > 0) {
-                  form <- z$name[D]
+                code_row <- which(z$code == x)
+                if (length(code_row) > 0) {
+                  field <- z$name[code_row]
                 }
               }
-              form
+              field
             }) %>%
             unlist() %>%
             as.character()
@@ -1275,8 +1275,8 @@ stripped_project <- function(project) {
 field_names_metadata <- function(project, field_names, col_names) {
   fields <- project$metadata$fields # project$metadata$fields
   # if(!deparse(substitute(form_name))%in%project$metadata$forms$form_name)stop("To avoid potential issues the form name should match one of the instrument names" )
-  BAD <- field_names[which(!field_names %in% c(project$metadata$fields$field_name, project$redcap$raw_structure_cols, "arm_number", "event_name"))]
-  if (length(BAD) > 0) stop("All column names in your form must match items in your metadata, `project$metadata$fields$field_name`... ", paste0(BAD, collapse = ", "))
+  bad_field_names <- field_names[which(!field_names %in% c(project$metadata$fields$field_name, project$redcap$raw_structure_cols, "arm_number", "event_name"))]
+  if (length(bad_field_names) > 0) stop("All column names in your form must match items in your metadata, `project$metadata$fields$field_name`... ", paste0(bad_field_names, collapse = ", "))
   # metadata <- project$metadata$fields[which(project$metadata$fields$form_name%in%instruments),]
   fields <- fields[which(fields$field_name %in% field_names), ]
   # metadata <- metadata[which(metadata$field_name%in%field_names),]
@@ -1335,17 +1335,17 @@ form_list_to_text <- function(form_list, project, drop_nas = TRUE, clean_names =
   return(output_list)
 }
 #' @noRd
-check_project_for_IDs <- function(project, required_percent_filled = 0.7) {
+check_project_for_id_cols <- function(project, required_percent_filled = 0.7) {
   cols <- NULL
   if (is_something(project)) {
     if (is_something(project$data)) {
       form <- project$data[[project$metadata$forms$form_name[which(!project$metadata$forms$repeating)][[1]]]]
-      IN_length <- form %>% nrow()
+      the_length <- form %>% nrow()
       cols <- colnames(form)[form %>%
                                lapply(function(field) {
                                  form <- FALSE
                                  x <- field %>% drop_nas()
-                                 if ((length(x) / IN_length) > required_percent_filled) {
+                                 if ((length(x) / the_length) > required_percent_filled) {
                                    form <- anyDuplicated(x) == 0
                                  }
                                  return(form)

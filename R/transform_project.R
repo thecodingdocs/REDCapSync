@@ -375,8 +375,8 @@ run_fields_transformation <- function(project) {
       }
     }
     if (field_name %in% the_names_existing) {
-      OLD <- project$data[[form_name]][[field_name]]
-      if (!identical(field, OLD)) {
+      form_old <- project$data[[form_name]][[field_name]]
+      if (!identical(field, form_old)) {
         ref_cols <- project$metadata$form_key_cols[[form_name]]
         new <- old <- project$data[[form_name]][, c(ref_cols, field_name)]
         new[[field_name]] <- field

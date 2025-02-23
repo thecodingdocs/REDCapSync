@@ -56,7 +56,7 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
     file_path <- assert_dir(file_path)
     check_path <- file.path(file_path, "R_objects")
   }
-  files <- list.files.real(check_path, full.names = TRUE, recursive = TRUE)
+  files <- list_files_real(check_path, full_names = TRUE, recursive = TRUE)
   if (length(file) == 0) {
     return(character(0))
   }
@@ -388,9 +388,9 @@ save_project_details <- function(project, silent = TRUE) {
 delete_project_by_name <- function(short_name) {
   projects <- get_projects()
   row <- which(projects$short_name == short_name)
-  OTHERS <- which(projects$short_name != short_name)
+  other_projects <- which(projects$short_name != short_name)
   if (!is_something(row)) message("Nothing to delete named: ", short_name) %>% return()
-  projects <- projects[OTHERS, ]
+  projects <- projects[other_projects, ]
   message("Deleted: ", short_name)
   save_projects_to_cache(projects)
   return(projects)

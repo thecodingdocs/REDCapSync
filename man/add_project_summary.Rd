@@ -54,7 +54,7 @@ subset.}
 
 \item{filter_strict}{Logical. If \code{TRUE}, all forms will be filtered by
 criteria. If \code{FALSE}, will convert original filter to id column and filter
-all other forms by that ID. Default is \code{TRUE}.}
+all other forms by that record. Default is \code{TRUE}.}
 
 \item{field_names}{Character vector. Names of specific fields to include in
 the subset. Default is \code{NULL}, which includes all fields.}

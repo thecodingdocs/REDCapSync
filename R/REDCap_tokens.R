@@ -119,16 +119,16 @@ test_project_token <- function(project, set_if_fails = TRUE, launch_browser = TR
     }
   )
   project$internals$last_test_connection_attempt <- now_time()
-  ERROR <- is.null(redcap_version)
-  project$internals$last_test_connection_outcome <- !ERROR
+  version_error <- is.null(redcap_version)
+  project$internals$last_test_connection_outcome <- !version_error
   if (!set_if_fails) {
     return(invisible(project))
   }
-  if (ERROR && launch_browser) {
+  if (version_error && launch_browser) {
     utils::browseURL(url = ifelse(is_something(project$redcap$version), project$links$redcap_API, project$links$redcap_base))
     # this will fail to bring you to right URL if redcap version changes at the same time a previously valid token is no longer valid
   }
-  while (ERROR) {
+  while (version_error) {
     bullet_in_console("Your REDCap API token check failed. Invalid token or API privileges. Contact Admin!`", bullet_type = "x")
     if (set_if_fails) {
       set_project_token(project, ask = FALSE)
@@ -140,8 +140,8 @@ test_project_token <- function(project, set_if_fails = TRUE, launch_browser = TR
           NULL
         }
       )
-      ERROR <- is.null(redcap_version)
-      project$internals$last_test_connection_outcome <- !ERROR
+      version_error <- is.null(redcap_version)
+      project$internals$last_test_connection_outcome <- !version_error
     }
   }
   bullet_in_console("Connected to REDCap!", bullet_type = "v")

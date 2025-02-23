@@ -67,7 +67,7 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
       unique()
   }
   if (is_something(project$data)) {
-    drop_list <- Map(function(NAME, cols) {
+    drop_list <- Map(function(x, cols) {
       identifiers[which(identifiers %in% cols)]
     }, names(project$data), lapply(project$data, colnames))
     drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0]
@@ -280,8 +280,8 @@ clean_redcap_log <- function(log) {
   log$record_id[record_rows] <- gsub("Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation|Lock/Unlock Record | |[:):]|[:(:]", "", log$action[record_rows])
   log$action_type[record_rows] <- log$action[record_rows] %>%
     strsplit(" ") %>%
-    lapply(function(A) {
-      A[[1]]
+    lapply(function(x) {
+      x[[1]]
     }) %>%
     unlist()
   log$action_type[

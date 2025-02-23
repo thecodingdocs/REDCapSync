@@ -241,7 +241,7 @@ read_from_REDCap_upload <- function(project, allow_all = TRUE, drop_nonredcap_va
   redcap_dir <- file.path(root_dir, "REDCap", project$short_name)
   redcap_upload_dir <- file.path(redcap_dir, "upload")
   if (!file.exists(redcap_upload_dir)) stop("Did you forget to run `setup_project()`? No upload folder --> ", redcap_upload_dir)
-  x <- list.files.real(redcap_upload_dir) %>% basename()
+  x <- list_files_real(redcap_upload_dir) %>% basename()
   if (length(x) == 0) {
     stop("No files in folder --> ", redcap_upload_dir)
   }

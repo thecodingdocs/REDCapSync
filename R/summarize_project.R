@@ -190,27 +190,27 @@ annotate_choices <- function(project, summarize_data = TRUE, drop_missing = TRUE
   if (summarize_data) {
     choices$n <- seq_len(nrow(choices)) %>%
       lapply(function(i) {
-        DF <- project$data[[choices$form_name[i]]]
-        if (is.null(DF)) {
+        form <- project$data[[choices$form_name[i]]]
+        if (is.null(form)) {
           return(0)
         }
-        if (nrow(DF) == 0) {
+        if (nrow(form) == 0) {
           return(0)
         }
-        sum(DF[, choices$field_name[i]] == choices$name[i], na.rm = TRUE)
+        sum(form[, choices$field_name[i]] == choices$name[i], na.rm = TRUE)
         # print(i)
       }) %>%
       unlist()
     choices$n_total <- seq_len(nrow(choices)) %>%
       lapply(function(i) {
-        DF <- project$data[[choices$form_name[i]]]
-        if (is.null(DF)) {
+        form <- project$data[[choices$form_name[i]]]
+        if (is.null(form)) {
           return(0)
         }
-        if (nrow(DF) == 0) {
+        if (nrow(form) == 0) {
           return(0)
         }
-        sum(!is.na(DF[, choices$field_name[i]]), na.rm = TRUE)
+        sum(!is.na(form[, choices$field_name[i]]), na.rm = TRUE)
       }) %>%
       unlist()
     choices$perc <- (choices$n / choices$n_total) %>% round(4)
@@ -239,7 +239,7 @@ clean_DF_list <- function(DF_list, fields, drop_blanks = TRUE, other_drops = NUL
   # add check for DF_list#
   for (form_name in names(DF_list)) {
     DF_list[[form_name]] <- clean_DF(
-      DF = DF_list[[form_name]],
+      form = DF_list[[form_name]],
       fields = fields,
       drop_blanks = drop_blanks,
       other_drops = other_drops
@@ -248,16 +248,16 @@ clean_DF_list <- function(DF_list, fields, drop_blanks = TRUE, other_drops = NUL
   return(DF_list)
 }
 #' @noRd
-clean_DF <- function(DF, fields, drop_blanks = TRUE, other_drops = NULL) {
-  for (COLUMN in colnames(DF)) {
-    if (COLUMN %in% fields$field_name) {
-      row <- which(fields$field_name == COLUMN)
+clean_DF <- function(form, fields, drop_blanks = TRUE, other_drops = NULL) {
+  for (field_name in colnames(form)) {
+    if (field_name %in% fields$field_name) {
+      row <- which(fields$field_name == field_name)
       units <- NULL
       if (!is.na(fields$units[row])) {
         units <- fields$units[row]
       }
       class <- fields$field_type_R[row][[1]]
-      label <- ifelse(is.na(fields$field_label[row]), COLUMN, fields$field_label[row])[[1]]
+      label <- ifelse(is.na(fields$field_label[row]), field_name, fields$field_label[row])[[1]]
       levels <- NULL
       if (!is.na(class)) {
         if (class == "factor") {
@@ -265,31 +265,31 @@ clean_DF <- function(DF, fields, drop_blanks = TRUE, other_drops = NULL) {
           if (!is.na(select_choices)) {
             levels <- split_choices(select_choices)[[2]]
           } else {
-            levels <- unique(DF[[COLUMN]]) %>% drop_nas()
+            levels <- unique(form[[field_name]]) %>% drop_nas()
           }
           if (any(duplicated(levels))) {
             DUPS <- levels %>%
               duplicated() %>%
               which()
-            warning("You have a variable (", COLUMN, ") with dupplicate names (", levels[DUPS] %>% paste0(collapse = ", "), "). This is not great but for this proccess they will be merged and treated as identical responses.")
+            warning("You have a variable (", field_name, ") with dupplicate names (", levels[DUPS] %>% paste0(collapse = ", "), "). This is not great but for this proccess they will be merged and treated as identical responses.")
             levels <- levels %>% unique()
           }
           if (drop_blanks) {
-            levels <- levels[which(levels %in% unique(DF[[COLUMN]]))]
+            levels <- levels[which(levels %in% unique(form[[field_name]]))]
           }
           if (!is.null(other_drops)) {
             if (length(other_drops) > 0) levels <- levels[which(!levels %in% other_drops)]
           }
         }
         if (class == "integer") {
-          DF[[COLUMN]] <- as.integer(DF[[COLUMN]])
+          form[[field_name]] <- as.integer(form[[field_name]])
         }
         if (class == "numeric") {
-          DF[[COLUMN]] <- as.numeric(DF[[COLUMN]])
+          form[[field_name]] <- as.numeric(form[[field_name]])
         }
-        DF
+        form
       }
-      DF[[COLUMN]] <- DF[[COLUMN]] %>% clean_column_for_table(
+      form[[field_name]] <- form[[field_name]] %>% clean_column_for_table(
         class = class,
         label = label,
         units = units,
@@ -297,21 +297,21 @@ clean_DF <- function(DF, fields, drop_blanks = TRUE, other_drops = NULL) {
       )
     }
   }
-  return(DF)
+  return(form)
 }
 #' @noRd
-clean_column_for_table <- function(col, class, label, units, levels) {
+clean_column_for_table <- function(field, class, label, units, levels) {
   if (!missing(class)) {
     if (!is.null(class)) {
       if (!is.na(class)) {
         if (class == "integer") {
-          col <- col %>% as.integer()
+          field <- field %>% as.integer()
         }
         if (class == "factor") {
-          col <- col %>% factor(levels = levels, ordered = TRUE)
+          field <- field %>% factor(levels = levels, ordered = TRUE)
         }
         if (class == "numeric") {
-          col <- col %>% as.numeric()
+          field <- field %>% as.numeric()
         }
       }
     }
@@ -319,18 +319,18 @@ clean_column_for_table <- function(col, class, label, units, levels) {
   if (!missing(label)) {
     if (!is.null(label)) {
       if (!is.na(label)) {
-        attr(col, "label") <- label
+        attr(field, "label") <- label
       }
     }
   }
   if (!missing(units)) {
     if (!is.null(units)) {
       if (!is.na(units)) {
-        attr(col, "units") <- units
+        attr(field, "units") <- units
       }
     }
   }
-  col
+  return(field)
 }
 #' @title Add a Subset to a REDCap Database
 #' @description
@@ -486,8 +486,8 @@ save_REDCapSync_list <- function(
       add_links <- which(names(to_save_list) %in% names(project$data))
       if (length(add_links) > 0) {
         to_save_list[add_links] <- to_save_list[add_links] %>%
-          lapply(function(DF) {
-            add_redcap_links_to_DF(DF, project)
+          lapply(function(form) {
+            add_redcap_links_to_DF(form, project)
           })
         link_col_list <- list(
           "redcap_link"
@@ -647,9 +647,9 @@ generate_summary <- function(
     # is_repeating_filter <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == filter_form)]
   }
   for (form_name in form_names) {
-    DF <- project$data[[form_name]]
+    form <- project$data[[form_name]]
     # is_repeating_form <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == form_name)]
-    if (is_something(DF)) {
+    if (is_something(form)) {
       row_logic <- NULL
       for (filter_field_name in filter_field_names) {
         filter_field_final <- filter_field_name
@@ -687,10 +687,10 @@ generate_summary <- function(
       rows <- which(row_logic)
       field_names_adj <- field_names
       # if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(form_name, project, original_only = FALSE))
-      cols <- colnames(DF)[which(colnames(DF) %in% field_names_adj)]
+      cols <- colnames(form)[which(colnames(form) %in% field_names_adj)]
       if (length(rows) > 0 && length(cols) > 0) {
-        cols <- colnames(DF)[which(colnames(DF) %in% unique(c(project$metadata$form_key_cols[[form_name]], field_names_adj)))]
-        out_list[[form_name]] <- DF[rows, cols, drop = FALSE]
+        cols <- colnames(form)[which(colnames(form) %in% unique(c(project$metadata$form_key_cols[[form_name]], field_names_adj)))]
+        out_list[[form_name]] <- form[rows, cols, drop = FALSE]
       }
     }
   }
@@ -952,8 +952,8 @@ get_records <- function(project, subset_name) {
     no_duplicate_cols = TRUE
   )
   records <- to_save_list %>%
-    lapply(function(DF) {
-      DF[[project$redcap$id_col]]
+    lapply(function(form) {
+      form[[project$redcap$id_col]]
     }) %>%
     unlist() %>%
     unique()
@@ -1159,7 +1159,7 @@ stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
   if (!all(vars %in% fields$field_name)) stop("all vars must be in metadata.")
   the_stack <- NULL
   for (var in vars) { # var <- vars %>% sample1()
-    DF <- generate_summary(
+    form <- generate_summary(
       project,
       field_names = var,
       include_log = FALSE,
@@ -1167,8 +1167,8 @@ stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
       include_record_summary = FALSE,
       include_users = FALSE
     )[[1]]
-    colnames(DF)[which(colnames(DF) == var)] <- new_name
-    the_stack <- the_stack %>% dplyr::bind_rows(DF)
+    colnames(form)[which(colnames(form) == var)] <- new_name
+    the_stack <- the_stack %>% dplyr::bind_rows(form)
   }
   if (drop_na) {
     the_stack <- the_stack[which(!is.na(the_stack[[new_name]])), ]
@@ -1320,16 +1320,16 @@ labelled_to_raw_project <- function(project) {
 DF_list_to_text <- function(DF_list, project, drop_nas = TRUE, clean_names = TRUE) {
   output_list <- c()
   for (i in seq_along(DF_list)) {
-    DF <- DF_list[[i]]
+    form <- DF_list[[i]]
     the_raw_name <- names(DF_list)[[i]]
     the_name <- the_raw_name
     if (clean_names) the_name <- project$metadata$forms$form_label[which(project$metadata$forms$form_name == the_raw_name)]
     df_name <- paste0("----- ", the_name, " Table -----")
     output_list <- c(output_list, paste0("&nbsp;&nbsp;<strong>", df_name, "</strong><br>"))
     key_col_names <- project$metadata$form_key_cols[[the_raw_name]]
-    for (j in seq_len(nrow(DF))) {
-      for (col_name in colnames(DF)) {
-        entry <- DF[j, col_name]
+    for (j in seq_len(nrow(form))) {
+      for (col_name in colnames(form)) {
+        entry <- form[j, col_name]
         if (!col_name %in% key_col_names) {
           if (!is.na(entry) || !drop_nas) {
             entry <- gsub("\\n", "<br>", entry)
@@ -1350,9 +1350,9 @@ check_project_for_IDs <- function(project, required_percent_filled = 0.7) {
   cols <- NULL
   if (is_something(project)) {
     if (is_something(project$data)) {
-      DF <- project$data[[project$metadata$forms$form_name[which(!project$metadata$forms$repeating)][[1]]]]
-      IN_length <- DF %>% nrow()
-      cols <- colnames(DF)[DF %>%
+      form <- project$data[[project$metadata$forms$form_name[which(!project$metadata$forms$repeating)][[1]]]]
+      IN_length <- form %>% nrow()
+      cols <- colnames(form)[form %>%
                              lapply(function(IN) {
                                OUT <- FALSE
                                x <- IN %>% drop_nas()

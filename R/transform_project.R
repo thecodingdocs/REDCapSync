@@ -472,15 +472,15 @@ run_fields_transformation <- function(project) {
         ref_cols <- project$metadata$form_key_cols[[form_name]]
         new <- old <- project$data[[form_name]][, c(ref_cols, field_name)]
         new[[field_name]] <- OUT
-        DF <- find_df_diff2(
+        form <- find_df_diff2(
           new = new,
           old = old,
           ref_cols = ref_cols,
           view_old = FALSE,
           message_pass = paste0(form_name, " - ", field_name, ": ")
         )
-        if (is_something(DF)) {
-          project$transformation$data_updates[[field_name]] <- DF
+        if (is_something(form)) {
+          project$transformation$data_updates[[field_name]] <- form
         }
       }
     }

@@ -160,9 +160,9 @@ find_upload_diff <- function(project, view_old = FALSE, n_row_view = 20) {
   return(invisible(project))
 }
 #' @noRd
-check_field <- function(project, DF, field_name, autofill_new = TRUE) {
+check_field <- function(project, form, field_name, autofill_new = TRUE) {
   form <- field_names_to_form_names(project, field_name)
-  records <- DF[[project$redcap$id_col]] %>% unique()
+  records <- form[[project$redcap$id_col]] %>% unique()
   BAD <- records[which(!records %in% project$summary$all_records[[project$redcap$id_col]])]
   if (length(BAD) > 0) stop("Records not included in project: ", records %>% paste0(collapse = ", "))
   # is_repeating <- form%in% project$metadata$forms$form_name[which(project$metadata$forms$repeating)]
@@ -170,7 +170,7 @@ check_field <- function(project, DF, field_name, autofill_new = TRUE) {
   cols_mandatory <- c(cols_mandatory_structure, field_name)
   old <- project$data[[form]][, cols_mandatory]
   old <- old[which(old[[project$redcap$id_col]] %in% records), ]
-  new <- DF
+  new <- form
   missing_structure_cols <- cols_mandatory[which(!cols_mandatory %in% colnames(new))]
   cols <- cols_mandatory[which(cols_mandatory %in% colnames(new))]
   new <- new[, cols]
@@ -179,7 +179,7 @@ check_field <- function(project, DF, field_name, autofill_new = TRUE) {
     included_records_many_rows <- included_records[which(included_records %>% lapply(function(ID) {
       length(which(old[[project$redcap$id_col]] == ID)) > 1
     }) %>% unlist())]
-    if (length(included_records_many_rows) > 0) stop("DF is missing structural columns (", missing_structure_cols %>% paste0(collapse = ", "), ") and has ", form, " rows with multiple entries... remove them or add the intended columns: ", included_records_many_rows %>% paste0(collapse = ", "))
+    if (length(included_records_many_rows) > 0) stop("form is missing structural columns (", missing_structure_cols %>% paste0(collapse = ", "), ") and has ", form, " rows with multiple entries... remove them or add the intended columns: ", included_records_many_rows %>% paste0(collapse = ", "))
     if ("redcap_repeat_instrument" %in% missing_structure_cols) new$redcap_repeat_instrument <- form
     if ("redcap_repeat_instance" %in% missing_structure_cols) {
       new$redcap_repeat_instance <- new[[project$redcap$id_col]] %>%
@@ -291,7 +291,7 @@ edit_REDCap_while_viewing <- function(project, optional_DF, records, field_name_
     optional_DF <- project[["data"]][[change_form]][, unique(c(ref_cols_change, field_names_to_view))]
   }
   if (is.null(field_names_to_view)) field_names_to_view <- colnames(optional_DF)
-  # if(any(!ref_cols%in%colnames(DF)))stop("DF must contain all ref_cols")
+  # if(any(!ref_cols%in%colnames(form)))stop("form must contain all ref_cols")
   if (length(records) > 0) {
     # message("fix these in REDCap --> ",paste0(out,collapse = " | "))
     rows_of_choices <- which(project$metadata$choices$field_name == field_name_to_change)

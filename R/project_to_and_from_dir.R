@@ -185,8 +185,8 @@ drop_REDCap_to_directory <- function(
     }
     link_col_list <- list()
     # if (with_links) {
-    #   to_save_list <- to_save_list %>% lapply(function(DF) {
-    #     add_redcap_links_to_DF(DF, project)
+    #   to_save_list <- to_save_list %>% lapply(function(form) {
+    #     add_redcap_links_to_DF(form, project)
     #   })
     #   link_col_list <- list(
     #     "redcap_link"

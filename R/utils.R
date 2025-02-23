@@ -1,24 +1,24 @@
 #' @noRd
-add_redcap_links_to_DF <- function(DF, project) { # add instance links
-  if (project$redcap$id_col %in% colnames(DF)) {
-    DF_structure_cols <- project$redcap$raw_structure_cols[which(project$redcap$raw_structure_cols %in% colnames(DF))]
-    DF_structure_cols <- project$redcap$raw_structure_cols[which(project$redcap$raw_structure_cols %in% colnames(DF) & project$redcap$raw_structure_cols != project$redcap$id_col)]
+add_redcap_links_to_DF <- function(form, project) { # add instance links
+  if (project$redcap$id_col %in% colnames(form)) {
+    DF_structure_cols <- project$redcap$raw_structure_cols[which(project$redcap$raw_structure_cols %in% colnames(form))]
+    DF_structure_cols <- project$redcap$raw_structure_cols[which(project$redcap$raw_structure_cols %in% colnames(form) & project$redcap$raw_structure_cols != project$redcap$id_col)]
     link_head <- project$links$redcap_record_home
-    link_tail <- "&id=" %>% paste0(DF[[project$redcap$id_col]])
+    link_tail <- "&id=" %>% paste0(form[[project$redcap$id_col]])
     if ("redcap_repeat_instrument" %in% DF_structure_cols) {
       link_head <- project$links$redcap_record_subpage
-      link_tail <- link_tail %>% paste0("&page=", DF[["redcap_repeat_instrument"]])
+      link_tail <- link_tail %>% paste0("&page=", form[["redcap_repeat_instrument"]])
     }
     if ("redcap_repeat_instance" %in% DF_structure_cols) {
       link_head <- project$links$redcap_record_subpage
-      link_tail <- link_tail %>% paste0("&instance=", DF[["redcap_repeat_instance"]])
+      link_tail <- link_tail %>% paste0("&instance=", form[["redcap_repeat_instance"]])
     }
-    DF$redcap_link <- paste0(link_head, link_tail)
-    if ("arm_number" %in% colnames(DF)) {
-      DF$redcap_link <- DF$redcap_link %>% paste0("&arm=", DF[["arm_number"]])
+    form$redcap_link <- paste0(link_head, link_tail)
+    if ("arm_number" %in% colnames(form)) {
+      form$redcap_link <- form$redcap_link %>% paste0("&arm=", form[["arm_number"]])
     }
   }
-  return(DF)
+  return(form)
 }
 #' @noRd
 count_project_upload_cells <- function(project) {
@@ -31,11 +31,11 @@ count_project_upload_cells <- function(project) {
 }
 #' @noRd
 husk_of_form <- function(project, data_form, field_names) {
-  DF <- project$data[[data_form]]
-  cols <- colnames(DF)[which(colnames(DF) %in% project$redcap$raw_structure_cols)]
+  form <- project$data[[data_form]]
+  cols <- colnames(form)[which(colnames(form) %in% project$redcap$raw_structure_cols)]
   DF2 <- NULL
   for (col in cols) {
-    DF2[[col]] <- DF[[col]]
+    DF2[[col]] <- form[[col]]
   }
   DF2 <- as.data.frame(DF2)
   return(DF2)
@@ -47,15 +47,15 @@ all_project_to_char_cols <- function(project) {
   return(invisible(project))
 }
 #' @noRd
-add_redcap_links_table <- function(DF, project) {
-  if (nrow(DF) > 0) {
-    DF[[project$redcap$id_col]] <- paste0("<a href='", paste0("https://redcap.miami.edu/redcap_v", project$redcap$version, "/DataEntry/record_home.php?pid=", project$redcap$project_id, "&id=", DF[[project$redcap$id_col]], "&arm=1"), "' target='_blank'>", DF[[project$redcap$id_col]], "</a>")
+add_redcap_links_table <- function(form, project) {
+  if (nrow(form) > 0) {
+    form[[project$redcap$id_col]] <- paste0("<a href='", paste0("https://redcap.miami.edu/redcap_v", project$redcap$version, "/DataEntry/record_home.php?pid=", project$redcap$project_id, "&id=", form[[project$redcap$id_col]], "&arm=1"), "' target='_blank'>", form[[project$redcap$id_col]], "</a>")
   }
-  DF
+  form
 }
 #' @noRd
-clean_RC_col_names <- function(DF, project) {
-  colnames(DF) <- colnames(DF) %>%
+clean_RC_col_names <- function(form, project) {
+  colnames(form) <- colnames(form) %>%
     lapply(function(col) {
       x <- project$metadata$fields$field_label[which(project$metadata$fields$field_name == col)]
       if (length(x) > 1) {
@@ -65,11 +65,11 @@ clean_RC_col_names <- function(DF, project) {
     }) %>%
     unlist() %>%
     return()
-  DF
+  form
 }
 #' @noRd
-clean_RC_df_for_DT <- function(DF, project) {
-  DF %>%
+clean_RC_df_for_DT <- function(form, project) {
+  form %>%
     add_redcap_links_table(project) %>%
     clean_RC_col_names(project) %>%
     return()

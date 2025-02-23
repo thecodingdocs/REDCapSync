@@ -120,7 +120,7 @@ find_df_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
   new <- all_character_cols(new)
   old <- all_character_cols(old)
   if (!all(colnames(new) %in% colnames(old))) {
-    stop("All new DF columns must be included in old DF")
+    stop("All new form columns must be included in old form")
   }
   if (!all(ref_cols %in% colnames(new)) || !all(ref_cols %in% colnames(old))) {
     stop("ref_cols must be included in both dfs")
@@ -133,14 +133,14 @@ find_df_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
     old$key <- old[, ref_cols]
   }
   if (anyDuplicated(old$key) > 0) {
-    stop("Keys must lead to unique rows! (old DF)")
+    stop("Keys must lead to unique rows! (old form)")
   }
   if (anyDuplicated(new$key) > 0) {
-    stop("Keys must lead to unique rows! (new DF)")
+    stop("Keys must lead to unique rows! (new form)")
   }
   new_keys <- integer(0)
   if (any(!new$key %in% old$key)) {
-    # warning("You have at least one new key compared to old DF therefore all columns will be included by default",immediate. = TRUE)
+    # warning("You have at least one new key compared to old form therefore all columns will be included by default",immediate. = TRUE)
     new_keys <- which(!new$key %in% old$key)
   }
   indices <- data.frame(
@@ -187,7 +187,7 @@ find_df_diff2 <- function(new, old, ref_cols = NULL, message_pass = "", view_old
   new <- all_character_cols(new)
   old <- all_character_cols(old)
   if (!all(colnames(new) %in% colnames(old))) {
-    stop("All new DF columns must be included in old DF")
+    stop("All new form columns must be included in old form")
   }
   if (!all(ref_cols %in% colnames(new)) || !all(ref_cols %in% colnames(old))) {
     stop("ref_cols must be included in both dfs")
@@ -200,10 +200,10 @@ find_df_diff2 <- function(new, old, ref_cols = NULL, message_pass = "", view_old
     old_keys <- old[, ref_cols]
   }
   if (anyDuplicated(old_keys) > 0) {
-    stop("Keys must lead to unique rows! (old DF)")
+    stop("Keys must lead to unique rows! (old form)")
   }
   if (anyDuplicated(new_keys) > 0) {
-    stop("Keys must lead to unique rows! (new DF)")
+    stop("Keys must lead to unique rows! (new form)")
   }
   appended_old_col_suffix <- "__old"
   if (any(endsWith(unique(colnames(old), colnames(new)), appended_old_col_suffix))) stop("colnames cant end with '", appended_old_col_suffix, "'")
@@ -282,8 +282,8 @@ find_df_list_diff <- function(new_list, old_list, ref_col_list, view_old = TRUE,
   }
   return(new_list)
 }
-all_character_cols <- function(DF) {
-  as.data.frame(lapply(DF, as.character))
+all_character_cols <- function(form) {
+  as.data.frame(lapply(form, as.character))
 }
 all_character_cols_list <- function(list) {
   lapply(list, all_character_cols)
@@ -379,7 +379,7 @@ wb_to_list <- function(wb) {
   return(out)
 }
 DF_to_wb <- function(
-    DF,
+    form,
     DF_name,
     wb = openxlsx::createWorkbook(),
     link_col_list = list(),
@@ -394,28 +394,28 @@ DF_to_wb <- function(
     freeze_keys = TRUE,
     key_cols = NULL) {
   if (nchar(DF_name) > 31) stop(DF_name, " is longer than 31 char")
-  DF <- DF %>%
+  form <- form %>%
     lapply(stringr::str_trunc, str_trunc_length, ellipsis = "") %>%
     as.data.frame()
   hyperlink_col <- NULL
   if (freeze_keys) {
-    all_cols <- colnames(DF)
+    all_cols <- colnames(form)
     if (any(!key_cols %in% all_cols)) stop("all key_cols must be in the DFs")
     freeze_key_cols <- which(all_cols %in% key_cols)
     if (length(freeze_key_cols) > 0) {
       if (!is_consecutive_srt_1(freeze_key_cols)) {
         warning("please keep your key cols on the left consecutively. Fixing ", DF_name, ": ", paste0(key_cols, collapse = ", "), ".", immediate. = TRUE)
-        non_key_cols <- seq_len(ncol(DF))
+        non_key_cols <- seq_len(ncol(form))
         non_key_cols <- non_key_cols[which(!non_key_cols %in% freeze_key_cols)]
         new_col_order <- c(freeze_key_cols, non_key_cols)
         if (is_something(header_df)) {
           header_df <- header_df[, new_col_order]
         }
-        DF <- DF[, new_col_order]
+        form <- form[, new_col_order]
       }
     }
   }
-  if (nrow(DF) > 0) {
+  if (nrow(form) > 0) {
     openxlsx::addWorksheet(wb, DF_name)
     startRow_header <- pad_rows + 1
     startRow_table <- startRow_header
@@ -434,24 +434,24 @@ DF_to_wb <- function(
     if (length(link_col_list) > 0) {
       has_names <- !is.null(names(link_col_list))
       for (i in seq_along(link_col_list)) {
-        if (link_col_list[[i]] %in% colnames(DF)) {
-          class(DF[[link_col_list[[i]]]]) <- "hyperlink"
+        if (link_col_list[[i]] %in% colnames(form)) {
+          class(form[[link_col_list[[i]]]]) <- "hyperlink"
         } else {
           # warning("",immediate. = TRUE)
         }
         if (has_names) {
-          if (names(link_col_list)[i] %in% colnames(DF)) {
-            hyperlink_col <- which(colnames(DF) == names(link_col_list)[i])
-            openxlsx::writeData(wb, sheet = DF_name, x = DF[[link_col_list[[i]]]], startRow = startRow_table + 1, startCol = hyperlink_col + pad_cols)
-            DF[[link_col_list[[i]]]] <- NULL
+          if (names(link_col_list)[i] %in% colnames(form)) {
+            hyperlink_col <- which(colnames(form) == names(link_col_list)[i])
+            openxlsx::writeData(wb, sheet = DF_name, x = form[[link_col_list[[i]]]], startRow = startRow_table + 1, startCol = hyperlink_col + pad_cols)
+            form[[link_col_list[[i]]]] <- NULL
           } else {
             # warning("",immediate. = TRUE)
           }
         }
       }
     }
-    openxlsx::writeDataTable(wb, sheet = DF_name, x = DF, startRow = startRow_table, startCol = startCol, tableStyle = tableStyle)
-    style_cols <- seq_len(ncol(DF)) + pad_cols
+    openxlsx::writeDataTable(wb, sheet = DF_name, x = form, startRow = startRow_table, startCol = startCol, tableStyle = tableStyle)
+    style_cols <- seq_len(ncol(form)) + pad_cols
     openxlsx::addStyle(
       wb,
       sheet = DF_name,
@@ -465,7 +465,7 @@ DF_to_wb <- function(
       wb,
       sheet = DF_name,
       style = body_style,
-      rows = seq_len(nrow(DF)) + startRow_table,
+      rows = seq_len(nrow(form)) + startRow_table,
       cols = style_cols,
       gridExpand = TRUE,
       stack = TRUE
@@ -478,7 +478,7 @@ DF_to_wb <- function(
       firstActiveCol <- NULL
       if (freeze_keys) {
         firstActiveCol <- startCol
-        freeze_key_cols <- which(colnames(DF) %in% key_cols)
+        freeze_key_cols <- which(colnames(form) %in% key_cols)
         if (length(freeze_key_cols) > 0) {
           if (is_consecutive_srt_1(freeze_key_cols)) {
             firstActiveCol <- firstActiveCol + freeze_key_cols[length(freeze_key_cols)]
@@ -530,7 +530,7 @@ list_to_wb <- function(
     header_df <- header_df_list[[list_names[i]]]
     key_cols <- key_cols_list[[list_names[i]]]
     wb <- DF_to_wb(
-      DF = list[[list_names[i]]],
+      form = list[[list_names[i]]],
       DF_name = list_names_rename[i],
       wb = wb,
       link_col_list = list_link_names[[list_names[i]]],
@@ -656,7 +656,7 @@ list_to_csv <- function(list, dir, file_name = NULL, overwrite = TRUE, drop_empt
       file_name2 <- paste0(file_name, "_", file_name2)
     }
     save_csv(
-      DF = sub_list[[1]],
+      form = sub_list[[1]],
       dir = dir,
       file_name = file_name2,
       overwrite = overwrite
@@ -673,7 +673,7 @@ save_wb <- function(wb, dir, file_name, overwrite = TRUE) {
   )
   bullet_in_console(paste0("Saved '", basename(path), "'!"), file = path)
 }
-save_csv <- function(DF, dir, file_name, overwrite = TRUE) {
+save_csv <- function(form, dir, file_name, overwrite = TRUE) {
   if (!dir.exists(dir)) stop("dir doesn't exist")
   path <- file.path(dir, paste0(file_name, ".csv")) %>% sanitize_path()
   write_it <- TRUE
@@ -685,7 +685,7 @@ save_csv <- function(DF, dir, file_name, overwrite = TRUE) {
   }
   if (write_it) {
     utils::write.csv(
-      x = DF,
+      x = form,
       file = path
     )
     bullet_in_console(paste0("Saved '", basename(path), "'!"), file = path)

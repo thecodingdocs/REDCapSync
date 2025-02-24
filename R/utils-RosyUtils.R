@@ -424,6 +424,9 @@ form_to_wb <- function(
     form,
     form_name,
     wb = openxlsx::createWorkbook(),
+    key_cols = NULL,
+    derived_cols = NULL,
+    merge_cell_list = list(),
     link_col_list = list(),
     str_trunc_length = 32000,
     header_df = NULL,
@@ -433,8 +436,8 @@ form_to_wb <- function(
     freeze_header = TRUE,
     pad_rows = 0,
     pad_cols = 0,
-    freeze_keys = TRUE,
-    key_cols = NULL) {
+    freeze_keys = TRUE
+) {
   if (nchar(form_name) > 31) stop(form_name, " is longer than 31 char")
   form[] <- lapply(form, function(col) {
     if (is.character(col)) {
@@ -517,6 +520,26 @@ form_to_wb <- function(
       startCol = startCol,
       tableStyle = tableStyle
     )
+    if(is_something(merge_cell_list)){
+      openxlsx::writeDataTable(
+        wb,
+        sheet = form_name,
+        x = form,
+        startRow = start_row_table,
+        startCol = startCol,
+        tableStyle = tableStyle
+      )
+      for(i in seq_along(merge_cell_list$rows)){
+        for(j in merge_cell_list$cols){
+          openxlsx::mergeCells(
+            wb,
+            sheet = form_name,
+            rows = merge_cell_list$rows[[i]],
+            cols = j
+          )
+        }
+      }
+    }
     style_cols <- seq_len(ncol(form)) + pad_cols
     openxlsx::addStyle(
       wb,
@@ -566,6 +589,9 @@ form_to_wb <- function(
 }
 list_to_wb <- function(
     list,
+    key_cols_list = list(),
+    derived_cols_list = list(),
+    merge_cell_list = list(),
     link_col_list = list(),
     str_trunc_length = 32000,
     header_df_list = NULL,
@@ -576,7 +602,6 @@ list_to_wb <- function(
     pad_rows = 0,
     pad_cols = 0,
     freeze_keys = TRUE,
-    key_cols_list = NULL,
     drop_empty = TRUE) {
   wb <- openxlsx::createWorkbook()
   list <- process_df_list(list, drop_empty = drop_empty)
@@ -612,23 +637,23 @@ list_to_wb <- function(
     )
   }
   for (i in seq_along(list_names)) {
-    header_df <- header_df_list[[list_names[i]]]
-    key_cols <- key_cols_list[[list_names[i]]]
     wb <- form_to_wb(
+      wb = wb,
       form = list[[list_names[i]]],
       form_name = list_names_rename[i],
-      wb = wb,
-      link_col_list = list_link_names[[list_names[i]]],
+      key_cols = key_cols_list[[list_names[i]]],
+      derived_cols = NULL,
+      merge_cell_list = merge_cell_list[[list_names[i]]],
+      link_col_list = list_link_names,
       str_trunc_length = str_trunc_length,
-      header_df = header_df,
+      header_df = header_df_list[[list_names[i]]],
       tableStyle = tableStyle,
       header_style = header_style,
       body_style = body_style,
       freeze_header = freeze_header,
       pad_rows = pad_rows,
       pad_cols = pad_cols,
-      freeze_keys = freeze_keys,
-      key_cols = key_cols
+      freeze_keys = freeze_keys
     )
   }
   wb
@@ -671,6 +696,9 @@ list_to_excel <- function(
     file_name = NULL,
     separate = FALSE,
     overwrite = TRUE,
+    key_cols_list = list(),
+    derived_cols_list = list(),
+    merge_cell_list = list(),
     link_col_list = list(),
     str_trunc_length = 32000,
     header_df_list = NULL,
@@ -681,7 +709,6 @@ list_to_excel <- function(
     pad_rows = 0,
     pad_cols = 0,
     freeze_keys = TRUE,
-    key_cols_list = NULL,
     drop_empty = TRUE) {
   list <- process_df_list(list, drop_empty = drop_empty)
   list_names <- names(list)
@@ -698,7 +725,10 @@ list_to_excel <- function(
       save_wb(
         wb = list_to_wb(
           list = sub_list,
-          link_col_list = link_col_list,
+          key_cols_list = key_cols_list[[list_names[i]]],
+          derived_cols_list = derived_cols_list[[list_names[i]]],
+          merge_cell_list = merge_cell_list[[list_names[i]]],
+          link_col_list = link_col_list[[list_names[i]]],
           str_trunc_length = str_trunc_length,
           header_df_list = header_df_list,
           tableStyle = tableStyle,
@@ -708,7 +738,6 @@ list_to_excel <- function(
           pad_rows = pad_rows,
           pad_cols = pad_cols,
           freeze_keys = freeze_keys,
-          key_cols_list = key_cols_list[[list_names[i]]],
           drop_empty = drop_empty
         ),
         dir = dir,
@@ -720,6 +749,9 @@ list_to_excel <- function(
     save_wb(
       wb = list_to_wb(
         list = list,
+        key_cols_list = key_cols_list,
+        derived_cols_list = derived_cols_list,
+        merge_cell_list = merge_cell_list,
         link_col_list = link_col_list,
         str_trunc_length = str_trunc_length,
         header_df_list = header_df_list,
@@ -730,7 +762,6 @@ list_to_excel <- function(
         pad_rows = pad_rows,
         pad_cols = pad_cols,
         freeze_keys = freeze_keys,
-        key_cols_list = key_cols_list,
         drop_empty = drop_empty
       ),
       dir = dir,

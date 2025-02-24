@@ -462,7 +462,7 @@ add_project_summary <- function(
     last_save_time = NULL
   )
   subset_list_old <- project$summary$subsets[[subset_name]]
-  if(!is.null(subset_list_old && ! reset)) {
+  if(!is.null(subset_list_old) && ! reset) {
     important_vars <- names(subset_list_new)
     not_important <- c("subset_records","last_save_time")
     important_vars <- important_vars[which(!important_vars %in% not_important)]
@@ -472,7 +472,7 @@ add_project_summary <- function(
     )
     if(are_identical){
       # optional message?
-      invisible(project)
+      return(invisible(project))
     }
   }
   project$summary$subsets[[subset_name]] <- subset_list_new

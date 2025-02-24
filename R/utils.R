@@ -33,68 +33,6 @@ add_redcap_links_to_form <- function(form, project) { # add instance links
   form
 }
 #' @noRd
-count_project_upload_cells <- function(project) {
-  project$data_updates %>%
-    lapply(function(x) {
-      nrow(x) * ncol(x)
-    }) %>%
-    unlist() %>%
-    sum()
-}
-#' @noRd
-husk_of_form <- function(project, form_name, field_names) {
-  form <- project$data[[form_name]]
-  cols <- colnames(form)[which(
-    colnames(form) %in% project$redcap$raw_structure_cols
-  )]
-  form2 <- NULL
-  for (col in cols) {
-    form2[[col]] <- form[[col]]
-  }
-  form2 <- as.data.frame(form2)
-  form2
-}
-#' @noRd
-all_project_to_char_cols <- function(project) {
-  project$data <- project$data %>% all_character_cols_list()
-  project$data_updates <- project$data_updates %>% all_character_cols_list()
-  invisible(project)
-}
-#' @noRd
-add_redcap_links_to_form <- function(form, project) {
-  if (nrow(form) > 0) {
-    form[[project$redcap$id_col]] <- paste0(
-      "<a href='",
-      paste0(
-        "https://redcap.miami.edu/redcap_v",
-        project$redcap$version,
-        "/DataEntry/record_home.php?pid=",
-        project$redcap$project_id, "&id=",
-        form[[project$redcap$id_col]], "&arm=1"
-      ),
-      "' target='_blank'>",
-      form[[project$redcap$id_col]],
-      "</a>"
-    )
-  }
-  form
-}
-#' @noRd
-clean_form_to_field_labels <- function(form, project) {
-  colnames(form) <- colnames(form) %>%
-    lapply(function(field_name) {
-      x <- project$metadata$fields$field_label[which(
-        project$metadata$fields$field_name == field_name
-      )]
-      if (length(x) > 1) {
-        x <- x[[1]]
-      }
-      ifelse(length(x) > 0, x, field_name)
-    }) %>%
-    unlist()
-  form
-}
-#' @noRd
 clean_form2 <- function(form, project) {
   form %>%
     add_redcap_links_to_form(project) %>%

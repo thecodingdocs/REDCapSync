@@ -509,11 +509,17 @@ save_subset <- function(
       dir = subset_list$dir_other,
       separate = subset_list$separate,
       link_col_list = link_col_list,
+      merge_cell_list = construct_merge_cell_list(
+        project = project,
+        subset_name = subset_name,
+        data_list = to_save_list
+      ),
+      key_cols_list = construct_key_col_list(project),
+      # derived_cols_list = derived_cols_list,
       file_name = subset_list$file_name,
       header_df_list = to_save_list %>%
         construct_header_list(fields = project$metadata$fields) %>%
         process_df_list(silent = TRUE),
-      key_cols_list = construct_key_col_list(project),
       overwrite = TRUE
     )
   }
@@ -529,6 +535,78 @@ save_subset <- function(
   project$summary$subsets[[subset_name]]$subset_records <- subset_records
   project$summary$subsets[[subset_name]]$last_save_time <- now_time()
   invisible(project)
+}
+construct_merge_cell_list <- function(project,subset_name,data_list){
+  subset_list <- project$summary$subsets[[subset_name]]
+  merge_cell_list <- list()
+  if(subset_list$transform){
+    metadata_list <- project$transformation$metadata
+    form_names <- names(data_list) %>% vec1_in_vec2(metadata_list$forms$form_name)
+    for(form_name in form_names){
+      form <- data_list[[form_name]]
+      cols <- colnames(form)
+      col <- "redcap_repeat_instrument"
+      key_cols <- metadata_list$form_key_cols[[form_name]]
+      field_rows <- which(metadata_list$fields$form_name == form_name)
+      form_cols_primary <- c(
+        key_cols,
+        metadata_list$fields$field_name[field_rows]
+      ) %>% unique()
+      field_rows <- which(!metadata_list$fields$in_original_redcap)
+      form_cols_added <- metadata_list$fields$field_name[field_rows]
+      form_cols_merged <- cols[which(!cols%in%form_cols_primary)]
+
+      forms_transformation_row <- which(forms_transformation$form_name_remap == form_name) %>% dplyr::first()
+      merge_to <- forms_transformation$merge_to[forms_transformation_row]
+      by.x <- forms_transformation$by.x[forms_transformation_row] %>%
+        strsplit("[+]") %>%
+        unlist()
+      by.y <- forms_transformation$by.y[forms_transformation_row] %>%
+        strsplit("[+]") %>%
+        unlist()
+
+      merge_data_frame <- form[,by.x,drop = FALSE]
+      the_cols <- by.x
+      compound <- NULL
+      while (length(the_cols) > 0) {
+        if (is.null(compound)) {
+          compound <- form[[the_cols[1]]]
+        } else {
+          compound <- compound %>% paste0("_", form[[the_cols[1]]])
+        }
+        the_cols <- the_cols[-1]
+      }
+      merge_data_frame$merge_vector <- compound
+      the_cols <- by.x
+      while (length(the_cols) > 0) {
+        merge_data_frame$merge_vector[which(is.na(merge_data_frame[[the_cols[1]]]))] <- NA
+        the_cols <- the_cols[-1]
+      }
+      x<- rle(as.character(merge_data_frame$merge_vector))
+      x$lengths
+      index <- 1
+      vec <- rep(NA,nrow(merge_data_frame))
+      total <- 0
+      for (i in seq_along(x$lengths)){
+        y <- x$lengths[i]
+        if(y>1){
+          vec[seq_len(y)+total] <- i
+        }
+        total <- total + y
+      }
+      merges <- vec %>% unique() %>% drop_nas()
+      if(length(merges)>0){
+        merges <- merges %>% lapply(function(z){
+          which(vec==z)
+        })
+        merge_cell_list[[form_name]] <- list(
+          rows = merges,
+          cols = which(cols %in% form_cols_merged)
+        )
+      }
+    }
+  }
+  merge_cell_list
 }
 #' @title Generate a Summary from a Subset Name
 #' @description
@@ -620,10 +698,12 @@ generate_project_summary_test <- function(
     project$metadata <- project$transformation$metadata
     project$data <- project$transformation$data
   }
+  form_names_sub <- project %>%
+    field_names_to_form_names(field_names,tranform = tranform,strict = TRUE)
   if (missing(field_names)) field_names <- project %>% get_all_field_names()
   if (is.null(field_names)) field_names <- project %>% get_all_field_names()
-  if (missing(form_names)) form_names <- names(project$data)
-  if (is.null(form_names)) form_names <- names(project$data)
+  if (missing(form_names)) form_names <- form_names_sub
+  if (is.null(form_names)) form_names <- form_names_sub
   has_no_filter <- is.null(filter_list) &&
     missing(filter_choices) &&
     missing(filter_field)
@@ -1186,17 +1266,22 @@ get_all_field_names <- function(project) {
     unique()
 }
 #' @noRd
-field_names_to_form_names <- function(project, field_names) {
-  form_key_cols <- project$metadata$form_key_cols %>%
+field_names_to_form_names <- function(project, field_names, tranform = FALSE, strict = FALSE) {
+  metadata <- project$metadata
+  if(transform){
+    metadata <- project$transformation$metadata
+  }
+  fields <- metadata$fields
+  form_key_cols <- metadata$form_key_cols %>%
     unlist() %>%
     unique()
   field_names_keys <- field_names[which(field_names %in% form_key_cols)]
   form_names_keys <- field_names_keys %>%
     lapply(function(field_name) {
-      project$metadata$form_key_cols %>%
+      metadata$form_key_cols %>%
         names() %>%
         lapply(function(form_name) {
-          if (!field_name %in% project$metadata$form_key_cols[[form_name]]) {
+          if (!field_name %in% metadata$form_key_cols[[form_name]]) {
             return(NULL)
           }
           form_name
@@ -1206,10 +1291,12 @@ field_names_to_form_names <- function(project, field_names) {
     unlist() %>%
     as.character() %>%
     unique()
-  fields <- project$metadata$fields
-  field_names_not_keys <- field_names[which(!field_names %in% form_key_cols)]
-  form_names_not_keys <- fields$form_name[match(field_names_not_keys, fields$field_name)] %>% drop_nas()
-  form_names <- c(form_names_not_keys, form_names_keys) %>% unique()
+  field_names_not_keys <- field_names[which(!field_names %in% form_key_cols)]%>% unique()
+  form_names_not_keys <- fields$form_name[match(field_names_not_keys, fields$field_name)] %>% drop_nas()%>% unique()
+  form_names <- form_names_not_keys
+  if(!strict){
+    form_names <- form_names %>% append(form_names_keys) %>% unique()
+  }
   form_names
 }
 #' @noRd

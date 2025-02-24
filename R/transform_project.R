@@ -10,7 +10,7 @@ upload_transform_to_project <- function(project) {
         upload_form_to_REDCap(project)
     }
     bullet_in_console("Successfully uploaded to REDCap!", bullet_type = "v")
-    project$transformation$data_updates <- NULL
+    project$transformation$data_updates <- list()
   } else {
     bullet_in_console("Nothing to upload!")
   }

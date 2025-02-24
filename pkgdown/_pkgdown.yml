@@ -59,10 +59,11 @@ reference:
     desc: One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
     contents:
       - default_project_transformation
-      - add_default_project_transformation
       - add_default_project_fields
-      - add_project_transformation
+      - add_default_project_transformation
+      - add_default_project_summary
       - add_project_field
+      - add_project_transformation
       - add_project_summary
   - subtitle: Sync Functions
     desc: Run Syncs on periodic bases; sync is "hands-free", while sync_project uses project object in the environment.

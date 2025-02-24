@@ -426,43 +426,56 @@ add_project_summary <- function(
     file_name = paste0(project$short_name, "_", subset_name),
     reset = FALSE) {
   if (missing(use_csv)) use_csv <- project$internals$use_csv
-  if (is.null(project$summary$subsets[[subset_name]]) || reset) {
-    if (is.null(filter_list)) {
-      if (!is.null(filter_choices) && !is.null(filter_field)) {
-        filter_list <- list(filter_choices)
-        names(filter_list) <- filter_field
-      } else {
-        # warning
-      }
+  if (is.null(filter_list)) {
+    if (!is.null(filter_choices) && !is.null(filter_field)) {
+      filter_list <- list(filter_choices)
+      names(filter_list) <- filter_field
+    } else {
+      # warning
     }
-    file_ext <- ifelse(use_csv, ".csv", ".xlsx")
-    project$summary$subsets[[subset_name]] <- list(
-      subset_name = subset_name,
-      transform = transform,
-      filter_list = filter_list,
-      filter_strict = filter_strict,
-      field_names = field_names,
-      form_names = form_names,
-      no_duplicate_cols = no_duplicate_cols,
-      deidentify = deidentify,
-      drop_free_text = drop_free_text,
-      clean = clean,
-      drop_blanks = drop_blanks,
-      include_metadata = include_metadata,
-      annotate_metadata = annotate_metadata,
-      include_record_summary = include_record_summary,
-      include_users = include_users,
-      include_log = include_log,
-      with_links = with_links,
-      separate = separate,
-      use_csv = use_csv,
-      dir_other = dir_other,
-      file_name = file_name,
-      file_path = file.path(dir_other, paste0(file_name, file_ext)),
-      subset_records = NULL,
-      last_save_time = NULL
-    )
   }
+  file_ext <- ifelse(use_csv, ".csv", ".xlsx")
+  subset_list_new <- list(
+    subset_name = subset_name,
+    transform = transform,
+    filter_list = filter_list,
+    filter_strict = filter_strict,
+    field_names = field_names,
+    form_names = form_names,
+    no_duplicate_cols = no_duplicate_cols,
+    deidentify = deidentify,
+    drop_free_text = drop_free_text,
+    clean = clean,
+    drop_blanks = drop_blanks,
+    include_metadata = include_metadata,
+    annotate_metadata = annotate_metadata,
+    include_record_summary = include_record_summary,
+    include_users = include_users,
+    include_log = include_log,
+    with_links = with_links,
+    separate = separate,
+    use_csv = use_csv,
+    dir_other = dir_other,
+    file_name = file_name,
+    file_path = file.path(dir_other, paste0(file_name, file_ext)),
+    subset_records = NULL,
+    last_save_time = NULL
+  )
+  subset_list_old <- project$summary$subsets[[subset_name]]
+  if(!is.null(subset_list_old && ! reset)) {
+    important_vars <- names(subset_list_new)
+    not_important <- c("subset_records","last_save_time")
+    important_vars <- important_vars[which(!important_vars %in% not_important)]
+    are_identical <- identical(
+      subset_list_old[important_vars],
+      subset_list_old[important_vars]
+    )
+    if(are_identical){
+      # optional message?
+      invisible(project)
+    }
+  }
+  project$summary$subsets[[subset_name]] <- subset_list_new
   invisible(project)
 }
 #' @noRd
@@ -768,6 +781,7 @@ summarize_project <- function(
   }
   if (is_something(subset_names)) {
     for (subset_name in subset_names) {
+      project <- project %>% save_subset(subset_name)
     }
   }
   invisible(project)

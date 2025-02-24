@@ -131,4 +131,4 @@ REDCapSync::sync()
 - Follow me on Twitter
   [twitter.com/BRoseMDMPH](https://twitter.com/BRoseMDMPH "BRoseMDMPH Twitter")
 
-[![TheCodingDocs.com](man/figures/TCD.png)](http://www.thecodingdocs.com)
+[![TheCodingDocs.com](man/figures/TCD.png)](https://www.thecodingdocs.com)

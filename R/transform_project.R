@@ -399,6 +399,32 @@ run_fields_transformation <- function(project) {
   bullet_in_console(paste0("Added new fields to ", project$short_name, " `project$data`"), bullet_type = "v")
   invisible(project)
 }
+#' @rdname default-transformations
+#' @title Add Default Forms Transformation to the Database
+#' @export
+add_default_project_summary <- function(project) {
+  project <- add_project_summary(
+    project = project,
+    subset_name = "REDCapSync",
+    transform = project$internals$is_transformed,
+    filter_list = NULL,
+    deidentify = TRUE,
+    drop_free_text = FALSE,
+    clean = TRUE,
+    drop_blanks = FALSE,
+    include_metadata = TRUE,
+    annotate_metadata = TRUE,
+    include_record_summary = TRUE,
+    include_users = TRUE,
+    include_log = TRUE,
+    with_links = nrow(project$summary$all_records) <= 10000,
+    separate = FALSE,
+    use_csv = project$internals$use_csv,
+    dir_other = file.path(project$dir_path, "output"),
+    file_name = paste0(project$short_name, "_", subset_name)
+  )
+  invisible(project)
+}
 #' @title transform_project
 #' @description
 #' Transforms the REDCap database (`project` object) by applying the necessary

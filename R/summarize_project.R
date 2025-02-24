@@ -630,89 +630,87 @@ generate_project_summary_test <- function(
   if (is.null(field_names)) field_names <- project %>% get_all_field_names()
   if (missing(form_names)) form_names <- names(project$data)
   if (is.null(form_names)) form_names <- names(project$data)
-  if (is.null(filter_list)) {
-    filter_list <- list(filter_choices)
-    names(filter_list) <- filter_field
-  } else {
-    if (!missing(filter_field) || !missing(filter_choices)) {
-      # warning
+  has_no_filter <- is.null(filter_list) &&
+    missing(filter_choices) &&
+    missing(filter_field)
+  if(! has_no_filter){
+    if (is.null(filter_list)) {
+      if (!missing(filter_field) && !missing(filter_choices)) {
+        filter_list <- list(filter_choices)
+        names(filter_list) <- filter_field
+      }
+    } else {
+      if (!missing(filter_field) || !missing(filter_choices)) {
+        # warning about only using one or the other option
+      }
     }
-  }
-  filter_field_names <- filter_list %>%
-    names() %>%
-    drop_if("")
-  # should be unique
-  # filter_field_names %>% vec1_not_in_vec2(project$metadata$fields$field_name) # should be empty
-  filter_form <- project %>% field_names_to_form_names(field_names = filter_field_names)
-  if (length(filter_field_names) == 1) {
-    if (filter_field_names == project$redcap$id_col) {
-      filter_form <- project$metadata$forms$form_name[1] # RISKY?
+    filter_field_names <- filter_list %>%
+      names() %>%
+      drop_if("")
+    # should be unique
+    # filter_field_names %>% vec1_not_in_vec2(project$metadata$fields$field_name) # should be empty
+    filter_form <- project %>% field_names_to_form_names(field_names = filter_field_names)
+    if (length(filter_field_names) == 1) {
+      if (filter_field_names == project$redcap$id_col) {
+        filter_form <- project$metadata$forms$form_name[1] # RISKY?
+      }
     }
-  }
-  # should be length 1
-  if (length(filter_form) > 1) {
-    stop("You can only filter_list by multiple columns part of one single reference form")
-  }
-  # filter_ops <- filter_list[which(names(filter_list) == "")] %>% unlist()
-  # filter ops must be "and" or "or"
-  out_list <- list()
-  form_key_cols <- project$metadata$form_key_cols %>%
-    unlist() %>%
-    unique()
-  is_key <- all(filter_field_names %in% form_key_cols)
-  if (!is_key) {
-    # form_name <- field_names_to_form_names(project, field_names = filter_field)
-    # is_repeating_filter <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == filter_form)]
-  }
-  for (form_name in form_names) {
-    form <- project$data[[form_name]]
-    # is_repeating_form <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == form_name)]
-    if (is_something(form)) {
-      row_logic <- NULL
-      for (filter_field_name in filter_field_names) {
-        filter_field_final <- filter_field_name
-        filter_choices_final <- filter_list[[filter_field_name]]
-        if (!filter_strict) {
-          if (!is_key) { # need to account for instances
-            # if (is_repeating_filter) {
-            # if (!is_repeating_form) {
-            if (form_name != filter_form) {
-              filter_field_final <- project$redcap$id_col
-              filter_choices_final <- project$data[[filter_form]][[filter_field_final]][which(project$data[[filter_form]][[filter_field_name]] %in% filter_choices_final)] %>% unique()
+    # should be length 1
+    if (length(filter_form) > 1) {
+      stop("You can only filter_list by multiple columns part of one single reference form")
+    }
+    out_list <- list()
+    form_key_cols <- project$metadata$form_key_cols %>%
+      unlist() %>%
+      unique()
+    is_key <- all(filter_field_names %in% form_key_cols)
+    for (form_name in form_names) {
+      form <- project$data[[form_name]]
+      if (is_something(form)) {
+        row_logic <- NULL
+        for (filter_field_name in filter_field_names) {
+          filter_field_final <- filter_field_name
+          filter_choices_final <- filter_list[[filter_field_name]]
+          if (!filter_strict) {
+            if (!is_key) { # need to account for instances
+              if (form_name != filter_form) {
+                filter_field_final <- project$redcap$id_col
+                filter_choices_final <- project$data[[filter_form]][[filter_field_final]][which(project$data[[filter_form]][[filter_field_name]] %in% filter_choices_final)] %>% unique()
+              }
             }
           }
-        }
-        if (filter_field_final %in% colnames(project$data[[form_name]])) {
-          index_test <- project$data[[form_name]][[filter_field_final]] %in% filter_choices_final
-          if (is.null(row_logic)) {
-            row_logic <- index_test
-          }
-          field_index <- which(names(filter_list) == filter_field_name)
-          op_index <- (field_index - 1)
-          if (op_index <= length(filter_list)) {
-            if (field_index != 1) {
-              is_and <- filter_list[[op_index]] == "and"
-              if (is_and) {
-                row_logic <- row_logic & index_test
-              } else {
-                row_logic <- row_logic | index_test
+          if (filter_field_final %in% colnames(project$data[[form_name]])) {
+            index_test <- project$data[[form_name]][[filter_field_final]] %in% filter_choices_final
+            if (is.null(row_logic)) {
+              row_logic <- index_test
+            }
+            field_index <- which(names(filter_list) == filter_field_name)
+            op_index <- (field_index - 1)
+            if (op_index <= length(filter_list)) {
+              if (field_index != 1) {
+                is_and <- filter_list[[op_index]] == "and"
+                if (is_and) {
+                  row_logic <- row_logic & index_test
+                } else {
+                  row_logic <- row_logic | index_test
+                }
               }
             }
           }
         }
-      }
-      if (is.null(row_logic)) row_logic <- NA
-      rows <- which(row_logic)
-      field_names_adj <- field_names
-      # if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(form_name, project, original_only = FALSE))
-      cols <- colnames(form)[which(colnames(form) %in% field_names_adj)]
-      if (length(rows) > 0 && length(cols) > 0) {
-        cols <- colnames(form)[which(colnames(form) %in% unique(c(project$metadata$form_key_cols[[form_name]], field_names_adj)))]
-        out_list[[form_name]] <- form[rows, cols, drop = FALSE]
+        if (is.null(row_logic)) row_logic <- NA
+        rows <- which(row_logic)
+        field_names_adj <- field_names
+        # if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(form_name, project, original_only = FALSE))
+        cols <- colnames(form)[which(colnames(form) %in% field_names_adj)]
+        if (length(rows) > 0 && length(cols) > 0) {
+          cols <- colnames(form)[which(colnames(form) %in% unique(c(project$metadata$form_key_cols[[form_name]], field_names_adj)))]
+          out_list[[form_name]] <- form[rows, cols, drop = FALSE]
+        }
       }
     }
+    project$data <- out_list
   }
-  project$data <- out_list
   if (deidentify) {
     project <- deidentify_project(project, drop_free_text = drop_free_text)
   }

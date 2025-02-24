@@ -406,7 +406,6 @@ add_default_project_summary <- function(project) {
   project <- add_project_summary(
     project = project,
     subset_name = "REDCapSync",
-    transform = project$internals$is_transformed,
     filter_list = NULL,
     deidentify = TRUE,
     drop_free_text = FALSE,

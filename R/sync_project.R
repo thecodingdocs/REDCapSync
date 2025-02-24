@@ -76,7 +76,7 @@ sync_project <- function(
   }
   # project$internals$last_metadata_update <-  now_time()-lubridate::days(1)
   # project$internals$last_data_update <-  now_time()-lubridate::days(1)
-  if (!is.null(project$transformation$data_updates)) {
+  if (is_something(project$transformation$data_updates)) {
     do_it <- TRUE
     bullet_in_console(
       "There is data in 'project$transformation$data_updates' that has not been pushed to REDCap yet..."

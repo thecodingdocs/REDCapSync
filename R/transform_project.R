@@ -403,9 +403,10 @@ run_fields_transformation <- function(project) {
 #' @title Add Default Forms Transformation to the Database
 #' @export
 add_default_project_summary <- function(project) {
+  subset_name <- "REDCapSync"
   project <- add_project_summary(
     project = project,
-    subset_name = "REDCapSync",
+    subset_name = subset_name,
     filter_list = NULL,
     deidentify = TRUE,
     drop_free_text = FALSE,

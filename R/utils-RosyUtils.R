@@ -436,9 +436,13 @@ form_to_wb <- function(
     freeze_keys = TRUE,
     key_cols = NULL) {
   if (nchar(form_name) > 31) stop(form_name, " is longer than 31 char")
-  form <- form %>%
-    lapply(stringr::str_trunc, str_trunc_length, ellipsis = "") %>%
-    as.data.frame()
+  form[] <- lapply(form, function(col) {
+    if (is.character(col)) {
+      return(stringr::str_trunc(col, str_trunc_length, ellipsis = ""))
+    } else {
+      return(col)
+    }
+  })
   hyperlink_col <- NULL
   if (freeze_keys) {
     all_cols <- colnames(form)

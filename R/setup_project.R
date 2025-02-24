@@ -427,7 +427,6 @@ save_project <- function(project, silent = FALSE) {
     return(invisible(project))
   }
   project$internals$last_directory_save <- now_time()
-  # project <- reverse_clean_project(project) # # problematic because setting numeric would delete missing codes
   save_project_path <- get_expected_project_path(project = project)
   saveRDS(
     object = project,

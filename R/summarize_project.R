@@ -225,13 +225,6 @@ fields_with_no_data <- function(project) {
   project$metadata$fields$field_name[which(is.na(project$metadata$fields$complete_rate) & !project$metadata$fields$field_type %in% c("checkbox", "descriptive"))]
 }
 #' @noRd
-reverse_clean_project <- function(project) { # problematic because setting numeric would delete missing codes
-  project$data <- all_character_cols_list(project$data)
-  project$data_updates <- project$data_updates %>% all_character_cols_list()
-  project$internals$is_clean <- FALSE
-  invisible(project)
-}
-#' @noRd
 clean_form_list <- function(form_list, fields, drop_blanks = TRUE, other_drops = NULL) {
   # add check for form_list#
   for (form_name in names(form_list)) {
@@ -483,6 +476,7 @@ save_subset <- function(
     project,
     subset_name
 ) {
+  id_col <- project$redcap$id_col
   subset_list <- project$summary$subsets[[subset_name]]
   to_save_list <- project %>%
     generate_project_summary(
@@ -500,7 +494,7 @@ save_subset <- function(
         link_col_list <- list(
           "redcap_link"
         )
-        names(link_col_list) <- project$redcap$id_col
+        names(link_col_list) <- id_col
       }
     }
   }

@@ -768,7 +768,6 @@ summarize_project <- function(
   }
   if (is_something(subset_names)) {
     for (subset_name in subset_names) {
-
     }
   }
   invisible(project)

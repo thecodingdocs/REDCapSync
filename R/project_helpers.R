@@ -208,7 +208,7 @@ construct_key_col_list <- function(project) {
   form_names <- names(form_list)
   key_cols_list <- form_names %>% lapply(function(form_name) {
     key_cols <- which(data_field_list[[form_name]] %in% project$redcap$raw_structure_cols)
-    data_field_list[[field]][key_cols]
+    data_field_list[[form_name]][key_cols]
   })
   names(key_cols_list) <- form_names
   key_cols_list

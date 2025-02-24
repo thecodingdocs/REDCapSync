@@ -76,8 +76,8 @@ reference:
       - clean_project
       - deidentify_project
       - drop_REDCap_to_directory
-      - generate_summary_by_name
-      - generate_summary
+      - generate_project_summary
+      - generate_project_summary_test
       - summarize_project
       - transform_project
   - subtitle: Data Helpers

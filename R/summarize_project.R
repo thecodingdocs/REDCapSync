@@ -485,7 +485,7 @@ save_subset <- function(
 ) {
   subset_list <- project$summary$subsets[[subset_name]]
   to_save_list <- project %>%
-    generate_summary_by_name(
+    generate_project_summary(
       subset_name = subset_name
     )
   link_col_list <- list()
@@ -555,11 +555,11 @@ save_subset <- function(
 #' for cleaning, annotating, and including metadata, as well as controlling
 #' whether to include record summaries, user information, and logs.
 #' @export
-generate_summary_by_name <- function(
+generate_project_summary <- function(
     project,
     subset_name) {
   subset_list <- project$summary$subsets[[subset_name]]
-  to_save_list <- generate_summary(
+  to_save_list <- generate_project_summary_test(
     project = project,
     transform = subset_list$transform,
     filter_list = subset_list$filter_list,
@@ -588,7 +588,7 @@ generate_summary_by_name <- function(
 #'
 #' @inheritParams save_project
 #' @inheritParams add_project_summary
-#' @inheritParams deidentify_project#'
+#' @inheritParams deidentify_project
 #' @return A modified `project` object with filtered records and columns based
 #' on the provided criteria.
 #'
@@ -600,7 +600,7 @@ generate_summary_by_name <- function(
 #' filtering logic to the `project$data` list.
 #'
 #' @export
-generate_summary <- function(
+generate_project_summary_test <- function(
     project,
     transform,
     filter_field,
@@ -939,7 +939,7 @@ get_subset_records <- function(project, subset_name) {
     return(project$summary$all_records[[id_col]])
   }
   subset_list <- project$summary$subsets[[subset_name]]
-  to_save_list <- generate_summary(
+  to_save_list <- generate_project_summary_test(
     project = project,
     filter_list = subset_list$filter_list,
     filter_strict = subset_list$filter_strict,
@@ -1170,7 +1170,7 @@ stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
   if (!all(vars %in% fields$field_name)) stop("all vars must be in metadata.")
   the_stack <- NULL
   for (var in vars) { # var <- vars %>% sample1()
-    form <- generate_summary(
+    form <- generate_project_summary_test(
       project,
       field_names = var,
       include_log = FALSE,

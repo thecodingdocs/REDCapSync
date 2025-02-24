@@ -172,7 +172,7 @@ drop_REDCap_to_directory <- function(
     # }
     to_save_list <- project[["data"]]
     if (!missing(records)) {
-      to_save_list <- generate_summary(
+      to_save_list <- generate_project_summary_test(
         project,
         filter_field = project$redcap$id_col,
         filter_choices = records,

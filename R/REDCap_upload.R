@@ -315,7 +315,7 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
       form_view_simp %>%
         t() %>%
         print()
-      form_change <- generate_summary(
+      form_change <- generate_project_summary_test(
         project,
         filter_field = project$redcap$id_col,
         filter_choices = records,

@@ -4,6 +4,7 @@
 #' @import rlang
 #' @importFrom checkmate makeAssertCollection
 #' @importFrom checkmate assert_choice
+#' @importFrom checkmate assert_date
 #' @importFrom checkmate assert_character
 #' @importFrom checkmate assert_logical
 #' @importFrom checkmate assert_list

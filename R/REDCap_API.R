@@ -331,6 +331,10 @@ get_REDCap_log <- function(project,
                            user = NULL) {
   assert_setup_project(project)
   assert_logical(clean)
+  assert_date(log_begin_date)
+  if(log_begin_date == Sys.Date()){
+    log_begin_date <- log_begin_date - 1 # keep getting errors for same day checks?
+  }
   log <- tryCatch(
     expr = {
       REDCapR::redcap_log_read(

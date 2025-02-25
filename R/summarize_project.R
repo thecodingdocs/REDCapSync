@@ -628,12 +628,15 @@ generate_project_summary_test <- function(
     project$metadata <- project$transformation$metadata
     project$data <- project$transformation$data
   }
-  form_names_sub <- project %>% # can cause errors?
-    field_names_to_form_names(field_names,transform = transform,strict = filter_strict)
   if (missing(field_names)) field_names <- project %>% get_all_field_names()
   if (is.null(field_names)) field_names <- project %>% get_all_field_names()
-  if (missing(form_names)) form_names <- form_names_sub
-  if (is.null(form_names)) form_names <- form_names_sub
+  if (missing(form_names)) form_names <- project$metadata$forms$form_name
+  if (is.null(form_names)) form_names <- project$metadata$forms$form_name
+  field_names_minus <-field_names[which(!field_names%in%project$redcap$raw_structure_cols)]
+  if(length(field_names_minus)>0){
+    form_names_minus <- project %>% field_names_to_form_names(field_names_minus,transform = transform,strict = TRUE)
+    form_names <- form_names %>% vec1_in_vec2(form_names_minus)
+  }
   has_no_filter <- is.null(filter_list) &&
     missing(filter_choices) &&
     missing(filter_field)

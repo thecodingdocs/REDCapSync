@@ -521,14 +521,6 @@ form_to_wb <- function(
       tableStyle = tableStyle
     )
     if(is_something(merge_cell_list)){
-      openxlsx::writeDataTable(
-        wb,
-        sheet = form_name,
-        x = form,
-        startRow = start_row_table,
-        startCol = startCol,
-        tableStyle = tableStyle
-      )
       for(i in seq_along(merge_cell_list$rows)){
         for(j in merge_cell_list$cols){
           openxlsx::mergeCells(

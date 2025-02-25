@@ -57,6 +57,7 @@ validate the data in the field. Default is \code{NA}.}
 The updated \code{project} object with the field transformation added.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Adds a new field transformation to the REDCap database (\code{project}). This
 allows users to define custom transformations for a specific field in a form,
 including its type, label, choices, and associated function for data

@@ -17,6 +17,7 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 The transformed \code{project} object.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Transforms the REDCap database (\code{project} object) by applying the necessary
 field transformations. This function modifies the structure of the data and
 records according to the transformation rules specified.

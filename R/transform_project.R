@@ -209,6 +209,7 @@ add_project_transformation <- function(project, forms_transformation, ask = TRUE
 }
 #' @title Add Field Transformation to the Database
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' Adds a new field transformation to the REDCap database (`project`). This
 #' allows users to define custom transformations for a specific field in a form,
 #' including its type, label, choices, and associated function for data
@@ -427,6 +428,7 @@ add_default_project_summary <- function(project) {
 }
 #' @title transform_project
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' Transforms the REDCap database (`project` object) by applying the necessary
 #' field transformations. This function modifies the structure of the data and
 #' records according to the transformation rules specified.

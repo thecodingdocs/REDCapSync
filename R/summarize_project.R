@@ -628,8 +628,8 @@ generate_project_summary_test <- function(
     project$metadata <- project$transformation$metadata
     project$data <- project$transformation$data
   }
-  form_names_sub <- project %>%
-    field_names_to_form_names(field_names,transform = transform,strict = TRUE)
+  form_names_sub <- project %>% # can cause errors?
+    field_names_to_form_names(field_names,transform = transform,strict = filter_strict)
   if (missing(field_names)) field_names <- project %>% get_all_field_names()
   if (is.null(field_names)) field_names <- project %>% get_all_field_names()
   if (missing(form_names)) form_names <- form_names_sub

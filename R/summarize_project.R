@@ -671,6 +671,8 @@ generate_project_summary_test <- function(
       unlist() %>%
       unique()
     is_key <- all(filter_field_names %in% form_key_cols)
+    is_repeating_filter_form <- filter_form %in% project$metadata$forms$form_name[which(project$metadata$forms$repeating)]
+    # can use this to have repeats capture non-rep events
     for (form_name in form_names) {
       form <- project$data[[form_name]]
       if (is_something(form)) {

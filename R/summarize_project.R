@@ -542,6 +542,7 @@ construct_merge_cell_list <- function(project,subset_name,data_list){
   subset_list <- project$summary$subsets[[subset_name]]
   merge_cell_list <- list()
   if(subset_list$transform){
+    forms_transformation <- project$transformation$forms
     metadata_list <- project$transformation$metadata
     form_names <- names(data_list) %>% vec1_in_vec2(metadata_list$forms$form_name)
     for(form_name in form_names){

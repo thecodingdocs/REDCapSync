@@ -622,7 +622,7 @@ list_to_wb <- function(
       form_name = list_names_rename[i],
       key_cols = key_cols_list[[list_names[i]]],
       derived_cols = NULL,
-      link_col_list = list_link_names,
+      link_col_list = list_link_names[[list_names[i]]],
       str_trunc_length = str_trunc_length,
       header_df = header_df_list[[list_names[i]]],
       tableStyle = tableStyle,

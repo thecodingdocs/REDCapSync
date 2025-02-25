@@ -507,7 +507,8 @@ save_subset <- function(
       overwrite = TRUE
     ) # account for links with CSV like new column
   } else {
-    to_save_list %>% list_to_excel(
+    list_to_excel(
+      list = to_save_list,
       dir = subset_list$dir_other,
       separate = subset_list$separate,
       link_col_list = link_col_list,

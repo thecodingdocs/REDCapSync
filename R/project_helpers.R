@@ -81,7 +81,7 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
     if (length(drop_list) == 0) {
       bullet_in_console(
         paste0(
-          "Nothing to deidentify from --> ",
+          "Nothing to deidentify --> ",
           identifiers %>% paste0(collapse = ", ")
         ),
         bullet_type = "x"
@@ -94,6 +94,30 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
     for (form_name in names(drop_list)) {
       for (field_name in drop_list[[form_name]]) {
         project$data[[form_name]][[field_name]] <- NULL
+      }
+    }
+  }
+  if (is_something(project$transformation$data)) {
+    drop_list <- Map(function(x, cols) {
+      identifiers[which(identifiers %in% cols)]
+    }, names(project$transformation$data), lapply(project$transformation$data, colnames))
+    drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0]
+    if (length(drop_list) == 0) {
+      bullet_in_console(
+        paste0(
+          "Nothing to deidentify --> ",
+          identifiers %>% paste0(collapse = ", ")
+        ),
+        bullet_type = "x"
+      )
+    } else {
+      bullet_in_console(paste0("Deidentified Transformation ", project$short_name),
+                        bullet_type = "v"
+      )
+    }
+    for (form_name in names(drop_list)) {
+      for (field_name in drop_list[[form_name]]) {
+        project$transformation$data[[form_name]][[field_name]] <- NULL
       }
     }
   }

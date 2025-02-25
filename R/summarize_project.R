@@ -555,7 +555,6 @@ construct_merge_cell_list <- function(project,subset_name,data_list){
       field_rows <- which(!metadata_list$fields$in_original_redcap)
       form_cols_added <- metadata_list$fields$field_name[field_rows]
       form_cols_merged <- cols[which(!cols%in%form_cols_primary)]
-
       forms_transformation_row <- which(forms_transformation$form_name_remap == form_name) %>% dplyr::first()
       merge_to <- forms_transformation$merge_to[forms_transformation_row]
       by.x <- forms_transformation$by.x[forms_transformation_row] %>%
@@ -564,7 +563,6 @@ construct_merge_cell_list <- function(project,subset_name,data_list){
       by.y <- forms_transformation$by.y[forms_transformation_row] %>%
         strsplit("[+]") %>%
         unlist()
-
       merge_data_frame <- form[,by.x,drop = FALSE]
       the_cols <- by.x
       compound <- NULL

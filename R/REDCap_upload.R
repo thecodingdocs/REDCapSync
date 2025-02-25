@@ -281,7 +281,12 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
 #' \code{\link{save_project}} for saving the modified database.
 #'
 #' @export
-edit_REDCap_while_viewing <- function(project, optional_form, records, field_name_to_change, field_names_to_view = NULL, upload_individually = TRUE) {
+edit_REDCap_while_viewing <- function(project,
+                                      optional_form,
+                                      records,
+                                      field_name_to_change,
+                                      field_names_to_view = NULL,
+                                      upload_individually = TRUE) {
   change_form <- field_names_to_form_names(project, field_name_to_change)
   view_forms <- field_names_to_form_names(project, field_names_to_view)
   field_names_to_view <- c(field_name_to_change, field_names_to_view) %>% unique()
@@ -307,6 +312,9 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
     }
     is_repeating_form <- change_form %in% project$metadata$forms$form_name[which(project$metadata$forms$repeating)]
     form <- NULL
+    form_change <- project$data[[change_form]]
+    row.names(form_change) <- NULL
+    form_change <- form_change[, unique(c(ref_cols_change, field_name_to_change))]
     for (record in records) { # record <- records%>% sample(1)
       record_was_updated <- FALSE
       form_view <- optional_form[which(optional_form[[project$redcap$id_col]] == record), ]
@@ -315,18 +323,6 @@ edit_REDCap_while_viewing <- function(project, optional_form, records, field_nam
       form_view_simp %>%
         t() %>%
         print()
-      form_change <- generate_project_summary_test(
-        project,
-        filter_field = project$redcap$id_col,
-        filter_choices = records,
-        form_names = change_form,
-        include_log = FALSE,
-        include_metadata = FALSE,
-        include_record_summary = FALSE,
-        include_users = FALSE
-      )[[1]]
-      row.names(form_change) <- NULL
-      form_change <- form_change[, unique(c(ref_cols_change, field_name_to_change))]
       if (nrow(form_change) == 0) {
         print("Nothing in form_change. If you choose edit it will add an instance...")
         blank_row <- data.frame(

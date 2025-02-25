@@ -945,7 +945,7 @@ get_subset_records <- function(project, subset_name) {
   to_save_list <- generate_project_summary_test(
     project = project,
     filter_list = subset_list$filter_list,
-    filter_strict = subset_list$filter_strict,
+    filter_strict = FALSE,
     form_names = subset_list$form_names,
     field_names = project$redcap$id_col,
     deidentify = FALSE,

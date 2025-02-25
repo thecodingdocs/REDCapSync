@@ -19,6 +19,7 @@ List. Returns a list containing the summarized data, including
 records, metadata, users, logs, and any other specified data.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Summarizes the REDCap database (\code{project} object) by filtering and generating
 a summary list.
 }

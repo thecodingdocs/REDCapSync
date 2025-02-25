@@ -116,6 +116,7 @@ A modified \code{project} object that includes the newly created subset.
 The subset is also saved as a file in the specified directory.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Creates a subset of the main REDCap database (\code{project}) based on specific
 filter criteria and saves it to a specified directory. The subset can be
 further customized with additional forms, fields, and deidentification

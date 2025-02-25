@@ -89,6 +89,7 @@ A modified \code{project} object with filtered records and columns based
 on the provided criteria.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 This function filters the records in the \code{project} object by specified
 criteria, such as field names, form names, and optional filtering based on a
 specific field and its values. It returns a modified \code{project} object

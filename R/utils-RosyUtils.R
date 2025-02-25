@@ -330,10 +330,10 @@ vec1_in_vec2 <- function(vec1, vec2) {
 vec1_not_in_vec2 <- function(vec1, vec2) {
   vec1[which(!vec1 %in% vec2)]
 }
-ul <- function(x) {
+unique_length <- function(x) {
   length(unique(x))
 }
-wl <- function(x) {
+which_length <- function(x) {
   length(which(x))
 }
 drop_nas <- function(x) {
@@ -621,7 +621,7 @@ list_to_wb <- function(
                                           side = "right",
                                           ellipsis = ""
   )
-  bad_names <- dw(list_names_rename)
+  bad_names <- duplicated_which(list_names_rename)
   if (length(bad_names) > 0) {
     warning(
       "Duplicated names when trimmed from right 31 max in Excel: ",
@@ -834,7 +834,7 @@ default_body_style <-
     valign = "center",
     fontSize = 12
   )
-dw <- function(x) {
+duplicated_which <- function(x) {
   which(duplicated(x))
 }
 is_consecutive_srt_1 <- function(vec) {
@@ -964,7 +964,7 @@ clean_env_names <- function(env_names, silent = FALSE, lowercase = TRUE) {
           message("Non-unique environment name: '", name, "', added numbers...")
         }
         cleaned_name <- cleaned_name %>%
-          paste0("_", max(wl(cleaned_name %in% cleaned_names)) + 1)
+          paste0("_", max(which_length(cleaned_name %in% cleaned_names)) + 1)
       }
       cleaned_names[i] <- cleaned_name
     }
@@ -1036,61 +1036,4 @@ is_nested_list <- function(x) {
 }
 clean_num <- function(num) {
   formatC(num, format = "d", big.mark = ",")
-}
-is_date <- function(date) {
-  out <- grepl("^\\d{4}-\\d{2}-\\d{2}$|^\\d{4}-\\d{2}$|^\\d{4}$", date)
-  if (out) {
-    out2 <- date %>%
-      strsplit(split = "-") %>%
-      unlist()
-    year <- out2[[1]]
-    check_date <- year
-    if (length(out2) == 1) {
-      check_date <- check_date %>% paste0("-01")
-      out2[[2]] <- "01"
-    }
-    if (length(out2) == 2) {
-      check_date <- check_date %>% paste0("-01")
-      out2[[3]] <- "01"
-    }
-    year <- year %>% as.integer()
-    month <- out2[[2]] %>% as.integer()
-    day <- out2[[3]] %>% as.integer()
-    out <- month >= 1 &&
-      month <= 12 &&
-      day >= 1 &&
-      day <= 31 && year >= 1900 && year <= lubridate::year(Sys.Date())
-  }
-  out
-}
-is_date_full <- function(date) {
-  grepl("^\\d{4}-\\d{2}-\\d{2}$", date)
-}
-date_imputation <- function(dates_in, date_imputation) {
-  # followup add min max
-  z <- lapply(dates_in, is_date) %>% as.logical()
-  x <- which(z & !is_date_full(dates_in))
-  y <- which(!z)
-  date_out <- dates_in
-  if (length(y) > 0) {
-    date_out[y] <- NA
-  }
-  if (length(x) > 0) {
-    if (missing(date_imputation)) date_imputation <- NULL
-    if (is.null(date_imputation)) {
-      date_out[x] <- NA
-    }
-    if (!is.null(date_imputation)) {
-      date_out[x] <- dates_in[x] %>%
-        lapply(function(date) {
-          admiral::impute_dtc_dt(
-            date,
-            highest_imputation = "M",
-            date_imputation = date_imputation
-          )
-        }) %>%
-        unlist()
-    }
-  }
-  date_out
 }

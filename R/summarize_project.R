@@ -324,6 +324,7 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 }
 #' @title Add a Subset to a REDCap Database
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' Creates a subset of the main REDCap database (`project`) based on specific
 #' filter criteria and saves it to a specified directory. The subset can be
 #' further customized with additional forms, fields, and deidentification
@@ -418,6 +419,7 @@ add_project_summary <- function(
     dir_other = file.path(project$dir_path, "output"),
     file_name = paste0(project$short_name, "_", subset_name),
     reset = FALSE) {
+  lifecycle::signal_stage("experimental", "add_project_summary()")
   if (missing(use_csv)) use_csv <- project$internals$use_csv
   if (is.null(filter_list)) {
     if (!is.null(filter_choices) && !is.null(filter_field)) {
@@ -608,6 +610,7 @@ construct_merge_cell_list <- function(project,subset_name,data_list){
 }
 #' @title Generate a Summary from a Subset Name
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' Generates a summary from a predefined subset of data within a REDCap project.
 #' The summary can be customized based on various options, such as cleaning the
 #' data, including metadata, and annotating metadata.
@@ -628,6 +631,7 @@ construct_merge_cell_list <- function(project,subset_name,data_list){
 generate_project_summary <- function(
     project,
     subset_name) {
+  lifecycle::signal_stage("experimental", "generate_project_summary()")
   subset_list <- project$summary$subsets[[subset_name]]
   to_save_list <- generate_project_summary_test(
     project = project,
@@ -651,6 +655,7 @@ generate_project_summary <- function(
 }
 #' @title Select REDCap Records from project
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' This function filters the records in the `project` object by specified
 #' criteria, such as field names, form names, and optional filtering based on a
 #' specific field and its values. It returns a modified `project` object
@@ -689,6 +694,7 @@ generate_project_summary_test <- function(
     include_record_summary = TRUE,
     include_users = TRUE,
     include_log = TRUE) {
+  lifecycle::signal_stage("experimental", "generate_project_summary_test()")
   if (missing(transform)) {
     transform <- project$internals$is_transformed
   }
@@ -817,6 +823,7 @@ generate_project_summary_test <- function(
 }
 #' @title Summarize REDCap Database
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' Summarizes the REDCap database (`project` object) by filtering and generating
 #' a summary list.
 #'
@@ -941,7 +948,7 @@ summarize_users_from_log <- function(project, records) {
     unlist()
   summary_users$unique_records_n <- user_groups %>%
     lapply(function(group) {
-      ul(group$record)
+      unique_length(group$record)
     }) %>%
     unlist() %>%
     as.integer()
@@ -996,7 +1003,7 @@ summarize_records_from_log <- function(project, records) {
   )
   summary_records$unique_users_n <- record_groups %>%
     lapply(function(group) {
-      ul(group$username)
+      unique_length(group$username)
     }) %>%
     unlist() %>%
     as.integer()
@@ -1078,6 +1085,7 @@ check_subsets <- function(project, subset_names) {
 }
 #' @title rmarkdown_project
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' Generates an RMarkdown report for the given REDCap database (`project`
 #' object). This function creates an RMarkdown file in the specified directory
 #' or default directory, allowing users to create custom reports based on the

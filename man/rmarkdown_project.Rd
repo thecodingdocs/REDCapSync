@@ -20,6 +20,7 @@ A message indicating the creation of the RMarkdown report and the
 path to the generated file.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Generates an RMarkdown report for the given REDCap database (\code{project}
 object). This function creates an RMarkdown file in the specified directory
 or default directory, allowing users to create custom reports based on the

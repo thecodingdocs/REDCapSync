@@ -70,22 +70,6 @@ remove_records_from_list <- function(project, records, silent = FALSE) {
   form_list
 }
 #' @noRd
-other_drops <- function(ignore = FALSE) {
-  if (ignore) {
-    return(NULL)
-  }
-  c(
-    "Not applicable",
-    "No information",
-    "Not asked",
-    "Unknown",
-    "Unencoded",
-    "Unknown / Not Reported",
-    "Missing Dates",
-    "Pediatric"
-  ) %>% return()
-}
-#' @noRd
 ignore_redcap_log <- function(collapse = TRUE) {
   ignores <- c(
     "export",
@@ -104,18 +88,6 @@ ignore_redcap_log <- function(collapse = TRUE) {
     return(paste0(ignores, collapse = "|"))
   }
   return(ignores)
-}
-#' @noRd
-sidebar_choices <- function(project, n_threshold = 1) {
-  choices <- annotate_choices(project)
-  choices <- choices[which(choices$n >= n_threshold), ]
-  sbc <- data.frame(
-    form_name = choices$form_name,
-    field_name = choices$field_name,
-    name = choices$name,
-    label = paste0(choices$label, " (n = ", clean_num(choices$n), ")")
-  )
-  return(sbc)
 }
 #' @noRd
 split_choices <- function(x) {

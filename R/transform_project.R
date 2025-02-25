@@ -263,7 +263,7 @@ add_project_field <- function(
     units = NA,
     data_func = NA) {
   project <- assert_blank_project(project, silent = TRUE)
-  if (wl(project$transformation$fields$field_name == field_name) > 0) {
+  if (which_length(project$transformation$fields$field_name == field_name) > 0) {
     project$transformation$fields <- project$transformation$fields[which(project$transformation$fields$field_name != field_name), ]
   }
   # if(!project$data %>% is_something())stop("Must have transformed data to add new vars.")

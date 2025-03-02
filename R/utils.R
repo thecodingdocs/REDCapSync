@@ -33,13 +33,6 @@ add_redcap_links_to_form <- function(form, project) { # add instance links
   form
 }
 #' @noRd
-clean_form2 <- function(form, project) {
-  form %>%
-    add_redcap_links_to_form(project) %>%
-    clean_form_to_field_labels(project) %>%
-    return()
-}
-#' @noRd
 remove_records_from_list <- function(project, records, silent = FALSE) {
   form_list <- project$data
   if (!is_df_list(form_list)) {

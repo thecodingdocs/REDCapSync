@@ -133,8 +133,12 @@ add_default_project_fields <- function(project) {
 }
 #' @rdname default-transformations
 #' @export
-add_project_transformation <- function(project, forms_transformation, ask = TRUE) {
-  if (missing(forms_transformation)) forms_transformation <- default_project_transformation(project)
+add_project_transformation <- function(project,
+                                       forms_transformation,
+                                       ask = TRUE) {
+  if (missing(forms_transformation)) {
+    forms_transformation <- default_project_transformation(project)
+  }
   forms_tranformation_cols <- c(
     "form_name",
     "form_label",
@@ -147,19 +151,24 @@ add_project_transformation <- function(project, forms_transformation, ask = TRUE
     "x_first"
   )
   if (project$redcap$is_longitudinal) {
-    forms_tranformation_cols <- forms_tranformation_cols %>% append("repeating_via_events")
+    forms_tranformation_cols <- forms_tranformation_cols %>%
+      append("repeating_via_events")
   }
   if (any(!names(forms_transformation) %in% forms_tranformation_cols)) {
     cli_alert_wrap(
       "Use `add_default_forms_transformation(project)` is an example!"
     )
-    stop("forms_transformation needs the following colnames... ", forms_tranformation_cols %>% as_comma_string())
+    stop(
+      "forms_transformation needs the following colnames... ",
+      forms_tranformation_cols %>% as_comma_string()
+    )
   }
   choice <- TRUE
   if (!is.null(project$transformation$forms)) {
     if (!identical(project$transformation$forms, forms_transformation)) {
       if (ask) {
-        choice <- utils::askYesNo("Do you want to add transformation? (it doesn't match previous transform)")
+        choice <- utils::askYesNo(
+          msg = "Do you want to add transformation? (does not match previous)")
         if (!choice) {
           stop("Stopped as you asked.")
         }
@@ -233,7 +242,9 @@ add_project_field <- function(
   # if(!project$data %>% is_something())stop("Must have transformed data to add new vars.")
   fields <- project$metadata$fields
   in_original_redcap <- field_name %in% fields$field_name
-  if (is_something(select_choices_or_calculations)) select_choices_or_calculations <- choice_vector_string(select_choices_or_calculations)
+  if (is_something(select_choices_or_calculations)) {
+    select_choices_or_calculations <- choice_vector_string(select_choices_or_calculations)
+  }
   if (in_original_redcap) {
     original_fields_row <- fields[which(fields$field_name == field_name), ]
     if (missing(form_name)) form_name <- original_fields_row$form_name
@@ -242,14 +253,20 @@ add_project_field <- function(
       field_type_R <- original_fields_row$field_type_R
     }
     if (is.na(field_label)) field_label <- original_fields_row$field_label
-    if (is.na(select_choices_or_calculations)) select_choices_or_calculations <- original_fields_row$select_choices_or_calculations
+    if (is.na(select_choices_or_calculations)) {
+      select_choices_or_calculations <- original_fields_row$select_choices_or_calculations
+    }
     if (is.na(field_note)) field_note <- original_fields_row$field_note
     if (identifier == "") identifier <- original_fields_row$identifier
   }
-  if (!is_something(data_func)) warning("if no `data_func` is provided, the column is only added to the metadata", immediate. = TRUE)
+  if (!is_something(data_func)) {
+    warning("if no `data_func` is provided, the column is only added to the metadata", immediate. = TRUE)
+  }
   if (is_something(data_func)) {
     func_template <- "data_func = function(project,field_name){YOUR FUNCTION}"
-    if (!is.function(data_func)) stop("`data_func` must be a function ... ", func_template)
+    if (!is.function(data_func)) {
+      stop("`data_func` must be a function ... ", func_template)
+    }
     allowed_args <- c("project", "field_name", "form_name")
     if (
       all(!allowed_args %in% names(formals(data_func))) ||
@@ -284,7 +301,7 @@ add_project_field <- function(
   invisible(project)
 }
 #' @noRd
-combine_original_transformed_fields <- function(project) {
+combine_project_fields <- function(project) {
   the_names <- project$transformation$fields$field_name
   fields <- project$metadata$fields
   if (is.null(the_names)) {
@@ -335,7 +352,6 @@ run_fields_transformation <- function(project) {
   original_fields <- project$metadata$fields
   the_names_existing <- the_names[which(the_names %in% original_fields$field_name)]
   the_names_new <- the_names[which(!the_names %in% original_fields$field_name)]
-  # fields_to_update <- NULL
   field_names <- c(the_names_existing, the_names_new)
   for (field_name in field_names) {
     field <- NA
@@ -458,7 +474,17 @@ transform_project <- function(project, reset = FALSE) {
           by.y <- z$by.y <- z$by.y %>%
             strsplit("\\+") %>%
             unlist()
-          if (length(z$by.x) != length(z$by.y)) stop("by.x and by.y must be same length... [", z$form_name, "] (", z$by.x %>% as_comma_string(), ") AND (", z$by.y %>% as_comma_string(), ")")
+          if (length(z$by.x) != length(z$by.y)) {
+            stop(
+              "by.x and by.y must be same length... [",
+              z$form_name,
+              "] (",
+              z$by.x %>% as_comma_string(),
+              ") AND (",
+              z$by.y %>% as_comma_string(),
+              ")"
+            )
+          }
           if (form_name == z$merge_to) {
             form_list[[z$form_name_remap]] <- ref
           } else {
@@ -468,7 +494,6 @@ transform_project <- function(project, reset = FALSE) {
             }
             ref_names <- names(ref)
             mer_names <- names(mer)
-            # new_name <- by.x %>% vec1_not_in_vec2(by.y)
             new_names <- ref_names %>%
               vec1_in_vec2(mer_names) %>%
               vec1_not_in_vec2(by.x)
@@ -496,7 +521,6 @@ transform_project <- function(project, reset = FALSE) {
               by.x %>% vec1_not_in_vec2(by.y)
             )
             mer_names <- names(mer)
-            # new_name <- by.x %>% vec1_not_in_vec2(by.y)
             del_names <- mer_names %>%
               vec1_in_vec2(ref_names) %>%
               vec1_not_in_vec2(by.y)
@@ -532,7 +556,6 @@ transform_project <- function(project, reset = FALSE) {
     if (is_something(form_list)) {
       project$transformation$data <- form_list
     }
-    # forms_transformation <- annotate_forms(project,summarize_data = FALSE)
     if (!is.null(project$metadata$form_key_cols)) {
       forms_transformation$key_cols <- forms_transformation$form_name %>%
         lapply(function(x) {
@@ -571,7 +594,7 @@ transform_project <- function(project, reset = FALSE) {
       as.character()
     project$transformation$metadata$forms <- forms_transformation
     # fields------------
-    fields <- combine_original_transformed_fields(project)
+    fields <- combine_project_fields(project)
     fields$original_form_name <- fields$form_name
     fields$form_name <- forms_transformation_original$form_name_remap[match(fields$form_name, forms_transformation_original$form_name)]
     fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]

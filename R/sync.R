@@ -195,7 +195,9 @@ due_for_sync2 <- function() {
   results[results_no_check_true] <- TRUE
   results[results_no_check_false] <- FALSE
   if (length(results_check) > 0) {
-    then <- as.POSIXct(projects$last_data_update[results_check], format = "%Y-%m-%d %H:%M:%OS", tz = Sys.timezone())
+    then <- as.POSIXct(projects$last_data_update[results_check],
+                       format = "%Y-%m-%d %H:%M:%OS",
+                       tz = Sys.timezone())
     sync_frequency <- projects$sync_frequency[results_check]
     time_diff_map <- list(
       "hourly" = lubridate::dhours(1),
@@ -218,7 +220,6 @@ due_for_sync2 <- function() {
 }
 sweep_dirs_for_cache <- function(project_names = NULL) {
   projects <- get_projects()
-  # save_project_details(project)
   if (nrow(projects) > 0) {
     project_list <- projects %>% split(projects$short_name)
     had_change <- FALSE
@@ -246,7 +247,9 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
           }
         )
         if (is.null(to_cache)) {
-          cli_alert_warning(paste0("issue loading project_details: ", project_name))
+          cli_alert_warning(
+            paste0("issue loading project_details: ", project_name)
+          )
           to_cache <- from_cache
           had_change <- TRUE
           unlink(expected_path)

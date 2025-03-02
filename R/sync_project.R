@@ -213,6 +213,7 @@ sync_project <- function(
         now_time()
       project$data <- remove_records_from_list(project = project, records = stale_records, silent = TRUE)
       # if (project$internals$is_transformed) {
+      # SAVE
       #   project2 <- stripped_project(project)
       #   project2$internals$is_transformed <- FALSE
       #   project2$data <- form_list
@@ -255,14 +256,7 @@ sync_project <- function(
   }
   project$internals$last_sync <- now_time()
   if (save_to_dir && !is.null(project$dir_path)) {
-    project <- drop_REDCap_to_directory(
-      project = project,
-      smart = TRUE,
-      deidentify = FALSE,
-      include_metadata = TRUE,
-      include_other = TRUE,
-      separate = TRUE
-    ) # add params
+    # add params
     # vars
     # transform
     # if(transform) {

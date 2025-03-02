@@ -474,7 +474,19 @@ add_project_summary <- function(
   invisible(project)
 }
 #' @noRd
-save_subset <- function(project, subset_name) {
+save_summary <- function(project, subset_name) {
+  save_all <- missing(subset_name)
+  if(save_all){
+    project <- drop_REDCap_to_directory(
+      project = project,
+      smart = TRUE,
+      deidentify = FALSE,
+      include_metadata = TRUE,
+      include_other = TRUE,
+      separate = TRUE
+    )
+    return(invisible(project))
+  }
   id_col <- project$redcap$id_col
   subset_list <- project$summary$subsets[[subset_name]]
   to_save_list <- project %>%
@@ -785,13 +797,16 @@ summarize_project <- function(
   if (!do_it) {
     do_it <- project$internals$last_summary < last_data_update
   }
+  if(do_it){
+    project <- save_summary(project)
+  }
   subset_names <- check_subsets(project)
   if (reset) {
     subset_names <- project$summary$subsets %>% names()
   }
   if (is_something(subset_names)) {
     for (subset_name in subset_names) {
-      project <- project %>% save_subset(subset_name)
+      project <- project %>% save_summary(subset_name)
     }
   }
   invisible(project)

@@ -16,44 +16,6 @@ upload_transform_to_project <- function(project) {
   }
   invisible(project)
 }
-#' @noRd
-extract_form_from_merged <- function(project, form_name) {
-  merged <- project$data[[project$internals$merge_form_name]]
-  if (nrow(merged) > 0) {
-    add_ons <- c(project$redcap$id_col, "arm_number", "event_name", "redcap_event_name", "redcap_repeat_instrument", "redcap_repeat_instance")
-    add_ons <- add_ons[which(add_ons %in% colnames(merged))]
-    if (!form_name %in% project$metadata$forms$form_name) stop("form_name must be included in set of project$metadata$forms$form_name")
-    # form_name <-  project$metadata$forms$form_name %>% sample(1)
-    is_repeating_form <- form_name %in% project$metadata$forms$form_name[which(project$metadata$forms$repeating)]
-    rows <- seq_len(nrow(merged))
-    if (is_repeating_form) {
-      # rows <- which(merged$redcap_repeat_form==form_name)
-    }
-    if (!is_repeating_form) {
-      rows <- which(!is.na(merged[[paste0(form_name, "_complete")]]))
-    }
-    #
-    # if(!project$redcap$is_longitudinal){
-    #   if("redcap_repeat_form"%in%colnames(merged)){
-    #     if(is_repeating_form){
-    #       rows <- which(merged$redcap_repeat_instrument==form_name)
-    #     }
-    #     if(!is_repeating_form){
-    #       rows <- which(is.na(merged$redcap_repeat_instrument))
-    #     }
-    #   }
-    # }
-    # if(project$redcap$is_longitudinal){
-    #   events_ins <- project$metadata$event_mapping$unique_event_name[which(project$metadata$event_mapping$form==form_name)] %>% unique()
-    #   rows <- which(merged$redcap_event_name%in%events_ins)
-    # }
-    # if(!is_repeating_form){
-    #   add_ons <- add_ons[which(!add_ons%in%c("redcap_repeat_instrument","redcap_repeat_instance"))]
-    # }
-    cols <- unique(c(add_ons, project$metadata$fields$field_name[which(project$metadata$fields$form_name == form_name & project$metadata$fields$field_name %in% colnames(merged))]))
-    merged[rows, cols]
-  }
-}
 #' @rdname default-transformations
 #' @title Add Default Forms Transformation to the Database
 #' @description
@@ -122,7 +84,6 @@ add_default_project_fields <- function(project) {
   forms <- project$metadata$forms
   last_non_rep <- forms$form_name[which(!forms$repeating)] %>% dplyr::last()
   form_names <- forms$form_name[which(forms$repeating)]
-  # id_col <- project$metadata$form_key_cols[[last_non_rep]]
   has_non_rep <- length(last_non_rep) > 0
   if (has_non_rep) {
     for (form_name in form_names) {
@@ -290,8 +251,15 @@ add_project_field <- function(
     func_template <- "data_func = function(project,field_name){YOUR FUNCTION}"
     if (!is.function(data_func)) stop("`data_func` must be a function ... ", func_template)
     allowed_args <- c("project", "field_name", "form_name")
-    if (all(!allowed_args %in% names(formals(data_func)))) stop("`data_func` must have two aruguments (project and field_name) ... ", func_template)
-    if (any(!names(formals(data_func)) %in% allowed_args)) stop("`data_func` can only have two aruguments (project and field_name) ... ", func_template)
+    if (
+      all(!allowed_args %in% names(formals(data_func))) ||
+      any(!names(formals(data_func)) %in% allowed_args)
+    ) {
+      stop(
+        "`data_func` must have two arguments (project and field_name) ... ",
+        func_template
+      )
+    }
   }
   field_row <- data.frame(
     field_name = field_name,
@@ -307,8 +275,11 @@ add_project_field <- function(
     field_label_short = field_label,
     field_func = data_func %>% function_to_string()
   )
-  project$transformation$fields <- project$transformation$fields %>% dplyr::bind_rows(field_row)
-  project$transformation$field_functions[[field_name]] <- data_func %>% clean_function()
+  project$transformation$fields <-
+    project$transformation$fields %>%
+    dplyr::bind_rows(field_row)
+  project$transformation$field_functions[[field_name]] <-
+    data_func %>% clean_function()
   message("added '", field_name, "' column")
   invisible(project)
 }
@@ -630,21 +601,4 @@ missing_form_names <- function(project) {
   form_names <- names(project$data)
   form_names <- form_names[which(!form_names %in% project$metadata$forms$form_name)]
   form_names
-}
-#' @noRd
-missing_field_names <- function(project) {
-  # md <- data.frame(
-  #   field_name = project$metadata$fields$field_name,
-  #   form_name = project$metadata$fields$form_name
-  # )
-  # d <- project$data %>%
-  #   names() %>%
-  #   lapply(function(form_name) {
-  #     data.frame(
-  #       form_name = form_name,
-  #       field_name = colnames(project$data[[form_name]])
-  #     )
-  #   }) %>%
-  #   dplyr::bind_rows()
-  # # return(form_names)
 }

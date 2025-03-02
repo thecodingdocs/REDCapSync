@@ -818,7 +818,7 @@ default_header_style <-
     textDecoration = "Bold",
     fontSize = 14,
     fontColour = "black",
-    border = "TopBottomLeftRight",
+    border = "TopBottomLeftRight"
   )
 default_body_style <-
   openxlsx::createStyle(

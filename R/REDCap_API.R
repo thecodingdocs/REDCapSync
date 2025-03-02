@@ -177,7 +177,6 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     # }
     project$metadata$forms$repeating_via_events <- FALSE
     project$metadata$forms$repeating_via_events[which(project$metadata$forms$form_name %>% lapply(function(form_name) {
-      # form_name <- forms$form_name %>% sample(1)
       anyDuplicated(project$metadata$event_mapping$arm_number[which(project$metadata$event_mapping$form == form_name)]) > 0
     }) %>% unlist())] <- TRUE
   } else {

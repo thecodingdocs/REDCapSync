@@ -106,8 +106,9 @@ view_project_token <- function(project) {
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
-test_project_token <- function(project, set_if_fails = TRUE, launch_browser = TRUE) {
-  # token <- get_project_token(project, silent = FALSE)
+test_project_token <- function(project,
+                               set_if_fails = TRUE,
+                               launch_browser = TRUE) {
   assert_setup_project(project)
   rcon <- project_rcon(project)
   redcap_version <- tryCatch(

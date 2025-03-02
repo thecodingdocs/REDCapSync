@@ -60,7 +60,6 @@ drop_REDCap_to_directory <- function(
   }
   if (missing(dir_other)) {
     root_dir <- get_dir(project)
-    # output_dir <- file.path(root_dir, "output")
     redcap_dir <- file.path(root_dir, "REDCap", project$short_name)
   } else {
     redcap_dir <- dir_other
@@ -172,9 +171,6 @@ drop_REDCap_to_directory <- function(
   }
   if (due_for_save_data) {
     project$internals$last_data_dir_save <- project$internals$last_data_update
-    # if(merge_non_repeating) {
-    #   project <- merge_non_repeating_project(project)
-    # }
     to_save_list <- project[["data"]]
     if (!missing(records)) {
       to_save_list <- generate_project_summary_test(

@@ -6,9 +6,10 @@ assert_dir <- function(dir_path, silent = TRUE) {
   if (!is.logical(silent)) stop("silent parameter must be TRUE/FALSE")
   stop_mes <- "Did you use `setup_project()`?"
   for (folder in internal_dir_folders) {
-    if (!file.exists(file.path(dir_path, folder))) stop("'", dir_path, "/", folder, "' missing! ", stop_mes)
+    if (!file.exists(file.path(dir_path, folder))) {
+      stop("'", dir_path, "/", folder, "' missing! ", stop_mes)
+    }
   }
-  # if ( ! file.exists(file.path(dir_path,"ref_tables"))) stop("'",dir_path,"/ref_tables' missing! ",stop_mes)
   if (!silent){
     cli_alert_wrap("Directory is Valid!", url = dir_path, bullet_type = "v")
   }
@@ -20,7 +21,8 @@ get_project_token <- function(project, silent = TRUE) {
   token_name <- get_REDCap_token_name(project)
   token <- Sys.getenv(token_name)
   is_a_test <- is_test_project(project)
-  valid <- token %>% is_valid_REDCap_token(silent = silent, is_a_test = is_a_test)
+  valid <- token %>%
+     aisis_valid_REDCap_token(silent = silent, is_a_test = is_a_test)
   message_about_token <- ifelse(is_a_test,
                                 get_test_token(project$short_name),
                                 "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"

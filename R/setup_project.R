@@ -338,9 +338,7 @@ load_project <- function(short_name) {
   if (!file.exists(project_path)) stop("No file at path '", project_path, "'. Did you use `setup_project()` and `sync_project()`?")
   project <- readRDS(file = project_path)
   project <- project %>% assert_setup_project(silent = FALSE)
-  # if(){
   #   check if in cache already and relation!
-  # }
   # SAVE
   loaded_dir <- project$dir_path %>% sanitize_path()
   if (!identical(dir_path, loaded_dir)) {

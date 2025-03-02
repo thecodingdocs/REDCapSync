@@ -229,7 +229,6 @@ link_REDCap_record <- function(project,
 }
 #' @noRd
 construct_key_col_list <- function(project) {
-  # fields <- project$metadata$fields
   form_list <- project$data
   data_field_list <- form_list %>% lapply(colnames)
   form_names <- names(form_list)
@@ -311,7 +310,6 @@ raw_process_redcap <- function(raw, project, labelled) {
     }
     form_rows <- which(forms$form_name %in% unique(fields$form_name))
     form_names <- forms$form_name[form_rows]
-    # form_name <- form_names %>% sample1()
     has_repeating_forms <- project$redcap$has_repeating_forms
     for (form_name in form_names) {
       form_field_names <- fields$field_name[which(
@@ -334,7 +332,6 @@ raw_process_redcap <- function(raw, project, labelled) {
             stop("redcap_repeat_instrument not in colnames(raw)")
           }
           if (is_longitudinal) {
-            # rows <- which(raw$redcap_repeat_instrument==form_name)
             rows <- which(
               raw$redcap_repeat_instrument == form_name |
                 raw$redcap_event_name %in% event_mapping$unique_event_name[which(!event_mapping$repeating &

@@ -79,16 +79,16 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
     }, names(project$data), lapply(project$data, colnames))
     drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0]
     if (length(drop_list) == 0) {
-      bullet_in_console(
+      cli_alert_danger(
         paste0(
           "Nothing to deidentify --> ",
           identifiers %>% paste0(collapse = ", ")
-        ),
-        bullet_type = "x"
+        )
       )
     } else {
-      bullet_in_console(paste0("Deidentified ", project$short_name),
-                        bullet_type = "v"
+      cli_alert_wrap(
+        paste0("Deidentified ", project$short_name),
+        bullet_type = "v"
       )
     }
     for (form_name in names(drop_list)) {
@@ -98,21 +98,24 @@ deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
     }
   }
   if (is_something(project$transformation$data)) {
-    drop_list <- Map(function(x, cols) {
-      identifiers[which(identifiers %in% cols)]
-    }, names(project$transformation$data), lapply(project$transformation$data, colnames))
+    drop_list <- Map(
+      f = function(x, cols) {
+        identifiers[which(identifiers %in% cols)]
+      },
+      names(project$transformation$data),
+      lapply(project$transformation$data, colnames)
+    )
     drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0]
     if (length(drop_list) == 0) {
-      bullet_in_console(
+      cli_alert_success(
         paste0(
           "Nothing to deidentify --> ",
           identifiers %>% paste0(collapse = ", ")
-        ),
-        bullet_type = "x"
+        )
       )
     } else {
-      bullet_in_console(paste0("Deidentified Transformation ", project$short_name),
-                        bullet_type = "v"
+      cli_alert_success(
+        paste0("Deidentified Transformation ", project$short_name)
       )
     }
     for (form_name in names(drop_list)) {
@@ -231,7 +234,9 @@ construct_key_col_list <- function(project) {
   data_field_list <- form_list %>% lapply(colnames)
   form_names <- names(form_list)
   key_cols_list <- form_names %>% lapply(function(form_name) {
-    key_cols <- which(data_field_list[[form_name]] %in% project$redcap$raw_structure_cols)
+    key_cols <- which(
+      data_field_list[[form_name]] %in% project$redcap$raw_structure_cols
+    )
     data_field_list[[form_name]][key_cols]
   })
   names(key_cols_list) <- form_names
@@ -267,10 +272,24 @@ raw_process_redcap <- function(raw, project, labelled) {
   form_list <- list()
   if (nrow(raw) > 0) {
     raw <- raw %>% all_character_cols()
-    add_ons <- c(project$redcap$id_col, "arm_number", "event_name", "redcap_event_name", "redcap_repeat_instrument", "redcap_repeat_instance")
+    add_ons <- c(
+      project$redcap$id_col,
+      "arm_number",
+      "event_name",
+      "redcap_event_name",
+      "redcap_repeat_instrument",
+      "redcap_repeat_instance"
+    )
     if (project$redcap$is_longitudinal) {
       raw$id_temp <- seq_len(nrow(raw))
-      raw <- merge(raw, events[, c("arm_number", "event_name", "unique_event_name")], by.x = "redcap_event_name", by.y = "unique_event_name", sort = FALSE, all.x = TRUE)
+      raw <- merge(
+        raw,
+        events[, c("arm_number", "event_name", "unique_event_name")],
+        by.x = "redcap_event_name",
+        by.y = "unique_event_name",
+        sort = FALSE,
+        all.x = TRUE
+      )
       add_ons <- add_ons[which(add_ons %in% colnames(raw))]
       cols <- c(add_ons, colnames(raw)) %>% unique()
       raw <- raw[
@@ -284,14 +303,26 @@ raw_process_redcap <- function(raw, project, labelled) {
       raw$id_temp <- NULL
     }
     add_ons <- add_ons[which(add_ons %in% colnames(raw))]
-    if (any(!project$redcap$raw_structure_cols %in% colnames(raw))) stop("raw is missing one of the following... and that's weird: ", project$redcap$raw_structure_cols %>% paste0(collapse = ", "))
-    form_names <- forms$form_name[which(forms$form_name %in% unique(fields$form_name))]
+    if (any(!project$redcap$raw_structure_cols %in% colnames(raw))) {
+      stop(
+        "raw is missing one of the following... and that's weird: ",
+        project$redcap$raw_structure_cols %>% paste0(collapse = ", ")
+      )
+    }
+    form_rows <- which(forms$form_name %in% unique(fields$form_name))
+    form_names <- forms$form_name[form_rows]
     # form_name <- form_names %>% sample1()
     has_repeating_forms <- project$redcap$has_repeating_forms
     for (form_name in form_names) {
-      form_field_names <- fields$field_name[which(fields$form_name == form_name & fields$field_name %in% colnames(raw) & fields$field_name != project$redcap$id_col)]
+      form_field_names <- fields$field_name[which(
+        fields$form_name == form_name &
+          fields$field_name %in% colnames(raw) &
+          fields$field_name != project$redcap$id_col
+      )]
       if (length(form_field_names) == 0) {
-        bullet_in_console(paste0("You might not have access to ", form_name, ". Unable to obtain."), bullet_type = "x")
+        cli_alert_danger(
+          paste0("You might not have access to ", form_name, ". Unable to obtain.")
+        )
       }
       if (length(form_field_names) > 0) {
         add_ons_x <- add_ons
@@ -299,10 +330,16 @@ raw_process_redcap <- function(raw, project, labelled) {
         is_longitudinal <- project$redcap$is_longitudinal
         rows <- seq_len(nrow(raw))
         if (is_repeating_form) {
-          if (!"redcap_repeat_instrument" %in% colnames(raw)) stop("redcap_repeat_instrument not in colnames(raw)")
+          if (!"redcap_repeat_instrument" %in% colnames(raw)) {
+            stop("redcap_repeat_instrument not in colnames(raw)")
+          }
           if (is_longitudinal) {
             # rows <- which(raw$redcap_repeat_instrument==form_name)
-            rows <- which(raw$redcap_repeat_instrument == form_name | raw$redcap_event_name %in% event_mapping$unique_event_name[which(!event_mapping$repeating & event_mapping$form == form_name)])
+            rows <- which(
+              raw$redcap_repeat_instrument == form_name |
+                raw$redcap_event_name %in% event_mapping$unique_event_name[which(!event_mapping$repeating &
+                                                                                   event_mapping$form == form_name)]
+            )
           }
           if (!is_longitudinal) {
             rows <- which(raw$redcap_repeat_instrument == form_name)
@@ -349,7 +386,11 @@ clean_redcap_log <- function(log) {
   not_design_rows <- which(!design_test)
   # notdesign action -----
   record_rows <- not_design_rows[dplyr::starts_with(match = internal_log_action_records, vars = log$action[not_design_rows])]
-  log$record_id[record_rows] <- gsub("Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation|Lock/Unlock Record | |[:):]|[:(:]", "", log$action[record_rows])
+  log$record_id[record_rows] <- gsub(
+    "Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation|Lock/Unlock Record | |[:):]|[:(:]",
+    "",
+    log$action[record_rows]
+  )
   log$action_type[record_rows] <- log$action[record_rows] %>%
     strsplit(" ") %>%
     lapply(function(x) {
@@ -387,7 +428,10 @@ clean_redcap_log <- function(log) {
       vars = log$details[design_rows]
     )
   ]
-  log$record_id[comment_rows] <- stringr::str_extract(log$details[comment_rows], "(?<=Record: )[^,]+")
+  log$record_id[comment_rows] <- stringr::str_extract(
+    string = log$details[comment_rows],
+    pattern = "(?<=Record: )[^,]+"
+  )
   log$action_type[comment_rows] <- "Comment"
   log$action_type[
     design_rows[

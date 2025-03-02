@@ -9,10 +9,10 @@ upload_transform_to_project <- function(project) {
         labelled_to_raw_form(project) %>%
         upload_form_to_REDCap(project)
     }
-    bullet_in_console("Successfully uploaded to REDCap!", bullet_type = "v")
+    cli_alert_wrap("Successfully uploaded to REDCap!", bullet_type = "v")
     project$transformation$data_updates <- list()
   } else {
-    bullet_in_console("Nothing to upload!")
+    cli_alert_wrap("Nothing to upload!")
   }
   invisible(project)
 }
@@ -189,7 +189,9 @@ add_project_transformation <- function(project, forms_transformation, ask = TRUE
     forms_tranformation_cols <- forms_tranformation_cols %>% append("repeating_via_events")
   }
   if (any(!names(forms_transformation) %in% forms_tranformation_cols)) {
-    bullet_in_console("Use `add_default_forms_transformation(project)` is an example!")
+    cli_alert_wrap(
+      "Use `add_default_forms_transformation(project)` is an example!"
+    )
     stop("forms_transformation needs the following colnames... ", forms_tranformation_cols %>% as_comma_string())
   }
   choice <- TRUE
@@ -315,7 +317,7 @@ combine_original_transformed_fields <- function(project) {
   the_names <- project$transformation$fields$field_name
   fields <- project$metadata$fields
   if (is.null(the_names)) {
-    bullet_in_console("Nothing to add. Use `add_project_field()`", bullet_type = "x")
+    cli_alert_danger("Nothing to add. Use `add_project_field()`")
     return(fields)
   }
   for (field_name in the_names) {
@@ -356,7 +358,7 @@ combine_original_transformed_fields <- function(project) {
 run_fields_transformation <- function(project) {
   the_names <- project$transformation$fields$field_name
   if (is.null(the_names)) {
-    bullet_in_console("Nothing to run. Use `add_project_field()`", bullet_type = "x")
+    cli_alert_danger("Nothing to run. Use `add_project_field()`")
     return(invisible(project))
   }
   original_fields <- project$metadata$fields
@@ -397,7 +399,7 @@ run_fields_transformation <- function(project) {
       project$transformation$data[[form_name]][[field_name]] <- field
     }
   }
-  bullet_in_console(paste0("Added new fields to ", project$short_name, " `project$data`"), bullet_type = "v")
+  cli_alert_wrap(paste0("Added new fields to ", project$short_name, " `project$data`"), bullet_type = "v")
   invisible(project)
 }
 #' @rdname default-transformations
@@ -452,15 +454,15 @@ transform_project <- function(project, reset = FALSE) {
   has_data <- is_something(process_df_list(project$data, silent = TRUE))
   is_transformed <- project$internals$is_transformed
   if (!has_data) {
-    bullet_in_console("No data... nothing to do!", bullet_type = "x")
+    cli_alert_warning("No data... nothing to do!")
     return(invisible(project))
   }
   if (!has_transformation) {
-    bullet_in_console("Nothing to run. Use `add_project_field()`", bullet_type = "x")
+    cli_alert_warning("Nothing to run. Use `add_project_field()`")
     return(invisible(project))
   }
   if (is_transformed && !reset) {
-    bullet_in_console("Already transformed... nothing to do!", bullet_type = "x")
+    cli_alert_warning("Already transformed... nothing to do!")
     return(invisible(project))
   }
   if (!is_transformed || reset) {
@@ -576,7 +578,13 @@ transform_project <- function(project, reset = FALSE) {
         })
     }
     project$internals$is_transformed <- TRUE
-    bullet_in_console(paste0(project$short_name, " transformed according to `project$transformation`"), bullet_type = "v")
+    cli_alert_wrap(
+      paste0(
+        project$short_name,
+        " transformed according to `project$transformation`"
+      ),
+      bullet_type = "v"
+    )
     # forms ---------
     # new function RosyUtils
     cols_to_keep <- c("form_name_remap", "form_label_remap", "repeating", "repeating_via_events", "key_cols", "key_names")
@@ -602,7 +610,14 @@ transform_project <- function(project, reset = FALSE) {
     last <- which(colnames(fields) != "original_form_name")[-first]
     fields <- fields[, c(first, move, last)]
     project$transformation$metadata$fields <- fields
-    bullet_in_console(paste0("Added mod fields to ", project$short_name, " `project$transformation`"), bullet_type = "v")
+    cli_alert_wrap(
+      paste0(
+        "Added mod fields to ",
+        project$short_name,
+        " `project$transformation`"
+      ),
+      bullet_type = "v"
+    )
     project$transformation$metadata$choices <- fields_to_choices(fields)
     project$transformation$metadata$form_key_cols <- get_key_col_list(project = project, transform = TRUE)
     project$transformation$metadata$missing_codes <- project$metadata$missing_codes

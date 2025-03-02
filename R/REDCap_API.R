@@ -247,9 +247,10 @@ get_REDCap_files <- function(project,
     dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
     for (field_name in project$metadata$fields$field_name[file_rows]) {
       out_dir_folder <- file.path(out_dir, field_name)
-      dir.create(out_dir_folder,
-                 showWarnings = FALSE,
-                 recursive = TRUE
+      dir.create(
+        out_dir_folder,
+        showWarnings = FALSE,
+        recursive = TRUE
       )
       form_name <- project$metadata$fields$form_name[which(project$metadata$fields$field_name == field_name)]
       is_repeating <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == form_name)]
@@ -291,8 +292,7 @@ get_REDCap_files <- function(project,
             tools::file_ext(file_name)
           )
         )
-        if (!file.exists(file.path(out_dir_folder, file_name)) ||
-            overwrite) {
+        if (!file.exists(file.path(out_dir_folder, file_name)) || overwrite) {
           REDCapR::redcap_file_download_oneshot(
             redcap_uri = project$links$redcap_uri,
             token = get_project_token(project),
@@ -304,21 +304,30 @@ get_REDCap_files <- function(project,
             repeat_instance = repeat_instance,
             verbose = FALSE
           )
-          bullet_in_console(paste0("`", file_name, "` saved."), bullet_type = ">")
+          cli_alert_wrap(paste0("`", file_name, "` saved."), bullet_type = ">")
         }
       }
     }
   }
-  bullet_in_console("Checked for files! Stored at ...",
-                    file = out_dir,
-                    bullet_type = "v"
+  cli_alert_wrap(
+    "Checked for files! Stored at ...",
+    file = out_dir,
+    bullet_type = "v"
   )
 }
 get_REDCap_users <- function(project) {
   assert_setup_project(project)
   rcon <- project_rcon(project)
-  users <- redcapAPI::exportUsers(rcon = rcon, labels = FALSE, form_rights = FALSE)
-  user_roles <- redcapAPI::exportUserRoles(rcon = rcon, labels = FALSE, form_rights = FALSE)
+  users <- redcapAPI::exportUsers(
+    rcon = rcon,
+    labels = FALSE,
+    form_rights = FALSE
+  )
+  user_roles <- redcapAPI::exportUserRoles(
+    rcon = rcon,
+    labels = FALSE,
+    form_rights = FALSE
+  )
   user_role_assignments <- redcapAPI::exportUserRoleAssignments(rcon = rcon)
   final <- merge(merge(user_roles[, c("unique_role_name", "role_label")], user_role_assignments, by = "unique_role_name"), users, by = "username", all.y = TRUE)
   final

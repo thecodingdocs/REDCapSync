@@ -67,18 +67,14 @@ sync_project <- function(
   project <- test_project_token(project, set_if_fails = set_token_if_fails)
   connected <- project$internals$last_test_connection_outcome
   if (!connected) {
-    bullet_in_console(
-      "Could not connect to REDCap",
-      bullet_type = "x",
-      silent = silent
-    )
+    cli_alert_danger("Could not connect to REDCap")
     return(invisible(project))
   }
   # project$internals$last_metadata_update <-  now_time()-lubridate::days(1)
   # project$internals$last_data_update <-  now_time()-lubridate::days(1)
   if (is_something(project$transformation$data_updates)) {
     do_it <- TRUE
-    bullet_in_console(
+    cli_alert_wrap(
       "There is data in 'project$transformation$data_updates' that has not been pushed to REDCap yet..."
     )
     print(project$transformation$data_updates)
@@ -99,10 +95,7 @@ sync_project <- function(
     ) {
       reset <- TRUE
     } else {
-      interim_log <- get_REDCap_log(
-        project,
-        log_begin_date = as.Date(strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d"))
-      )
+      interim_log <- get_REDCap_log(project, log_begin_date = as.Date(strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d")))
       if (nrow(interim_log) <= nrow(project$redcap$log)) {
         head_of_log <- project$redcap$log %>% utils::head(n = nrow(interim_log))
       } else {
@@ -186,7 +179,7 @@ sync_project <- function(
         project$internals$last_full_update <-
         project$internals$last_metadata_update <-
         project$internals$last_data_update <- now_time()
-      bullet_in_console(paste0("Full ", project$short_name, " update!"), bullet_type = "v")
+      cli_alert_wrap(paste0("Full ", project$short_name, " update!"), bullet_type = "v")
       was_updated <- TRUE
     }
   } else {
@@ -227,7 +220,7 @@ sync_project <- function(
       #   project2 <- transform_project(project2)
       #   if (!is.null(project2$data_updates$from_transform)) {
       #     do_it <- TRUE
-      #     bullet_in_console("There is data in 'project$transformation$data_updates' that has not been pushed to REDCap yet...")
+      #     cli_alert_wrap("There is data in 'project$transformation$data_updates' that has not been pushed to REDCap yet...")
       #     print(project2$transformation$data_updates)
       #     if (ask_about_overwrites) {
       #       do_it <- utils::menu(choices = c("Yes", "No and stop the function!"), title = "Would you like to push these updates now?") == 1
@@ -240,7 +233,9 @@ sync_project <- function(
       #     process_df_list(silent = TRUE) %>%
       #     all_character_cols_list()
       # }
-      if (any(!names(form_list) %in% names(project$data))) stop("Imported data names doesn't match project$data names. If this happens run `sync_project(project, reset = TRUE)`")
+      if (any(!names(form_list) %in% names(project$data))) {
+        stop("Imported data names doesn't match project$data names. If this happens run `sync_project(project, reset = TRUE)`")
+      }
       for (form_name in names(form_list)) {
         project$data[[form_name]] <- project$data[[form_name]] %>%
           all_character_cols() %>%

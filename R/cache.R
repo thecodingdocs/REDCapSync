@@ -39,11 +39,10 @@ cache_path <- function() {
 cache_clear <- function() {
   cache <- get_cache()
   cache$delete_all()
-  bullet_in_console(
-    "You must delete any/all other files manually from the directory.",
-    bullet_type = "!"
+  cli_alert_warning(
+    "You must delete any/all other files manually from the directory."
   )
-  bullet_in_console(
+  cli_alert_wrap(
     "REDCapSync cache cleared!",
     file = cache$cache_path_get(),
     bullet_type = "v"
@@ -62,7 +61,7 @@ cache_projects_exists <- function() {
       file.path("projects.rds") %>%
       file.exists()
   } else {
-    bullet_in_console("Cache doesn't exist", bullet_type = "x")
+    cli_alert_warning("Cache doesn't exist")
     outcome <- FALSE
   }
   outcome

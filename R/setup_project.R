@@ -212,7 +212,7 @@ setup_project <- function(
       } else {
         project <- internal_blank_project
       }
-      bullet_in_console(
+      cli_alert_wrap(
         "Setup blank project object because nothing found in cache or directory.",
         bullet_type = "!",
         silent = silent
@@ -247,7 +247,7 @@ setup_project <- function(
   }
   if (reset) { # load blank if reset = TRUE
     project <- internal_blank_project
-    bullet_in_console(
+    cli_alert_wrap(
       paste0("Setup blank project object because `reset = TRUE`"),
       silent = silent
     )
@@ -279,7 +279,7 @@ setup_project <- function(
     project$links$redcap_base <- assert_web_link(redcap_base)
     project$links$redcap_uri <- project$links$redcap_base %>% paste0("api/")
   } else {
-    bullet_in_console(
+    cli_alert_wrap(
       "Test objects ignore the `redcap_base` url argument and will not communicate with the REDCap API.",
       silent = silent
     )
@@ -433,7 +433,7 @@ save_project <- function(project, silent = FALSE) {
     file = save_project_path
   ) # add error check
   save_project_details(project)
-  bullet_in_console(
+  cli_alert_wrap(
     paste0("Saved ", project$short_name, "!"),
     url = save_project_path,
     bullet_type = "v",
@@ -452,7 +452,7 @@ delete_project <- function(project) {
   if (file.exists(delete_this)) {
     unlink(delete_this)
     unlink(delete_this_too)
-    bullet_in_console("Deleted saved project", bullet_type = "v")
+    cli_alert_wrap("Deleted saved project", bullet_type = "v")
   } else {
     warning("The project object you wanted to is not there. Did you delete already? ", delete_this)
   }
@@ -462,7 +462,9 @@ get_dir <- function(project) {
   dir_path <- project$dir_path
   stop_mes <- "Did you use `set_dir()`?"
   if (!file.exists(dir_path)) {
-    bullet_in_console("Searched for directory --> '", file = dir_path, bullet_type = "x")
+    cli_alert_wrap("Searched for directory --> '",
+                   file = dir_path,
+                   bullet_type = "x")
     stop(paste0("Does not exist. ", stop_mes))
   }
   assert_dir(dir_path, silent = TRUE)

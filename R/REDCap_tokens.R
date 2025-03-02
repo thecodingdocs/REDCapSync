@@ -33,7 +33,7 @@ set_project_token <- function(project, ask = TRUE) {
   if (ask) {
     token <- get_project_token(project)
     if (is_valid_REDCap_token(token)) {
-      bullet_in_console(paste0("You already have a valid token in your R session (pending test connection) '", token, "'."))
+      cli_alert_wrap(paste0("You already have a valid token in your R session (pending test connection) '", token, "'."))
       answer <- utils::menu(choices = c("Yes", "No"), title = "Are you sure you want to set something else?")
     }
   }
@@ -41,11 +41,11 @@ set_project_token <- function(project, ask = TRUE) {
     has_valid_REDCap_token <- FALSE
     if (is_something(project$links$redcap_API)) {
       if (!ask) {
-        bullet_in_console(paste0("You can request/regenerate/delete with `link_API_token(project)` or go here: "), url = project$links$redcap_API)
+        cli_alert_wrap(paste0("You can request/regenerate/delete with `link_API_token(project)` or go here: "), url = project$links$redcap_API)
       }
     }
     if (is_a_test) {
-      bullet_in_console(paste0("This is only a test so the token is: ", get_test_token(project$short_name)), bullet_type = ">")
+      cli_alert_wrap(paste0("This is only a test so the token is: ", get_test_token(project$short_name)), bullet_type = ">")
     }
     prompt <- paste0("What is your ", project$short_name, " REDCap API token: ")
     while (!has_valid_REDCap_token) {
@@ -77,7 +77,7 @@ set_project_token <- function(project, ask = TRUE) {
 view_project_token <- function(project) {
   project <- assert_blank_project(project)
   token <- get_project_token(project, silent = FALSE)
-  bullet_in_console(paste0("Never share your token: ", token), bullet_type = "!")
+  cli_alert_warning(paste0("Never share your token: ", token))
   invisible()
 }
 #' @title Test REDCap API Token linked to a project Object
@@ -129,7 +129,7 @@ test_project_token <- function(project, set_if_fails = TRUE, launch_browser = TR
     # this will fail to bring you to right URL if redcap version changes at the same time a previously valid token is no longer valid
   }
   while (version_error) {
-    bullet_in_console("Your REDCap API token check failed. Invalid token or API privileges. Contact Admin!`", bullet_type = "x")
+    cli_alert_danger("Your REDCap API token check failed. Check privileges.")
     if (set_if_fails) {
       set_project_token(project, ask = FALSE)
       redcap_version <- tryCatch(
@@ -144,7 +144,7 @@ test_project_token <- function(project, set_if_fails = TRUE, launch_browser = TR
       project$internals$last_test_connection_outcome <- !version_error
     }
   }
-  bullet_in_console("Connected to REDCap!", bullet_type = "v")
+  cli_alert_wrap("Connected to REDCap!", bullet_type = "v")
   project$redcap$version <- redcap_version
   project$internals$ever_connected <- TRUE
   invisible(project)
@@ -164,51 +164,33 @@ is_valid_REDCap_token <- function(token, silent = TRUE, is_a_test = FALSE) {
     )
     end_text <- "not a valid test token."
     if (!token %in% allowed) {
-      bullet_in_console(
-        text = paste0(start_text, token_text, end_text),
-        bullet_type = "x", silent = silent
-      )
+      cli_alert_danger(paste0(start_text, token_text, end_text))
       return(FALSE)
     }
   }
   if (is.null(token)) {
     token_text <- "is `NULL`,"
-    bullet_in_console(
-      text = paste0(start_text, token_text, end_text),
-      bullet_type = "x", silent = silent
-    )
+    cli_alert_danger(paste0(start_text, token_text, end_text))
     return(FALSE)
   }
   if (is.na(token)) {
     token_text <- "is `NA`,"
-    bullet_in_console(
-      text = paste0(start_text, token_text, end_text),
-      bullet_type = "x", silent = silent
-    )
+    cli_alert_danger(paste0(start_text, token_text, end_text))
     return(FALSE)
   }
   if (nchar(token) == 0L) {
     token_text <- "`` (empty),"
-    bullet_in_console(
-      text = paste0(start_text, token_text, end_text),
-      bullet_type = "x", silent = silent
-    )
+    cli_alert_danger(paste0(start_text, token_text, end_text))
     return(FALSE)
   }
   if (token != trimmed_token) {
     token_text <- "contains whitespace (extra lines) and is therefore"
-    bullet_in_console(
-      text = paste0(start_text, token_text, end_text),
-      bullet_type = "x", silent = silent
-    )
+    cli_alert_danger(paste0(start_text, token_text, end_text))
     return(FALSE)
   }
   if (!is_a_test) {
     if (!is_hexadecimal(token, length = 32)) {
-      bullet_in_console(
-        text = paste0(start_text, token_text, end_text),
-        bullet_type = "x", silent = silent
-      )
+      cli_alert_danger(paste0(start_text, token_text, end_text))
       return(FALSE)
     }
   }

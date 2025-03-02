@@ -64,7 +64,11 @@ drop_REDCap_to_directory <- function(
     redcap_dir <- file.path(root_dir, "REDCap", project$short_name)
   } else {
     redcap_dir <- dir_other
-    bullet_in_console("Be careful setting your own directories", file = redcap_dir, bullet_type = "!")
+    cli_alert_wrap(
+      "Be careful setting your own directories",
+      file = redcap_dir,
+      bullet_type = "!"
+    )
   }
   redcap_metadata_dir <- file.path(redcap_dir, "metadata")
   redcap_other_dir <- file.path(redcap_dir, "other")
@@ -83,7 +87,8 @@ drop_REDCap_to_directory <- function(
   redcap_other_dir %>% dir.create(showWarnings = FALSE)
   if (due_for_save_metadata) {
     if (include_metadata) {
-      project$internals$last_metadata_dir_save <- project$internals$last_metadata_update
+      project$internals$last_metadata_dir_save <-
+        project$internals$last_metadata_update
       names_generic <- c(
         "forms",
         "fields",
@@ -345,7 +350,10 @@ read_xl_to_project_for_upload <- function(project, file_path, drop_sheets = defa
     openxlsx::loadWorkbook() %>%
     wb_to_list()
   if (is_something(drop_sheets)) {
-    message("dropping sheets from `drop_sheets` (Default is names from project$summary)... ", paste0(drop_sheets, collapse = ", "))
+    message(
+      "dropping sheets from `drop_sheets` (Default is names from project$summary)... ",
+      paste0(drop_sheets, collapse = ", ")
+    )
     for (drop_sheet in drop_sheets) {
       form_list[[drop_sheet]] <- NULL
     }

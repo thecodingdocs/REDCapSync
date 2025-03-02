@@ -27,13 +27,3 @@ generate_hex <- function(length = 32) {
     paste0(sample(c(0:9, letters[1:6]), length, replace = TRUE), collapse = "")
   )
 }
-#' @noRd
-is_exported <- function(func_name) {
-  # # Check if the package namespace is loaded
-  #
-  # # Get the namespace environment for the package
-  # ns_env <- asNamespace("REDCapSync")
-  # "setup_project" %in% getNamespaceExports(ns_env)
-  # RosyDev::get_external_functions()
-  # getNamespaceImports()
-}

@@ -1,9 +1,9 @@
-bullet_in_console <- function(text = "",
-                              url = NULL,
-                              bullet_type = "i",
-                              collapse = TRUE,
-                              file = NULL,
-                              silent = FALSE) {
+cli_alert_wrap <- function(text = "",
+                           url = NULL,
+                           bullet_type = "i",
+                           collapse = TRUE,
+                           file = NULL,
+                           silent = FALSE) {
   if (silent) {
     return(invisible())
   }
@@ -71,7 +71,7 @@ process_df_list <- function(list, drop_empty = TRUE, silent = FALSE) {
       drops <- which(!is_a_df_with_rows)
       if (length(drops) > 0) {
         if (!silent) {
-          bullet_in_console(
+          cli_alert_wrap(
             "Dropping non-data.frames and empties... ",
             paste0(names(drops), collapse = ", ")
           )
@@ -150,7 +150,8 @@ find_form_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
   }
   new_keys <- integer(0)
   if (any(!new$key %in% old$key)) {
-    # warning("You have at least one new key compared to old form therefore all columns will be included by default",immediate. = TRUE)
+    # "You have at least one new key compared to old form therefore all
+    # columns will be included by default"
     new_keys <- which(!new$key %in% old$key)
   }
   indices <- data.frame(
@@ -224,7 +225,13 @@ find_form_diff2 <- function(new,
   if (any(endsWith(unique(colnames(old), colnames(new)), appended_old_col_suffix))) {
     stop("colnames cant end with '", appended_old_col_suffix, "'")
   }
-  merged_df <- merge(new, old, by = ref_cols, suffixes = c("", appended_old_col_suffix), all.x = TRUE)
+  merged_df <- merge(
+    new,
+    old,
+    by = ref_cols,
+    suffixes = c("", appended_old_col_suffix),
+    all.x = TRUE
+  )
   placeholder <- "NA_placeholder"
   rows_to_keep <- NULL
   cols_to_view <- cols_to_keep <- which(colnames(merged_df) %in% ref_cols)
@@ -259,7 +266,9 @@ find_form_diff2 <- function(new,
         if (length_of_rows_to_keep == 0) {
           done <- TRUE
         } else {
-          indices <- 1:ifelse(length_of_rows_to_keep < n_row_view, length_of_rows_to_keep, n_row_view)
+          indices <- 1:ifelse(length_of_rows_to_keep < n_row_view,
+                              length_of_rows_to_keep,
+                              n_row_view)
           rows_to_keep3 <- rows_to_keep2[indices]
           print.data.frame(merged_df[rows_to_keep3, unique(cols_to_view)])
           choice <- utils::menu(
@@ -283,7 +292,11 @@ find_form_diff2 <- function(new,
     return(NULL)
   }
 }
-find_df_list_diff <- function(new_list, old_list, ref_col_list, view_old = TRUE, n_row_view = 20) {
+find_df_list_diff <- function(new_list,
+                              old_list,
+                              ref_col_list,
+                              view_old = TRUE,
+                              n_row_view = 20) {
   if (!is_something(new_list)) {
     message("new_list is empty")
     return(list())
@@ -360,9 +373,10 @@ csv_to_list <- function(paths) {
     tools::file_path_sans_ext() %>%
     clean_env_names()
   for (i in seq_along(paths)) {
-    form_list[[i]] <- utils::read.csv(paths[i],
-                                      stringsAsFactors = FALSE,
-                                      na.strings = c("", "NA")
+    form_list[[i]] <- utils::read.csv(
+      paths[i],
+      stringsAsFactors = FALSE,
+      na.strings = c("", "NA")
     )
   }
   names(form_list) <- clean_names
@@ -398,8 +412,7 @@ is_named_list <- function(x, silent = TRUE, recursive = FALSE) {
   named_all
 }
 wb_to_list <- function(wb) {
-  # wb <- openxlsx::loadWorkbook(file = path)
-  # test for if user does not have excel
+  # consider test for if user does not have excel
   sheets <- openxlsx::sheets(wb)
   clean_sheets <- clean_env_names(sheets)
   out <- list()
@@ -439,11 +452,11 @@ form_to_wb <- function(
 ) {
   if (nchar(form_name) > 31) stop(form_name, " is longer than 31 char")
   form[] <- lapply(form, function(col) {
+    out <- col
     if (is.character(col)) {
-      return(stringr::str_trunc(col, str_trunc_length, ellipsis = ""))
-    } else {
-      return(col)
+      out <- stringr::str_trunc(col, str_trunc_length, ellipsis = "")
     }
+    out
   })
   hyperlink_col <- NULL
   if (freeze_keys) {
@@ -550,17 +563,20 @@ form_to_wb <- function(
         freeze_key_cols <- which(colnames(form) %in% key_cols)
         if (length(freeze_key_cols) > 0) {
           if (is_consecutive_srt_1(freeze_key_cols)) {
-            firstActiveCol <- firstActiveCol + freeze_key_cols[length(freeze_key_cols)]
+            firstActiveCol <- firstActiveCol +
+              freeze_key_cols[length(freeze_key_cols)]
           } else {
-            warning("key_cols must be consecutive and start from the left most column.",
-                    immediate. = TRUE
+            warning(
+              "key_cols must be consecutive and start from left most column.",
+              immediate. = TRUE
             )
           }
         }
-        openxlsx::freezePane(wb,
-                             form_name,
-                             firstActiveRow = firstActiveRow,
-                             firstActiveCol = firstActiveCol
+        openxlsx::freezePane(
+          wb,
+          form_name,
+          firstActiveRow = firstActiveRow,
+          firstActiveCol = firstActiveCol
         )
       }
     }
@@ -595,10 +611,11 @@ list_to_wb <- function(
       }
     }
   }
-  list_names_rename <- stringr::str_trunc(list_names,
-                                          width = 31,
-                                          side = "right",
-                                          ellipsis = ""
+  list_names_rename <- stringr::str_trunc(
+    list_names,
+    width = 31,
+    side = "right",
+    ellipsis = ""
   )
   bad_names <- duplicated_which(list_names_rename)
   if (length(bad_names) > 0) {
@@ -773,7 +790,7 @@ save_wb <- function(wb, dir, file_name, overwrite = TRUE) {
     file = path,
     overwrite = overwrite
   )
-  bullet_in_console(paste0("Saved '", basename(path), "'!"), file = path)
+  cli_alert_wrap(paste0("Saved '", basename(path), "'!"), file = path)
 }
 save_csv <- function(form, dir, file_name, overwrite = TRUE) {
   if (!dir.exists(dir)) stop("dir doesn't exist")
@@ -782,7 +799,7 @@ save_csv <- function(form, dir, file_name, overwrite = TRUE) {
   if (!overwrite) {
     if (file.exists(path)) {
       write_it <- FALSE
-      bullet_in_console(paste0("Already a file!"), file = path)
+      cli_alert_wrap(paste0("Already a file!"), file = path)
     }
   }
   if (write_it) {
@@ -790,7 +807,7 @@ save_csv <- function(form, dir, file_name, overwrite = TRUE) {
       x = form,
       file = path
     )
-    bullet_in_console(paste0("Saved '", basename(path), "'!"), file = path)
+    cli_alert_wrap(paste0("Saved '", basename(path), "'!"), file = path)
   }
 }
 default_header_style <-

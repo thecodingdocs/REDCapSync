@@ -34,7 +34,7 @@ clean_project <- function(project, drop_blanks = FALSE, other_drops = NULL) { # 
     return(invisible(project))
   }
   if (project$internals$is_clean) {
-    bullet_in_console("Already Clean", bullet_type = "v")
+    cli_alert_wrap("Already Clean", bullet_type = "v")
     return(invisible(project))
   }
   project$data <- clean_form_list(
@@ -134,7 +134,7 @@ annotate_fields <- function(project, summarize_data = TRUE, drop_missing = TRUE)
         }) %>%
         dplyr::bind_rows()
     }
-    # bullet_in_console("Annotated `project$metadata$fields`",bullet_type = "v")
+    # cli_alert_wrap("Annotated `project$metadata$fields`",bullet_type = "v")
   }
   fields
 }
@@ -216,7 +216,7 @@ annotate_choices <- function(project, summarize_data = TRUE, drop_missing = TRUE
       round(1) %>%
       paste0("%")
     # project$summary$choices <- choices
-    # bullet_in_console("Annotated `project$summary$choices`",bullet_type = "v")
+    # cli_alert_wrap("Annotated `project$summary$choices`",bullet_type = "v")
   }
   choices
 }
@@ -459,7 +459,7 @@ add_project_summary <- function(
   subset_list_old <- project$summary$subsets[[subset_name]]
   if(!is.null(subset_list_old) && ! reset) {
     important_vars <- names(subset_list_new)
-    not_important <- c("subset_records","last_save_time")
+    not_important <- c("subset_records", "last_save_time")
     important_vars <- important_vars[which(!important_vars %in% not_important)]
     are_identical <- identical(
       subset_list_old[important_vars],
@@ -474,10 +474,7 @@ add_project_summary <- function(
   invisible(project)
 }
 #' @noRd
-save_subset <- function(
-    project,
-    subset_name
-) {
+save_subset <- function(project, subset_name) {
   id_col <- project$redcap$id_col
   subset_list <- project$summary$subsets[[subset_name]]
   to_save_list <- project %>%
@@ -529,7 +526,7 @@ save_subset <- function(
     sort() %>%
     unique()
   record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  subset_records <- project$summary$all_records[record_rows,]
+  subset_records <- project$summary$all_records[record_rows, ]
   project$summary$subsets[[subset_name]]$subset_records <- subset_records
   project$summary$subsets[[subset_name]]$last_save_time <- now_time()
   invisible(project)
@@ -634,7 +631,12 @@ generate_project_summary_test <- function(
   if (is.null(form_names)) form_names <- project$metadata$forms$form_name
   field_names_minus <-field_names[which(!field_names%in%project$redcap$raw_structure_cols)]
   if(length(field_names_minus)>0){
-    form_names_minus <- project %>% field_names_to_form_names(field_names_minus,transform = transform,strict = TRUE)
+    form_names_minus <- project %>%
+      field_names_to_form_names(
+        field_names_minus,
+        transform = transform,
+        strict = TRUE
+      )
     form_names <- form_names %>% vec1_in_vec2(form_names_minus)
   }
   has_no_filter <- is.null(filter_list) &&
@@ -973,7 +975,7 @@ get_subset_records <- function(project, subset_name) {
     sort() %>%
     unique()
   record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  subset_records <- project$summary$all_records[record_rows,]
+  subset_records <- project$summary$all_records[record_rows, ]
   subset_records
 }
 #' @noRd
@@ -1002,7 +1004,7 @@ check_subsets <- function(project, subset_names) {
   }
   needs_refresh <- NULL
   if (is.null(subset_names)){
-    bullet_in_console("No subsets. Use `add_project_summary()`!")
+    cli_alert_wrap("No subsets. Use `add_project_summary()`!")
   }
   for (subset_name in subset_names) {
     if (subset_records_due(project = project, subset_name = subset_name)) {
@@ -1010,7 +1012,7 @@ check_subsets <- function(project, subset_names) {
     }
   }
   if (is.null(needs_refresh)) {
-    bullet_in_console("Refresh of subsets not needed!", bullet_type = "v")
+    cli_alert_wrap("Refresh of subsets not needed!", bullet_type = "v")
   }
   needs_refresh
 }

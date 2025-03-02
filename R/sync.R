@@ -103,7 +103,7 @@ sync <- function(
       projects$status[project_row] <- project_status
       the_link <- projects$redcap_home[project_row]
       if (is_something(the_link)) {
-        bullet_in_console(paste0(project_name, ": "), url = the_link)
+        cli_alert_wrap(paste0(project_name, ": "), url = the_link)
       }
       cli::cli_progress_update()
     }

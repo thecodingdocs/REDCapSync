@@ -9,7 +9,9 @@ assert_dir <- function(dir_path, silent = TRUE) {
     if (!file.exists(file.path(dir_path, folder))) stop("'", dir_path, "/", folder, "' missing! ", stop_mes)
   }
   # if ( ! file.exists(file.path(dir_path,"ref_tables"))) stop("'",dir_path,"/ref_tables' missing! ",stop_mes)
-  if (!silent) bullet_in_console("Directory is Valid!", url = dir_path, bullet_type = "v")
+  if (!silent){
+    cli_alert_wrap("Directory is Valid!", url = dir_path, bullet_type = "v")
+  }
   dir_path
 }
 #' @noRd
@@ -24,7 +26,7 @@ get_project_token <- function(project, silent = TRUE) {
                                 "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
   )
   if (!silent) {
-    bullet_in_console(
+    cli_alert_wrap(
       paste0(
         "You can set REDCap tokens each session with `set_project_token(project)` or `Sys.setenv(",
         token_name,
@@ -42,7 +44,7 @@ get_project_token <- function(project, silent = TRUE) {
       )
     )
     if (is_something(project$links$redcap_API)) {
-      bullet_in_console(
+      cli_alert_wrap(
         paste0(
           "You can request/regenerate/delete with `link_API_token(project)` or go here: "
         ),
@@ -50,7 +52,7 @@ get_project_token <- function(project, silent = TRUE) {
       )
     }
     if (valid) {
-      bullet_in_console(
+      cli_alert_wrap(
         paste0(
           "Valid token for ",
           project$short_name,
@@ -250,10 +252,19 @@ assert_setup_project <- function(
     choices = c("always", "hourly", "daily", "weekly", "monthly", "never"),
     add = collected
   )
-  assert_integerish(project$internals$days_of_log, len = 1, lower = 1, add = collected)
+  assert_integerish(
+    project$internals$days_of_log,
+    len = 1,
+    lower = 1,
+    add = collected
+  )
   assert_logical(project$internals$get_files, len = 1, add = collected)
-  assert_logical(project$internals$get_file_repository, len = 1, add = collected)
-  assert_logical(project$internals$original_file_names, len = 1, add = collected)
+  assert_logical(project$internals$get_file_repository,
+                 len = 1,
+                 add = collected)
+  assert_logical(project$internals$original_file_names,
+                 len = 1,
+                 add = collected)
   assert_logical(project$internals$entire_log, len = 1, add = collected)
   assert_logical(project$internals$metadata_only, len = 1, add = collected)
   assert_env_name(
@@ -263,8 +274,18 @@ assert_setup_project <- function(
     add = collected
   )
   assert_logical(project$internals$use_csv, len = 1, add = collected)
-  assert_integerish(project$internals$batch_size_download, len = 1, lower = 1, add = collected)
-  assert_integerish(project$internals$batch_size_upload, len = 1, lower = 1, add = collected)
+  assert_integerish(
+    project$internals$batch_size_download,
+    len = 1,
+    lower = 1,
+    add = collected
+  )
+  assert_integerish(
+    project$internals$batch_size_upload,
+    len = 1,
+    lower = 1,
+    add = collected
+  )
   assert_choice(
     project$internals$get_type,
     choices = c("identified", "deidentified", "strict-deidentified")

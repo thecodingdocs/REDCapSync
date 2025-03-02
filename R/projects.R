@@ -16,7 +16,9 @@ get_projects <- function() {
     projects <- cache_path() %>%
       file.path("projects.rds") %>%
       readRDS()
-    if (!does_exist) message("You have no projects cached. Try `setup_project()`")
+    if (!does_exist) {
+      message("You have no projects cached. Try `setup_project()`")
+    }
     is_ok <- all(colnames(internal_blank_project_details() %in% colnames(projects)))
     if (!is_ok) cache_clear()
   }
@@ -67,7 +69,8 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
     file_name = file_name,
     file_ext = file_ext
   )
-  df <- df[which((df$file_ext == "RData") & (endsWith(df$file_name, "_REDCapSync"))), ]
+  df <- df[which((df$file_ext == "RData") &
+                   (endsWith(df$file_name, "_REDCapSync"))), ]
   if (nrow(df) == 0) {
     return(character(0))
   }
@@ -156,9 +159,8 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
   projects <- projects[order(projects$short_name), ]
   saveRDS(projects, file = cache_path() %>% file.path("projects.rds"))
   if (!silent) {
-    bullet_in_console(
-      bullet_type = "v",
-      text = paste0(
+    cli_alert_success(
+      paste0(
         pkg_name,
         " saved ",
         nrow(projects),
@@ -166,9 +168,9 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
         paste0(projects$short_name, collapse = ", ")
       ) # "   Token: ",projects$token_name,collapse = "\n"))
     )
-    bullet_in_console(
+    cli_alert_wrap(
       text = paste0(
-        "The cache is stored in directory on your computer. It can be found with `",
+        "Cache is stored in directory on your computer. It can be found with `",
         pkg_name,
         "::cache_path()`, and cleared with `",
         pkg_name,
@@ -269,8 +271,8 @@ add_project_details_to_cache <- function(project_details) {
   if (length(bad_row) > 0) {
     cli::cli_abort(
       paste0(
-        "You are trying to save from a project [{project_details$short_name} PID ",
-        "{projects$project_id[bad_row]}] that you have already setup ",
+        "You are trying to save from a project [{project_details$short_name} ",
+        "PID {projects$project_id[bad_row]}] that you have already setup ",
         "[{projects$short_name[bad_row]} PID {project_details$project_id}] ",
         "You can load the old project or run ",
         "`delete_project_by_name(\"{projects$short_name[bad_row]}\")`"
@@ -305,8 +307,11 @@ add_project_details_to_project <- function(project, project_details) {
   project$internals$get_type <- project_details$get_type # should trigger reset
   project$internals$labelled <- project_details$labelled # should trigger reset
   project$internals$merge_form_name <- project_details$merge_form_name
-  project$internals$batch_size_download <- project_details$batch_size_download %>% as.integer()
-  project$internals$batch_size_upload <- project_details$batch_size_upload %>% as.integer()
+  project$internals$batch_size_download <-
+    project_details$batch_size_download %>%
+    as.integer()
+  project$internals$batch_size_upload <- project_details$batch_size_upload %>%
+    as.integer()
   # redcap --------
   # project$redcap$version <- project_details$version # check identical unless NA
   # project$redcap$token_name <- project_details$token_name
@@ -374,7 +379,9 @@ save_project_details <- function(project, silent = TRUE) {
           cli::cli_abort()
       }
       if (!check_set_equal(from$dir_path, to$dir_path)) {
-        cli::cli_alert_warning("Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary.")
+        cli::cli_alert_warning(
+          "Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary."
+        )
       }
     }
     saveRDS(

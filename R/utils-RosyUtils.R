@@ -611,27 +611,7 @@ list_to_wb <- function(
       }
     }
   }
-  list_names_rename <- stringr::str_trunc(
-    list_names,
-    width = 31,
-    side = "right",
-    ellipsis = ""
-  )
-  bad_names <- duplicated_which(list_names_rename)
-  if (length(bad_names) > 0) {
-    warning(
-      "Duplicated names when trimmed from right 31 max in Excel: ",
-      list_names[bad_names] %>% paste0(collapse = ", "),
-      immediate. = TRUE
-    )
-    message(
-      "Use CSV or shorten the names and make sure they are unique if they are trimmed to 31 char. For now will make unique by adding number."
-    )
-    list_names_rename <- unique_trimmed_strings(
-      list_names_rename,
-      max_length = 31
-    )
-  }
+  list_names_rename <- rename_list_names_excel(list_names = list_names)
   for (i in seq_along(list_names)) {
     wb <- form_to_wb(
       wb = wb,
@@ -652,6 +632,30 @@ list_to_wb <- function(
     )
   }
   wb
+}
+rename_list_names_excel <- function(list_names){
+  list_names_rename <- stringr::str_trunc(
+    list_names,
+    width = 31,
+    side = "right",
+    ellipsis = ""
+  )
+  bad_names <- duplicated_which(list_names_rename)
+  if (length(bad_names) > 0) {
+    cli_alert_danger(
+      "Duplicated names when trimmed from right 31 max in Excel: ",
+      list_names[bad_names] %>% paste0(collapse = ", "),
+      immediate. = TRUE
+    )
+    cli_alert_info(
+      "Use CSV or shorten the names and make sure they are unique if they are trimmed to 31 char. For now will make unique by adding number."
+    )
+    list_names_rename <- unique_trimmed_strings(
+      list_names_rename,
+      max_length = 31
+    )
+  }
+  list_names_rename
 }
 unique_trimmed_strings <- function(strings, max_length) {
   trim_string <- function(s, max_length) {

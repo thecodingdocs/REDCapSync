@@ -4,7 +4,12 @@
 \alias{deidentify_project}
 \title{Deidentify the REDCap Database}
 \usage{
-deidentify_project(project, identifiers, drop_free_text = FALSE)
+deidentify_project(
+  project,
+  identifiers = NULL,
+  drop_free_text = FALSE,
+  date_handling = "none"
+)
 }
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data
@@ -17,6 +22,10 @@ excluded from the \code{project}. If not provided, fields where
 
 \item{drop_free_text}{Logical. If \code{TRUE}, columns containing free text
 will also be excluded from the \code{project}. Default is \code{FALSE}.}
+
+\item{date_handling}{character string. One of \code{none},\code{lowest-overall-zero},
+\code{lowest-record-zero}, \code{shuffle-record-randomly}, or zero date date in form of
+\code{2012-12-05}}
 }
 \value{
 A \code{project} object with deidentified forms.

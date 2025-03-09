@@ -5,6 +5,7 @@
 #' by specifying custom identifiers.
 #'
 #' @inheritParams save_project
+#' @inheritParams add_project_summary
 #' @param identifiers Optional character vector of column names that should be
 #' excluded from the `project`. If not provided, fields where
 #' `project$metadata$fields$identifier == "y"` will be used as the default.
@@ -24,107 +25,171 @@
 #' \code{\link{save_project}} for saving the modified database.
 #'
 #' @export
-deidentify_project <- function(project, identifiers, drop_free_text = FALSE) {
+deidentify_project <- function(
+    project,
+    identifiers = NULL,
+    drop_free_text = FALSE,
+    date_handling = "none"
+) {
   project <- assert_blank_project(project)
-  missing_identifiers <- missing(identifiers)
-  if (!missing_identifiers) {
-    identifiers <- identifiers %>% unique()
-    bad_identifiers <- identifiers[
-      which(
-        !identifiers %in% project$metadata$fields$field_name
-      )
-    ]
-    if (length(bad_identifiers) > 0) {
-      stop(
-        "There is a bad identifier. see `project$metadata$fields$field_name`: ",
-        bad_identifiers %>% paste0(collapse = ", ")
-      )
-    }
-    if (project$redcap$id_col %in% identifiers) {
-      # If you want to pass a new set of random IDs to make this data use
-      # `scramble_ID_project(project)`."
-      stop(
-        "Your REDCap ID, ",
-        project$redcap$id_col,
-        ", should not be deidentified."
-      )
-    }
+  if(is_something(project$data)){
+    project <- deidentify_data_list(
+      project,
+      identifiers = identifiers,
+      drop_free_text = drop_free_text,
+      date_handling = date_handling
+    )
+    cli_alert_wrap(
+      paste0("Deidentified ", project$short_name),
+      bullet_type = "v"
+    )
   }
-  if (missing_identifiers) {
-    identifiers <- project$metadata$fields$field_name[
-      which(project$metadata$fields$identifier == "y")
-    ]
-    if (length(identifiers) == 0) {
-      warning(
-        paste0(
-          "You have no identifiers marked in ",
-          "`project$metadata$fields$identifier`. ",
-          "You can set it in REDCap Project Setup and update ",
-          "project OR define your idenitifiers in this functions ",
-          "`identifiers` argument."
-        ),
-        immediate. = TRUE
+  if(is_something(project$transformation$data)){
+    project$transformation <- deidentify_data_list(project$transformation)
+    cli_alert_wrap(
+      paste0("Deidentified Transformation ", project$short_name),
+      bullet_type = "v"
+    )
+  }
+  invisible(project)
+}
+deidentify_data_list <- function(data_list,
+                                 identifiers = NULL,
+                                 drop_free_text = FALSE) {
+  # assert_data_list contains data and metadata with forms and fields
+  data <- data_list$data
+  metadata <- data_list$metadata
+  fields <- metadata$fields
+  initial_identifiers <- fields$field_name[
+    which(fields$identifier == "y")
+  ]
+  if (length(initial_identifiers) == 0) {
+    warning(
+      paste0(
+        "You have no identifiers marked in ",
+        "`project$metadata$fields$identifier`. ",
+        "You can set it in REDCap Project Setup and update ",
+        "project OR define your idenitifiers in this functions ",
+        "`identifiers` argument."
+      ),
+      immediate. = TRUE
+    )
+  }
+  identifiers <- initial_identifiers %>% append(identifiers) %>% unique()
+  bad_identifiers <- identifiers[
+    which(
+      !identifiers %in% fields$field_name
+    )
+  ]
+  if (length(bad_identifiers) > 0) {
+    stop(
+      "There is a bad identifier. see `fields$field_name`: ",
+      bad_identifiers %>% as_comma_string()
+    )
+  }
+  id_cols <- metadata$form_key_cols %>% unlist() %>% unique()
+  if(is_something(id_cols)){
+    if (any(id_cols %in% identifiers)) {
+      stop(
+        "ID cols not allowed... ",
+        id_cols %>% as_comma_string(),
+        " <-- use hashing (in dev)"
       )
     }
   }
   if (drop_free_text) { # placeholder
-    note_rows <- which(project$metadata$fields$field_type == "notes")
+    #drop free text only if there is no validation
+    #make function for that ?external
+    free_text_rows <- which(
+      fields$field_type == "notes" |
+        (fields$field_type == "text" &
+           is.na(fields$text_validation_type_or_show_slider_number)
+        ) &
+        ! fields$field_name %in% id_cols
+    )
     identifiers <- identifiers %>%
-      append(project$metadata$fields$field_name[note_rows]) %>%
+      append(fields$field_name[free_text_rows]) %>%
       unique()
   }
-  if (is_something(project$data)) {
+  if (is_something(data)) {
+    date_vector <- fields$field_name[which(fields$field_type_R == "date")]
+    records <- lapply(data,function(form){
+      form[[id_cols[1]]]
+    }) %>% unlist() %>% unique()
+    date_list <- Map(
+      f = function(x, cols) {
+        date_vector[which(date_vector %in% cols)]
+      },
+      names(data),
+      lapply(data, colnames)
+    )
+    if(date_handling != "none"){
+      min_dates <- get_min_dates(data_list)
+      # if(date_handling == "lowest-record-zero"){
+      #
+      # }
+      min_dates$difference <- (min_dates$date - as.Date(date_handling))
+      for(form_name in names(date_list)){
+        field_record <- data[[form_name]][[id_cols[1]]]
+        difference <- min_dates$difference[match(field_record,min_dates$record_id)]
+        for (field_name in date_list[[form_name]]) {
+          field <- data[[form_name]][[field_name]]
+          data[[form_name]][[field_name]] <- as.Date(field) - difference
+        }
+      }
+      #if you have dates you already mutated no need to drop anymore
+      identifiers <- identifiers[which(!identifiers %in% date_vector)]
+    }
     drop_list <- Map(function(x, cols) {
       identifiers[which(identifiers %in% cols)]
-    }, names(project$data), lapply(project$data, colnames))
+    }, names(data), lapply(data, colnames))
     drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0]
-    if (length(drop_list) == 0) {
-      cli_alert_danger(
-        paste0(
-          "Nothing to deidentify --> ",
-          identifiers %>% paste0(collapse = ", ")
-        )
-      )
-    } else {
-      cli_alert_wrap(
-        paste0("Deidentified ", project$short_name),
-        bullet_type = "v"
-      )
-    }
     for (form_name in names(drop_list)) {
       for (field_name in drop_list[[form_name]]) {
-        project$data[[form_name]][[field_name]] <- NULL
+        data[[form_name]][[field_name]] <- NULL
       }
     }
   }
-  if (is_something(project$transformation$data)) {
-    drop_list <- Map(
-      f = function(x, cols) {
-        identifiers[which(identifiers %in% cols)]
-      },
-      names(project$transformation$data),
-      lapply(project$transformation$data, colnames)
-    )
-    drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0]
-    if (length(drop_list) == 0) {
-      cli_alert_success(
-        paste0(
-          "Nothing to deidentify --> ",
-          identifiers %>% paste0(collapse = ", ")
-        )
-      )
-    } else {
-      cli_alert_success(
-        paste0("Deidentified Transformation ", project$short_name)
-      )
-    }
-    for (form_name in names(drop_list)) {
-      for (field_name in drop_list[[form_name]]) {
-        project$transformation$data[[form_name]][[field_name]] <- NULL
+  data_list$data <- data
+  invisible(data_list)
+}
+get_min_dates <- function(data_list) {
+  # assert_data_list contains data and metadata with forms and fields
+  data <- data_list$data
+  metadata <- data_list$metadata
+  fields <- metadata$fields
+  id_cols <- metadata$form_key_cols %>% unlist() %>% unique()
+  empty <- data.frame(record_id = character(), min_date = as.Date(character()))
+  if (!is_something(data)) {
+    return(empty)
+  }
+  date_vector <- fields$field_name[which(fields$field_type_R == "date")]
+  records <- lapply(data,function(form){
+    form[[id_cols[1]]]
+  }) %>% unlist() %>% unique()
+  all_dates <- list()
+  # Loop through each form in the list
+  for (form in data) {
+    if (id_cols[1] %in% names(form)) {
+      # Find the date fields that exist in this form
+      existing_fields <- intersect(names(form), date_vector)
+      if (length(existing_fields) > 0) {
+        df_subset <- form[, c(id_cols[1], existing_fields), drop = FALSE]
+        df_long <- reshape(df_subset, varying = existing_fields,
+                           v.names = "date", times = existing_fields,
+                           timevar = "field", direction = "long")
+        df_long$date <- as.Date(df_long$date, format = "%Y-%m-%d")
+        all_dates <- c(all_dates, list(df_long))
       }
     }
   }
-  invisible(project)
+  if (length(all_dates) == 0){
+    return(empty)
+  }
+  combined <- do.call(rbind, all_dates)
+  combined <- combined[!is.na(combined$date), ]
+  min_dates <- stats::aggregate(date ~ record_id, data = combined, FUN = min)
+  min_dates
 }
 #' @rdname Links
 #' @title Open Links to REDCap Pages
@@ -604,50 +669,48 @@ internal_log_details_metadata_major <- c(
   "Create project "
 )
 #' @noRd
-all_missing_codes <- function() {
-  data.frame(
-    code = c(
-      "NI",
-      "INV",
-      "UNK",
-      "NASK",
-      "ASKU",
-      "NAV",
-      "MSK",
-      "NA",
-      "NAVU",
-      "NP",
-      "QS",
-      "QI",
-      "TRC",
-      "UNC",
-      "DER",
-      "PINF",
-      "NINF",
-      "OTH"
-    ),
-    name = c(
-      "No information",
-      "Invalid",
-      "Unknown",
-      "Not asked",
-      "Asked but unknown",
-      "Temporarily unavailable",
-      "Masked",
-      "Not applicable",
-      "Not available",
-      "Not present",
-      "Sufficient quantity",
-      "Insufficient quantity",
-      "Trace",
-      "Unencoded",
-      "Derived",
-      "Positive infinity",
-      "Negative infinity",
-      "Other"
-    )
+internal_all_missing_codes <- data.frame(
+  code = c(
+    "NI",
+    "INV",
+    "UNK",
+    "NASK",
+    "ASKU",
+    "NAV",
+    "MSK",
+    "NA",
+    "NAVU",
+    "NP",
+    "QS",
+    "QI",
+    "TRC",
+    "UNC",
+    "DER",
+    "PINF",
+    "NINF",
+    "OTH"
+  ),
+  name = c(
+    "No information",
+    "Invalid",
+    "Unknown",
+    "Not asked",
+    "Asked but unknown",
+    "Temporarily unavailable",
+    "Masked",
+    "Not applicable",
+    "Not available",
+    "Not present",
+    "Sufficient quantity",
+    "Insufficient quantity",
+    "Trace",
+    "Unencoded",
+    "Derived",
+    "Positive infinity",
+    "Negative infinity",
+    "Other"
   )
-}
+)
 #' @noRd
 missing_codes2 <- function(project) {
   included <- "missing_data_codes" %in% colnames(project$redcap$project_info)

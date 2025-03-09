@@ -397,9 +397,12 @@ add_default_project_summary <- function(project) {
   project <- add_project_summary(
     project = project,
     subset_name = subset_name,
+    transform = TRUE,
     filter_list = NULL,
     deidentify = TRUE,
     drop_free_text = FALSE,
+    date_handling = "none",
+    upload_compatible = TRUE,
     clean = TRUE,
     drop_blanks = FALSE,
     include_metadata = TRUE,

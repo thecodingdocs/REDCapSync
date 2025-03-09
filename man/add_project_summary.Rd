@@ -17,6 +17,8 @@ add_project_summary(
   no_duplicate_cols = FALSE,
   deidentify = TRUE,
   drop_free_text = FALSE,
+  date_handling = "none",
+  upload_compatible = TRUE,
   clean = TRUE,
   drop_blanks = TRUE,
   include_metadata = TRUE,
@@ -71,6 +73,15 @@ Default is \code{TRUE}.}
 
 \item{drop_free_text}{Logical. If \code{TRUE}, columns containing free text
 will also be excluded from the \code{project}. Default is \code{FALSE}.}
+
+\item{date_handling}{character string. One of \code{none},\code{lowest-overall-zero},
+\code{lowest-record-zero}, \code{shuffle-record-randomly}, or zero date date in form of
+\code{2012-12-05}}
+
+\item{upload_compatible}{Logical. If \code{TRUE}, the data will be compatible with
+REDCap API upload. The main conflict is numeric or date variables in a
+project with missing codes while \code{clean} = \code{TRUE}. R converts these to \code{NA}.
+Default is \code{TRUE}.}
 
 \item{clean}{Logical. If \code{TRUE}, the data will be cleaned before summarizing.
 Default is \code{TRUE}.}

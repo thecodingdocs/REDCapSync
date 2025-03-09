@@ -333,15 +333,30 @@ read_from_REDCap_upload <- function(project,
 }
 #' @noRd
 default_sheet_drops <- function(project) {
+  #outdated! generate from subset
   project$summary %>%
     process_df_list() %>%
     names()
 }
 #' @noRd
-read_xl_to_project_for_upload <- function(project, file_path, drop_sheets = default_sheet_drops(project)) {
+read_xl_to_project_for_upload <- function(project, subset_name, file_path, drop_sheets = default_sheet_drops(project)) {
   # add data_updates check
-  if (!endsWith(file_path, ".xlsx")) stop("File type must be '.xlsx' --> ", file_path)
-  if (!file.exists(file_path)) stop("Path does not exist --> ", file_path)
+  if (!endsWith(file_path, ".xlsx")) {
+    stop("File type must be '.xlsx' --> ", file_path)
+  }
+  if (!file.exists(file_path)) {
+    stop("Path does not exist --> ", file_path)
+  }
+  if(!missing(subset_name)){
+    if(!missing(file_path)){
+      cli_alert_warning("`file_path` only needed if subset_name not provided.")
+      cli_alert_info("Using `file_path` from `subset_name`...")
+    }
+    if(!subset_name %in% names(project$summary$subsets)){
+      stop("`subset_name` is not one of `project$summary$subsets`")
+    }
+    file_path <- project$summary$subsets[[subset_name]]$file_path
+  }
   form_list <- file_path %>%
     openxlsx::loadWorkbook() %>%
     wb_to_list()

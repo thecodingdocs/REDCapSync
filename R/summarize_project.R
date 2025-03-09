@@ -25,8 +25,9 @@
 #' The function will not proceed with cleaning if `project$internals$is_clean`
 #' is already TRUE, signaling that the project has already been cleaned.
 #' @export
-clean_project <- function(project, drop_blanks = FALSE, other_drops = NULL) { # problematic because setting numeric would delete missing codes
+clean_project <- function(project, drop_blanks = FALSE, other_drops = NULL) {
   # project <-  project %>% annotate_fields(skim = FALSE)
+  # problematic because setting numeric would delete missing codes
   if (!is_something(project)) {
     return(invisible(project))
   }
@@ -34,12 +35,15 @@ clean_project <- function(project, drop_blanks = FALSE, other_drops = NULL) { # 
     return(invisible(project))
   }
   if (project$internals$is_clean) {
-    cli_alert_wrap("Already Clean", bullet_type = "v")
+    cli_alert_success("Already Clean")
     return(invisible(project))
+  } # make sure reversible
+  if(!project$internals$is_transformed){
+    #transform first
+    project <- transform_project(project)
   }
-  project$data <- clean_form_list(
-    form_list = project$data,
-    fields = project$metadata$fields,
+  project$data <- clean_data_list(
+    data_list = project$transformation,
     drop_blanks = drop_blanks,
     other_drops = other_drops
   )
@@ -225,17 +229,19 @@ fields_with_no_data <- function(project) {
   project$metadata$fields$field_name[which(is.na(project$metadata$fields$complete_rate) & !project$metadata$fields$field_type %in% c("checkbox", "descriptive"))]
 }
 #' @noRd
-clean_form_list <- function(form_list, fields, drop_blanks = TRUE, other_drops = NULL) {
-  # add check for form_list#
-  for (form_name in names(form_list)) {
-    form_list[[form_name]] <- clean_form(
-      form = form_list[[form_name]],
-      fields = fields,
+clean_data_list <- function(data_list, drop_blanks = TRUE, other_drops = NULL) {
+  #assert data list
+  data <- data_list$data
+  metadata <- data_list$metadata
+  for (form_name in names(data)) {
+    data[[form_name]] <- clean_form(
+      form = data[[form_name]],
+      fields = metadata$fields,
       drop_blanks = drop_blanks,
       other_drops = other_drops
     )
   }
-  form_list
+  data
 }
 #' @noRd
 clean_form <- function(form, fields, drop_blanks = TRUE, other_drops = NULL) {
@@ -356,6 +362,13 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' the subset. Default is `NULL`, which includes all fields.
 #' @param deidentify Logical. Whether to deidentify the data in the subset.
 #' Default is `TRUE`.
+#' @param date_handling character string. One of `none`,`lowest-overall-zero`,
+#' `lowest-record-zero`, `shuffle-record-randomly`, or zero date date in form of
+#' `2012-12-05`
+#' @param upload_compatible Logical. If `TRUE`, the data will be compatible with
+#' REDCap API upload. The main conflict is numeric or date variables in a
+#' project with missing codes while `clean` = `TRUE`. R converts these to `NA`.
+#' Default is `TRUE`.
 #' @param clean Logical. If `TRUE`, the data will be cleaned before summarizing.
 #' Default is `TRUE`.
 #' @param drop_blanks Logical. If `TRUE`, records with blank fields will be
@@ -406,6 +419,8 @@ add_project_summary <- function(
     no_duplicate_cols = FALSE,
     deidentify = TRUE,
     drop_free_text = FALSE,
+    date_handling = "none",
+    upload_compatible = TRUE,
     clean = TRUE,
     drop_blanks = TRUE,
     include_metadata = TRUE,
@@ -420,6 +435,7 @@ add_project_summary <- function(
     file_name = paste0(project$short_name, "_", subset_name),
     reset = FALSE) {
   lifecycle::signal_stage("experimental", "add_project_summary()")
+  # sync_frequency ... project$internals$sync_frequency
   if (missing(use_csv)) use_csv <- project$internals$use_csv
   if (is.null(filter_list)) {
     if (!is.null(filter_choices) && !is.null(filter_field)) {
@@ -440,6 +456,8 @@ add_project_summary <- function(
     no_duplicate_cols = no_duplicate_cols,
     deidentify = deidentify,
     drop_free_text = drop_free_text,
+    date_handling = date_handling,
+    upload_compatible = upload_compatible,
     clean = clean,
     drop_blanks = drop_blanks,
     include_metadata = include_metadata,
@@ -454,12 +472,17 @@ add_project_summary <- function(
     file_name = file_name,
     file_path = file.path(dir_other, paste0(file_name, file_ext)),
     subset_records = NULL,
-    last_save_time = NULL
+    last_save_time = NULL,
+    final_form_tab_names = NULL
   )
   subset_list_old <- project$summary$subsets[[subset_name]]
   if(!is.null(subset_list_old) && ! reset) {
     important_vars <- names(subset_list_new)
-    not_important <- c("subset_records", "last_save_time")
+    not_important <- c(
+      "subset_records",
+      "last_save_time",
+      "final_form_tab_names"
+    )
     important_vars <- important_vars[which(!important_vars %in% not_important)]
     are_identical <- identical(
       subset_list_old[important_vars],
@@ -541,6 +564,10 @@ save_summary <- function(project, subset_name) {
   subset_records <- project$summary$all_records[record_rows, ]
   project$summary$subsets[[subset_name]]$subset_records <- subset_records
   project$summary$subsets[[subset_name]]$last_save_time <- now_time()
+  project$summary$subsets[[subset_name]]$final_form_tab_names <-
+    rename_list_names_excel(list_names = to_save_list)
+  names(project$summary$subsets[[subset_name]]$final_form_tab_names) <-
+    names(to_save_list)
   invisible(project)
 }
 #' @title Generate a Summary from a Subset Name
@@ -578,6 +605,8 @@ generate_project_summary <- function(
     no_duplicate_cols = subset_list$no_duplicate_cols,
     deidentify = subset_list$deidentify,
     drop_free_text = subset_list$drop_free_text,
+    date_handling = subset_list$date_handling,
+    upload_compatible = subset_list$upload_compatible,
     clean = subset_list$clean,
     drop_blanks = subset_list$drop_blanks,
     include_metadata = subset_list$include_metadata,
@@ -622,6 +651,8 @@ generate_project_summary_test <- function(
     no_duplicate_cols = FALSE,
     deidentify = TRUE,
     drop_free_text = FALSE,
+    date_handling = "none",
+    upload_compatible = TRUE,
     clean = TRUE,
     drop_blanks = TRUE,
     include_metadata = TRUE,
@@ -735,7 +766,11 @@ generate_project_summary_test <- function(
     project$data <- out_list
   }
   if (deidentify) {
-    project <- deidentify_project(project, drop_free_text = drop_free_text)
+    project <- deidentify_project(
+      project,
+      drop_free_text = drop_free_text,
+      date_handling = date_handling
+    )
   }
   if (clean) {
     project <- project %>% clean_project(drop_blanks = drop_blanks) # problematic because setting numeric would delete missing codes
@@ -791,15 +826,7 @@ generate_project_summary_test <- function(
 summarize_project <- function(
     project,
     reset = FALSE) {
-  project <- project %>% assert_blank_project()
-  do_it <- is.null(project$internals$last_summary)
-  last_data_update <- project$internals$last_data_update
-  if (!do_it) {
-    do_it <- project$internals$last_summary < last_data_update
-  }
-  if(do_it){
-    project <- save_summary(project)
-  }
+  assert_setup_project(project)
   subset_names <- check_subsets(project)
   if (reset) {
     subset_names <- project$summary$subsets %>% names()
@@ -809,6 +836,7 @@ summarize_project <- function(
       project <- project %>% save_summary(subset_name)
     }
   }
+  project$internals$last_summary <- now_time()
   invisible(project)
 }
 #' @title Run Quality Checks

@@ -47,5 +47,5 @@ applying default transformations to the database forms. The transformations
 are predefined within the function and ensure consistency across datasets.
 }
 \seealso{
-\code{\link{save_project}} for saving the database or subsets.
+\code{\link{save_project}} for saving the database or summaries.
 }

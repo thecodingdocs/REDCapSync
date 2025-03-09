@@ -522,9 +522,7 @@ internal_blank_project_new <- list(
     original_fields = NULL,
     data_updates = NULL
   ),
-  summary = list(
-    subsets = NULL
-  ),
+  summary = list(),
   settings = list(
     sync_frequency = NULL,
     get_files = NULL,
@@ -614,9 +612,7 @@ internal_blank_project <- list(
     field_functions = NULL,
     data_updates = NULL
   ),
-  summary = list(
-    subsets = NULL
-  ),
+  summary = list(),
   internals = list(
     last_test_connection_attempt = NULL,
     last_test_connection_outcome = NULL,

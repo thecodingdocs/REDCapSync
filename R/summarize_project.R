@@ -331,36 +331,36 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' @title Add a Subset to a REDCap Database
 #' @description
 #' `r lifecycle::badge("experimental")`
-#' Creates a subset of the main REDCap database (`project`) based on specific
-#' filter criteria and saves it to a specified directory. The subset can be
+#' Creates a summary of the main REDCap database (`project`) based on specific
+#' filter criteria and saves it to a specified directory. The summary can be
 #' further customized with additional forms, fields, and deidentification
 #' options.
 #'
 #' @inheritParams save_project
 #' @inheritParams deidentify_project
 #' @inheritParams setup_project
-#' @param subset_name Character. The name of the subset to create.
-#' @param transform Logical. Whether to transform the data in the subset.
+#' @param summary_name Character. The name of the summary to create.
+#' @param transform Logical. Whether to transform the data in the summary.
 #' Default
 #' is `TRUE`.
 #' @param filter_field Character. The name of the field in the database to
 #' filter on.
 #' @param filter_choices Vector. The values of `filter_field` used to define the
-#' subset.
+#' summary.
 #' @param filter_list Vector. The values of `filter_field` used to define the
-#' subset.
+#' summary.
 #' @param filter_strict Logical. If `TRUE`, all forms will be filtered by
 #' criteria. If `FALSE`, will convert original filter to id column and filter
 #' all other forms by that record. Default is `TRUE`.
-#' @param dir_other Character. The directory where the subset file will be
+#' @param dir_other Character. The directory where the summary file will be
 #' saved. Default is the `output` folder within the database directory.
-#' @param file_name Character. The base name of the file where the subset will
-#' be saved. Default is `<project$short_name>_<subset_name>`.
-#' @param form_names Character vector. Names of forms to include in the subset.
+#' @param file_name Character. The base name of the file where the summary will
+#' be saved. Default is `<project$short_name>_<summary_name>`.
+#' @param form_names Character vector. Names of forms to include in the summary.
 #' Default is `NULL`, which includes all forms.
 #' @param field_names Character vector. Names of specific fields to include in
-#' the subset. Default is `NULL`, which includes all fields.
-#' @param deidentify Logical. Whether to deidentify the data in the subset.
+#' the summary. Default is `NULL`, which includes all fields.
+#' @param deidentify Logical. Whether to deidentify the data in the summary.
 #' Default is `TRUE`.
 #' @param date_handling character string. One of `none`,`lowest-overall-zero`,
 #' `lowest-record-zero`, `shuffle-record-randomly`, or zero date date in form of
@@ -386,29 +386,29 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the
 #' function will avoid including duplicate columns in the output. Defaults to
 #' `FALSE`.
-#' @param reset Logical. If `TRUE`, overwrite existing subset files with the
+#' @param reset Logical. If `TRUE`, overwrite existing summary files with the
 #' same name. Default is `FALSE`.
 #' @param with_links Optional logical (TRUE/FALSE) for including links in Excel
 #' sheets. Default is `FALSE`.
 #' @param separate Optional logical (TRUE/FALSE) separating each form into
 #' separate files as opposed to multi-tab Excel. Default is `FALSE`.
 #' @return
-#' A modified `project` object that includes the newly created subset.
-#' The subset is also saved as a file in the specified directory.
+#' A modified `project` object that includes the newly created summary.
+#' The summary is also saved as a file in the specified directory.
 #'
 #' @details
 #' This function filters the main REDCap database using the specified
 #' `filter_field`
-#' and `filter_choices`, then creates a new subset with optional
+#' and `filter_choices`, then creates a new summary with optional
 #' deidentification. It can be customized to include only specific forms or
-#' fields. The resulting subset is saved to a file for future use.
+#' fields. The resulting summary is saved to a file for future use.
 #'
 #' @seealso
-#' \code{\link{save_project}} for saving the main database or subsets.
+#' \code{\link{save_project}} for saving the main database or summarys.
 #' @export
 add_project_summary <- function(
     project,
-    subset_name,
+    summary_name,
     transform = TRUE,
     filter_field = NULL,
     filter_choices = NULL,
@@ -432,10 +432,13 @@ add_project_summary <- function(
     separate = FALSE,
     use_csv,
     dir_other = file.path(project$dir_path, "output"),
-    file_name = paste0(project$short_name, "_", subset_name),
+    file_name = paste0(project$short_name, "_", summary_name),
     reset = FALSE) {
   lifecycle::signal_stage("experimental", "add_project_summary()")
   # sync_frequency ... project$internals$sync_frequency
+  if(summary_name == "all_records"){
+    stop("'all_records' is a forbidden summary name. Used for REDCapSync.")
+  }
   if (missing(use_csv)) use_csv <- project$internals$use_csv
   if (is.null(filter_list)) {
     if (!is.null(filter_choices) && !is.null(filter_field)) {
@@ -446,8 +449,8 @@ add_project_summary <- function(
     }
   }
   file_ext <- ifelse(use_csv, ".csv", ".xlsx")
-  subset_list_new <- list(
-    subset_name = subset_name,
+  summary_list_new <- list(
+    summary_name = summary_name,
     transform = transform,
     filter_list = filter_list,
     filter_strict = filter_strict,
@@ -471,34 +474,34 @@ add_project_summary <- function(
     dir_other = dir_other,
     file_name = file_name,
     file_path = file.path(dir_other, paste0(file_name, file_ext)),
-    subset_records = NULL,
+    summary_records = NULL,
     last_save_time = NULL,
     final_form_tab_names = NULL
   )
-  subset_list_old <- project$summary$subsets[[subset_name]]
-  if(!is.null(subset_list_old) && ! reset) {
-    important_vars <- names(subset_list_new)
+  summary_list_old <- project$summary[[summary_name]]
+  if(!is.null(summary_list_old) && ! reset) {
+    important_vars <- names(summary_list_new)
     not_important <- c(
-      "subset_records",
+      "summary_records",
       "last_save_time",
       "final_form_tab_names"
     )
     important_vars <- important_vars[which(!important_vars %in% not_important)]
     are_identical <- identical(
-      subset_list_old[important_vars],
-      subset_list_old[important_vars]
+      summary_list_old[important_vars],
+      summary_list_old[important_vars]
     )
     if(are_identical){
       # optional message?
       return(invisible(project))
     }
   }
-  project$summary$subsets[[subset_name]] <- subset_list_new
+  project$summary[[summary_name]] <- summary_list_new
   invisible(project)
 }
 #' @noRd
-save_summary <- function(project, subset_name) {
-  save_all <- missing(subset_name)
+save_summary <- function(project, summary_name) {
+  save_all <- missing(summary_name)
   if(save_all){
     project <- drop_REDCap_to_directory(
       project = project,
@@ -511,13 +514,13 @@ save_summary <- function(project, subset_name) {
     return(invisible(project))
   }
   id_col <- project$redcap$id_col
-  subset_list <- project$summary$subsets[[subset_name]]
+  summary_list <- project$summary[[summary_name]]
   to_save_list <- project %>%
     generate_project_summary(
-      subset_name = subset_name
+      summary_name = summary_name
     )
   link_col_list <- list()
-  if (subset_list$with_links) {
+  if (summary_list$with_links) {
     if (project$internals$project_type == "redcap") {
       add_links <- which(names(to_save_list) %in% names(project$data))
       if (length(add_links) > 0) {
@@ -532,21 +535,21 @@ save_summary <- function(project, subset_name) {
       }
     }
   }
-  if (subset_list$use_csv) {
+  if (summary_list$use_csv) {
     to_save_list %>% list_to_csv(
-      dir = subset_list$dir_other,
-      file_name = subset_list$file_name,
+      dir = summary_list$dir_other,
+      file_name = summary_list$file_name,
       overwrite = TRUE
     ) # account for links with CSV like new column
   } else {
     list_to_excel(
       list = to_save_list,
-      dir = subset_list$dir_other,
-      separate = subset_list$separate,
+      dir = summary_list$dir_other,
+      separate = summary_list$separate,
       link_col_list = link_col_list,
       key_cols_list = construct_key_col_list(project),
       # derived_cols_list = derived_cols_list,
-      file_name = subset_list$file_name,
+      file_name = summary_list$file_name,
       header_df_list = to_save_list %>%
         construct_header_list(fields = project$metadata$fields) %>%
         process_df_list(silent = TRUE),
@@ -560,60 +563,60 @@ save_summary <- function(project, subset_name) {
     unlist() %>%
     sort() %>%
     unique()
-  record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  subset_records <- project$summary$all_records[record_rows, ]
-  project$summary$subsets[[subset_name]]$subset_records <- subset_records
-  project$summary$subsets[[subset_name]]$last_save_time <- now_time()
-  project$summary$subsets[[subset_name]]$final_form_tab_names <-
+  record_rows <- which(project$redcap$all_records[[id_col]] %in% records)
+  summary_records <- project$redcap$all_records[record_rows, ]
+  project$summary[[summary_name]]$summary_records <- summary_records
+  project$summary[[summary_name]]$last_save_time <- now_time()
+  project$summary[[summary_name]]$final_form_tab_names <-
     rename_list_names_excel(list_names = to_save_list)
-  names(project$summary$subsets[[subset_name]]$final_form_tab_names) <-
+  names(project$summary[[summary_name]]$final_form_tab_names) <-
     names(to_save_list)
   invisible(project)
 }
 #' @title Generate a Summary from a Subset Name
 #' @description
 #' `r lifecycle::badge("experimental")`
-#' Generates a summary from a predefined subset of data within a REDCap project.
+#' Generates a summary from a predefined summary of data within a REDCap project.
 #' The summary can be customized based on various options, such as cleaning the
 #' data, including metadata, and annotating metadata.
 #'
 #' @inheritParams save_project
-#' @param subset_name Character. The name of the subset from which to generate
+#' @param summary_name Character. The name of the summary from which to generate
 #' the summary.
 #' @return
 #' A list containing the generated summary based on the specified options. The
 #' list includes filtered and cleaned data, metadata, and other summary details.
 #'
 #' @details
-#' This function allows you to generate a summary of data from a specific subset
+#' This function allows you to generate a summary of data from a specific summary
 #' of records within the REDCap project. The function provides flexible options
 #' for cleaning, annotating, and including metadata, as well as controlling
 #' whether to include record summaries, user information, and logs.
 #' @export
 generate_project_summary <- function(
     project,
-    subset_name) {
+    summary_name) {
   lifecycle::signal_stage("experimental", "generate_project_summary()")
-  subset_list <- project$summary$subsets[[subset_name]]
+  summary_list <- project$summary[[summary_name]]
   to_save_list <- generate_project_summary_test(
     project = project,
-    transform = subset_list$transform,
-    filter_list = subset_list$filter_list,
-    filter_strict = subset_list$filter_strict,
-    field_names = subset_list$field_names,
-    form_names = subset_list$form_names,
-    no_duplicate_cols = subset_list$no_duplicate_cols,
-    deidentify = subset_list$deidentify,
-    drop_free_text = subset_list$drop_free_text,
-    date_handling = subset_list$date_handling,
-    upload_compatible = subset_list$upload_compatible,
-    clean = subset_list$clean,
-    drop_blanks = subset_list$drop_blanks,
-    include_metadata = subset_list$include_metadata,
-    annotate_metadata = subset_list$annotate_metadata,
-    include_record_summary = subset_list$include_record_summary,
-    include_users = subset_list$include_users,
-    include_log = subset_list$include_log
+    transform = summary_list$transform,
+    filter_list = summary_list$filter_list,
+    filter_strict = summary_list$filter_strict,
+    field_names = summary_list$field_names,
+    form_names = summary_list$form_names,
+    no_duplicate_cols = summary_list$no_duplicate_cols,
+    deidentify = summary_list$deidentify,
+    drop_free_text = summary_list$drop_free_text,
+    date_handling = summary_list$date_handling,
+    upload_compatible = summary_list$upload_compatible,
+    clean = summary_list$clean,
+    drop_blanks = summary_list$drop_blanks,
+    include_metadata = summary_list$include_metadata,
+    annotate_metadata = summary_list$annotate_metadata,
+    include_record_summary = summary_list$include_record_summary,
+    include_users = summary_list$include_users,
+    include_log = summary_list$include_log
   )
   invisible(to_save_list)
 }
@@ -827,16 +830,25 @@ summarize_project <- function(
     project,
     reset = FALSE) {
   assert_setup_project(project)
-  subset_names <- check_subsets(project)
+  summary_names <- check_summaries(project)
   if (reset) {
-    subset_names <- project$summary$subsets %>% names()
+    summary_names <- project$summary %>% names()
   }
-  if (is_something(subset_names)) {
-    for (subset_name in subset_names) {
-      project <- project %>% save_summary(subset_name)
+  if (is_something(summary_names)) {
+    for (summary_name in summary_names) {
+      project <- project %>% save_summary(summary_name)
     }
   }
   project$internals$last_summary <- now_time()
+  invisible(project)
+}
+#' @title clear_summaries
+#' @inheritParams save_project
+#' @export
+clear_summaries <- function(project){
+  assert_setup_project(project)
+  project$summary <- list()
+  cli_alert_success("Cleared project summaries!")
   invisible(project)
 }
 #' @title Run Quality Checks
@@ -951,7 +963,7 @@ summarize_records_from_log <- function(project, records) {
   }
   # records -------------
   # all_records <- unique(log$record)
-  summary_records <- project$summary$all_records
+  summary_records <- project$redcap$all_records
   record_groups <- log %>% split(log$record)
   summary_records <- summary_records[which(summary_records[[project$redcap$id_col]] %in% names(record_groups)), , drop = FALSE]
   # users_log_rows <- users %>% lapply(function(user){which(log$username==user)})
@@ -986,22 +998,22 @@ summarize_records_from_log <- function(project, records) {
   summary_records
 }
 #' @noRd
-get_subset_records <- function(project, subset_name) {
+get_summary_records <- function(project, summary_name) {
   id_col <- project$redcap$id_col
-  if (missing(subset_name)) {
-    return(project$summary$all_records[[id_col]])
+  if (missing(summary_name)) {
+    return(project$redcap$all_records[[id_col]])
   }
-  subset_list <- project$summary$subsets[[subset_name]]
+  summary_list <- project$summary[[summary_name]]
   to_save_list <- generate_project_summary_test(
     project = project,
-    filter_list = subset_list$filter_list,
+    filter_list = summary_list$filter_list,
     filter_strict = FALSE,
-    form_names = subset_list$form_names,
+    form_names = summary_list$form_names,
     field_names = project$redcap$id_col,
     deidentify = FALSE,
     drop_free_text = FALSE,
     clean = FALSE,
-    transform = subset_list$transform,
+    transform = summary_list$transform,
     drop_blanks = FALSE,
     include_metadata = FALSE,
     annotate_metadata = FALSE,
@@ -1017,45 +1029,45 @@ get_subset_records <- function(project, subset_name) {
     unlist() %>%
     sort() %>%
     unique()
-  record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  subset_records <- project$summary$all_records[record_rows, ]
-  subset_records
+  record_rows <- which(project$redcap$all_records[[id_col]] %in% records)
+  summary_records <- project$redcap$all_records[record_rows, ]
+  summary_records
 }
 #' @noRd
-subset_records_due <- function(project, subset_name) {
-  subset_list <- project$summary$subsets[[subset_name]]
-  if (is.null(subset_list$last_save_time)) {
+summary_records_due <- function(project, summary_name) {
+  summary_list <- project$summary[[summary_name]]
+  if (is.null(summary_list$last_save_time)) {
     return(TRUE)
   }
-  if (!file.exists(subset_list$file_path)) {
+  if (!file.exists(summary_list$file_path)) {
     return(TRUE)
   }
-  subset_records <- get_subset_records(
+  summary_records <- get_summary_records(
     project = project,
-    subset_name = subset_name
+    summary_name = summary_name
   )
   is_due <- !identical(
-    unname(subset_list$subset_records),
-    unname(subset_records)
+    unname(summary_list$summary_records),
+    unname(summary_records)
   )
   is_due
 }
 #' @noRd
-check_subsets <- function(project, subset_names) {
-  if (missing(subset_names)){
-    subset_names <- project$summary$subsets %>% names()
+check_summaries <- function(project, summary_names) {
+  if (missing(summary_names)){
+    summary_names <- project$summary %>% names()
   }
   needs_refresh <- NULL
-  if (is.null(subset_names)){
-    cli_alert_wrap("No subsets. Use `add_project_summary()`!")
+  if (is.null(summary_names)){
+    cli_alert_wrap("No summaries. Use `add_project_summary()`!")
   }
-  for (subset_name in subset_names) {
-    if (subset_records_due(project = project, subset_name = subset_name)) {
-      needs_refresh <- needs_refresh %>% append(subset_name)
+  for (summary_name in summary_names) {
+    if (summary_records_due(project = project, summary_name = summary_name)) {
+      needs_refresh <- needs_refresh %>% append(summary_name)
     }
   }
   if (is.null(needs_refresh)) {
-    cli_alert_wrap("Refresh of subsets not needed!", bullet_type = "v")
+    cli_alert_wrap("Refresh of summaries not needed!", bullet_type = "v")
   }
   needs_refresh
 }

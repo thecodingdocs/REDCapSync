@@ -41,7 +41,7 @@ upload_transform_to_project <- function(project) {
 #' are predefined within the function and ensure consistency across datasets.
 #'
 #' @seealso
-#' \code{\link{save_project}} for saving the database or subsets.
+#' \code{\link{save_project}} for saving the database or summaries.
 #' @export
 add_default_project_transformation <- function(project) {
   project <- add_project_transformation(
@@ -220,7 +220,7 @@ add_project_transformation <- function(project,
 #' functionality of existing REDCap forms and fields.
 #'
 #' @seealso
-#' \code{\link{save_project}} for saving the database or subsets.
+#' \code{\link{save_project}} for saving the database or summaries.
 #'
 #' @export
 add_project_field <- function(
@@ -393,10 +393,10 @@ run_fields_transformation <- function(project) {
 #' @title Add Default Forms Transformation to the Database
 #' @export
 add_default_project_summary <- function(project) {
-  subset_name <- "REDCapSync"
+  summary_name <- "REDCapSync"
   project <- add_project_summary(
     project = project,
-    subset_name = subset_name,
+    summary_name = summary_name,
     transform = TRUE,
     filter_list = NULL,
     deidentify = TRUE,
@@ -410,11 +410,11 @@ add_default_project_summary <- function(project) {
     include_record_summary = TRUE,
     include_users = TRUE,
     include_log = TRUE,
-    with_links = nrow(project$summary$all_records) <= 10000,
+    with_links = nrow(project$redcap$all_records) <= 10000,
     separate = FALSE,
     use_csv = project$internals$use_csv,
     dir_other = file.path(project$dir_path, "output"),
-    file_name = paste0(project$short_name, "_", subset_name)
+    file_name = paste0(project$short_name, "_", summary_name)
   )
   invisible(project)
 }

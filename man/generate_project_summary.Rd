@@ -4,14 +4,14 @@
 \alias{generate_project_summary}
 \title{Generate a Summary from a Subset Name}
 \usage{
-generate_project_summary(project, subset_name)
+generate_project_summary(project, summary_name)
 }
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data
 and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{subset_name}{Character. The name of the subset from which to generate
+\item{summary_name}{Character. The name of the summary from which to generate
 the summary.}
 }
 \value{
@@ -20,12 +20,12 @@ list includes filtered and cleaned data, metadata, and other summary details.
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-Generates a summary from a predefined subset of data within a REDCap project.
+Generates a summary from a predefined summary of data within a REDCap project.
 The summary can be customized based on various options, such as cleaning the
 data, including metadata, and annotating metadata.
 }
 \details{
-This function allows you to generate a summary of data from a specific subset
+This function allows you to generate a summary of data from a specific summary
 of records within the REDCap project. The function provides flexible options
 for cleaning, annotating, and including metadata, as well as controlling
 whether to include record summaries, user information, and logs.

@@ -231,7 +231,7 @@ extract_project_details <- function(project) {
   project_details$has_multiple_arms <-
     project$redcap$has_multiple_arms %>% na_if_null()
   project_details$n_records <-
-    length(project$summary$all_records[[project$redcap$id_col]]) %>%
+    length(project$redcap$all_records[[project$redcap$id_col]]) %>%
     na_if_null() %>%
     as.integer()
   project_details$redcap_base <- project$links$redcap_base %>% na_if_null()
@@ -323,7 +323,7 @@ add_project_details_to_project <- function(project, project_details) {
   # project$redcap$is_longitudinal <- project_details$is_longitudinal
   # project$redcap$has_repeating_forms_or_events <- project_details$has_repeating_forms_or_events
   # project$redcap$has_multiple_arms <- project_details$has_multiple_arms
-  # project$summary$all_records[[project$redcap$id_col]] <- project_details$n_records %>% as.integer()
+  # project$redcap$all_records[[project$redcap$id_col]] <- project_details$n_records %>% as.integer()
   # project$links$redcap_base <- project_details$redcap_base # check identical unless NA
   # project$links$redcap_home <- project_details$redcap_home
   # project$links$redcap_API_playground <- project_details$redcap_API_playground

@@ -71,5 +71,5 @@ data. This is particularly useful for customizing or extending the
 functionality of existing REDCap forms and fields.
 }
 \seealso{
-\code{\link{save_project}} for saving the database or subsets.
+\code{\link{save_project}} for saving the database or summaries.
 }

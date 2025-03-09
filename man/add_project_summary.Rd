@@ -6,7 +6,7 @@
 \usage{
 add_project_summary(
   project,
-  subset_name,
+  summary_name,
   transform = TRUE,
   filter_field = NULL,
   filter_choices = NULL,
@@ -30,7 +30,7 @@ add_project_summary(
   separate = FALSE,
   use_csv,
   dir_other = file.path(project$dir_path, "output"),
-  file_name = paste0(project$short_name, "_", subset_name),
+  file_name = paste0(project$short_name, "_", summary_name),
   reset = FALSE
 )
 }
@@ -39,9 +39,9 @@ add_project_summary(
 and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{subset_name}{Character. The name of the subset to create.}
+\item{summary_name}{Character. The name of the summary to create.}
 
-\item{transform}{Logical. Whether to transform the data in the subset.
+\item{transform}{Logical. Whether to transform the data in the summary.
 Default
 is \code{TRUE}.}
 
@@ -49,26 +49,26 @@ is \code{TRUE}.}
 filter on.}
 
 \item{filter_choices}{Vector. The values of \code{filter_field} used to define the
-subset.}
+summary.}
 
 \item{filter_list}{Vector. The values of \code{filter_field} used to define the
-subset.}
+summary.}
 
 \item{filter_strict}{Logical. If \code{TRUE}, all forms will be filtered by
 criteria. If \code{FALSE}, will convert original filter to id column and filter
 all other forms by that record. Default is \code{TRUE}.}
 
 \item{field_names}{Character vector. Names of specific fields to include in
-the subset. Default is \code{NULL}, which includes all fields.}
+the summary. Default is \code{NULL}, which includes all fields.}
 
-\item{form_names}{Character vector. Names of forms to include in the subset.
+\item{form_names}{Character vector. Names of forms to include in the summary.
 Default is \code{NULL}, which includes all forms.}
 
 \item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the
 function will avoid including duplicate columns in the output. Defaults to
 \code{FALSE}.}
 
-\item{deidentify}{Logical. Whether to deidentify the data in the subset.
+\item{deidentify}{Logical. Whether to deidentify the data in the summary.
 Default is \code{TRUE}.}
 
 \item{drop_free_text}{Logical. If \code{TRUE}, columns containing free text
@@ -113,33 +113,33 @@ separate files as opposed to multi-tab Excel. Default is \code{FALSE}.}
 \item{use_csv}{Logical (TRUE/FALSE). If TRUE, uses CSV files for data
 storage. Default is \code{FALSE}.}
 
-\item{dir_other}{Character. The directory where the subset file will be
+\item{dir_other}{Character. The directory where the summary file will be
 saved. Default is the \code{output} folder within the database directory.}
 
-\item{file_name}{Character. The base name of the file where the subset will
-be saved. Default is \verb{<project$short_name>_<subset_name>}.}
+\item{file_name}{Character. The base name of the file where the summary will
+be saved. Default is \verb{<project$short_name>_<summary_name>}.}
 
-\item{reset}{Logical. If \code{TRUE}, overwrite existing subset files with the
+\item{reset}{Logical. If \code{TRUE}, overwrite existing summary files with the
 same name. Default is \code{FALSE}.}
 }
 \value{
-A modified \code{project} object that includes the newly created subset.
-The subset is also saved as a file in the specified directory.
+A modified \code{project} object that includes the newly created summary.
+The summary is also saved as a file in the specified directory.
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-Creates a subset of the main REDCap database (\code{project}) based on specific
-filter criteria and saves it to a specified directory. The subset can be
+Creates a summary of the main REDCap database (\code{project}) based on specific
+filter criteria and saves it to a specified directory. The summary can be
 further customized with additional forms, fields, and deidentification
 options.
 }
 \details{
 This function filters the main REDCap database using the specified
 \code{filter_field}
-and \code{filter_choices}, then creates a new subset with optional
+and \code{filter_choices}, then creates a new summary with optional
 deidentification. It can be customized to include only specific forms or
-fields. The resulting subset is saved to a file for future use.
+fields. The resulting summary is saved to a file for future use.
 }
 \seealso{
-\code{\link{save_project}} for saving the main database or subsets.
+\code{\link{save_project}} for saving the main database or summarys.
 }

@@ -32,7 +32,7 @@ generate_project_summary_test(
 and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{transform}{Logical. Whether to transform the data in the subset.
+\item{transform}{Logical. Whether to transform the data in the summary.
 Default
 is \code{TRUE}.}
 
@@ -40,26 +40,26 @@ is \code{TRUE}.}
 filter on.}
 
 \item{filter_choices}{Vector. The values of \code{filter_field} used to define the
-subset.}
+summary.}
 
 \item{filter_list}{Vector. The values of \code{filter_field} used to define the
-subset.}
+summary.}
 
 \item{filter_strict}{Logical. If \code{TRUE}, all forms will be filtered by
 criteria. If \code{FALSE}, will convert original filter to id column and filter
 all other forms by that record. Default is \code{TRUE}.}
 
 \item{field_names}{Character vector. Names of specific fields to include in
-the subset. Default is \code{NULL}, which includes all fields.}
+the summary. Default is \code{NULL}, which includes all fields.}
 
-\item{form_names}{Character vector. Names of forms to include in the subset.
+\item{form_names}{Character vector. Names of forms to include in the summary.
 Default is \code{NULL}, which includes all forms.}
 
 \item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the
 function will avoid including duplicate columns in the output. Defaults to
 \code{FALSE}.}
 
-\item{deidentify}{Logical. Whether to deidentify the data in the subset.
+\item{deidentify}{Logical. Whether to deidentify the data in the summary.
 Default is \code{TRUE}.}
 
 \item{drop_free_text}{Logical. If \code{TRUE}, columns containing free text

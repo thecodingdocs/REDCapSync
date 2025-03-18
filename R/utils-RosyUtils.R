@@ -644,8 +644,7 @@ rename_list_names_excel <- function(list_names){
   if (length(bad_names) > 0) {
     cli_alert_danger(
       "Duplicated names when trimmed from right 31 max in Excel: ",
-      list_names[bad_names] %>% paste0(collapse = ", "),
-      immediate. = TRUE
+      list_names[bad_names] %>% paste0(collapse = ", ")
     )
     cli_alert_info(
       "Use CSV or shorten the names and make sure they are unique if they are trimmed to 31 char. For now will make unique by adding number."

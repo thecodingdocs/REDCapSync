@@ -1,61 +1,7 @@
-#' @title Deidentify the REDCap Database
-#' @description
-#' Removes identifying information from the REDCap object (`project`).
-#' This can be done either based on the `identifier` field in the metadata or
-#' by specifying custom identifiers.
-#'
-#' @inheritParams save_project
-#' @inheritParams add_project_summary
-#' @param identifiers Optional character vector of column names that should be
-#' excluded from the `project`. If not provided, fields where
-#' `project$metadata$fields$identifier == "y"` will be used as the default.
-#' @param drop_free_text Logical. If `TRUE`, columns containing free text
-#' will also be excluded from the `project`. Default is `FALSE`.
-#'
-#' @return
-#' A `project` object with deidentified forms.
-#'
-#' @details
-#' This function modifies the `project` object to exclude specified identifiers
-#' or any columns flagged as identifiers in the metadata. Free-text fields can
-#' also be optionally removed, ensuring the resulting dataset complies with
-#' deidentification standards.
-#'
-#' @seealso
-#' \code{\link{save_project}} for saving the modified database.
-#'
-#' @export
-deidentify_project <- function(
-    project,
-    identifiers = NULL,
-    drop_free_text = FALSE,
-    date_handling = "none"
-) {
-  project <- assert_blank_project(project)
-  if(is_something(project$data)){
-    project <- deidentify_data_list(
-      project,
-      identifiers = identifiers,
-      drop_free_text = drop_free_text,
-      date_handling = date_handling
-    )
-    cli_alert_wrap(
-      paste0("Deidentified ", project$short_name),
-      bullet_type = "v"
-    )
-  }
-  if(is_something(project$transformation$data)){
-    project$transformation <- deidentify_data_list(project$transformation)
-    cli_alert_wrap(
-      paste0("Deidentified Transformation ", project$short_name),
-      bullet_type = "v"
-    )
-  }
-  invisible(project)
-}
 deidentify_data_list <- function(data_list,
                                  identifiers = NULL,
-                                 drop_free_text = FALSE) {
+                                 date_handling = "none",
+                                 exclude_free_text = FALSE) {
   # assert_data_list contains data and metadata with forms and fields
   data <- data_list$data
   metadata <- data_list$metadata
@@ -97,7 +43,7 @@ deidentify_data_list <- function(data_list,
       )
     }
   }
-  if (drop_free_text) { # placeholder
+  if (exclude_free_text) { # placeholder
     #drop free text only if there is no validation
     #make function for that ?external
     free_text_rows <- which(
@@ -175,9 +121,9 @@ get_min_dates <- function(data_list) {
       existing_fields <- intersect(names(form), date_vector)
       if (length(existing_fields) > 0) {
         df_subset <- form[, c(id_cols[1], existing_fields), drop = FALSE]
-        df_long <- reshape(df_subset, varying = existing_fields,
-                           v.names = "date", times = existing_fields,
-                           timevar = "field", direction = "long")
+        df_long <- stats::reshape(df_subset, varying = existing_fields,
+                                  v.names = "date", times = existing_fields,
+                                  timevar = "field", direction = "long")
         df_long$date <- as.Date(df_long$date, format = "%Y-%m-%d")
         all_dates <- c(all_dates, list(df_long))
       }
@@ -251,15 +197,15 @@ link_REDCap_record <- function(project,
   )
   id_col <- project$redcap$id_col
   if (!missing(record)) {
-    if (!record %in% project$redcap$all_records[[id_col]]) {
+    if (!record %in% project$summary$all_records[[id_col]]) {
       stop(record, " is not one of the records inside project")
     }
-    if ("arm_number" %in% colnames(project$redcap$all_records)) {
-      arm_row <- which(project$redcap$all_records[[id_col]] == record)
+    if ("arm_number" %in% colnames(project$summary$all_records)) {
+      arm_row <- which(project$summary$all_records[[id_col]] == record)
       link <- link %>%
         paste0(
           "&arm=",
-          project$redcap$all_records$arm_number[arm_row]
+          project$summary$all_records$arm_number[arm_row]
         )
     }
     link <- link %>% paste0("&id=", record)

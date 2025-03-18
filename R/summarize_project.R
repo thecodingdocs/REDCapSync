@@ -1,55 +1,3 @@
-#' @title Clean project columns for plotting using the metadata
-#' @description
-#' This function cleans the columns of a `project` object, transforming choice
-#' fields into factors and ensuring numeric columns are set correctly for table
-#' processing or plotting (e.g., using `table1`). It handles the transformation
-#' of missing values and optional removal of certain codes based on user input.
-#'
-#' @inheritParams save_project
-#' @param drop_blanks Logical. If TRUE, will drop choice fields with zero
-#' occurrences (n = 0). Default is FALSE.
-#' @param other_drops A list of additional fields or choices to drop from the
-#' data. Defaults to NULL.
-#'
-#' @return A cleaned `project` object ready for table or plot processing.
-#'
-#' @details
-#' The function works by cleaning up the data frame list (`project$data`)
-#' according to the metadata (`project$metadata$fields`). It converts choice
-#' fields into factors, numeric fields are treated appropriately, and any
-#' unwanted or missing codes can be dropped based on the parameters provided.
-#' The function also ensures that the data is only cleaned once by checking the
-#' internal `is_clean` flag.
-#'
-#' @note
-#' The function will not proceed with cleaning if `project$internals$is_clean`
-#' is already TRUE, signaling that the project has already been cleaned.
-#' @export
-clean_project <- function(project, drop_blanks = FALSE, other_drops = NULL) {
-  # project <-  project %>% annotate_fields(skim = FALSE)
-  # problematic because setting numeric would delete missing codes
-  if (!is_something(project)) {
-    return(invisible(project))
-  }
-  if (!is_something(project$data)) {
-    return(invisible(project))
-  }
-  if (project$internals$is_clean) {
-    cli_alert_success("Already Clean")
-    return(invisible(project))
-  } # make sure reversible
-  if(!project$internals$is_transformed){
-    #transform first
-    project <- transform_project(project)
-  }
-  project$data <- clean_data_list(
-    data_list = project$transformation,
-    drop_blanks = drop_blanks,
-    other_drops = other_drops
-  )
-  project$internals$is_clean <- TRUE
-  invisible(project)
-}
 #' @noRd
 fields_to_choices <- function(fields) {
   fields <- fields[which(fields$field_type %in% c("radio", "dropdown", "checkbox_choice", "yesno")), ]
@@ -92,9 +40,9 @@ add_labels_to_checkbox <- function(fields) {
   fields
 }
 #' @noRd
-annotate_fields <- function(project, summarize_data = TRUE, drop_missing = TRUE) {
+annotate_fields <- function(project, summarize_data = TRUE, drop_blanks = TRUE) {
   fields <- project$metadata$fields # [,colnames(project$metadata$fields)]
-  if (drop_missing) {
+  if (drop_blanks) {
     fields <- fields[which(fields$field_name %in% get_all_field_names(project)), ]
   }
   if (nrow(fields) > 0) {
@@ -143,9 +91,9 @@ annotate_fields <- function(project, summarize_data = TRUE, drop_missing = TRUE)
   fields
 }
 #' @noRd
-annotate_forms <- function(project, summarize_data = TRUE, drop_missing = TRUE) {
+annotate_forms <- function(project, summarize_data = TRUE, drop_blanks = TRUE) {
   forms <- project$metadata$forms
-  if (drop_missing) {
+  if (drop_blanks) {
     forms <- forms[which(forms$form_name %in% names(project$data)), ]
   }
   if (nrow(forms) > 0) {
@@ -172,11 +120,11 @@ annotate_forms <- function(project, summarize_data = TRUE, drop_missing = TRUE) 
   forms
 }
 #' @noRd
-annotate_choices <- function(project, summarize_data = TRUE, drop_missing = TRUE) {
+annotate_choices <- function(project, summarize_data = TRUE, drop_blanks = TRUE) {
   # forms <- project$metadata$forms
   # fields <- project$metadata$fields
   choices <- project$metadata$choices
-  if (drop_missing) {
+  if (drop_blanks) {
     choices <- choices[which(choices$field_name %in% get_all_field_names(project)), ]
   }
   # choices$field_name_raw <- choices$field_name
@@ -229,7 +177,7 @@ fields_with_no_data <- function(project) {
   project$metadata$fields$field_name[which(is.na(project$metadata$fields$complete_rate) & !project$metadata$fields$field_type %in% c("checkbox", "descriptive"))]
 }
 #' @noRd
-clean_data_list <- function(data_list, drop_blanks = TRUE, other_drops = NULL) {
+clean_data_list <- function(data_list, drop_blanks = TRUE, drop_others = NULL) {
   #assert data list
   data <- data_list$data
   metadata <- data_list$metadata
@@ -238,13 +186,13 @@ clean_data_list <- function(data_list, drop_blanks = TRUE, other_drops = NULL) {
       form = data[[form_name]],
       fields = metadata$fields,
       drop_blanks = drop_blanks,
-      other_drops = other_drops
+      drop_others = drop_others
     )
   }
   data
 }
 #' @noRd
-clean_form <- function(form, fields, drop_blanks = TRUE, other_drops = NULL) {
+clean_form <- function(form, fields, drop_blanks = TRUE, drop_others = NULL) {
   for (field_name in colnames(form)) {
     if (field_name %in% fields$field_name) {
       row <- which(fields$field_name == field_name)
@@ -273,8 +221,8 @@ clean_form <- function(form, fields, drop_blanks = TRUE, other_drops = NULL) {
           if (drop_blanks) {
             levels <- levels[which(levels %in% unique(form[[field_name]]))]
           }
-          if (!is.null(other_drops)) {
-            if (length(other_drops) > 0) levels <- levels[which(!levels %in% other_drops)]
+          if (!is.null(drop_others)) {
+            if (length(drop_others) > 0) levels <- levels[which(!levels %in% drop_others)]
           }
         }
         if (class == "integer") {
@@ -337,7 +285,6 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' options.
 #'
 #' @inheritParams save_project
-#' @inheritParams deidentify_project
 #' @inheritParams setup_project
 #' @param summary_name Character. The name of the summary to create.
 #' @param transform Logical. Whether to transform the data in the summary.
@@ -360,8 +307,9 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' Default is `NULL`, which includes all forms.
 #' @param field_names Character vector. Names of specific fields to include in
 #' the summary. Default is `NULL`, which includes all fields.
-#' @param deidentify Logical. Whether to deidentify the data in the summary.
-#' Default is `TRUE`.
+#' @param exclude_identifiers Logical. Whether to exlude identifiers in the data
+#' in the summary. Default is `TRUE`.
+#' @param exclude_free_text Logical for excluding free text. Default is `FALSE`.
 #' @param date_handling character string. One of `none`,`lowest-overall-zero`,
 #' `lowest-record-zero`, `shuffle-record-randomly`, or zero date date in form of
 #' `2012-12-05`
@@ -373,6 +321,9 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' Default is `TRUE`.
 #' @param drop_blanks Logical. If `TRUE`, records with blank fields will be
 #' dropped. Default is `TRUE`.
+#' @param drop_missings Logical. If `TRUE`, will convert missing codes to NA.
+#' Default is `FALSE`.
+#' @param drop_others Character vector of other values that should be dropped.
 #' @param include_metadata Logical. If `TRUE`, metadata will be included in the
 #' summary. Default is `TRUE`.
 #' @param annotate_metadata Logical. If `TRUE`, metadata will be annotated in
@@ -417,12 +368,14 @@ add_project_summary <- function(
     field_names = NULL,
     form_names = NULL,
     no_duplicate_cols = FALSE,
-    deidentify = TRUE,
-    drop_free_text = FALSE,
+    exclude_identifiers = TRUE,
+    exclude_free_text = FALSE,
     date_handling = "none",
     upload_compatible = TRUE,
     clean = TRUE,
     drop_blanks = TRUE,
+    drop_missings = FALSE,
+    drop_others = NULL,
     include_metadata = TRUE,
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
@@ -457,12 +410,14 @@ add_project_summary <- function(
     field_names = field_names,
     form_names = form_names,
     no_duplicate_cols = no_duplicate_cols,
-    deidentify = deidentify,
-    drop_free_text = drop_free_text,
+    exclude_identifiers = exclude_identifiers,
+    exclude_free_text = exclude_free_text,
     date_handling = date_handling,
     upload_compatible = upload_compatible,
     clean = clean,
     drop_blanks = drop_blanks,
+    drop_missings = drop_missings,
+    drop_others = drop_others,
     include_metadata = include_metadata,
     annotate_metadata = annotate_metadata,
     include_record_summary = include_record_summary,
@@ -501,18 +456,6 @@ add_project_summary <- function(
 }
 #' @noRd
 save_summary <- function(project, summary_name) {
-  save_all <- missing(summary_name)
-  if(save_all){
-    project <- drop_REDCap_to_directory(
-      project = project,
-      smart = TRUE,
-      deidentify = FALSE,
-      include_metadata = TRUE,
-      include_other = TRUE,
-      separate = TRUE
-    )
-    return(invisible(project))
-  }
   id_col <- project$redcap$id_col
   summary_list <- project$summary[[summary_name]]
   to_save_list <- project %>%
@@ -563,8 +506,8 @@ save_summary <- function(project, summary_name) {
     unlist() %>%
     sort() %>%
     unique()
-  record_rows <- which(project$redcap$all_records[[id_col]] %in% records)
-  summary_records <- project$redcap$all_records[record_rows, ]
+  record_rows <- which(project$summary$all_records[[id_col]] %in% records)
+  summary_records <- project$summary$all_records[record_rows, ]
   project$summary[[summary_name]]$summary_records <- summary_records
   project$summary[[summary_name]]$last_save_time <- now_time()
   project$summary[[summary_name]]$final_form_tab_names <-
@@ -581,8 +524,10 @@ save_summary <- function(project, summary_name) {
 #' data, including metadata, and annotating metadata.
 #'
 #' @inheritParams save_project
+#' @inheritParams add_project_summary
 #' @param summary_name Character. The name of the summary from which to generate
-#' the summary.
+#' the summary. *If you provide `summary_name` all other parameters are
+#' inherited according to what was set with `add_project_summary`.
 #' @return
 #' A list containing the generated summary based on the specified options. The
 #' list includes filtered and cleaned data, metadata, and other summary details.
@@ -595,55 +540,7 @@ save_summary <- function(project, summary_name) {
 #' @export
 generate_project_summary <- function(
     project,
-    summary_name) {
-  lifecycle::signal_stage("experimental", "generate_project_summary()")
-  summary_list <- project$summary[[summary_name]]
-  to_save_list <- generate_project_summary_test(
-    project = project,
-    transform = summary_list$transform,
-    filter_list = summary_list$filter_list,
-    filter_strict = summary_list$filter_strict,
-    field_names = summary_list$field_names,
-    form_names = summary_list$form_names,
-    no_duplicate_cols = summary_list$no_duplicate_cols,
-    deidentify = summary_list$deidentify,
-    drop_free_text = summary_list$drop_free_text,
-    date_handling = summary_list$date_handling,
-    upload_compatible = summary_list$upload_compatible,
-    clean = summary_list$clean,
-    drop_blanks = summary_list$drop_blanks,
-    include_metadata = summary_list$include_metadata,
-    annotate_metadata = summary_list$annotate_metadata,
-    include_record_summary = summary_list$include_record_summary,
-    include_users = summary_list$include_users,
-    include_log = summary_list$include_log
-  )
-  invisible(to_save_list)
-}
-#' @title Select REDCap Records from project
-#' @description
-#' `r lifecycle::badge("experimental")`
-#' This function filters the records in the `project` object by specified
-#' criteria, such as field names, form names, and optional filtering based on a
-#' specific field and its values. It returns a modified `project` object
-#' containing only the records that match the filter criteria.
-#'
-#' @inheritParams save_project
-#' @inheritParams add_project_summary
-#' @inheritParams deidentify_project
-#' @return A modified `project` object with filtered records and columns based
-#' on the provided criteria.
-#'
-#' @details
-#' This function filters the data in the `project` object according to the
-#' specified form and field names and optional filter criteria. If no field
-#' names or form names are provided, it defaults to using all fields and forms
-#' in the database. The function uses the helper `filter_form_list` to apply the
-#' filtering logic to the `project$data` list.
-#'
-#' @export
-generate_project_summary_test <- function(
-    project,
+    summary_name,
     transform,
     filter_field,
     filter_choices,
@@ -652,18 +549,44 @@ generate_project_summary_test <- function(
     field_names = NULL,
     form_names = NULL,
     no_duplicate_cols = FALSE,
-    deidentify = TRUE,
-    drop_free_text = FALSE,
+    exclude_identifiers = TRUE,
+    exclude_free_text = FALSE,
     date_handling = "none",
     upload_compatible = TRUE,
     clean = TRUE,
     drop_blanks = TRUE,
+    drop_missings = FALSE,
+    drop_others = NULL,
     include_metadata = TRUE,
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
     include_users = TRUE,
     include_log = TRUE) {
-  lifecycle::signal_stage("experimental", "generate_project_summary_test()")
+  lifecycle::signal_stage("experimental", "generate_project_summary()")
+  provided_summary_name <- !missing(summary_name)
+  summary_list <- project$summary[[summary_name]]
+  if (provided_summary_name){
+    #warning about other params?
+    transform <- summary_list$transform
+    filter_list <- summary_list$filter_list
+    filter_strict <- summary_list$filter_strict
+    field_names <- summary_list$field_names
+    form_names <- summary_list$form_names
+    no_duplicate_cols <- summary_list$no_duplicate_cols
+    exclude_identifiers <- summary_list$exclude_identifiers
+    exclude_free_text <- summary_list$exclude_free_text
+    date_handling <- summary_list$date_handling
+    upload_compatible <- summary_list$upload_compatible
+    clean <- summary_list$clean
+    drop_blanks <- summary_list$drop_blanks
+    drop_missings <- summary_list$drop_missings
+    drop_others <- summary_list$drop_others
+    include_metadata <- summary_list$include_metadata
+    annotate_metadata <- summary_list$annotate_metadata
+    include_record_summary <- summary_list$include_record_summary
+    include_users <- summary_list$include_users
+    include_log <- summary_list$include_log
+  }
   if (missing(transform)) {
     transform <- project$internals$is_transformed
   }
@@ -768,15 +691,19 @@ generate_project_summary_test <- function(
     }
     project$data <- out_list
   }
-  if (deidentify) {
-    project <- deidentify_project(
-      project,
-      drop_free_text = drop_free_text,
+  if (exclude_identifiers) {
+    project <- deidentify_data_list(
+      data_list = project,
+      exclude_free_text = exclude_free_text,
       date_handling = date_handling
     )
   }
   if (clean) {
-    project <- project %>% clean_project(drop_blanks = drop_blanks) # problematic because setting numeric would delete missing codes
+    project <- clean_data_list(
+      data_list = project,
+      drop_blanks = drop_blanks,
+      drop_others = drop_others
+    )
   }
   to_save_list <- project$data
   if (include_metadata) {
@@ -791,7 +718,7 @@ generate_project_summary_test <- function(
     }
   }
   if (include_record_summary) {
-    records <- sum_records(project)[[1]]
+    records <- extract_project_records(project)[[1]]
     if (!is.null(records)) {
       to_save_list$records <- summarize_records_from_log(project, records = records)
     }
@@ -805,27 +732,7 @@ generate_project_summary_test <- function(
   invisible(to_save_list)
 }
 #' @title Summarize REDCap Database
-#' @description
-#' `r lifecycle::badge("experimental")`
-#' Summarizes the REDCap database (`project` object) by filtering and generating
-#' a summary list.
-#'
-#' @details
-#' This function filters the REDCap database based on the provided parameters
-#' and generates a summary list. The summary can include metadata, record
-#' summaries, user information, and logs. The function also supports
-#' deidentification and cleaning of the data.
-#'
-#' @inheritParams save_project
-#' @param reset Logical (TRUE/FALSE). If TRUE, forces the summary generation
-#' even if there are issues. Default is `FALSE`.
-#' @return List. Returns a list containing the summarized data, including
-#' records, metadata, users, logs, and any other specified data.
-#' @seealso
-#' \link{setup_project} for initializing the `project` object.
-#' \link{sync_project} for updating the `project` object.
-#' @family db_functions
-#' @export
+#' @noRd
 summarize_project <- function(
     project,
     reset = FALSE) {
@@ -868,34 +775,15 @@ run_quality_checks <- function(project) {
   invisible(project)
 }
 #' @noRd
-sum_records <- function(project) {
+extract_project_records <- function(project) {
   records <- NULL
   if (project$data %>% is_something()) {
-    cols <- project$redcap$id_col
-    if (is.data.frame(project$metadata$arms)) {
-      if (nrow(project$metadata$arms) > 1) {
-        cols <- project$redcap$id_col %>% append("arm_number")
-      }
-    }
-    if (length(cols) == 1) {
-      records <- data.frame(
-        records = names(project$data) %>% lapply(function(form_name) {
-          project$data[[form_name]][, cols]
-        }) %>% unlist() %>% unique()
-      )
-      colnames(records) <- cols
-    }
-    if (length(cols) == 2) {
-      records <- names(project$data) %>%
-        lapply(function(form_name) {
-          project$data[[form_name]][, cols]
-        }) %>%
-        dplyr::bind_rows() %>%
-        unique()
-      # records <- records[order(as.integer(records[[project$redcap$id_col]])),]
-    }
+    records <- data.frame(
+      records = names(project$data) %>% lapply(function(form_name) {
+        project$data[[form_name]][, project$redcap$id_col,drop = FALSE]
+      }) %>% unlist() %>% unique()
+    )
     rownames(records) <- NULL
-    if (records[[project$redcap$id_col]] %>% duplicated() %>% any()) stop("duplicate ", project$redcap$id_col, " in sum_records() function")
   }
   records
 }
@@ -963,7 +851,7 @@ summarize_records_from_log <- function(project, records) {
   }
   # records -------------
   # all_records <- unique(log$record)
-  summary_records <- project$redcap$all_records
+  summary_records <- project$summary$all_records
   record_groups <- log %>% split(log$record)
   summary_records <- summary_records[which(summary_records[[project$redcap$id_col]] %in% names(record_groups)), , drop = FALSE]
   # users_log_rows <- users %>% lapply(function(user){which(log$username==user)})
@@ -1001,20 +889,19 @@ summarize_records_from_log <- function(project, records) {
 get_summary_records <- function(project, summary_name) {
   id_col <- project$redcap$id_col
   if (missing(summary_name)) {
-    return(project$redcap$all_records[[id_col]])
+    return(project$summary$all_records[[id_col]])
   }
   summary_list <- project$summary[[summary_name]]
-  to_save_list <- generate_project_summary_test(
+  to_save_list <- generate_project_summary(
     project = project,
+    transform = summary_list$transform,
     filter_list = summary_list$filter_list,
     filter_strict = FALSE,
     form_names = summary_list$form_names,
     field_names = project$redcap$id_col,
-    deidentify = FALSE,
-    drop_free_text = FALSE,
+    exclude_identifiers = FALSE,
+    exclude_free_text = FALSE,
     clean = FALSE,
-    transform = summary_list$transform,
-    drop_blanks = FALSE,
     include_metadata = FALSE,
     annotate_metadata = FALSE,
     include_record_summary = FALSE,
@@ -1029,8 +916,8 @@ get_summary_records <- function(project, summary_name) {
     unlist() %>%
     sort() %>%
     unique()
-  record_rows <- which(project$redcap$all_records[[id_col]] %in% records)
-  summary_records <- project$redcap$all_records[record_rows, ]
+  record_rows <- which(project$summary$all_records[[id_col]] %in% records)
+  summary_records <- project$summary$all_records[record_rows, ]
   summary_records
 }
 #' @noRd
@@ -1236,7 +1123,7 @@ stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
   if (!all(vars %in% fields$field_name)) stop("all vars must be in metadata.")
   the_stack <- NULL
   for (var in vars) { # var <- vars %>% sample1()
-    form <- generate_project_summary_test(
+    form <- generate_project_summary(
       project,
       field_names = var,
       include_log = FALSE,

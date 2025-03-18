@@ -15,7 +15,7 @@
 #' set the REDCap API token if the update fails. Default is `TRUE`.
 #' @param reset Logical that forces a fresh update if TRUE. Default is `FALSE`.
 #' @param ask_about_overwrites Logical (TRUE/FALSE). If TRUE, prompts the user
-#' #' before overwriting existing data. Default is `TRUE`.
+#' before overwriting existing data. Default is `TRUE`.
 #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
 #' the directory. Default is `TRUE`.
@@ -174,8 +174,8 @@ sync_project <- function(
       }
       # project <- annotate_fields(project)
       # project <- annotate_choices(project)
-      project$redcap$all_records <- sum_records(project)
-      project$redcap$all_records$last_api_call <-
+      project$summary$all_records <- extract_project_records(project)
+      project$summary$all_records$last_api_call <-
         project$internals$last_full_update <-
         project$internals$last_metadata_update <-
         project$internals$last_data_update <- now_time()
@@ -193,22 +193,22 @@ sync_project <- function(
     if (will_update) {
       project$data <- project$data %>% all_character_cols_list()
       if (length(deleted_records) > 0) {
-        project$redcap$all_records <- project$redcap$all_records[which(!project$redcap$all_records[[project$redcap$id_col]] %in% deleted_records), ]
+        project$summary$all_records <- project$summary$all_records[which(!project$summary$all_records[[project$redcap$id_col]] %in% deleted_records), ]
         stale_records <- stale_records[which(!stale_records %in% deleted_records)]
         project$data <- remove_records_from_list(project = project, records = deleted_records, silent = TRUE)
       }
       form_list <- project %>% get_REDCap_data(labelled = project$internals$labelled, records = stale_records)
-      missing_from_summary <- stale_records[which(!stale_records %in% project$redcap$all_records[[project$redcap$id_col]])]
+      missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[project$redcap$id_col]])]
       if (length(missing_from_summary) > 0) {
         x <- data.frame(
           record = missing_from_summary,
           last_api_call = NA
         )
         colnames(x)[1] <- project$redcap$id_col
-        project$redcap$all_records <- project$redcap$all_records %>% dplyr::bind_rows(x)
-        project$redcap$all_records <- project$redcap$all_records[order(project$redcap$all_records[[project$redcap$id_col]], decreasing = TRUE), ]
+        project$summary$all_records <- project$summary$all_records %>% dplyr::bind_rows(x)
+        project$summary$all_records <- project$summary$all_records[order(project$summary$all_records[[project$redcap$id_col]], decreasing = TRUE), ]
       }
-      project$redcap$all_records$last_api_call[which(project$redcap$all_records[[project$redcap$id_col]] %in% stale_records)] <-
+      project$summary$all_records$last_api_call[which(project$summary$all_records[[project$redcap$id_col]] %in% stale_records)] <-
         project$internals$last_data_update <-
         now_time()
       project$data <- remove_records_from_list(project = project, records = stale_records, silent = TRUE)
@@ -256,20 +256,11 @@ sync_project <- function(
   }
   project$internals$last_sync <- now_time()
   if (save_to_dir && !is.null(project$dir_path)) {
-    # add params
-    # vars
-    # transform
-    # if(transform) {
-    #   project <- transform_project(
-    #   )
-    # }
-    if (summarize) {
+    if (was_updated) {
       project <- summarize_project(
         project = project,
         reset = reset
       )
-    }
-    if (was_updated) {
       project <- save_project(project)
     } else {
       project$internals$last_directory_save <- project$internals$last_sync

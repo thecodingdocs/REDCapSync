@@ -411,7 +411,9 @@ is_test_project <- function(project) {
 #' @return Message
 #' @family project object
 #' @export
-save_project <- function(project, silent = FALSE) {
+save_project <- function(project,
+                         silent = FALSE
+) {
   assert_setup_project(project)
   # assert_setup_project(project)
   if (!project$internals$ever_connected) {

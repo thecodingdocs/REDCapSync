@@ -78,6 +78,28 @@ default_project_transformation <- function(project) {
   forms_transformation$x_first[which(forms_transformation$repeating)] <- TRUE
   forms_transformation
 }
+#' @noRd
+merge_non_rep_project_transformation <- function(project) {
+  assert_setup_project(project)
+  forms_transformation <- project$metadata$forms
+  if ("repeating_via_events" %in% colnames(forms_transformation)) {
+    forms_transformation <- forms_transformation[order(forms_transformation$repeating_via_events), ]
+  }
+  forms_transformation <- forms_transformation[order(forms_transformation$repeating), ]
+  merge_form_name <- project$internals$merge_form_name
+  forms_transformation$form_name_remap <- forms_transformation$form_name
+  forms_transformation$form_label_remap <- forms_transformation$form_label
+  forms_transformation$form_name_remap[which(!forms_transformation$repeating)] <- merge_form_name
+  merge_form_name_label <- merge_form_name
+  if (merge_form_name %in% forms_transformation$form_name) {
+    merge_form_name_label <- forms_transformation$form_label[which(forms_transformation$form_name == merge_form_name)]
+  }
+  forms_transformation$form_label_remap[which(!forms_transformation$repeating)] <- merge_form_name_label
+  forms_transformation$merge_to <- NA
+  forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to
+  forms_transformation$x_first <- FALSE
+  forms_transformation
+}
 #' @rdname default-transformations
 #' @export
 add_default_project_fields <- function(project) {
@@ -399,18 +421,19 @@ add_default_project_summary <- function(project) {
     summary_name = summary_name,
     transform = TRUE,
     filter_list = NULL,
-    deidentify = TRUE,
-    drop_free_text = FALSE,
+    exclude_identifiers = TRUE,
+    exclude_free_text = FALSE,
     date_handling = "none",
     upload_compatible = TRUE,
     clean = TRUE,
     drop_blanks = FALSE,
+    drop_others = NULL,
     include_metadata = TRUE,
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
     include_users = TRUE,
     include_log = TRUE,
-    with_links = nrow(project$redcap$all_records) <= 10000,
+    with_links = nrow(project$summary$all_records) <= 10000,
     separate = FALSE,
     use_csv = project$internals$use_csv,
     dir_other = file.path(project$dir_path, "output"),
@@ -419,26 +442,7 @@ add_default_project_summary <- function(project) {
   invisible(project)
 }
 #' @title transform_project
-#' @description
-#' `r lifecycle::badge("experimental")`
-#' Transforms the REDCap database (`project` object) by applying the necessary
-#' field transformations. This function modifies the structure of the data and
-#' records according to the transformation rules specified.
-#'
-#' @details
-#' This function checks if the database has already been transformed and applies
-#' the transformation if not. It stores the original column names before
-#' transforming the data. The transformation process can include modifying field
-#' values and renaming columns based on predefined transformation rules.
-#'
-#' @inheritParams save_project
-#' @param reset Logical that forces transformation if TRUE. Default is `FALSE`.
-#' @return The transformed `project` object.
-#' @seealso
-#' \code{\link[REDCapSync]{save_project}} for saving the transformed database
-#' object.
-#' @family db_functions
-#' @export
+#' @noRd
 transform_project <- function(project, reset = FALSE) {
   has_transformation <- is_something(project$transformation$forms)
   has_data <- is_something(process_df_list(project$data, silent = TRUE))

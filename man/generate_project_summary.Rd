@@ -4,7 +4,31 @@
 \alias{generate_project_summary}
 \title{Generate a Summary from a Subset Name}
 \usage{
-generate_project_summary(project, summary_name)
+generate_project_summary(
+  project,
+  summary_name,
+  transform,
+  filter_field,
+  filter_choices,
+  filter_list = NULL,
+  filter_strict = TRUE,
+  field_names = NULL,
+  form_names = NULL,
+  no_duplicate_cols = FALSE,
+  exclude_identifiers = TRUE,
+  exclude_free_text = FALSE,
+  date_handling = "none",
+  upload_compatible = TRUE,
+  clean = TRUE,
+  drop_blanks = TRUE,
+  drop_missings = FALSE,
+  drop_others = NULL,
+  include_metadata = TRUE,
+  annotate_metadata = TRUE,
+  include_record_summary = TRUE,
+  include_users = TRUE,
+  include_log = TRUE
+)
 }
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data
@@ -12,7 +36,75 @@ and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{summary_name}{Character. The name of the summary from which to generate
-the summary.}
+the summary. *If you provide \code{summary_name} all other parameters are
+inherited according to what was set with \code{add_project_summary}.}
+
+\item{transform}{Logical. Whether to transform the data in the summary.
+Default
+is \code{TRUE}.}
+
+\item{filter_field}{Character. The name of the field in the database to
+filter on.}
+
+\item{filter_choices}{Vector. The values of \code{filter_field} used to define the
+summary.}
+
+\item{filter_list}{Vector. The values of \code{filter_field} used to define the
+summary.}
+
+\item{filter_strict}{Logical. If \code{TRUE}, all forms will be filtered by
+criteria. If \code{FALSE}, will convert original filter to id column and filter
+all other forms by that record. Default is \code{TRUE}.}
+
+\item{field_names}{Character vector. Names of specific fields to include in
+the summary. Default is \code{NULL}, which includes all fields.}
+
+\item{form_names}{Character vector. Names of forms to include in the summary.
+Default is \code{NULL}, which includes all forms.}
+
+\item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the
+function will avoid including duplicate columns in the output. Defaults to
+\code{FALSE}.}
+
+\item{exclude_identifiers}{Logical. Whether to exlude identifiers in the data
+in the summary. Default is \code{TRUE}.}
+
+\item{exclude_free_text}{Logical for excluding free text. Default is \code{FALSE}.}
+
+\item{date_handling}{character string. One of \code{none},\code{lowest-overall-zero},
+\code{lowest-record-zero}, \code{shuffle-record-randomly}, or zero date date in form of
+\code{2012-12-05}}
+
+\item{upload_compatible}{Logical. If \code{TRUE}, the data will be compatible with
+REDCap API upload. The main conflict is numeric or date variables in a
+project with missing codes while \code{clean} = \code{TRUE}. R converts these to \code{NA}.
+Default is \code{TRUE}.}
+
+\item{clean}{Logical. If \code{TRUE}, the data will be cleaned before summarizing.
+Default is \code{TRUE}.}
+
+\item{drop_blanks}{Logical. If \code{TRUE}, records with blank fields will be
+dropped. Default is \code{TRUE}.}
+
+\item{drop_missings}{Logical. If \code{TRUE}, will convert missing codes to NA.
+Default is \code{FALSE}.}
+
+\item{drop_others}{Character vector of other values that should be dropped.}
+
+\item{include_metadata}{Logical. If \code{TRUE}, metadata will be included in the
+summary. Default is \code{TRUE}.}
+
+\item{annotate_metadata}{Logical. If \code{TRUE}, metadata will be annotated in
+the summary. Default is \code{TRUE}.}
+
+\item{include_record_summary}{Logical. If \code{TRUE}, a record summary will be
+included in the generated summary. Default is \code{TRUE}.}
+
+\item{include_users}{Logical. If \code{TRUE}, user-related information will be
+included in the summary. Default is \code{TRUE}.}
+
+\item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in
+the summary. Default is \code{TRUE}.}
 }
 \value{
 A list containing the generated summary based on the specified options. The

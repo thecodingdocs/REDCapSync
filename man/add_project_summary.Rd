@@ -15,14 +15,14 @@ add_project_summary(
   field_names = NULL,
   form_names = NULL,
   no_duplicate_cols = FALSE,
-  deidentify = TRUE,
-  drop_free_text = FALSE,
+  exclude_identifiers = TRUE,
+  exclude_free_text = FALSE,
   date_handling = "none",
   upload_compatible = TRUE,
   clean = TRUE,
   drop_blanks = TRUE,
   drop_missings = FALSE,
-  other_drops = NULL,
+  drop_others = NULL,
   include_metadata = TRUE,
   annotate_metadata = TRUE,
   include_record_summary = TRUE,
@@ -70,8 +70,10 @@ Default is \code{NULL}, which includes all forms.}
 function will avoid including duplicate columns in the output. Defaults to
 \code{FALSE}.}
 
-\item{deidentify}{Logical. Whether to deidentify the data in the summary.
-Default is \code{TRUE}.}
+\item{exclude_identifiers}{Logical. Whether to exlude identifiers in the data
+in the summary. Default is \code{TRUE}.}
+
+\item{exclude_free_text}{Logical for excluding free text. Default is \code{FALSE}.}
 
 \item{date_handling}{character string. One of \code{none},\code{lowest-overall-zero},
 \code{lowest-record-zero}, \code{shuffle-record-randomly}, or zero date date in form of
@@ -87,6 +89,11 @@ Default is \code{TRUE}.}
 
 \item{drop_blanks}{Logical. If \code{TRUE}, records with blank fields will be
 dropped. Default is \code{TRUE}.}
+
+\item{drop_missings}{Logical. If \code{TRUE}, will convert missing codes to NA.
+Default is \code{FALSE}.}
+
+\item{drop_others}{Character vector of other values that should be dropped.}
 
 \item{include_metadata}{Logical. If \code{TRUE}, metadata will be included in the
 summary. Default is \code{TRUE}.}

@@ -1,6 +1,6 @@
 deidentify_data_list <- function(data_list,
                                  identifiers = NULL,
-                                 drop_free_text = FALSE) {
+                                 exclude_free_text = FALSE) {
   # assert_data_list contains data and metadata with forms and fields
   data <- data_list$data
   metadata <- data_list$metadata
@@ -42,7 +42,7 @@ deidentify_data_list <- function(data_list,
       )
     }
   }
-  if (drop_free_text) { # placeholder
+  if (exclude_free_text) { # placeholder
     #drop free text only if there is no validation
     #make function for that ?external
     free_text_rows <- which(

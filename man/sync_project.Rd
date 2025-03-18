@@ -27,7 +27,7 @@ set the REDCap API token if the update fails. Default is \code{TRUE}.}
 \item{silent}{Logical (TRUE/FALSE). For messages.}
 
 \item{ask_about_overwrites}{Logical (TRUE/FALSE). If TRUE, prompts the user
-#' before overwriting existing data. Default is \code{TRUE}.}
+before overwriting existing data. Default is \code{TRUE}.}
 
 \item{summarize}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
 
@@ -52,8 +52,6 @@ processing.
 \link{setup_project} for initializing the \code{project} object.
 
 Other db_functions: 
-\code{\link{rmarkdown_project}()},
-\code{\link{summarize_project}()},
-\code{\link{transform_project}()}
+\code{\link{rmarkdown_project}()}
 }
 \concept{db_functions}

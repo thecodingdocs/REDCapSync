@@ -73,8 +73,6 @@ reference:
     desc: Mirror your project object to a local/cloud file system. If you have summaries, will only update file if record belonging to that summary was updated.
     contents:
       - generate_project_summary
-      - summarize_project
-      - transform_project
   - subtitle: Data Helpers
     desc: Used for managing to-be-upload data
     contents:

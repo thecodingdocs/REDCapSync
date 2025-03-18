@@ -5,19 +5,7 @@
 \alias{delete_project}
 \title{Save or Delete project file from the directory}
 \usage{
-save_project(
-  project,
-  silent = FALSE,
-  save_spreadsheets = FALSE,
-  smart = TRUE,
-  deidentify = FALSE,
-  include_metadata = TRUE,
-  include_other = TRUE,
-  with_links = TRUE,
-  forms,
-  merge_non_repeating = TRUE,
-  separate = TRUE
-)
+save_project(project, silent = FALSE)
 
 delete_project(project)
 }

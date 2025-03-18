@@ -15,7 +15,7 @@
 #' set the REDCap API token if the update fails. Default is `TRUE`.
 #' @param reset Logical that forces a fresh update if TRUE. Default is `FALSE`.
 #' @param ask_about_overwrites Logical (TRUE/FALSE). If TRUE, prompts the user
-#' #' before overwriting existing data. Default is `TRUE`.
+#' before overwriting existing data. Default is `TRUE`.
 #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
 #' the directory. Default is `TRUE`.
@@ -256,20 +256,11 @@ sync_project <- function(
   }
   project$internals$last_sync <- now_time()
   if (save_to_dir && !is.null(project$dir_path)) {
-    # add params
-    # vars
-    # transform
-    # if(transform) {
-    #   project <- transform_project(
-    #   )
-    # }
-    if (summarize) {
+    if (was_updated) {
       project <- summarize_project(
         project = project,
         reset = reset
       )
-    }
-    if (was_updated) {
       project <- save_project(project)
     } else {
       project$internals$last_directory_save <- project$internals$last_sync

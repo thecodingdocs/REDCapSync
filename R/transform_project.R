@@ -421,13 +421,13 @@ add_default_project_summary <- function(project) {
     summary_name = summary_name,
     transform = TRUE,
     filter_list = NULL,
-    deidentify = TRUE,
-    drop_free_text = FALSE,
+    exclude_identifiers = TRUE,
+    exclude_free_text = FALSE,
     date_handling = "none",
     upload_compatible = TRUE,
     clean = TRUE,
     drop_blanks = FALSE,
-    other_drops = NULL,
+    drop_others = NULL,
     include_metadata = TRUE,
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
@@ -442,26 +442,7 @@ add_default_project_summary <- function(project) {
   invisible(project)
 }
 #' @title transform_project
-#' @description
-#' `r lifecycle::badge("experimental")`
-#' Transforms the REDCap database (`project` object) by applying the necessary
-#' field transformations. This function modifies the structure of the data and
-#' records according to the transformation rules specified.
-#'
-#' @details
-#' This function checks if the database has already been transformed and applies
-#' the transformation if not. It stores the original column names before
-#' transforming the data. The transformation process can include modifying field
-#' values and renaming columns based on predefined transformation rules.
-#'
-#' @inheritParams save_project
-#' @param reset Logical that forces transformation if TRUE. Default is `FALSE`.
-#' @return The transformed `project` object.
-#' @seealso
-#' \code{\link[REDCapSync]{save_project}} for saving the transformed database
-#' object.
-#' @family db_functions
-#' @export
+#' @noRd
 transform_project <- function(project, reset = FALSE) {
   has_transformation <- is_something(project$transformation$forms)
   has_data <- is_something(process_df_list(project$data, silent = TRUE))

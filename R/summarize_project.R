@@ -177,7 +177,7 @@ fields_with_no_data <- function(project) {
   project$metadata$fields$field_name[which(is.na(project$metadata$fields$complete_rate) & !project$metadata$fields$field_type %in% c("checkbox", "descriptive"))]
 }
 #' @noRd
-clean_data_list <- function(data_list, drop_blanks = TRUE, other_drops = NULL) {
+clean_data_list <- function(data_list, drop_blanks = TRUE, drop_others = NULL) {
   #assert data list
   data <- data_list$data
   metadata <- data_list$metadata
@@ -186,13 +186,13 @@ clean_data_list <- function(data_list, drop_blanks = TRUE, other_drops = NULL) {
       form = data[[form_name]],
       fields = metadata$fields,
       drop_blanks = drop_blanks,
-      other_drops = other_drops
+      drop_others = drop_others
     )
   }
   data
 }
 #' @noRd
-clean_form <- function(form, fields, drop_blanks = TRUE, other_drops = NULL) {
+clean_form <- function(form, fields, drop_blanks = TRUE, drop_others = NULL) {
   for (field_name in colnames(form)) {
     if (field_name %in% fields$field_name) {
       row <- which(fields$field_name == field_name)
@@ -221,8 +221,8 @@ clean_form <- function(form, fields, drop_blanks = TRUE, other_drops = NULL) {
           if (drop_blanks) {
             levels <- levels[which(levels %in% unique(form[[field_name]]))]
           }
-          if (!is.null(other_drops)) {
-            if (length(other_drops) > 0) levels <- levels[which(!levels %in% other_drops)]
+          if (!is.null(drop_others)) {
+            if (length(drop_others) > 0) levels <- levels[which(!levels %in% drop_others)]
           }
         }
         if (class == "integer") {
@@ -307,8 +307,9 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' Default is `NULL`, which includes all forms.
 #' @param field_names Character vector. Names of specific fields to include in
 #' the summary. Default is `NULL`, which includes all fields.
-#' @param deidentify Logical. Whether to deidentify the data in the summary.
-#' Default is `TRUE`.
+#' @param exclude_identifiers Logical. Whether to exlude identifiers in the data
+#' in the summary. Default is `TRUE`.
+#' @param exclude_free_text Logical for excluding free text. Default is `FALSE`.
 #' @param date_handling character string. One of `none`,`lowest-overall-zero`,
 #' `lowest-record-zero`, `shuffle-record-randomly`, or zero date date in form of
 #' `2012-12-05`
@@ -320,6 +321,9 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' Default is `TRUE`.
 #' @param drop_blanks Logical. If `TRUE`, records with blank fields will be
 #' dropped. Default is `TRUE`.
+#' @param drop_missings Logical. If `TRUE`, will convert missing codes to NA.
+#' Default is `FALSE`.
+#' @param drop_others Character vector of other values that should be dropped.
 #' @param include_metadata Logical. If `TRUE`, metadata will be included in the
 #' summary. Default is `TRUE`.
 #' @param annotate_metadata Logical. If `TRUE`, metadata will be annotated in
@@ -364,14 +368,14 @@ add_project_summary <- function(
     field_names = NULL,
     form_names = NULL,
     no_duplicate_cols = FALSE,
-    deidentify = TRUE,
-    drop_free_text = FALSE,
+    exclude_identifiers = TRUE,
+    exclude_free_text = FALSE,
     date_handling = "none",
     upload_compatible = TRUE,
     clean = TRUE,
     drop_blanks = TRUE,
     drop_missings = FALSE,
-    other_drops = NULL,
+    drop_others = NULL,
     include_metadata = TRUE,
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
@@ -406,14 +410,14 @@ add_project_summary <- function(
     field_names = field_names,
     form_names = form_names,
     no_duplicate_cols = no_duplicate_cols,
-    deidentify = deidentify,
-    drop_free_text = drop_free_text,
+    exclude_identifiers = exclude_identifiers,
+    exclude_free_text = exclude_free_text,
     date_handling = date_handling,
     upload_compatible = upload_compatible,
     clean = clean,
     drop_blanks = drop_blanks,
     drop_missings = drop_missings,
-    other_drops = other_drops,
+    drop_others = drop_others,
     include_metadata = include_metadata,
     annotate_metadata = annotate_metadata,
     include_record_summary = include_record_summary,
@@ -545,14 +549,14 @@ generate_project_summary <- function(
     field_names = NULL,
     form_names = NULL,
     no_duplicate_cols = FALSE,
-    deidentify = TRUE,
-    drop_free_text = FALSE,
+    exclude_identifiers = TRUE,
+    exclude_free_text = FALSE,
     date_handling = "none",
     upload_compatible = TRUE,
     clean = TRUE,
     drop_blanks = TRUE,
     drop_missings = FALSE,
-    other_drops = NULL,
+    drop_others = NULL,
     include_metadata = TRUE,
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
@@ -569,14 +573,14 @@ generate_project_summary <- function(
     field_names <- summary_list$field_names
     form_names <- summary_list$form_names
     no_duplicate_cols <- summary_list$no_duplicate_cols
-    deidentify <- summary_list$deidentify
-    drop_free_text <- summary_list$drop_free_text
+    exclude_identifiers <- summary_list$exclude_identifiers
+    exclude_free_text <- summary_list$exclude_free_text
     date_handling <- summary_list$date_handling
     upload_compatible <- summary_list$upload_compatible
     clean <- summary_list$clean
     drop_blanks <- summary_list$drop_blanks
     drop_missings <- summary_list$drop_missings
-    other_drops <- summary_list$other_drops
+    drop_others <- summary_list$drop_others
     include_metadata <- summary_list$include_metadata
     annotate_metadata <- summary_list$annotate_metadata
     include_record_summary <- summary_list$include_record_summary
@@ -687,10 +691,10 @@ generate_project_summary <- function(
     }
     project$data <- out_list
   }
-  if (deidentify) {
+  if (exclude_identifiers) {
     project <- deidentify_data_list(
       data_list = project,
-      drop_free_text = drop_free_text,
+      exclude_free_text = exclude_free_text,
       date_handling = date_handling
     )
   }
@@ -698,7 +702,7 @@ generate_project_summary <- function(
     project <- clean_data_list(
       data_list = project,
       drop_blanks = drop_blanks,
-      other_drops = other_drops
+      drop_others = drop_others
     )
   }
   to_save_list <- project$data
@@ -728,27 +732,7 @@ generate_project_summary <- function(
   invisible(to_save_list)
 }
 #' @title Summarize REDCap Database
-#' @description
-#' `r lifecycle::badge("experimental")`
-#' Summarizes the REDCap database (`project` object) by filtering and generating
-#' a summary list.
-#'
-#' @details
-#' This function filters the REDCap database based on the provided parameters
-#' and generates a summary list. The summary can include metadata, record
-#' summaries, user information, and logs. The function also supports
-#' deidentification and cleaning of the data.
-#'
-#' @inheritParams save_project
-#' @param reset Logical (TRUE/FALSE). If TRUE, forces the summary generation
-#' even if there are issues. Default is `FALSE`.
-#' @return List. Returns a list containing the summarized data, including
-#' records, metadata, users, logs, and any other specified data.
-#' @seealso
-#' \link{setup_project} for initializing the `project` object.
-#' \link{sync_project} for updating the `project` object.
-#' @family db_functions
-#' @export
+#' @noRd
 summarize_project <- function(
     project,
     reset = FALSE) {
@@ -934,8 +918,8 @@ get_summary_records <- function(project, summary_name) {
     filter_strict = FALSE,
     form_names = summary_list$form_names,
     field_names = project$redcap$id_col,
-    deidentify = FALSE,
-    drop_free_text = FALSE,
+    exclude_identifiers = FALSE,
+    exclude_free_text = FALSE,
     clean = FALSE,
     include_metadata = FALSE,
     annotate_metadata = FALSE,

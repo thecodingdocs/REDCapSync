@@ -36,8 +36,6 @@ PDF, or other formats.
 \code{\link[REDCapSync]{save_project}} for saving the \code{project} object.
 
 Other db_functions: 
-\code{\link{summarize_project}()},
-\code{\link{sync_project}()},
-\code{\link{transform_project}()}
+\code{\link{sync_project}()}
 }
 \concept{db_functions}

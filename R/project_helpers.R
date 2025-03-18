@@ -1,5 +1,6 @@
 deidentify_data_list <- function(data_list,
                                  identifiers = NULL,
+                                 date_handling = "none",
                                  exclude_free_text = FALSE) {
   # assert_data_list contains data and metadata with forms and fields
   data <- data_list$data
@@ -120,7 +121,7 @@ get_min_dates <- function(data_list) {
       existing_fields <- intersect(names(form), date_vector)
       if (length(existing_fields) > 0) {
         df_subset <- form[, c(id_cols[1], existing_fields), drop = FALSE]
-        df_long <- reshape(df_subset, varying = existing_fields,
+        df_long <- stats::reshape(df_subset, varying = existing_fields,
                            v.names = "date", times = existing_fields,
                            timevar = "field", direction = "long")
         df_long$date <- as.Date(df_long$date, format = "%Y-%m-%d")

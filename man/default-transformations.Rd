@@ -14,7 +14,7 @@ default_project_transformation(project)
 
 add_default_project_fields(project)
 
-add_project_transformation(project, forms_transformation, ask = TRUE)
+add_project_transformation(project, forms_transformation)
 
 add_default_project_summary(project)
 }

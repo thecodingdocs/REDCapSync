@@ -110,7 +110,6 @@ articles:
       - Basic
       - Intermediate
       - Advanced
-      - RosyREDCap
   - title: Using RosyREDCap
     contents:
       - REDCap

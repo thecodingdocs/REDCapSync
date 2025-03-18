@@ -156,8 +156,7 @@ add_default_project_fields <- function(project) {
 #' @rdname default-transformations
 #' @export
 add_project_transformation <- function(project,
-                                       forms_transformation,
-                                       ask = TRUE) {
+                                       forms_transformation) {
   if (missing(forms_transformation)) {
     forms_transformation <- default_project_transformation(project)
   }
@@ -185,16 +184,10 @@ add_project_transformation <- function(project,
       forms_tranformation_cols %>% as_comma_string()
     )
   }
-  choice <- TRUE
   if (!is.null(project$transformation$forms)) {
-    if (!identical(project$transformation$forms, forms_transformation)) {
-      if (ask) {
-        choice <- utils::askYesNo(
-          msg = "Do you want to add transformation? (does not match previous)")
-        if (!choice) {
-          stop("Stopped as you asked.")
-        }
-      }
+    if (identical(project$transformation$forms, forms_transformation)) {
+      #message
+      return(invisible(project))
     }
   }
   # add more checks

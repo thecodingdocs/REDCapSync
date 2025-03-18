@@ -741,6 +741,7 @@ summarize_project <- function(
   if (reset) {
     summary_names <- project$summary %>% names()
   }
+  summary_names <- summary_names[which(summary_names!="all_records")]
   if (is_something(summary_names)) {
     for (summary_name in summary_names) {
       project <- project %>% save_summary(summary_name)

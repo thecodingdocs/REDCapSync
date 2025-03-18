@@ -29,8 +29,6 @@ upload_transform_to_project <- function(project) {
 #' @inheritParams save_project
 #' @param forms_transformation a data.frame that matches instruments. See
 #' `default_project_transformation` for an example.
-#' @param ask logical for asking in console about changes to project
-#' forms_transformation
 #' @return
 #' The updated `project` object with default transformations applied to the
 #' specified forms.

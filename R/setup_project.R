@@ -411,7 +411,18 @@ is_test_project <- function(project) {
 #' @return Message
 #' @family project object
 #' @export
-save_project <- function(project, silent = FALSE) {
+save_project <- function(project,
+                         silent = FALSE,
+                         save_spreadsheets = FALSE,
+                         smart = TRUE,
+                         deidentify = FALSE,
+                         include_metadata = TRUE,
+                         include_other = TRUE,
+                         with_links = TRUE,
+                         forms,
+                         merge_non_repeating = TRUE,
+                         separate = TRUE
+                         ) {
   assert_setup_project(project)
   # assert_setup_project(project)
   if (!project$internals$ever_connected) {
@@ -423,6 +434,149 @@ save_project <- function(project, silent = FALSE) {
       )
     )
     return(invisible(project))
+  }
+  if(save_spreadsheets){
+    if (deidentify) {
+      project <- deidentify_data_list(
+        data_list = project,
+        drop_free_text = drop_free_text,
+        date_handling = date_handling
+      )
+    }
+    if (missing(dir_other)) {
+      root_dir <- get_dir(project)
+      redcap_dir <- file.path(root_dir, "REDCap", project$short_name)
+    } else {
+      redcap_dir <- dir_other
+      cli_alert_wrap(
+        "Be careful setting your own directories",
+        file = redcap_dir,
+        bullet_type = "!"
+      )
+    }
+    redcap_metadata_dir <- file.path(redcap_dir, "metadata")
+    redcap_other_dir <- file.path(redcap_dir, "other")
+    due_for_save_metadata <- TRUE
+    due_for_save_data <- TRUE
+    if (smart) {
+      if (!is.null(project$internals$last_metadata_dir_save)) {
+        due_for_save_metadata <- project$internals$last_metadata_update > project$internals$last_metadata_dir_save
+      }
+      if (!is.null(project$internals$last_data_dir_save)) {
+        due_for_save_data <- project$internals$last_data_update > project$internals$last_data_dir_save
+      }
+    }
+    redcap_dir %>% dir.create(showWarnings = FALSE)
+    redcap_metadata_dir %>% dir.create(showWarnings = FALSE)
+    redcap_other_dir %>% dir.create(showWarnings = FALSE)
+    if (due_for_save_metadata) {
+      if (include_metadata) {
+        project$internals$last_metadata_dir_save <-
+          project$internals$last_metadata_update
+        names_generic <- c(
+          "forms",
+          "fields",
+          "choices",
+          "arms",
+          "events",
+          "event_mapping",
+          "missing_codes"
+        )
+        names_redcap <- c(
+          "instruments",
+          "metadata",
+          "codebook",
+          "arms",
+          "events",
+          "event_mapping",
+          "missing_codes"
+        )
+        for (i in seq_along(names_generic)) { # ,"log" #taking too long
+          z <- project$metadata[names_generic[i]]
+          if (is_something(z[[1]])) {
+            tn <- names_redcap[i]
+            if (project$internals$use_csv) {
+              list_to_csv(
+                list = z,
+                dir = redcap_metadata_dir,
+                file_name = tn
+              )
+            } else {
+              list_to_excel(
+                list = z,
+                dir = redcap_metadata_dir,
+                file_name = tn,
+                str_trunc_length = str_trunc_length,
+                overwrite = TRUE
+              )
+            }
+          }
+        }
+      }
+      if (include_other) {
+        for (i in seq_along(names_generic)) { # ,"log" #taking too long
+          z <- project$metadata[names_generic[i]]
+          if (is_something(z[[1]])) {
+            tn <- names_redcap[i]
+            if (project$internals$use_csv) {
+              list_to_csv(
+                list = z,
+                dir = redcap_metadata_dir,
+                file_name = tn
+              )
+            } else {
+              list_to_excel(
+                list = z,
+                dir = redcap_metadata_dir,
+                file_name = tn,
+                str_trunc_length = str_trunc_length,
+                overwrite = TRUE
+              )
+            }
+          }
+        }
+        for (x in c("project_info", "users")) { # ,"log" #taking too long
+          if (project$internals$use_csv) {
+            list_to_csv(
+              list = project$redcap[x],
+              dir = redcap_other_dir,
+              file_name = x
+            )
+          } else {
+            list_to_excel(
+              list = project$redcap[x],
+              dir = redcap_other_dir,
+              file_name = x,
+              str_trunc_length = str_trunc_length,
+              overwrite = TRUE
+            )
+          }
+        }
+      }
+    }
+    if (due_for_save_data) {
+      project$internals$last_data_dir_save <- project$internals$last_data_update
+      to_save_list <- project[["data"]]
+      link_col_list <- list()
+      file_name <- project$short_name
+      if (project$internals$use_csv) {
+        list_to_csv(
+          list = to_save_list,
+          dir = redcap_dir,
+          file_name = file_name
+        )
+      } else {
+        list_to_excel(
+          list = to_save_list,
+          dir = redcap_dir,
+          link_col_list = link_col_list,
+          file_name = file_name,
+          separate = separate,
+          str_trunc_length = str_trunc_length,
+          overwrite = TRUE
+        )
+      }
+    }
   }
   project$internals$last_directory_save <- now_time()
   save_project_path <- get_expected_project_path(project = project)

@@ -30,7 +30,6 @@ reference:
       - get_projects
       - setup_project
       - sync_project
-      - drop_REDCap_to_directory
       - summarize_project
   - title: Everything by Topic (Intermediate/Advanced)
     desc: Expands on functionality and breaksdown core feautures into more customizable parts
@@ -71,13 +70,9 @@ reference:
       - add_project_transformation
       - add_project_summary
   - subtitle: project Object Outputs
-    desc: Mirror your project object to a local/cloud file system. If you have subsets, will only update file if record beloning to that subset was updated.
+    desc: Mirror your project object to a local/cloud file system. If you have summaries, will only update file if record belonging to that summary was updated.
     contents:
-      - clean_project
-      - deidentify_project
-      - drop_REDCap_to_directory
       - generate_project_summary
-      - generate_project_summary_test
       - summarize_project
       - transform_project
   - subtitle: Data Helpers

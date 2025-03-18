@@ -78,6 +78,28 @@ default_project_transformation <- function(project) {
   forms_transformation$x_first[which(forms_transformation$repeating)] <- TRUE
   forms_transformation
 }
+#' @noRd
+merge_non_rep_project_transformation <- function(project) {
+  assert_setup_project(project)
+  forms_transformation <- project$metadata$forms
+  if ("repeating_via_events" %in% colnames(forms_transformation)) {
+    forms_transformation <- forms_transformation[order(forms_transformation$repeating_via_events), ]
+  }
+  forms_transformation <- forms_transformation[order(forms_transformation$repeating), ]
+  merge_form_name <- project$internals$merge_form_name
+  forms_transformation$form_name_remap <- forms_transformation$form_name
+  forms_transformation$form_label_remap <- forms_transformation$form_label
+  forms_transformation$form_name_remap[which(!forms_transformation$repeating)] <- merge_form_name
+  merge_form_name_label <- merge_form_name
+  if (merge_form_name %in% forms_transformation$form_name) {
+    merge_form_name_label <- forms_transformation$form_label[which(forms_transformation$form_name == merge_form_name)]
+  }
+  forms_transformation$form_label_remap[which(!forms_transformation$repeating)] <- merge_form_name_label
+  forms_transformation$merge_to <- NA
+  forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to
+  forms_transformation$x_first <- FALSE
+  forms_transformation
+}
 #' @rdname default-transformations
 #' @export
 add_default_project_fields <- function(project) {
@@ -405,6 +427,7 @@ add_default_project_summary <- function(project) {
     upload_compatible = TRUE,
     clean = TRUE,
     drop_blanks = FALSE,
+    other_drops = NULL,
     include_metadata = TRUE,
     annotate_metadata = TRUE,
     include_record_summary = TRUE,

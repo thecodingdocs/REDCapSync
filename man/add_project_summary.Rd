@@ -21,6 +21,8 @@ add_project_summary(
   upload_compatible = TRUE,
   clean = TRUE,
   drop_blanks = TRUE,
+  drop_missings = FALSE,
+  other_drops = NULL,
   include_metadata = TRUE,
   annotate_metadata = TRUE,
   include_record_summary = TRUE,
@@ -70,9 +72,6 @@ function will avoid including duplicate columns in the output. Defaults to
 
 \item{deidentify}{Logical. Whether to deidentify the data in the summary.
 Default is \code{TRUE}.}
-
-\item{drop_free_text}{Logical. If \code{TRUE}, columns containing free text
-will also be excluded from the \code{project}. Default is \code{FALSE}.}
 
 \item{date_handling}{character string. One of \code{none},\code{lowest-overall-zero},
 \code{lowest-record-zero}, \code{shuffle-record-randomly}, or zero date date in form of

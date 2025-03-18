@@ -4,7 +4,31 @@
 \alias{generate_project_summary}
 \title{Generate a Summary from a Subset Name}
 \usage{
-generate_project_summary(project, summary_name)
+generate_project_summary(
+  project,
+  summary_name,
+  transform,
+  filter_field,
+  filter_choices,
+  filter_list = NULL,
+  filter_strict = TRUE,
+  field_names = NULL,
+  form_names = NULL,
+  no_duplicate_cols = FALSE,
+  deidentify = TRUE,
+  drop_free_text = FALSE,
+  date_handling = "none",
+  upload_compatible = TRUE,
+  clean = TRUE,
+  drop_blanks = TRUE,
+  drop_missings = FALSE,
+  other_drops = NULL,
+  include_metadata = TRUE,
+  annotate_metadata = TRUE,
+  include_record_summary = TRUE,
+  include_users = TRUE,
+  include_log = TRUE
+)
 }
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data
@@ -12,7 +36,8 @@ and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{summary_name}{Character. The name of the summary from which to generate
-the summary.}
+the summary. *If you provide \code{summary_name} all other parameters are
+inherited according to what was set with \code{add_project_summary}.}
 }
 \value{
 A list containing the generated summary based on the specified options. The

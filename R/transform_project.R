@@ -433,7 +433,7 @@ add_default_project_summary <- function(project) {
     include_record_summary = TRUE,
     include_users = TRUE,
     include_log = TRUE,
-    with_links = nrow(project$redcap$all_records) <= 10000,
+    with_links = nrow(project$summary$all_records) <= 10000,
     separate = FALSE,
     use_csv = project$internals$use_csv,
     dir_other = file.path(project$dir_path, "output"),

@@ -506,8 +506,8 @@ save_summary <- function(project, summary_name) {
     unlist() %>%
     sort() %>%
     unique()
-  record_rows <- which(project$redcap$all_records[[id_col]] %in% records)
-  summary_records <- project$redcap$all_records[record_rows, ]
+  record_rows <- which(project$summary$all_records[[id_col]] %in% records)
+  summary_records <- project$summary$all_records[record_rows, ]
   project$summary[[summary_name]]$summary_records <- summary_records
   project$summary[[summary_name]]$last_save_time <- now_time()
   project$summary[[summary_name]]$final_form_tab_names <-
@@ -718,7 +718,7 @@ generate_project_summary <- function(
     }
   }
   if (include_record_summary) {
-    records <- sum_records(project)[[1]]
+    records <- extract_project_records(project)[[1]]
     if (!is.null(records)) {
       to_save_list$records <- summarize_records_from_log(project, records = records)
     }
@@ -775,34 +775,15 @@ run_quality_checks <- function(project) {
   invisible(project)
 }
 #' @noRd
-sum_records <- function(project) {
+extract_project_records <- function(project) {
   records <- NULL
   if (project$data %>% is_something()) {
-    cols <- project$redcap$id_col
-    if (is.data.frame(project$metadata$arms)) {
-      if (nrow(project$metadata$arms) > 1) {
-        cols <- project$redcap$id_col %>% append("arm_number")
-      }
-    }
-    if (length(cols) == 1) {
-      records <- data.frame(
-        records = names(project$data) %>% lapply(function(form_name) {
-          project$data[[form_name]][, cols]
-        }) %>% unlist() %>% unique()
-      )
-      colnames(records) <- cols
-    }
-    if (length(cols) == 2) {
-      records <- names(project$data) %>%
-        lapply(function(form_name) {
-          project$data[[form_name]][, cols]
-        }) %>%
-        dplyr::bind_rows() %>%
-        unique()
-      # records <- records[order(as.integer(records[[project$redcap$id_col]])),]
-    }
+    records <- data.frame(
+      records = names(project$data) %>% lapply(function(form_name) {
+        project$data[[form_name]][, project$redcap$id_col,drop = FALSE]
+      }) %>% unlist() %>% unique()
+    )
     rownames(records) <- NULL
-    if (records[[project$redcap$id_col]] %>% duplicated() %>% any()) stop("duplicate ", project$redcap$id_col, " in sum_records() function")
   }
   records
 }
@@ -870,7 +851,7 @@ summarize_records_from_log <- function(project, records) {
   }
   # records -------------
   # all_records <- unique(log$record)
-  summary_records <- project$redcap$all_records
+  summary_records <- project$summary$all_records
   record_groups <- log %>% split(log$record)
   summary_records <- summary_records[which(summary_records[[project$redcap$id_col]] %in% names(record_groups)), , drop = FALSE]
   # users_log_rows <- users %>% lapply(function(user){which(log$username==user)})
@@ -908,7 +889,7 @@ summarize_records_from_log <- function(project, records) {
 get_summary_records <- function(project, summary_name) {
   id_col <- project$redcap$id_col
   if (missing(summary_name)) {
-    return(project$redcap$all_records[[id_col]])
+    return(project$summary$all_records[[id_col]])
   }
   summary_list <- project$summary[[summary_name]]
   to_save_list <- generate_project_summary(
@@ -935,8 +916,8 @@ get_summary_records <- function(project, summary_name) {
     unlist() %>%
     sort() %>%
     unique()
-  record_rows <- which(project$redcap$all_records[[id_col]] %in% records)
-  summary_records <- project$redcap$all_records[record_rows, ]
+  record_rows <- which(project$summary$all_records[[id_col]] %in% records)
+  summary_records <- project$summary$all_records[record_rows, ]
   summary_records
 }
 #' @noRd

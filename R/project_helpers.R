@@ -122,8 +122,8 @@ get_min_dates <- function(data_list) {
       if (length(existing_fields) > 0) {
         df_subset <- form[, c(id_cols[1], existing_fields), drop = FALSE]
         df_long <- stats::reshape(df_subset, varying = existing_fields,
-                           v.names = "date", times = existing_fields,
-                           timevar = "field", direction = "long")
+                                  v.names = "date", times = existing_fields,
+                                  timevar = "field", direction = "long")
         df_long$date <- as.Date(df_long$date, format = "%Y-%m-%d")
         all_dates <- c(all_dates, list(df_long))
       }
@@ -197,15 +197,15 @@ link_REDCap_record <- function(project,
   )
   id_col <- project$redcap$id_col
   if (!missing(record)) {
-    if (!record %in% project$redcap$all_records[[id_col]]) {
+    if (!record %in% project$summary$all_records[[id_col]]) {
       stop(record, " is not one of the records inside project")
     }
-    if ("arm_number" %in% colnames(project$redcap$all_records)) {
-      arm_row <- which(project$redcap$all_records[[id_col]] == record)
+    if ("arm_number" %in% colnames(project$summary$all_records)) {
+      arm_row <- which(project$summary$all_records[[id_col]] == record)
       link <- link %>%
         paste0(
           "&arm=",
-          project$redcap$all_records$arm_number[arm_row]
+          project$summary$all_records$arm_number[arm_row]
         )
     }
     link <- link %>% paste0("&id=", record)

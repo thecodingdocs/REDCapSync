@@ -167,7 +167,7 @@ find_upload_diff <- function(project, view_old = FALSE, n_row_view = 20) {
 check_field <- function(project, form, field_name, autofill_new = TRUE) {
   form <- field_names_to_form_names(project, field_name)
   records <- form[[project$redcap$id_col]] %>% unique()
-  bad_records <- records[which(!records %in% project$redcap$all_records[[project$redcap$id_col]])]
+  bad_records <- records[which(!records %in% project$summary$all_records[[project$redcap$id_col]])]
   if (length(bad_records) > 0) stop("Records not included in project: ", records %>% paste0(collapse = ", "))
   cols_mandatory_structure <- project$metadata$form_key_cols[[form]]
   cols_mandatory <- c(cols_mandatory_structure, field_name)

@@ -520,6 +520,7 @@ save_summary <- function(project, summary_name) {
 #' data, including metadata, and annotating metadata.
 #'
 #' @inheritParams save_project
+#' @inheritParams add_project_summary
 #' @param summary_name Character. The name of the summary from which to generate
 #' the summary. *If you provide `summary_name` all other parameters are
 #' inherited according to what was set with `add_project_summary`.

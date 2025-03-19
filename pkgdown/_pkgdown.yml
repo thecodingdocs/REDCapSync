@@ -68,6 +68,7 @@ reference:
       - add_project_field
       - add_project_transformation
       - add_project_summary
+      - clear_project_summaries
   - subtitle: project Object Outputs
     desc: Mirror your project object to a local/cloud file system. If you have summaries, will only update file if record belonging to that summary was updated.
     contents:

@@ -750,10 +750,10 @@ summarize_project <- function(
   project$internals$last_summary <- now_time()
   invisible(project)
 }
-#' @title clear_summaries
+#' @title clear_project_summaries
 #' @inheritParams save_project
 #' @export
-clear_summaries <- function(project){
+clear_project_summaries <- function(project){
   assert_setup_project(project)
   project$summary <- list()
   cli_alert_success("Cleared project summaries!")

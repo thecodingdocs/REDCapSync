@@ -11,11 +11,10 @@ articles:
   project_object: project_object.html
   REDCap: REDCap.html
   REDCapSync: REDCapSync.html
-  RosyREDCap: RosyREDCap.html
   Security: Security.html
   Tokens: Tokens.html
   Upload: Upload.html
-last_built: 2025-02-25T22:42Z
+last_built: 2025-03-19T02:08Z
 urls:
   reference: https://thecodingdocs.github.io/REDCapSync/reference
   article: https://thecodingdocs.github.io/REDCapSync/articles

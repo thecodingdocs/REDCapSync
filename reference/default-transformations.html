@@ -32,7 +32,6 @@ forms."><meta property="og:image" content="https://thecodingdocs.github.io/REDCa
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Basic.html">REDCapSync for the Basic R User</a></li>
     <li><a class="dropdown-item" href="../articles/Intermediate.html">REDCapSync for the Intermediate R User</a></li>
     <li><a class="dropdown-item" href="../articles/Advanced.html">REDCapSync for the Advanced R User</a></li>
-    <li><a class="dropdown-item" href="../articles/RosyREDCap.html">RosyREDCap Shiny App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul></li>
@@ -54,7 +53,7 @@ forms."><meta property="og:image" content="https://thecodingdocs.github.io/REDCa
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Add Default Forms Transformation to the Database</h1>
-      <small class="dont-index">Source: <a href="https://github.com/thecodingdocs/REDCapSync/blob/master/R/transform_project.R" class="external-link"><code>R/transform_project.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/thecodingdocs/REDCapSync/blob/main/R/transform_project.R" class="external-link"><code>R/transform_project.R</code></a></small>
       <div class="d-none name"><code>default-transformations.Rd</code></div>
     </div>
 
@@ -75,7 +74,7 @@ forms.</p>
 <span></span>
 <span><span class="fu">add_default_project_fields</span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">add_project_transformation</span><span class="op">(</span><span class="va">project</span>, <span class="va">forms_transformation</span>, ask <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">add_project_transformation</span><span class="op">(</span><span class="va">project</span>, <span class="va">forms_transformation</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">add_default_project_summary</span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -94,11 +93,6 @@ settings. Generated using <a href="setup-load.html">load_project</a> or <a href=
 <dd><p>a data.frame that matches instruments. See
 <code>default_project_transformation</code> for an example.</p></dd>
 
-
-<dt id="arg-ask">ask<a class="anchor" aria-label="anchor" href="#arg-ask"></a></dt>
-<dd><p>logical for asking in console about changes to project
-forms_transformation</p></dd>
-
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -113,7 +107,7 @@ are predefined within the function and ensure consistency across datasets.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="save-deleteproject.html">save_project</a></code> for saving the database or subsets.</p></div>
+    <div class="dont-index"><p><code><a href="save-deleteproject.html">save_project</a></code> for saving the database or summaries.</p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

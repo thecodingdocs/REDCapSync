@@ -43,7 +43,6 @@
 <li><a class="dropdown-item" href="../articles/Basic.html">REDCapSync for the Basic R User</a></li>
     <li><a class="dropdown-item" href="../articles/Intermediate.html">REDCapSync for the Intermediate R User</a></li>
     <li><a class="dropdown-item" href="../articles/Advanced.html">REDCapSync for the Advanced R User</a></li>
-    <li><a class="dropdown-item" href="../articles/RosyREDCap.html">RosyREDCap Shiny App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul>
@@ -78,7 +77,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Get Started</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/thecodingdocs/REDCapSync/blob/master/vignettes/REDCapSync.Rmd" class="external-link"><code>vignettes/REDCapSync.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/thecodingdocs/REDCapSync/blob/main/vignettes/REDCapSync.Rmd" class="external-link"><code>vignettes/REDCapSync.Rmd</code></a></small>
       <div class="d-none name"><code>REDCapSync.Rmd</code></div>
     </div>
 
@@ -127,14 +126,14 @@ package.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu">update_project</span><span class="op">(</span><span class="va">project</span><span class="op">)</span> <span class="co"># update from redcap by checking log and using saved object </span></span>
 <span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu">add_forms_transformation_to_project</span><span class="op">(</span><span class="va">project</span>,forms_tranformation <span class="op">=</span> <span class="fu">default_forms_transformation</span><span class="op">(</span><span class="va">project</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/transform_project.html">transform_project</a></span><span class="op">(</span><span class="va">project</span><span class="op">)</span> <span class="co"># transform to most basic forms, can be modified</span></span>
+<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu">transform_project</span><span class="op">(</span><span class="va">project</span><span class="op">)</span> <span class="co"># transform to most basic forms, can be modified</span></span>
 <span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu">drop_redcap_dir</span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span>
 <span><span class="co">#run shiny app!</span></span>
 <span><span class="fu">run_REDCapSync</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># dev functions not ready for public yet</span></span>
-<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_project.html">clean_project</a></span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span>
-<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summarize_project.html">summarize_project</a></span><span class="op">(</span><span class="va">project</span><span class="op">)</span> <span class="co">#can use for subsets!</span></span>
-<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summarize_project.html">summarize_project</a></span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span>
+<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu">clean_project</span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span>
+<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu">summarize_project</span><span class="op">(</span><span class="va">project</span><span class="op">)</span> <span class="co">#can use for subsets!</span></span>
+<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu">summarize_project</span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span>
 <span><span class="va">project</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">save_summary</span><span class="op">(</span><span class="op">)</span> <span class="co"># will save summary data, look at the tabs!</span></span></code></pre></div>
 </div>
 <div class="section level2">

@@ -22,7 +22,6 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Basic.html">REDCapSync for the Basic R User</a></li>
     <li><a class="dropdown-item" href="../articles/Intermediate.html">REDCapSync for the Intermediate R User</a></li>
     <li><a class="dropdown-item" href="../articles/Advanced.html">REDCapSync for the Advanced R User</a></li>
-    <li><a class="dropdown-item" href="../articles/RosyREDCap.html">RosyREDCap Shiny App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul></li>
@@ -81,18 +80,6 @@
 
         </dt>
         <dd>Syncronize REDCap Data</dd>
-      </dl><dl><dt>
-
-          <code><a href="drop_REDCap_to_directory.html">drop_REDCap_to_directory()</a></code>
-
-        </dt>
-        <dd>Drop REDCap Data to Directory</dd>
-      </dl><dl><dt>
-
-          <code><a href="summarize_project.html">summarize_project()</a></code>
-          <span class="badge lifecycle lifecycle-experimental">experimental</span>
-        </dt>
-        <dd>Summarize REDCap Database</dd>
       </dl></div><div class="section level2">
       <h2 id="everything-by-topic-intermediate-advanced-">Everything by Topic (Intermediate/Advanced)<a class="anchor" aria-label="anchor" href="#everything-by-topic-intermediate-advanced-"></a></h2>
 
@@ -244,10 +231,16 @@
           <span class="badge lifecycle lifecycle-experimental">experimental</span>
         </dt>
         <dd>Add a Subset to a REDCap Database</dd>
+      </dl><dl><dt>
+
+          <code><a href="clear_project_summaries.html">clear_project_summaries()</a></code>
+
+        </dt>
+        <dd>clear_project_summaries</dd>
       </dl></div><div class="section level2">
 
       <h3 id="project-object-outputs">project Object Outputs<a class="anchor" aria-label="anchor" href="#project-object-outputs"></a></h3>
-      <div class="section-desc"><p>Mirror your project object to a local/cloud file system. If you have subsets, will only update file if record beloning to that subset was updated.</p></div>
+      <div class="section-desc"><p>Mirror your project object to a local/cloud file system. If you have summaries, will only update file if record belonging to that summary was updated.</p></div>
 
 
     </div><div class="section level2">
@@ -257,46 +250,10 @@
 
       <dl><dt>
 
-          <code><a href="clean_project.html">clean_project()</a></code>
-
-        </dt>
-        <dd>Clean project columns for plotting using the metadata</dd>
-      </dl><dl><dt>
-
-          <code><a href="deidentify_project.html">deidentify_project()</a></code>
-
-        </dt>
-        <dd>Deidentify the REDCap Database</dd>
-      </dl><dl><dt>
-
-          <code><a href="drop_REDCap_to_directory.html">drop_REDCap_to_directory()</a></code>
-
-        </dt>
-        <dd>Drop REDCap Data to Directory</dd>
-      </dl><dl><dt>
-
           <code><a href="generate_project_summary.html">generate_project_summary()</a></code>
           <span class="badge lifecycle lifecycle-experimental">experimental</span>
         </dt>
         <dd>Generate a Summary from a Subset Name</dd>
-      </dl><dl><dt>
-
-          <code><a href="generate_project_summary_test.html">generate_project_summary_test()</a></code>
-          <span class="badge lifecycle lifecycle-experimental">experimental</span>
-        </dt>
-        <dd>Select REDCap Records from project</dd>
-      </dl><dl><dt>
-
-          <code><a href="summarize_project.html">summarize_project()</a></code>
-          <span class="badge lifecycle lifecycle-experimental">experimental</span>
-        </dt>
-        <dd>Summarize REDCap Database</dd>
-      </dl><dl><dt>
-
-          <code><a href="transform_project.html">transform_project()</a></code>
-          <span class="badge lifecycle lifecycle-experimental">experimental</span>
-        </dt>
-        <dd>transform_project</dd>
       </dl></div><div class="section level2">
 
       <h3 id="data-helpers">Data Helpers<a class="anchor" aria-label="anchor" href="#data-helpers"></a></h3>

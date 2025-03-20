@@ -2,6 +2,7 @@
 % Please edit documentation in R/transform_project.R
 \name{add_default_project_transformation}
 \alias{add_default_project_transformation}
+\alias{add_project_defaults}
 \alias{default_project_transformation}
 \alias{add_default_project_fields}
 \alias{add_project_transformation}
@@ -9,6 +10,8 @@
 \title{Add Default Forms Transformation to the Database}
 \usage{
 add_default_project_transformation(project)
+
+add_project_defaults(project)
 
 default_project_transformation(project)
 

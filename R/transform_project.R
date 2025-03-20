@@ -50,6 +50,14 @@ add_default_project_transformation <- function(project) {
 }
 #' @rdname default-transformations
 #' @export
+add_project_defaults <- function(project) {
+  project <- add_default_project_transformation(project)
+  project <- add_default_project_fields(project)
+  project <- add_default_project_summary(project)
+  invisible(project)
+}
+#' @rdname default-transformations
+#' @export
 default_project_transformation <- function(project) {
   assert_setup_project(project)
   forms_transformation <- merge_non_rep_project_transformation(project)

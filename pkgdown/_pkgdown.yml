@@ -30,7 +30,6 @@ reference:
       - get_projects
       - setup_project
       - sync_project
-      - summarize_project
   - title: Everything by Topic (Intermediate/Advanced)
     desc: Expands on functionality and breaksdown core feautures into more customizable parts
   - subtitle: Project Cache
@@ -63,12 +62,14 @@ reference:
     desc: One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
     contents:
       - default_project_transformation
-      - add_default_project_fields
       - add_default_project_transformation
+      - add_default_project_fields
       - add_default_project_summary
+      - add_project_defaults
       - add_project_field
       - add_project_transformation
       - add_project_summary
+      - clear_project_summaries
   - subtitle: project Object Outputs
     desc: Mirror your project object to a local/cloud file system. If you have summaries, will only update file if record belonging to that summary was updated.
     contents:
@@ -110,7 +111,6 @@ articles:
       - Basic
       - Intermediate
       - Advanced
-      - RosyREDCap
   - title: Using RosyREDCap
     contents:
       - REDCap

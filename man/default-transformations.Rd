@@ -2,6 +2,7 @@
 % Please edit documentation in R/transform_project.R
 \name{add_default_project_transformation}
 \alias{add_default_project_transformation}
+\alias{add_project_defaults}
 \alias{default_project_transformation}
 \alias{add_default_project_fields}
 \alias{add_project_transformation}
@@ -10,11 +11,13 @@
 \usage{
 add_default_project_transformation(project)
 
+add_project_defaults(project)
+
 default_project_transformation(project)
 
 add_default_project_fields(project)
 
-add_project_transformation(project, forms_transformation, ask = TRUE)
+add_project_transformation(project, forms_transformation)
 
 add_default_project_summary(project)
 }
@@ -25,9 +28,6 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{forms_transformation}{a data.frame that matches instruments. See
 \code{default_project_transformation} for an example.}
-
-\item{ask}{logical for asking in console about changes to project
-forms_transformation}
 }
 \value{
 The updated \code{project} object with default transformations applied to the

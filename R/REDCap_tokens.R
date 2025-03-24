@@ -130,10 +130,12 @@ test_project_token <- function(project,
     utils::browseURL(url = ifelse(is_something(project$redcap$version), project$links$redcap_API, project$links$redcap_base))
     # this will fail to bring you to right URL if redcap version changes at the same time a previously valid token is no longer valid
   }
+  changed_in_console <- FALSE
   while (version_error) {
     cli_alert_danger("Your REDCap API token check failed. Check privileges.")
     if (set_if_fails) {
       set_project_token(project, ask = FALSE)
+      rcon <- project_rcon(project)
       redcap_version <- tryCatch(
         expr = {
           redcapAPI::exportVersion(rcon)
@@ -143,11 +145,23 @@ test_project_token <- function(project,
         }
       )
       version_error <- is.null(redcap_version)
-      project$internals$last_test_connection_outcome <- !version_error
+      changed_in_console <-
+        project$internals$last_test_connection_outcome <-
+        !version_error
     }
   }
-  cli_alert_wrap("Connected to REDCap!", bullet_type = "v")
+  cli_alert_wrap("Connected to REDCap!", url = project$links$redcap_home, bullet_type = "v")
+  if(changed_in_console){
+    cli_alert_warning("Don't forget to change your token with `edit_r_environ()` from `usethis` package.")
+  }
+  version_changed <- FALSE
+  if(!is.null(project$redcap$version)){
+    version_changed <- !identical(project$redcap$version,redcap_version)
+  }
   project$redcap$version <- redcap_version
+  if(version_changed){
+    project <- update_project_links(project)
+  }
   project$internals$ever_connected <- TRUE
   invisible(project)
 }

@@ -389,8 +389,9 @@ add_project_summary <- function(
     reset = FALSE) {
   lifecycle::signal_stage("experimental", "add_project_summary()")
   # sync_frequency ... project$internals$sync_frequency
-  if(summary_name == "all_records"){
-    stop("'all_records' is a forbidden summary name. Used for REDCapSync.")
+  forbiden_summary_names <- c("all_records", "transform", "last_api_call")
+  if(summary_name %in% forbiden_summary_names){
+    stop(summary_name," is a forbidden summary name. Used for REDCapSync.")
   }
   if (missing(use_csv)) use_csv <- project$internals$use_csv
   if (is.null(filter_list)) {
@@ -452,6 +453,7 @@ add_project_summary <- function(
     }
   }
   project$summary[[summary_name]] <- summary_list_new
+  project$summary$all_records[[summary_name]] <- NA
   invisible(project)
 }
 #' @noRd
@@ -741,6 +743,7 @@ summarize_project <- function(
   if (reset) {
     summary_names <- project$summary %>% names()
   }
+  summary_names <- summary_names[which(summary_names!="all_records")]
   if (is_something(summary_names)) {
     for (summary_name in summary_names) {
       project <- project %>% save_summary(summary_name)
@@ -749,10 +752,10 @@ summarize_project <- function(
   project$internals$last_summary <- now_time()
   invisible(project)
 }
-#' @title clear_summaries
+#' @title clear_project_summaries
 #' @inheritParams save_project
 #' @export
-clear_summaries <- function(project){
+clear_project_summaries <- function(project){
   assert_setup_project(project)
   project$summary <- list()
   cli_alert_success("Cleared project summaries!")

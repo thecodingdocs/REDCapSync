@@ -177,7 +177,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     # }
     project$metadata$forms$repeating_via_events <- FALSE
     project$metadata$forms$repeating_via_events[which(project$metadata$forms$form_name %>% lapply(function(form_name) {
-      anyDuplicated(project$metadata$event_mapping$arm_number[which(project$metadata$event_mapping$form == form_name)]) > 0
+      anyDuplicated(project$metadata$event_mapping$arm_num[which(project$metadata$event_mapping$form == form_name)]) > 0
     }) %>% unlist())] <- TRUE
   } else {
     project$redcap$has_arms <- FALSE
@@ -192,6 +192,10 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     project$redcap$log <- get_REDCap_log(project, log_begin_date = Sys.Date())
     project$redcap$users$current_user <- project$redcap$users$username == project$redcap$log$username[which(project$redcap$log$details == "Export REDCap version (API)") %>% dplyr::first()]
   }
+  project <- update_project_links(project)
+  invisible(project)
+}
+update_project_links <- function(project){
   project$links$redcap_home <- paste0(
     project$links$redcap_base,
     "redcap_v",

@@ -389,8 +389,9 @@ add_project_summary <- function(
     reset = FALSE) {
   lifecycle::signal_stage("experimental", "add_project_summary()")
   # sync_frequency ... project$internals$sync_frequency
-  if(summary_name == "all_records"){
-    stop("'all_records' is a forbidden summary name. Used for REDCapSync.")
+  forbiden_summary_names <- c("all_records", "transform", "last_api_call")
+  if(summary_name %in% forbiden_summary_names){
+    stop(summary_name," is a forbidden summary name. Used for REDCapSync.")
   }
   if (missing(use_csv)) use_csv <- project$internals$use_csv
   if (is.null(filter_list)) {
@@ -452,6 +453,7 @@ add_project_summary <- function(
     }
   }
   project$summary[[summary_name]] <- summary_list_new
+  project$summary$all_records[[summary_name]] <- NA
   invisible(project)
 }
 #' @noRd

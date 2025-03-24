@@ -125,7 +125,7 @@ add_default_project_fields <- function(project) {
         units = "n",
         data_func = function(project, field_name, form_name) {
           form <- gsub("n_forms_", "", field_name)
-          id_col <- project$metadata$form_key_cols[[form_name]]
+          id_col <- project$redcap$id_col
           project$data[[form_name]][[id_col]] %>%
             matches(project$data[[form]][[id_col]], count_only = TRUE) %>%
             as.character() %>%

@@ -363,53 +363,6 @@ combine_project_fields <- function(project) {
   }
   fields
 }
-#' @noRd
-run_fields_transformation <- function(project) {
-  the_names <- project$transformation$fields$field_name
-  if (is.null(the_names)) {
-    cli_alert_danger("Nothing to run. Use `add_project_field()`")
-    return(invisible(project))
-  }
-  original_fields <- project$metadata$fields
-  the_names_existing <- the_names[which(the_names %in% original_fields$field_name)]
-  the_names_new <- the_names[which(!the_names %in% original_fields$field_name)]
-  field_names <- c(the_names_existing, the_names_new)
-  for (field_name in field_names) {
-    field <- NA
-    row_of_interest <- project$transformation$fields[which(project$transformation$fields$field_name == field_name), ]
-    form_name <- row_of_interest$form_name
-    field_func <- project$transformation$field_functions[[field_name]]
-    environment(field_func) <- environment()
-    if (is_something(field_func)) {
-      if (form_name %in% names(project$data)) {
-        field <- field_func(project = project, field_name = field_name, form_name = form_name)
-      }
-    }
-    if (field_name %in% the_names_existing) {
-      form_old <- project$data[[form_name]][[field_name]]
-      if (!identical(field, form_old)) {
-        ref_cols <- project$metadata$form_key_cols[[form_name]]
-        new <- old <- project$data[[form_name]][, c(ref_cols, field_name)]
-        new[[field_name]] <- field
-        form <- find_form_diff2(
-          new = new,
-          old = old,
-          ref_cols = ref_cols,
-          view_old = FALSE,
-          message_pass = paste0(form_name, " - ", field_name, ": ")
-        )
-        if (is_something(form)) {
-          project$transformation$data_updates[[field_name]] <- form
-        }
-      }
-    }
-    if (form_name %in% names(project$data)) {
-      project$transformation$data[[form_name]][[field_name]] <- field
-    }
-  }
-  cli_alert_wrap(paste0("Added new fields to ", project$short_name, " `project$data`"), bullet_type = "v")
-  invisible(project)
-}
 #' @rdname default-transformations
 #' @title Add Default Forms Transformation to the Database
 #' @export
@@ -442,119 +395,153 @@ add_default_project_summary <- function(project) {
 }
 #' @title transform_project
 #' @noRd
-transform_project <- function(project, reset = FALSE) {
+transform_project <- function(project) {
   has_transformation <- is_something(project$transformation$forms)
-  has_data <- is_something(process_df_list(project$data, silent = TRUE))
-  is_transformed <- project$internals$is_transformed
+  the_names <- project$transformation$fields$field_name
+  has_fields <- !is.null(the_names)
+  forms_transformation <- project$transformation$forms
+  forms_transformation_original <- forms_transformation
+  named_df_list <- project$data
+  has_data <- is_something(named_df_list)
+  original_fields <- project$metadata$fields
+  data_updates <- NULL
   if (!has_data) {
     cli_alert_warning("No data... nothing to do!")
-    return(invisible(project))
+    return(invisible(NULL))
+  }
+  if (!has_fields) {
+    cli_alert_danger("No additional fields. Use `add_project_field()`")
   }
   if (!has_transformation) {
-    cli_alert_warning("Nothing to run. Use `add_project_field()`")
-    return(invisible(project))
+    cli_alert_warning("No transformation. Use `add_project_transformation()`")
   }
-  if (is_transformed && !reset) {
-    cli_alert_warning("Already transformed... nothing to do!")
-    return(invisible(project))
+  the_names_existing <- the_names[which(the_names %in% original_fields$field_name)]
+  the_names_new <- the_names[which(!the_names %in% original_fields$field_name)]
+  field_names <- c(the_names_existing, the_names_new)
+  for (field_name in field_names) {
+    field <- NA
+    row_of_interest <- project$transformation$fields[which(project$transformation$fields$field_name == field_name), ]
+    form_name <- row_of_interest$form_name
+    field_func <- project$transformation$field_functions[[field_name]]
+    environment(field_func) <- environment()
+    if (is_something(field_func)) {
+      if (form_name %in% names(named_df_list)) {
+        field <- field_func(project = project, field_name = field_name, form_name = form_name)
+      }
+    }
+    if (field_name %in% the_names_existing) {
+      form_old <- named_df_list[[form_name]][[field_name]]
+      if (!identical(field, form_old)) {
+        ref_cols <- project$metadata$form_key_cols[[form_name]]
+        new <- old <- named_df_list[[form_name]][, c(ref_cols, field_name)]
+        new[[field_name]] <- field
+        form <- find_form_diff2(
+          new = new,
+          old = old,
+          ref_cols = ref_cols,
+          view_old = FALSE,
+          message_pass = paste0(form_name, " - ", field_name, ": ")
+        )
+        if (is_something(form)) {
+          data_updates[[field_name]] <- form
+        }
+      }
+    }
+    if (form_name %in% names(named_df_list)) {
+      named_df_list[[form_name]][[field_name]] <- field
+    }
   }
-  if (!is_transformed || reset) {
-    forms_transformation <- project$transformation$forms
-    forms_transformation_original <- forms_transformation
-    project$transformation$data <- project$data
-    project <- run_fields_transformation(project)
-    named_df_list <- project$transformation$data
-    form_list <- NULL
-    for (i in (seq_len(nrow(forms_transformation)))) {
-      form_name <- forms_transformation$form_name[i]
-      ref <- named_df_list[[form_name]]
-      if (!is.null(ref)) {
-        if (is_something(ref)) {
-          a <- forms_transformation[i, ]
-          z <- as.list(a)
-          ref <- named_df_list[[form_name]]
-          rownames(ref) <- NULL
-          by.x <- z$by.x <- z$by.x %>%
-            strsplit("\\+") %>%
-            unlist()
-          by.y <- z$by.y <- z$by.y %>%
-            strsplit("\\+") %>%
-            unlist()
-          if (length(z$by.x) != length(z$by.y)) {
-            stop(
-              "by.x and by.y must be same length... [",
-              z$form_name,
-              "] (",
-              z$by.x %>% as_comma_string(),
-              ") AND (",
-              z$by.y %>% as_comma_string(),
-              ")"
-            )
+  cli_alert_wrap(paste0("Added new fields to ", project$short_name, " `project$data`"), bullet_type = "v")
+  form_list <- NULL
+  for (i in (seq_len(nrow(forms_transformation)))) {
+    form_name <- forms_transformation$form_name[i]
+    ref <- named_df_list[[form_name]]
+    if (!is.null(ref)) {
+      if (is_something(ref)) {
+        a <- forms_transformation[i, ]
+        z <- as.list(a)
+        ref <- named_df_list[[form_name]]
+        rownames(ref) <- NULL
+        by.x <- z$by.x <- z$by.x %>%
+          strsplit("\\+") %>%
+          unlist()
+        by.y <- z$by.y <- z$by.y %>%
+          strsplit("\\+") %>%
+          unlist()
+        if (length(z$by.x) != length(z$by.y)) {
+          stop(
+            "by.x and by.y must be same length... [",
+            z$form_name,
+            "] (",
+            z$by.x %>% as_comma_string(),
+            ") AND (",
+            z$by.y %>% as_comma_string(),
+            ")"
+          )
+        }
+        if (form_name == z$merge_to) {
+          form_list[[z$form_name_remap]] <- ref
+        } else {
+          mer <- named_df_list[[z$merge_to]]
+          if (z$merge_to %in% names(form_list)) {
+            mer <- form_list[[z$merge_to]]
           }
-          if (form_name == z$merge_to) {
-            form_list[[z$form_name_remap]] <- ref
+          ref_names <- names(ref)
+          mer_names <- names(mer)
+          new_names <- ref_names %>%
+            vec1_in_vec2(mer_names) %>%
+            vec1_not_in_vec2(by.x)
+          for (new_name in new_names) {
+            col <- which(colnames(mer) == new_name)
+            replace_name <- paste0(new_name, "_merged")
+            a <- mer[, 1:col]
+            a[[replace_name]] <- a[[col]]
+            b <- mer[, (col + 1):ncol(mer)]
+            mer <- cbind(a, b)
+          }
+          bad_cols <- which(!by.x %in% by.y)
+          z$by.x[bad_cols]
+          z$by.y[bad_cols]
+          if (length(bad_cols) > 0) {
+            for (col in bad_cols) {
+              new_col_name <- paste0(z$by.y[col], "_merged")
+              ref[[new_col_name]] <- ref[[z$by.x[col]]]
+              z$by.x[col] <- new_col_name
+            }
+          }
+          by.x <- z$by.x
+          by.y <- z$by.y
+          ref_names <- names(ref) %>% vec1_not_in_vec2(
+            by.x %>% vec1_not_in_vec2(by.y)
+          )
+          mer_names <- names(mer)
+          del_names <- mer_names %>%
+            vec1_in_vec2(ref_names) %>%
+            vec1_not_in_vec2(by.y)
+          mer[, del_names] <- NULL
+          ref$sort_me_ftlog <- seq_len(nrow(ref))
+          if (is.null(mer)) {
+            a <- ref
           } else {
-            mer <- named_df_list[[z$merge_to]]
-            if (z$merge_to %in% names(form_list)) {
-              mer <- form_list[[z$merge_to]]
-            }
-            ref_names <- names(ref)
-            mer_names <- names(mer)
-            new_names <- ref_names %>%
-              vec1_in_vec2(mer_names) %>%
-              vec1_not_in_vec2(by.x)
-            for (new_name in new_names) {
-              col <- which(colnames(mer) == new_name)
-              replace_name <- paste0(new_name, "_merged")
-              a <- mer[, 1:col]
-              a[[replace_name]] <- a[[col]]
-              b <- mer[, (col + 1):ncol(mer)]
-              mer <- cbind(a, b)
-            }
-            bad_cols <- which(!by.x %in% by.y)
-            z$by.x[bad_cols]
-            z$by.y[bad_cols]
-            if (length(bad_cols) > 0) {
-              for (col in bad_cols) {
-                new_col_name <- paste0(z$by.y[col], "_merged")
-                ref[[new_col_name]] <- ref[[z$by.x[col]]]
-                z$by.x[col] <- new_col_name
-              }
-            }
-            by.x <- z$by.x
-            by.y <- z$by.y
-            ref_names <- names(ref) %>% vec1_not_in_vec2(
-              by.x %>% vec1_not_in_vec2(by.y)
+            a <- merge(
+              x = ref,
+              y = mer,
+              by.x = by.x,
+              by.y = by.y,
+              all.x = TRUE,
+              sort = FALSE
             )
-            mer_names <- names(mer)
-            del_names <- mer_names %>%
-              vec1_in_vec2(ref_names) %>%
-              vec1_not_in_vec2(by.y)
-            mer[, del_names] <- NULL
-            ref$sort_me_ftlog <- seq_len(nrow(ref))
-            if (is.null(mer)) {
-              a <- ref
-            } else {
-              a <- merge(
-                x = ref,
-                y = mer,
-                by.x = by.x,
-                by.y = by.y,
-                all.x = TRUE,
-                sort = FALSE
-              )
-            }
-            a <- a[order(a$sort_me_ftlog), ]
-            all_names <- c(ref_names, names(mer)) %>% unique()
-            if (is_something(z$x_first)) {
-              if (!z$x_first) {
-                all_names <- c(by.y %>% vec1_in_vec2(by.x), names(mer) %>% vec1_not_in_vec2(by.y), ref_names) %>% unique()
-              }
-            }
-            a <- a[, match(all_names, names(a))]
-            rownames(a) <- NULL
-            form_list[[z$form_name_remap]] <- a
           }
+          a <- a[order(a$sort_me_ftlog), ]
+          all_names <- c(ref_names, names(mer)) %>% unique()
+          if (is_something(z$x_first)) {
+            if (!z$x_first) {
+              all_names <- c(by.y %>% vec1_in_vec2(by.x), names(mer) %>% vec1_not_in_vec2(by.y), ref_names) %>% unique()
+            }
+          }
+          a <- a[, match(all_names, names(a))]
+          rownames(a) <- NULL
+          form_list[[z$form_name_remap]] <- a
         }
       }
     }

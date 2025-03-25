@@ -779,16 +779,20 @@ run_quality_checks <- function(project) {
 }
 #' @noRd
 extract_project_records <- function(project) {
-  records <- NULL
-  if (project$data %>% is_something()) {
-    records <- data.frame(
-      records = names(project$data) %>% lapply(function(form_name) {
-        project$data[[form_name]][, project$redcap$id_col,drop = FALSE]
-      }) %>% unlist() %>% unique()
+  all_records <- NULL
+  if (all_records$data %>% is_something()) {
+    all_records <- data.frame(
+      record = names(project$data) %>% lapply(function(form_name) {
+        project$data[[form_name]][[project$redcap$id_col]]
+      }) %>% unlist() %>% unique(),
+      first_timestamp = NA,
+      last_timestamp = NA,
+      last_api_call = NA,
+      transformation = NA
     )
-    rownames(records) <- NULL
+    rownames(all_records) <- NULL
   }
-  records
+  all_records
 }
 #' @noRd
 get_log <- function(project, records) {

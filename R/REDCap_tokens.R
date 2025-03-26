@@ -26,7 +26,6 @@
 #' @keywords Token Functions
 #' @export
 set_project_token <- function(project, ask = TRUE) {
-  # Hello - nat
   project <- assert_blank_project(project)
   token_name <- get_REDCap_token_name(project)
   is_a_test <- is_test_project(project)

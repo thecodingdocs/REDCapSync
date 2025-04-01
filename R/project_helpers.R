@@ -96,8 +96,7 @@ deidentify_data_list <- function(data_list,
       }
     }
   }
-  data_list$data <- data
-  invisible(data_list)
+  invisible(data)
 }
 get_min_dates <- function(data_list) {
   # assert_data_list contains data and metadata with forms and fields

@@ -189,7 +189,7 @@ clean_data_list <- function(data_list, drop_blanks = TRUE, drop_others = NULL) {
       drop_others = drop_others
     )
   }
-  data
+  invisible(data)
 }
 #' @noRd
 clean_form <- function(form, fields, drop_blanks = TRUE, drop_others = NULL) {
@@ -694,14 +694,14 @@ generate_project_summary <- function(
     project$data <- out_list
   }
   if (exclude_identifiers) {
-    project <- deidentify_data_list(
+    project$data <- deidentify_data_list(
       data_list = project,
       exclude_free_text = exclude_free_text,
       date_handling = date_handling
     )
   }
   if (clean) {
-    project <- clean_data_list(
+    project$data <- clean_data_list(
       data_list = project,
       drop_blanks = drop_blanks,
       drop_others = drop_others

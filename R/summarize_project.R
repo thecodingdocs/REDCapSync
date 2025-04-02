@@ -527,7 +527,7 @@ save_summary <- function(project, summary_name) {
   project$summary[[summary_name]]$summary_records <- summary_records
   project$summary[[summary_name]]$last_save_time <- now_time()
   project$summary[[summary_name]]$final_form_tab_names <-
-    rename_list_names_excel(list_names = to_save_list)
+    rename_list_names_excel(list_names = names(to_save_list))
   names(project$summary[[summary_name]]$final_form_tab_names) <-
     names(to_save_list)
   invisible(project)

@@ -780,9 +780,10 @@ run_quality_checks <- function(project) {
 #' @noRd
 extract_project_records <- function(project) {
   all_records <- NULL
-  if (all_records$data %>% is_something()) {
+  id_col <- project$redcap$id_col
+  if (project$data %>% is_something()) {
     all_records <- data.frame(
-      record = names(project$data) %>% lapply(function(form_name) {
+      record_id_col = names(project$data) %>% lapply(function(form_name) {
         project$data[[form_name]][[project$redcap$id_col]]
       }) %>% unlist() %>% unique(),
       first_timestamp = NA,
@@ -791,6 +792,7 @@ extract_project_records <- function(project) {
       transformation = NA
     )
     rownames(all_records) <- NULL
+    colnames(all_records)[which(colnames(all_records)=="record_id_col")] <- id_col
   }
   all_records
 }

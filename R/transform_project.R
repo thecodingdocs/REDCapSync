@@ -620,7 +620,7 @@ transform_project <- function(project) {
   project$transformation$metadata$missing_codes <-
     project$metadata$missing_codes
   project$internals$last_data_transformation <-
-    project$summary$all_records$transformation <-
+    project$summary$all_records$last_transformation <-
     now_time()
   invisible(project)
 }

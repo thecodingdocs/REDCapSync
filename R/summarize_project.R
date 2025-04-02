@@ -389,7 +389,10 @@ add_project_summary <- function(
     reset = FALSE) {
   lifecycle::signal_stage("experimental", "add_project_summary()")
   # sync_frequency ... project$internals$sync_frequency
-  forbiden_summary_names <- c("all_records", "transform", "last_api_call")
+  forbiden_summary_names <- c(
+    project$redcap$id_col,
+    internal_forbiden_summary_names
+  )
   if(summary_name %in% forbiden_summary_names){
     stop(summary_name," is a forbidden summary name. Used for REDCapSync.")
   }
@@ -457,6 +460,13 @@ add_project_summary <- function(
   invisible(project)
 }
 #' @noRd
+internal_forbiden_summary_names <- c(
+  "first_timestamp",
+  "last_timestamp",
+  "last_api_call" ,
+  "last_transformation"
+)
+#' @noRd
 save_summary <- function(project, summary_name) {
   id_col <- project$redcap$id_col
   summary_list <- project$summary[[summary_name]]
@@ -510,6 +520,10 @@ save_summary <- function(project, summary_name) {
     unique()
   record_rows <- which(project$summary$all_records[[id_col]] %in% records)
   summary_records <- project$summary$all_records[record_rows, ]
+  if(summary_name != "REDCapSync"){
+    cols_save <- c(id_col, internal_forbiden_summary_names, summary_name)
+    summary_records <- summary_records[, cols_save]
+  }
   project$summary[[summary_name]]$summary_records <- summary_records
   project$summary[[summary_name]]$last_save_time <- now_time()
   project$summary[[summary_name]]$final_form_tab_names <-
@@ -789,7 +803,7 @@ extract_project_records <- function(project) {
       first_timestamp = NA,
       last_timestamp = NA,
       last_api_call = NA,
-      transformation = NA
+      last_transformation = NA
     )
     rownames(all_records) <- NULL
     colnames(all_records)[which(colnames(all_records)=="record_id_col")] <- id_col

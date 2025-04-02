@@ -187,6 +187,7 @@ link_REDCap_record <- function(project,
                                page,
                                instance,
                                text_only = FALSE) {
+  #FIX
   link <- paste0(
     project$links$redcap_base,
     "redcap_v",

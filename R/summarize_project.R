@@ -434,20 +434,16 @@ add_project_summary <- function(
     file_name = file_name,
     file_path = file.path(dir_other, paste0(file_name, file_ext)),
     summary_records = NULL,
+    n_records = NULL,
     last_save_time = NULL,
     final_form_tab_names = NULL
   )
   summary_list_old <- project$summary[[summary_name]]
   if(!is.null(summary_list_old) && ! reset) {
-    important_vars <- names(summary_list_new)
-    not_important <- c(
-      "summary_records",
-      "last_save_time",
-      "final_form_tab_names"
-    )
-    important_vars <- important_vars[which(!important_vars %in% not_important)]
+    important_vars <- names(summary_list_new) %>%
+      vec1_not_in_vec2(internal_not_important_summary_names)
     are_identical <- identical(
-      summary_list_old[important_vars],
+      summary_list_new[important_vars],
       summary_list_old[important_vars]
     )
     if(are_identical){
@@ -465,6 +461,12 @@ internal_forbiden_summary_names <- c(
   "last_timestamp",
   "last_api_call" ,
   "last_transformation"
+)
+internal_not_important_summary_names <- c(
+  "summary_records",
+  "n_records",
+  "last_save_time",
+  "final_form_tab_names"
 )
 #' @noRd
 save_summary <- function(project, summary_name) {
@@ -525,6 +527,7 @@ save_summary <- function(project, summary_name) {
     summary_records <- summary_records[, cols_save]
   }
   project$summary[[summary_name]]$summary_records <- summary_records
+  project$summary[[summary_name]]$n_records <- nrow(summary_records)
   project$summary[[summary_name]]$last_save_time <- now_time()
   project$summary[[summary_name]]$final_form_tab_names <-
     rename_list_names_excel(list_names = names(to_save_list))

@@ -500,22 +500,6 @@ clean_redcap_log <- function(log) {
   sort_redcap_log(log)
 }
 #' @noRd
-annotate_records_with_log <- function(project){
-  all_records <- project$summary$all_records
-  log <- project$redcap$log[which(!is.na(project$redcap$log$record)),]
-  id_col <- project$redcap$id_col
-  if(! is_something(all_records) || ! is_something(log)){
-    return(project)
-  }
-  log <- log[which(log$action_type!="Users"),]
-  log$row_match <- match(log$record,all_records[[id_col]])
-  all_records$first_timestamp <- all_records$record_id %>% lapply(function(record_id){
-    #FIX need first and last
-  })
-  # log$timestamp[all_records[[id_col]] %>% match(log$record)]
-  invisible(project)
-}
-#' @noRd
 internal_log_action_exports <- c(
   "Data export",
   "Download uploaded "

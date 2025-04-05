@@ -173,6 +173,25 @@ annotate_choices <- function(project, summarize_data = TRUE, drop_blanks = TRUE)
   choices
 }
 #' @noRd
+annotate_records <- function(project){
+  all_records <- project$summary$all_records
+  log <- project$redcap$log[which(!is.na(project$redcap$log$record)),]
+  id_col <- project$redcap$id_col
+  if(! is_something(all_records) || ! is_something(log)){
+    return(project)
+  }
+  log <- log[which(log$action_type!="Users"),]
+  log <- log[which(log$record %in% all_records$record_id),]
+  cool_list <- split(log$timestamp, log$record)
+  cool_list_match <- cool_list %>% names() %>% match(all_records$record_id)
+  # test matched all_records$record_id[cool_list_match]
+  cool_list_first <- cool_list %>% lapply(dplyr::first) %>% unlist()
+  cool_list_last <- cool_list %>% lapply(dplyr::last) %>% unlist()
+  all_records$first_timestamp[cool_list_match] <- cool_list_first
+  all_records$last_timestamp[cool_list_match] <- cool_list_last
+  invisible(project)
+}
+#' @noRd
 fields_with_no_data <- function(project) {
   project$metadata$fields$field_name[which(is.na(project$metadata$fields$complete_rate) & !project$metadata$fields$field_type %in% c("checkbox", "descriptive"))]
 }

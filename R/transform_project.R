@@ -62,24 +62,26 @@ default_project_transformation <- function(project) {
   assert_setup_project(project)
   forms_transformation <- merge_non_rep_project_transformation(project)
   forms_transformation$merge_to <- project$internals$merge_form_name
-  forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to %>%
-    lapply(function(form_name) {
-      if (form_name %in% names(project$metadata$form_key_cols)) {
-        project$metadata$form_key_cols[[form_name]] %>%
-          paste0(collapse = "+") %>%
-          return()
-      } else {
-        rows <- which(!forms_transformation$repeating)
-        if (length(rows) == 0) {
-          return(NA)
-        }
-        form_name <- forms_transformation$form_name[rows[[1]]]
-        project$metadata$form_key_cols[[form_name]] %>%
-          paste0(collapse = "+") %>%
-          return()
-      }
-    }) %>%
-    unlist()
+  forms_transformation$by.y <- forms_transformation$by.x <- project$redcap$id_col
+    # Will avoid doing this for now
+    #forms_transformation$merge_to %>%
+    # lapply(function(form_name) {
+    #   if (form_name %in% names(project$metadata$form_key_cols)) {
+    #     project$metadata$form_key_cols[[form_name]] %>%
+    #       paste0(collapse = "+") %>%
+    #       return()
+    #   } else {
+    #     rows <- which(!forms_transformation$repeating)
+    #     if (length(rows) == 0) {
+    #       return(NA)
+    #     }
+    #     form_name <- forms_transformation$form_name[rows[[1]]]
+    #     project$metadata$form_key_cols[[form_name]] %>%
+    #       paste0(collapse = "+") %>%
+    #       return()
+    #   }
+    # }) %>%
+    # unlist()
   forms_transformation$x_first <- FALSE
   forms_transformation$x_first[which(forms_transformation$repeating)] <- TRUE
   if(project$redcap$is_longitudinal){

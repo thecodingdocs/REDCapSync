@@ -602,6 +602,9 @@ generate_project_summary <- function(
     include_log = TRUE) {
   lifecycle::signal_stage("experimental", "generate_project_summary()")
   provided_summary_name <- !missing(summary_name)
+  if(!summary_name %in% names(project$summary)){
+    stop(summary_name, " is not included in the current project summaries")
+  }
   summary_list <- project$summary[[summary_name]]
   if (provided_summary_name){
     #warning about other params?

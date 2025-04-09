@@ -82,6 +82,9 @@ default_project_transformation <- function(project) {
     unlist()
   forms_transformation$x_first <- FALSE
   forms_transformation$x_first[which(forms_transformation$repeating)] <- TRUE
+  if(project$redcap$is_longitudinal){
+    forms_transformation$x_first[which(forms_transformation$repeating_via_events)] <- TRUE
+  }
   forms_transformation
 }
 #' @noRd

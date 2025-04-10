@@ -95,7 +95,7 @@ sync_project <- function(
     ) {
       reset <- TRUE
     } else {
-      interim_log <- get_REDCap_log(project, log_begin_date = as.Date(strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d")))
+      interim_log <- get_REDCap_log(project, log_begin_date = as.Date(strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d"))) %>% unique()
       if (nrow(interim_log) <= nrow(project$redcap$log)) {
         head_of_log <- project$redcap$log %>% utils::head(n = nrow(interim_log))
       } else {

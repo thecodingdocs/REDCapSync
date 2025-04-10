@@ -62,26 +62,31 @@ default_project_transformation <- function(project) {
   assert_setup_project(project)
   forms_transformation <- merge_non_rep_project_transformation(project)
   forms_transformation$merge_to <- project$internals$merge_form_name
-  forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to %>%
-    lapply(function(form_name) {
-      if (form_name %in% names(project$metadata$form_key_cols)) {
-        project$metadata$form_key_cols[[form_name]] %>%
-          paste0(collapse = "+") %>%
-          return()
-      } else {
-        rows <- which(!forms_transformation$repeating)
-        if (length(rows) == 0) {
-          return(NA)
-        }
-        form_name <- forms_transformation$form_name[rows[[1]]]
-        project$metadata$form_key_cols[[form_name]] %>%
-          paste0(collapse = "+") %>%
-          return()
-      }
-    }) %>%
-    unlist()
+  forms_transformation$by.y <- forms_transformation$by.x <- project$redcap$id_col
+    # Will avoid doing this for now
+    #forms_transformation$merge_to %>%
+    # lapply(function(form_name) {
+    #   if (form_name %in% names(project$metadata$form_key_cols)) {
+    #     project$metadata$form_key_cols[[form_name]] %>%
+    #       paste0(collapse = "+") %>%
+    #       return()
+    #   } else {
+    #     rows <- which(!forms_transformation$repeating)
+    #     if (length(rows) == 0) {
+    #       return(NA)
+    #     }
+    #     form_name <- forms_transformation$form_name[rows[[1]]]
+    #     project$metadata$form_key_cols[[form_name]] %>%
+    #       paste0(collapse = "+") %>%
+    #       return()
+    #   }
+    # }) %>%
+    # unlist()
   forms_transformation$x_first <- FALSE
   forms_transformation$x_first[which(forms_transformation$repeating)] <- TRUE
+  if(project$redcap$is_longitudinal){
+    forms_transformation$x_first[which(forms_transformation$repeating_via_events)] <- TRUE
+  }
   forms_transformation
 }
 #' @noRd
@@ -117,27 +122,29 @@ add_default_project_fields <- function(project) {
   forms <- project$metadata$forms
   last_non_rep <- forms$form_name[which(!forms$repeating)] %>% dplyr::last()
   form_names <- forms$form_name[which(forms$repeating)]
-  has_non_rep <- length(last_non_rep) > 0
-  if (has_non_rep) {
-    for (form_name in form_names) {
-      form_label <- forms$form_label[which(forms$form_name == form_name)]
-      project <- project %>% add_project_field(
-        field_name = paste0("n_forms_", form_name),
-        form_name = last_non_rep,
-        field_type = "text",
-        field_type_R = "integer",
-        field_label = paste0(form_label, " Forms"),
-        units = "n",
-        data_func = function(project, field_name, form_name) {
-          form <- gsub("n_forms_", "", field_name)
-          #need another way to count if multiple id cols
-          id_col <- project$metadata$form_key_cols[[form_name]]
-          project$data[[form_name]][[id_col]] %>%
-            matches(project$data[[form]][[id_col]], count_only = TRUE) %>%
-            as.character() %>%
-            return()
-        }
-      )
+  if(!project$redcap$is_longitudinal){
+    has_non_rep <- length(last_non_rep) > 0
+    if (has_non_rep) {
+      for (form_name in form_names) {
+        form_label <- forms$form_label[which(forms$form_name == form_name)]
+        project <- project %>% add_project_field(
+          field_name = paste0("n_forms_", form_name),
+          form_name = last_non_rep,
+          field_type = "text",
+          field_type_R = "integer",
+          field_label = paste0(form_label, " Forms"),
+          units = "n",
+          data_func = function(project, field_name, form_name) {
+            form <- gsub("n_forms_", "", field_name)
+            #need another way to count if multiple id cols
+            id_col <- project$metadata$form_key_cols[[form_name]]
+            project$data[[form_name]][[id_col]] %>%
+              matches(project$data[[form]][[id_col]], count_only = TRUE) %>%
+              as.character() %>%
+              return()
+          }
+        )
+      }
     }
   }
   for (form_name in form_names) {

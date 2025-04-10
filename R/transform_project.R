@@ -63,25 +63,25 @@ default_project_transformation <- function(project) {
   forms_transformation <- merge_non_rep_project_transformation(project)
   forms_transformation$merge_to <- project$internals$merge_form_name
   forms_transformation$by.y <- forms_transformation$by.x <- project$redcap$id_col
-    # Will avoid doing this for now
-    #forms_transformation$merge_to %>%
-    # lapply(function(form_name) {
-    #   if (form_name %in% names(project$metadata$form_key_cols)) {
-    #     project$metadata$form_key_cols[[form_name]] %>%
-    #       paste0(collapse = "+") %>%
-    #       return()
-    #   } else {
-    #     rows <- which(!forms_transformation$repeating)
-    #     if (length(rows) == 0) {
-    #       return(NA)
-    #     }
-    #     form_name <- forms_transformation$form_name[rows[[1]]]
-    #     project$metadata$form_key_cols[[form_name]] %>%
-    #       paste0(collapse = "+") %>%
-    #       return()
-    #   }
-    # }) %>%
-    # unlist()
+  # Will avoid doing this for now
+  #forms_transformation$merge_to %>%
+  # lapply(function(form_name) {
+  #   if (form_name %in% names(project$metadata$form_key_cols)) {
+  #     project$metadata$form_key_cols[[form_name]] %>%
+  #       paste0(collapse = "+") %>%
+  #       return()
+  #   } else {
+  #     rows <- which(!forms_transformation$repeating)
+  #     if (length(rows) == 0) {
+  #       return(NA)
+  #     }
+  #     form_name <- forms_transformation$form_name[rows[[1]]]
+  #     project$metadata$form_key_cols[[form_name]] %>%
+  #       paste0(collapse = "+") %>%
+  #       return()
+  #   }
+  # }) %>%
+  # unlist()
   forms_transformation$x_first <- FALSE
   forms_transformation$x_first[which(forms_transformation$repeating)] <- TRUE
   if(project$redcap$is_longitudinal){
@@ -380,6 +380,29 @@ combine_project_fields <- function(project) {
 #' @title Add Default Forms Transformation to the Database
 #' @export
 add_default_project_summary <- function(project) {
+  summary_name <- "REDCapSync_raw"
+  project <- add_project_summary(
+    project = project,
+    summary_name = summary_name,
+    transform = FALSE,
+    filter_list = NULL,
+    exclude_identifiers = FALSE,
+    exclude_free_text = FALSE,
+    date_handling = "none",
+    clean = FALSE,
+    drop_blanks = FALSE,
+    drop_others = NULL,
+    include_metadata = TRUE,
+    annotate_metadata = FALSE,
+    include_record_summary = FALSE,
+    include_users = TRUE,
+    include_log = TRUE,
+    with_links = nrow(project$summary$all_records) <= 3000,
+    separate = TRUE,
+    use_csv = project$internals$use_csv,
+    dir_other = file.path(project$dir_path, "REDCap",project$short_name),
+    file_name = project$short_name
+  )
   summary_name <- "REDCapSync"
   project <- add_project_summary(
     project = project,
@@ -398,7 +421,7 @@ add_default_project_summary <- function(project) {
     include_record_summary = TRUE,
     include_users = TRUE,
     include_log = TRUE,
-    with_links = nrow(project$summary$all_records) <= 10000,
+    with_links = nrow(project$summary$all_records) <= 3000,
     separate = FALSE,
     use_csv = project$internals$use_csv,
     dir_other = file.path(project$dir_path, "output"),

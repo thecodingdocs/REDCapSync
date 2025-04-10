@@ -511,6 +511,14 @@ save_summary <- function(project, summary_name) {
       }
     }
   }
+  header_df_list <- to_save_list %>%
+    construct_header_list(fields = project$metadata$fields) %>%
+    process_df_list(silent = TRUE)
+  key_cols_list <- construct_key_col_list(project)
+  if(summary_name == "REDCapSync_raw"){
+    header_df_list <- NULL
+    key_cols_list <- NULL
+  }
   if (summary_list$use_csv) {
     to_save_list %>% list_to_csv(
       dir = summary_list$dir_other,
@@ -523,12 +531,10 @@ save_summary <- function(project, summary_name) {
       dir = summary_list$dir_other,
       separate = summary_list$separate,
       link_col_list = link_col_list,
-      key_cols_list = construct_key_col_list(project),
+      key_cols_list = key_cols_list,
       # derived_cols_list = derived_cols_list,
       file_name = summary_list$file_name,
-      header_df_list = to_save_list %>%
-        construct_header_list(fields = project$metadata$fields) %>%
-        process_df_list(silent = TRUE),
+      header_df_list = header_df_list,
       overwrite = TRUE
     )
   }

@@ -764,8 +764,8 @@ generate_project_summary <- function(
       to_save_list$choices <- project$metadata$choices
     }
   }
+  records <- extract_project_records(project)[[1]]
   if (include_record_summary) {
-    records <- extract_project_records(project)[[1]]
     if (!is.null(records)) {
       to_save_list$records <- summarize_records_from_log(project, records = records)
     }

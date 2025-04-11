@@ -150,28 +150,13 @@ sync_project <- function(
       log <- project$redcap$log # in case there is a log already
       if (project$internals$entire_log) {
         log_begin_date <- as.POSIXct(project$redcap$project_info$creation_time) %>% as.Date()
-        # if(is_something(log)){
-        #   log_begin_date <- (log$timestamp[1] %>% as.Date())-1
-        #   #account for renames in log would have to get entire log again, should separate reset from going to get one new variable etc
-        # } # need log check for what is missing
-        project$redcap$log <- log %>%
-          dplyr::bind_rows(
-            project %>% get_REDCap_log(
-              log_begin_date = log_begin_date
-            ) %>%
-              unique() # should add - lubridate::days(2)
-          ) %>%
-          sort_redcap_log()
       } else {
-        project$redcap$log <- log %>%
-          dplyr::bind_rows(
-            project %>% get_REDCap_log(
-              log_begin_date = Sys.Date() - project$internals$days_of_log
-            ) %>%
-              unique()
-          ) %>%
-          sort_redcap_log()
+        log_begin_date <- Sys.Date() - project$internals$days_of_log
       }
+      project$redcap$log <- log %>%
+        dplyr::bind_rows(
+          project %>% get_REDCap_log(log_begin_date = log_begin_date)
+        ) %>% sort_redcap_log()
       # project <- annotate_fields(project)
       # project <- annotate_choices(project)
       project$summary$all_records <- extract_project_records(project)

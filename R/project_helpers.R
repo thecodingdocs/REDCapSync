@@ -377,7 +377,7 @@ raw_process_redcap <- function(raw, project, labelled) {
 }
 #' @noRd
 sort_redcap_log <- function(log) {
-  log[order(log$timestamp, decreasing = TRUE), ]
+  unique(log[order(log$timestamp, decreasing = TRUE), ])
 }
 #' @noRd
 clean_redcap_log <- function(log) {

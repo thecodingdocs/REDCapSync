@@ -366,6 +366,49 @@ get_REDCap_log <- function(project,
   }
   log # deal with if NA if user does not have log privileges.
 }
+get_REDCap_log2 <- function(project,
+                            log_begin_date = Sys.Date() - 10L,
+                            clean = TRUE,
+                            record = NULL,
+                            user = NULL){
+  assert_setup_project(project)
+  assert_logical(clean)
+  assert_date(log_begin_date)
+  if(log_begin_date == Sys.Date()){
+    log_begin_date <- log_begin_date - 1 # keep getting errors for same day checks?
+  }
+  if(is.null(record)){
+    record <- ""
+  }
+  if(is.null(user)){
+    user <- ""
+  }
+  response <- httr::POST(
+    url = project$links$redcap_uri,
+    body = list(
+      "token"=get_project_token(project),
+      content='log',
+      logtype='',
+      user='',
+      record='',
+      beginTime=log_begin_date,
+      endTime='',
+      format='json',
+      returnFormat='json'
+    ),
+    encode = "form"
+  )
+  result <- httr::content(response)
+  if(httr::http_error()){
+    return(NULL)
+  }
+  if (is.data.frame(log)) {
+    if (clean) {
+      log <- log %>% clean_redcap_log()
+    }
+  }
+  log # deal with if NA if user does not have log privileges.
+}
 #' @noRd
 get_REDCap_raw_data <- function(
     project,

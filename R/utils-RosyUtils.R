@@ -360,7 +360,7 @@ excel_to_list <- function(path) {
   clean_sheets <- clean_env_names(sheets)
   out <- list()
   for (i in seq_along(sheets)) {
-    out[[i]] <- rio::import(path, col_types = "text", sheet = i)
+    out[[i]] <- readxl::read_xlsx(path, col_types = "text", sheet = i)
   }
   names(out) <- clean_sheets
   out

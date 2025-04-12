@@ -586,8 +586,8 @@ generate_project_summary <- function(
     project,
     summary_name,
     transform,
-    filter_field,
-    filter_choices,
+    filter_field = NULL,
+    filter_choices = NULL,
     filter_list = NULL,
     filter_strict = TRUE,
     field_names = NULL,
@@ -641,9 +641,7 @@ generate_project_summary <- function(
     project$metadata <- project$transformation$metadata
     project$data <- project$transformation$data
   }
-  if (missing(field_names)) field_names <- project %>% get_all_field_names()
   if (is.null(field_names)) field_names <- project %>% get_all_field_names()
-  if (missing(form_names)) form_names <- project$metadata$forms$form_name
   if (is.null(form_names)) form_names <- project$metadata$forms$form_name
   field_names_minus <-field_names[which(!field_names%in%project$redcap$raw_structure_cols)]
   if(length(field_names_minus)>0){
@@ -656,8 +654,8 @@ generate_project_summary <- function(
     form_names <- form_names %>% vec1_in_vec2(form_names_minus)
   }
   has_no_filter <- is.null(filter_list) &&
-    missing(filter_choices) &&
-    missing(filter_field)
+    is.null(filter_choices) &&
+    is.null(filter_field)
   if(! has_no_filter){
     if (is.null(filter_list)) {
       if (!missing(filter_field) && !missing(filter_choices)) {

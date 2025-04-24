@@ -162,7 +162,12 @@ find_upload_diff <- function(to_be_uploaded,project, view_old = FALSE, n_row_vie
   old_list <- list()
   # if (any(!names(new_list) %in% project$metadata$forms$form_name)) warning("All upload names should ideally match the project form names, `project$metadata$forms$form_name`", immediate. = TRUE)
   already_used <- NULL
-  if(is.data.frame(to_be_uploaded)){
+  was_df <- is.data.frame(to_be_uploaded)
+  was_list <- is.list(to_be_uploaded)
+  if( ! was_df && ! was_list){
+    stop("`to_be_uploaded` must be list of data.frames or a date.frame")
+  }
+  if(was_df){
     to_be_uploaded <- list(upload_me = to_be_uploaded)
   }
   for (user_name in names(to_be_uploaded)) { # form_name <- names(new_list) %>% sample(1)
@@ -186,7 +191,7 @@ find_upload_diff <- function(to_be_uploaded,project, view_old = FALSE, n_row_vie
     if (length(drop) > 0) {
       message("Dropping field_names that aren't part of REDCap metadata: ", paste0(drop, collapse = ", "))
     }
-    to_be_uploaded[[user_name]] <- find_form_diff2(
+    final <- find_form_diff2(
       new = new[,keep],
       old = project$data[[form_names]][,keep],
       ref_cols = ref_cols,
@@ -194,6 +199,11 @@ find_upload_diff <- function(to_be_uploaded,project, view_old = FALSE, n_row_vie
       view_old = view_old,
       n_row_view = n_row_view
     )
+    if(was_df){
+      to_be_uploaded <- final
+    }else{
+      to_be_uploaded[[user_name]] <- final
+    }
   }
   if (is_something(to_be_uploaded)) {
     return(invisible(to_be_uploaded))

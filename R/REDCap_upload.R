@@ -68,33 +68,65 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
   #   }
   # }
   warning("Right now this function only updates repeating forms. It WILL NOT clear repeating form instances past number 1. SO, you will have to delete manually on REDCap.", immediate. = TRUE)
-  if (!is_something(project$data_updates)) stop("`project$data_updates` is empty")
   any_updates <- FALSE
-  entire_list <- project$data_updates
-  for (form_name in names(entire_list)) {
-    to_be_uploaded <- entire_list[[form_name]]
+  data_updates <- project$data_updates
+  data_updates_transformation <- project$transformation$data_updates
+  for (form_name in names(data_updates)) {
+    to_be_uploaded <- find_upload_diff(
+      to_be_uploaded = data_updates[[form_name]],
+      project,
+      view_old = view_old,
+      n_row_view = n_row_view
+    )
+    data_updates[[form_name]] <- to_be_uploaded
     if (is_something(to_be_uploaded)) {
-      project$data_updates <- list()
-      project$data_updates[[form_name]] <- to_be_uploaded
-      project <- find_upload_diff(project, view_old = view_old, n_row_view = n_row_view)
-      to_be_uploaded <- project$data_updates[[form_name]]
-      if (is_something(to_be_uploaded)) {
-        if (project$internals$labelled) {
-          to_be_uploaded <- to_be_uploaded %>% labelled_to_raw_form(project)
-        }
-        do_it <- 1
-        if (ask) {
-          do_it <- utils::menu(choices = c("Yes upload", "No and go to next"), title = "Do you want to upload this?")
-        }
-        if (do_it == 1) {
-          upload_form_to_REDCap(to_be_uploaded = to_be_uploaded, project = project, batch_size = batch_size)
-          project$data_updates[[form_name]] <- NULL
-          any_updates <- TRUE
-          project$internals$last_data_update <- now_time()
-        }
+      if (project$internals$labelled) {
+        to_be_uploaded <- to_be_uploaded %>% labelled_to_raw_form(project)
+      }
+      do_it <- 1
+      if (ask) {
+        do_it <- utils::menu(choices = c("Yes upload", "No and go to next"), title = "Do you want to upload this?")
+      }
+      if (do_it == 1) {
+        upload_form_to_REDCap(to_be_uploaded = to_be_uploaded, project = project, batch_size = batch_size)
+        data_updates[[form_name]] <- NULL
+        any_updates <- TRUE
+        project$internals$last_data_update <- now_time()
       }
     }
   }
+  if(!is_something(data_updates)){
+    data_updates <- list()
+  }
+  for (form_name in names(data_updates_transformation)) {
+    to_be_uploaded <- find_upload_diff(
+      to_be_uploaded = data_updates_transformation[[form_name]],
+      project,
+      view_old = view_old,
+      n_row_view = n_row_view
+    )
+    data_updates_transformation[[form_name]] <- to_be_uploaded
+    if (is_something(to_be_uploaded)) {
+      if (project$internals$labelled) {
+        to_be_uploaded <- to_be_uploaded %>% labelled_to_raw_form(project)
+      }
+      do_it <- 1
+      if (ask) {
+        do_it <- utils::menu(choices = c("Yes upload", "No and go to next"), title = "Do you want to upload this?")
+      }
+      if (do_it == 1) {
+        upload_form_to_REDCap(to_be_uploaded = to_be_uploaded, project = project, batch_size = batch_size)
+        data_updates_transformation[[form_name]] <- NULL
+        any_updates <- TRUE
+        project$internals$last_data_update <- now_time()
+      }
+    }
+  }
+  if(!is_something(data_updates_transformation)){
+    data_updates_transformation <- list()
+  }
+  project$data_updates <- data_updates
+  project$transformation$data_updates <-  data_updates_transformation
   if (any_updates) {
     project <- sync_project(project)
   }
@@ -107,6 +139,7 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
 #' differences for upload. The function ensures that the new data matches the
 #' structure defined by the metadata and provides warnings when discrepancies
 #' are found.
+#' @param to_be_uploaded a data.frame or list of data.frames to be uploaded
 #' @inheritParams save_project
 #' @param view_old Logical. If TRUE, it will display a preview of the old data
 #' (default is FALSE).
@@ -124,44 +157,49 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
 #' choices to compare, though their exact usage will depend on how the function
 #' is fully implemented.
 #' @export
-find_upload_diff <- function(project, view_old = FALSE, n_row_view = 20) {
+find_upload_diff <- function(to_be_uploaded,project, view_old = FALSE, n_row_view = 20) {
   project <- assert_blank_project(project)
-  new_list <- project$data_updates
   old_list <- list()
-  if (any(!names(new_list) %in% project$metadata$forms$form_name)) warning("All upload names should ideally match the project form names, `project$metadata$forms$form_name`", immediate. = TRUE)
+  # if (any(!names(new_list) %in% project$metadata$forms$form_name)) warning("All upload names should ideally match the project form names, `project$metadata$forms$form_name`", immediate. = TRUE)
   already_used <- NULL
-  for (form_name in names(new_list)) { # form_name <- names(new_list) %>% sample(1)
-    new <- new_list[[form_name]]
+  if(is.data.frame(to_be_uploaded)){
+    to_be_uploaded <- list(upload_me = to_be_uploaded)
+  }
+  for (user_name in names(to_be_uploaded)) { # form_name <- names(new_list) %>% sample(1)
+    new <- to_be_uploaded[[user_name]]
     ref_cols <- project$redcap$raw_structure_cols
     ref_cols <- ref_cols[which(ref_cols %in% colnames(new))]
     data_cols <- colnames(new)[which(!colnames(new) %in% ref_cols)]
     form_names <- field_names_to_form_names(project, data_cols)
-    if (any(form_names %in% already_used)) stop("REDCapSync will not allow you to upload items from same form multiple times in one loop without refreshing.")
-    # old <- merge_forms(forms = form_names, project = project,data_choice = "data",exact = TRUE)
+    form_name_old <- form_names
+    # if (any(form_names %in% already_used)) {
+    #   stop("REDCapSync will not allow you to upload items from same form multiple times in one loop without refreshing.")
+    # }
+    if(length(form_names)>1){
+      if(any(!form_names %in% project$metadata$forms$form_name[which(project$metadata$forms$repeating)])){
+        stop("Can't have variables in multiple forms in an upload data.frame unless it is a non-repeating form")
+      }
+      stop("Can only upload data from one form at a time.")
+    }
+    keep <- c(ref_cols,data_cols %>% vec1_in_vec2(form_names_to_field_names(form_names = form_names, project = project)))
     drop <- data_cols %>% vec1_not_in_vec2(form_names_to_field_names(form_names = form_names, project = project))
     if (length(drop) > 0) {
       message("Dropping field_names that aren't part of REDCap metadata: ", paste0(drop, collapse = ", "))
-      old <- old[, which(!colnames(old) %in% drop)]
     }
-    old_list[[form_name]] <- old
-    already_used <- already_used %>%
-      append(form_names) %>%
-      unique()
+    to_be_uploaded[[user_name]] <- find_form_diff2(
+      new = new[,keep],
+      old = project$data[[form_names]][,keep],
+      ref_cols = ref_cols,
+      message_pass = paste0(user_name, ": "),
+      view_old = view_old,
+      n_row_view = n_row_view
+    )
   }
-  new_list <- find_df_list_diff(
-    new_list = new_list,
-    old_list = old_list,
-    ref_col_list = project$metadata$form_key_cols[names(new_list)],
-    view_old = view_old,
-    n_row_view = n_row_view
-  )
-  if (is_something(new_list)) {
-    project$data_updates <- new_list
-    return(invisible(project))
+  if (is_something(to_be_uploaded)) {
+    return(invisible(to_be_uploaded))
   }
   message("No upload updates!")
-  project$data_updates <- list()
-  invisible(project)
+  invisible(NULL)
 }
 #' @noRd
 check_field <- function(project, form, field_name, autofill_new = TRUE) {

@@ -4,9 +4,11 @@
 \alias{find_upload_diff}
 \title{Find the project_import and project differences}
 \usage{
-find_upload_diff(project, view_old = FALSE, n_row_view = 20)
+find_upload_diff(to_be_uploaded, project, view_old = FALSE, n_row_view = 20)
 }
 \arguments{
+\item{to_be_uploaded}{a data.frame or list of data.frames to be uploaded}
+
 \item{project}{A validated \code{project} object containing REDCap project data
 and
 settings. Generated using \link{load_project} or \link{setup_project}}

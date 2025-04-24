@@ -15,7 +15,7 @@ are found."><meta property="og:image" content="https://thecodingdocs.github.io/R
 
     <a class="navbar-brand me-2" href="../index.html">REDCapSync</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9011</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,14 +65,18 @@ are found.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_upload_diff</span><span class="op">(</span><span class="va">project</span>, view_old <span class="op">=</span> <span class="cn">FALSE</span>, n_row_view <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_upload_diff</span><span class="op">(</span><span class="va">to_be_uploaded</span>, <span class="va">project</span>, view_old <span class="op">=</span> <span class="cn">FALSE</span>, n_row_view <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-project">project<a class="anchor" aria-label="anchor" href="#arg-project"></a></dt>
+<dl><dt id="arg-to-be-uploaded">to_be_uploaded<a class="anchor" aria-label="anchor" href="#arg-to-be-uploaded"></a></dt>
+<dd><p>a data.frame or list of data.frames to be uploaded</p></dd>
+
+
+<dt id="arg-project">project<a class="anchor" aria-label="anchor" href="#arg-project"></a></dt>
 <dd><p>A validated <code>project</code> object containing REDCap project data
 and
 settings. Generated using <a href="setup-load.html">load_project</a> or <a href="setup-load.html">setup_project</a></p></dd>

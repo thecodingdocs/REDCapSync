@@ -452,7 +452,6 @@ add_project_summary <- function(
     dir_other = dir_other,
     file_name = file_name,
     file_path = file.path(dir_other, paste0(file_name, file_ext)),
-    summary_records = NULL,
     n_records = NULL,
     last_save_time = NULL,
     final_form_tab_names = NULL
@@ -471,7 +470,7 @@ add_project_summary <- function(
     }
   }
   project$summary[[summary_name]] <- summary_list_new
-  project$summary$all_records[[summary_name]] <- NA
+  project$summary$all_records[[summary_name]] <- as.POSIXct(NA)
   invisible(project)
 }
 #' @noRd
@@ -482,7 +481,6 @@ internal_forbiden_summary_names <- c(
   "last_transformation"
 )
 internal_not_important_summary_names <- c(
-  "summary_records",
   "n_records",
   "last_save_time",
   "final_form_tab_names"
@@ -546,14 +544,11 @@ save_summary <- function(project, summary_name) {
     sort() %>%
     unique()
   record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  summary_records <- project$summary$all_records[record_rows, ]
-  if(summary_name != "REDCapSync"){
-    cols_save <- c(id_col, internal_forbiden_summary_names, summary_name)
-    summary_records <- summary_records[, cols_save]
-  }
-  project$summary[[summary_name]]$summary_records <- summary_records
-  project$summary[[summary_name]]$n_records <- nrow(summary_records)
-  project$summary[[summary_name]]$last_save_time <- now_time()
+  last_save_time <- now_time()
+  project$summary$all_records[[summary_name]][record_rows] <- last_save_time
+  #todo maybe all_records cols not needed if you have last_save_time?
+  project$summary[[summary_name]]$n_records <- length(records)
+  project$summary[[summary_name]]$last_save_time <- last_save_time
   project$summary[[summary_name]]$final_form_tab_names <-
     rename_list_names_excel(list_names = names(to_save_list))
   names(project$summary[[summary_name]]$final_form_tab_names) <-

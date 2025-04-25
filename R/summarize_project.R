@@ -543,12 +543,8 @@ save_summary <- function(project, summary_name) {
     unlist() %>%
     sort() %>%
     unique()
-  record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  last_save_time <- now_time()
-  project$summary$all_records[[summary_name]][record_rows] <- last_save_time
-  #todo maybe all_records cols not needed if you have last_save_time?
   project$summary[[summary_name]]$n_records <- length(records)
-  project$summary[[summary_name]]$last_save_time <- last_save_time
+  project$summary[[summary_name]]$last_save_time <-  now_time()
   project$summary[[summary_name]]$final_form_tab_names <-
     rename_list_names_excel(list_names = names(to_save_list))
   names(project$summary[[summary_name]]$final_form_tab_names) <-
@@ -964,7 +960,9 @@ get_summary_records <- function(project, summary_name) {
     sort() %>%
     unique()
   record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  summary_records <- project$summary$all_records[record_rows, ]
+  summary_records <- project$summary$all_records$record_id[record_rows] %>%
+    sort() %>%
+    unique()
   summary_records
 }
 #' @noRd
@@ -980,10 +978,10 @@ summary_records_due <- function(project, summary_name) {
     project = project,
     summary_name = summary_name
   )
-  is_due <- !identical(
-    unname(summary_list$summary_records),
-    unname(summary_records)
-  )
+  record_rows <- which(project$summary$all_records[[id_col]] %in% records)
+  ref_col <- ifelse(summary_list$transform,"last_transformation","last_api_call")
+  timestamps <- project$summary$all_records[[ref_col]][record_rows]
+  is_due <- any(timestamps > summary_list$last_save_time)
   is_due
 }
 #' @noRd

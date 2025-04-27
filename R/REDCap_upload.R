@@ -112,10 +112,15 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
       }
       do_it <- 1
       if (ask) {
-        do_it <- utils::menu(choices = c("Yes upload", "No and go to next"), title = "Do you want to upload this?")
+        do_it <- utils::menu(
+          choices = c("Yes upload", "No and go to next"),
+          title = "Do you want to upload this?"
+          )
       }
       if (do_it == 1) {
-        upload_form_to_REDCap(to_be_uploaded = to_be_uploaded, project = project, batch_size = batch_size)
+        upload_form_to_REDCap(to_be_uploaded = to_be_uploaded,
+                              project = project,
+                              batch_size = batch_size)
         data_updates_transformation[[form_name]] <- NULL
         any_updates <- TRUE
         project$internals$last_data_update <- now_time()
@@ -150,8 +155,8 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
 #' The function compares the data in `project$data_updates` (new data) with the
 #' current data in the database (`project$data`). If the form names in the new
 #' data do not match the `project$metadata$forms$form_name`, a warning is
-#' issued. The function goes through each table in the new data and compares it with the
-#' old data, recording the differences.
+#' issued. The function goes through each table in the new data and compares it
+#' with the old data, recording the differences.
 #'
 #' The `compare` and `to` parameters allow users to specify specific data
 #' choices to compare, though their exact usage will depend on how the function
@@ -309,8 +314,8 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
 #' @param field_name_to_change Character. The field name to be changed in the
 #' REDCap database.
 #' @param field_names_to_view Optional character vector. A list of field names
-#' to view alongside the field being edited. Defaults to `NULL`, in which case only
-#' the field being changed will be viewed.
+#' to view alongside the field being edited. Defaults to `NULL`, in which case
+#' only the field being changed will be viewed.
 #' @param upload_individually Logical. If `TRUE`, each change is uploaded
 #' individually. Default is `TRUE`.
 #'

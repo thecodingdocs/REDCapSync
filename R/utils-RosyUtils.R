@@ -185,7 +185,8 @@ find_form_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
     rows <- indices$row %>%
       unique() %>%
       sort()
-    cols <- which(colnames(new) %in% ref_cols) %>% append(indices$col %>% unique() %>% sort())
+    cols <- which(colnames(new) %in% ref_cols) %>%
+      append(indices$col %>% unique() %>% sort())
     out_form <- new[rows, cols]
     message(message_pass, nrow(out_form), " rows have updates")
   } else {
@@ -222,7 +223,10 @@ find_form_diff2 <- function(new,
     stop("Keys must lead to unique rows! (new form)")
   }
   appended_old_col_suffix <- "__old"
-  if (any(endsWith(unique(colnames(old), colnames(new)), appended_old_col_suffix))) {
+  bad_name_test <- any(
+    endsWith(unique(colnames(old), colnames(new)), appended_old_col_suffix)
+  )
+  if (bad_name_test) {
     stop("colnames cant end with '", appended_old_col_suffix, "'")
   }
   merged_df <- merge(
@@ -647,7 +651,10 @@ rename_list_names_excel <- function(list_names){
       list_names[bad_names] %>% paste0(collapse = ", ")
     )
     cli_alert_info(
-      "Use CSV or shorten the names and make sure they are unique if they are trimmed to 31 char. For now will make unique by adding number."
+      paste0(
+        "Use CSV or shorten the names and make sure they are unique if they",
+        " are trimmed to 31 char. For now will make unique by adding number."
+      )
     )
     list_names_rename <- unique_trimmed_strings(
       list_names_rename,

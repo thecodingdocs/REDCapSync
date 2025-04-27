@@ -968,6 +968,7 @@ get_summary_records <- function(project, summary_name) {
 #' @noRd
 summary_records_due <- function(project, summary_name) {
   summary_list <- project$summary[[summary_name]]
+  id_col <- project$redcap$id_col
   if (is.null(summary_list$last_save_time)) {
     return(TRUE)
   }

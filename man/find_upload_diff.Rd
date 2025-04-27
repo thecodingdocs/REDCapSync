@@ -33,8 +33,8 @@ are found.
 The function compares the data in \code{project$data_updates} (new data) with the
 current data in the database (\code{project$data}). If the form names in the new
 data do not match the \code{project$metadata$forms$form_name}, a warning is
-issued. The function goes through each table in the new data and compares it with the
-old data, recording the differences.
+issued. The function goes through each table in the new data and compares it
+with the old data, recording the differences.
 
 The \code{compare} and \code{to} parameters allow users to specify specific data
 choices to compare, though their exact usage will depend on how the function

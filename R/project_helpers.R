@@ -77,7 +77,8 @@ deidentify_data_list <- function(data_list,
       min_dates$difference <- (min_dates$date - as.Date(date_handling))
       for(form_name in names(date_list)){
         field_record <- data[[form_name]][[id_cols[1]]]
-        difference <- min_dates$difference[match(field_record,min_dates$record_id)]
+        match_date_diff <- match(field_record,min_dates$record_id)
+        difference <- min_dates$difference[match_date_diff]
         for (field_name in date_list[[form_name]]) {
           field <- data[[form_name]][[field_name]]
           data[[form_name]][[field_name]] <- as.Date(field) - difference
@@ -330,12 +331,17 @@ raw_process_redcap <- function(raw, project, labelled) {
       )]
       if (length(form_field_names) == 0) {
         cli_alert_danger(
-          paste0("You might not have access to ", form_name, ". Unable to obtain.")
+          paste0(
+            "You might not have access to ",
+            form_name,
+            ". Unable to obtain."
+          )
         )
       }
       if (length(form_field_names) > 0) {
         add_ons_x <- add_ons
-        is_repeating_form <- form_name %in% forms$form_name[which(forms$repeating)]
+        repeating_forms <- forms$form_name[which(forms$repeating)]
+        is_repeating_form <- form_name %in% repeating_forms
         is_longitudinal <- project$redcap$is_longitudinal
         rows <- seq_len(nrow(raw))
         if (is_repeating_form) {
@@ -366,7 +372,10 @@ raw_process_redcap <- function(raw, project, labelled) {
           cols <- unique(c(add_ons_x, form_field_names))
           raw_subset <- raw[rows, cols]
           if (labelled) {
-            raw_subset <- raw_to_labelled_form(form = raw_subset, project = project)
+            raw_subset <- raw_to_labelled_form(
+              form = raw_subset,
+              project = project
+            )
           }
           form_list[[form_name]] <- raw_subset
         }

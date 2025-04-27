@@ -29,8 +29,8 @@ provided, the function will use the unique values from the specified forms.}
 REDCap database.}
 
 \item{field_names_to_view}{Optional character vector. A list of field names
-to view alongside the field being edited. Defaults to \code{NULL}, in which case only
-the field being changed will be viewed.}
+to view alongside the field being edited. Defaults to \code{NULL}, in which case
+only the field being changed will be viewed.}
 
 \item{upload_individually}{Logical. If \code{TRUE}, each change is uploaded
 individually. Default is \code{TRUE}.}

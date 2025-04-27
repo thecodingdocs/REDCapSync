@@ -111,7 +111,11 @@ default_sheet_drops <- function(project) {
     names()
 }
 #' @noRd
-read_xl_to_project_for_upload <- function(project, summary_name, file_path, drop_sheets = default_sheet_drops(project)) {
+read_xl_to_project_for_upload <- function(project,
+                                          summary_name,
+                                          file_path,
+                                          drop_sheets = default_sheet_drops(project)) {
+
   # add data_updates check
   if (!endsWith(file_path, ".xlsx")) {
     stop("File type must be '.xlsx' --> ", file_path)
@@ -134,7 +138,7 @@ read_xl_to_project_for_upload <- function(project, summary_name, file_path, drop
     wb_to_list()
   if (is_something(drop_sheets)) {
     message(
-      "dropping sheets from `drop_sheets` (Default is names from project$summary)... ",
+      "dropping sheets from `drop_sheets` ... ",
       paste0(drop_sheets, collapse = ", ")
     )
     for (drop_sheet in drop_sheets) {

@@ -9,15 +9,14 @@ deidentify_data_list <- function(data_list,
   initial_identifiers <- fields$field_name[
     which(fields$identifier == "y")
   ]
-  if (length(initial_identifiers) == 0) {
+  if (length(initial_identifiers) == 0L) {
     warning(
-      paste0(
-        "You have no identifiers marked in ",
-        "`project$metadata$fields$identifier`. ",
-        "You can set it in REDCap Project Setup and update ",
-        "project OR define your idenitifiers in this functions ",
-        "`identifiers` argument."
-      ),
+      "You have no identifiers marked in ",
+      "`project$metadata$fields$identifier`. ",
+      "You can set it in REDCap Project Setup and update ",
+      "project OR define your idenitifiers in this functions ",
+      "`identifiers` argument."
+      ,
       immediate. = TRUE
     )
   }
@@ -27,18 +26,18 @@ deidentify_data_list <- function(data_list,
       !identifiers %in% fields$field_name
     )
   ]
-  if (length(bad_identifiers) > 0) {
+  if (length(bad_identifiers) > 0L) {
     stop(
       "There is a bad identifier. see `fields$field_name`: ",
-      bad_identifiers %>% as_comma_string()
+      toString(bad_identifiers)
     )
   }
   id_cols <- metadata$form_key_cols %>% unlist() %>% unique()
-  if(is_something(id_cols)){
+  if (is_something(id_cols)) {
     if (any(id_cols %in% identifiers)) {
       stop(
         "ID cols not allowed... ",
-        id_cols %>% as_comma_string(),
+        toString(id_cols),
         " <-- use hashing (in dev)"
       )
     }
@@ -48,10 +47,11 @@ deidentify_data_list <- function(data_list,
     #make function for that ?external
     free_text_rows <- which(
       fields$field_type == "notes" |
-        (fields$field_type == "text" &
-           is.na(fields$text_validation_type_or_show_slider_number)
+        (
+          fields$field_type == "text" &
+            is.na(fields$text_validation_type_or_show_slider_number)
         ) &
-        ! fields$field_name %in% id_cols
+        !fields$field_name %in% id_cols
     )
     identifiers <- identifiers %>%
       append(fields$field_name[free_text_rows]) %>%
@@ -59,9 +59,9 @@ deidentify_data_list <- function(data_list,
   }
   if (is_something(data)) {
     date_vector <- fields$field_name[which(fields$field_type_R == "date")]
-    records <- lapply(data,function(form){
-      form[[id_cols[1]]]
-    }) %>% unlist() %>% unique()
+    # records <- lapply(data,function(form){
+    #   form[[id_cols[1]]]
+    # }) %>% unlist() %>% unique()
     date_list <- Map(
       f = function(x, cols) {
         date_vector[which(date_vector %in% cols)]
@@ -69,15 +69,15 @@ deidentify_data_list <- function(data_list,
       names(data),
       lapply(data, colnames)
     )
-    if(date_handling != "none"){
+    if (date_handling != "none") {
       min_dates <- get_min_dates(data_list)
       # if(date_handling == "lowest-record-zero"){
       #
       # }
       min_dates$difference <- (min_dates$date - as.Date(date_handling))
-      for(form_name in names(date_list)){
+      for (form_name in names(date_list)){
         field_record <- data[[form_name]][[id_cols[1]]]
-        match_date_diff <- match(field_record,min_dates$record_id)
+        match_date_diff <- match(field_record, min_dates$record_id)
         difference <- min_dates$difference[match_date_diff]
         for (field_name in date_list[[form_name]]) {
           field <- data[[form_name]][[field_name]]
@@ -90,7 +90,7 @@ deidentify_data_list <- function(data_list,
     drop_list <- Map(function(x, cols) {
       identifiers[which(identifiers %in% cols)]
     }, names(data), lapply(data, colnames))
-    drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0]
+    drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0L]
     for (form_name in names(drop_list)) {
       for (field_name in drop_list[[form_name]]) {
         data[[form_name]][[field_name]] <- NULL
@@ -105,21 +105,25 @@ get_min_dates <- function(data_list) {
   metadata <- data_list$metadata
   fields <- metadata$fields
   id_cols <- metadata$form_key_cols %>% unlist() %>% unique()
-  empty <- data.frame(record_id = character(), min_date = as.Date(character()))
+  empty <- data.frame(
+    record_id = character(),
+    min_date = as.Date(character()),
+    stringsAsFactors = FALSE
+  )
   if (!is_something(data)) {
     return(empty)
   }
   date_vector <- fields$field_name[which(fields$field_type_R == "date")]
-  records <- lapply(data,function(form){
-    form[[id_cols[1]]]
-  }) %>% unlist() %>% unique()
+  # records <- lapply(data,function(form){
+  #   form[[id_cols[1]]]
+  # }) %>% unlist() %>% unique()
   all_dates <- list()
   # Loop through each form in the list
   for (form in data) {
     if (id_cols[1] %in% names(form)) {
       # Find the date fields that exist in this form
       existing_fields <- intersect(names(form), date_vector)
-      if (length(existing_fields) > 0) {
+      if (length(existing_fields) > 0L) {
         df_subset <- form[, c(id_cols[1], existing_fields), drop = FALSE]
         df_long <- stats::reshape(df_subset, varying = existing_fields,
                                   v.names = "date", times = existing_fields,
@@ -129,7 +133,7 @@ get_min_dates <- function(data_list) {
       }
     }
   }
-  if (length(all_dates) == 0){
+  if (length(all_dates) == 0) {
     return(empty)
   }
   combined <- do.call(rbind, all_dates)
@@ -158,22 +162,22 @@ get_min_dates <- function(data_list) {
 #' @family Link Functions
 #' @export
 link_API_token <- function(project) {
-  project$links$redcap_API %>% utils::browseURL()
+  utils::browseURL(project$links$redcap_API)
 }
 #' @rdname Links
 #' @export
 link_API_playground <- function(project) {
-  project$links$redcap_API_playground %>% utils::browseURL()
+  utils::browseURL(project$links$redcap_API_playground)
 }
 #' @rdname Links
 #' @export
 link_REDCap_home <- function(project) {
-  project$links$redcap_base %>% utils::browseURL()
+  utils::browseURL(project$links$redcap_base)
 }
 #' @rdname Links
 #' @export
 link_REDCap_project <- function(project) {
-  project$links$redcap_home %>% utils::browseURL()
+  utils::browseURL(project$links$redcap_home)
 }
 #' @param record REDCap record id or study id etc, any column names that match
 #' `project$redcap$id_col`
@@ -203,11 +207,7 @@ link_REDCap_record <- function(project,
     }
     if ("arm_number" %in% colnames(project$summary$all_records)) {
       arm_row <- which(project$summary$all_records[[id_col]] == record)
-      link <- link %>%
-        paste0(
-          "&arm=",
-          project$summary$all_records$arm_number[arm_row]
-        )
+      link <- paste0(link, "&arm=", project$summary$all_records$arm_number[arm_row])
     }
     link <- link %>% paste0("&id=", record)
   }
@@ -217,7 +217,7 @@ link_REDCap_record <- function(project,
       stop(
         page,
         " has to be one of the instrument names: ",
-        paste0(project$metadata$forms$form_name, collapse = ", ")
+        toString(project$metadata$forms$form_name)
       )
     }
     link <- link %>% paste0("&page=", page)
@@ -228,7 +228,7 @@ link_REDCap_record <- function(project,
       if (!page %in% repeating_form_names) {
         stop(
           "If you provide an instance, it has to be a repeating instrument: ",
-          repeating_form_names %>% as_comma_string()
+          repeating_form_names %>% toString()
         )
       }
       link <- link %>% paste0("&instance=", instance)
@@ -314,10 +314,10 @@ raw_process_redcap <- function(raw, project, labelled) {
       raw$id_temp <- NULL
     }
     add_ons <- add_ons[which(add_ons %in% colnames(raw))]
-    if (any(!project$redcap$raw_structure_cols %in% colnames(raw))) {
+    if (!all(project$redcap$raw_structure_cols %in% colnames(raw))) {
       stop(
         "raw is missing one of the following... and that's weird: ",
-        project$redcap$raw_structure_cols %>% paste0(collapse = ", ")
+        toString(project$redcap$raw_structure_cols)
       )
     }
     form_rows <- which(forms$form_name %in% unique(fields$form_name))
@@ -402,7 +402,7 @@ clean_redcap_log <- function(log) {
   design_rows <- which(design_test)
   not_design_rows <- which(!design_test)
   # notdesign action -----
-  record_rows <- not_design_rows[dplyr::starts_with(match = internal_log_action_records, vars = log$action[not_design_rows])]
+  record_rows <- not_design_rows[dplyr::starts_with(match = .log_action_records, vars = log$action[not_design_rows])]
   log$record_id[record_rows] <- gsub(
     "Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation|Lock/Unlock Record | |[:):]|[:(:]",
     "",
@@ -417,7 +417,7 @@ clean_redcap_log <- function(log) {
   log$action_type[
     not_design_rows[
       dplyr::starts_with(
-        match = internal_log_action_exports,
+        match = .log_action_exports,
         vars = log$action[not_design_rows]
       )
     ]
@@ -425,7 +425,7 @@ clean_redcap_log <- function(log) {
   log$action_type[
     not_design_rows[
       dplyr::starts_with(
-        match = internal_log_action_users,
+        match = .log_action_users,
         vars = log$action[not_design_rows]
       )
     ]
@@ -433,7 +433,7 @@ clean_redcap_log <- function(log) {
   log$action_type[
     not_design_rows[
       dplyr::starts_with(
-        match = internal_log_action_no_changes,
+        match = .log_action_no_changes,
         vars = log$action[not_design_rows]
       )
     ]
@@ -441,7 +441,7 @@ clean_redcap_log <- function(log) {
   # design details  -------------------
   comment_rows <- design_rows[
     dplyr::starts_with(
-      match = internal_log_details_comments,
+      match = .log_details_comments,
       vars = log$details[design_rows]
     )
   ]
@@ -453,7 +453,7 @@ clean_redcap_log <- function(log) {
   log$action_type[
     design_rows[
       dplyr::starts_with(
-        match = internal_log_details_exports,
+        match = .log_details_exports,
         vars = log$details[design_rows]
       )
     ]
@@ -461,7 +461,7 @@ clean_redcap_log <- function(log) {
   log$action_type[
     design_rows[
       dplyr::starts_with(
-        match = internal_log_details_metadata_major,
+        match = .log_details_metadata_major,
         vars = log$details[design_rows]
       )
     ]
@@ -469,7 +469,7 @@ clean_redcap_log <- function(log) {
   log$action_type[
     design_rows[
       dplyr::starts_with(
-        match = internal_log_details_metadata_minor,
+        match = .log_details_metadata_minor,
         vars = log$details[design_rows]
       )
     ]
@@ -477,7 +477,7 @@ clean_redcap_log <- function(log) {
   log$action_type[
     design_rows[
       dplyr::starts_with(
-        match = internal_log_details_no_changes,
+        match = .log_details_no_changes,
         vars = log$details[design_rows]
       )
     ]
@@ -485,7 +485,7 @@ clean_redcap_log <- function(log) {
   log$action_type[
     design_rows[
       dplyr::starts_with(
-        match = internal_log_details_tokens,
+        match = .log_details_tokens,
         vars = log$details[design_rows]
       )
     ]
@@ -493,7 +493,7 @@ clean_redcap_log <- function(log) {
   log$action_type[
     design_rows[
       dplyr::starts_with(
-        match = internal_log_details_repository,
+        match = .log_details_repository,
         vars = log$details[design_rows]
       )
     ]
@@ -509,17 +509,17 @@ clean_redcap_log <- function(log) {
   sort_redcap_log(log)
 }
 #' @noRd
-internal_log_action_exports <- c(
+.log_action_exports <- c(
   "Data export",
   "Download uploaded "
 )
 #' @noRd
-internal_log_details_exports <- c(
+.log_details_exports <- c(
   "Export ",
   "Download "
 )
 #' @noRd
-internal_log_action_users <- c(
+.log_action_users <- c(
   "User assigned to role ",
   "Add user ",
   "Edit user ",
@@ -529,26 +529,26 @@ internal_log_action_users <- c(
   "Create user role"
 )
 #' @noRd
-internal_log_details_comments <- c(
+.log_details_comments <- c(
   "Add field comment ",
   "Edit field comment ",
   "Delete field comment "
 )
 #' @noRd
-internal_log_action_records <- c(
+.log_action_records <- c(
   "Update record ",
   "Delete record ",
   "Lock/Unlock Record ",
   "Create record "
 )
 #' @noRd
-internal_log_action_no_changes <- c(
+.log_action_no_changes <- c(
   "Enable external module ",
   "Disable external module ",
   "Modify configuration for external module "
 )
 #' @noRd
-internal_log_details_no_changes <- c(
+.log_details_no_changes <- c(
   "Switch DAG ",
   "Modify custom record dashboard",
   "Delete custom record dashboard",
@@ -583,12 +583,12 @@ internal_log_details_no_changes <- c(
   "Send request to copy project"
 )
 #' @noRd
-internal_log_details_tokens <- c(
+.log_details_tokens <- c(
   "Create API token",
   "User regenerate own API token"
 )
 #' @noRd
-internal_log_details_repository <- c(
+.log_details_repository <- c(
   "Upload file to File Repository",
   "Delete file from File Repository",
   "Delete folder from File Repository",
@@ -596,7 +596,7 @@ internal_log_details_repository <- c(
   "Upload document to file repository"
 )
 #' @noRd
-internal_log_details_metadata_minor <- c(
+.log_details_metadata_minor <- c(
   "Tag new identifier fields",
   "Add/edit branching logic",
   "Reorder project fields",
@@ -605,7 +605,7 @@ internal_log_details_metadata_minor <- c(
   "Reorder data collection instruments"
 )
 #' @noRd
-internal_log_details_metadata_major <- c(
+.log_details_metadata_major <- c(
   "Edit project field",
   "Delete project field",
   "Create project field",
@@ -624,7 +624,7 @@ internal_log_details_metadata_major <- c(
   "Create project "
 )
 #' @noRd
-internal_all_missing_codes <- data.frame(
+.all_missing_codes <- data.frame(
   code = c(
     "NI",
     "INV",
@@ -664,7 +664,8 @@ internal_all_missing_codes <- data.frame(
     "Positive infinity",
     "Negative infinity",
     "Other"
-  )
+  ),
+  stringsAsFactors = FALSE
 )
 #' @noRd
 missing_codes2 <- function(project) {

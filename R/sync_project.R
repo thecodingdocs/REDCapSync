@@ -112,18 +112,23 @@ sync_project <- function(
           unique()
         interim_log$timestamp <- NULL
         interim_log_metadata <- interim_log[which(is.na(interim_log$record)), ]
-        interim_log_metadata <- interim_log_metadata[which(interim_log_metadata$action_type %in% "Metadata Change Major"), ] # inclusion
-        interim_log_metadata_minor <- length(which(interim_log_metadata$action_type %in% "Metadata Change Minor")) > 0
+        interim_log_metadata <- interim_log_metadata[which(interim_log_metadata$action_type == "Metadata Change Major"), ] # inclusion
+        interim_log_metadata_minor <- any(interim_log_metadata$action_type == "Metadata Change Minor")
         # interim_log_metadata <- interim_log_metadata[grep(ignore_redcap_log(),interim_log_metadata$details,ignore.case = TRUE,invert = TRUE) %>% unique(),]
         if (nrow(interim_log_metadata) > 0 || interim_log_metadata_minor) { # account for minor changes later
           reset <- TRUE
-          message(paste0("Update because: Metadata was changed!"))
+          message("Update because: Metadata was changed!")
         } else {
           interim_log_data <- interim_log[which(!is.na(interim_log$record)), ]
           interim_log_data <- interim_log_data[which(interim_log_data$action_type != "Users"), ]
-          deleted_records <- interim_log_data$record[which(interim_log_data$action_type %in% c("Delete"))]
+          deleted_records <- interim_log_data$record[which(interim_log_data$action_type == "Delete")]
           if (length(deleted_records) > 0) {
-            warning("There were recent records deleted from redcap Consider running with 'reset = TRUE'. Records: ", deleted_records %>% paste0(collapse = ", "), immediate. = TRUE)
+            warning(
+              "There were recent records deleted from redcap Consider running",
+              " with 'reset = TRUE'. Records: ",
+              deleted_records %>% toString(),
+              immediate. = TRUE
+            )
           }
           stale_records <- interim_log_data$record %>% unique()
           if (length(stale_records) == 0) {
@@ -156,7 +161,8 @@ sync_project <- function(
       project$redcap$log <- log %>%
         dplyr::bind_rows(
           project %>% get_REDCap_log(log_begin_date = log_begin_date)
-        ) %>% sort_redcap_log()
+        ) %>%
+        sort_redcap_log()
       # project <- annotate_fields(project)
       # project <- annotate_choices(project)
       project$summary$all_records <- extract_project_records(project)
@@ -187,7 +193,8 @@ sync_project <- function(
       if (length(missing_from_summary) > 0) {
         x <- data.frame(
           record = missing_from_summary,
-          last_api_call = NA
+          last_api_call = NA,
+          stringsAsFactors = FALSE
         )
         colnames(x)[1] <- project$redcap$id_col
         project$summary$all_records <- project$summary$all_records %>% dplyr::bind_rows(x)
@@ -219,7 +226,7 @@ sync_project <- function(
       #     process_df_list(silent = TRUE) %>%
       #     all_character_cols_list()
       # }
-      if (any(!names(form_list) %in% names(project$data))) {
+      if (!all(names(form_list) %in% names(project$data))) {
         stop("Imported data names doesn't match project$data names. If this happens run `sync_project(project, reset = TRUE)`")
       }
       for (form_name in names(form_list)) {
@@ -227,7 +234,7 @@ sync_project <- function(
           all_character_cols() %>%
           dplyr::bind_rows(form_list[[form_name]])
       }
-      message("Updated: ", paste0(stale_records, collapse = ", "))
+      message("Updated: ", toString(stale_records))
       was_updated <- TRUE
     } else {
       message("Up to date already!")

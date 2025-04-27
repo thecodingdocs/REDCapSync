@@ -2,10 +2,14 @@
 assert_dir <- function(dir_path, silent = TRUE) {
   # param check
   dir_path <- clean_dir_path(dir_path)
-  if (!file.exists(dir_path)) stop("dir_path does not exist")
-  if (!is.logical(silent)) stop("silent parameter must be TRUE/FALSE")
+  if (!file.exists(dir_path)) {
+    stop("dir_path does not exist")
+  }
+  if (!is.logical(silent)) {
+    stop("silent parameter must be TRUE/FALSE")
+  }
   stop_mes <- "Did you use `setup_project()`?"
-  for (folder in internal_dir_folders) {
+  for (folder in .dir_folders) {
     if (!file.exists(file.path(dir_path, folder))) {
       stop("'", dir_path, "/", folder, "' missing! ", stop_mes)
     }
@@ -23,9 +27,10 @@ get_project_token <- function(project, silent = TRUE) {
   is_a_test <- is_test_project(project)
   valid <- token %>%
     is_valid_REDCap_token(silent = silent, is_a_test = is_a_test)
-  message_about_token <- ifelse(is_a_test,
-                                get_test_token(project$short_name),
-                                "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
+  message_about_token <- ifelse(
+    is_a_test,
+    get_test_token(project$short_name),
+    "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
   )
   if (!silent) {
     cli_alert_wrap(
@@ -177,13 +182,13 @@ assert_blank_project <- function(
   assert_list(
     project,
     names = "unique",
-    len = length(internal_blank_project),
+    len = length(.blank_project),
     add = collected
   )
   assert_names(
     names(project),
     type = "unique",
-    identical.to = names(internal_blank_project),
+    identical.to = names(.blank_project),
     add = collected
   )
   if (!collected$isEmpty()) {
@@ -198,8 +203,7 @@ assert_blank_project <- function(
       )
       return(invisible(project))
     }
-    message <- collected %>%
-      cli_message_maker(function_name = current_function)
+    message <- cli_message_maker(collected, function_name = current_function)
     if (warn_only) {
       cli::cli_warn(message)
       return(invisible(project))
@@ -223,7 +227,7 @@ assert_setup_project <- function(
   assert_logical(warn_only, any.missing = FALSE, len = 1, add = collected)
   current_function <- as.character(current_call()) %>% dplyr::first()
   if (!collected$isEmpty()) {
-    message <- collected %>% cli_message_maker(function_name = current_function)
+    message <- cli_message_maker(collected, function_name = current_function)
     cli::cli_abort(message)
   }
   collected <- makeAssertCollection()
@@ -305,8 +309,7 @@ assert_setup_project <- function(
       )
       return(invisible(project))
     }
-    message <- collected %>%
-      cli_message_maker(function_name = current_function)
+    message <- cli_message_maker(collected = collected, function_name = current_function)
     if (warn_only) {
       cli::cli_warn(message)
       return(invisible(project))
@@ -325,7 +328,7 @@ assert_project_details <- function(projects, nrows = NULL) {
   assert_data_frame(
     x = projects,
     nrows = nrows,
-    ncols = length(internal_blank_project_cols)
+    ncols = length(.blank_project_cols)
   )
 }
 assert_project_path <- function(project_path) {
@@ -334,5 +337,5 @@ assert_project_path <- function(project_path) {
     overwrite = TRUE,
     extension = "RData"
   )
-  assert_true(endsWith(basename(project_path), internal_project_path_suffix))
+  assert_true(endsWith(basename(project_path), .project_path_suffix))
 }

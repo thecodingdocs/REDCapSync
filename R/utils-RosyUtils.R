@@ -10,12 +10,15 @@ cli_alert_wrap <- function(text = "",
   url_if <- ""
   file_if <- ""
   if (length(url) > 0) {
-    # url %>% lapply(function(x){assert_web_link(x)}) # doesnt work for /subheaders/
+    # url %>% lapply(function(x){assert_web_link(x)})
+    # doesnt work for /subheaders/
     # url_if <- " {.url {url}}"
     url_names <- names(url)
     if (is.list(url)) {
-      url_names <- url %>% unlist()
-      if (is_named_list(url)) url_names <- names(url)
+      url_names <- unlist(url)
+      if (is_named_list(url)) {
+        url_names <- names(url)
+      }
       url <- unlist(url)
     }
     if (is.null(url_names)) url_names <- url
@@ -31,7 +34,7 @@ cli_alert_wrap <- function(text = "",
   if (length(file) > 0) {
     file_names <- names(file)
     if (is.list(file)) {
-      file_names <- file %>% unlist()
+      file_names <- unlist(file)
       if (is_named_list(file)) file_names <- names(file)
       file <- unlist(file)
     }
@@ -73,7 +76,7 @@ process_df_list <- function(list, drop_empty = TRUE, silent = FALSE) {
         if (!silent) {
           cli_alert_wrap(
             "Dropping non-data.frames and empties... ",
-            paste0(names(drops), collapse = ", ")
+            toString(names(drops))
           )
         }
       }
@@ -149,14 +152,15 @@ find_form_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
     stop("Keys must lead to unique rows! (new form)")
   }
   new_keys <- integer(0)
-  if (any(!new$key %in% old$key)) {
+  if (!all(new$key %in% old$key)) {
     # "You have at least one new key compared to old form therefore all
     # columns will be included by default"
     new_keys <- which(!new$key %in% old$key)
   }
   indices <- data.frame(
     row = integer(0),
-    col = integer(0)
+    col = integer(0),
+    stringsAsFactors = FALSE
   )
   for (new_key in new_keys) {
     indices <- indices %>% dplyr::bind_rows(
@@ -175,7 +179,8 @@ find_form_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
         indices <- indices %>% dplyr::bind_rows(
           data.frame(
             row = row,
-            col = col
+            col = col,
+            stringsAsFactors = FALSE
           )
         )
       }
@@ -249,7 +254,7 @@ find_form_diff2 <- function(new,
     # Compare vectors element-wise
     are_not_equal <- which(vector1_no_na != vector2_no_na)
     if (length(are_not_equal) > 0) {
-      rows_to_keep <- rows_to_keep %>% append(are_not_equal)
+      rows_to_keep <- append(rows_to_keep, are_not_equal)
       additional_cols <- which(colnames(merged_df) == col)
       cols_to_keep <- cols_to_keep %>% append(additional_cols)
       if (view_old) {
@@ -260,8 +265,8 @@ find_form_diff2 <- function(new,
     }
   }
   if (length(rows_to_keep) > 0) {
-    rows_to_keep <- rows_to_keep %>% unique()
-    cols_to_keep <- cols_to_keep %>% unique()
+    rows_to_keep <- unique(rows_to_keep)
+    cols_to_keep <- unique(cols_to_keep)
     if (view_old) {
       rows_to_keep2 <- rows_to_keep
       done <- FALSE
@@ -272,7 +277,7 @@ find_form_diff2 <- function(new,
         } else {
           indices <- 1:ifelse(length_of_rows_to_keep < n_row_view,
                               length_of_rows_to_keep,
-                              n_row_view)
+                              n_row_view) #TODO
           rows_to_keep3 <- rows_to_keep2[indices]
           print.data.frame(merged_df[rows_to_keep3, unique(cols_to_view)])
           choice <- utils::menu(
@@ -311,7 +316,7 @@ find_df_list_diff <- function(new_list,
   }
   if (!is_df_list(new_list)) stop("new_list must be a list of data.frames")
   if (!is_df_list(old_list)) stop("old_list must be a list of data.frames")
-  if (any(!names(new_list) %in% names(old_list))) {
+  if (!all(names(new_list) %in% names(old_list))) {
     stop("All new_list names must be included in the set of old_list names.")
   }
   if (!is.list(ref_col_list)) {
@@ -337,9 +342,6 @@ all_character_cols <- function(form) {
 }
 all_character_cols_list <- function(list) {
   lapply(list, all_character_cols)
-}
-as_comma_string <- function(vec) {
-  paste0(vec, collapse = ", ")
 }
 vec1_in_vec2 <- function(vec1, vec2) {
   vec1[which(vec1 %in% vec2)]
@@ -390,7 +392,7 @@ csv_folder_to_list <- function(folder) {
   folder <- sanitize_path(folder)
   if (!dir.exists(folder)) stop("Folder does not exist: ", folder)
   paths <- list_files_real(folder)
-  paths <- paths[which(paths %>% endsWith(".csv"))]
+  paths <- paths[which(endsWith(paths, ".csv"))]
   csv_to_list(paths = paths)
 }
 is_named_df_list <- function(x, strict = FALSE) {
@@ -437,23 +439,21 @@ wb_to_list <- function(wb) {
   names(out) <- clean_sheets
   out
 }
-form_to_wb <- function(
-    form,
-    form_name,
-    wb = openxlsx::createWorkbook(),
-    key_cols = NULL,
-    derived_cols = NULL,
-    link_col_list = list(),
-    str_trunc_length = 32000,
-    header_df = NULL,
-    tableStyle = "none",
-    header_style = default_header_style,
-    body_style = default_body_style,
-    freeze_header = TRUE,
-    pad_rows = 0,
-    pad_cols = 0,
-    freeze_keys = TRUE
-) {
+form_to_wb <- function(form,
+                       form_name,
+                       wb = openxlsx::createWorkbook(),
+                       key_cols = NULL,
+                       derived_cols = NULL,
+                       link_col_list = list(),
+                       str_trunc_length = 32000,
+                       header_df = NULL,
+                       tableStyle = "none",
+                       header_style = default_header_style,
+                       body_style = default_body_style,
+                       freeze_header = TRUE,
+                       pad_rows = 0,
+                       pad_cols = 0,
+                       freeze_keys = TRUE) {
   if (nchar(form_name) > 31) stop(form_name, " is longer than 31 char")
   form[] <- lapply(form, function(col) {
     out <- col
@@ -465,7 +465,7 @@ form_to_wb <- function(
   hyperlink_col <- NULL
   if (freeze_keys) {
     all_cols <- colnames(form)
-    if (any(!key_cols %in% all_cols)) stop("all key_cols must be in the forms")
+    if (!all(key_cols %in% all_cols)) stop("all key_cols must be in the forms")
     freeze_key_cols <- which(all_cols %in% key_cols)
     if (length(freeze_key_cols) > 0) {
       if (!is_consecutive_srt_1(freeze_key_cols)) {
@@ -473,7 +473,7 @@ form_to_wb <- function(
           "please keep your key cols on the left consecutively. Fixing ",
           form_name,
           ": ",
-          paste0(key_cols, collapse = ", "),
+          toString(key_cols),
           ".",
           immediate. = TRUE
         )
@@ -637,7 +637,7 @@ list_to_wb <- function(
   }
   wb
 }
-rename_list_names_excel <- function(list_names){
+rename_list_names_excel <- function(list_names) {
   list_names_rename <- stringr::str_trunc(
     list_names,
     width = 31,
@@ -648,7 +648,7 @@ rename_list_names_excel <- function(list_names){
   if (length(bad_names) > 0) {
     cli_alert_danger(
       "Duplicated names when trimmed from right 31 max in Excel: ",
-      list_names[bad_names] %>% paste0(collapse = ", ")
+      toString(list_names[bad_names])
     )
     cli_alert_info(
       paste0(
@@ -840,7 +840,7 @@ duplicated_which <- function(x) {
   which(duplicated(x))
 }
 is_consecutive_srt_1 <- function(vec) {
-  if (vec[1] != 1) {
+  if (vec[1] != 1L) {
     return(FALSE)
   }
   if (length(vec) > 1) {
@@ -864,7 +864,7 @@ matches <- function(x, ref, count_only = FALSE) {
   final_match[seq_along(x)] <- NA
   next_match <- match(x, ref)
   next_match_index <- which(!is.na(next_match))
-  while (length(next_match_index) > 0) {
+  while (length(next_match_index) > 0L) {
     final_match[next_match_index] <-
       next_match_index %>% lapply(function(index) {
         out <- NULL
@@ -918,7 +918,7 @@ drop_if <- function(x, drops) {
   x[which(!x %in% drops)]
 }
 sample1 <- function(x) {
-  sample(x, 1)
+  sample(x, 1L)
 }
 list_files_real <- function(path, full_names = TRUE, recursive = FALSE) {
   grep(
@@ -932,16 +932,16 @@ list_files_real <- function(path, full_names = TRUE, recursive = FALSE) {
     invert = TRUE
   )
 }
-wrap_text <- function(text, max_length = 40, spacer = "\n") {
+wrap_text <- function(text, max_length = 40L, spacer = "\n") {
   words <- unlist(strsplit(text, " "))
   current_line <- ""
   result <- ""
   for (word in words) {
-    if (nchar(current_line) + nchar(word) + 1 > max_length) {
+    if (nchar(current_line) + nchar(word) + 1L > max_length) {
       result <- paste0(result, current_line, spacer)
       current_line <- word
     } else {
-      if (nchar(current_line) == 0) {
+      if (nchar(current_line) == 0L) {
         current_line <- word
       } else {
         current_line <- paste0(current_line, " ", word)
@@ -966,7 +966,7 @@ clean_env_names <- function(env_names, silent = FALSE, lowercase = TRUE) {
           message("Non-unique environment name: '", name, "', added numbers...")
         }
         cleaned_name <- cleaned_name %>%
-          paste0("_", max(which_length(cleaned_name %in% cleaned_names)) + 1)
+          paste0("_", max(which_length(cleaned_name %in% cleaned_names)) + 1L)
       }
       cleaned_names[i] <- cleaned_name
     }
@@ -977,7 +977,7 @@ is_df_list <- function(x, strict = FALSE) {
   if (!is.list(x)) {
     return(FALSE)
   }
-  if (length(x) == 0) {
+  if (length(x) == 0L) {
     return(FALSE)
   }
   if (is_nested_list(x)) {
@@ -1002,8 +1002,10 @@ check_match <- function(vec_list) {
 is_env_name <- function(env_name, silent = FALSE) {
   result <- tryCatch(
     {
-      if (is.null(env_name)) stop("env_name is NULL")
-      if (nchar(env_name) == 0) {
+      if (is.null(env_name)) {
+        stop("env_name is NULL")
+      }
+      if (nchar(env_name) == 0L) {
         stop("Short name cannot be empty.")
       }
       if (grepl("^\\d", env_name)) {
@@ -1030,7 +1032,7 @@ is_nested_list <- function(x) {
   if (is.data.frame(x)) {
     return(FALSE)
   }
-  outcome <- length(x) == 0
+  outcome <- length(x) == 0L
   for (i in seq_along(x)) {
     outcome <- outcome || is_nested_list(x[[i]])
   }

@@ -150,15 +150,15 @@ test_project_token <- function(project,
     }
   }
   cli_alert_wrap("Connected to REDCap!", url = project$links$redcap_home, bullet_type = "v")
-  if(changed_in_console){
+  if (changed_in_console) {
     cli_alert_warning("Don't forget to change your token with `edit_r_environ()` from `usethis` package.")
   }
   version_changed <- FALSE
-  if(!is.null(project$redcap$version)){
-    version_changed <- !identical(project$redcap$version,redcap_version)
+  if (!is.null(project$redcap$version)) {
+    version_changed <- !identical(project$redcap$version, redcap_version)
   }
   project$redcap$version <- redcap_version
-  if(version_changed){
+  if (version_changed) {
     project <- update_project_links(project)
   }
   project$internals$ever_connected <- TRUE
@@ -172,10 +172,10 @@ is_valid_REDCap_token <- function(token, silent = TRUE, is_a_test = FALSE) {
   trimmed_token <- token %>% trimws(whitespace = "[\\h\\v]")
   if (is_a_test) {
     allowed <- c(
-      internal_TEST_classic_token,
-      internal_TEST_repeating_token,
-      internal_TEST_longitudinal_token,
-      internal_TEST_multiarm_token
+      .TEST_classic_token,
+      .TEST_repeating_token,
+      .TEST_longitudinal_token,
+      .TEST_multiarm_token
     )
     end_text <- "not a valid test token."
     if (!token %in% allowed) {
@@ -226,7 +226,7 @@ is_hexadecimal <- function(string, length = NULL) {
 #' @noRd
 get_REDCap_token_name <- function(project) {
   token_name <- paste0(
-    internal_token_prefix,
+    .token_prefix,
     assert_env_name(project$short_name)
   )
   if (is_something(project$redcap$token_name)) {
@@ -234,37 +234,37 @@ get_REDCap_token_name <- function(project) {
   }
   token_name
 }
-internal_project_path_suffix <- "_REDCapSync.RData"
-internal_project_details_path_suffix <- "_REDCapSync_details.RData"
+.project_path_suffix <- "_REDCapSync.RData"
+.project_details_path_suffix <- "_REDCapSync_details.RData"
 #' @noRd
-internal_token_prefix <- "REDCapSync_"
+.token_prefix <- "REDCapSync_"
 #' @noRd
-internal_TEST_classic_token <- "FAKE32TESTTOKENCLASSIC1111111111"
+.TEST_classic_token <- "FAKE32TESTTOKENCLASSIC1111111111"
 #' @noRd
-internal_TEST_repeating_token <- "FAKE32TESTTOKENREPEATING22222222"
+.TEST_repeating_token <- "FAKE32TESTTOKENREPEATING22222222"
 #' @noRd
-internal_TEST_longitudinal_token <- "FAKE32TESTTOKENLONGITUDINAL33333"
+.TEST_longitudinal_token <- "FAKE32TESTTOKENLONGITUDINAL33333"
 #' @noRd
-internal_TEST_multiarm_token <- "FAKE32TESTTOKENMULTIARM444444444"
+.TEST_multiarm_token <- "FAKE32TESTTOKENMULTIARM444444444"
 #' @noRd
 get_test_token <- function(short_name) {
   em <- "`short_name` must be character of length 1 equal ..." %>%
-    paste0(as_comma_string(internal_allowed_test_short_names))
+    paste0(toString(.allowed_test_short_names))
   if (!is.character(short_name)) stop(em)
   if (length(short_name) != 1) stop(em)
   if (!is_test_short_name(short_name = short_name)) stop(em)
   token <- NA
   if (short_name == "TEST_classic") {
-    token <- internal_TEST_classic_token
+    token <- .TEST_classic_token
   }
   if (short_name == "TEST_repeating") {
-    token <- internal_TEST_repeating_token
+    token <- .TEST_repeating_token
   }
   if (short_name == "TEST_longitudinal") {
-    token <- internal_TEST_longitudinal_token
+    token <- .TEST_longitudinal_token
   }
   if (short_name == "TEST_multiarm") {
-    token <- internal_TEST_multiarm_token
+    token <- .TEST_multiarm_token
   }
   token
 }

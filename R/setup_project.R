@@ -161,7 +161,7 @@ setup_project <- function(
   projects <- get_projects() # add short_name conflict check id-base url differs
   short_name <- assert_env_name(short_name)
   sweep_dirs_for_cache(project_names = short_name)
-  if (paste0(internal_token_prefix, short_name) != token_name) {
+  if (paste0(.token_prefix, short_name) != token_name) {
   } # maybe a message
   token_name <- assert_env_name(token_name)
   in_proj_cache <- short_name %in% projects$short_name
@@ -173,7 +173,7 @@ setup_project <- function(
     project_details_path <- file.path(
       dir_path,
       "R_objects",
-      paste0(short_name, internal_project_details_path_suffix)
+      paste0(short_name, .project_details_path_suffix)
     )
     if (file.exists(project_details_path)) {
       project_details <- tryCatch(
@@ -210,7 +210,7 @@ setup_project <- function(
       if (is_a_test) {
         project <- load_test_project(short_name = short_name, with_data = FALSE)
       } else {
-        project <- internal_blank_project
+        project <- .blank_project
       }
       cli_alert_wrap(
         "Setup blank project object because nothing found in cache or directory.",
@@ -246,7 +246,7 @@ setup_project <- function(
     }
   }
   if (reset) { # load blank if reset = TRUE
-    project <- internal_blank_project
+    project <- .blank_project
     cli_alert_wrap(
       paste0("Setup blank project object because `reset = TRUE`"),
       silent = silent
@@ -275,14 +275,14 @@ setup_project <- function(
     assert_integerish() %>%
     as.integer()
   project$internals$get_file_repository <- get_file_repository
-  if (!is_a_test) {
-    project$links$redcap_base <- assert_web_link(redcap_base)
-    project$links$redcap_uri <- project$links$redcap_base %>% paste0("api/")
-  } else {
+  if (is_a_test) {
     cli_alert_wrap(
       "Test objects ignore the `redcap_base` url argument and will not communicate with the REDCap API.",
       silent = silent
     )
+  } else {
+    project$links$redcap_base <- assert_web_link(redcap_base)
+    project$links$redcap_uri <- project$links$redcap_base %>% paste0("api/")
   }
   project$internals$merge_form_name <- merge_form_name
   project$internals$use_csv <- use_csv
@@ -300,25 +300,23 @@ setup_project <- function(
   save_project_details(project)
   invisible(project)
 }
-get_expected_project_path <- function(project) {
+get_project_path <- function(project) {
   assert_setup_project(project)
-  file.path(
+  file_path <- file.path(
     project$dir_path,
     "R_objects",
-    paste0(project$short_name, internal_project_path_suffix)
-  ) %>%
-    sanitize_path() %>%
-    return()
+    paste0(project$short_name, .project_path_suffix)
+  )
+  sanitize_path(file_path)
 }
-get_expected_project_details_path <- function(project) {
+get_project_details_path <- function(project) {
   assert_setup_project(project)
-  file.path(
+  file_path <- file.path(
     project$dir_path,
     "R_objects",
-    paste0(project$short_name, internal_project_details_path_suffix)
-  ) %>%
-    sanitize_path() %>%
-    return()
+    paste0(project$short_name, .project_details_path_suffix)
+  )
+  sanitize_path(file_path)
 }
 #' @rdname setup-load
 #' @export
@@ -332,7 +330,7 @@ load_project <- function(short_name) {
   project_path <- file.path(
     dir_path,
     "R_objects",
-    paste0(short_name, internal_project_path_suffix)
+    paste0(short_name, .project_path_suffix)
   )
   assert_project_path(project_path)
   if (!file.exists(project_path)) stop("No file at path '", project_path, "'. Did you use `setup_project()` and `sync_project()`?")
@@ -345,7 +343,7 @@ load_project <- function(short_name) {
     cli_alert_warning("loaded dir_path did not match your cached dir_path. This should only happen with cloud/shared directories.")
   }
   project$dir_path <- dir_path
-  project_details_path <- get_expected_project_details_path(project)
+  project_details_path <- get_project_details_path(project)
   project_details <- readRDS(file = project_details_path)
   project <- add_project_details_to_project(
     project = project,
@@ -366,11 +364,11 @@ compare_project_details <- function(from, to) {
 #' @rdname setup-load
 #' @export
 load_test_project <- function(short_name = "TEST_repeating", with_data = FALSE) {
-  em <- "`short_name` must be character string of length 1 equal to one of the following: " %>% paste0(as_comma_string(internal_allowed_test_short_names))
+  em <- "`short_name` must be character string of length 1 equal to one of the following: " %>% paste0(toString(.allowed_test_short_names))
   if (!is.character(short_name)) stop(em)
   if (length(short_name) != 1) stop(em)
   if (!is_test_short_name(short_name = short_name)) stop(em)
-  project <- internal_blank_project
+  project <- .blank_project
   project$short_name <- short_name
   project$internals$is_test <- TRUE
   if (with_data) {
@@ -387,11 +385,11 @@ load_test_project <- function(short_name = "TEST_repeating", with_data = FALSE) 
 }
 #' @noRd
 is_test_short_name <- function(short_name) {
-  short_name %in% internal_allowed_test_short_names
+  short_name %in% .allowed_test_short_names
 }
 #' @noRd
 is_test_project <- function(project) {
-  (project$short_name %in% internal_allowed_test_short_names) && project$internals$is_test
+  (project$short_name %in% .allowed_test_short_names) && project$internals$is_test
 }
 #' @rdname save-deleteproject
 #' @title Save or Delete project file from the directory
@@ -411,9 +409,7 @@ is_test_project <- function(project) {
 #' @return Message
 #' @family project object
 #' @export
-save_project <- function(project,
-                         silent = FALSE
-) {
+save_project <- function(project, silent = FALSE) {
   assert_setup_project(project)
   # assert_setup_project(project)
   if (!project$internals$ever_connected) {
@@ -427,7 +423,7 @@ save_project <- function(project,
     return(invisible(project))
   }
   project$internals$last_directory_save <- now_time()
-  save_project_path <- get_expected_project_path(project = project)
+  save_project_path <- get_project_path(project = project)
   saveRDS(
     object = project,
     file = save_project_path
@@ -447,8 +443,8 @@ delete_project <- function(project) {
   project <- assert_blank_project(project)
   dir_path <- project$dir_path
   dir_path <- assert_dir(dir_path, silent = FALSE)
-  delete_this <- get_expected_project_path(project)
-  delete_this_too <- get_expected_project_details_path(project)
+  delete_this <- get_project_path(project)
+  delete_this_too <- get_project_details_path(project)
   if (file.exists(delete_this)) {
     unlink(delete_this)
     unlink(delete_this_too)
@@ -465,7 +461,7 @@ get_dir <- function(project) {
     cli_alert_wrap("Searched for directory --> '",
                    file = dir_path,
                    bullet_type = "x")
-    stop(paste0("Does not exist. ", stop_mes))
+    stop("Does not exist. ", stop_mes)
   }
   assert_dir(dir_path, silent = TRUE)
 }
@@ -477,9 +473,12 @@ nav_to_dir <- function(project) {
   utils::browseURL(project$dir_path)
 }
 #' @noRd
-internal_allowed_test_short_names <- c("TEST_classic", "TEST_repeating", "TEST_longitudinal", "TEST_multiarm")
+.allowed_test_short_names <- c("TEST_classic",
+                               "TEST_repeating",
+                               "TEST_longitudinal",
+                               "TEST_multiarm")
 #' @noRd
-internal_blank_project_new <- list(
+.blank_project_new <- list(
   short_name = NULL,
   dir_path = NULL,
   redcap = list(
@@ -572,7 +571,7 @@ internal_blank_project_new <- list(
   )
 )
 #' @noRd
-internal_blank_project <- list(
+.blank_project <- list(
   short_name = NULL,
   dir_path = NULL,
   redcap = list(
@@ -671,7 +670,7 @@ set_dir <- function(dir_path) {
       stop("Path not found. Use absolute path or choose one within R project working directory.")
     }
   }
-  for (folder in internal_dir_folders) {
+  for (folder in .dir_folders) {
     if (!file.exists(file.path(dir_path, folder))) {
       dir.create(file.path(dir_path, folder), showWarnings = FALSE)
     }
@@ -679,7 +678,7 @@ set_dir <- function(dir_path) {
   assert_dir(dir_path, silent = FALSE)
 }
 #' @noRd
-internal_dir_folders <- c("R_objects", "output", "scripts", "input", "REDCap")
+.dir_folders <- c("R_objects", "output", "scripts", "input", "REDCap")
 #' @noRd
 clean_dir_path <- function(dir_path) {
   if (!is.character(dir_path)) stop("dir must be a character string")

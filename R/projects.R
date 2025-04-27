@@ -19,11 +19,11 @@ get_projects <- function() {
     if (!does_exist) {
       message("You have no projects cached. Try `setup_project()`")
     }
-    is_ok <- all(colnames(internal_blank_project_details() %in% colnames(projects)))
+    is_ok <- all(colnames(.blank_project_details %in% colnames(projects)))
     if (!is_ok) cache_clear()
   }
   if (!does_exist || !is_ok) {
-    return(internal_blank_project_details())
+    return(.blank_project_details)
   }
   projects
 }
@@ -67,7 +67,8 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
   df <- data.frame(
     file_path = files,
     file_name = file_name,
-    file_ext = file_ext
+    file_ext = file_ext,
+    stringsAsFactors = FALSE
   )
   df <- df[which((df$file_ext == "RData") &
                    (endsWith(df$file_name, "_REDCapSync"))), ]
@@ -77,7 +78,7 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
   df$file_path
 }
 #' @noRd
-internal_blank_project_cols <- c(
+.blank_project_cols <- c(
   "short_name",
   "dir_path",
   "sync_frequency",
@@ -114,8 +115,7 @@ internal_blank_project_cols <- c(
   "batch_size_upload"
 )
 #' @noRd
-internal_blank_project_details <- function() {
-  project_details <- data.frame(
+.blank_project_details <- data.frame(
     short_name = character(0),
     dir_path = character(0),
     sync_frequency = character(0),
@@ -149,10 +149,9 @@ internal_blank_project_details <- function() {
     use_csv = logical(0),
     get_type = character(0),
     batch_size_download = integer(0),
-    batch_size_upload = integer(0)
+    batch_size_upload = integer(0),
+    stringsAsFactors = FALSE
   )
-  project_details
-}
 #' @noRd
 save_projects_to_cache <- function(projects, silent = TRUE) {
   assert_project_details(projects)
@@ -165,7 +164,7 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
         " saved ",
         nrow(projects),
         " project locations to the cache...",
-        paste0(projects$short_name, collapse = ", ")
+        toString(projects$short_name)
       ) # "   Token: ",projects$token_name,collapse = "\n"))
     )
     cli_alert_wrap(
@@ -189,11 +188,11 @@ extract_project_details <- function(project) {
   assert_setup_project(project)
   project_details <- matrix(
     data = NA,
-    ncol = length(internal_blank_project_cols),
+    ncol = length(.blank_project_cols),
     nrow = 1,
     dimnames = list(
       NULL,
-      internal_blank_project_cols
+      .blank_project_cols
     )
   ) %>% as.data.frame()
   # top -----
@@ -362,7 +361,7 @@ save_project_details <- function(project, silent = TRUE) {
   assert_logical(silent, len = 1)
   project_details <- extract_project_details(project)
   add_project_details_to_cache(project_details)
-  save_project_details_path <- get_expected_project_details_path(project = project)
+  save_project_details_path <- get_project_details_path(project = project)
   current_function <- as.character(current_call())[[1]]
   if (is_something(save_project_details_path)) {
     if (file.exists(save_project_details_path)) {
@@ -400,14 +399,17 @@ delete_project_by_name <- function(short_name) {
   projects <- get_projects()
   row <- which(projects$short_name == short_name)
   other_projects <- which(projects$short_name != short_name)
-  if (!is_something(row)) message("Nothing to delete named: ", short_name) %>% return()
+  if (!is_something(row)) {
+    message("Nothing to delete named: ", short_name)
+    return(invisible())
+  }
   projects <- projects[other_projects, ]
   message("Deleted: ", short_name)
   save_projects_to_cache(projects)
   projects
 }
 #' @noRd
-internal_field_colnames <- c(
+.field_colnames <- c(
   "field_name",
   "form_name",
   "section_header",
@@ -429,21 +431,20 @@ internal_field_colnames <- c(
 )
 #' @noRd
 form_colnames <- function(type) {
-  if (missing(type)) type <- "default"
+  if (missing(type))
+    type <- "default"
+  final <- NULL
   if (type == "default") {
-    c(
-      "form_name",
-      "form_label",
-      "repeating",
-      "repeating_via_events"
-    ) %>% return()
+    final <- c("form_name",
+               "form_label",
+               "repeating",
+               "repeating_via_events")
   }
   if (type == "redcap") {
-    c(
-      "form_name",
-      "form_label",
-      "repeating",
-      "repeating_via_events"
-    ) %>% return()
+    final <- c("form_name",
+               "form_label",
+               "repeating",
+               "repeating_via_events")
   }
+  final
 }

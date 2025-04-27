@@ -60,7 +60,7 @@ add_project_defaults <- function(project) {
 #' @export
 default_project_transformation <- function(project) {
   assert_setup_project(project)
-  forms_transformation <- merge_non_rep_project_transformation(project)
+  forms_transformation <- non_rep_project_transformation(project)
   forms_transformation$merge_to <- project$internals$merge_form_name
   forms_transformation$by.y <- forms_transformation$by.x <- project$redcap$id_col
   # Will avoid doing this for now
@@ -84,13 +84,13 @@ default_project_transformation <- function(project) {
   # unlist()
   forms_transformation$x_first <- FALSE
   forms_transformation$x_first[which(forms_transformation$repeating)] <- TRUE
-  if(project$redcap$is_longitudinal){
+  if (project$redcap$is_longitudinal) {
     forms_transformation$x_first[which(forms_transformation$repeating_via_events)] <- TRUE
   }
   forms_transformation
 }
 #' @noRd
-merge_non_rep_project_transformation <- function(project) {
+non_rep_project_transformation <- function(project) {
   assert_setup_project(project)
   forms_transformation <- project$metadata$forms
   is_longitudinal <- project$redcap$is_longitudinal
@@ -122,7 +122,7 @@ add_default_project_fields <- function(project) {
   forms <- project$metadata$forms
   last_non_rep <- forms$form_name[which(!forms$repeating)] %>% dplyr::last()
   form_names <- forms$form_name[which(forms$repeating)]
-  if(!project$redcap$is_longitudinal){
+  if (!project$redcap$is_longitudinal) {
     has_non_rep <- length(last_non_rep) > 0
     if (has_non_rep) {
       for (form_name in form_names) {
@@ -138,10 +138,10 @@ add_default_project_fields <- function(project) {
             form <- gsub("n_forms_", "", field_name)
             #need another way to count if multiple id cols
             id_col <- project$metadata$form_key_cols[[form_name]]
-            project$data[[form_name]][[id_col]] %>%
+            final_vector <- project$data[[form_name]][[id_col]] %>%
               matches(project$data[[form]][[id_col]], count_only = TRUE) %>%
-              as.character() %>%
-              return()
+              as.character()
+            final_vector
           }
         )
       }
@@ -194,13 +194,13 @@ add_project_transformation <- function(project,
     forms_tranformation_cols <- forms_tranformation_cols %>%
       append("repeating_via_events")
   }
-  if (any(!names(forms_transformation) %in% forms_tranformation_cols)) {
+  if (!all(names(forms_transformation) %in% forms_tranformation_cols)) {
     cli_alert_wrap(
       "Use `add_default_forms_transformation(project)` is an example!"
     )
     stop(
       "forms_transformation needs the following colnames... ",
-      forms_tranformation_cols %>% as_comma_string()
+      forms_tranformation_cols %>% toString()
     )
   }
   if (!is.null(project$transformation$forms)) {
@@ -302,14 +302,10 @@ add_project_field <- function(
       stop("`data_func` must be a function ... ", func_template)
     }
     allowed_args <- c("project", "field_name", "form_name")
-    if (
-      all(!allowed_args %in% names(formals(data_func))) ||
-      any(!names(formals(data_func)) %in% allowed_args)
-    ) {
-      stop(
-        "`data_func` must have two arguments (project and field_name) ... ",
-        func_template
-      )
+    if (!any(allowed_args %in% names(formals(data_func))) ||
+        !all(names(formals(data_func)) %in% allowed_args)) {
+      stop("`data_func` must have two arguments (project and field_name) ... ",
+           func_template)
     }
   }
   field_row <- data.frame(
@@ -324,7 +320,8 @@ add_project_field <- function(
     units = units,
     in_original_redcap = in_original_redcap,
     field_label_short = field_label,
-    field_func = data_func %>% function_to_string()
+    field_func = function_to_string(data_func),
+    stringsAsFactors = FALSE
   )
   project$transformation$fields <-
     project$transformation$fields %>%
@@ -400,7 +397,7 @@ add_default_project_summary <- function(project) {
     with_links = nrow(project$summary$all_records) <= 3000,
     separate = TRUE,
     use_csv = project$internals$use_csv,
-    dir_other = file.path(project$dir_path, "REDCap",project$short_name),
+    dir_other = file.path(project$dir_path, "REDCap", project$short_name),
     file_name = project$short_name
   )
   summary_name <- "REDCapSync"
@@ -440,7 +437,6 @@ transform_project <- function(project) {
   named_df_list <- project$data
   has_data <- is_something(named_df_list)
   original_fields <- project$metadata$fields
-  data_updates <- NULL
   if (!has_data) {
     cli_alert_warning("No data... nothing to do!")
     return(invisible(NULL))
@@ -509,9 +505,9 @@ transform_project <- function(project) {
             "by.x and by.y must be same length... [",
             z$form_name,
             "] (",
-            z$by.x %>% as_comma_string(),
+            z$by.x %>% toString(),
             ") AND (",
-            z$by.y %>% as_comma_string(),
+            z$by.y %>% toString(),
             ")"
           )
         }
@@ -582,7 +578,7 @@ transform_project <- function(project) {
       }
     }
   }
-  if (any(!names(form_list) %in% unique(forms_transformation$form_name_remap))) {
+  if (!all(names(form_list) %in% unique(forms_transformation$form_name_remap))) {
     stop("not all names in form_list objext. Something wrong with transform_project()")
   }
   if (is_something(form_list)) {

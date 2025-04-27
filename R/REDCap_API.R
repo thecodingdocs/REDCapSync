@@ -56,16 +56,19 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     unique()
   form_names <- project$metadata$forms$form_name # [which(project$metadata$forms$form_name%in%unique(project$metadata$fields$form_name))]
   for (form_name in form_names) {
+    field_name <- paste0(form_name, "_complete")
+    field_label <- field_name %>%
+      strsplit("_") %>%
+      unlist() %>%
+      stringr::str_to_title() %>%
+      paste()
     new_row <- data.frame(
-      field_name = paste0(form_name, "_complete"),
+      field_name = field_name,
       form_name = form_name,
       field_type = "radio",
-      field_label = paste0(form_name, "_complete") %>%
-        strsplit("_") %>%
-        unlist() %>%
-        stringr::str_to_title() %>%
-        paste0(collapse = " "),
-      select_choices_or_calculations = "0, Incomplete | 1, Unverified | 2, Complete"
+      field_label = field_label,
+      select_choices_or_calculations = "0, Incomplete | 1, Unverified | 2, Complete",
+      stringsAsFactors = FALSE
     )
     last_row <- nrow(project$metadata$fields)
     rows <- which(project$metadata$fields$form_name == form_name)
@@ -90,7 +93,8 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
         form_name = project$metadata$fields$form_name[which(project$metadata$fields$field_name == field_name)],
         field_label = x$name,
         field_type = "checkbox_choice",
-        select_choices_or_calculations = c("0, Unchecked | 1, Checked")
+        select_choices_or_calculations = "0, Unchecked | 1, Checked",
+        stringsAsFactors = FALSE
       )
       row <- which(project$metadata$fields$field_name == field_name)
       last_row <- nrow(project$metadata$fields)
@@ -105,7 +109,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     }
   }
   if (any(project$metadata$fields$field_type == "yesno")) {
-    project$metadata$fields$select_choices_or_calculations[which(project$metadata$fields$field_type == "yesno")] <- c("0, No | 1, Yes")
+    project$metadata$fields$select_choices_or_calculations[which(project$metadata$fields$field_type == "yesno")] <- "0, No | 1, Yes"
   }
   project$metadata$fields <- project %>% annotate_fields(summarize_data = FALSE, drop_blanks = FALSE)
   project$metadata$choices <- fields_to_choices(fields = project$metadata$fields)
@@ -176,9 +180,9 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     #   )
     # }
     project$metadata$forms$repeating_via_events <- FALSE
-    project$metadata$forms$repeating_via_events[which(project$metadata$forms$form_name %>% lapply(function(form_name) {
+    project$metadata$forms$repeating_via_events[which(unlist(lapply(project$metadata$forms$form_name,function(form_name) {
       anyDuplicated(project$metadata$event_mapping$arm_num[which(project$metadata$event_mapping$form == form_name)]) > 0
-    }) %>% unlist())] <- TRUE
+    })))] <- TRUE
   } else {
     project$redcap$has_arms <- FALSE
     project$redcap$has_multiple_arms <- FALSE
@@ -193,7 +197,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project <- update_project_links(project)
   invisible(project)
 }
-update_project_links <- function(project){
+update_project_links <- function(project) {
   project$links$redcap_home <- paste0(
     project$links$redcap_base,
     "redcap_v",
@@ -265,13 +269,11 @@ get_REDCap_files <- function(project,
         if (!original_file_names) {
           if (anyDuplicated(file_name) > 0) {
             warning(
-              paste0(
-                "You have duplicate file names in ",
-                form_name,
-                ", ",
-                field_name,
-                ". Therefore will use system generated names"
-              ),
+              "You have duplicate file names in ",
+              form_name,
+              ", ",
+              field_name,
+              ". Therefore will use system generated names",
               immediate. = TRUE
             )
             original_file_names <- FALSE
@@ -342,7 +344,7 @@ get_REDCap_log <- function(project,
   assert_setup_project(project)
   assert_logical(clean)
   assert_date(log_begin_date)
-  if(log_begin_date == Sys.Date()){
+  if (log_begin_date == Sys.Date()) {
     log_begin_date <- log_begin_date - 1 # keep getting errors for same day checks?
   }
   log <- tryCatch(
@@ -370,36 +372,36 @@ get_REDCap_log2 <- function(project,
                             log_begin_date = Sys.Date() - 10L,
                             clean = TRUE,
                             record = NULL,
-                            user = NULL){
+                            user = NULL) {
   assert_setup_project(project)
   assert_logical(clean)
   assert_date(log_begin_date)
-  if(log_begin_date == Sys.Date()){
+  if (log_begin_date == Sys.Date()) {
     log_begin_date <- log_begin_date - 1 # keep getting errors for same day checks?
   }
-  if(is.null(record)){
+  if (is.null(record)) {
     record <- ""
   }
-  if(is.null(user)){
+  if (is.null(user)) {
     user <- ""
   }
   response <- httr::POST(
     url = project$links$redcap_uri,
     body = list(
-      "token"=get_project_token(project),
-      content='log',
-      logtype='',
-      user='',
-      record='',
-      beginTime=log_begin_date,
-      endTime='',
-      format='json',
-      returnFormat='json'
+      token = get_project_token(project),
+      content = "log",
+      logtype = "",
+      user = "",
+      record = "",
+      beginTime = log_begin_date,
+      endTime = "",
+      format = "json",
+      returnFormat = "json"
     ),
     encode = "form"
   )
   result <- httr::content(response)
-  if(httr::http_error()){
+  if (httr::http_error()) {
     return(NULL)
   }
   if (is.data.frame(log)) {

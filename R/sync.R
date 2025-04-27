@@ -200,10 +200,10 @@ due_for_sync2 <- function() {
                        tz = Sys.timezone())
     sync_frequency <- projects$sync_frequency[results_check]
     time_diff_map <- list(
-      "hourly" = lubridate::dhours(1),
-      "daily" = lubridate::ddays(1),
-      "weekly" = lubridate::dweeks(1),
-      "monthly" = lubridate::dmonths(1)
+      hourly = lubridate::dhours(1),
+      daily = lubridate::ddays(1),
+      weekly = lubridate::dweeks(1),
+      monthly = lubridate::dmonths(1)
     )
     results[results_check] <- mapply(function(last_update, freq) {
       if (!freq %in% names(time_diff_map)) {
@@ -233,7 +233,7 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
       expected_path <- file.path(
         from_cache$dir_path,
         "R_objects",
-        paste0(project_name, internal_project_details_path_suffix)
+        paste0(project_name, .project_details_path_suffix)
       ) %>% sanitize_path()
       if (file.exists(expected_path)) {
         to_cache <- tryCatch(

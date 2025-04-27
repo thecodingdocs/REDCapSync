@@ -30,7 +30,8 @@ read_from_REDCap_upload <- function(project,
   df <- data.frame(
     file_name = basename(x),
     file_name_no_ext = gsub("\\.xlsx|\\.xls", "", x),
-    match = NA
+    match = NA,
+    stringsAsFactors = FALSE
   )
   df$match <- strsplit(df$file_name_no_ext, "_") %>%
     lapply(function(x) {
@@ -88,7 +89,7 @@ read_from_REDCap_upload <- function(project,
       "forbidden cols name: ",
       df$file_name[i],
       "; ",
-      x %>% paste0(collapse = ", ")
+      toString(x)
     )
     if (length(x) > 0) {
       if (stop_or_warn == "stop") {
@@ -115,7 +116,6 @@ read_xl_to_project_for_upload <- function(project,
                                           summary_name,
                                           file_path,
                                           drop_sheets = default_sheet_drops(project)) {
-
   # add data_updates check
   if (!endsWith(file_path, ".xlsx")) {
     stop("File type must be '.xlsx' --> ", file_path)
@@ -123,12 +123,12 @@ read_xl_to_project_for_upload <- function(project,
   if (!file.exists(file_path)) {
     stop("Path does not exist --> ", file_path)
   }
-  if(!missing(summary_name)){
-    if(!missing(file_path)){
+  if (!missing(summary_name)) {
+    if (!missing(file_path)) {
       cli_alert_warning("`file_path` only needed if summary_name not provided.")
       cli_alert_info("Using `file_path` from `summary_name`...")
     }
-    if(!summary_name %in% names(project$summary)){
+    if (!summary_name %in% names(project$summary)) {
       stop("`summary_name` is not one of `project$summary`")
     }
     file_path <- project$summary[[summary_name]]$file_path
@@ -139,7 +139,7 @@ read_xl_to_project_for_upload <- function(project,
   if (is_something(drop_sheets)) {
     message(
       "dropping sheets from `drop_sheets` ... ",
-      paste0(drop_sheets, collapse = ", ")
+      toString(drop_sheets)
     )
     for (drop_sheet in drop_sheets) {
       form_list[[drop_sheet]] <- NULL

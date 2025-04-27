@@ -1,15 +1,15 @@
 test_that("internal constants are correct", {
-  expect_equal(internal_token_prefix, "REDCapSync_")
-  expect_equal(internal_TEST_classic_token, "FAKE32TESTTOKENCLASSIC1111111111")
-  expect_equal(internal_TEST_repeating_token, "FAKE32TESTTOKENREPEATING22222222")
-  expect_equal(internal_TEST_longitudinal_token, "FAKE32TESTTOKENLONGITUDINAL33333")
-  expect_equal(internal_TEST_multiarm_token, "FAKE32TESTTOKENMULTIARM444444444")
+  expect_equal(.token_prefix, "REDCapSync_")
+  expect_equal(.TEST_classic_token, "FAKE32TESTTOKENCLASSIC1111111111")
+  expect_equal(.TEST_repeating_token, "FAKE32TESTTOKENREPEATING22222222")
+  expect_equal(.TEST_longitudinal_token, "FAKE32TESTTOKENLONGITUDINAL33333")
+  expect_equal(.TEST_multiarm_token, "FAKE32TESTTOKENMULTIARM444444444")
 })
 test_that("get_test_token works correctly", {
-  expect_equal(get_test_token("TEST_classic"), internal_TEST_classic_token)
-  expect_equal(get_test_token("TEST_repeating"), internal_TEST_repeating_token)
-  expect_equal(get_test_token("TEST_longitudinal"), internal_TEST_longitudinal_token)
-  expect_equal(get_test_token("TEST_multiarm"), internal_TEST_multiarm_token)
+  expect_equal(get_test_token("TEST_classic"), .TEST_classic_token)
+  expect_equal(get_test_token("TEST_repeating"), .TEST_repeating_token)
+  expect_equal(get_test_token("TEST_longitudinal"), .TEST_longitudinal_token)
+  expect_equal(get_test_token("TEST_multiarm"), .TEST_multiarm_token)
   expect_error(get_test_token("INVALID_SHORT_NAME"))
   expect_error(get_test_token(1213123))
   expect_error(get_test_token(c("TEST_classic", "TEST_repeating")))
@@ -23,11 +23,11 @@ test_that("is_valid_REDCap_token respects the rules of 32L hexidecimal", {
   expect_false(is_valid_REDCap_token(paste0(" ", generate_hex(31))))
   expect_false(is_valid_REDCap_token(paste0("J", generate_hex(31))))
   expect_false(is_valid_REDCap_token(paste0("_", generate_hex(31))))
-  expect_false(is_valid_REDCap_token(internal_TEST_classic_token))
-  expect_true(is_valid_REDCap_token(internal_TEST_classic_token, is_a_test = TRUE))
-  expect_true(is_valid_REDCap_token(internal_TEST_repeating_token, is_a_test = TRUE))
-  expect_true(is_valid_REDCap_token(internal_TEST_longitudinal_token, is_a_test = TRUE))
-  expect_true(is_valid_REDCap_token(internal_TEST_multiarm_token, is_a_test = TRUE))
+  expect_false(is_valid_REDCap_token(.TEST_classic_token))
+  expect_true(is_valid_REDCap_token(.TEST_classic_token, is_a_test = TRUE))
+  expect_true(is_valid_REDCap_token(.TEST_repeating_token, is_a_test = TRUE))
+  expect_true(is_valid_REDCap_token(.TEST_longitudinal_token, is_a_test = TRUE))
+  expect_true(is_valid_REDCap_token(.TEST_multiarm_token, is_a_test = TRUE))
   expect_false(is_valid_REDCap_token(generate_hex(32), is_a_test = TRUE))
 })
 test_that("get_project_token checks_env", {
@@ -72,29 +72,29 @@ test_that("get_REDCap_token_name works", {
 })
 # test_that("set_REDCap_token sets a new token", {
 #   project <- mock_project()
-#   mockery::stub(set_REDCap_token, "readline", internal_TEST_classic_token)
+#   mockery::stub(set_REDCap_token, "readline", .TEST_classic_token)
 #   set_REDCap_token(project, ask = FALSE)
 #   token_name <- get_REDCap_token_name(project)
-#   expect_equal(Sys.getenv(token_name), internal_TEST_classic_token)
+#   expect_equal(Sys.getenv(token_name), .TEST_classic_token)
 # })
 # test_that("set_REDCap_token handles existing valid token", {
 #   project <- mock_project("TEST_classic")
 #
 #   # Set an existing valid token
-#   Sys.setenv(REDCapSync_TEST_classic = internal_TEST_classic_token)
+#   Sys.setenv(REDCapSync_TEST_classic = .TEST_classic_token)
 #
 #   # Mock user input to not change the token
 #   stub(set_REDCap_token, "utils::menu", 2)
 #
 #   expect_message(set_REDCap_token(project, ask = TRUE), "You already have a valid token in your R session")
 #   token_name <- get_REDCap_token_name(project)
-#   expect_equal(Sys.getenv(token_name), internal_TEST_classic_token)
+#   expect_equal(Sys.getenv(token_name), .TEST_classic_token)
 # })
 # test_that("set_REDCap_token changes existing token when user confirms", {
 #   project <- mock_project("TEST_classic")
 #
 #   # Set an existing valid token
-#   Sys.setenv(REDCapSync_TEST_classic = internal_TEST_classic_token)
+#   Sys.setenv(REDCapSync_TEST_classic = .TEST_classic_token)
 #
 #   # Mock user input to change the token
 #   stub(set_REDCap_token, "utils::menu", 1)
@@ -117,11 +117,11 @@ test_that("get_REDCap_token_name works", {
 #   project <- mock_project("TEST_classic")
 #
 #   # Mock user input for a test token
-#   stub(set_REDCap_token, "readline", internal_TEST_classic_token)
+#   stub(set_REDCap_token, "readline", .TEST_classic_token)
 #
 #   set_REDCap_token(project, ask = FALSE)
 #   token_name <- get_REDCap_token_name(project)
-#   expect_equal(Sys.getenv(token_name), internal_TEST_classic_token)
+#   expect_equal(Sys.getenv(token_name), .TEST_classic_token)
 # })
 #
 # test_that("set_REDCap_token handles invalid project object", {

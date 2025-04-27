@@ -27,9 +27,9 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_no_error(assert_web_link("https://redcap.miami.edu"))
   expect_no_error(assert_web_link("https://redcap.edu"))
   # test db
-  expect_no_error(assert_blank_project(internal_blank_project))
-  expect_error(assert_setup_project(internal_blank_project))
-  expect_error(assert_blank_project(internal_blank_project[[-1]]))
+  expect_no_error(assert_blank_project(.blank_project))
+  expect_error(assert_setup_project(.blank_project))
+  expect_error(assert_blank_project(.blank_project[[-1]]))
   expect_error(assert_blank_project(1))
   expect_error(assert_blank_project(data.frame()))
   expect_error(get_dir(project))
@@ -54,7 +54,7 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_true(file.exists(project$dir_path))
   expect_equal(project$short_name, short_name)
   test_dir_files <- list.files(test_dir)
-  expect_true(all(internal_dir_folders %in% test_dir_files))
+  expect_true(all(.dir_folders %in% test_dir_files))
   project$dir_path <- file.path(test_dir, "another_fake_folder") %>% sanitize_path()
   expect_error(get_dir(project))
 })
@@ -118,7 +118,7 @@ test_that("set_dir creates a new directory if it does not exist", {
   mockery::stub(set_dir, "utils::menu", 1)
   expect_message(set_dir(dir_path), "Directory is Valid!")
   expect_true(file.exists(dir_path))
-  expect_true(all(internal_dir_folders %in% list.files(dir_path)))
+  expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
 test_that("set_dir handles existing directory correctly", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
@@ -126,7 +126,7 @@ test_that("set_dir handles existing directory correctly", {
   dir.create(dir_path)
   expect_message(set_dir(dir_path), "Directory is Valid!")
   expect_true(file.exists(dir_path))
-  expect_true(all(internal_dir_folders %in% list.files(dir_path)))
+  expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
 test_that("set_dir throws an error for invalid directory path", {
   expect_error(set_dir(123), "dir must be a character string")
@@ -138,7 +138,7 @@ test_that("set_dir creates missing internal directories", {
   dir.create(file.path(dir_path, "R_objects"))
   expect_message(set_dir(dir_path), "Directory is Valid!")
   expect_true(file.exists(dir_path))
-  expect_true(all(internal_dir_folders %in% list.files(dir_path)))
+  expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
 test_that("set_dir stops if user chooses not to create directory", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
@@ -152,10 +152,10 @@ test_that("set_dir validates the directory structure", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   dir_path <- file.path(test_dir, "valid_dir")
   dir.create(dir_path)
-  for (folder in internal_dir_folders) {
+  for (folder in .dir_folders) {
     dir.create(file.path(dir_path, folder))
   }
   expect_message(set_dir(dir_path), "Directory is Valid!")
   expect_true(file.exists(dir_path))
-  expect_true(all(internal_dir_folders %in% list.files(dir_path)))
+  expect_true(all(.dir_folders %in% list.files(dir_path)))
 })

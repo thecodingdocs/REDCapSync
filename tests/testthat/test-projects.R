@@ -2,10 +2,10 @@
 test_that("get_projects is df and has appropriate columns", {
   df <- get_projects()
   expect_s3_class(df, "data.frame")
-  expect_true(all(colnames(df) %in% internal_blank_project_cols))
-  df <- internal_blank_project_details()
+  expect_true(all(colnames(df) %in% .blank_project_cols))
+  df <- .blank_project_details
   expect_s3_class(df, "data.frame")
-  expect_true(all(colnames(df) %in% internal_blank_project_cols))
+  expect_true(all(colnames(df) %in% .blank_project_cols))
 })
 test_that("check_folder_for_projects works", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()

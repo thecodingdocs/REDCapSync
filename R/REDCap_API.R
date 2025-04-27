@@ -61,7 +61,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
       strsplit("_") %>%
       unlist() %>%
       stringr::str_to_title() %>%
-      paste()
+      paste(collapse = " ")
     new_row <- data.frame(
       field_name = field_name,
       form_name = form_name,

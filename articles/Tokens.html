@@ -110,16 +110,9 @@ demonstrates how to set and check your tokens…</p>
 <div class="section level3">
 <h3 id="setting-your-token-for-one-session">Setting Your Token for One Session<a class="anchor" aria-label="anchor" href="#setting-your-token-for-one-session"></a>
 </h3>
+<p>You can set manually with base R. Unless you specifically set the
+token <code>Sys.getenv("REDCapSync_TEST")</code> will be blank.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCapSync_TEST"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;[1] ""</span></span>
-<span><span class="co"># Assuming you already setup or loaded a project object you can set the token like this...</span></span>
-<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">load_project</a></span><span class="op">(</span><span class="st">"TEST"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/set_project_token.html">set_project_token</a></span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span></code></pre></div>
-<p>You can also set manually with base R. Unless you specifically set
-the token <code>Sys.getenv("REDCapSync_TEST")</code> will be blank.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set your token manually</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>REDCapSync_TEST<span class="op">=</span><span class="st">"a_FaKe_TOkEn"</span><span class="op">)</span> <span class="co"># again having this in a script is not advised but possible</span></span>
 <span></span>
@@ -153,7 +146,7 @@ token will be visible to you if specifically called with
 <li>Confirm with <code>Sys.getenv("REDCapSync_TEST")</code>
 </li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Install usethis if you don't have it.</span></span>
 <span><span class="co">#install.packages("usethis") </span></span>
 <span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_r_environ</span><span class="op">(</span><span class="op">)</span></span>
@@ -174,7 +167,7 @@ we may set our token in a different way.</p>
 <p>If you are ever having any issues with your token, you can test your
 project object with <code>view_project_token(project)</code> and/or
 <code>test_project_token(project)</code></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/view_project_token.html">view_project_token</a></span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span>
 <span></span>

@@ -64,7 +64,6 @@ from the REDCap server.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sync_project</span><span class="op">(</span></span>
 <span>  <span class="va">project</span>,</span>
-<span>  set_token_if_fails <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  reset <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  silent <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ask_about_overwrites <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -81,11 +80,6 @@ from the REDCap server.</p>
 <dd><p>A validated <code>project</code> object containing REDCap project data
 and
 settings. Generated using <a href="setup-load.html">load_project</a> or <a href="setup-load.html">setup_project</a></p></dd>
-
-
-<dt id="arg-set-token-if-fails">set_token_if_fails<a class="anchor" aria-label="anchor" href="#arg-set-token-if-fails"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, prompts the user to
-set the REDCap API token if the update fails. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-reset">reset<a class="anchor" aria-label="anchor" href="#arg-reset"></a></dt>

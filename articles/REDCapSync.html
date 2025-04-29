@@ -105,7 +105,7 @@
 <span>  use_csv <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># if you don't have Microsoft change to TRUE</span></span>
 <span>  auto_check_token <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>You can set your REDCap token in three ways! If you need more help
+<p>You can set your REDCap token in two ways! If you need more help
 setting your tokens see this article –&gt; placeholder</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#1. set each time in your session (not recommended in saved/shared scripts!)</span></span>
@@ -117,10 +117,7 @@ setting your tokens see this article –&gt; placeholder</p>
 <span><span class="co"># If it worked you will see your token when you run...</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCapSync_TEST"</span><span class="op">)</span></span>
 <span><span class="co">#And if your project object is setup properly...</span></span>
-<span><span class="co">#3. Using the REDCap console</span></span>
 <span><span class="va">project</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/setup-load.html">load_project</a></span><span class="op">(</span><span class="st">"TEST"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/set_project_token.html">set_project_token</a></span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span>
-<span><span class="co"># can see if it's set correctly</span></span>
 <span><span class="fu"><a href="../reference/view_project_token.html">view_project_token</a></span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

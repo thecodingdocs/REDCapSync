@@ -27,6 +27,7 @@ Other contributors:
   \item Natalie Goulett [contributor]
   \item Chris Hilsinger-Pate [contributor]
   \item Nikola Susic [contributor]
+  \item Mason Thorton [contributor]
   \item Sydney Stern (\href{https://orcid.org/0000-0002-1479-605X}{ORCID}) [contributor]
 }
 

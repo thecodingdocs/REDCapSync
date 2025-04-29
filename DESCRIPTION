@@ -7,6 +7,7 @@ Authors@R: c(
     person("Natalie", "Goulett", role = "ctb"),
     person("Chris", "Hilsinger-Pate", role = "ctb"),
     person("Nikola", "Susic", role = "ctb"),
+    person("Mason", "Thorton", role = "ctb"),
     person("Sydney", "Stern", role = "ctb",
            comment = c(ORCID = "0000-0002-1479-605X"))
   )

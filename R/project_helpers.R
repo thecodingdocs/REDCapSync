@@ -282,6 +282,7 @@ raw_process_redcap <- function(raw, project, labelled) {
   event_mapping <- project$metadata$event_mapping
   form_list <- list()
   if (nrow(raw) > 0) {
+    is_longitudinal <- project$redcap$is_longitudinal
     raw <- raw %>% all_character_cols()
     add_ons <- c(
       project$redcap$id_col,
@@ -291,7 +292,7 @@ raw_process_redcap <- function(raw, project, labelled) {
       "redcap_repeat_instrument",
       "redcap_repeat_instance"
     )
-    if (project$redcap$is_longitudinal) {
+    if (is_longitudinal) {
       raw$id_temp <- seq_len(nrow(raw))
       raw <- merge(
         raw,
@@ -323,6 +324,7 @@ raw_process_redcap <- function(raw, project, labelled) {
     form_rows <- which(forms$form_name %in% unique(fields$form_name))
     form_names <- forms$form_name[form_rows]
     has_repeating_forms <- project$redcap$has_repeating_forms
+    repeating_forms <- forms$form_name[which(forms$repeating)]
     for (form_name in form_names) {
       form_field_names <- fields$field_name[which(
         fields$form_name == form_name &
@@ -338,11 +340,10 @@ raw_process_redcap <- function(raw, project, labelled) {
           )
         )
       }
+      # consider message for what variables you are missing with vec1_not_in_vec2
       if (length(form_field_names) > 0) {
         add_ons_x <- add_ons
-        repeating_forms <- forms$form_name[which(forms$repeating)]
         is_repeating_form <- form_name %in% repeating_forms
-        is_longitudinal <- project$redcap$is_longitudinal
         rows <- seq_len(nrow(raw))
         if (is_repeating_form) {
           if (!"redcap_repeat_instrument" %in% colnames(raw)) {
@@ -361,24 +362,27 @@ raw_process_redcap <- function(raw, project, labelled) {
         }
         if (!is_repeating_form) {
           add_ons_x <- add_ons_x[which(!add_ons_x %in% c("redcap_repeat_instrument", "redcap_repeat_instance"))]
-          if (is_longitudinal) {
-            rows <- which(raw$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)]))
-          }
-          if (!is_longitudinal) {
-            if (has_repeating_forms) rows <- which(is.na(raw$redcap_repeat_instrument))
-          }
         }
-        if (is_something(rows)) {
-          cols <- unique(c(add_ons_x, form_field_names))
-          raw_subset <- raw[rows, cols]
-          if (labelled) {
-            raw_subset <- raw_to_labelled_form(
-              form = raw_subset,
-              project = project
-            )
-          }
-          form_list[[form_name]] <- raw_subset
+        if (!is_repeating_form && is_longitudinal && has_repeating_forms) {
+          rows <- which(
+            is.na(raw$redcap_repeat_instrument) &
+              raw$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)])
+          )
         }
+        if (!is_repeating_form && is_longitudinal && !has_repeating_forms) {
+          rows <- which(raw$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)]))
+        }
+        if (!is_repeating_form && !is_longitudinal && has_repeating_forms) {
+          rows <- which(is.na(raw$redcap_repeat_instrument))
+        }
+      }
+      if (is_something(rows)) {
+        cols <- unique(c(add_ons_x, form_field_names))
+        raw_subset <- raw[rows, cols]
+        if (labelled) {
+          raw_subset <- raw_to_labelled_form(form = raw_subset, project = project)
+        }
+        form_list[[form_name]] <- raw_subset
       }
     }
   }

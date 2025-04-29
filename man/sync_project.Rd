@@ -6,7 +6,6 @@
 \usage{
 sync_project(
   project,
-  set_token_if_fails = TRUE,
   reset = FALSE,
   silent = FALSE,
   ask_about_overwrites = TRUE,
@@ -18,9 +17,6 @@ sync_project(
 \item{project}{A validated \code{project} object containing REDCap project data
 and
 settings. Generated using \link{load_project} or \link{setup_project}}
-
-\item{set_token_if_fails}{Logical (TRUE/FALSE). If TRUE, prompts the user to
-set the REDCap API token if the update fails. Default is \code{TRUE}.}
 
 \item{reset}{Logical that forces a fresh update if TRUE. Default is \code{FALSE}.}
 

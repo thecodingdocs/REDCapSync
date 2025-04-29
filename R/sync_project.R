@@ -11,8 +11,6 @@
 #' processing.
 #'
 #' @inheritParams save_project
-#' @param set_token_if_fails Logical (TRUE/FALSE). If TRUE, prompts the user to
-#' set the REDCap API token if the update fails. Default is `TRUE`.
 #' @param reset Logical that forces a fresh update if TRUE. Default is `FALSE`.
 #' @param ask_about_overwrites Logical (TRUE/FALSE). If TRUE, prompts the user
 #' before overwriting existing data. Default is `TRUE`.
@@ -26,7 +24,6 @@
 #' @export
 sync_project <- function(
     project,
-    set_token_if_fails = TRUE,
     reset = FALSE,
     silent = FALSE,
     ask_about_overwrites = TRUE,
@@ -34,12 +31,6 @@ sync_project <- function(
     save_to_dir = TRUE) {
   collected <- makeAssertCollection()
   assert_blank_project(project)
-  assert_logical(
-    set_token_if_fails,
-    any.missing = FALSE,
-    len = 1,
-    add = collected
-  )
   assert_logical(reset, any.missing = FALSE, len = 1, add = collected)
   assert_logical(
     ask_about_overwrites,
@@ -64,7 +55,7 @@ sync_project <- function(
   was_updated <- FALSE
   # project$internals$last_directory_save
   # project$internals$last_test_connection_attempt
-  project <- test_project_token(project, set_if_fails = set_token_if_fails)
+  project <- test_project_token(project)
   connected <- project$internals$last_test_connection_outcome
   if (!connected) {
     cli_alert_danger("Could not connect to REDCap")

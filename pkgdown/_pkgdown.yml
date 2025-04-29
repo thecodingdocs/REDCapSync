@@ -43,7 +43,6 @@ reference:
   - subtitle: Tokens
     desc: Tokens are required to use the REDCap API. Never share your tokens.
     contents:
-      - set_project_token
       - view_project_token
       - test_project_token
   - subtitle: Setup/Load/Save/Delete project Object

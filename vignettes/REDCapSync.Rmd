@@ -28,7 +28,7 @@ project <- setup_project(
   auto_check_token = TRUE
 )
 ```
-You can set your REDCap token in three ways! If you need more help setting your tokens see this article --> placeholder
+You can set your REDCap token in two ways! If you need more help setting your tokens see this article --> placeholder
 ```{r example2, eval=FALSE}
 #1. set each time in your session (not recommended in saved/shared scripts!)
 Sys.setenv(REDCapSync_TEST = "YoUrNevErShaReToken")
@@ -39,10 +39,7 @@ usethis::edit_r_environ() #finds your file
 # If it worked you will see your token when you run...
 Sys.getenv("REDCapSync_TEST")
 #And if your project object is setup properly...
-#3. Using the REDCap console
 project<-load_project("TEST")
-set_project_token(project)
-# can see if it's set correctly
 view_project_token(project)
 ```
 ## Run Core Functions

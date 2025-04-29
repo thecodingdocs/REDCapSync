@@ -29,7 +29,6 @@ unnecessarily.
 }
 \seealso{
 Other Token Functions: 
-\code{\link{set_project_token}()},
 \code{\link{test_project_token}()}
 }
 \concept{Token Functions}

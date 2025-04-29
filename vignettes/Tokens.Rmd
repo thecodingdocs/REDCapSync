@@ -22,16 +22,7 @@ Precisely because tokens are sensitive, REDCapSync is designed to only reference
 
 ## Setting Your Token for One Session
 
-```{r, eval=FALSE}
-library(REDCapSync)
-Sys.getenv("REDCapSync_TEST")
-#>[1] ""
-# Assuming you already setup or loaded a project object you can set the token like this...
-project <- load_project("TEST")
-set_project_token(project)
-```
-
-You can also set manually with base R. Unless you specifically set the token `Sys.getenv("REDCapSync_TEST")` will be blank.
+You can set manually with base R. Unless you specifically set the token `Sys.getenv("REDCapSync_TEST")` will be blank.
 
 ```{r, eval=FALSE}
 # Set your token manually

@@ -83,7 +83,6 @@ sync <- function(
           expr = {
             suppressWarnings({
               project %>% sync_project(
-                set_token_if_fails = use_console,
                 save_to_dir = TRUE,
                 reset = hard_reset
               )

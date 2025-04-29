@@ -1,62 +1,3 @@
-#' @title Set a REDCap API Token to Your Current R Session
-#' @description
-#' Prompts the user to input a valid REDCap API token and stores it as an
-#' environment variable for the current R session.
-#' Instead of using this function you should consider setting your token within
-#' your REnviron file which can be edited with
-#' \code{\link[usethis]{edit_r_environ}}.
-#' @details
-#' If a valid token already exists in the R session, the function notifies the
-#' user and asks whether they want to replace it.
-#' The user is guided to provide a new token through the console.
-#' It is strongly discouraged to include API tokens directly within R scripts.
-#' The token is validated internally and stored using `Sys.setenv()`.
-#' @inheritParams save_project
-#' @param ask Logical (TRUE/FALSE). If TRUE, asks the user for confirmation
-#' before overwriting an existing valid token. Default is `TRUE`.
-#' @return Invisible. A message is printed to confirm the token is successfully
-#' set.
-#' @seealso
-#' For the function to work you need to have a valid project object from
-#' \code{\link{setup_project}()}.
-#' See our
-#'
-#' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{REDCap Tokens Article}
-#' @family Token Functions
-#' @keywords Token Functions
-#' @export
-set_project_token <- function(project, ask = TRUE) {
-  project <- assert_blank_project(project)
-  token_name <- get_REDCap_token_name(project)
-  is_a_test <- is_test_project(project)
-  answer <- 1
-  if (ask) {
-    token <- get_project_token(project)
-    if (is_valid_REDCap_token(token)) {
-      cli_alert_wrap(paste0("You already have a valid token in your R session (pending test connection) '", token, "'."))
-      answer <- utils::menu(choices = c("Yes", "No"), title = "Are you sure you want to set something else?")
-    }
-  }
-  if (answer == 1) {
-    has_valid_REDCap_token <- FALSE
-    if (is_something(project$links$redcap_API)) {
-      if (!ask) {
-        cli_alert_wrap(paste0("You can request/regenerate/delete with `link_API_token(project)` or go here: "), url = project$links$redcap_API)
-      }
-    }
-    if (is_a_test) {
-      cli_alert_wrap(paste0("This is only a test so the token is: ", get_test_token(project$short_name)), bullet_type = ">")
-    }
-    prompt <- paste0("What is your ", project$short_name, " REDCap API token: ")
-    while (!has_valid_REDCap_token) {
-      token <- readline(prompt)
-      has_valid_REDCap_token <- is_valid_REDCap_token(token, silent = FALSE, is_a_test = is_a_test)
-    }
-    do.call(Sys.setenv, stats::setNames(list(token), token_name))
-  }
-  get_project_token(project, silent = FALSE)
-  invisible()
-}
 #' @title View the REDCap API Token Stored in the Session
 #' @description
 #' Displays the REDCap API token currently stored in the session as an
@@ -88,26 +29,19 @@ view_project_token <- function(project) {
 #' This function tests whether the API token stored in the `project` object is
 #' valid by making a request to the REDCap server.
 #' If the token is invalid, the function can optionally open the REDCap login
-#' page in a browser (`launch_browser`) and/or reset the token (`set_if_fails`)
-#' using the console.
+#' page in a browser (`launch_browser`)
 #' @inheritParams save_project
-#' @param set_if_fails Logical (TRUE/FALSE). If TRUE and test connection fails,
-#' asks user to paster token into consult using `set_project_token(project)`
-#' function. Default is `TRUE`.
 #' @param launch_browser Logical (TRUE/FALSE). If TRUE, launches the REDCap
 #' login page in the default web browser when validation fails. Default is
 #' `TRUE`.
 #' @return Logical. Returns `TRUE` if the API token is valid, otherwise `FALSE`.
 #' @seealso
 #' \href{../articles/Tokens.html}{pkgdown article on tokens}
-#'
-#'
 #' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{pkgdown article on tokens}
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
 test_project_token <- function(project,
-                               set_if_fails = TRUE,
                                launch_browser = TRUE) {
   assert_setup_project(project)
   rcon <- project_rcon(project)
@@ -122,43 +56,23 @@ test_project_token <- function(project,
   project$internals$last_test_connection_attempt <- now_time()
   version_error <- is.null(redcap_version)
   project$internals$last_test_connection_outcome <- !version_error
-  if (!set_if_fails) {
-    return(invisible(project))
-  }
   if (version_error && launch_browser) {
     utils::browseURL(url = ifelse(is_something(project$redcap$version), project$links$redcap_API, project$links$redcap_base))
     # this will fail to bring you to right URL if redcap version changes at the same time a previously valid token is no longer valid
   }
   changed_in_console <- FALSE
-  while (version_error) {
+  if (version_error) {
     cli_alert_danger("Your REDCap API token check failed. Check privileges.")
-    if (set_if_fails) {
-      set_project_token(project, ask = FALSE)
-      rcon <- project_rcon(project)
-      redcap_version <- tryCatch(
-        expr = {
-          redcapAPI::exportVersion(rcon)
-        },
-        error = function(e) {
-          NULL
-        }
-      )
-      version_error <- is.null(redcap_version)
-      changed_in_console <-
-        project$internals$last_test_connection_outcome <-
-        !version_error
-    }
+    return(invisible(project))
   }
   cli_alert_wrap("Connected to REDCap!", url = project$links$redcap_home, bullet_type = "v")
-  if (changed_in_console) {
-    cli_alert_warning("Don't forget to change your token with `edit_r_environ()` from `usethis` package.")
-  }
   version_changed <- FALSE
   if (!is.null(project$redcap$version)) {
     version_changed <- !identical(project$redcap$version, redcap_version)
   }
   project$redcap$version <- redcap_version
   if (version_changed) {
+    #message here
     project <- update_project_links(project)
   }
   project$internals$ever_connected <- TRUE

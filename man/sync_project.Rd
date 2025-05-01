@@ -8,7 +8,6 @@ sync_project(
   project,
   reset = FALSE,
   silent = FALSE,
-  ask_about_overwrites = TRUE,
   summarize = TRUE,
   save_to_dir = TRUE
 )
@@ -21,9 +20,6 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 \item{reset}{Logical that forces a fresh update if TRUE. Default is \code{FALSE}.}
 
 \item{silent}{Logical (TRUE/FALSE). For messages.}
-
-\item{ask_about_overwrites}{Logical (TRUE/FALSE). If TRUE, prompts the user
-before overwriting existing data. Default is \code{TRUE}.}
 
 \item{summarize}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
 

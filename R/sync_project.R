@@ -12,8 +12,6 @@
 #'
 #' @inheritParams save_project
 #' @param reset Logical that forces a fresh update if TRUE. Default is `FALSE`.
-#' @param ask_about_overwrites Logical (TRUE/FALSE). If TRUE, prompts the user
-#' before overwriting existing data. Default is `TRUE`.
 #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
 #' the directory. Default is `TRUE`.
@@ -26,18 +24,17 @@ sync_project <- function(
     project,
     reset = FALSE,
     silent = FALSE,
-    ask_about_overwrites = TRUE,
     summarize = TRUE,
     save_to_dir = TRUE) {
   collected <- makeAssertCollection()
   assert_blank_project(project)
   assert_logical(reset, any.missing = FALSE, len = 1, add = collected)
-  assert_logical(
-    ask_about_overwrites,
-    any.missing = FALSE,
-    len = 1,
-    add = collected
-  )
+  # assert_logical(
+  #   ask_about_overwrites,
+  #   any.missing = FALSE,
+  #   len = 1,
+  #   add = collected
+  # )
   assert_logical(save_to_dir, any.missing = FALSE, len = 1, add = collected)
   assert_logical(silent, any.missing = FALSE, len = 1, add = collected)
   current_function <- as.character(current_call())[[1]]
@@ -64,19 +61,19 @@ sync_project <- function(
   # project$internals$last_metadata_update <-  now_time()-lubridate::days(1)
   # project$internals$last_data_update <-  now_time()-lubridate::days(1)
   if (is_something(project$transformation$data_updates)) {
-    do_it <- TRUE
     cli_alert_wrap(
       "There is data in 'project$transformation$data_updates' that has not been pushed to REDCap yet..."
     )
-    print(project$transformation$data_updates)
-    if (ask_about_overwrites) {
-      do_it <- utils::menu(
-        choices = c("Yes", "No and stop the function!"),
-        title = "Would you like to push these updates now?"
-      ) == 1
+    choice <- utils::menu(
+      choices = c("Yes", "No and skip", "No and stop the function!"),
+      title = "Would you like to review these updates now?"
+    )
+    if (choice == 3){
+      stop("Stopped as requested!")
     }
-    if (!do_it) stop("Stopped as requested!")
-    project <- upload_transform_to_project(project)
+    if (choice == 1) {
+      project <- upload_project_to_REDCap(project, ask = TRUE)
+    }
   }
   if (!reset) { # check log interim
     if (

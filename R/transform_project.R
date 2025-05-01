@@ -417,7 +417,7 @@ add_default_project_summary <- function(project) {
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
     include_users = TRUE,
-    include_log = TRUE,
+    include_log = FALSE,
     with_links = nrow(project$summary$all_records) <= 3000,
     separate = FALSE,
     use_csv = project$internals$use_csv,

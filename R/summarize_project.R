@@ -398,7 +398,7 @@ add_project_summary <- function(
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
     include_users = TRUE,
-    include_log = TRUE,
+    include_log = FALSE,
     with_links = TRUE,
     separate = FALSE,
     use_csv,
@@ -595,7 +595,7 @@ generate_project_summary <- function(
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
     include_users = TRUE,
-    include_log = TRUE) {
+    include_log = FALSE) {
   lifecycle::signal_stage("experimental", "generate_project_summary()")
   provided_summary_name <- !missing(summary_name)
   if (provided_summary_name) {

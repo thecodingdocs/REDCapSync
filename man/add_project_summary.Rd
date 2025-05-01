@@ -27,7 +27,7 @@ add_project_summary(
   annotate_metadata = TRUE,
   include_record_summary = TRUE,
   include_users = TRUE,
-  include_log = TRUE,
+  include_log = FALSE,
   with_links = TRUE,
   separate = FALSE,
   use_csv,

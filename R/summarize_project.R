@@ -469,7 +469,7 @@ add_project_summary <- function(
     }
   }
   project$summary[[summary_name]] <- summary_list_new
-  project$summary$all_records[[summary_name]] <- as.POSIXct(NA)
+  project$summary$all_records[[summary_name]] <- as.logical(NA)
   invisible(project)
 }
 #' @noRd
@@ -477,7 +477,9 @@ add_project_summary <- function(
   "first_timestamp",
   "last_timestamp",
   "last_api_call",
-  "last_transformation"
+  "all_records",
+  "transformed",
+  "saved"
 )
 .not_important_summary_names <- c(
   "n_records",
@@ -790,7 +792,12 @@ summarize_project <- function(
 #' @export
 clear_project_summaries <- function(project) {
   assert_setup_project(project)
-  project$summary <- list()
+  summary_names <- names(project$summary)
+  summary_names <- summary_names[which(summary_names!="all_records")]
+  for(summary_name in summary_names){
+    project$summary[[summary_name]]<- NULL
+    project$summary$all_records[[summary_name]]<- NULL
+  }
   cli_alert_success("Cleared project summaries!")
   invisible(project)
 }
@@ -825,7 +832,8 @@ extract_project_records <- function(project) {
       first_timestamp = NA,
       last_timestamp = NA,
       last_api_call = NA,
-      last_transformation = NA,
+      tranformed = FALSE,
+      saved = FALSE,
       stringsAsFactors = FALSE
     )
     rownames(all_records) <- NULL
@@ -983,10 +991,7 @@ summary_records_due <- function(project, summary_name) {
     summary_name = summary_name
   )
   record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  ref_col <- ifelse(summary_list$transform,
-                    "last_transformation",
-                    "last_api_call")
-  timestamps <- project$summary$all_records[[ref_col]][record_rows]
+  relevant_records <- project$summary$all_records[record_rows,]
   is_due <- any(timestamps > summary_list$last_save_time)
   is_due
 }
@@ -994,6 +999,7 @@ summary_records_due <- function(project, summary_name) {
 check_summaries <- function(project, summary_names) {
   if (missing(summary_names)) {
     summary_names <- project$summary %>% names()
+    summary_names <- summary_names[which(summary_names!="all_records")]
   }
   needs_refresh <- NULL
   if (is.null(summary_names)) {

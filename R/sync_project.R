@@ -172,9 +172,8 @@ sync_project <- function(
     if (will_update) {
       project$data <- project$data %>% all_character_cols_list()
       if (length(deleted_records) > 0) {
-        project$summary$all_records <- project$summary$all_records[which(!project$summary$all_records[[project$redcap$id_col]] %in% deleted_records), ]
         stale_records <- stale_records[which(!stale_records %in% deleted_records)]
-        project$data <- remove_records_from_list(project = project, records = deleted_records, silent = TRUE)
+        project <- remove_records_from_project(project = project, records = deleted_records, silent = TRUE)
       }
       form_list <- project %>% get_REDCap_data(labelled = project$internals$labelled, records = stale_records)
       missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[project$redcap$id_col]])]
@@ -191,7 +190,7 @@ sync_project <- function(
       project$summary$all_records$last_api_call[which(project$summary$all_records[[project$redcap$id_col]] %in% stale_records)] <-
         project$internals$last_data_update <-
         now_time()
-      project$data <- remove_records_from_list(project = project, records = stale_records, silent = TRUE)
+      project <- remove_records_from_project(project = project, records = stale_records, silent = TRUE)
       # if (project$internals$is_transformed) {
       # SAVE
       #   project2 <- stripped_project(project)

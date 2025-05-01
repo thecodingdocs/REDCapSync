@@ -30,14 +30,14 @@ add_redcap_links_to_form <- function(form, project) { # add instance links
   form
 }
 #' @noRd
-remove_records_from_list <- function(project, records, silent = FALSE) {
+remove_records_from_project <- function(project, records, silent = FALSE) {
   form_list <- project$data
   if (!is_df_list(form_list)) {
     stop("form_list is not a list of data.frames as expected.")
   }
   if (length(records) == 0L) {
     stop(
-      "no records supplied to remove_records_from_list, but it's used in",
+      "no records supplied to remove_records_from_project, but it's used in",
       "update which depends on records."
     )
   }
@@ -53,7 +53,25 @@ remove_records_from_list <- function(project, records, silent = FALSE) {
     form_list[[form_name]] <- form_list[[form_name]][rows, ]
   }
   if (!silent) message("Removed: ", toString(records))
-  form_list
+  project$data <- form_list
+  project$summary$all_records <- project$summary$all_records[which(!project$summary$all_records[[project$redcap$id_col]] %in% records), ]
+  form_list <- project$transformation$data
+  if(is_something(form_list)){
+    form_names <- names(form_list)[
+      which(
+        unlist(lapply(names(form_list), function(form_name) {
+          nrow(form_list[[form_name]]) > 0L
+        }))
+      )
+    ]
+    for (form_name in form_names) {
+      rows <- which(!form_list[[form_name]][[project$redcap$id_col]] %in% records)
+      form_list[[form_name]] <- form_list[[form_name]][rows, ]
+    }
+    if (!silent) message("Removed: ", toString(records))
+    project$transformation$data <- form_list
+  }
+  invisible(project)
 }
 #' @noRd
 ignore_redcap_log <- function(collapse = TRUE) {

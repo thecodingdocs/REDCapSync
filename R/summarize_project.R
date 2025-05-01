@@ -478,8 +478,7 @@ add_project_summary <- function(
   "last_timestamp",
   "last_api_call",
   "all_records",
-  "transformed",
-  "saved"
+  "transformed"
 )
 .not_important_summary_names <- c(
   "n_records",
@@ -832,8 +831,7 @@ extract_project_records <- function(project) {
       first_timestamp = NA,
       last_timestamp = NA,
       last_api_call = NA,
-      tranformed = FALSE,
-      saved = FALSE,
+      tranformed = NA,
       stringsAsFactors = FALSE
     )
     rownames(all_records) <- NULL

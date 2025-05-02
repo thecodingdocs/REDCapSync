@@ -469,7 +469,7 @@ add_project_summary <- function(
     }
   }
   project$summary[[summary_name]] <- summary_list_new
-  project$summary$all_records[[summary_name]] <- as.logical(NA)
+  project$summary$all_records[[summary_name]] <- FALSE
   invisible(project)
 }
 #' @noRd
@@ -478,7 +478,8 @@ add_project_summary <- function(
   "last_timestamp",
   "last_api_call",
   "all_records",
-  "transformed"
+  "was_transformed",
+  "was_saved"
 )
 .not_important_summary_names <- c(
   "n_records",
@@ -831,7 +832,8 @@ extract_project_records <- function(project) {
       first_timestamp = NA,
       last_timestamp = NA,
       last_api_call = NA,
-      tranformed = NA,
+      was_tranformed = FALSE,
+      was_saved = FALSE,
       stringsAsFactors = FALSE
     )
     rownames(all_records) <- NULL
@@ -990,7 +992,7 @@ summary_records_due <- function(project, summary_name) {
   )
   record_rows <- which(project$summary$all_records[[id_col]] %in% records)
   relevant_records <- project$summary$all_records[record_rows,]
-  is_due <- any(timestamps > summary_list$last_save_time)
+  is_due <- any(relevant_records$last_api_call > summary_list$last_save_time)
   is_due
 }
 #' @noRd

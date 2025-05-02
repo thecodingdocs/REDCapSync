@@ -181,6 +181,8 @@ sync_project <- function(
         x <- data.frame(
           record = missing_from_summary,
           last_api_call = NA,
+          was_tranformed = FALSE,
+          was_saved = FALSE,
           stringsAsFactors = FALSE
         )
         colnames(x)[1] <- project$redcap$id_col

@@ -211,6 +211,7 @@ add_project_transformation <- function(project,
   }
   # add more checks
   project$transformation$forms <- forms_transformation
+  project$summary$all_records$was_transformed <- FALSE
   invisible(project)
 }
 #' @title Add Field Transformation to the Database
@@ -308,6 +309,7 @@ add_project_field <- function(
            func_template)
     }
   }
+  # add check for identical and if not identical was_transformed = FALSE
   field_row <- data.frame(
     field_name = field_name,
     form_name = form_name,

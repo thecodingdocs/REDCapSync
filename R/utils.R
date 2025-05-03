@@ -31,8 +31,8 @@ add_redcap_links_to_form <- function(form, project) { # add instance links
 }
 remove_from_form_list <- function(form_list,
                                   id_col,
-                                  records = NULL,
-                                  silent = FALSE) {
+                                  records = NULL
+                                  ) {
   if (!is_something(form_list)) {
     return(form_list)
   }
@@ -52,9 +52,6 @@ remove_from_form_list <- function(form_list,
   for (form_name in form_names) {
     chosen_rows <- which(!form_list[[form_name]][[id_col]] %in% records)
     form_list[[form_name]] <- form_list[[form_name]][chosen_rows, ]
-  }
-  if (!silent) {
-    message("Removed: ", toString(records))
   }
   form_list
 }

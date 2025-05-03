@@ -431,17 +431,37 @@ add_default_project_summary <- function(project) {
 #' @title transform_project
 #' @noRd
 transform_project <- function(project) {
-  has_transformation <- is_something(project$transformation$forms)
-  the_names <- project$transformation$fields$field_name
+  has_data <- is_something(project$data)
   has_fields <- !is.null(the_names)
+  has_transformation <- is_something(project$transformation$forms)
+  if (!has_data) {
+    cli_alert_warning("No data... nothing to do!")
+  }
+  if (!has_fields) {
+    cli_alert_danger("No additional fields. Use `add_project_field()`")
+  }
+  if (!has_transformation) {
+    cli_alert_warning("No transformation. Use `add_project_transformation()`")
+  }
+  the_names <- project$transformation$fields$field_name
   forms_transformation <- project$transformation$forms
   forms_transformation_original <- forms_transformation
   all_records <- project$summary$all_records
   check_logical <- !all_records$was_tranformed
   id_col <- project$redcap$id_col
-  if (all(check_logical)) {
+  needs_full <- all(check_logical)
+  needs_nothing <- !any(check_logical)
+  needs_partial <- !needs_full && !needs_nothing
+  if (needs_nothing) {
+    cli_alert_success("Everything transformed already.")
+  }
+  if (needs_nothing || !has_transformation || !has_data) {
+    return(invisible(project))
+  }
+  if (needs_full) {
     named_df_list <- project$data
-  } else {
+  }
+  if(needs_partial) {
     named_df_list <- generate_project_summary(
       project = project,
       transform = FALSE,
@@ -460,18 +480,7 @@ transform_project <- function(project) {
       include_log = FALSE
       )
   }
-  has_data <- is_something(named_df_list)
   original_fields <- project$metadata$fields
-  if (!has_data) {
-    cli_alert_warning("No data... nothing to do!")
-    return(invisible(project))
-  }
-  if (!has_fields) {
-    cli_alert_danger("No additional fields. Use `add_project_field()`")
-  }
-  if (!has_transformation) {
-    cli_alert_warning("No transformation. Use `add_project_transformation()`")
-  }
   the_names_existing <- the_names[which(the_names %in% original_fields$field_name)]
   the_names_new <- the_names[which(!the_names %in% original_fields$field_name)]
   field_names <- c(the_names_existing, the_names_new)
@@ -607,18 +616,24 @@ transform_project <- function(project) {
     stop("not all names in form_list objext. Something wrong with transform_project()")
   }
   if (is_something(form_list)) {
-    new_records <- extract_values_from_form_list(
-      form_list = form_list,
-      col_name = id_col
-    )
-    project$transformation$data <- remove_from_form_list(
-      form_list = project$transformation$data,
-      id_col = id_col,
-      records = new_records
-    )
-    for (form_name in names(form_list)) {
-      project$transformation[[form_name]] <- project$transformation[[form_name]] %>%
-        dplyr::bind_rows(form_list[[form_name]])
+    if(needs_full){
+      project$transformation$data <- form_list
+    }
+    if(needs_partial){
+      new_records <- extract_values_from_form_list(
+        form_list = form_list,
+        col_name = id_col
+      )
+      project$transformation$data <- remove_from_form_list(
+        form_list = project$transformation$data,
+        id_col = id_col,
+        records = new_records
+      )
+      for (form_name in names(form_list)) {
+        project$transformation$data[[form_name]] <-
+          project$transformation$data[[form_name]] %>%
+          dplyr::bind_rows(form_list[[form_name]])
+      }
     }
   }
   if (!is.null(project$metadata$form_key_cols)) {

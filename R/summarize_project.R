@@ -818,15 +818,23 @@ run_quality_checks <- function(project) {
   invisible(project)
 }
 #' @noRd
+extract_values_from_form_list <- function(form_list, col_name) {
+  names(form_list) %>% lapply(function(form_name) {
+    form_list[[form_name]][[col_name]]
+  }) %>%
+    unlist() %>%
+    drop_nas() %>%
+    unique()
+}
+#' @noRd
 extract_project_records <- function(project) {
   all_records <- NULL
   id_col <- project$redcap$id_col
   if (project$data %>% is_something()) {
-    record_id_col <- names(project$data) %>% lapply(function(form_name) {
-      project$data[[form_name]][[project$redcap$id_col]]
-    }) %>%
-      unlist() %>%
-      unique()
+    record_id_col <- extract_values_from_form_list(
+      form_list = project$data,
+      col_name = id_col
+    )
     all_records <- data.frame(
       record_id_col = record_id_col,
       first_timestamp = NA,

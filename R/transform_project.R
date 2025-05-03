@@ -438,16 +438,15 @@ transform_project <- function(project) {
   forms_transformation_original <- forms_transformation
   all_records <- project$summary$all_records
   check_logical <- !all_records$was_tranformed
+  id_col <- project$redcap$id_col
   if (all(check_logical)) {
     named_df_list <- project$data
   } else {
-    id_col <- project$redcap$id_col
-    due_records <- all_records[[id_col]][which(check_logical)]
     named_df_list <- generate_project_summary(
       project = project,
       transform = FALSE,
       filter_field = id_col,
-      filter_choices = due_records,
+      filter_choices = all_records[[id_col]][which(check_logical)],
       filter_strict = FALSE,
       no_duplicate_cols = FALSE,
       exclude_identifiers = FALSE,
@@ -608,7 +607,19 @@ transform_project <- function(project) {
     stop("not all names in form_list objext. Something wrong with transform_project()")
   }
   if (is_something(form_list)) {
-    project$transformation$data <- form_list
+    new_records <- extract_values_from_form_list(
+      form_list = form_list,
+      col_name = id_col
+    )
+    project$transformation$data <- remove_from_form_list(
+      form_list = project$transformation$data,
+      id_col = id_col,
+      records = new_records
+    )
+    for (form_name in names(form_list)) {
+      project$transformation[[form_name]] <- project$transformation[[form_name]] %>%
+        dplyr::bind_rows(form_list[[form_name]])
+    }
   }
   if (!is.null(project$metadata$form_key_cols)) {
     forms_transformation$key_cols <- forms_transformation$form_name %>%
@@ -635,6 +646,7 @@ transform_project <- function(project) {
   )
   # forms ---------
   # new function RosyUtils
+  # should separate out of this function
   cols_to_keep <- c("form_name_remap", "form_label_remap", "repeating", "repeating_via_events", "key_cols", "key_names")
   cols_to_keep <- cols_to_keep[which(cols_to_keep %in% colnames(forms_transformation))]
   forms_transformation <- forms_transformation[, cols_to_keep] %>% unique()
@@ -671,7 +683,12 @@ transform_project <- function(project) {
     get_key_col_list(project = project, transform = TRUE)
   project$transformation$metadata$missing_codes <-
     project$metadata$missing_codes
+  #end --------
   project$internals$last_data_transformation <- now_time()
+  row_match <- which(all_records[[id_col]]%in%new_records)
+  all_records$was_tranformed[row_match] <- TRUE
+  all_records$was_saved[row_match] <- FALSE
+  project$summary$all_records <- all_records
   invisible(project)
 }
 #' @noRd

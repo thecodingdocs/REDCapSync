@@ -131,7 +131,7 @@ sync_project <- function(
   }
   if (reset) {
     project <- project %>% get_REDCap_metadata(include_users = !project$internals$metadata_only)
-    project$internals$is_transformed <- FALSE
+    # project$internals$is_transformed <- FALSE
     if (!project$internals$metadata_only) {
       project$data <- list()
       project$data_updates <- list()
@@ -173,7 +173,7 @@ sync_project <- function(
       project$data <- project$data %>% all_character_cols_list()
       if (length(deleted_records) > 0) {
         stale_records <- stale_records[which(!stale_records %in% deleted_records)]
-        project <- remove_records_from_project(project = project, records = deleted_records, silent = TRUE)
+        project <- remove_records_from_project(project = project, records = deleted_records)
       }
       form_list <- project %>% get_REDCap_data(labelled = project$internals$labelled, records = stale_records)
       missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[project$redcap$id_col]])]
@@ -192,29 +192,7 @@ sync_project <- function(
       project$summary$all_records$last_api_call[which(project$summary$all_records[[project$redcap$id_col]] %in% stale_records)] <-
         project$internals$last_data_update <-
         now_time()
-      project <- remove_records_from_project(project = project, records = stale_records, silent = TRUE)
-      # if (project$internals$is_transformed) {
-      # SAVE
-      #   project2 <- stripped_project(project)
-      #   project2$internals$is_transformed <- FALSE
-      #   project2$data <- form_list
-      #   # add remove records from list equivalant
-      #   project2 <- transform_project(project2)
-      #   if (!is.null(project2$data_updates$from_transform)) {
-      #     do_it <- TRUE
-      #     cli_alert_wrap("There is data in 'project$transformation$data_updates' that has not been pushed to REDCap yet...")
-      #     print(project2$transformation$data_updates)
-      #     if (ask_about_overwrites) {
-      #       do_it <- utils::menu(choices = c("Yes", "No and stop the function!"), title = "Would you like to push these updates now?") == 1
-      #     }
-      #     if (!do_it) stop("Stopped as requested!")
-      #     # account for uploads in process
-      #     project2 <- upload_transform_to_project(project2)
-      #   }
-      #   form_list <- project2$data %>%
-      #     process_df_list(silent = TRUE) %>%
-      #     all_character_cols_list()
-      # }
+      project <- remove_records_from_project(project = project, records = stale_records)
       if (!all(names(form_list) %in% names(project$data))) {
         stop("Imported data names doesn't match project$data names. If this happens run `sync_project(project, reset = TRUE)`")
       }
@@ -238,6 +216,7 @@ sync_project <- function(
   project$internals$last_sync <- now_time()
   if (save_to_dir && !is.null(project$dir_path)) {
     if (was_updated) {
+      project <- transform_project(project)
       project <- summarize_project(
         project = project,
         reset = reset

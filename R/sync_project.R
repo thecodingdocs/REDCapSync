@@ -250,4 +250,3 @@ sync_project <- function(
   }
   invisible(project)
 }
-

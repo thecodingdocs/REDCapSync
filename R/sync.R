@@ -1,4 +1,4 @@
-#' @title Syncronize your REDCaps
+#' @title Synchronize your REDCaps
 #' @param use_console Whether or not to use console to guide through sync vs
 #' just running
 #' @param hard_reset Will go get all projects from scratch if TRUE.

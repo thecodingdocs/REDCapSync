@@ -1,4 +1,4 @@
-#' @title Syncronize REDCap Data
+#' @title Synchronize REDCap Data
 #' @description
 #' Updates the REDCap database (`project` object) by fetching the latest data
 #' from the REDCap server.
@@ -250,3 +250,4 @@ sync_project <- function(
   }
   invisible(project)
 }
+

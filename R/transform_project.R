@@ -436,12 +436,36 @@ transform_project <- function(project) {
   has_fields <- !is.null(the_names)
   forms_transformation <- project$transformation$forms
   forms_transformation_original <- forms_transformation
-  named_df_list <- project$data
+  all_records <- project$summary$all_records
+  check_logical <- !all_records$was_tranformed
+  if (all(check_logical)) {
+    named_df_list <- project$data
+  } else {
+    id_col <- project$redcap$id_col
+    due_records <- all_records[[id_col]][which(check_logical)]
+    named_df_list <- generate_project_summary(
+      project = project,
+      transform = FALSE,
+      filter_field = id_col,
+      filter_choices = due_records,
+      filter_strict = FALSE,
+      no_duplicate_cols = FALSE,
+      exclude_identifiers = FALSE,
+      exclude_free_text = FALSE,
+      clean = FALSE,
+      drop_blanks = FALSE,
+      include_metadata = FALSE,
+      annotate_metadata = FALSE,
+      include_record_summary = FALSE,
+      include_users = FALSE,
+      include_log = FALSE
+      )
+  }
   has_data <- is_something(named_df_list)
   original_fields <- project$metadata$fields
   if (!has_data) {
     cli_alert_warning("No data... nothing to do!")
-    return(invisible(NULL))
+    return(invisible(project))
   }
   if (!has_fields) {
     cli_alert_danger("No additional fields. Use `add_project_field()`")

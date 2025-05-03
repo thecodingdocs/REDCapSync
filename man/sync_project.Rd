@@ -2,7 +2,7 @@
 % Please edit documentation in R/sync_project.R
 \name{sync_project}
 \alias{sync_project}
-\title{Syncronize REDCap Data}
+\title{Synchronize REDCap Data}
 \usage{
 sync_project(
   project,

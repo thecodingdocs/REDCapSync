@@ -2,7 +2,7 @@
 % Please edit documentation in R/sync.R
 \name{sync}
 \alias{sync}
-\title{Syncronize your REDCaps}
+\title{Synchronize your REDCaps}
 \usage{
 sync(use_console = TRUE, hard_reset = FALSE, project_names = NULL)
 }
@@ -16,5 +16,5 @@ just running}
 sync. Default is NULL which will check every project in cache.}
 }
 \description{
-Syncronize your REDCaps
+Synchronize your REDCaps
 }

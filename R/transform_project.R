@@ -432,6 +432,7 @@ add_default_project_summary <- function(project) {
 #' @noRd
 transform_project <- function(project) {
   has_data <- is_something(project$data)
+  the_names <- project$transformation$fields$field_name
   has_fields <- !is.null(the_names)
   has_transformation <- is_something(project$transformation$forms)
   if (!has_data) {
@@ -443,7 +444,6 @@ transform_project <- function(project) {
   if (!has_transformation) {
     cli_alert_warning("No transformation. Use `add_project_transformation()`")
   }
-  the_names <- project$transformation$fields$field_name
   forms_transformation <- project$transformation$forms
   forms_transformation_original <- forms_transformation
   all_records <- project$summary$all_records

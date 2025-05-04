@@ -550,6 +550,9 @@ save_summary <- function(project, summary_name) {
     rename_list_names_excel(list_names = names(to_save_list))
   names(project$summary[[summary_name]]$final_form_tab_names) <-
     names(to_save_list)
+  row_match <- which(project$summary$all_records[[id_col]] %in% records)
+  project$summary$all_records[[summary_name]][row_match] <- TRUE
+  project$summary$all_records$was_saved[row_match] <- TRUE
   invisible(project)
 }
 #' @title Generate a Summary from a Subset Name

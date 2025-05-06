@@ -997,13 +997,17 @@ summary_records_due <- function(project, summary_name) {
   if (!file.exists(summary_list$file_path)) {
     return(TRUE)
   }
+  old_records <- project$summary$all_records[[id_col]][which(project$summary$all_records[[summary_name]])] %>% sort()
   records <- get_summary_records(
     project = project,
     summary_name = summary_name
-  )
+  ) %>% sort()
+  if(!identical(records,old_records)) {
+    return(TRUE)
+  }
   record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  relevant_records <- project$summary$all_records[record_rows,]
-  is_due <- any(relevant_records$last_api_call > summary_list$last_save_time)
+  relevant_records <- project$summary$all_records[record_rows,c(id_col,"was_saved",summary_name)]
+  is_due <- length(which(!relevant_records$was_saved))>0
   is_due
 }
 #' @noRd
@@ -1017,7 +1021,11 @@ check_summaries <- function(project, summary_names) {
     cli_alert_wrap("No summaries. Use `add_project_summary()`!")
   }
   for (summary_name in summary_names) {
-    if (summary_records_due(project = project, summary_name = summary_name)) {
+    test_summary <- summary_records_due(
+      project = project,
+      summary_name = summary_name
+      )
+    if (test_summary) {
       needs_refresh <- needs_refresh %>% append(summary_name)
     }
   }

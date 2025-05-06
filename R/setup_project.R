@@ -219,13 +219,6 @@ setup_project <- function(
       )
     }
   }
-  if (missing_dir_path) { # if missing the directory path from setup or load then let user know nothing will be stored
-    if (!is_something(project$dir_path)) { # only show message if load_project wasn't used internally (that has a directory)
-      cli::cli_alert_warning(
-        "If you don't supply a directory, REDCapSync will only run in R session. Package is best with a directory."
-      )
-    }
-  }
   if (was_loaded) {
     # compare current setting to previous settings...
     original_details <- project %>% extract_project_details()
@@ -251,6 +244,13 @@ setup_project <- function(
       paste0("Setup blank project object because `reset = TRUE`"),
       silent = silent
     )
+  }
+  if (missing_dir_path) { # if missing the directory path from setup or load then let user know nothing will be stored
+    if (!is_something(project$dir_path)) { # only show message if load_project wasn't used internally (that has a directory)
+      cli::cli_alert_warning(
+        "If you don't supply a directory, REDCapSync will only run in R session. Package is best with a directory."
+      )
+    }
   }
   if (!missing_dir_path) {
     project$dir_path <- set_dir(dir_path) # will also ask user if provided dir is new or different (will load from original but start using new dir)

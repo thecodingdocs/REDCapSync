@@ -42,6 +42,7 @@ remove_from_form_list <- function(form_list,
   if(is.null(records)){
     return(form_list)
   }
+  id_col <- project$redcap$id_col
   form_names <- names(form_list)[
     which(
       unlist(lapply(names(form_list), function(form_name) {
@@ -63,7 +64,8 @@ remove_records_from_project <- function(project, records) {
       "update which depends on records."
     )
   }
-  project$summary$all_records <- project$summary$all_records[which(!project$summary$all_records[[project$redcap$id_col]] %in% records), ]
+  id_col <- project$redcap$id_col
+  project$summary$all_records <- project$summary$all_records[which(!project$summary$all_records[[id_col]] %in% records), ]
   project$data <- remove_from_form_list(
     form_list = project$data,
     records = records

@@ -64,16 +64,16 @@ sync_project <- function(
       cli_alert_wrap(
         "There is data in 'project$transformation$data_updates' that has not been pushed to REDCap yet..."
       )
-      choice <- utils::menu(
-        choices = c("Yes", "No and skip", "No and stop the function!"),
-        title = "Would you like to review these updates now?"
-      )
-      if (choice == 3){
-        stop("Stopped as requested!")
-      }
-      if (choice == 1) {
-        project <- upload_project_to_REDCap(project, ask = TRUE)
-      }
+      # choice <- utils::menu(
+      #   choices = c("Yes", "No and skip", "No and stop the function!"),
+      #   title = "Would you like to review these updates now?"
+      # )
+      # if (choice == 3){
+      #   stop("Stopped as requested!")
+      # }
+      # if (choice == 1) {
+      #   project <- upload_project_to_REDCap(project, ask = TRUE)
+      # }
     }
     if (!reset) { # check log interim
       if (
@@ -228,7 +228,6 @@ sync_project <- function(
       )
       second_stamp <- project$internals$last_data_transformation
     }
-
     if (was_updated) {
       project <- save_project(project)
     } else {

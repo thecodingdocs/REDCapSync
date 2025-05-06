@@ -843,7 +843,7 @@ extract_project_records <- function(project) {
       first_timestamp = NA,
       last_timestamp = NA,
       last_api_call = NA,
-      was_tranformed = FALSE,
+      was_transformed = FALSE,
       was_saved = FALSE,
       stringsAsFactors = FALSE
     )

@@ -447,7 +447,7 @@ transform_project <- function(project) {
   forms_transformation <- project$transformation$forms
   forms_transformation_original <- forms_transformation
   all_records <- project$summary$all_records
-  check_logical <- !all_records$was_tranformed
+  check_logical <- !all_records$was_transformed
   id_col <- project$redcap$id_col
   needs_full <- all(check_logical)
   needs_nothing <- !any(check_logical)
@@ -704,7 +704,7 @@ transform_project <- function(project) {
   #end --------
   project$internals$last_data_transformation <- now_time()
   # row_match <- which(all_records[[id_col]]%in%new_records)
-  all_records$was_tranformed <- TRUE
+  all_records$was_transformed <- TRUE
   all_records$was_saved <- FALSE
   project$summary$all_records <- all_records
   invisible(project)

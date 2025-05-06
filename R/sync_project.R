@@ -183,7 +183,7 @@ sync_project <- function(
           x <- data.frame(
             record = missing_from_summary,
             last_api_call = NA,
-            was_tranformed = FALSE,
+            was_transformed = FALSE,
             was_saved = FALSE,
             stringsAsFactors = FALSE
           )
@@ -204,7 +204,7 @@ sync_project <- function(
         project$summary$all_records$last_api_call[row_match] <-
           project$internals$last_data_update <-
           now_time()
-        project$summary$all_records$was_tranformed[row_match] <- FALSE
+        project$summary$all_records$was_transformed[row_match] <- FALSE
         project$summary$all_records$was_saved[row_match] <- FALSE
         message_string <- toString(stale_records)
         stale_record_length <- length(stale_records)

@@ -132,9 +132,6 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
   }
   project$data_updates <- data_updates
   project$transformation$data_updates <-  data_updates_transformation
-  if (any_updates) {
-    project <- sync_project(project)
-  }
   invisible(project)
 }
 #' @title Find the project_import and project differences

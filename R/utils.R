@@ -42,7 +42,6 @@ remove_from_form_list <- function(form_list,
   if(is.null(records)){
     return(form_list)
   }
-  id_col <- project$redcap$id_col
   form_names <- names(form_list)[
     which(
       unlist(lapply(names(form_list), function(form_name) {

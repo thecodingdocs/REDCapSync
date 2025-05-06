@@ -994,7 +994,8 @@ summary_records_due <- function(project, summary_name) {
   if (is.null(summary_list$last_save_time)) {
     return(TRUE)
   }
-  if (!file.exists(summary_list$file_path)) {
+  if (!file.exists(summary_list$file_path) && !summary_list$separate) {
+    # can't do this for separate unless more code is written
     return(TRUE)
   }
   old_records <- project$summary$all_records[[id_col]][which(project$summary$all_records[[summary_name]])] %>% sort()

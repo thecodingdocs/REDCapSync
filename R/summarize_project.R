@@ -1006,9 +1006,14 @@ summary_records_due <- function(project, summary_name) {
     return(TRUE)
   }
   record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  relevant_records <- project$summary$all_records[record_rows,c(id_col,"was_saved",summary_name)]
-  is_due <- length(which(!relevant_records$was_saved))>0
-  is_due
+  relevant_records <- project$summary$all_records[record_rows,c(id_col,"last_api_call","was_saved",summary_name)]
+  if(length(which(!relevant_records$was_saved))>0) {
+    return(TRUE)   # maybe was_saved not needed at all
+  }
+  if(any(relevant_records$last_api_call > summary_list$last_save_time)) {
+    return(TRUE)
+  }
+  FALSE
 }
 #' @noRd
 check_summaries <- function(project, summary_names) {
@@ -1020,6 +1025,7 @@ check_summaries <- function(project, summary_names) {
   if (is.null(summary_names)) {
     cli_alert_wrap("No summaries. Use `add_project_summary()`!")
   }
+  # need_to_check <- any(project$summary$all_records$last_api_call > summary_list$last_save_time)
   for (summary_name in summary_names) {
     test_summary <- summary_records_due(
       project = project,

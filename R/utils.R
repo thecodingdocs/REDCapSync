@@ -57,6 +57,7 @@ remove_from_form_list <- function(form_list,
 }
 #' @noRd
 remove_records_from_project <- function(project, records) {
+  id_col <- project$redcap$id_col
   if (length(records) == 0L) {
     stop(
       "no records supplied to remove_records_from_project, but it's used in",
@@ -65,10 +66,12 @@ remove_records_from_project <- function(project, records) {
   }
   project$data <- remove_from_form_list(
     form_list = project$data,
+    id_col = id_col,
     records = records
     )
   project$transformation$data <- remove_from_form_list(
     form_list = project$transformation$data,
+    id_col = id_col,
     records = records
   )
   invisible(project)

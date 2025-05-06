@@ -64,8 +64,6 @@ remove_records_from_project <- function(project, records) {
       "update which depends on records."
     )
   }
-  id_col <- project$redcap$id_col
-  project$summary$all_records <- project$summary$all_records[which(!project$summary$all_records[[id_col]] %in% records), ]
   project$data <- remove_from_form_list(
     form_list = project$data,
     records = records

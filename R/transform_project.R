@@ -458,28 +458,29 @@ transform_project <- function(project) {
   if (needs_nothing || !has_transformation || !has_data) {
     return(invisible(project))
   }
-  if (needs_full) {
+  if (needs_full || needs_partial) {
     named_df_list <- project$data
   }
-  if(needs_partial) {
-    named_df_list <- generate_project_summary(
-      project = project,
-      transform = FALSE,
-      filter_field = id_col,
-      filter_choices = all_records[[id_col]][which(check_logical)],
-      filter_strict = FALSE,
-      no_duplicate_cols = FALSE,
-      exclude_identifiers = FALSE,
-      exclude_free_text = FALSE,
-      clean = FALSE,
-      drop_blanks = FALSE,
-      include_metadata = FALSE,
-      annotate_metadata = FALSE,
-      include_record_summary = FALSE,
-      include_users = FALSE,
-      include_log = FALSE
-      )
-  }
+  # right now do not want to reconcile multiple uploads
+  # if(needs_partial) {
+  #   named_df_list <- generate_project_summary(
+  #     project = project,
+  #     transform = FALSE,
+  #     filter_field = id_col,
+  #     filter_choices = all_records[[id_col]][which(check_logical)],
+  #     filter_strict = FALSE,
+  #     no_duplicate_cols = FALSE,
+  #     exclude_identifiers = FALSE,
+  #     exclude_free_text = FALSE,
+  #     clean = FALSE,
+  #     drop_blanks = FALSE,
+  #     include_metadata = FALSE,
+  #     annotate_metadata = FALSE,
+  #     include_record_summary = FALSE,
+  #     include_users = FALSE,
+  #     include_log = FALSE
+  #     )
+  # }
   original_fields <- project$metadata$fields
   the_names_existing <- the_names[which(the_names %in% original_fields$field_name)]
   the_names_new <- the_names[which(!the_names %in% original_fields$field_name)]
@@ -492,7 +493,9 @@ transform_project <- function(project) {
     environment(field_func) <- environment()
     if (is_something(field_func)) {
       if (form_name %in% names(named_df_list)) {
-        field <- field_func(project = project, field_name = field_name, form_name = form_name)
+        field <- field_func(project = project,
+                            field_name = field_name,
+                            form_name = form_name)
       }
     }
     if (field_name %in% the_names_existing) {
@@ -616,25 +619,25 @@ transform_project <- function(project) {
     stop("not all names in form_list objext. Something wrong with transform_project()")
   }
   if (is_something(form_list)) {
-    if(needs_full){
+    if(needs_full || needs_partial){
       project$transformation$data <- form_list
     }
-    if(needs_partial){
-      new_records <- extract_values_from_form_list(
-        form_list = form_list,
-        col_name = id_col
-      )
-      project$transformation$data <- remove_from_form_list(
-        form_list = project$transformation$data,
-        id_col = id_col,
-        records = new_records
-      )
-      for (form_name in names(form_list)) {
-        project$transformation$data[[form_name]] <-
-          project$transformation$data[[form_name]] %>%
-          dplyr::bind_rows(form_list[[form_name]])
-      }
-    }
+    # if(needs_partial){
+    #   new_records <- extract_values_from_form_list(
+    #     form_list = form_list,
+    #     col_name = id_col
+    #   )
+    #   project$transformation$data <- remove_from_form_list(
+    #     form_list = project$transformation$data,
+    #     id_col = id_col,
+    #     records = new_records
+    #   )
+    #   for (form_name in names(form_list)) {
+    #     project$transformation$data[[form_name]] <-
+    #       project$transformation$data[[form_name]] %>%
+    #       dplyr::bind_rows(form_list[[form_name]])
+    #   }
+    # }
   }
   if (!is.null(project$metadata$form_key_cols)) {
     forms_transformation$key_cols <- forms_transformation$form_name %>%
@@ -700,9 +703,9 @@ transform_project <- function(project) {
     project$metadata$missing_codes
   #end --------
   project$internals$last_data_transformation <- now_time()
-  row_match <- which(all_records[[id_col]]%in%new_records)
-  all_records$was_tranformed[row_match] <- TRUE
-  all_records$was_saved[row_match] <- FALSE
+  # row_match <- which(all_records[[id_col]]%in%new_records)
+  all_records$was_tranformed <- TRUE
+  all_records$was_saved <- FALSE
   project$summary$all_records <- all_records
   invisible(project)
 }

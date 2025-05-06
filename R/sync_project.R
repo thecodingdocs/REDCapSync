@@ -42,6 +42,7 @@ sync_project <- function(
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
+  id_col <- project$redcap$id_col
   do_it <- due_for_sync(project_name = project$short_name) || reset
   was_updated <- FALSE
   if (!do_it) {
@@ -174,9 +175,10 @@ sync_project <- function(
         if (length(deleted_records) > 0) {
           stale_records <- stale_records[which(!stale_records %in% deleted_records)]
           project <- remove_records_from_project(project = project, records = deleted_records)
+          project$summary$all_records <- project$summary$all_records[which(!project$summary$all_records[[id_col]] %in% deleted_records), ]
         }
         form_list <- project %>% get_REDCap_data(labelled = project$internals$labelled, records = stale_records)
-        missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[project$redcap$id_col]])]
+        missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[id_col]])]
         if (length(missing_from_summary) > 0) {
           x <- data.frame(
             record = missing_from_summary,
@@ -185,15 +187,12 @@ sync_project <- function(
             was_saved = FALSE,
             stringsAsFactors = FALSE
           )
-          colnames(x)[1] <- project$redcap$id_col
+          colnames(x)[1] <- id_col
           project$summary$all_records <- project$summary$all_records %>% dplyr::bind_rows(x)
-          project$summary$all_records <- project$summary$all_records[order(project$summary$all_records[[project$redcap$id_col]], decreasing = TRUE), ]
+          project$summary$all_records <- project$summary$all_records[order(project$summary$all_records[[id_col]], decreasing = TRUE), ]
         }
-        project$summary$all_records$last_api_call[which(project$summary$all_records[[project$redcap$id_col]] %in% stale_records)] <-
-          project$internals$last_data_update <-
-          now_time()
         project <- remove_records_from_project(project = project, records = stale_records)
-        if (!all(names(form_list) %in% names(project$data))) {
+        if (!all(names(form_list) %in% project$metadata$forms$form_name)) {
           stop("Imported data names doesn't match project$data names. If this happens run `sync_project(project, reset = TRUE)`")
         }
         for (form_name in names(form_list)) {
@@ -201,7 +200,18 @@ sync_project <- function(
             all_character_cols() %>%
             dplyr::bind_rows(form_list[[form_name]])
         }
-        message("Updated: ", toString(stale_records))
+        row_match <- which(project$summary$all_records[[id_col]] %in% stale_records)
+        project$summary$all_records$last_api_call[row_match] <-
+          project$internals$last_data_update <-
+          now_time()
+        project$summary$all_records$was_tranformed[row_match] <- FALSE
+        project$summary$all_records$was_saved[row_match] <- FALSE
+        message_string <- toString(stale_records)
+        stale_record_length <- length(stale_records)
+        if(stale_record_length>20){
+          message_string <- stale_record_length %>% paste("records")
+        }
+        message("Updated: ", message_string)
         was_updated <- TRUE
       } else {
         message("Up to date already!")

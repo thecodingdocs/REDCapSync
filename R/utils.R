@@ -116,6 +116,6 @@ split_choices <- function(x) {
   x
 }
 #' @noRd
-redcap_field_types_not_in_data <- c(
+.field_types_not_in_data <- c(
   "descriptive", "checkbox"
 )

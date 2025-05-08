@@ -139,7 +139,7 @@ add_default_project_fields <- function(project) {
             #need another way to count if multiple id cols
             id_col <- project$metadata$form_key_cols[[form_name]]
             final_vector <- project$data[[form_name]][[id_col]] %>%
-              matches(project$data[[form]][[id_col]], count_only = TRUE) %>%
+              find_match(project$data[[form]][[id_col]], count_only = TRUE) %>%
               as.character()
             final_vector
           }

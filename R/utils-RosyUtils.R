@@ -859,7 +859,7 @@ remove_html_tags <- function(text_vector) {
   cleaned_vector <- gsub(html_pattern, "", text_vector)
   cleaned_vector
 }
-matches <- function(x, ref, count_only = FALSE) {
+find_match <- function(x, ref, count_only = FALSE) {
   final_match <- list()
   final_match[seq_along(x)] <- NA
   next_match <- match(x, ref)

@@ -192,7 +192,7 @@ annotate_records <- function(project) {
 }
 #' @noRd
 fields_with_no_data <- function(project) {
-  project$metadata$fields$field_name[which(is.na(project$metadata$fields$complete_rate) & !project$metadata$fields$field_type %in% c("checkbox", "descriptive"))]
+  project$metadata$fields$field_name[which(is.na(project$metadata$fields$complete_rate) & !project$metadata$fields$field_type %in% .field_types_not_in_data)]
 }
 #' @noRd
 clean_data_list <- function(data_list, drop_blanks = TRUE, drop_others = NULL) {
@@ -1351,7 +1351,13 @@ field_names_metadata <- function(project, field_names, col_names) {
 #' @noRd
 filter_fields_from_form <- function(form, project) {
   forms <- project %>% field_names_to_form_names(field_names = colnames(form))
-  if (any(forms %in% project$metadata$forms$repeating)) stop("All column names in your form must match only one form in your metadata, `project$metadata$forms$form_name`, unless they are all non-repeating")
+  if (any(forms %in% project$metadata$forms$repeating)) {
+    stop(
+      "All column names in your form must match only one form in your",
+      "metadata, `project$metadata$forms$form_name`, unless they are",
+      " all non-repeating"
+    )
+  }
   fields <- project %>% field_names_metadata(field_names = colnames(form))
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)

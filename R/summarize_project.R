@@ -175,13 +175,13 @@ annotate_choices <- function(project, summarize_data = TRUE, drop_blanks = TRUE)
 #' @noRd
 annotate_records <- function(project) {
   all_records <- project$summary$all_records
-  log <- project$redcap$log[which(!is.na(project$redcap$log$record)), ]
-  if (! is_something(all_records) || ! is_something(log)) {
+  redcap_log <- project$redcap$log[which(!is.na(project$redcap$log$record)), ]
+  if (! is_something(all_records) || ! is_something(redcap_log)) {
     return(project)
   }
-  log <- log[which(log$action_type != "Users"), ]
-  log <- log[which(log$record %in% all_records$record_id), ]
-  cool_list <- split(log$timestamp, log$record)
+  redcap_log <- redcap_log[which(redcap_log$action_type != "Users"), ]
+  redcap_log <- redcap_log[which(redcap_log$record %in% all_records$record_id), ]
+  cool_list <- split(redcap_log$timestamp, redcap_log$record)
   cool_list_match <- cool_list %>% names() %>% match(all_records$record_id)
   # test matched all_records$record_id[cool_list_match]
   cool_list_first <- cool_list %>% lapply(dplyr::first) %>% unlist()
@@ -854,24 +854,24 @@ extract_project_records <- function(project) {
 }
 #' @noRd
 get_log <- function(project, records) {
-  log <- project$redcap$log
-  log <- log[which(!is.na(log$username)), ]
-  log <- log[which(!is.na(log$record)), ]
+  redcap_log <- project$redcap$log
+  redcap_log <- redcap_log[which(!is.na(redcap_log$username)), ]
+  redcap_log <- redcap_log[which(!is.na(redcap_log$record)), ]
   # if(drop_exports){
-  #   log <- log[which(log$action_type != "Exports" | is.na(log$action_type)), ]
+  #   redcap_log <- redcap_log[which(redcap_log$action_type != "Exports" | is.na(redcap_log$action_type)), ]
   # }
   if (!missing(records)) {
     if (!is.null(records)) {
-      log <- log[which(log$record %in% records), ]
+      redcap_log <- redcap_log[which(redcap_log$record %in% records), ]
     }
   }
-  log
+  redcap_log
 }
 #' @noRd
 summarize_users_from_log <- function(project, records) {
-  log <- get_log(project, records)
+  redcap_log <- get_log(project, records)
   summary_users <- project$redcap$users %>% dplyr::select(c("username", "role_label", "email", "firstname", "lastname"))
-  user_groups <- log %>% split(log$username)
+  user_groups <- redcap_log %>% split(redcap_log$username)
   summary_users <- summary_users[which(summary_users$username %in% names(user_groups)), ]
   if (nrow(summary_users) == 0) {
     return(NULL)
@@ -897,30 +897,30 @@ summarize_users_from_log <- function(project, records) {
 }
 #' @noRd
 summarize_comments_from_log <- function(project, records) {
-  log <- get_log(project, records)
-  # log$action_type == "Comment"
-  if (nrow(log) == 0) {
+  redcap_log <- get_log(project, records)
+  # redcap_log$action_type == "Comment"
+  if (nrow(redcap_log) == 0) {
     return(NULL)
   }
-  log
+  redcap_log
 }
 #' @noRd
 summarize_records_from_log <- function(project, records) {
-  log <- project$redcap$log
-  log <- log[which(!is.na(log$username)), ]
-  log <- log[which(!is.na(log$record)), ]
+  redcap_log <- project$redcap$log
+  redcap_log <- redcap_log[which(!is.na(redcap_log$username)), ]
+  redcap_log <- redcap_log[which(!is.na(redcap_log$record)), ]
   if (!missing(records)) {
     if (!is.null(records)) {
-      log <- log[which(log$record %in% records), ]
+      redcap_log <- redcap_log[which(redcap_log$record %in% records), ]
     }
   }
   # records -------------
-  # all_records <- unique(log$record)
+  # all_records <- unique(redcap_log$record)
   summary_records <- project$summary$all_records
-  record_groups <- log %>% split(log$record)
+  record_groups <- redcap_log %>% split(redcap_log$record)
   summary_records <- summary_records[which(summary_records[[project$redcap$id_col]] %in% names(record_groups)), , drop = FALSE]
-  # users_log_rows <- users %>% lapply(function(user){which(log$username==user)})
-  # records_log_rows <- records %>% lapply(function(record){which(log$record==record)})
+  # users_log_rows <- users %>% lapply(function(user){which(redcap_log$username==user)})
+  # records_log_rows <- records %>% lapply(function(record){which(redcap_log$record==record)})
   record_groups <- record_groups[match(summary_records[[project$redcap$id_col]], names(record_groups))]
   summary_records$last_timestamp <- record_groups %>%
     lapply(function(group) {

@@ -389,56 +389,56 @@ raw_process_redcap <- function(raw, project, labelled) {
   form_list
 }
 #' @noRd
-sort_redcap_log <- function(log) {
-  unique(log[order(log$timestamp, decreasing = TRUE), ])
+sort_redcap_log <- function(redcap_log) {
+  unique(redcap_log[order(redcap_log$timestamp, decreasing = TRUE), ])
 }
 #' @noRd
-clean_redcap_log <- function(log) {
-  log <- unique(log)
-  log$record_id <- NA
-  log$action_type <- NA
-  log <- log %>%
+clean_redcap_log <- function(redcap_log) {
+  redcap_log <- unique(redcap_log)
+  redcap_log$record_id <- NA
+  redcap_log$action_type <- NA
+  redcap_log <- redcap_log %>%
     lapply(function(x) {
       x %>% trimws(whitespace = "[\\h\\v]")
     }) %>%
     as.data.frame()
-  design_test <- log$action == "Manage/Design"
+  design_test <- redcap_log$action == "Manage/Design"
   design_rows <- which(design_test)
   not_design_rows <- which(!design_test)
   # notdesign action -----
-  record_rows <- not_design_rows[dplyr::starts_with(match = .log_action_records, vars = log$action[not_design_rows])]
-  log$record_id[record_rows] <- gsub(
+  record_rows <- not_design_rows[dplyr::starts_with(match = .log_action_records, vars = redcap_log$action[not_design_rows])]
+  redcap_log$record_id[record_rows] <- gsub(
     "Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation|Lock/Unlock Record | |[:):]|[:(:]",
     "",
-    log$action[record_rows]
+    redcap_log$action[record_rows]
   )
-  log$action_type[record_rows] <- log$action[record_rows] %>%
+  redcap_log$action_type[record_rows] <- redcap_log$action[record_rows] %>%
     strsplit(" ") %>%
     lapply(function(x) {
       x[[1]]
     }) %>%
     unlist()
-  log$action_type[
+  redcap_log$action_type[
     not_design_rows[
       dplyr::starts_with(
         match = .log_action_exports,
-        vars = log$action[not_design_rows]
+        vars = redcap_log$action[not_design_rows]
       )
     ]
   ] <- "Exports"
-  log$action_type[
+  redcap_log$action_type[
     not_design_rows[
       dplyr::starts_with(
         match = .log_action_users,
-        vars = log$action[not_design_rows]
+        vars = redcap_log$action[not_design_rows]
       )
     ]
   ] <- "Users"
-  log$action_type[
+  redcap_log$action_type[
     not_design_rows[
       dplyr::starts_with(
         match = .log_action_no_changes,
-        vars = log$action[not_design_rows]
+        vars = redcap_log$action[not_design_rows]
       )
     ]
   ] <- "No Changes"
@@ -446,71 +446,72 @@ clean_redcap_log <- function(log) {
   comment_rows <- design_rows[
     dplyr::starts_with(
       match = .log_details_comments,
-      vars = log$details[design_rows]
+      vars = redcap_log$details[design_rows]
     )
   ]
-  log$record_id[comment_rows] <- stringr::str_extract(
-    string = log$details[comment_rows],
+  redcap_log$record_id[comment_rows] <- stringr::str_extract(
+    string = redcap_log$details[comment_rows],
     pattern = "(?<=Record: )[^,]+"
   )
-  log$action_type[comment_rows] <- "Comment"
-  log$action_type[
+  redcap_log$action_type[comment_rows] <- "Comment"
+  redcap_log$action_type[
     design_rows[
       dplyr::starts_with(
         match = .log_details_exports,
-        vars = log$details[design_rows]
+        vars = redcap_log$details[design_rows]
       )
     ]
   ] <- "Exports"
-  log$action_type[
+  redcap_log$action_type[
     design_rows[
       dplyr::starts_with(
         match = .log_details_metadata_major,
-        vars = log$details[design_rows]
+        vars = redcap_log$details[design_rows]
       )
     ]
   ] <- "Metadata Change Major"
-  log$action_type[
+  redcap_log$action_type[
     design_rows[
       dplyr::starts_with(
         match = .log_details_metadata_minor,
-        vars = log$details[design_rows]
+        vars = redcap_log$details[design_rows]
       )
     ]
   ] <- "Metadata Change Minor"
-  log$action_type[
+  redcap_log$action_type[
     design_rows[
       dplyr::starts_with(
         match = .log_details_no_changes,
-        vars = log$details[design_rows]
+        vars = redcap_log$details[design_rows]
       )
     ]
   ] <- "No Changes"
-  log$action_type[
+  redcap_log$action_type[
     design_rows[
       dplyr::starts_with(
         match = .log_details_tokens,
-        vars = log$details[design_rows]
+        vars = redcap_log$details[design_rows]
       )
     ]
   ] <- "Tokens"
-  log$action_type[
+  redcap_log$action_type[
     design_rows[
       dplyr::starts_with(
         match = .log_details_repository,
-        vars = log$details[design_rows]
+        vars = redcap_log$details[design_rows]
       )
     ]
   ] <- "Repository"
   # end ------------
-  rows <- which(is.na(log$record) & !is.na(log$record_id))
-  log$record[rows] <- log$record_id[rows]
-  rows <- which(!is.na(log$record) & is.na(log$record_id))
-  log$action_type[rows] <- "Users"
-  log$record_id <- NULL
-  log$username[which(log$username == "[survey respondent]")] <- NA
+  rows <- which(is.na(redcap_log$record) & !is.na(redcap_log$record_id))
+  redcap_log$record[rows] <- redcap_log$record_id[rows]
+  rows <- which(!is.na(redcap_log$record) & is.na(redcap_log$record_id))
+  redcap_log$action_type[rows] <- "Users"
+  redcap_log$record_id <- NULL
+  redcap_log$username[which(redcap_log$username == "[survey respondent]")] <- NA
   # add drop exports?
-  sort_redcap_log(log)
+  redcap_log <- sort_redcap_log(redcap_log)
+  redcap_log
 }
 #' @noRd
 .log_action_exports <- c(

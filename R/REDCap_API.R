@@ -347,7 +347,7 @@ get_REDCap_log <- function(project,
   if (log_begin_date == Sys.Date()) {
     log_begin_date <- log_begin_date - 1 # keep getting errors for same day checks?
   }
-  log <- tryCatch(
+  redcap_log <- tryCatch(
     expr = {
       REDCapR::redcap_log_read(
         redcap_uri = project$links$redcap_uri,
@@ -361,12 +361,12 @@ get_REDCap_log <- function(project,
       NULL
     }
   )
-  if (is.data.frame(log)) {
+  if (is.data.frame(redcap_log)) {
     if (clean) {
-      log <- log %>% clean_redcap_log()
+      redcap_log <- redcap_log %>% clean_redcap_log()
     }
   }
-  log # deal with if NA if user does not have log privileges.
+  redcap_log # deal with if NA if user does not have log privileges.
 }
 get_REDCap_log2 <- function(project,
                             log_begin_date = Sys.Date() - 10L,
@@ -376,15 +376,6 @@ get_REDCap_log2 <- function(project,
   assert_setup_project(project)
   assert_logical(clean)
   assert_date(log_begin_date)
-  if (log_begin_date == Sys.Date()) {
-    log_begin_date <- log_begin_date - 1 # keep getting errors for same day checks?
-  }
-  if (is.null(record)) {
-    record <- ""
-  }
-  if (is.null(user)) {
-    user <- ""
-  }
   response <- httr::POST(
     url = project$links$redcap_uri,
     body = list(
@@ -400,19 +391,19 @@ get_REDCap_log2 <- function(project,
     ),
     encode = "form"
   )
-  result <- httr::content(response) %>% dplyr::bind_rows()
-  if(nrow(result)>0){
-    result[result == ""] <- NA
-  }
   if (httr::http_error(response)) {
     return(NULL)
   }
-  if (is.data.frame(log)) {
+  redcap_log <- httr::content(response) %>% dplyr::bind_rows()
+  if (is.data.frame(redcap_log)) {
+    if(nrow(redcap_log)>0){
+      redcap_log[redcap_log == ""] <- NA
+    }
     if (clean) {
-      log <- log %>% clean_redcap_log()
+      redcap_log <- redcap_log %>% clean_redcap_log()
     }
   }
-  log # deal with if NA if user does not have log privileges.
+  redcap_log # deal with if NA if user does not have log privileges.
 }
 #' @noRd
 get_REDCap_raw_data <- function(

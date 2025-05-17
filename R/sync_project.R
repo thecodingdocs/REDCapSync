@@ -141,13 +141,13 @@ sync_project <- function(
           labelled = project$internals$labelled,
           batch_size = project$internals$batch_size_download
         )
-        log <- project$redcap$log # in case there is a log already
+        redcap_log <- project$redcap$log # in case there is a log already
         if (project$internals$entire_log) {
           log_begin_date <- as.POSIXct(project$redcap$project_info$creation_time) %>% as.Date()
         } else {
           log_begin_date <- Sys.Date() - project$internals$days_of_log
         }
-        project$redcap$log <- log %>%
+        project$redcap$log <- redcap_log %>%
           dplyr::bind_rows(
             project %>% get_REDCap_log2(log_begin_date = log_begin_date)
           ) %>%

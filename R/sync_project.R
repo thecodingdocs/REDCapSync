@@ -217,15 +217,15 @@ sync_project <- function(
         message("Up to date already!")
       }
     }
+  }
+  project$internals$last_sync <- now_time()
+  if (save_to_dir && !is.null(project$dir_path)) {
     if (project$internals$get_files) { # test now
       get_REDCap_files(
         project,
         original_file_names = project$internals$original_file_names
       )
     }
-    project$internals$last_sync <- now_time()
-  }
-  if (save_to_dir && !is.null(project$dir_path)) {
     first_stamp <- project$internals$last_data_transformation
     project <- transform_project(project)
     second_stamp <- project$internals$last_data_transformation

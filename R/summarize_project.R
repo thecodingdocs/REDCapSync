@@ -777,17 +777,19 @@ summarize_project <- function(
     project,
     reset = FALSE) {
   assert_setup_project(project)
-  summary_names <- check_summaries(project)
-  if (reset) {
-    summary_names <- project$summary %>% names()
-  }
-  summary_names <- summary_names[which(summary_names != "all_records")]
-  if (is_something(summary_names)) {
-    for (summary_name in summary_names) {
-      project <- project %>% save_summary(summary_name)
+  if(is.something(project$data)){
+    summary_names <- check_summaries(project)
+    if (reset) {
+      summary_names <- project$summary %>% names()
     }
+    summary_names <- summary_names[which(summary_names != "all_records")]
+    if (is_something(summary_names)) {
+      for (summary_name in summary_names) {
+        project <- project %>% save_summary(summary_name)
+      }
+    }
+    project$internals$last_summary <- now_time()
   }
-  project$internals$last_summary <- now_time()
   invisible(project)
 }
 #' @title clear_project_summaries

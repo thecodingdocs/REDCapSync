@@ -777,7 +777,7 @@ summarize_project <- function(
     project,
     reset = FALSE) {
   assert_setup_project(project)
-  if(is.something(project$data)){
+  if(is_something(project$data)){
     summary_names <- check_summaries(project)
     if (reset) {
       summary_names <- project$summary %>% names()

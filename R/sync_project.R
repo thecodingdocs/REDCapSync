@@ -177,39 +177,46 @@ sync_project <- function(
           project <- remove_records_from_project(project = project, records = deleted_records)
           project$summary$all_records <- project$summary$all_records[which(!project$summary$all_records[[id_col]] %in% deleted_records), ]
         }
-        form_list <- project %>% get_REDCap_data(labelled = project$internals$labelled, records = stale_records)
-        missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[id_col]])]
-        if (length(missing_from_summary) > 0) {
-          x <- data.frame(
-            record = missing_from_summary,
-            last_api_call = NA,
-            was_transformed = FALSE,
-            was_saved = FALSE,
-            stringsAsFactors = FALSE
-          )
-          colnames(x)[1] <- id_col
-          project$summary$all_records <- project$summary$all_records %>% dplyr::bind_rows(x)
-          project$summary$all_records <- project$summary$all_records[order(project$summary$all_records[[id_col]], decreasing = TRUE), ]
-        }
-        project <- remove_records_from_project(project = project, records = stale_records)
-        if (!all(names(form_list) %in% project$metadata$forms$form_name)) {
-          stop("Imported data names doesn't match project$data names. If this happens run `sync_project(project, reset = TRUE)`")
-        }
-        for (form_name in names(form_list)) {
-          project$data[[form_name]] <- project$data[[form_name]] %>%
-            all_character_cols() %>%
-            dplyr::bind_rows(form_list[[form_name]])
-        }
-        row_match <- which(project$summary$all_records[[id_col]] %in% stale_records)
-        project$summary$all_records$last_api_call[row_match] <-
-          project$internals$last_data_update <-
-          now_time()
-        project$summary$all_records$was_transformed[row_match] <- FALSE
-        project$summary$all_records$was_saved[row_match] <- FALSE
-        message_string <- toString(stale_records)
-        stale_record_length <- length(stale_records)
-        if(stale_record_length>20){
-          message_string <- stale_record_length %>% paste("records")
+        message_string <- "No new records to update!"
+        if (length(stale_records) > 0) {
+          form_list <- project %>% get_REDCap_data(labelled = project$internals$labelled,
+                                                   records = stale_records)
+          missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[id_col]])]
+          if (length(missing_from_summary) > 0) {
+            x <- data.frame(
+              record = missing_from_summary,
+              last_api_call = NA,
+              was_transformed = FALSE,
+              was_saved = FALSE,
+              stringsAsFactors = FALSE
+            )
+            colnames(x)[1] <- id_col
+            project$summary$all_records <- project$summary$all_records %>% dplyr::bind_rows(x)
+            project$summary$all_records <- project$summary$all_records[order(project$summary$all_records[[id_col]], decreasing = TRUE), ]
+          }
+          project <- remove_records_from_project(project = project, records = stale_records)
+          if (!all(names(form_list) %in% project$metadata$forms$form_name)) {
+            stop(
+              "Imported data names doesn't match project$data names. If this",
+              "happens run `sync_project(project, reset = TRUE)`"
+            )
+          }
+          for (form_name in names(form_list)) {
+            project$data[[form_name]] <- project$data[[form_name]] %>%
+              all_character_cols() %>%
+              dplyr::bind_rows(form_list[[form_name]])
+          }
+          row_match <- which(project$summary$all_records[[id_col]] %in% stale_records)
+          project$summary$all_records$last_api_call[row_match] <-
+            project$internals$last_data_update <-
+            now_time()
+          project$summary$all_records$was_transformed[row_match] <- FALSE
+          project$summary$all_records$was_saved[row_match] <- FALSE
+          message_string <- toString(stale_records)
+          stale_record_length <- length(stale_records)
+          if (stale_record_length > 20) {
+            message_string <- stale_record_length %>% paste("records")
+          }
         }
         message("Updated: ", message_string)
         was_updated <- TRUE

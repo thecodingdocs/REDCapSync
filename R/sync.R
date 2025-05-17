@@ -89,7 +89,7 @@ sync <- function(
             })
           },
           error = function(e) {
-            NULL
+            project
           }
         )
         # it_failed <- is.null(project)

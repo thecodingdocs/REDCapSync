@@ -391,17 +391,20 @@ get_REDCap_log2 <- function(project,
       token = get_project_token(project),
       content = "log",
       logtype = "",
-      user = "",
-      record = "",
-      beginTime = log_begin_date,
+      user = user,
+      record = record,
+      beginTime = as.character(log_begin_date) %>% paste("00:00:00"),
       endTime = "",
       format = "json",
       returnFormat = "json"
     ),
     encode = "form"
   )
-  result <- httr::content(response)
-  if (httr::http_error()) {
+  result <- httr::content(response) %>% dplyr::bind_rows()
+  if(nrow(result)>0){
+    result[result == ""] <- NA
+  }
+  if (httr::http_error(response)) {
     return(NULL)
   }
   if (is.data.frame(log)) {

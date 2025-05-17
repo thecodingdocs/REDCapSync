@@ -377,16 +377,22 @@ combine_project_fields <- function(project) {
 }
 #' @rdname default-transformations
 #' @title Add Default Forms Transformation to the Database
+#' @inheritParams generate_project_summary
 #' @export
-add_default_project_summary <- function(project) {
+add_default_project_summary <- function(project,
+                                        exclude_identifiers = FALSE,
+                                        exclude_free_text = FALSE,
+                                        date_handling = "none") {
+  assert_logical(exclude_identifiers)
+  assert_logical(exclude_free_text)
   summary_name <- "REDCapSync_raw"
   project <- add_project_summary(
     project = project,
     summary_name = summary_name,
     transform = FALSE,
     filter_list = NULL,
-    exclude_identifiers = FALSE,
-    exclude_free_text = FALSE,
+    exclude_identifiers = exclude_identifiers,
+    exclude_free_text = exclude_free_text,
     date_handling = "none",
     clean = FALSE,
     drop_blanks = FALSE,
@@ -408,8 +414,8 @@ add_default_project_summary <- function(project) {
     summary_name = summary_name,
     transform = TRUE,
     filter_list = NULL,
-    exclude_identifiers = TRUE,
-    exclude_free_text = FALSE,
+    exclude_identifiers = exclude_identifiers,
+    exclude_free_text = exclude_free_text,
     date_handling = "none",
     upload_compatible = TRUE,
     clean = TRUE,

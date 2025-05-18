@@ -554,6 +554,7 @@ save_summary <- function(project, summary_name) {
   row_match <- which(project$summary$all_records[[id_col]] %in% records)
   project$summary$all_records[[summary_name]][row_match] <- TRUE
   project$summary$all_records$was_saved[row_match] <- TRUE
+  project$internals$last_summary <- now_time()
   invisible(project)
 }
 #' @title Generate a Summary from a Subset Name
@@ -789,7 +790,6 @@ summarize_project <- function(
         project <- project %>% save_summary(summary_name)
       }
     }
-    project$internals$last_summary <- now_time()
   }
   invisible(project)
 }

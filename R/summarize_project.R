@@ -174,16 +174,17 @@ annotate_choices <- function(project, summarize_data = TRUE, drop_blanks = TRUE)
 }
 #' @noRd
 annotate_records <- function(project) {
+  id_col <- project$redcap$id_col
   all_records <- project$summary$all_records
   redcap_log <- project$redcap$log[which(!is.na(project$redcap$log$record)), ]
   if (! is_something(all_records) || ! is_something(redcap_log)) {
     return(project)
   }
   redcap_log <- redcap_log[which(redcap_log$action_type != "Users"), ]
-  redcap_log <- redcap_log[which(redcap_log$record %in% all_records$record_id), ]
+  redcap_log <- redcap_log[which(redcap_log$record %in% all_records[[id_col]]), ]
   cool_list <- split(redcap_log$timestamp, redcap_log$record)
-  cool_list_match <- cool_list %>% names() %>% match(all_records$record_id)
-  # test matched all_records$record_id[cool_list_match]
+  cool_list_match <- cool_list %>% names() %>% match(all_records[[id_col]])
+  # test matched all_records[[id_col]][cool_list_match]
   cool_list_first <- cool_list %>% lapply(dplyr::first) %>% unlist()
   cool_list_last <- cool_list %>% lapply(dplyr::last) %>% unlist()
   all_records$first_timestamp[cool_list_match] <- cool_list_first
@@ -984,7 +985,7 @@ get_summary_records <- function(project, summary_name) {
     sort() %>%
     unique()
   record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  summary_records <- project$summary$all_records$record_id[record_rows] %>%
+  summary_records <- project$summary$all_records[[id_col]][record_rows] %>%
     sort() %>%
     unique()
   summary_records
@@ -997,7 +998,7 @@ summary_records_due <- function(project, summary_name) {
     return(TRUE)
   }
   if (!file.exists(summary_list$file_path) && !summary_list$separate) {
-    # can't do this for separate unless more code is written
+    # can't do this for separate = T unless more code is written
     return(TRUE)
   }
   old_records <- project$summary$all_records[[id_col]][which(project$summary$all_records[[summary_name]])] %>% sort()

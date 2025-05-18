@@ -50,9 +50,6 @@ sync <- function(
   for (project_name in names(project_list)) {
     project_details <- project_list[[project_name]]
     project_row <- which(projects$short_name == project_name)
-    then <- project_details$last_sync
-    sync_frequency <- project_details$sync_frequency
-    do_it <- due_for_sync(project_name) || hard_reset
     project_status <- "Not Needed"
     # what determines due if setting changed?
     # add to due for sync?
@@ -76,21 +73,43 @@ sync <- function(
       use_csv = project_details$use_csv,
       hard_reset = hard_reset
     )
+    original_last_sync <- project$internals$last_sync
+    original_last_summary <- project$internals$last_summary
     project <- tryCatch(
       expr = {
         suppressWarnings({
-          project %>% sync_project(
-            hard_reset = hard_reset,
-            hard_check = hard_check,
-            summarize = summarize
+          list(
+            project = project %>% sync_project(
+              hard_reset = hard_reset,
+              hard_check = hard_check,
+              summarize = summarize
+            ),
+            sync_failed = FALSE
           )
         })
       },
       error = function(e) {
         message("Sync failed: ", e$message)
-        project
+        list(
+          project = project,
+          sync_failed = TRUE
+        )
       }
     )
+    sync_failed <- project$sync_failed
+    project <- project$project
+    if (sync_failed) {
+      project_status <- "Failed"
+    } else {
+      synced_last_sync <- project$internals$last_sync
+      synced_last_summary <- project$internals$last_summary
+      if(!identical(original_last_sync,synced_last_sync)){
+        project_status <- "Updated"
+      }
+      if(!identical(original_last_summary,synced_last_summary)){
+        project_status <- "Updated"
+      }
+    }
     projects$status[project_row] <- project_status
     the_link <- projects$redcap_home[project_row]
     if (is_something(the_link)) {

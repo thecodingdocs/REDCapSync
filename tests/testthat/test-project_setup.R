@@ -38,7 +38,7 @@ test_that("setup_project creates a valid project object and valid directory", {
     short_name = short_name,
     dir_path = test_dir,
     redcap_base = redcap_base,
-    reset = TRUE
+    hard_reset = TRUE
   )
   expect_no_error(assert_dir(dir_path = test_dir))
   expect_no_error(assert_blank_project(project = project))

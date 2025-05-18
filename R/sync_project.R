@@ -11,10 +11,12 @@
 #' processing.
 #'
 #' @inheritParams save_project
-#' @param hard_reset Logical that forces a fresh update if TRUE. Default is `FALSE`.
 #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
 #' the directory. Default is `TRUE`.
+#' @param hard_check Will check REDCap even if not due (see `sync_frequency`
+#' parameter from `setup_project()`)
+#' @param hard_reset Logical that forces a fresh update if TRUE. Default is `FALSE`.
 #' @return Messages for confirmation.
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.

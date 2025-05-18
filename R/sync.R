@@ -2,8 +2,6 @@
 #' @param project_names character vector of project short_names to check for
 #' sync. Default is NULL which will check every project in cache.
 #' @inheritParams sync_project
-#' @param hard_check Will check REDCap even if not due (see `sync_frequency`
-#' parameter from `setup_project()`)
 #' @param hard_reset Will go get all projects from scratch if TRUE.
 #' @export
 sync <- function(

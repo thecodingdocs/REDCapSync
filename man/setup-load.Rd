@@ -12,7 +12,7 @@ setup_project(
   redcap_base,
   token_name = paste0("REDCapSync_", short_name),
   sync_frequency = "daily",
-  reset = FALSE,
+  hard_reset = FALSE,
   get_type = "identified",
   labelled = TRUE,
   metadata_only = FALSE,
@@ -52,7 +52,7 @@ Default is \verb{REDCapSync_<short_name>}}
 calling the function, but can be automated with other packages.
 Default is \code{daily}}
 
-\item{reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the
+\item{hard_reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the
 \code{project}
 object already exists. Default is \code{FALSE}.}
 
@@ -76,7 +76,7 @@ Default is \code{500}.}
 Default is \code{FALSE}.}
 
 \item{days_of_log}{Integer. Number of days to be checked in the log if a
-reset
+hard_reset
 or new project is setup. Default is \code{10}.}
 
 \item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
@@ -116,7 +116,7 @@ Neither function directly attempts communication with REDCap.
 
 \code{setup_project} is used the first time you initialize/link a REDCap project.
 Mainly, it sets your unique \code{short_name} and your intended directory.
-Unless you run \code{reset = TRUE} the default will first try load_project.
+Unless you run \code{hard_reset = TRUE} the default will first try load_project.
 dir_path is technically optional but without it the user cannot
 save/load/update projects.
 

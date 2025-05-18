@@ -356,7 +356,7 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the
 #' function will avoid including duplicate columns in the output. Defaults to
 #' `FALSE`.
-#' @param reset Logical. If `TRUE`, overwrite existing summary files with the
+#' @param hard_reset Logical. If `TRUE`, overwrite existing summary files with the
 #' same name. Default is `FALSE`.
 #' @param with_links Optional logical (TRUE/FALSE) for including links in Excel
 #' sheets. Default is `FALSE`.
@@ -405,7 +405,7 @@ add_project_summary <- function(
     use_csv,
     dir_other = file.path(project$dir_path, "output"),
     file_name = paste0(project$short_name, "_", summary_name),
-    reset = FALSE) {
+    hard_reset = FALSE) {
   lifecycle::signal_stage("experimental", "add_project_summary()")
   # sync_frequency ... project$internals$sync_frequency
   forbiden_summary_names <- c(
@@ -457,7 +457,7 @@ add_project_summary <- function(
     final_form_tab_names = NULL
   )
   summary_list_old <- project$summary[[summary_name]]
-  if (!is.null(summary_list_old) && ! reset) {
+  if (!is.null(summary_list_old) && ! hard_reset) {
     important_vars <- names(summary_list_new) %>%
       vec1_not_in_vec2(.not_important_summary_names)
     are_identical <- identical(
@@ -776,11 +776,11 @@ generate_project_summary <- function(
 #' @noRd
 summarize_project <- function(
     project,
-    reset = FALSE) {
+    hard_reset = FALSE) {
   assert_setup_project(project)
   if(is_something(project$data)){
     summary_names <- check_summaries(project)
-    if (reset) {
+    if (hard_reset) {
       summary_names <- project$summary %>% names()
     }
     summary_names <- summary_names[which(summary_names != "all_records")]

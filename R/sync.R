@@ -1,16 +1,19 @@
 #' @title Synchronize your REDCaps
-#' @param use_console Whether or not to use console to guide through sync vs
-#' just running
-#' @param hard_reset Will go get all projects from scratch if TRUE.
 #' @param project_names character vector of project short_names to check for
 #' sync. Default is NULL which will check every project in cache.
+#' @inheritParams sync_project
+#' @param hard_check Will check REDCap even if not due (see `sync_frequency`
+#' parameter from `setup_project()`)
+#' @param hard_reset Will go get all projects from scratch if TRUE.
+
 #' @export
 sync <- function(
-    use_console = TRUE,
-    hard_reset = FALSE,
-    project_names = NULL) {
+    project_names = NULL,
+    summarize = TRUE,
+    hard_check = FALSE,
+    hard_reset = FALSE
+    ) {
   collected <- makeAssertCollection()
-  assert_logical(use_console, any.missing = FALSE, len = 1, add = collected)
   assert_logical(hard_reset, any.missing = FALSE, len = 1, add = collected)
   assert_character(
     project_names,
@@ -34,80 +37,71 @@ sync <- function(
   projects <- get_projects()
   if (!is_something(projects)) {
     # setup_project if interactive
-    if (use_console) {
-      cli_abort("I can't help you with this yet. Dev.")
-    }
-  } else {
-    if (is.null(project_names)) {
-      project_names <- projects$short_name
-    }
-    # assert_choice(project_names) #placeholder
-    project_names_length <- length(project_names)
-    cli::cli_progress_bar("Syncing REDCaps ...", total = project_names_length)
-    projects$status <- NA
-    # vector_of_due <- due_for_sync2()
-    project_list <- projects %>% split(projects$short_name)
-    # are_due <- due_for_sync2()
-    for (project_name in names(project_list)) {
-      project_details <- project_list[[project_name]]
-      project_row <- which(projects$short_name == project_name)
-      then <- project_details$last_sync
-      sync_frequency <- project_details$sync_frequency
-      do_it <- due_for_sync(project_name) || hard_reset
-      # what determines due if setting changed?
-      # add to due for sync?
-      if (!do_it) project_status <- "Not Needed"
-      if (do_it) {
-        project_status <- "Failed"
-        project <- setup_project(
-          short_name = project_details$short_name,
-          dir_path = project_details$dir_path,
-          redcap_base = project_details$redcap_base,
-          token_name = project_details$token_name,
-          sync_frequency = project_details$sync_frequency,
-          get_type = project_details$get_type,
-          labelled = project_details$labelled,
-          metadata_only = project_details$metadata_only,
-          batch_size_download = project_details$batch_size_download,
-          batch_size_upload = project_details$batch_size_upload,
-          entire_log = project_details$entire_log,
-          days_of_log = project_details$days_of_log,
-          get_files = project_details$get_files,
-          get_file_repository = project_details$get_file_repository,
-          original_file_names = project_details$original_file_names,
-          merge_form_name = project_details$merge_form_name,
-          use_csv = project_details$use_csv,
-          reset = hard_reset
-        )
-        project <- tryCatch(
-          expr = {
-            suppressWarnings({
-              project %>% sync_project(
-                save_to_dir = TRUE,
-                reset = hard_reset
-              )
-            })
-          },
-          error = function(e) {
-            project
-          }
-        )
-        # it_failed <- is.null(project)
-        if (project$internals$last_test_connection_outcome) {
-          project_status <- "Updated"
-        }
-      } else {
-        cli::cli_alert_info("No need to update {project_name}: {then} ({sync_frequency})")
-      }
-      projects$status[project_row] <- project_status
-      the_link <- projects$redcap_home[project_row]
-      if (is_something(the_link)) {
-        cli_alert_wrap(paste0(project_name, ": "), url = the_link)
-      }
-      cli::cli_progress_update()
-    }
-    cli::cli_progress_done()
+    cli_abort("You have not setup any projects yet! Use `setup_project()`")
+    return(invisible())
   }
+  if (is.null(project_names)) {
+    project_names <- projects$short_name
+  }
+  # assert_choice(project_names) #placeholder
+  project_names_length <- length(project_names)
+  cli::cli_progress_bar("Syncing REDCaps ...", total = project_names_length)
+  projects$status <- NA
+  # vector_of_due <- due_for_sync2()
+  project_list <- projects %>% split(projects$short_name)
+  # are_due <- due_for_sync2()
+  for (project_name in names(project_list)) {
+    project_details <- project_list[[project_name]]
+    project_row <- which(projects$short_name == project_name)
+    then <- project_details$last_sync
+    sync_frequency <- project_details$sync_frequency
+    do_it <- due_for_sync(project_name) || hard_reset
+    project_status <- "Not Needed"
+    # what determines due if setting changed?
+    # add to due for sync?
+    project <- setup_project(
+      short_name = project_details$short_name,
+      dir_path = project_details$dir_path,
+      redcap_base = project_details$redcap_base,
+      token_name = project_details$token_name,
+      sync_frequency = project_details$sync_frequency,
+      get_type = project_details$get_type,
+      labelled = project_details$labelled,
+      metadata_only = project_details$metadata_only,
+      batch_size_download = project_details$batch_size_download,
+      batch_size_upload = project_details$batch_size_upload,
+      entire_log = project_details$entire_log,
+      days_of_log = project_details$days_of_log,
+      get_files = project_details$get_files,
+      get_file_repository = project_details$get_file_repository,
+      original_file_names = project_details$original_file_names,
+      merge_form_name = project_details$merge_form_name,
+      use_csv = project_details$use_csv,
+      reset = hard_reset
+    )
+    project <- tryCatch(
+      expr = {
+        suppressWarnings({
+          project %>% sync_project(
+            reset = hard_reset,
+            hard_check = hard_check,
+            summarize = summarize
+          )
+        })
+      },
+      error = function(e) {
+        message("Sync failed: ", e$message)
+        project
+      }
+    )
+    projects$status[project_row] <- project_status
+    the_link <- projects$redcap_home[project_row]
+    if (is_something(the_link)) {
+      cli_alert_wrap(paste0(project_name, ": "), url = the_link)
+    }
+    cli::cli_progress_update()
+  }
+  cli::cli_progress_done()
   not_needed <- sum(projects$status == "Not Needed")
   failed <- sum(projects$status == "Failed") # add why
   succeeded <- sum(projects$status == "Updated")

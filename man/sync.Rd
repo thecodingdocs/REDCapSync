@@ -4,16 +4,15 @@
 \alias{sync}
 \title{Synchronize your REDCaps}
 \usage{
-sync(use_console = TRUE, hard_reset = FALSE, project_names = NULL)
+sync(project_names = NULL, hard_reset = FALSE, summarize = TRUE)
 }
 \arguments{
-\item{use_console}{Whether or not to use console to guide through sync vs
-just running}
+\item{project_names}{character vector of project short_names to check for
+sync. Default is NULL which will check every project in cache.}
 
 \item{hard_reset}{Will go get all projects from scratch if TRUE.}
 
-\item{project_names}{character vector of project short_names to check for
-sync. Default is NULL which will check every project in cache.}
+\item{summarize}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
 }
 \description{
 Synchronize your REDCaps

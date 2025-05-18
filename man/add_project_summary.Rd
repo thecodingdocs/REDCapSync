@@ -33,7 +33,7 @@ add_project_summary(
   use_csv,
   dir_other = file.path(project$dir_path, "output"),
   file_name = paste0(project$short_name, "_", summary_name),
-  reset = FALSE
+  hard_reset = FALSE
 )
 }
 \arguments{
@@ -125,7 +125,7 @@ saved. Default is the \code{output} folder within the database directory.}
 \item{file_name}{Character. The base name of the file where the summary will
 be saved. Default is \verb{<project$short_name>_<summary_name>}.}
 
-\item{reset}{Logical. If \code{TRUE}, overwrite existing summary files with the
+\item{hard_reset}{Logical. If \code{TRUE}, overwrite existing summary files with the
 same name. Default is \code{FALSE}.}
 }
 \value{

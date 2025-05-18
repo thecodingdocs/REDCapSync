@@ -303,8 +303,8 @@ add_project_details_to_project <- function(project, project_details) {
   project$internals$entire_log <- project_details$entire_log
   project$internals$metadata_only <- project_details$metadata_only
   project$internals$use_csv <- project_details$use_csv
-  project$internals$get_type <- project_details$get_type # should trigger reset
-  project$internals$labelled <- project_details$labelled # should trigger reset
+  project$internals$get_type <- project_details$get_type # should trigger hard_reset
+  project$internals$labelled <- project_details$labelled # should trigger hard_reset
   project$internals$merge_form_name <- project_details$merge_form_name
   project$internals$batch_size_download <-
     project_details$batch_size_download %>%

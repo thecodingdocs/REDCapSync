@@ -12,7 +12,7 @@
 #'
 #' `setup_project` is used the first time you initialize/link a REDCap project.
 #' Mainly, it sets your unique `short_name` and your intended directory.
-#' Unless you run \code{reset = TRUE} the default will first try load_project.
+#' Unless you run \code{hard_reset = TRUE} the default will first try load_project.
 #' dir_path is technically optional but without it the user cannot
 #' save/load/update projects.
 #'
@@ -36,7 +36,7 @@
 #' 'daily', 'weekly', "monthly",and "never". The check is only triggered by
 #' calling the function, but can be automated with other packages.
 #' Default is `daily`
-#' @param reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the
+#' @param hard_reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the
 #' `project`
 #' object already exists. Default is `FALSE`.
 #' @param merge_form_name A character string representing the name of the merged
@@ -44,7 +44,7 @@
 #' @param use_csv Logical (TRUE/FALSE). If TRUE, uses CSV files for data
 #' storage. Default is `FALSE`.
 #' @param days_of_log Integer. Number of days to be checked in the log if a
-#' reset
+#' hard_reset
 #' or new project is setup. Default is `10`.
 #' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
 #' Default is `FALSE`.
@@ -90,7 +90,7 @@ setup_project <- function(
     redcap_base,
     token_name = paste0("REDCapSync_", short_name),
     sync_frequency = "daily",
-    reset = FALSE,
+    hard_reset = FALSE,
     get_type = "identified",
     labelled = TRUE,
     metadata_only = FALSE,
@@ -119,7 +119,7 @@ setup_project <- function(
     underscore_allowed_first = TRUE,
     add = collected
   )
-  assert_logical(reset, len = 1, add = collected)
+  assert_logical(hard_reset, len = 1, add = collected)
   assert_logical(labelled, len = 1, add = collected)
   assert_integerish(days_of_log, len = 1, lower = 1, add = collected)
   assert_logical(get_files, len = 1, add = collected)
@@ -194,7 +194,7 @@ setup_project <- function(
       # add check for if it was loaded from right place
     }
   }
-  if (!reset) {
+  if (!hard_reset) {
     project <- tryCatch(
       expr = {
         suppressWarnings({
@@ -224,10 +224,10 @@ setup_project <- function(
     original_details <- project %>% extract_project_details()
     if (!is.null(project$internals$labelled)) {
       if (project$internals$labelled != labelled) {
-        if (!reset) {
+        if (!hard_reset) {
           load_type <- ifelse(project$internals$labelled, "labelled", "raw")
           chosen_type <- ifelse(labelled, "labelled", "raw")
-          reset <- TRUE
+          hard_reset <- TRUE
           warning(
             "The project that was loaded was ",
             load_type, " and you chose ", chosen_type,
@@ -238,10 +238,10 @@ setup_project <- function(
       }
     }
   }
-  if (reset) { # load blank if reset = TRUE
+  if (hard_reset) { # load blank if hard_reset = TRUE
     project <- .blank_project
     cli_alert_wrap(
-      paste0("Setup blank project object because `reset = TRUE`"),
+      paste0("Setup blank project object because `hard_reset = TRUE`"),
       silent = silent
     )
   }

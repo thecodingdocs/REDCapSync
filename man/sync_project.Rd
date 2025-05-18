@@ -6,10 +6,11 @@
 \usage{
 sync_project(
   project,
-  reset = FALSE,
-  silent = FALSE,
   summarize = TRUE,
-  save_to_dir = TRUE
+  save_to_dir = TRUE,
+  hard_check = FALSE,
+  hard_reset = FALSE,
+  silent = FALSE
 )
 }
 \arguments{
@@ -17,14 +18,14 @@ sync_project(
 and
 settings. Generated using \link{load_project} or \link{setup_project}}
 
-\item{reset}{Logical that forces a fresh update if TRUE. Default is \code{FALSE}.}
-
-\item{silent}{Logical (TRUE/FALSE). For messages.}
-
 \item{summarize}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
 
 \item{save_to_dir}{Logical (TRUE/FALSE). If TRUE, saves the updated data to
 the directory. Default is \code{TRUE}.}
+
+\item{hard_reset}{Logical that forces a fresh update if TRUE. Default is \code{FALSE}.}
+
+\item{silent}{Logical (TRUE/FALSE). For messages.}
 }
 \value{
 Messages for confirmation.

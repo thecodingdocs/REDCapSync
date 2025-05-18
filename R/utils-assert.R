@@ -197,7 +197,7 @@ assert_blank_project <- function(
         cli::format_message(
           paste0(
             "Did you use {.fun REDCapSync::setup_project}? ",
-            "Consider using `reset = TRUE`."
+            "Consider using `hard_reset = TRUE`."
           )
         )
       )
@@ -303,7 +303,7 @@ assert_setup_project <- function(
         cli::format_message(
           paste0(
             "Did you use {.fun REDCapSync::setup_project}? ",
-            "Consider using `reset = TRUE`."
+            "Consider using `hard_reset = TRUE`."
           )
         )
       )

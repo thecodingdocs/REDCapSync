@@ -100,7 +100,7 @@ options.</p>
 <span>  <span class="va">use_csv</span>,</span>
 <span>  dir_other <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">project</span><span class="op">$</span><span class="va">dir_path</span>, <span class="st">"output"</span><span class="op">)</span>,</span>
 <span>  file_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">project</span><span class="op">$</span><span class="va">short_name</span>, <span class="st">"_"</span>, <span class="va">summary_name</span><span class="op">)</span>,</span>
-<span>  reset <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  hard_reset <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -252,7 +252,7 @@ saved. Default is the <code>output</code> folder within the database directory.<
 be saved. Default is <code>&lt;project$short_name&gt;_&lt;summary_name&gt;</code>.</p></dd>
 
 
-<dt id="arg-reset">reset<a class="anchor" aria-label="anchor" href="#arg-reset"></a></dt>
+<dt id="arg-hard-reset">hard_reset<a class="anchor" aria-label="anchor" href="#arg-hard-reset"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, overwrite existing summary files with the
 same name. Default is <code>FALSE</code>.</p></dd>
 

@@ -65,7 +65,7 @@
 <span>  <span class="va">redcap_base</span>,</span>
 <span>  token_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"REDCapSync_"</span>, <span class="va">short_name</span><span class="op">)</span>,</span>
 <span>  sync_frequency <span class="op">=</span> <span class="st">"daily"</span>,</span>
-<span>  reset <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  hard_reset <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  get_type <span class="op">=</span> <span class="st">"identified"</span>,</span>
 <span>  labelled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  metadata_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -119,7 +119,7 @@ calling the function, but can be automated with other packages.
 Default is <code>daily</code></p></dd>
 
 
-<dt id="arg-reset">reset<a class="anchor" aria-label="anchor" href="#arg-reset"></a></dt>
+<dt id="arg-hard-reset">hard_reset<a class="anchor" aria-label="anchor" href="#arg-hard-reset"></a></dt>
 <dd><p>Logical (TRUE/FALSE). If TRUE, forces the setup even if the
 <code>project</code>
 object already exists. Default is <code>FALSE</code>.</p></dd>
@@ -158,7 +158,7 @@ Default is <code>FALSE</code>.</p></dd>
 
 <dt id="arg-days-of-log">days_of_log<a class="anchor" aria-label="anchor" href="#arg-days-of-log"></a></dt>
 <dd><p>Integer. Number of days to be checked in the log if a
-reset
+hard_reset
 or new project is setup. Default is <code>10</code>.</p></dd>
 
 
@@ -211,7 +211,7 @@ It ensures that the token is valid and ready for use in subsequent API calls.
 Neither function directly attempts communication with REDCap.</p>
 <p><code>setup_project</code> is used the first time you initialize/link a REDCap project.
 Mainly, it sets your unique <code>short_name</code> and your intended directory.
-Unless you run <code>reset = TRUE</code> the default will first try load_project.
+Unless you run <code>hard_reset = TRUE</code> the default will first try load_project.
 dir_path is technically optional but without it the user cannot
 save/load/update projects.</p>
 <p><code>load_project</code> can be used with just the <code>short_name</code> parameter after you

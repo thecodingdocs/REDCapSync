@@ -5,7 +5,6 @@
 #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
 #' parameter from `setup_project()`)
 #' @param hard_reset Will go get all projects from scratch if TRUE.
-
 #' @export
 sync <- function(
     project_names = NULL,
@@ -77,13 +76,13 @@ sync <- function(
       original_file_names = project_details$original_file_names,
       merge_form_name = project_details$merge_form_name,
       use_csv = project_details$use_csv,
-      reset = hard_reset
+      hard_reset = hard_reset
     )
     project <- tryCatch(
       expr = {
         suppressWarnings({
           project %>% sync_project(
-            reset = hard_reset,
+            hard_reset = hard_reset,
             hard_check = hard_check,
             summarize = summarize
           )
@@ -305,7 +304,7 @@ project_health_check <- function() {
   #             dir_path = form$dir_path,
   #             token_name = form$token_name,
   #             redcap_base = "https://redcap.miami.edu/",
-  #             reset = TRUE,
+  #             hard_reset = TRUE,
   #             merge_form_name = "merged"
   #           )
   #         },error = function(e) {NULL})

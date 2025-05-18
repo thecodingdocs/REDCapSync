@@ -4,15 +4,23 @@
 \alias{sync}
 \title{Synchronize your REDCaps}
 \usage{
-sync(project_names = NULL, hard_reset = FALSE, summarize = TRUE)
+sync(
+  project_names = NULL,
+  summarize = TRUE,
+  hard_check = FALSE,
+  hard_reset = FALSE
+)
 }
 \arguments{
 \item{project_names}{character vector of project short_names to check for
 sync. Default is NULL which will check every project in cache.}
 
-\item{hard_reset}{Will go get all projects from scratch if TRUE.}
-
 \item{summarize}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
+
+\item{hard_check}{Will check REDCap even if not due (see \code{sync_frequency}
+parameter from \code{setup_project()})}
+
+\item{hard_reset}{Will go get all projects from scratch if TRUE.}
 }
 \description{
 Synchronize your REDCaps

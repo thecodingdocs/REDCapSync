@@ -220,6 +220,19 @@ sync_project <- function(
     }
     project$internals$last_sync <- now_time()
   }
+  if (project$internals$add_default_fields) {
+    project <- add_default_fields(project)
+  }
+  if (project$internals$add_default_transformation) {
+    project <- add_default_transformation(project)
+  }
+  if (project$internals$add_default_summaries) {
+    project <- add_default_summaries(project)
+  }
+  first_stamp <- project$internals$last_data_transformation
+  project <- transform_project(project)
+  second_stamp <- project$internals$last_data_transformation
+  was_updated <- was_updated || !identical(first_stamp,second_stamp)
   if (save_to_dir && !is.null(project$dir_path)) {
     if(is_something(project$data)){
       if (project$internals$get_files) { # test now
@@ -228,15 +241,12 @@ sync_project <- function(
           original_file_names = project$internals$original_file_names
         )
       }
-      first_stamp <- project$internals$last_data_transformation
-      project <- transform_project(project)
-      second_stamp <- project$internals$last_data_transformation
-      was_updated <- was_updated || !identical(first_stamp,second_stamp)
     }
     if (summarize) {
-      first_stamp <- project$internals$last_data_transformation
+      first_stamp <- project$internals$last_summary
       project <- summarize_project(project = project, hard_reset = hard_reset)
-      second_stamp <- project$internals$last_data_transformation
+      second_stamp <- project$internals$last_summary
+      was_updated <- was_updated || !identical(first_stamp,second_stamp)
     }
     if (was_updated) {
       project <- save_project(project)

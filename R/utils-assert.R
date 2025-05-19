@@ -275,7 +275,7 @@ assert_setup_project <- function(
   assert_logical(project$internals$metadata_only, len = 1, add = collected)
   assert_logical(project$internals$add_default_fields, len = 1, add = collected)
   assert_logical(project$internals$add_default_transformation, len = 1, add = collected)
-  assert_logical(project$internals$add_default_summary, len = 1, add = collected)
+  assert_logical(project$internals$add_default_summaries, len = 1, add = collected)
   assert_env_name(
     project$internals$merge_form_name,
     max.chars = 31,

@@ -172,9 +172,6 @@ add_project_field <- function(
     units = NA,
     data_func = NA) {
   project <- assert_blank_project(project, silent = TRUE)
-  if (which_length(project$transformation$fields$field_name == field_name) > 0) {
-    project$transformation$fields <- project$transformation$fields[which(project$transformation$fields$field_name != field_name), ]
-  }
   # if(!project$data %>% is_something())stop("Must have transformed data to add new vars.")
   fields <- project$metadata$fields
   in_original_redcap <- field_name %in% fields$field_name
@@ -226,6 +223,16 @@ add_project_field <- function(
     field_func = function_to_string(data_func),
     stringsAsFactors = FALSE
   )
+  row_match <- which(project$transformation$fields$field_name == field_name)
+  included_already <- length(row_match) > 0
+  if (included_already) {
+    compare_this <- project$transformation$fields[row_match,]
+    if (all.equal(field_row,compare_this,check.attributes = FALSE)) {
+      # should there be a message?
+      return(invisible(project)) #return if the same
+    }
+  }
+  project$transformation$fields <- project$transformation$fields[which(project$transformation$fields$field_name != field_name), ]
   project$transformation$fields <-
     project$transformation$fields %>%
     dplyr::bind_rows(field_row)

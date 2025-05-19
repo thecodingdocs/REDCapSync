@@ -160,7 +160,7 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
   )
 #' @noRd
 save_projects_to_cache <- function(projects, silent = TRUE) {
-  # assert_project_details(projects)
+  assert_project_details(projects)
   projects <- projects[order(projects$short_name), ]
   saveRDS(projects, file = cache_path() %>% file.path("projects.rds"))
   if (!silent) {
@@ -272,7 +272,7 @@ extract_project_details <- function(project) {
 }
 #' @noRd
 add_project_details_to_cache <- function(project_details) {
-  # assert_project_details(project_details, nrows = 1)
+  assert_project_details(project_details, nrows = 1)
   projects <- get_projects()
   projects <- projects[which(projects$short_name != project_details$short_name), ]
   bad_row <- which(
@@ -296,7 +296,7 @@ add_project_details_to_cache <- function(project_details) {
 #' @noRd
 add_project_details_to_project <- function(project, project_details) {
   assert_setup_project(project)
-  # assert_project_details(project_details, nrows = 1)
+  assert_project_details(project_details, nrows = 1)
   # compare_project_details()
   # top -----
   if (!identical(project$short_name, project_details$short_name)) {

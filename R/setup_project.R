@@ -136,9 +136,9 @@ setup_project <- function(
   assert_logical(original_file_names, len = 1, add = collected)
   assert_logical(entire_log, len = 1, add = collected)
   assert_logical(metadata_only, len = 1, add = collected)
-  # assert_logical(add_default_fields, len = 1, add = collected)
-  # assert_logical(add_default_transformation, len = 1, add = collected)
-  # assert_logical(add_default_summaries, len = 1, add = collected)
+  assert_logical(add_default_fields, len = 1, add = collected)
+  assert_logical(add_default_transformation, len = 1, add = collected)
+  assert_logical(add_default_summaries, len = 1, add = collected)
   assert_env_name(
     merge_form_name,
     max.chars = 31,
@@ -372,8 +372,8 @@ load_project <- function(short_name) {
   invisible(project)
 }
 compare_project_details <- function(from, to) {
-  # assert_project_details(from)
-  # assert_project_details(to)
+  assert_project_details(from)
+  assert_project_details(to)
   collected <- makeAssertCollection()
   assert_set_equal(from$short_name, to$short_name, add = collected)
   assert_set_equal(from$project_id, to$project_id, add = collected)

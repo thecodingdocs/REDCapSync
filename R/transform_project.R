@@ -209,17 +209,17 @@ add_project_field <- function(
   }
   # add check for identical and if not identical was_transformed = FALSE
   field_row <- data.frame(
-    field_name = field_name,
-    form_name = form_name,
-    field_type = field_type,
-    field_label = field_label,
-    select_choices_or_calculations = select_choices_or_calculations,
-    field_note = field_note,
-    identifier = identifier,
-    field_type_R = field_type_R,
-    units = units,
-    in_original_redcap = in_original_redcap,
-    field_label_short = field_label,
+    field_name = as.character(field_name),
+    form_name = as.character(form_name),
+    field_type = as.character(field_type),
+    field_label = as.character(field_label),
+    select_choices_or_calculations = as.character(select_choices_or_calculations),
+    field_note = as.character(field_note),
+    identifier = as.character(identifier),
+    field_type_R = as.character(field_type_R),
+    units = as.character(units),
+    in_original_redcap = as.logical(in_original_redcap),
+    field_label_short = as.character(field_label),
     field_func = function_to_string(data_func),
     stringsAsFactors = FALSE
   )
@@ -227,7 +227,9 @@ add_project_field <- function(
   included_already <- length(row_match) > 0
   if (included_already) {
     compare_this <- project$transformation$fields[row_match,]
-    if (all.equal(field_row,compare_this,check.attributes = FALSE)) {
+    rownames(compare_this) <- NULL
+    rownames(field_row) <- NULL
+    if (identical(field_row,compare_this)) {
       # should there be a message?
       return(invisible(project)) #return if the same
     }

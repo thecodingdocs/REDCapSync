@@ -58,6 +58,12 @@
 #' Default is `FALSE`.
 #' @param metadata_only Logical (TRUE/FALSE). If TRUE, updates only the
 #' metadata. Default is `FALSE`.
+#' @param add_default_fields Logical (TRUE/FALSE). If TRUE,
+#' will add default fields
+#' @param add_default_transformation Logical (TRUE/FALSE). If TRUE,
+#' will add default transformation
+#' @param add_default_summaries Logical (TRUE/FALSE). If TRUE,
+#' will add default summaries
 #' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test project
 #' object with data included.
 #' @param get_type optional character of REDCap API call type.
@@ -102,6 +108,9 @@ setup_project <- function(
     get_file_repository = FALSE,
     original_file_names = FALSE,
     merge_form_name = "merged",
+    add_default_fields = TRUE,
+    add_default_transformation = TRUE,
+    add_default_summaries = TRUE,
     use_csv = FALSE,
     silent = FALSE) {
   collected <- makeAssertCollection()
@@ -127,6 +136,9 @@ setup_project <- function(
   assert_logical(original_file_names, len = 1, add = collected)
   assert_logical(entire_log, len = 1, add = collected)
   assert_logical(metadata_only, len = 1, add = collected)
+  assert_logical(add_default_fields, len = 1, add = collected)
+  assert_logical(add_default_transformation, len = 1, add = collected)
+  assert_logical(add_default_summaries, len = 1, add = collected)
   assert_env_name(
     merge_form_name,
     max.chars = 31,
@@ -268,6 +280,12 @@ setup_project <- function(
   project$internals$get_files <- get_files
   project$internals$get_type <- get_type
   project$internals$metadata_only <- metadata_only
+  project$internals$add_default_fields <-
+    add_default_fields
+  project$internals$add_default_transformation <-
+    add_default_transformation
+  project$internals$add_default_summaries <-
+    add_default_summaries
   project$internals$batch_size_download <- batch_size_download %>%
     assert_integerish() %>%
     as.integer()

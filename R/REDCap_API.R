@@ -194,6 +194,15 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   if (include_users) {
     project$redcap$users <- get_REDCap_users(project)
   }
+  if (project$internals$add_default_fields) {
+    project <- add_default_fields(project)
+  }
+  if (project$internals$add_default_transformation) {
+    project <- add_default_transformation(project)
+  }
+  if (project$internals$add_default_summaries) {
+    project <- add_default_summaries(project)
+  }
   project <- update_project_links(project)
   invisible(project)
 }

@@ -24,6 +24,9 @@ setup_project(
   get_file_repository = FALSE,
   original_file_names = FALSE,
   merge_form_name = "merged",
+  add_default_fields = TRUE,
+  add_default_transformation = TRUE,
+  add_default_summaries = TRUE,
   use_csv = FALSE,
   silent = FALSE
 )
@@ -92,6 +95,15 @@ names for retrieved files. Default is \code{FALSE}.}
 
 \item{merge_form_name}{A character string representing the name of the merged
 form. Default is "merged".}
+
+\item{add_default_fields}{Logical (TRUE/FALSE). If TRUE,
+will add default fields}
+
+\item{add_default_transformation}{Logical (TRUE/FALSE). If TRUE,
+will add default transformation}
+
+\item{add_default_summaries}{Logical (TRUE/FALSE). If TRUE,
+will add default summaries}
 
 \item{use_csv}{Logical (TRUE/FALSE). If TRUE, uses CSV files for data
 storage. Default is \code{FALSE}.}

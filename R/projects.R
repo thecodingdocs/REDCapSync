@@ -108,6 +108,9 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
   "original_file_names",
   "entire_log",
   "metadata_only",
+  "add_default_fields",
+  "add_default_transformation",
+  "add_default_summaries",
   "merge_form_name",
   "use_csv",
   "get_type",
@@ -145,6 +148,9 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
     original_file_names = logical(0),
     entire_log = logical(0),
     metadata_only = logical(0),
+    add_default_fields = logical(0),
+    add_default_transformation = logical(0),
+    add_default_summaries = logical(0),
     merge_form_name = character(0),
     use_csv = logical(0),
     get_type = character(0),
@@ -206,6 +212,12 @@ extract_project_details <- function(project) {
   project_details$original_file_names <- project$internals$original_file_names
   project_details$entire_log <- project$internals$entire_log
   project_details$metadata_only <- project$internals$metadata_only
+  project_details$add_default_fields <-
+    project$internals$add_default_fields
+  project_details$add_default_transformation <-
+    project$internals$add_default_transformation
+  project_details$add_default_summaries <-
+    project$internals$add_default_summaries
   project_details$use_csv <- project$internals$use_csv
   project_details$get_type <- project$internals$get_type
   project_details$labelled <- project$internals$labelled
@@ -302,6 +314,12 @@ add_project_details_to_project <- function(project, project_details) {
   project$internals$original_file_names <- project_details$original_file_names
   project$internals$entire_log <- project_details$entire_log
   project$internals$metadata_only <- project_details$metadata_only
+  project$internals$add_default_fields <-
+    project_details$add_default_fields
+  project$internals$add_default_transformation <-
+    project_details$add_default_transformation
+  project$internals$add_default_summaries <-
+    project_details$add_default_summaries
   project$internals$use_csv <- project_details$use_csv
   project$internals$get_type <- project_details$get_type # should trigger hard_reset
   project$internals$labelled <- project_details$labelled # should trigger hard_reset

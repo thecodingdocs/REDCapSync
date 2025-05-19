@@ -41,139 +41,6 @@ upload_transform_to_project <- function(project) {
 #' @seealso
 #' \code{\link{save_project}} for saving the database or summaries.
 #' @export
-add_default_project_transformation <- function(project) {
-  project <- add_project_transformation(
-    project = project,
-    forms_transformation = default_project_transformation(project = project)
-  )
-  invisible(project)
-}
-#' @rdname default-transformations
-#' @export
-add_project_defaults <- function(project) {
-  project <- add_default_project_transformation(project)
-  project <- add_default_project_fields(project)
-  project <- add_default_project_summary(project)
-  invisible(project)
-}
-#' @rdname default-transformations
-#' @export
-default_project_transformation <- function(project) {
-  assert_setup_project(project)
-  forms_transformation <- non_rep_project_transformation(project)
-  forms_transformation$merge_to <- project$internals$merge_form_name
-  forms_transformation$by.y <- forms_transformation$by.x <- project$redcap$id_col
-  # Will avoid doing this for now
-  #forms_transformation$merge_to %>%
-  # lapply(function(form_name) {
-  #   if (form_name %in% names(project$metadata$form_key_cols)) {
-  #     project$metadata$form_key_cols[[form_name]] %>%
-  #       paste0(collapse = "+") %>%
-  #       return()
-  #   } else {
-  #     rows <- which(!forms_transformation$repeating)
-  #     if (length(rows) == 0) {
-  #       return(NA)
-  #     }
-  #     form_name <- forms_transformation$form_name[rows[[1]]]
-  #     project$metadata$form_key_cols[[form_name]] %>%
-  #       paste0(collapse = "+") %>%
-  #       return()
-  #   }
-  # }) %>%
-  # unlist()
-  forms_transformation$x_first <- FALSE
-  forms_transformation$x_first[which(forms_transformation$repeating)] <- TRUE
-  if (project$redcap$is_longitudinal) {
-    forms_transformation$x_first[which(forms_transformation$repeating_via_events)] <- TRUE
-  }
-  forms_transformation
-}
-#' @noRd
-non_rep_project_transformation <- function(project) {
-  assert_setup_project(project)
-  forms_transformation <- project$metadata$forms
-  is_longitudinal <- project$redcap$is_longitudinal
-  if (is_longitudinal) {
-    forms_transformation <- forms_transformation[order(forms_transformation$repeating_via_events), ]
-  }
-  forms_transformation <- forms_transformation[order(forms_transformation$repeating), ]
-  merge_form_name <- project$internals$merge_form_name
-  forms_transformation$form_name_remap <- forms_transformation$form_name
-  forms_transformation$form_label_remap <- forms_transformation$form_label
-  row_check <- !forms_transformation$repeating
-  if (is_longitudinal) {
-    row_check <- row_check & !forms_transformation$repeating_via_events
-  }
-  forms_transformation$form_name_remap[which(row_check)] <- merge_form_name
-  merge_form_name_label <- merge_form_name
-  if (merge_form_name %in% forms_transformation$form_name) {
-    merge_form_name_label <- forms_transformation$form_label[which(forms_transformation$form_name == merge_form_name)]
-  }
-  forms_transformation$form_label_remap[which(row_check)] <- merge_form_name_label
-  forms_transformation$merge_to <- NA
-  forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to
-  forms_transformation$x_first <- FALSE
-  forms_transformation
-}
-#' @rdname default-transformations
-#' @export
-add_default_project_fields <- function(project) {
-  forms <- project$metadata$forms
-  last_non_rep <- forms$form_name[which(!forms$repeating)] %>% dplyr::last()
-  form_names <- forms$form_name[which(forms$repeating)]
-  if (!project$redcap$is_longitudinal) {
-    has_non_rep <- length(last_non_rep) > 0
-    if (has_non_rep) {
-      for (form_name in form_names) {
-        form_label <- forms$form_label[which(forms$form_name == form_name)]
-        project <- project %>% add_project_field(
-          field_name = paste0("n_forms_", form_name),
-          form_name = last_non_rep,
-          field_type = "text",
-          field_type_R = "integer",
-          field_label = paste0(form_label, " Forms"),
-          units = "n",
-          data_func = function(project, field_name, form_name) {
-            form <- gsub("n_forms_", "", field_name)
-            #need another way to count if multiple id cols
-            id_col <- project$metadata$form_key_cols[[form_name]]
-            final_vector <- project$data[[form_name]][[id_col]] %>%
-              find_match(project$data[[form]][[id_col]], count_only = TRUE) %>%
-              as.character()
-            final_vector
-          }
-        )
-      }
-    }
-  }
-  for (form_name in form_names) {
-    form_label <- forms$form_label[which(forms$form_name == form_name)]
-    project <- project %>% add_project_field(
-      field_name = paste0(form_name, "_compound_key"),
-      form_name = form_name,
-      field_type = "text",
-      field_type_R = "character",
-      field_label = paste(form_label, "Compound Key"),
-      data_func = function(project, field_name, form_name) {
-        cols <- project$metadata$form_key_cols[[form_name]]
-        form <- NULL
-        while (length(cols) > 0) {
-          if (is.null(form)) {
-            form <- project$data[[form_name]][[cols[1]]]
-          } else {
-            form <- form %>% paste0("_", project$data[[form_name]][[cols[1]]])
-          }
-          cols <- cols[-1]
-        }
-        form
-      }
-    )
-  }
-  invisible(project)
-}
-#' @rdname default-transformations
-#' @export
 add_project_transformation <- function(project,
                                        forms_transformation) {
   if (missing(forms_transformation)) {
@@ -213,6 +80,40 @@ add_project_transformation <- function(project,
   project$transformation$forms <- forms_transformation
   project$summary$all_records$was_transformed <- FALSE
   invisible(project)
+}
+#' @rdname default-transformations
+#' @export
+default_project_transformation <- function(project) {
+  lifecycle::signal_stage("experimental", "default_project_transformation()")
+  assert_setup_project(project)
+  forms_transformation <- non_rep_project_transformation(project)
+  forms_transformation$merge_to <- project$internals$merge_form_name
+  forms_transformation$by.y <- forms_transformation$by.x <- project$redcap$id_col
+  # Will avoid doing this for now
+  #forms_transformation$merge_to %>%
+  # lapply(function(form_name) {
+  #   if (form_name %in% names(project$metadata$form_key_cols)) {
+  #     project$metadata$form_key_cols[[form_name]] %>%
+  #       paste0(collapse = "+") %>%
+  #       return()
+  #   } else {
+  #     rows <- which(!forms_transformation$repeating)
+  #     if (length(rows) == 0) {
+  #       return(NA)
+  #     }
+  #     form_name <- forms_transformation$form_name[rows[[1]]]
+  #     project$metadata$form_key_cols[[form_name]] %>%
+  #       paste0(collapse = "+") %>%
+  #       return()
+  #   }
+  # }) %>%
+  # unlist()
+  forms_transformation$x_first <- FALSE
+  forms_transformation$x_first[which(forms_transformation$repeating)] <- TRUE
+  if (project$redcap$is_longitudinal) {
+    forms_transformation$x_first[which(forms_transformation$repeating_via_events)] <- TRUE
+  }
+  forms_transformation
 }
 #' @title Add Field Transformation to the Database
 #' @description
@@ -334,6 +235,96 @@ add_project_field <- function(
   invisible(project)
 }
 #' @noRd
+add_default_transformation <- function(project) {
+  project <- add_project_transformation(
+    project = project,
+    forms_transformation = default_project_transformation(project = project)
+  )
+  invisible(project)
+}
+#' @noRd
+non_rep_project_transformation <- function(project) {
+  assert_setup_project(project)
+  forms_transformation <- project$metadata$forms
+  is_longitudinal <- project$redcap$is_longitudinal
+  if (is_longitudinal) {
+    forms_transformation <- forms_transformation[order(forms_transformation$repeating_via_events), ]
+  }
+  forms_transformation <- forms_transformation[order(forms_transformation$repeating), ]
+  merge_form_name <- project$internals$merge_form_name
+  forms_transformation$form_name_remap <- forms_transformation$form_name
+  forms_transformation$form_label_remap <- forms_transformation$form_label
+  row_check <- !forms_transformation$repeating
+  if (is_longitudinal) {
+    row_check <- row_check & !forms_transformation$repeating_via_events
+  }
+  forms_transformation$form_name_remap[which(row_check)] <- merge_form_name
+  merge_form_name_label <- merge_form_name
+  if (merge_form_name %in% forms_transformation$form_name) {
+    merge_form_name_label <- forms_transformation$form_label[which(forms_transformation$form_name == merge_form_name)]
+  }
+  forms_transformation$form_label_remap[which(row_check)] <- merge_form_name_label
+  forms_transformation$merge_to <- NA
+  forms_transformation$by.y <- forms_transformation$by.x <- forms_transformation$merge_to
+  forms_transformation$x_first <- FALSE
+  forms_transformation
+}
+#' @noRd
+add_default_fields <- function(project) {
+  forms <- project$metadata$forms
+  last_non_rep <- forms$form_name[which(!forms$repeating)] %>% dplyr::last()
+  form_names <- forms$form_name[which(forms$repeating)]
+  if (!project$redcap$is_longitudinal) {
+    has_non_rep <- length(last_non_rep) > 0
+    if (has_non_rep) {
+      for (form_name in form_names) {
+        form_label <- forms$form_label[which(forms$form_name == form_name)]
+        project <- project %>% add_project_field(
+          field_name = paste0("n_forms_", form_name),
+          form_name = last_non_rep,
+          field_type = "text",
+          field_type_R = "integer",
+          field_label = paste0(form_label, " Forms"),
+          units = "n",
+          data_func = function(project, field_name, form_name) {
+            form <- gsub("n_forms_", "", field_name)
+            #need another way to count if multiple id cols
+            id_col <- project$metadata$form_key_cols[[form_name]]
+            final_vector <- project$data[[form_name]][[id_col]] %>%
+              find_match(project$data[[form]][[id_col]], count_only = TRUE) %>%
+              as.character()
+            final_vector
+          }
+        )
+      }
+    }
+  }
+  for (form_name in form_names) {
+    form_label <- forms$form_label[which(forms$form_name == form_name)]
+    project <- project %>% add_project_field(
+      field_name = paste0(form_name, "_compound_key"),
+      form_name = form_name,
+      field_type = "text",
+      field_type_R = "character",
+      field_label = paste(form_label, "Compound Key"),
+      data_func = function(project, field_name, form_name) {
+        cols <- project$metadata$form_key_cols[[form_name]]
+        form <- NULL
+        while (length(cols) > 0) {
+          if (is.null(form)) {
+            form <- project$data[[form_name]][[cols[1]]]
+          } else {
+            form <- form %>% paste0("_", project$data[[form_name]][[cols[1]]])
+          }
+          cols <- cols[-1]
+        }
+        form
+      }
+    )
+  }
+  invisible(project)
+}
+#' @noRd
 combine_project_fields <- function(project) {
   the_names <- project$transformation$fields$field_name
   fields <- project$metadata$fields
@@ -375,11 +366,8 @@ combine_project_fields <- function(project) {
   }
   fields
 }
-#' @rdname default-transformations
-#' @title Add Default Forms Transformation to the Database
-#' @inheritParams generate_project_summary
-#' @export
-add_default_project_summary <- function(project,
+#' @noRd
+add_default_summaries <- function(project,
                                         exclude_identifiers = FALSE,
                                         exclude_free_text = FALSE,
                                         date_handling = "none") {

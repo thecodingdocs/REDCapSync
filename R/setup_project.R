@@ -136,9 +136,9 @@ setup_project <- function(
   assert_logical(original_file_names, len = 1, add = collected)
   assert_logical(entire_log, len = 1, add = collected)
   assert_logical(metadata_only, len = 1, add = collected)
-  assert_logical(add_default_fields, len = 1, add = collected)
-  assert_logical(add_default_transformation, len = 1, add = collected)
-  assert_logical(add_default_summaries, len = 1, add = collected)
+  # assert_logical(add_default_fields, len = 1, add = collected)
+  # assert_logical(add_default_transformation, len = 1, add = collected)
+  # assert_logical(add_default_summaries, len = 1, add = collected)
   assert_env_name(
     merge_form_name,
     max.chars = 31,

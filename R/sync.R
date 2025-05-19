@@ -278,7 +278,7 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
               had_change <- TRUE
             }
           }
-          # assert_project_details(project_details)
+          # assert_project_details(project_details) #not this
         }
       }
       # else {

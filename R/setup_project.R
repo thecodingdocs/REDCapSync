@@ -372,8 +372,8 @@ load_project <- function(short_name) {
   invisible(project)
 }
 compare_project_details <- function(from, to) {
-  assert_project_details(from)
-  assert_project_details(to)
+  # assert_project_details(from)
+  # assert_project_details(to)
   collected <- makeAssertCollection()
   assert_set_equal(from$short_name, to$short_name, add = collected)
   assert_set_equal(from$project_id, to$project_id, add = collected)

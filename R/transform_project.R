@@ -207,7 +207,6 @@ add_project_field <- function(
            func_template)
     }
   }
-  # add check for identical and if not identical was_transformed = FALSE
   field_row <- data.frame(
     field_name = as.character(field_name),
     form_name = as.character(form_name),
@@ -377,9 +376,9 @@ combine_project_fields <- function(project) {
 }
 #' @noRd
 add_default_summaries <- function(project,
-                                        exclude_identifiers = FALSE,
-                                        exclude_free_text = FALSE,
-                                        date_handling = "none") {
+                                  exclude_identifiers = FALSE,
+                                  exclude_free_text = FALSE,
+                                  date_handling = "none") {
   assert_logical(exclude_identifiers)
   assert_logical(exclude_free_text)
   summary_name <- "REDCapSync_raw"
@@ -398,7 +397,7 @@ add_default_summaries <- function(project,
     annotate_metadata = FALSE,
     include_record_summary = FALSE,
     include_users = TRUE,
-    include_log = TRUE,
+    include_log = FALSE,
     with_links = nrow(project$summary$all_records) <= 3000,
     separate = TRUE,
     use_csv = project$internals$use_csv,

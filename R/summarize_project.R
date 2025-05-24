@@ -391,6 +391,7 @@ add_project_summary <- function(
     exclude_free_text = FALSE,
     date_handling = "none",
     upload_compatible = TRUE,
+    labelled = TRUE,
     clean = TRUE,
     drop_blanks = TRUE,
     drop_missings = FALSE,
@@ -437,6 +438,7 @@ add_project_summary <- function(
     exclude_free_text = exclude_free_text,
     date_handling = date_handling,
     upload_compatible = upload_compatible,
+    labelled = labelled,
     clean = clean,
     drop_blanks = drop_blanks,
     drop_missings = drop_missings,
@@ -594,6 +596,7 @@ generate_project_summary <- function(
     exclude_free_text = FALSE,
     date_handling = "none",
     upload_compatible = TRUE,
+    labelled = TRUE,
     clean = TRUE,
     drop_blanks = TRUE,
     drop_missings = FALSE,
@@ -621,6 +624,7 @@ generate_project_summary <- function(
     exclude_free_text <- summary_list$exclude_free_text
     date_handling <- summary_list$date_handling
     upload_compatible <- summary_list$upload_compatible
+    labelled <- summary_list$labelled
     clean <- summary_list$clean
     drop_blanks <- summary_list$drop_blanks
     drop_missings <- summary_list$drop_missings
@@ -732,6 +736,20 @@ generate_project_summary <- function(
       }
     }
     project$data <- out_list
+  }
+  if (!identical(labelled,project$internals$labelled)){
+    if(!labelled && project$internals$labelled){
+      stop(
+        "We do not recommend converting labelled values back to raw values ",
+        "except for at the upload step. If you want to edit only coded values,",
+        " choose `labelled = FALSE` with `setup_project()`"
+      ) #complicates things
+      project <- labelled_to_raw_project(project)
+    }
+    if(labelled && !project$internals$labelled){
+      project <- raw_to_labelled_project(project)
+
+    }
   }
   if (exclude_identifiers) {
     project$data <- deidentify_data_list(
@@ -1372,12 +1390,28 @@ filter_fields_from_form <- function(form, project) {
 #' @noRd
 labelled_to_raw_project <- function(project) {
   project <- assert_blank_project(project)
-  if (!project$internals$labelled) stop("project is already raw/coded (not labelled values)")
+  if (!project$internals$labelled) {
+    stop("project is already raw/coded (not labelled values)")
+  }
   for (form_name in names(project$data)) {
-    project$data[[form_name]] <- labelled_to_raw_form(form = project$data[[form_name]], project = project)
+    project$data[[form_name]] <- project$data[[form_name]] %>%
+      labelled_to_raw_form(project = project)
   }
   project$internals$labelled <- FALSE
-  project
+  invisible(project)
+}
+#' @noRd
+raw_to_labelled_project <- function(project) {
+  project <- assert_blank_project(project)
+  if (project$internals$labelled) {
+    stop("project is already labelled (not raw/coded values)")
+  }
+  for (form_name in names(project$data)) {
+    project$data[[form_name]] <- project$data[[form_name]] %>%
+      raw_to_labelled_form(project = project)
+  }
+  project$internals$labelled <- FALSE
+  invisible(project)
 }
 #' @noRd
 form_list_to_text <- function(form_list, project, drop_nas = TRUE, clean_names = TRUE) {

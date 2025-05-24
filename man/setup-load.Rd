@@ -90,8 +90,7 @@ raw coded data in output.}
 metadata. Default is \code{FALSE}.}
 
 \item{batch_size_download}{Integer. Number of records to process in each
-batch.
-Default is \code{2000}.}
+batch. Default is \code{2000}.}
 
 \item{batch_size_upload}{Integer. Number of records to process in each batch.
 Default is \code{500}.}

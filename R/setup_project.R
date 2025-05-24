@@ -68,8 +68,7 @@
 #' @param get_type optional character of REDCap API call type.
 #' data as if user ran `sync_project`. Default is `FALSE`.
 #' @param batch_size_download Integer. Number of records to process in each
-#' batch.
-#' Default is `2000`.
+#' batch. Default is `2000`.
 #' @param batch_size_upload Integer. Number of records to process in each batch.
 #' Default is `500`.
 #' @param silent Logical (TRUE/FALSE). For messages.

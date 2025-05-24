@@ -19,6 +19,7 @@ generate_project_summary(
   exclude_free_text = FALSE,
   date_handling = "none",
   upload_compatible = TRUE,
+  labelled = TRUE,
   clean = TRUE,
   drop_blanks = TRUE,
   drop_missings = FALSE,
@@ -79,6 +80,9 @@ in the summary. Default is \code{TRUE}.}
 REDCap API upload. The main conflict is numeric or date variables in a
 project with missing codes while \code{clean} = \code{TRUE}. R converts these to \code{NA}.
 Default is \code{TRUE}.}
+
+\item{labelled}{Logical (TRUE/FALSE). For whether or not to use labelled vs
+raw coded data in output.}
 
 \item{clean}{Logical. If \code{TRUE}, the data will be cleaned before summarizing.
 Default is \code{TRUE}.}

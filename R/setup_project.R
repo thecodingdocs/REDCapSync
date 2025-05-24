@@ -75,6 +75,7 @@
 #' @param silent Logical (TRUE/FALSE). For messages.
 #' @param labelled Logical (TRUE/FALSE). For whether or not to use labelled vs
 #' raw coded data in output.
+#' @inheritParams REDCapR::redcap_read
 #' @return REDCapSync `project` list object.
 #' @seealso
 #' \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from

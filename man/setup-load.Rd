@@ -63,6 +63,23 @@ Default is \code{daily}}
 \item{hard_reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the
 \code{project} object already exists. Default is \code{FALSE}.}
 
+\item{records}{An array, where each element corresponds to the ID of a
+desired record.  Optional.}
+
+\item{fields}{An array, where each element corresponds to a desired project
+field.  Optional.}
+
+\item{forms}{An array, where each element corresponds to a desired project
+form.  Optional.}
+
+\item{events}{An array, where each element corresponds to a desired project
+event.  Optional.}
+
+\item{filter_logic}{String of logic text (e.g., \verb{[gender] = 'male'}) for
+filtering the data to be returned by this API method, in which the API
+will only return the records (or record-events, if a longitudinal project)
+where the logic evaluates as TRUE.   An blank/empty string returns all records.}
+
 \item{get_type}{optional character of REDCap API call type.
 data as if user ran \code{sync_project}. Default is \code{FALSE}.}
 

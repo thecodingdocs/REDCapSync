@@ -748,7 +748,6 @@ generate_project_summary <- function(
     }
     if(labelled && !project$internals$labelled){
       project <- raw_to_labelled_project(project)
-
     }
   }
   if (exclude_identifiers) {

@@ -391,6 +391,7 @@ add_project_summary <- function(
     exclude_free_text = FALSE,
     date_handling = "none",
     upload_compatible = TRUE,
+    labelled = TRUE,
     clean = TRUE,
     drop_blanks = TRUE,
     drop_missings = FALSE,
@@ -437,6 +438,7 @@ add_project_summary <- function(
     exclude_free_text = exclude_free_text,
     date_handling = date_handling,
     upload_compatible = upload_compatible,
+    labelled = labelled,
     clean = clean,
     drop_blanks = drop_blanks,
     drop_missings = drop_missings,
@@ -594,6 +596,7 @@ generate_project_summary <- function(
     exclude_free_text = FALSE,
     date_handling = "none",
     upload_compatible = TRUE,
+    labelled = TRUE,
     clean = TRUE,
     drop_blanks = TRUE,
     drop_missings = FALSE,
@@ -621,6 +624,7 @@ generate_project_summary <- function(
     exclude_free_text <- summary_list$exclude_free_text
     date_handling <- summary_list$date_handling
     upload_compatible <- summary_list$upload_compatible
+    labelled <- summary_list$labelled
     clean <- summary_list$clean
     drop_blanks <- summary_list$drop_blanks
     drop_missings <- summary_list$drop_missings

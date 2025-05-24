@@ -19,6 +19,7 @@ generate_project_summary(
   exclude_free_text = FALSE,
   date_handling = "none",
   upload_compatible = TRUE,
+  labelled = TRUE,
   clean = TRUE,
   drop_blanks = TRUE,
   drop_missings = FALSE,

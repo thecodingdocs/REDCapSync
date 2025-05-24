@@ -19,6 +19,7 @@ upload_transform_to_project <- function(project) {
 #' @rdname default-transformations
 #' @title Add Default Forms Transformation to the Database
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' Applies default transformations to specific forms within the REDCap database
 #' (`project`).
 #' This function modifies the `project` object to include default
@@ -43,6 +44,7 @@ upload_transform_to_project <- function(project) {
 #' @export
 add_project_transformation <- function(project,
                                        forms_transformation) {
+  lifecycle::signal_stage("experimental", "add_project_transformation()")
   if (missing(forms_transformation)) {
     forms_transformation <- default_project_transformation(project)
   }

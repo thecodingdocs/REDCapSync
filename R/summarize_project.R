@@ -794,9 +794,11 @@ summarize_project <- function(
   invisible(project)
 }
 #' @title clear_project_summaries
+#' `r lifecycle::badge("experimental")`
 #' @inheritParams save_project
 #' @export
 clear_project_summaries <- function(project) {
+  lifecycle::signal_stage("experimental", "clear_project_summaries()")
   assert_setup_project(project)
   summary_names <- names(project$summary)
   summary_names <- summary_names[which(summary_names!="all_records")]

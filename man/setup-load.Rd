@@ -24,7 +24,7 @@ setup_project(
   get_file_repository = FALSE,
   original_file_names = FALSE,
   merge_form_name = "merged",
-  add_default_fields = TRUE,
+  add_default_fields = FALSE,
   add_default_transformation = TRUE,
   add_default_summaries = TRUE,
   use_csv = FALSE,

@@ -108,7 +108,7 @@ setup_project <- function(
     get_file_repository = FALSE,
     original_file_names = FALSE,
     merge_form_name = "merged",
-    add_default_fields = TRUE,
+    add_default_fields = FALSE,
     add_default_transformation = TRUE,
     add_default_summaries = TRUE,
     use_csv = FALSE,
@@ -339,6 +339,7 @@ get_project_details_path <- function(project) {
 #' @rdname setup-load
 #' @export
 load_project <- function(short_name) {
+  #add load by path option
   projects <- get_projects()
   if (nrow(projects) == 0) stop("No projects in cache")
   if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_project()` and `sync_project()`?")
@@ -634,6 +635,7 @@ nav_to_dir <- function(project) {
   summary = list(),
   internals = list(
     last_test_connection_attempt = NULL,
+    last_test_connection_timezone = NULL,
     last_test_connection_outcome = NULL,
     last_metadata_update = NULL,
     last_metadata_dir_save = NULL,

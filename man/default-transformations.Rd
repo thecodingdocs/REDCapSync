@@ -22,6 +22,7 @@ The updated \code{project} object with default transformations applied to the
 specified forms.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Applies default transformations to specific forms within the REDCap database
 (\code{project}).
 This function modifies the \code{project} object to include default

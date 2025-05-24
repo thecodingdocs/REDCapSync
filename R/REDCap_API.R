@@ -406,12 +406,12 @@ get_REDCap_log2 <- function(project,
   redcap_log # deal with if NA if user does not have log privileges.
 }
 #' @noRd
-get_REDCap_raw_data <- function(
+get_REDCap_denormalized <- function(
     project,
     labelled = FALSE,
     records = NULL,
     batch_size = 1000) {
-  raw <- REDCapR::redcap_read(
+  denormalized <- REDCapR::redcap_read(
     redcap_uri = project$links$redcap_uri,
     token = get_project_token(project),
     batch_size = batch_size,
@@ -419,7 +419,7 @@ get_REDCap_raw_data <- function(
     records = records,
     raw_or_label = ifelse(labelled, "label", "raw")
   )$data %>% all_character_cols()
-  return(raw)
+  return(denormalized)
 }
 #' @title Get REDCap Report
 #' @inheritParams save_project
@@ -439,17 +439,16 @@ get_REDCap_report <- function(project, report_id, silent = TRUE) {
 }
 #' @noRd
 get_REDCap_data <- function(project,
-                            labelled = TRUE,
                             records = NULL,
                             batch_size = 2000) {
   form_list <- list()
-  raw <- get_REDCap_raw_data(
+  denormalized <- get_REDCap_denormalized(
     project = project,
     labelled = FALSE,
     records = records,
     batch_size = batch_size
   )
-  form_list <- raw %>% raw_process_redcap(project = project, labelled = labelled)
+  form_list <- denormalized %>% normalize_redcap(project = project)
   return(form_list)
 }
 #' @noRd

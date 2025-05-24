@@ -147,5 +147,5 @@ deidentification. It can be customized to include only specific forms or
 fields. The resulting summary is saved to a file for future use.
 }
 \seealso{
-\code{\link{save_project}} for saving the main database or summarys.
+\code{\link{save_project}} for saving the main database or summaries.
 }

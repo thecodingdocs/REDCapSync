@@ -80,9 +80,6 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
     )
     data_updates[[form_name]] <- to_be_uploaded
     if (is_something(to_be_uploaded)) {
-      if (project$internals$labelled) {
-        to_be_uploaded <- to_be_uploaded %>% labelled_to_raw_form(project)
-      }
       do_it <- 1
       if (ask) {
         do_it <- utils::menu(choices = c("Yes upload", "No and go to next"), title = "Do you want to upload this?")
@@ -107,9 +104,6 @@ upload_project_to_REDCap <- function(project, batch_size = 500, ask = TRUE, view
     )
     data_updates_transformation[[form_name]] <- to_be_uploaded
     if (is_something(to_be_uploaded)) {
-      if (project$internals$labelled) {
-        to_be_uploaded <- to_be_uploaded %>% labelled_to_raw_form(project)
-      }
       do_it <- 1
       if (ask) {
         do_it <- utils::menu(

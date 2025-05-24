@@ -374,7 +374,7 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' fields. The resulting summary is saved to a file for future use.
 #'
 #' @seealso
-#' \code{\link{save_project}} for saving the main database or summarys.
+#' \code{\link{save_project}} for saving the main database or summaries.
 #' @export
 add_project_summary <- function(
     project,
@@ -644,7 +644,7 @@ generate_project_summary <- function(
   if (length(field_names_minus) > 0) {
     form_names_minus <- project %>%
       field_names_to_form_names(
-        field_names_minus,
+        field_names = field_names_minus,
         transform = transform,
         strict = TRUE
       )
@@ -672,7 +672,7 @@ generate_project_summary <- function(
     filter_form <- project %>% field_names_to_form_names(field_names = filter_field_names)
     if (length(filter_field_names) == 1) {
       if (filter_field_names == project$redcap$id_col) {
-        filter_form <- project$metadata$forms$form_name[1] # RISKY?
+        filter_form <- project$metadata$forms$form_name[1] # RISKY? id_position
       }
     }
     # should be length 1
@@ -1368,16 +1368,6 @@ filter_fields_from_form <- function(form, project) {
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
   fields$has_choices[which(fields$field_type == "calc")] <- FALSE
   fields
-}
-#' @noRd
-labelled_to_raw_project <- function(project) {
-  project <- assert_blank_project(project)
-  if (!project$internals$labelled) stop("project is already raw/coded (not labelled values)")
-  for (form_name in names(project$data)) {
-    project$data[[form_name]] <- labelled_to_raw_form(form = project$data[[form_name]], project = project)
-  }
-  project$internals$labelled <- FALSE
-  project
 }
 #' @noRd
 form_list_to_text <- function(form_list, project, drop_nas = TRUE, clean_names = TRUE) {

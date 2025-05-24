@@ -37,8 +37,8 @@
 #' calling the function, but can be automated with other packages.
 #' Default is `daily`
 #' @param hard_reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the
-#' `project`
-#' object already exists. Default is `FALSE`.
+#' `project` object already exists. Default is `FALSE`.
+#' @inheritParams REDCapR::redcap_read
 #' @param merge_form_name A character string representing the name of the merged
 #' form. Default is "merged".
 #' @param use_csv Logical (TRUE/FALSE). If TRUE, uses CSV files for data
@@ -74,8 +74,6 @@
 #' @param batch_size_upload Integer. Number of records to process in each batch.
 #' Default is `500`.
 #' @param silent Logical (TRUE/FALSE). For messages.
-#' @param labelled Logical (TRUE/FALSE). For whether or not to use labelled vs
-#' raw coded data in output.
 #' @return REDCapSync `project` list object.
 #' @seealso
 #' \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from
@@ -97,8 +95,12 @@ setup_project <- function(
     token_name = paste0("REDCapSync_", short_name),
     sync_frequency = "daily",
     hard_reset = FALSE,
+    records = NULL,
+    fields = NULL,
+    forms = NULL,
+    events = NULL,
+    filter_logic = NULL,
     get_type = "identified",
-    labelled = TRUE,
     metadata_only = FALSE,
     batch_size_download = 2000,
     batch_size_upload = 500,
@@ -129,7 +131,6 @@ setup_project <- function(
     add = collected
   )
   assert_logical(hard_reset, len = 1, add = collected)
-  assert_logical(labelled, len = 1, add = collected)
   assert_integerish(days_of_log, len = 1, lower = 1, add = collected)
   assert_logical(get_files, len = 1, add = collected)
   assert_logical(get_file_repository, len = 1, add = collected)
@@ -234,21 +235,6 @@ setup_project <- function(
   if (was_loaded) {
     # compare current setting to previous settings...
     original_details <- project %>% extract_project_details()
-    if (!is.null(project$internals$labelled)) {
-      if (project$internals$labelled != labelled) {
-        if (!hard_reset) {
-          load_type <- ifelse(project$internals$labelled, "labelled", "raw")
-          chosen_type <- ifelse(labelled, "labelled", "raw")
-          hard_reset <- TRUE
-          warning(
-            "The project that was loaded was ",
-            load_type, " and you chose ", chosen_type,
-            ". Therefore, a full update was triggered to avoid data conflicts",
-            immediate. = TRUE
-          )
-        }
-      }
-    }
   }
   if (hard_reset) { # load blank if hard_reset = TRUE
     project <- .blank_project
@@ -271,7 +257,6 @@ setup_project <- function(
   project$redcap$token_name <- token_name
   project$internals$sync_frequency <- sync_frequency
   project$internals$use_csv <- use_csv
-  project$internals$labelled <- labelled
   project$internals$original_file_names <- original_file_names
   project$internals$entire_log <- entire_log
   project$internals$days_of_log <- days_of_log %>%
@@ -550,7 +535,6 @@ nav_to_dir <- function(project) {
     original_file_names = NULL,
     days_of_log = NULL,
     entire_log = NULL,
-    labelled = NULL,
     merge_form_name = "merged",
     use_csv = FALSE
   ),
@@ -654,7 +638,6 @@ nav_to_dir <- function(project) {
     original_file_names = NULL,
     days_of_log = NULL,
     entire_log = NULL,
-    labelled = NULL,
     data_extract_merged = NULL,
     merge_form_name = "merged",
     project_type = "redcap",

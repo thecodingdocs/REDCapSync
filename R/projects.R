@@ -91,7 +91,6 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
   "token_name",
   "project_id",
   "project_title",
-  "labelled",
   "id_col",
   "is_longitudinal",
   "has_repeating_forms_or_events",
@@ -131,7 +130,6 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
     token_name = character(0),
     project_id = character(0),
     project_title = character(0),
-    labelled = logical(0),
     id_col = character(0),
     is_longitudinal = logical(0),
     has_repeating_forms_or_events = logical(0),
@@ -220,7 +218,6 @@ extract_project_details <- function(project) {
     project$internals$add_default_summaries
   project_details$use_csv <- project$internals$use_csv
   project_details$get_type <- project$internals$get_type
-  project_details$labelled <- project$internals$labelled
   project_details$merge_form_name <- project$internals$merge_form_name
   project_details$batch_size_download <-
     project$internals$batch_size_download %>%
@@ -322,7 +319,6 @@ add_project_details_to_project <- function(project, project_details) {
     project_details$add_default_summaries
   project$internals$use_csv <- project_details$use_csv
   project$internals$get_type <- project_details$get_type # should trigger hard_reset
-  project$internals$labelled <- project_details$labelled # should trigger hard_reset
   project$internals$merge_form_name <- project_details$merge_form_name
   project$internals$batch_size_download <-
     project_details$batch_size_download %>%

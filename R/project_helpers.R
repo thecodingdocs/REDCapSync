@@ -275,15 +275,15 @@ get_key_col_list <- function(project, transform = FALSE) {
   out_list
 }
 #' @noRd
-raw_process_redcap <- function(raw, project, labelled) {
+normalize_redcap <- function(denormalized, project) {
   forms <- project$metadata$forms
   fields <- project$metadata$fields
   events <- project$metadata$events
   event_mapping <- project$metadata$event_mapping
   form_list <- list()
-  if (nrow(raw) > 0) {
+  if (nrow(denormalized) > 0) {
     is_longitudinal <- project$redcap$is_longitudinal
-    raw <- raw %>% all_character_cols()
+    denormalized <- denormalized %>% all_character_cols()
     add_ons <- c(
       project$redcap$id_col,
       "arm_number",
@@ -293,31 +293,31 @@ raw_process_redcap <- function(raw, project, labelled) {
       "redcap_repeat_instance"
     )
     if (is_longitudinal) {
-      raw$id_temp <- seq_len(nrow(raw))
-      raw <- merge(
-        raw,
+      denormalized$id_temp <- seq_len(nrow(denormalized))
+      denormalized <- merge(
+        denormalized,
         events[, c("arm_number", "event_name", "unique_event_name")],
         by.x = "redcap_event_name",
         by.y = "unique_event_name",
         sort = FALSE,
         all.x = TRUE
       )
-      add_ons <- add_ons[which(add_ons %in% colnames(raw))]
-      cols <- c(add_ons, colnames(raw)) %>% unique()
-      raw <- raw[
-        order(raw$id_temp),
+      add_ons <- add_ons[which(add_ons %in% colnames(denormalized))]
+      cols <- c(add_ons, colnames(denormalized)) %>% unique()
+      denormalized <- denormalized[
+        order(denormalized$id_temp),
         cols %>% lapply(function(c) {
-          which(colnames(raw) == c)
+          which(colnames(denormalized) == c)
         }) %>%
           unlist() %>%
           as.integer()
       ]
-      raw$id_temp <- NULL
+      denormalized$id_temp <- NULL
     }
-    add_ons <- add_ons[which(add_ons %in% colnames(raw))]
-    if (!all(project$redcap$raw_structure_cols %in% colnames(raw))) {
+    add_ons <- add_ons[which(add_ons %in% colnames(denormalized))]
+    if (!all(project$redcap$raw_structure_cols %in% colnames(denormalized))) {
       stop(
-        "raw is missing one of the following... and that's weird: ",
+        "denormalized is missing one of the following... and that's weird: ",
         toString(project$redcap$raw_structure_cols)
       )
     }
@@ -328,7 +328,7 @@ raw_process_redcap <- function(raw, project, labelled) {
     for (form_name in form_names) {
       form_field_names <- fields$field_name[which(
         fields$form_name == form_name &
-          fields$field_name %in% colnames(raw) &
+          fields$field_name %in% colnames(denormalized) &
           fields$field_name != project$redcap$id_col
       )]
       if (length(form_field_names) == 0) {
@@ -341,23 +341,24 @@ raw_process_redcap <- function(raw, project, labelled) {
         )
       }
       # consider message for what variables you are missing with vec1_not_in_vec2
+      rows <- NULL
       if (length(form_field_names) > 0) {
         add_ons_x <- add_ons
         is_repeating_form <- form_name %in% repeating_forms
-        rows <- seq_len(nrow(raw))
+        rows <- seq_len(nrow(denormalized))
         if (is_repeating_form) {
-          if (!"redcap_repeat_instrument" %in% colnames(raw)) {
-            stop("redcap_repeat_instrument not in colnames(raw)")
+          if (!"redcap_repeat_instrument" %in% colnames(denormalized)) {
+            stop("redcap_repeat_instrument not in colnames(denormalized)")
           }
           if (is_longitudinal) {
             rows <- which(
-              raw$redcap_repeat_instrument == form_name |
-                raw$redcap_event_name %in% event_mapping$unique_event_name[which(!event_mapping$repeating &
+              denormalized$redcap_repeat_instrument == form_name |
+                denormalized$redcap_event_name %in% event_mapping$unique_event_name[which(!event_mapping$repeating &
                                                                                    event_mapping$form == form_name)]
             )
           }
           if (!is_longitudinal) {
-            rows <- which(raw$redcap_repeat_instrument == form_name)
+            rows <- which(denormalized$redcap_repeat_instrument == form_name)
           }
         }
         if (!is_repeating_form) {
@@ -365,23 +366,20 @@ raw_process_redcap <- function(raw, project, labelled) {
         }
         if (!is_repeating_form && is_longitudinal && has_repeating_forms) {
           rows <- which(
-            is.na(raw$redcap_repeat_instrument) &
-              raw$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)])
+            is.na(denormalized$redcap_repeat_instrument) &
+              denormalized$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)])
           )
         }
         if (!is_repeating_form && is_longitudinal && !has_repeating_forms) {
-          rows <- which(raw$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)]))
+          rows <- which(denormalized$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)]))
         }
         if (!is_repeating_form && !is_longitudinal && has_repeating_forms) {
-          rows <- which(is.na(raw$redcap_repeat_instrument))
+          rows <- which(is.na(denormalized$redcap_repeat_instrument))
         }
       }
       if (is_something(rows)) {
         cols <- unique(c(add_ons_x, form_field_names))
-        raw_subset <- raw[rows, cols]
-        if (labelled) {
-          raw_subset <- raw_to_labelled_form(form = raw_subset, project = project)
-        }
+        raw_subset <- denormalized[rows, cols]
         form_list[[form_name]] <- raw_subset
       }
     }

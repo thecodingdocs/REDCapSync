@@ -7,6 +7,7 @@ sync_project_oneshot <- function(
     token_name = paste0("REDCapSync_", short_name),
     sync_frequency = "daily",
     get_type = "identified",
+    labelled = TRUE,
     metadata_only = FALSE,
     batch_size_download = 2000,
     batch_size_upload = 500,

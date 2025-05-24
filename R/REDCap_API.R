@@ -439,6 +439,7 @@ get_REDCap_report <- function(project, report_id, silent = TRUE) {
 }
 #' @noRd
 get_REDCap_data <- function(project,
+                            labelled = TRUE,
                             records = NULL,
                             batch_size = 2000) {
   form_list <- list()
@@ -448,7 +449,7 @@ get_REDCap_data <- function(project,
     records = records,
     batch_size = batch_size
   )
-  form_list <- denormalized %>% normalize_redcap(project = project)
+  form_list <- denormalized %>% normalize_redcap(project = project, labelled = labelled)
   return(form_list)
 }
 #' @noRd

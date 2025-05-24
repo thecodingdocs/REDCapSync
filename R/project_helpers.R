@@ -275,7 +275,7 @@ get_key_col_list <- function(project, transform = FALSE) {
   out_list
 }
 #' @noRd
-normalize_redcap <- function(denormalized, project) {
+normalize_redcap <- function(denormalized, project, labelled) {
   forms <- project$metadata$forms
   fields <- project$metadata$fields
   events <- project$metadata$events
@@ -380,6 +380,9 @@ normalize_redcap <- function(denormalized, project) {
       if (is_something(rows)) {
         cols <- unique(c(add_ons_x, form_field_names))
         raw_subset <- denormalized[rows, cols]
+        if (labelled) {
+          raw_subset <- raw_to_labelled_form(form = raw_subset, project = project)
+        }
         form_list[[form_name]] <- raw_subset
       }
     }

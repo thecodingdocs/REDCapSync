@@ -60,6 +60,7 @@ sync <- function(
       token_name = project_details$token_name,
       sync_frequency = project_details$sync_frequency,
       get_type = project_details$get_type,
+      labelled = project_details$labelled,
       metadata_only = project_details$metadata_only,
       add_default_fields = project_details$add_default_fields,
       add_default_transformation = project_details$add_default_transformation,

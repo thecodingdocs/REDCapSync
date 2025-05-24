@@ -252,6 +252,7 @@ assert_setup_project <- function(
     add = collected
   )
   # dirpath
+  assert_logical(project$internals$labelled, len = 1, add = collected)
   assert_choice(
     project$internals$sync_frequency,
     choices = c("always", "hourly", "daily", "weekly", "monthly", "never"),

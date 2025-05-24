@@ -192,7 +192,8 @@ setup_project <- function(
       project_details <- tryCatch(
         expr = {
           suppressWarnings({
-            readRDS(file = project_details_path)
+            project_details <- readRDS(file = project_details_path)
+            project_details <- assert_project_details(project_details)
           })
         },
         error = function(e) {

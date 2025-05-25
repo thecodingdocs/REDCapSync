@@ -63,8 +63,8 @@ deidentify_data_list <- function(data_list,
     #   form[[id_cols[1]]]
     # }) %>% unlist() %>% unique()
     date_list <- Map(
-      f = function(x, cols) {
-        date_vector[which(date_vector %in% cols)]
+      f = function(x, col_names) {
+        date_vector[which(date_vector %in% col_names)]
       },
       names(data),
       lapply(data, colnames)
@@ -87,8 +87,8 @@ deidentify_data_list <- function(data_list,
       #if you have dates you already mutated no need to drop anymore
       identifiers <- identifiers[which(!identifiers %in% date_vector)]
     }
-    drop_list <- Map(function(x, cols) {
-      identifiers[which(identifiers %in% cols)]
+    drop_list <- Map(function(x, col_names) {
+      identifiers[which(identifiers %in% col_names)]
     }, names(data), lapply(data, colnames))
     drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0L]
     for (form_name in names(drop_list)) {
@@ -96,6 +96,129 @@ deidentify_data_list <- function(data_list,
         data[[form_name]][[field_name]] <- NULL
       }
     }
+  }
+  invisible(data)
+}
+filter_data_list <- function(data_list,
+                             field_names = NULL,
+                             form_names = NULL,
+                             filter_field = NULL,
+                             filter_choices = NULL,
+                             filter_list = NULL,
+                             filter_strict = TRUE) {
+  if (is.null(field_names)) field_names <- data_list %>% get_all_field_names()
+  if (is.null(form_names)) form_names <- data_list$metadata$forms$form_name
+  field_names_minus <- field_names[which(!field_names %in% data_list$redcap$raw_structure_cols)]
+  if (length(field_names_minus) > 0) {
+    form_names_minus <- data_list %>%
+      field_names_to_form_names(
+        field_names = field_names_minus,
+        transform = transform,
+        strict = TRUE
+      )
+    form_names <- form_names %>% vec1_in_vec2(form_names_minus)
+  }
+  missing_filter <- is.null(filter_list) &&
+    is.null(filter_choices) &&
+    is.null(filter_field)
+  out_list <- list()
+  if (is.null(filter_list)) {
+    if (!is.null(filter_field) && !is.null(filter_choices)) {
+      filter_list <- list(filter_choices)
+      names(filter_list) <- filter_field
+    }
+  } else {
+    if (!is.null(filter_field) || !is.null(filter_choices)) {
+      cli_alert_warning("use `filter_list` only... or `filter_field` & `filter_choices`")
+    }
+  }
+  filter_field_names <- NULL
+  if (!is.null(filter_list)) {
+    filter_field_names <- filter_list %>%
+      names() %>%
+      drop_if("")
+    # should be unique
+    # filter_field_names %>% vec1_not_in_vec2(data_list$metadata$fields$field_name) # should be empty
+    filter_form <- data_list %>% field_names_to_form_names(field_names = filter_field_names)
+    if (length(filter_field_names) == 1L) {
+      if (filter_field_names == data_list$redcap$id_col) {
+        filter_form <- data_list$metadata$forms$form_name[1L] # RISKY? id_position
+      }
+    }
+    # should be length 1
+    if (length(filter_form) > 1) {
+      stop("You can only filter_list by multiple columns part of one single reference form")
+    }
+    form_key_cols <- data_list$metadata$form_key_cols %>%
+      unlist() %>%
+      unique()
+    is_key <- all(filter_field_names %in% form_key_cols)
+    is_repeating_filter_form <- filter_form %in% data_list$metadata$forms$form_name[which(data_list$metadata$forms$repeating)]
+  }
+  # can use this to have repeats capture non-rep events
+  for (form_name in form_names) {
+    form <- data_list$data[[form_name]]
+    if (is_something(form)) {
+      row_index <- seq_len(nrow(form))
+      if (!is.null(filter_list)) {
+        row_logic <- NULL
+        for (filter_field_name in filter_field_names) {
+          filter_field_final <- filter_field_name
+          filter_choices_final <- filter_list[[filter_field_name]]
+          if (!filter_strict) {
+            if (!is_key) { # need to account for instances
+              if (form_name != filter_form) {
+                filter_field_final <- data_list$redcap$id_col
+                filter_choices_final <- data_list$data[[filter_form]][[filter_field_final]][which(data_list$data[[filter_form]][[filter_field_name]] %in% filter_choices_final)] %>% unique()
+              }
+            }
+          }
+          index_test <- rep(FALSE, nrow(form))
+          if (filter_field_final %in% colnames(data_list$data[[form_name]])) {
+            index_test <- data_list$data[[form_name]][[filter_field_final]] %in% filter_choices_final
+          }
+          if (is.null(row_logic)) {
+            row_logic <- index_test
+          }
+          field_index <- which(names(filter_list) == filter_field_name)
+          op_index <- (field_index - 1)
+          if (op_index <= length(filter_list)) {
+            if (field_index != 1) {
+              is_and <- filter_list[[op_index]] == "and"
+              if (is_and) {
+                row_logic <- row_logic & index_test
+              } else {
+                row_logic <- row_logic | index_test
+              }
+            }
+          }
+        }
+        if (is.null(row_logic)) row_logic <- NA
+        row_index <- which(row_logic)
+      }
+      field_names_adj <- c(field_names,filter_field_names)
+      # if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(form_name, data_list, original_only = FALSE))
+      col_names <- colnames(form)[which(colnames(form) %in% field_names_adj)]
+      if (length(row_index) > 0 && length(col_names) > 0) {
+        col_names <- colnames(form)[which(colnames(form) %in% unique(c(data_list$metadata$form_key_cols[[form_name]], field_names_adj)))]
+        out_list[[form_name]] <- form[row_index, col_names, drop = FALSE]
+      }
+    }
+  }
+  invisible(out_list)
+}
+#' @noRd
+clean_data_list <- function(data_list, drop_blanks = TRUE, drop_others = NULL) {
+  #assert data list
+  data <- data_list$data
+  metadata <- data_list$metadata
+  for (form_name in names(data)) {
+    data[[form_name]] <- clean_form(
+      form = data[[form_name]],
+      fields = metadata$fields,
+      drop_blanks = drop_blanks,
+      drop_others = drop_others
+    )
   }
   invisible(data)
 }
@@ -303,10 +426,10 @@ normalize_redcap <- function(denormalized, project, labelled) {
         all.x = TRUE
       )
       add_ons <- add_ons[which(add_ons %in% colnames(denormalized))]
-      cols <- c(add_ons, colnames(denormalized)) %>% unique()
+      col_names <- c(add_ons, colnames(denormalized)) %>% unique()
       denormalized <- denormalized[
         order(denormalized$id_temp),
-        cols %>% lapply(function(c) {
+        col_names %>% lapply(function(c) {
           which(colnames(denormalized) == c)
         }) %>%
           unlist() %>%
@@ -341,45 +464,45 @@ normalize_redcap <- function(denormalized, project, labelled) {
         )
       }
       # consider message for what variables you are missing with vec1_not_in_vec2
-      rows <- NULL
+      row_index <- NULL
       if (length(form_field_names) > 0) {
         add_ons_x <- add_ons
         is_repeating_form <- form_name %in% repeating_forms
-        rows <- seq_len(nrow(denormalized))
+        row_index <- seq_len(nrow(denormalized))
         if (is_repeating_form) {
           if (!"redcap_repeat_instrument" %in% colnames(denormalized)) {
             stop("redcap_repeat_instrument not in colnames(denormalized)")
           }
           if (is_longitudinal) {
-            rows <- which(
+            row_index <- which(
               denormalized$redcap_repeat_instrument == form_name |
                 denormalized$redcap_event_name %in% event_mapping$unique_event_name[which(!event_mapping$repeating &
                                                                                    event_mapping$form == form_name)]
             )
           }
           if (!is_longitudinal) {
-            rows <- which(denormalized$redcap_repeat_instrument == form_name)
+            row_index <- which(denormalized$redcap_repeat_instrument == form_name)
           }
         }
         if (!is_repeating_form) {
           add_ons_x <- add_ons_x[which(!add_ons_x %in% c("redcap_repeat_instrument", "redcap_repeat_instance"))]
         }
         if (!is_repeating_form && is_longitudinal && has_repeating_forms) {
-          rows <- which(
+          row_index <- which(
             is.na(denormalized$redcap_repeat_instrument) &
               denormalized$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)])
           )
         }
         if (!is_repeating_form && is_longitudinal && !has_repeating_forms) {
-          rows <- which(denormalized$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)]))
+          row_index <- which(denormalized$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)]))
         }
         if (!is_repeating_form && !is_longitudinal && has_repeating_forms) {
-          rows <- which(is.na(denormalized$redcap_repeat_instrument))
+          row_index <- which(is.na(denormalized$redcap_repeat_instrument))
         }
       }
-      if (is_something(rows)) {
-        cols <- unique(c(add_ons_x, form_field_names))
-        raw_subset <- denormalized[rows, cols]
+      if (is_something(row_index)) {
+        col_names <- unique(c(add_ons_x, form_field_names))
+        raw_subset <- denormalized[row_index, col_names]
         if (labelled) {
           raw_subset <- raw_to_labelled_form(form = raw_subset, project = project)
         }
@@ -504,10 +627,10 @@ clean_redcap_log <- function(redcap_log) {
     ]
   ] <- "Repository"
   # end ------------
-  rows <- which(is.na(redcap_log$record) & !is.na(redcap_log$record_id))
-  redcap_log$record[rows] <- redcap_log$record_id[rows]
-  rows <- which(!is.na(redcap_log$record) & is.na(redcap_log$record_id))
-  redcap_log$action_type[rows] <- "Users"
+  row_index <- which(is.na(redcap_log$record) & !is.na(redcap_log$record_id))
+  redcap_log$record[row_index] <- redcap_log$record_id[row_index]
+  row_index <- which(!is.na(redcap_log$record) & is.na(redcap_log$record_id))
+  redcap_log$action_type[row_index] <- "Users"
   redcap_log$record_id <- NULL
   redcap_log$username[which(redcap_log$username == "[survey respondent]")] <- NA
   # add drop exports?

@@ -27,16 +27,16 @@ fields_to_choices <- function(fields) {
 }
 #' @noRd
 add_labels_to_checkbox <- function(fields) {
-  rows <- which(fields$field_type == "checkbox_choice")
-  x <- fields$field_name[rows] %>%
+  row_index <- which(fields$field_type == "checkbox_choice")
+  x <- fields$field_name[row_index] %>%
     strsplit("___") %>%
     lapply(function(x) {
       x[[1]]
     }) %>%
     unlist()
-  y <- fields$field_label[rows]
+  y <- fields$field_label[row_index]
   z <- paste0(fields$field_label[match(x, fields$field_name)], " - ", y)
-  fields$field_label[rows] <- z
+  fields$field_label[row_index] <- z
   fields
 }
 #' @noRd
@@ -73,10 +73,10 @@ annotate_fields <- function(project, summarize_data = TRUE, drop_blanks = TRUE) 
     if (summarize_data) {
       skimmed <- NULL
       for (form_name in unique(fields$form_name)) {
-        cols <- fields$field_name[which(fields$form_name == form_name)]
+        col_names <- fields$field_name[which(fields$form_name == form_name)]
         form <- project$data[[form_name]]
-        cols <- cols[which(cols %in% colnames(form))]
-        skimmed <- skimmed %>% dplyr::bind_rows(form[, cols] %>% skimr::skim())
+        col_names <- col_names[which(col_names %in% colnames(form))]
+        skimmed <- skimmed %>% dplyr::bind_rows(form[, col_names] %>% skimr::skim())
       }
       field_names <- fields$field_name
       fields <- fields %>% merge(skimmed, by.x = "field_name", by.y = "skim_variable", all = TRUE)
@@ -194,21 +194,6 @@ annotate_records <- function(project) {
 #' @noRd
 fields_with_no_data <- function(project) {
   project$metadata$fields$field_name[which(is.na(project$metadata$fields$complete_rate) & !project$metadata$fields$field_type %in% .field_types_not_in_data)]
-}
-#' @noRd
-clean_data_list <- function(data_list, drop_blanks = TRUE, drop_others = NULL) {
-  #assert data list
-  data <- data_list$data
-  metadata <- data_list$metadata
-  for (form_name in names(data)) {
-    data[[form_name]] <- clean_form(
-      form = data[[form_name]],
-      fields = metadata$fields,
-      drop_blanks = drop_blanks,
-      drop_others = drop_others
-    )
-  }
-  invisible(data)
 }
 #' @noRd
 clean_form <- function(form, fields, drop_blanks = TRUE, drop_others = NULL) {
@@ -642,101 +627,15 @@ generate_project_summary <- function(
     project$metadata <- project$transformation$metadata
     project$data <- project$transformation$data
   }
-  if (is.null(field_names)) field_names <- project %>% get_all_field_names()
-  if (is.null(form_names)) form_names <- project$metadata$forms$form_name
-  field_names_minus <- field_names[which(!field_names %in% project$redcap$raw_structure_cols)]
-  if (length(field_names_minus) > 0) {
-    form_names_minus <- project %>%
-      field_names_to_form_names(
-        field_names = field_names_minus,
-        transform = transform,
-        strict = TRUE
-      )
-    form_names <- form_names %>% vec1_in_vec2(form_names_minus)
-  }
-  has_no_filter <- is.null(filter_list) &&
-    is.null(filter_choices) &&
-    is.null(filter_field)
-  if (!has_no_filter) {
-    if (is.null(filter_list)) {
-      if (!missing(filter_field) && !missing(filter_choices)) {
-        filter_list <- list(filter_choices)
-        names(filter_list) <- filter_field
-      }
-    } else {
-      if (!missing(filter_field) || !missing(filter_choices)) {
-        # warning about only using one or the other option
-      }
-    }
-    filter_field_names <- filter_list %>%
-      names() %>%
-      drop_if("")
-    # should be unique
-    # filter_field_names %>% vec1_not_in_vec2(project$metadata$fields$field_name) # should be empty
-    filter_form <- project %>% field_names_to_form_names(field_names = filter_field_names)
-    if (length(filter_field_names) == 1) {
-      if (filter_field_names == project$redcap$id_col) {
-        filter_form <- project$metadata$forms$form_name[1] # RISKY? id_position
-      }
-    }
-    # should be length 1
-    if (length(filter_form) > 1) {
-      stop("You can only filter_list by multiple columns part of one single reference form")
-    }
-    out_list <- list()
-    form_key_cols <- project$metadata$form_key_cols %>%
-      unlist() %>%
-      unique()
-    is_key <- all(filter_field_names %in% form_key_cols)
-    is_repeating_filter_form <- filter_form %in% project$metadata$forms$form_name[which(project$metadata$forms$repeating)]
-    # can use this to have repeats capture non-rep events
-    for (form_name in form_names) {
-      form <- project$data[[form_name]]
-      if (is_something(form)) {
-        row_logic <- NULL
-        for (filter_field_name in filter_field_names) {
-          filter_field_final <- filter_field_name
-          filter_choices_final <- filter_list[[filter_field_name]]
-          if (!filter_strict) {
-            if (!is_key) { # need to account for instances
-              if (form_name != filter_form) {
-                filter_field_final <- project$redcap$id_col
-                filter_choices_final <- project$data[[filter_form]][[filter_field_final]][which(project$data[[filter_form]][[filter_field_name]] %in% filter_choices_final)] %>% unique()
-              }
-            }
-          }
-          if (filter_field_final %in% colnames(project$data[[form_name]])) {
-            index_test <- project$data[[form_name]][[filter_field_final]] %in% filter_choices_final
-            if (is.null(row_logic)) {
-              row_logic <- index_test
-            }
-            field_index <- which(names(filter_list) == filter_field_name)
-            op_index <- (field_index - 1)
-            if (op_index <= length(filter_list)) {
-              if (field_index != 1) {
-                is_and <- filter_list[[op_index]] == "and"
-                if (is_and) {
-                  row_logic <- row_logic & index_test
-                } else {
-                  row_logic <- row_logic | index_test
-                }
-              }
-            }
-          }
-        }
-        if (is.null(row_logic)) row_logic <- NA
-        rows <- which(row_logic)
-        field_names_adj <- field_names
-        # if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(form_name, project, original_only = FALSE))
-        cols <- colnames(form)[which(colnames(form) %in% field_names_adj)]
-        if (length(rows) > 0 && length(cols) > 0) {
-          cols <- colnames(form)[which(colnames(form) %in% unique(c(project$metadata$form_key_cols[[form_name]], field_names_adj)))]
-          out_list[[form_name]] <- form[rows, cols, drop = FALSE]
-        }
-      }
-    }
-    project$data <- out_list
-  }
+  project$data <- filter_data_list(
+    data_list = project,
+    field_names = field_names,
+    form_names = form_names,
+    filter_field = filter_field,
+    filter_choices = filter_choices,
+    filter_list = filter_list,
+    filter_strict = filter_strict
+  )
   if (!identical(labelled,project$internals$labelled)){
     if(!labelled && project$internals$labelled){
       stop(

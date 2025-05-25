@@ -318,15 +318,15 @@ add_default_fields <- function(project) {
       field_type_R = "character",
       field_label = paste(form_label, "Compound Key"),
       data_func = function(project, field_name, form_name) {
-        cols <- project$metadata$form_key_cols[[form_name]]
+        col_names <- project$metadata$form_key_cols[[form_name]]
         form <- NULL
-        while (length(cols) > 0) {
+        while (length(col_names) > 0) {
           if (is.null(form)) {
-            form <- project$data[[form_name]][[cols[1]]]
+            form <- project$data[[form_name]][[col_names[1]]]
           } else {
-            form <- form %>% paste0("_", project$data[[form_name]][[cols[1]]])
+            form <- form %>% paste0("_", project$data[[form_name]][[col_names[1]]])
           }
-          cols <- cols[-1]
+          col_names <- col_names[-1]
         }
         form
       }
@@ -464,9 +464,7 @@ transform_project <- function(project) {
   if (needs_nothing || !has_transformation || !has_data) {
     return(invisible(project))
   }
-  if (needs_full || needs_partial) {
-    named_df_list <- project$data
-  }
+  named_df_list <- project$data
   # right now do not want to reconcile multiple uploads
   # if(needs_partial) {
   #   named_df_list <- generate_project_summary(
@@ -708,11 +706,20 @@ transform_project <- function(project) {
   project$transformation$metadata$missing_codes <-
     project$metadata$missing_codes
   #end --------
-  project$internals$last_data_transformation <- now_time()
   # row_match <- which(all_records[[id_col]]%in%new_records)
   all_records$was_transformed <- TRUE
   all_records$was_saved <- FALSE
   project$summary$all_records <- all_records
+  project$internals$last_data_transformation <- now_time()
+  saveRDS(
+    project$transformation$data,
+    file = file.path(
+      project$dir_path,
+      "R_objects",
+      paste0(project$short_name, "_REDCapSync_transformation.RData")
+    )
+  )
+  project$transformation$data <- NULL
   invisible(project)
 }
 #' @noRd

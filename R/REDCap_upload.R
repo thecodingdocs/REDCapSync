@@ -232,8 +232,8 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
   old <- old[which(old[[project$redcap$id_col]] %in% records), ]
   new <- form
   missing_structure_cols <- cols_mandatory[which(!cols_mandatory %in% colnames(new))]
-  cols <- cols_mandatory[which(cols_mandatory %in% colnames(new))]
-  new <- new[, cols]
+  col_names <- cols_mandatory[which(cols_mandatory %in% colnames(new))]
+  new <- new[, col_names]
   included_records <- records[which(records %in% old[[project$redcap$id_col]])]
   if (length(missing_structure_cols) > 0) {
     included_records_many_rows <- included_records[which(unlist(lapply(included_records, function(record) {

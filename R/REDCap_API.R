@@ -71,11 +71,11 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
       stringsAsFactors = FALSE
     )
     last_row <- nrow(project$metadata$fields)
-    rows <- which(project$metadata$fields$form_name == form_name)
-    if (length(rows) == 0) {
-      rows <- last_row
+    row_index <- which(project$metadata$fields$form_name == form_name)
+    if (length(row_index) == 0) {
+      row_index <- last_row
     }
-    row <- dplyr::last(rows)
+    row <- dplyr::last(row_index)
     top <- project$metadata$fields[1:row, ]
     bottom <- NULL
     if (last_row > row) {

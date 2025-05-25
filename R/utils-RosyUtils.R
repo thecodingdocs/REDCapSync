@@ -187,12 +187,12 @@ find_form_diff <- function(new, old, ref_cols = NULL, message_pass = "") {
     }
   }
   if (nrow(indices) > 0) {
-    rows <- indices$row %>%
+    row_index <- indices$row %>%
       unique() %>%
       sort()
-    cols <- which(colnames(new) %in% ref_cols) %>%
+    col_names <- which(colnames(new) %in% ref_cols) %>%
       append(indices$col %>% unique() %>% sort())
-    out_form <- new[rows, cols]
+    out_form <- new[row_index, col_names]
     message(message_pass, nrow(out_form), " rows have updates")
   } else {
     out_form <- NULL
@@ -244,8 +244,8 @@ find_form_diff2 <- function(new,
   placeholder <- "NA_placeholder"
   rows_to_keep <- NULL
   cols_to_view <- cols_to_keep <- which(colnames(merged_df) %in% ref_cols)
-  cols <- colnames(new)[which(!colnames(new) %in% ref_cols)]
-  for (col in cols) {
+  col_names <- colnames(new)[which(!colnames(new) %in% ref_cols)]
+  for (col in col_names) {
     vector1 <- merged_df[[col]]
     compare_column <- paste0(col, appended_old_col_suffix)
     vector2 <- merged_df[[compare_column]]

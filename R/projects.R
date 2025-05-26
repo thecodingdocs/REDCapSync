@@ -379,7 +379,7 @@ save_project_details <- function(project, silent = TRUE) {
   assert_logical(silent, len = 1)
   project_details <- extract_project_details(project)
   add_project_details_to_cache(project_details)
-  save_project_details_path <- get_project_details_path(project = project)
+  save_project_details_path <- get_project_path2(project, type = "details")
   current_function <- as.character(current_call())[[1]]
   if (is_something(save_project_details_path)) {
     if (file.exists(save_project_details_path)) {

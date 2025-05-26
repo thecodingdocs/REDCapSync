@@ -242,11 +242,9 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
     project_names <- project_names[which(project_names %in% all_project_names)]
     for (project_name in project_names) {
       from_cache <- project_list[[project_name]]
-      expected_path <- file.path(
-        from_cache$dir_path,
-        "R_objects",
-        paste0(project_name, .project_details_path_suffix)
-      ) %>% sanitize_path()
+      expected_path <- get_project_path(short_name = project_name,
+                                        dir_path = from_cache$dir_path,
+                                        type = "details")
       if (file.exists(expected_path)) {
         to_cache <- tryCatch(
           expr = {

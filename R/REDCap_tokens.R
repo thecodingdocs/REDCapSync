@@ -149,8 +149,6 @@ get_REDCap_token_name <- function(project) {
   }
   token_name
 }
-.project_path_suffix <- "_REDCapSync.RData"
-.project_details_path_suffix <- "_REDCapSync_details.RData"
 #' @noRd
 .token_prefix <- "REDCapSync_"
 #' @noRd

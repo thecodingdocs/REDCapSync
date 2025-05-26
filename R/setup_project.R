@@ -186,11 +186,9 @@ setup_project <- function(
   was_loaded <- FALSE
   original_details <- NULL
   if (!in_proj_cache && !missing_dir_path) {
-    project_details_path <- file.path(
-      dir_path,
-      "R_objects",
-      paste0(short_name, .project_details_path_suffix)
-    )
+    project_details_path <- get_project_path(short_name = short_name,
+                                             dir_path = dir_path,
+                                             type = "details")
     if (file.exists(project_details_path)) {
       project_details <- tryCatch(
         expr = {
@@ -323,41 +321,69 @@ setup_project <- function(
   save_project_details(project)
   invisible(project)
 }
-get_project_path <- function(project) {
-  assert_setup_project(project)
-  file_path <- file.path(
-    project$dir_path,
-    "R_objects",
-    paste0(project$short_name, .project_path_suffix)
-  )
+get_project_path <- function(short_name,
+                             dir_path,
+                             type = "",
+                             check_dir = FALSE) {
+  assert_env_name(short_name)
+  if (check_dir) {
+    assert_dir(dir_path)
+  }
+  checkmate::assert_choice(type, .project_file_types)
+  file_name <- paste0(short_name, "_REDCapSync")
+  if(type != "") file_name <- file_name %>% paste0("_",type)
+  file_name <- file_name %>% paste0(".RData")
+  file_path <- file.path(project$dir_path, "R_objects", file_name)
   sanitize_path(file_path)
 }
-get_project_details_path <- function(project) {
+get_project_path2 <- function(project,
+                             type = "",
+                             check_dir = FALSE) {
   assert_setup_project(project)
-  file_path <- file.path(
-    project$dir_path,
-    "R_objects",
-    paste0(project$short_name, .project_details_path_suffix)
+  short_name <- project$short_name
+  dir_path <- project$dir_path
+  get_project_path(
+    short_name = short_name,
+    dir_path = dir_path,
+    type = type,
+    check_dir = check_dir
   )
-  sanitize_path(file_path)
 }
+.project_file_types <- c("","transformation","details")
+.project_path_suffix <- "_REDCapSync.RData"
 #' @rdname setup-load
 #' @export
 load_project <- function(short_name) {
   #add load by path option
   projects <- get_projects()
-  if (nrow(projects) == 0) stop("No projects in cache")
-  if (!short_name %in% projects$short_name) stop("No project named ", short_name, " in cache. Did you use `setup_project()` and `sync_project()`?")
-  dir_path <- projects$dir_path[which(projects$short_name == short_name)] %>% sanitize_path()
+  if (nrow(projects) == 0) {
+    stop("No projects in cache")
+  }
+  if (!short_name %in% projects$short_name) {
+    stop(
+      "No project named ",
+      short_name,
+      " in cache. Did you use `setup_project()` and `sync_project()`?"
+    )
+  }
+  dir_path <- projects$dir_path[which(projects$short_name == short_name)] %>%
+    sanitize_path()
   assert_dir(dir_path)
-  if (!file.exists(dir_path)) stop("`dir_path` doesn't exist: '", dir_path, "'")
-  project_path <- file.path(
-    dir_path,
-    "R_objects",
-    paste0(short_name, .project_path_suffix)
+  if (!file.exists(dir_path)) {
+    stop("`dir_path` doesn't exist: '", dir_path, "'")
+  }
+  project_path <- get_project_path(
+    short_name = short_name,
+    dir_path = dir_path
   )
   assert_project_path(project_path)
-  if (!file.exists(project_path)) stop("No file at path '", project_path, "'. Did you use `setup_project()` and `sync_project()`?")
+  if (!file.exists(project_path)) {
+    stop(
+      "No file at path '",
+      project_path,
+      "'. Did you use `setup_project()` and `sync_project()`?"
+    )
+  }
   project <- readRDS(file = project_path)
   project <- project %>% assert_setup_project(silent = FALSE)
   #   check if in cache already and relation!
@@ -367,13 +393,12 @@ load_project <- function(short_name) {
     cli_alert_warning("loaded dir_path did not match your cached dir_path. This should only happen with cloud/shared directories.")
   }
   project$dir_path <- dir_path
-  project_details_path <- get_project_details_path(project)
-  project_details <- readRDS(file = project_details_path)
+  project_details_path <- get_project_path2(project, type = "details")
   project <- add_project_details_to_project(
     project = project,
-    project_details = project_details
+    project_details = readRDS(file = project_details_path)
   )
-  project$dir_path <- dir_path
+  project$dir_path <- dir_path # why twice?
   save_project_details(project)
   invisible(project)
 }
@@ -447,7 +472,7 @@ save_project <- function(project, silent = FALSE) {
     return(invisible(project))
   }
   project$internals$last_directory_save <- now_time()
-  save_project_path <- get_project_path(project = project)
+  save_project_path <- get_project_path2(project = project)
   saveRDS(
     object = project,
     file = save_project_path
@@ -467,15 +492,20 @@ delete_project <- function(project) {
   project <- assert_blank_project(project)
   dir_path <- project$dir_path
   dir_path <- assert_dir(dir_path, silent = FALSE)
-  delete_this <- get_project_path(project)
-  delete_this_too <- get_project_details_path(project)
-  if (file.exists(delete_this)) {
-    unlink(delete_this)
-    unlink(delete_this_too)
+  deleted_stuff <- FALSE
+  for (type in .project_file_types) {
+    delete_this <- get_project_path2(project, type = type)
+    if (file.exists(delete_this)) {
+      unlink(delete_this)
+      deleted_stuff <- TRUE
+    }
+  }
+  if (deleted_stuff) {
     cli_alert_wrap("Deleted saved project", bullet_type = "v")
   } else {
     warning("The project object you wanted to is not there. Did you delete already? ", delete_this)
   }
+  invisible()
 }
 #' @noRd
 get_dir <- function(project) {

@@ -411,7 +411,7 @@ add_default_summaries <- function(project,
   project <- add_project_summary(
     project = project,
     summary_name = summary_name,
-    transform = TRUE,
+    transform = project$internals$is_transformed,
     filter_list = NULL,
     exclude_identifiers = exclude_identifiers,
     exclude_free_text = exclude_free_text,
@@ -710,16 +710,18 @@ transform_project <- function(project) {
   all_records$was_transformed <- TRUE
   all_records$was_saved <- FALSE
   project$summary$all_records <- all_records
+  # if(project$internals$offload_transformation){
+  #   saveRDS(
+  #     project$transformation$data,
+  #     file = get_project_path2(
+  #       project = project,
+  #       type = "transformation",
+  #       check_dir = TRUE
+  #     )
+  #   )
+  #   project$transformation$data <- NULL
+  # }
   project$internals$last_data_transformation <- now_time()
-  saveRDS(
-    project$transformation$data,
-    file = file.path(
-      project$dir_path,
-      "R_objects",
-      paste0(project$short_name, "_REDCapSync_transformation.RData")
-    )
-  )
-  project$transformation$data <- NULL
   invisible(project)
 }
 #' @noRd

@@ -127,6 +127,7 @@ sync_project <- function(
     if (hard_reset) {
       project <- project %>% get_REDCap_metadata(include_users = !project$internals$metadata_only)
       # project$internals$is_transformed <- FALSE
+      project <- clear_project_transformation(project)
       if (!project$internals$metadata_only) {
         project$data <- list()
         project$data_updates <- list()

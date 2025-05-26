@@ -744,7 +744,7 @@ clear_project_transformation <- function(project) {
     data_updates = NULL
   )
   project$internals$is_transformed <- FALSE
-  if(nrow(project$summary$all_records)>0){
+  if(length(project$summary$all_records$was_transformed)>0){
     project$summary$all_records$was_transformed <- FALSE
   }
   transformation_path <- get_project_path2(project, type = "transformation")

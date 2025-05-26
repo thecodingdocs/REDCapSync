@@ -223,6 +223,11 @@ add_project_field <- function(
     dplyr::bind_rows(field_row)
   project$transformation$field_functions[[field_name]] <-
     data_func %>% clean_function()
+  if(is_something(project$summary$all_records)){
+    if(nrow(project$summary$all_records)>0){
+      project$summary$all_records$was_transformed <- FALSE
+    }
+  }
   message("added '", field_name, "' column")
   invisible(project)
 }

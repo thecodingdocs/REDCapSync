@@ -113,7 +113,6 @@ filter_data_list <- function(data_list,
     form_names_minus <- data_list %>%
       field_names_to_form_names(
         field_names = field_names_minus,
-        transform = transform,
         strict = TRUE
       )
     form_names <- form_names %>% vec1_in_vec2(form_names_minus)

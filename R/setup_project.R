@@ -333,7 +333,7 @@ get_project_path <- function(short_name,
   file_name <- paste0(short_name, "_REDCapSync")
   if(type != "") file_name <- file_name %>% paste0("_",type)
   file_name <- file_name %>% paste0(".RData")
-  file_path <- file.path(project$dir_path, "R_objects", file_name)
+  file_path <- file.path(dir_path, "R_objects", file_name)
   sanitize_path(file_path)
 }
 get_project_path2 <- function(project,

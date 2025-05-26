@@ -1,21 +1,3 @@
-#' @title upload_transform_to_project Transform
-#' @inheritParams save_project
-#' @return project object
-#' @export
-upload_transform_to_project <- function(project) {
-  if (is_something(project$transformation$data_updates)) {
-    for (i in seq_along(project$transformation$data_updates)) {
-      project$transformation$data_updates[[i]] %>%
-        labelled_to_raw_form(project) %>%
-        upload_form_to_REDCap(project)
-    }
-    cli_alert_wrap("Successfully uploaded to REDCap!", bullet_type = "v")
-    project$transformation$data_updates <- list()
-  } else {
-    cli_alert_wrap("Nothing to upload!")
-  }
-  invisible(project)
-}
 #' @rdname default-transformations
 #' @title Add Default Forms Transformation to the Database
 #' @description

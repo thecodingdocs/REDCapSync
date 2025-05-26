@@ -83,7 +83,6 @@ reference:
       - get_REDCap_report
       - upload_project_to_REDCap
       - upload_form_to_REDCap
-      - upload_transform_to_project
   - subtitle: Experimental/Dev Functions
     desc: These functions are still in development and is subject to changes.
     contents:

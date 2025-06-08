@@ -16,51 +16,34 @@ knitr::opts_chunk$set(
 This is how you get REDCap turned into an R database...
 ```{r example, eval=FALSE}
 library(REDCapSync)
-projects <- get_projects() # get list of cached projects
-View(projects) # show your previously saved projects
-project <- setup_project(
-  short_name = "TEST_repeating",
-  redcap_base = "https://redcap.miami.edu/", # change to your institutions link
-  dir_path = getwd(), # or change to your intended file path
-  # force = T, # use this to force a refresh
-  merge_form_name = "patient",
-  use_csv = FALSE, # if you don't have Microsoft change to TRUE
-  auto_check_token = TRUE
-)
+
+projects <- get_projects()                         # get list of cached projects
+
+View(projects)                             # show your previously saved projects
 ```
 You can set your REDCap token in two ways! If you need more help setting your tokens see this article --> placeholder
 ```{r example2, eval=FALSE}
 #1. set each time in your session (not recommended in saved/shared scripts!)
-Sys.setenv(REDCapSync_TEST = "YoUrNevErShaReToken")
+Sys.setenv(REDCapSync_TEST1 = "YoUrNevErShaReToken")
 #2. set to your private R sessions!
-usethis::edit_r_environ() #finds your file
+usethis::edit_r_environ()                                       #finds your file
 # Then you add --> REDCapSync_TEST = 'YoUrNevErShaReToken'
 # then save file and restart R
 # If it worked you will see your token when you run...
-Sys.getenv("REDCapSync_TEST")
-#And if your project object is setup properly...
-project<-load_project("TEST")
-view_project_token(project)
+Sys.getenv("REDCapSync_TEST1")
 ```
 ## Run Core Functions
 The following functions represent the core functions of the package.
 ```{r , eval=FALSE}
-project <- update_project(project) # update from redcap by checking log and using saved object 
-project <- add_forms_transformation_to_project(project,forms_tranformation = default_forms_transformation(project))
-project <- transform_project(project) # transform to most basic forms, can be modified
-project <- drop_redcap_dir(project)
-#run shiny app!
-run_REDCapSync()
-# dev functions not ready for public yet
-project <- clean_project(project)
-project <- summarize_project(project) #can use for subsets!
-project <- summarize_project(project)
-project %>% save_summary() # will save summary data, look at the tabs!
+project <- setup_project(
+  short_name = "TEST1",                #must match token pattern REDCapSync_**** 
+  redcap_base = "https://redcap.miami.edu/",  # change to your institutions link
+  dir_path = getwd(),                     # or change to your intended file path
+)
+project <- sync_project(project) 
 ```
 ## Explore Outputs!
 ```{r , eval=FALSE}
-project$metadata %>% add_list_to_global()
-project$data %>% add_list_to_global()
-#project$summary %>% add_list_to_global() #not ready for public
-listviewer::jsonedit(project) # view object
+project$metadata %>% list2env(envir = global_env())
+project$data %>% list2env(envir = global_env())
 ```

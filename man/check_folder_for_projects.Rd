@@ -31,3 +31,4 @@ It identifies files with the extension \code{.RData} and names ending in
 \seealso{
 \link{setup_project} for setting up valid directories.
 }
+\keyword{internal}

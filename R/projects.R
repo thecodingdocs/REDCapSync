@@ -50,6 +50,7 @@ get_projects <- function() {
 #'
 #' @seealso
 #' \link{setup_project} for setting up valid directories.
+#' @keywords internal
 check_folder_for_projects <- function(file_path, validate = TRUE) {
   check_path <- file_path
   if (validate) {

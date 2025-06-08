@@ -2,8 +2,7 @@
 % Please edit documentation in R/summarize_project.R
 \name{clear_project_summaries}
 \alias{clear_project_summaries}
-\title{clear_project_summaries
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}}
+\title{clear_project_summaries}
 \usage{
 clear_project_summaries(project)
 }
@@ -13,6 +12,5 @@ and
 settings. Generated using \link{load_project} or \link{setup_project}}
 }
 \description{
-clear_project_summaries
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }

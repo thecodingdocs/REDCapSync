@@ -26,10 +26,10 @@ reference:
   - title: Core Pipeline Functions (Basic)
     desc: For basic users use these core functions to maintain REDCap data pipelines. Setup or Load your project. Update from REDCap using what is already saved. Save the outputs to a directory.
     contents:
-      - sync
       - get_projects
       - setup_project
       - sync_project
+      - sync
   - title: Everything by Topic (Intermediate/Advanced)
     desc: Expands on functionality and breaksdown core feautures into more customizable parts
   - subtitle: Project Cache
@@ -38,8 +38,6 @@ reference:
       - get_projects
       - cache_clear
       - cache_path
-      - check_folder_for_projects
-      - project_health_check
   - subtitle: Tokens
     desc: Tokens are required to use the REDCap API. Never share your tokens.
     contents:
@@ -55,8 +53,8 @@ reference:
   - subtitle: Sync Functions
     desc: Run Syncs on periodic bases; sync is "hands-free", while sync_project uses project object in the environment.
     contents:
-      - sync
       - sync_project
+      - sync
   - subtitle: project setup Object Modifications
     desc: One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
     contents:

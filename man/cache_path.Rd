@@ -32,8 +32,7 @@ For more details, see \code{\link[hoardr]{hoard}}.
 
 Other Project Cache Functions: 
 \code{\link{cache_clear}()},
-\code{\link{get_projects}()},
-\code{\link{project_health_check}()}
+\code{\link{get_projects}()}
 }
 \concept{Project Cache Functions}
 \keyword{Cache}

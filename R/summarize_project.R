@@ -710,6 +710,7 @@ summarize_project <- function(
   invisible(project)
 }
 #' @title clear_project_summaries
+#' @description
 #' `r lifecycle::badge("experimental")`
 #' @inheritParams save_project
 #' @export
@@ -726,9 +727,9 @@ clear_project_summaries <- function(project) {
   invisible(project)
 }
 #' @title clear_project_transformation
-#' `r lifecycle::badge("experimental")`
 #' @inheritParams save_project
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' Clears and project fields that were added with `add_project_fields()` and
 #' form_transformations added with `add_project_transformation()` ...
 #' or if `setup_project()` contained `add_default_fields = TRUE` or

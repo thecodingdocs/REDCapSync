@@ -2,8 +2,7 @@
 % Please edit documentation in R/summarize_project.R
 \name{clear_project_transformation}
 \alias{clear_project_transformation}
-\title{clear_project_transformation
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}}
+\title{clear_project_transformation}
 \usage{
 clear_project_transformation(project)
 }
@@ -13,6 +12,7 @@ and
 settings. Generated using \link{load_project} or \link{setup_project}}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Clears and project fields that were added with \code{add_project_fields()} and
 form_transformations added with \code{add_project_transformation()} ...
 or if \code{setup_project()} contained \code{add_default_fields = TRUE} or

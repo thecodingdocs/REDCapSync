@@ -269,6 +269,10 @@ setup_project <- function(
   }
   if (!missing_dir_path) {
     project$dir_path <- set_dir(dir_path) # will also ask user if provided dir is new or different (will load from original but start using new dir)
+    dir.create(
+      path = file.path(project$dir_path, "REDCap", short_name),
+      showWarnings = FALSE
+    )
   }
   project$short_name <- short_name
   project$redcap$token_name <- token_name

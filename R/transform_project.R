@@ -393,10 +393,18 @@ add_default_summaries <- function(project,
     file_name = project$short_name
   )
   summary_name <- "REDCapSync"
+  transform <- FALSE
+  if(project$internals$is_transformed||
+     is_something(project$transformation$forms)||
+     is_something(project$transformation$fields)
+  ){
+    transform <- TRUE
+  }
+  !is_something(project$transformation$forms)
   project <- add_project_summary(
     project = project,
     summary_name = summary_name,
-    transform = project$internals$is_transformed,
+    transform = transform,
     filter_list = NULL,
     exclude_identifiers = exclude_identifiers,
     exclude_free_text = exclude_free_text,

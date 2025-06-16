@@ -621,8 +621,9 @@ nav_to_dir <- function(project) {
     redcap_record_home = NULL,
     redcap_record_subpage = NULL,
     redcap_records_dashboard = NULL,
-    redcap_api = NULL,
-    redcap_api_playground = NULL,
+    redcap_API = NULL,
+    redcap_API_playground = NULL,
+    redcap_codebook = NULL,
     pkgdown = "https://thecodingdocs.github.io/REDCapSync/",
     github = "https://github.com/thecodingdocs/REDCapSync/",
     thecodingdocs = "https://www.thecodingdocs.com/"
@@ -711,8 +712,8 @@ nav_to_dir <- function(project) {
     redcap_record_home = NULL,
     redcap_record_subpage = NULL,
     redcap_records_dashboard = NULL,
-    redcap_api = NULL,
-    redcap_api_playground = NULL,
+    redcap_API = NULL,
+    redcap_API_playground = NULL,
     pkgdown = "https://thecodingdocs.github.io/REDCapSync/",
     github = "https://github.com/thecodingdocs/REDCapSync/",
     thecodingdocs = "https://www.thecodingdocs.com/"

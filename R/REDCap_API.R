@@ -240,6 +240,20 @@ update_project_links <- function(project) {
     "/API/playground.php?pid=",
     project$redcap$project_id
   )
+  project$links$redcap_codebook <- paste0(
+    project$links$redcap_base,
+    "redcap_v",
+    project$redcap$version,
+    "/Design/data_dictionary_codebook.php?pid=",
+    project$redcap$project_id
+  )
+  project$links$redcap_user_rights <- paste0(
+    project$links$redcap_base,
+    "redcap_v",
+    project$redcap$version,
+    "/UserRights/index.php?pid=",
+    project$redcap$project_id
+  )
   invisible(project)
 }
 #' @noRd

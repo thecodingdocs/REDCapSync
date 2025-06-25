@@ -14,6 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
+Here is how to set up a project object. First, load the REDCapSync package.
 ```{r setup, eval=FALSE}
 library(REDCapSync)
 ```

@@ -347,6 +347,7 @@ get_REDCap_log <- function(project,
   if(log_begin_date == Sys.Date()){
     log_begin_date <- log_begin_date - 1 # keep getting errors for same day checks?
   }
+  # If redcap_log_read() errors, log is set to NULL
   log <- tryCatch(
     expr = {
       REDCapR::redcap_log_read(

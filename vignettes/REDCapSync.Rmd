@@ -44,6 +44,6 @@ project <- sync_project(project)
 ```
 ## Explore Outputs!
 ```{r , eval=FALSE}
-project$metadata %>% list2env(envir = global_env())
-project$data %>% list2env(envir = global_env())
+project$metadata %>% list2env(envir = globalenv())
+project$data %>% list2env(envir = globalenv())
 ```

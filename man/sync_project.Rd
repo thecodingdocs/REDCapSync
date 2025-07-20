@@ -22,7 +22,7 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 \item{set_token_if_fails}{Logical (TRUE/FALSE). If TRUE, prompts the user to
 set the REDCap API token if the update fails. Default is \code{TRUE}.}
 
-\item{reset}{Logical that forces a fresh update if TRUE. Default is \code{FALSE}.}
+\item{reset}{Logical. Forces a fresh update if TRUE. Default is \code{FALSE}.}
 
 \item{silent}{Logical (TRUE/FALSE). For messages.}
 
@@ -35,7 +35,7 @@ before overwriting existing data. Default is \code{TRUE}.}
 the directory. Default is \code{TRUE}.}
 }
 \value{
-Messages for confirmation.
+Invisibly returns the full path to the new project root.
 }
 \description{
 Updates the REDCap database (\code{project} object) by fetching the latest data
@@ -47,6 +47,9 @@ the REDCap server. It supports various options such as forcing a fresh
 update, checking logs for a specified number of days, and retrieving files
 from REDCap. The function can also handle metadata-only updates and batch
 processing.
+}
+\examples{
+sync_project(MyProject)
 }
 \seealso{
 \link{setup_project} for initializing the \code{project} object.

@@ -13,16 +13,18 @@
 #' @inheritParams save_project
 #' @param set_token_if_fails Logical (TRUE/FALSE). If TRUE, prompts the user to
 #' set the REDCap API token if the update fails. Default is `TRUE`.
-#' @param reset Logical that forces a fresh update if TRUE. Default is `FALSE`.
+#' @param reset Logical. Forces a fresh update if TRUE. Default is `FALSE`.
 #' @param ask_about_overwrites Logical (TRUE/FALSE). If TRUE, prompts the user
 #' before overwriting existing data. Default is `TRUE`.
 #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
 #' the directory. Default is `TRUE`.
-#' @return Messages for confirmation.
+#' @returns Invisibly returns the full path to the new project root.
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.
 #' @family db_functions
+#' @examples
+#' sync_project(MyProject)
 #' @export
 sync_project <- function(
     project,

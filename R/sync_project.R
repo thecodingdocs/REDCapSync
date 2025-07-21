@@ -24,7 +24,7 @@
 #' \link{setup_project} for initializing the `project` object.
 #' @family db_functions
 #' @examples
-#' sync_project(
+#' MyProject <- sync_project(
 #'   project = MyProject,
 #'   set_token_if_fails = TRUE,
 #'   reset = FALSE,

@@ -49,7 +49,15 @@ from REDCap. The function can also handle metadata-only updates and batch
 processing.
 }
 \examples{
-sync_project(MyProject)
+sync_project(
+  project = MyProject,
+  set_token_if_fails = TRUE,
+  reset = FALSE,
+  silent = FALSE,
+  ask_about_overwrites = TRUE,
+  summarize = TRUE,
+  save_to_dir = TRUE
+)
 }
 \seealso{
 \link{setup_project} for initializing the \code{project} object.

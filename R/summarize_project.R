@@ -501,7 +501,10 @@ save_summary <- function(project, summary_name) {
   header_df_list <- to_save_list %>%
     construct_header_list(fields = project$metadata$fields) %>%
     process_df_list(silent = TRUE)
-  key_cols_list <- construct_key_col_list(project)
+  key_cols_list <- project$metadata$form_key_cols
+  if(summary_list$transform){
+    key_cols_list <- project$transformation$metadata$form_key_cols
+  }
   if (summary_name == "REDCapSync_raw") {
     header_df_list <- NULL
     key_cols_list <- NULL

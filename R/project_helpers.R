@@ -362,19 +362,19 @@ link_REDCap_record <- function(project,
   utils::browseURL(link)
 }
 #' @noRd
-construct_key_col_list <- function(project) {
-  form_list <- project$data
-  data_field_list <- form_list %>% lapply(colnames)
-  form_names <- names(form_list)
-  key_cols_list <- form_names %>% lapply(function(form_name) {
-    key_cols <- which(
-      data_field_list[[form_name]] %in% project$redcap$raw_structure_cols
-    )
-    data_field_list[[form_name]][key_cols]
-  })
-  names(key_cols_list) <- form_names
-  key_cols_list
-}
+# construct_key_col_list <- function(project) {
+#   form_list <- project$data
+#   data_field_list <- form_list %>% lapply(colnames)
+#   form_names <- names(form_list)
+#   key_cols_list <- form_names %>% lapply(function(form_name) {
+#     key_cols <- which(
+#       data_field_list[[form_name]] %in% project$redcap$raw_structure_cols
+#     )
+#     data_field_list[[form_name]][key_cols]
+#   })
+#   names(key_cols_list) <- form_names
+#   key_cols_list
+# }
 #' @noRd
 get_key_col_list <- function(project, transform = FALSE) {
   forms <- project$metadata$forms

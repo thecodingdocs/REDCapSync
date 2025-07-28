@@ -485,7 +485,11 @@ save_summary <- function(project, summary_name) {
   link_col_list <- list()
   if (summary_list$with_links) {
     if (project$internals$project_type == "redcap") {
-      add_links <- which(names(to_save_list) %in% names(project$data))
+      form_names <- names(project$data)
+      if(summary_list$transform){
+        form_names <- names(project$transformation$data)
+      }
+      add_links <- which(names(to_save_list) %in% form_names)
       if (length(add_links) > 0) {
         to_save_list[add_links] <- to_save_list[add_links] %>%
           lapply(function(form) {

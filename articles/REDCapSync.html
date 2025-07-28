@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">REDCapSync</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9013</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9014</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -118,7 +118,7 @@ package.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">setup_project</a></span><span class="op">(</span></span>
 <span>  short_name <span class="op">=</span> <span class="st">"TEST1"</span>,                <span class="co">#must match token pattern REDCapSync_**** </span></span>
-<span>  redcap_base <span class="op">=</span> <span class="st">"https://redcap.miami.edu/"</span>,  <span class="co"># change to your institutions link</span></span>
+<span>  redcap_uri <span class="op">=</span> <span class="st">"https://redcap.miami.edu/api/"</span>,  <span class="co"># change to your institutions link</span></span>
 <span>  dir_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>,                     <span class="co"># or change to your intended file path</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sync_project.html">sync_project</a></span><span class="op">(</span><span class="va">project</span><span class="op">)</span> </span></code></pre></div>

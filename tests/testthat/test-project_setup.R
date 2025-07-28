@@ -11,7 +11,7 @@ test_that("setup_project creates a valid project object and valid directory", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   expect_error(assert_dir(dir_path = test_dir))
   short_name <- "TEST_PROJECT"
-  redcap_base <- "https://redcap.miami.edu/"
+  redcap_uri <- "https://redcap.miami.edu/api/"
   # test_short_names
   expect_error(assert_env_name("A project"))
   expect_error(assert_env_name("project$]"))
@@ -37,7 +37,7 @@ test_that("setup_project creates a valid project object and valid directory", {
   project <- setup_project(
     short_name = short_name,
     dir_path = test_dir,
-    redcap_base = redcap_base,
+    redcap_uri = redcap_uri,
     hard_reset = TRUE
   )
   expect_no_error(assert_dir(dir_path = test_dir))
@@ -76,11 +76,11 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
     }
   )
   short_name <- "TEST_PROJECT"
-  redcap_base <- "https://redcap.miami.edu/"
+  redcap_uri <- "https://redcap.miami.edu/api/"
   project <- setup_project(
     short_name = short_name,
     dir_path = test_dir,
-    redcap_base = redcap_base
+    redcap_uri = redcap_uri
   )
   save_project(project)
   expect_false(file.exists(file.path(project$dir_path, "R_objects", paste0(short_name, "_REDCapSync.RData"))))
@@ -98,7 +98,7 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   projects <- get_projects()
   expect_equal(nrow(get_projects()), 1)
   expect_equal(projects$short_name, short_name)
-  expect_equal(projects$redcap_base, redcap_base)
+  expect_equal(projects$redcap_uri, redcap_uri)
   expect_equal(projects$dir_path, test_dir)
   # loading tests
   expect_error(load_project("a_project")) # wont load unknown project

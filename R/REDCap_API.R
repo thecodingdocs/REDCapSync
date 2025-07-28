@@ -34,7 +34,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$redcap$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events
   # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
   repeating_forms_events <- redcapAPI::exportRepeatingInstrumentsEvents(rcon = rcon)
-  if (is.data.frame(repeating_forms_events)) {
+  if (is.data.frame(repeating_forms_events)) { # TODOPLEASE test if you can do this if you dont have designer privilages or would have to use another package
     if (nrow(repeating_forms_events) > 0) {
       project$metadata$forms$repeating <- project$metadata$forms$form_name %in% repeating_forms_events$form_name
     }
@@ -226,14 +226,14 @@ update_project_links <- function(project) {
     "/DataEntry/record_status_dashboard.php?pid=",
     project$redcap$project_id
   )
-  project$links$redcap_API <- paste0(
+  project$links$redcap_api <- paste0(
     project$links$redcap_base,
     "redcap_v",
     project$redcap$version,
     "/API/project_api.php?pid=",
     project$redcap$project_id
   )
-  project$links$redcap_API_playground <- paste0(
+  project$links$redcap_api_playground <- paste0(
     project$links$redcap_base,
     "redcap_v",
     project$redcap$version,

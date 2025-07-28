@@ -28,7 +28,7 @@
 #' where you want the REDCap project data to be stored. If missing, project
 #' object
 #' will only be in current R session.
-#' @param redcap_base A character string representing the base URL of the REDCap
+#' @param redcap_uri A character string representing the base URL of the REDCap
 #' server.
 #' @param token_name An optional character string for setting your token name.
 #' Default is `REDCapSync_<short_name>`
@@ -84,7 +84,7 @@
 #' project <- setup_project(
 #'   short_name = "TEST",
 #'   dir_path = "path/to/secure/file/storage",
-#'   redcap_base = "https://redcap.yourinstitution.edu/"
+#'   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 #' )
 #' project <- load_project("TEST")
 #' @family project object
@@ -92,7 +92,7 @@
 setup_project <- function(
     short_name,
     dir_path,
-    redcap_base,
+    redcap_uri,
     token_name = paste0("REDCapSync_", short_name),
     sync_frequency = "daily",
     hard_reset = FALSE,
@@ -163,10 +163,10 @@ setup_project <- function(
   assert_integerish(batch_size_download, len = 1, lower = 1, add = collected)
   assert_integerish(batch_size_upload, len = 1, lower = 1, add = collected)
   assert_logical(silent, len = 1, add = collected)
-  if (missing(redcap_base)) {
-    REDCapSync_REDCAP_BASE <- Sys.getenv("REDCapSync_REDCAP_BASE")
-    if (is_something(REDCapSync_REDCAP_BASE)) {
-      redcap_base <- REDCapSync_REDCAP_BASE
+  if (missing(redcap_uri)) {
+    REDCapSync_REDCAP_URI <- Sys.getenv("REDCapSync_REDCAP_URI")
+    if (is_something(REDCapSync_REDCAP_URI)) {
+      redcap_uri <- REDCapSync_REDCAP_URI
     }
   }
   current_function <- as.character(current_call())[[1]]
@@ -302,12 +302,12 @@ setup_project <- function(
   project$internals$get_file_repository <- get_file_repository
   if (is_a_test) {
     cli_alert_wrap(
-      "Test objects ignore the `redcap_base` url argument and will not communicate with the REDCap API.",
+      "Test objects ignore the `redcap_uri` argument and will not communicate with the REDCap API.",
       silent = silent
     )
   } else {
-    project$links$redcap_base <- assert_web_link(redcap_base)
-    project$links$redcap_uri <- project$links$redcap_base %>% paste0("api/")
+    project$links$redcap_uri <- redcap_uri # add test function, should end in / or add it
+    project$links$redcap_base <- redcap_uri %>% dirname() %>% paste0("/") # add test function
   }
   project$internals$merge_form_name <- merge_form_name
   project$internals$use_csv <- use_csv
@@ -412,7 +412,7 @@ compare_project_details <- function(from, to) {
   collected <- makeAssertCollection()
   assert_set_equal(from$short_name, to$short_name, add = collected)
   assert_set_equal(from$project_id, to$project_id, add = collected)
-  assert_set_equal(from$redcap_base, to$redcap_base, add = collected)
+  assert_set_equal(from$redcap_uri, to$redcap_uri, add = collected)
 }
 #' @rdname setup-load
 #' @export
@@ -615,14 +615,14 @@ nav_to_dir <- function(project) {
     ever_connected = FALSE
   ),
   links = list(
-    redcap_base = NULL,
     redcap_uri = NULL,
+    redcap_base = NULL,
     redcap_home = NULL,
     redcap_record_home = NULL,
     redcap_record_subpage = NULL,
     redcap_records_dashboard = NULL,
-    redcap_API = NULL,
-    redcap_API_playground = NULL,
+    redcap_api = NULL,
+    redcap_api_playground = NULL,
     redcap_codebook = NULL,
     pkgdown = "https://thecodingdocs.github.io/REDCapSync/",
     github = "https://github.com/thecodingdocs/REDCapSync/",
@@ -706,14 +706,14 @@ nav_to_dir <- function(project) {
     use_csv = FALSE
   ),
   links = list(
-    redcap_base = NULL,
     redcap_uri = NULL,
+    redcap_base = NULL,
     redcap_home = NULL,
     redcap_record_home = NULL,
     redcap_record_subpage = NULL,
     redcap_records_dashboard = NULL,
-    redcap_API = NULL,
-    redcap_API_playground = NULL,
+    redcap_api = NULL,
+    redcap_api_playground = NULL,
     pkgdown = "https://thecodingdocs.github.io/REDCapSync/",
     github = "https://github.com/thecodingdocs/REDCapSync/",
     thecodingdocs = "https://www.thecodingdocs.com/"

@@ -284,12 +284,12 @@ get_min_dates <- function(data_list) {
 #' @family Link Functions
 #' @export
 link_API_token <- function(project) {
-  utils::browseURL(project$links$redcap_API)
+  utils::browseURL(project$links$redcap_api)
 }
 #' @rdname Links
 #' @export
 link_API_playground <- function(project) {
-  utils::browseURL(project$links$redcap_API_playground)
+  utils::browseURL(project$links$redcap_api_playground)
 }
 #' @rdname Links
 #' @export

@@ -1,9 +1,9 @@
 mock_project <- function() {
   short_name <- "TEST_PROJECT"
-  redcap_base <- "https://redcap.miami.edu/"
+  redcap_uri <- "https://redcap.miami.edu/api/"
   project <- setup_project(
     short_name = short_name,
-    redcap_base = redcap_base
+    redcap_uri = redcap_uri
   )
   project$internals$ever_connected <- TRUE
   fake_time <- now_time()
@@ -20,7 +20,7 @@ mock_project <- function() {
   project$redcap$is_longitudinal <- FALSE
   project$redcap$has_repeating_forms_or_events <- FALSE
   project$redcap$has_multiple_arms <- FALSE
-  project$links$redcap_home <- project$links$redcap_base
-  project$links$redcap_API_playground <- project$links$redcap_base
+  project$links$redcap_home <- project$links$redcap_uri
+  project$links$redcap_API_playground <- project$links$redcap_uri
   return(project)
 }

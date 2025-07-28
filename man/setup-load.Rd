@@ -9,7 +9,7 @@
 setup_project(
   short_name,
   dir_path,
-  redcap_base,
+  redcap_uri,
   token_name = paste0("REDCapSync_", short_name),
   sync_frequency = "daily",
   hard_reset = FALSE,
@@ -49,7 +49,7 @@ where you want the REDCap project data to be stored. If missing, project
 object
 will only be in current R session.}
 
-\item{redcap_base}{A character string representing the base URL of the REDCap
+\item{redcap_uri}{A character string representing the base URL of the REDCap
 server.}
 
 \item{token_name}{An optional character string for setting your token name.
@@ -164,7 +164,7 @@ is optional for this function but can be used if you relocated the directory.
 project <- setup_project(
   short_name = "TEST",
   dir_path = "path/to/secure/file/storage",
-  redcap_base = "https://redcap.yourinstitution.edu/"
+  redcap_uri = "https://redcap.yourinstitution.edu/api/"
 )
 project <- load_project("TEST")
 \dontshow{\}) # examplesIf}

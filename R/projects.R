@@ -98,9 +98,10 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
   "R_object_size",
   "file_size",
   "n_records",
+  "redcap_uri",
   "redcap_base",
   "redcap_home",
-  "redcap_API_playground",
+  "redcap_api_playground",
   "days_of_log",
   "get_files",
   "get_file_repository",
@@ -138,9 +139,10 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
     R_object_size = numeric(0),
     file_size = numeric(0),
     n_records = integer(0),
+    redcap_uri = character(0),
     redcap_base = character(0),
     redcap_home = character(0),
-    redcap_API_playground = character(0),
+    redcap_api_playground = character(0),
     days_of_log = integer(0),
     get_files = logical(0),
     get_file_repository = logical(0),
@@ -244,10 +246,11 @@ extract_project_details <- function(project) {
     length(project$summary$all_records[[project$redcap$id_col]]) %>%
     na_if_null() %>%
     as.integer()
+  project_details$redcap_uri <- project$links$redcap_uri %>% na_if_null()
   project_details$redcap_base <- project$links$redcap_base %>% na_if_null()
   project_details$redcap_home <- project$links$redcap_home %>% na_if_null()
-  project_details$redcap_API_playground <-
-    project$links$redcap_API_playground %>%
+  project_details$redcap_api_playground <-
+    project$links$redcap_api_playground %>%
     na_if_null()
   # saving ----
   project_details$timezone <- project$internals$timezone %>% na_if_null()
@@ -276,7 +279,7 @@ add_project_details_to_cache <- function(project_details) {
   projects <- projects[which(projects$short_name != project_details$short_name), ]
   bad_row <- which(
     projects$project_id == project_details$project_id &
-      basename(projects$redcap_base) == basename(project_details$redcap_base)
+      basename(projects$redcap_uri) == basename(project_details$redcap_uri)
   )
   if (length(bad_row) > 0) {
     cli::cli_abort(
@@ -340,9 +343,9 @@ add_project_details_to_project <- function(project, project_details) {
   # project$redcap$has_repeating_forms_or_events <- project_details$has_repeating_forms_or_events
   # project$redcap$has_multiple_arms <- project_details$has_multiple_arms
   # project$summary$all_records[[project$redcap$id_col]] <- project_details$n_records %>% as.integer()
-  # project$links$redcap_base <- project_details$redcap_base # check identical unless NA
+  # project$links$redcap_uri <- project_details$redcap_uri # check identical unless NA
   # project$links$redcap_home <- project_details$redcap_home
-  # project$links$redcap_API_playground <- project_details$redcap_API_playground
+  # project$links$redcap_api_playground <- project_details$redcap_api_playground
   # saving ----
   project$internals$timezone <- project_details$timezone
   project$internals$last_sync <- project_details$last_sync %>%
@@ -357,7 +360,7 @@ add_project_details_to_project <- function(project, project_details) {
   # project_details$file_size <- NA
   # bad_row <- which(
   #   projects$project_id == project_details$project_id &
-  #     basename(projects$redcap_base) == basename(project_details$redcap_base)
+  #     basename(projects$redcap_uri) == basename(project_details$redcap_uri)
   # )
   # if(length(bad_row)>0) {
   #   cli::cli_abort(
@@ -389,8 +392,8 @@ save_project_details <- function(project, silent = TRUE) {
       if (!is.na(from$project_id) && !is.na(to$project_id)) {
         assert_set_equal(from$project_id, to$project_id, add = collected)
       }
-      if (!is.na(from$redcap_base) && !is.na(to$redcap_base)) {
-        assert_set_equal(from$redcap_base, to$redcap_base, add = collected)
+      if (!is.na(from$redcap_uri) && !is.na(to$redcap_uri)) {
+        assert_set_equal(from$redcap_uri, to$redcap_uri, add = collected)
       }
       if (!collected$isEmpty()) {
         info <- "Something critical doesn't match. You should run `delete_project_by_name(\"{project$short_name}\")"

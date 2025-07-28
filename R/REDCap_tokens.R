@@ -58,7 +58,7 @@ test_project_token <- function(project,
   version_error <- is.null(redcap_version)
   project$internals$last_test_connection_outcome <- !version_error
   if (version_error && launch_browser) {
-    utils::browseURL(url = ifelse(is_something(project$redcap$version), project$links$redcap_API, project$links$redcap_base))
+    utils::browseURL(url = ifelse(is_something(project$redcap$version), project$links$redcap_api, project$links$redcap_base))
     # this will fail to bring you to right URL if redcap version changes at the same time a previously valid token is no longer valid
   }
   changed_in_console <- FALSE

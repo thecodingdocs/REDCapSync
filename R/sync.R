@@ -56,7 +56,7 @@ sync <- function(
     project <- setup_project(
       short_name = project_details$short_name,
       dir_path = project_details$dir_path,
-      redcap_base = project_details$redcap_base,
+      redcap_uri = project_details$redcap_uri,
       token_name = project_details$token_name,
       sync_frequency = project_details$sync_frequency,
       get_type = project_details$get_type,

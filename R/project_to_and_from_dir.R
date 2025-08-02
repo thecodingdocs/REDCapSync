@@ -1,10 +1,10 @@
 #' @title Reads project from the dropped REDCap files in dir/REDCap/upload
 #' @inheritParams save_project
-#' @param allow_all logical TF for allowing project$data names that are not also
+#' @param allow_all logical indicating whether to allow project$data names that are not also
 #' form names
-#' @param drop_nonredcap_vars logical TF for dropping non-redcap variable names
-#' @param drop_non_form_vars logical TF for dropping non-form variable names
-#' @param stop_or_warn character string of whether to stop, warn, or do nothing
+#' @param drop_nonredcap_vars logical indicating if non-REDCap variable names should be dropped.
+#' @param drop_non_form_vars logical indicating if non-form variable names should be dropped.
+#' @param stop_or_warn character string indicating whether to stop, warn, or do nothing
 #' when forbidden cols are present
 #' @return messages for confirmation
 #' @export

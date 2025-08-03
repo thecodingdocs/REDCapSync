@@ -58,8 +58,6 @@
 #' Default is `FALSE`.
 #' @param metadata_only Logical (TRUE/FALSE). If TRUE, updates only the
 #' metadata. Default is `FALSE`.
-#' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test project
-#' object with data included.
 #' @param get_type optional character of REDCap API call type.
 #' data as if user ran `sync_project`. Default is `FALSE`.
 #' @param batch_size_download Integer. Number of records to process in each
@@ -189,7 +187,7 @@ setup_project <- function(
       if (!is.null(project_details)) {
         add_project_details_to_cache(project_details)
       } else {
-        cli_alert_warning("currupted project_details so will be overwritten")
+        cli_alert_warning("project_details were corrupted and will be overwritten")
       }
       # add check for if it was loaded from right place
     }

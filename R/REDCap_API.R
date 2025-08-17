@@ -190,9 +190,9 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     project$metadata$event_mapping <- NA
     project$metadata$events <- NA
   }
-  # other-------
+  # othdevter-------
   if (include_users) {
-    project$redcap$users <- get_REDCap_users(project)
+    project <- get_REDCap_users(project)
   }
   project <- update_project_links(project)
   invisible(project)
@@ -334,20 +334,27 @@ get_REDCap_files <- function(project,
 }
 get_REDCap_users <- function(project) {
   assert_setup_project(project)
-  rcon <- project_rcon(project)
-  users <- redcapAPI::exportUsers(
-    rcon = rcon,
-    labels = FALSE,
-    form_rights = FALSE
-  )
-  user_roles <- redcapAPI::exportUserRoles(
-    rcon = rcon,
-    labels = FALSE,
-    form_rights = FALSE
-  )
-  user_role_assignments <- redcapAPI::exportUserRoleAssignments(rcon = rcon)
-  final <- merge(merge(user_roles[, c("unique_role_name", "role_label")], user_role_assignments, by = "unique_role_name"), users, by = "username", all.y = TRUE)
-  final
+  x<- REDCapR::redcap_users_export(project$links$redcap_uri,sanitize_token(Sys.getenv(project$redcap$token_name)))
+  if(!x$success)return(invisible(project))
+  data_user <- x$data_user
+  # data_user_form <- x$data_user_form
+  # add feedback of access
+  # rcon <- project_rcon(project)
+  # users <- redcapAPI::exportUsers(
+  #   rcon = rcon,
+  #   labels = FALSE,
+  #   form_rights = FALSE
+  # )
+  # user_roles <- redcapAPI::exportUserRoles(
+  #   rcon = rcon,
+  #   labels = FALSE,
+  #   form_rights = FALSE
+  # )
+  # user_role_assignments <- redcapAPI::exportUserRoleAssignments(rcon = rcon)
+  # final <- merge(merge(user_roles[, c("unique_role_name", "role_label")], user_role_assignments, by = "unique_role_name"), users, by = "username", all.y = TRUE)
+  # final
+  project$redcap$users <- x$data_user
+  invisible(project)
 }
 #' @noRd
 get_REDCap_log <- function(project,

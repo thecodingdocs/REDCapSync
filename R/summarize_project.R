@@ -835,14 +835,14 @@ summarize_users_from_log <- function(project, records) {
   #maybe dropping people at this step
   summary_users <- summary_users[which(summary_users$username %in% names(user_groups)), ]
   user_groups <- user_groups[drop_nas(match(summary_users$username, names(user_groups)))]
-  summary_users$last_timestamp <- user_groups %>%
-    lapply(function(group) {
-      group$timestamp[[1]]
-    }) %>%
-    unlist()
   summary_users$first_timestamp <- user_groups %>%
     lapply(function(group) {
       group$timestamp %>% dplyr::last()
+    }) %>%
+    unlist()
+  summary_users$last_timestamp <- user_groups %>%
+    lapply(function(group) {
+      group$timestamp[[1]]
     }) %>%
     unlist()
   summary_users$unique_records_n <- user_groups %>%

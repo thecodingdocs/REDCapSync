@@ -136,6 +136,7 @@ sync_project <- function(
           labelled = project$internals$labelled,
           batch_size = project$internals$batch_size_download
         )
+        #if error records comma
         redcap_log <- project$redcap$log # in case there is a log already
         if (project$internals$entire_log) {
           log_begin_date <- as.POSIXct(project$redcap$project_info$creation_time) %>% as.Date()

@@ -826,11 +826,13 @@ get_log <- function(project, records) {
 #' @noRd
 summarize_users_from_log <- function(project, records) {
   redcap_log <- get_log(project, records)
-  summary_users <- project$redcap$users %>% dplyr::select(c("username", "role_label", "email", "firstname", "lastname"))
+  #role_label not inculded now
+  summary_users <- project$redcap$users %>% dplyr::select(c("username", "email", "firstname", "lastname"))
   user_groups <- redcap_log %>% split(redcap_log$username)
   if (!is_something(user_groups)) {
     return(summary_users)
   }
+  #maybe dropping people at this step
   summary_users <- summary_users[which(summary_users$username %in% names(user_groups)), ]
   user_groups <- user_groups[drop_nas(match(summary_users$username, names(user_groups)))]
   summary_users$last_timestamp <- user_groups %>%
@@ -849,6 +851,8 @@ summarize_users_from_log <- function(project, records) {
     }) %>%
     unlist() %>%
     as.integer()
+  # summary_users$timestamp_diff_days<- (as.Date(summary_users$last_timestamp) - as.Date(summary_users$first_timestamp)+1) %>% as.integer()
+  # summary_users$records_per_day <- as.integer(summary_users$unique_records_n/summary_users$timestamp_diff_days)
   summary_users
 }
 #' @noRd

@@ -1,3 +1,6 @@
+clean_for_cli <- function(path){
+  gsub("'", "\\\\'", path)
+}
 cli_alert_wrap <- function(text = "",
                            url = NULL,
                            bullet_type = "i",
@@ -25,9 +28,9 @@ cli_alert_wrap <- function(text = "",
     if (collapse) url_if <- paste0(url_if, collapse = " and ")
     url_if <- paste0(
       " {cli::col_blue(cli::style_hyperlink('",
-      url_names,
+      url_names%>% clean_for_cli(),
       "', '",
-      url,
+      url%>% clean_for_cli(),
       "'))}"
     )
   }
@@ -42,9 +45,9 @@ cli_alert_wrap <- function(text = "",
     if (collapse) file_if <- paste0(file_if, collapse = " and ")
     file_if <- paste0(
       " {cli::col_blue(cli::style_hyperlink('",
-      sanitize_path(file_names),
+      sanitize_path(file_names) %>% clean_for_cli(),
       "', '",
-      sanitize_path(paste0("file://", file)),
+      sanitize_path(paste0("file://", file)) %>% clean_for_cli(),
       "'))}"
     )
   }

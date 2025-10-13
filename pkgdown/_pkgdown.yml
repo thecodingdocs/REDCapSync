@@ -29,7 +29,6 @@ reference:
       - get_projects
       - setup_project
       - sync_project
-      - sync
   - title: Everything by Topic (Intermediate/Advanced)
     desc: Expands on functionality and breaksdown core feautures into more customizable parts
   - subtitle: Project Cache
@@ -48,13 +47,11 @@ reference:
     contents:
       - setup_project
       - load_project
-      - delete_project
       - save_project
-  - subtitle: Sync Functions
-    desc: Run Syncs on periodic bases; sync is "hands-free", while sync_project uses project object in the environment.
+  - subtitle: Sync Function
+    desc: sync_project uses project object in the environment.
     contents:
       - sync_project
-      - sync
   - subtitle: project setup Object Modifications
     desc: One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
     contents:
@@ -63,7 +60,6 @@ reference:
       - default_project_transformation
       - add_project_summary
       - clear_project_summaries
-      - clear_project_transformation
   - subtitle: project Object Outputs
     desc: Mirror your project object to a local/cloud file system. If you have summaries, will only update file if record belonging to that summary was updated.
     contents:

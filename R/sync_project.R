@@ -127,7 +127,7 @@ sync_project <- function(
     if (hard_reset) {
       project <- project %>% get_REDCap_metadata(include_users = !project$internals$metadata_only)
       # project$internals$is_transformed <- FALSE
-      project <- clear_project_transformation(project)
+      # project <- clear_project_transformation(project)
       if (!project$internals$metadata_only) {
         project$data <- list()
         project$data_updates <- list()
@@ -265,4 +265,107 @@ sync_project <- function(
     }
   }
   invisible(project)
+}
+due_for_sync <- function(project_name) {
+  now <- now_time()
+  projects <- get_projects()
+  # early escapes ----
+  assert_data_frame(projects, min.rows = 1)
+  assert_names(projects$short_name, must.include = project_name)
+  #-----
+  project_row <- which(projects$short_name == project_name)
+  last_sync <- projects$last_sync[project_row]
+  # assert_posixct(last_data_update, len = 1, any.missing = TRUE)
+  if (is.na(last_sync)) {
+    return(TRUE)
+  }
+  then <- last_sync
+  if (is.na(then)) {
+    return(TRUE)
+  }
+  sync_frequency <- projects$sync_frequency[project_row]
+  if (sync_frequency == "always") {
+    return(TRUE)
+  }
+  if (sync_frequency == "never") {
+    return(FALSE)
+  }
+  have_to_check <- sync_frequency %in% c("hourly", "daily", "weekly", "monthly")
+  if (have_to_check) { # turn to function
+    if (sync_frequency == "hourly") {
+      return(now >= (then + lubridate::dhours(1)))
+    }
+    if (sync_frequency == "daily") {
+      return(now >= (then + lubridate::ddays(1)))
+    }
+    if (sync_frequency == "weekly") {
+      return(now >= (then + lubridate::dweeks(1)))
+    }
+    if (sync_frequency == "monthly") {
+      return(now >= (then + lubridate::dmonths(1)))
+    }
+  }
+  TRUE
+}
+# for if others are using the same object
+sweep_dirs_for_cache <- function(project_names = NULL) {
+  projects <- get_projects()
+  if (nrow(projects) > 0) {
+    project_list <- projects %>% split(projects$short_name)
+    had_change <- FALSE
+    all_project_names <- names(project_list)
+    if (is.null(project_names)) {
+      project_names <- all_project_names
+    }
+    project_names <- project_names[which(project_names %in% all_project_names)]
+    for (project_name in project_names) {
+      from_cache <- project_list[[project_name]]
+      expected_path <- get_project_path(short_name = project_name,
+                                        dir_path = from_cache$dir_path,
+                                        type = "details")
+      if (file.exists(expected_path)) {
+        to_cache <- tryCatch(
+          expr = {
+            suppressWarnings({
+              readRDS(expected_path)
+            })
+          },
+          error = function(e) {
+            NULL
+          }
+        )
+        if (is.null(to_cache)) {
+          cli_alert_warning(
+            paste0("issue loading project_details: ", project_name)
+          )
+          to_cache <- from_cache
+          had_change <- TRUE
+          unlink(expected_path)
+        }
+        if (!had_change) {
+          if (!is.na(from_cache$last_directory_save)) { # should I compare?
+            if (to_cache$last_directory_save != from_cache$last_directory_save) {
+              if (!identical(to_cache$dir_path, from_cache$dir_path)) {
+                to_cache$dir_path <- from_cache$dir_path
+                # SAVE
+              }
+              project_list[[project_name]] <- to_cache
+              cli_alert_info(paste0("Updated cache for ", project_name))
+              had_change <- TRUE
+            }
+          }
+          # assert_project_details(project_details) #not this
+        }
+      }
+      # else {
+      #   # project_list[[project_name]] <- NULL
+      #   # cli_alert_info(paste0("Dropped cache for ",project_name," because it didn't exist"))
+      #   # had_change <- TRUE
+      # }
+    }
+    if (had_change) {
+      projects <- project_list %>% dplyr::bind_rows()
+      save_projects_to_cache(projects, silent = FALSE)
+    }
+  }
 }

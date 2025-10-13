@@ -159,7 +159,7 @@ already run \code{setup_project} in the past with an established directory.
 is optional for this function but can be used if you relocated the directory.
 }
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
 # Initialize the project object with the REDCap API token and URL
 project <- setup_project(
   short_name = "TEST",

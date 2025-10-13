@@ -733,33 +733,6 @@ clear_project_summaries <- function(project) {
   cli_alert_success("Cleared project summaries!")
   invisible(project)
 }
-#' @title clear_project_transformation
-#' @inheritParams save_project
-#' @description
-#' `r lifecycle::badge("experimental")`
-#' Clears and project fields that were added with `add_project_fields()` and
-#' form_transformations added with `add_project_transformation()` ...
-#' or if `setup_project()` contained `add_default_fields = TRUE` or
-#' `add_default_fields = TRUE`
-#' @export
-clear_project_transformation <- function(project) {
-  lifecycle::signal_stage("experimental", "clear_project_transformation()")
-  assert_setup_project(project)
-  project$transformation <- list(
-    forms = NULL,
-    fields = NULL,
-    field_functions = NULL,
-    data_updates = NULL
-  )
-  project$internals$is_transformed <- FALSE
-  if(length(project$summary$all_records$was_transformed)>0){
-    project$summary$all_records$was_transformed <- FALSE
-  }
-  transformation_path <- get_project_path2(project, type = "transformation")
-  unlink(transformation_path)
-  cli_alert_success("Cleared project transformations!")
-  invisible(project)
-}
 #' @title Run Quality Checks
 #' @inheritParams save_project
 #' @return project object

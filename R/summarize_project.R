@@ -321,6 +321,8 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' REDCap API upload. The main conflict is numeric or date variables in a
 #' project with missing codes while `clean` = `TRUE`. R converts these to `NA`.
 #' Default is `TRUE`.
+#' @param labelled Logical. If `TRUE`, the data will be converted to labelled.
+#' Default is `TRUE`.
 #' @param clean Logical. If `TRUE`, the data will be cleaned before summarizing.
 #' Default is `TRUE`.
 #' @param drop_blanks Logical. If `TRUE`, records with blank fields will be

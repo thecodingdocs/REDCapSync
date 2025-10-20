@@ -85,6 +85,9 @@ REDCap API upload. The main conflict is numeric or date variables in a
 project with missing codes while \code{clean} = \code{TRUE}. R converts these to \code{NA}.
 Default is \code{TRUE}.}
 
+\item{labelled}{Logical. If \code{TRUE}, the data will be converted to labelled.
+Default is \code{TRUE}.}
+
 \item{clean}{Logical. If \code{TRUE}, the data will be cleaned before summarizing.
 Default is \code{TRUE}.}
 

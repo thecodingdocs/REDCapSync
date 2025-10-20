@@ -632,12 +632,15 @@ generate_project_summary <- function(
   if (missing(transform)) {
     transform <- project$internals$is_transformed
   }
+  data_list <- NULL
+  data_list$metadata <- project$metadata
+  data_list$data <- project$data
   if (transform) {
-    project$metadata <- project$transformation$metadata
-    project$data <- project$transformation$data
+    # project$metadata <- project$transformation$metadata
+    # project$data <- project$transformation$data
   }
-  project$data <- filter_data_list(
-    data_list = project,
+  data_list$data <- filter_data_list(
+    data_list = data_list,
     field_names = field_names,
     form_names = form_names,
     filter_field = filter_field,
@@ -647,24 +650,29 @@ generate_project_summary <- function(
   )
   if(labelled){
     # project <- raw_to_labelled_project(project)
+    for (form_name in names(data_list$data)) {
+      data_list$data[[form_name]] <- data_list$data[[form_name]] %>%
+        raw_to_labelled_form(project = project)
+    }
   }
   if (exclude_identifiers) {
-    project$data <- deidentify_data_list(
-      data_list = project,
+    data_list$data <- deidentify_data_list(
+      data_list = data_list,
       exclude_free_text = exclude_free_text,
       date_handling = date_handling
     )
   }
   if (clean) {
-    project$data <- clean_data_list(
-      data_list = project,
+    data_list$data <- clean_data_list(
+      data_list = data_list,
       drop_blanks = drop_blanks,
       drop_others = drop_others
     )
   }
-  to_save_list <- project$data
+  to_save_list <- data_list$data
   if (include_metadata) {
     if (annotate_metadata && is_something(to_save_list)) {
+      #need to decouple from project
       to_save_list$forms <- annotate_forms(project)
       to_save_list$fields <- annotate_fields(project)
       to_save_list$choices <- annotate_choices(project)

@@ -20,13 +20,11 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/news/index.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/Links.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync-package.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/reference/add_project_field.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/add_project_summary.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/cache_clear.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/cache_path.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/check_folder_for_projects.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/clear_project_summaries.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/reference/default-transformations.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/edit_REDCap_while_viewing.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/find_upload_diff.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/generate_project_summary.html</loc></url>
@@ -45,7 +43,6 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/sync_project.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/test_project_token.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/upload_form_to_REDCap.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/reference/upload_project_to_REDCap.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/view_project_token.html</loc></url>
 </urlset>
 

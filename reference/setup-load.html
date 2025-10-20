@@ -72,7 +72,6 @@
 <span>  events <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  filter_logic <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  get_type <span class="op">=</span> <span class="st">"identified"</span>,</span>
-<span>  labelled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  metadata_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  batch_size_download <span class="op">=</span> <span class="fl">2000</span>,</span>
 <span>  batch_size_upload <span class="op">=</span> <span class="fl">500</span>,</span>
@@ -162,11 +161,6 @@ where the logic evaluates as TRUE.   An blank/empty string returns all records.<
 <dt id="arg-get-type">get_type<a class="anchor" aria-label="anchor" href="#arg-get-type"></a></dt>
 <dd><p>optional character of REDCap API call type.
 data as if user ran <code>sync_project</code>. Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-labelled">labelled<a class="anchor" aria-label="anchor" href="#arg-labelled"></a></dt>
-<dd><p>Logical (TRUE/FALSE). For whether or not to use labelled vs
-raw coded data in output.</p></dd>
 
 
 <dt id="arg-metadata-only">metadata_only<a class="anchor" aria-label="anchor" href="#arg-metadata-only"></a></dt>

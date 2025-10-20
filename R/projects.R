@@ -221,7 +221,6 @@ extract_project_details <- function(project) {
     project$internals$add_default_summaries
   project_details$use_csv <- project$internals$use_csv
   project_details$get_type <- project$internals$get_type
-  project_details$labelled <- project$internals$labelled
   project_details$merge_form_name <- project$internals$merge_form_name
   project_details$batch_size_download <-
     project$internals$batch_size_download %>%
@@ -324,7 +323,6 @@ add_project_details_to_project <- function(project, project_details) {
     project_details$add_default_summaries
   project$internals$use_csv <- project_details$use_csv
   project$internals$get_type <- project_details$get_type # should trigger hard_reset
-  project$internals$labelled <- project_details$labelled # should trigger hard_reset
   project$internals$merge_form_name <- project_details$merge_form_name
   project$internals$batch_size_download <-
     project_details$batch_size_download %>%

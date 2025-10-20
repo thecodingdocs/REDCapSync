@@ -900,17 +900,6 @@ choice_vector_string <- function(vec) {
   }
   paste0(paste0(seq_along(vec), ", ", vec), collapse = " | ")
 }
-function_to_string <- function(func) {
-  # Deparse the function and collapse into a single string using "\n"
-  deparse(func) %>% paste(collapse = "\n")
-}
-clean_function <- function(func) {
-  if (!is.function(func)) {
-    stop("Input must be a function")
-  }
-  environment(func) <- emptyenv()
-  func
-}
 object_size <- function(x) {
   format(utils::object.size(x), units = "auto")
 }

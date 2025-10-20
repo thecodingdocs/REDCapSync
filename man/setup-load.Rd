@@ -19,7 +19,6 @@ setup_project(
   events = NULL,
   filter_logic = NULL,
   get_type = "identified",
-  labelled = TRUE,
   metadata_only = FALSE,
   batch_size_download = 2000,
   batch_size_upload = 500,
@@ -82,9 +81,6 @@ where the logic evaluates as TRUE.   An blank/empty string returns all records.}
 
 \item{get_type}{optional character of REDCap API call type.
 data as if user ran \code{sync_project}. Default is \code{FALSE}.}
-
-\item{labelled}{Logical (TRUE/FALSE). For whether or not to use labelled vs
-raw coded data in output.}
 
 \item{metadata_only}{Logical (TRUE/FALSE). If TRUE, updates only the
 metadata. Default is \code{FALSE}.}

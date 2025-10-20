@@ -55,9 +55,6 @@ reference:
   - subtitle: project setup Object Modifications
     desc: One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
     contents:
-      - add_project_field
-      - add_project_transformation
-      - default_project_transformation
       - add_project_summary
       - clear_project_summaries
   - subtitle: project Object Outputs
@@ -75,7 +72,6 @@ reference:
     desc: Always use with caution! Package takes several steps to test and confirm uploads but ultimately the user is responsible for data changes. Remember REDCap always keeps a log of changes.
     contents:
       - get_REDCap_report
-      - upload_project_to_REDCap
       - upload_form_to_REDCap
   - subtitle: Experimental/Dev Functions
     desc: These functions are still in development and is subject to changes.

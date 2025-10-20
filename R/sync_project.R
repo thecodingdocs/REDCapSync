@@ -238,10 +238,11 @@ sync_project <- function(
       project <- add_default_summaries(project)
     }
   }
-  first_stamp <- project$internals$last_data_transformation
-  project <- transform_project(project)
-  second_stamp <- project$internals$last_data_transformation
-  was_updated <- was_updated || !identical(first_stamp,second_stamp)
+  #turn off transform for now
+  # first_stamp <- project$internals$last_data_transformation
+  # project <- transform_project(project)
+  # second_stamp <- project$internals$last_data_transformation
+  # was_updated <- was_updated || !identical(first_stamp,second_stamp)
   if (save_to_dir && !is.null(project$dir_path)) {
     if(is_something(project$data)){
       if (project$internals$get_files) { # test now

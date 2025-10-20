@@ -33,10 +33,7 @@ default_project_transformation <- function(project) {
 }
 #' @noRd
 add_default_transformation <- function(project) {
-  project <- add_project_transformation(
-    project = project,
-    forms_transformation = default_project_transformation(project = project)
-  )
+  project$transformation$forms <- default_project_transformation(project = project)
   invisible(project)
 }
 #' @noRd

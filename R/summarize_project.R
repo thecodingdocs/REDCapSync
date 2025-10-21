@@ -640,8 +640,10 @@ generate_project_summary <- function(
     }
   }
   if (transform) {
-    data_list$metadata <- project$transformation$metadata
-    data_list$data <- project$transformation$data
+    data_list <- transform_project(
+      data_list = data_list,
+      transformation_list = project$transformation
+    )
   }
   data_list$data <- filter_data_list(
     data_list = data_list,

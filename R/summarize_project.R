@@ -489,7 +489,7 @@ save_summary <- function(project, summary_name) {
     if (project$internals$project_type == "redcap") {
       form_names <- names(project$data)
       if(summary_list$transform){
-        form_names <- names(project$transformation$data)
+        form_names <- project$transformation$forms$form_name_remap %>% unique()
       }
       add_links <- which(names(to_save_list) %in% form_names)
       if (length(add_links) > 0) {

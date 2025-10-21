@@ -222,11 +222,11 @@ sync_project <- function(
     }
     project$internals$last_sync <- now_time()
   }
-  if (project$internals$add_default_fields) {
-    if(!is_something(project$transformation$fields)){
-      project <- add_default_fields(project)
-    }
-  }
+  # if (project$internals$add_default_fields) {
+  #   if(!is_something(project$transformation$fields)){
+  #     project <- add_default_fields(project)
+  #   }
+  # }
   if (project$internals$add_default_transformation) {
     if(!is_something(project$transformation$forms)){
       project <- add_default_transformation(project)

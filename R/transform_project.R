@@ -300,27 +300,27 @@ transform_project <- function(data_list,transformation_list) {
     as.character()
   data_list$metadata$forms <- forms_transformation
   # fields------------
-  fields <- combine_project_fields(data_list)
-  fields$original_form_name <- fields$form_name
-  fields$form_name <- forms_transformation_original$form_name_remap[match(fields$form_name, forms_transformation_original$form_name)]
-  fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]
-  # new function RosyUtils
-  first <- 1:which(colnames(fields) == "form_name")
-  move <- which(colnames(fields) == "original_form_name")
-  last <- which(colnames(fields) != "original_form_name")[-first]
-  fields <- fields[, c(first, move, last)]
-  data_list$metadata$fields <- fields
-  cli_alert_wrap(
-    paste0(
-      "Added mod fields to ",
-      data_list$short_name,
-      " `data_list$transformation`"
-    ),
-    bullet_type = "v"
-  )
-  data_list$metadata$choices <- fields_to_choices(fields)
-  data_list$metadata$form_key_cols <-
-    get_key_col_list(data_list = data_list, transform = TRUE)
+  # fields <- combine_project_fields(data_list)
+  # fields$original_form_name <- fields$form_name
+  # fields$form_name <- forms_transformation_original$form_name_remap[match(fields$form_name, forms_transformation_original$form_name)]
+  # fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]
+  # # new function RosyUtils
+  # first <- 1:which(colnames(fields) == "form_name")
+  # move <- which(colnames(fields) == "original_form_name")
+  # last <- which(colnames(fields) != "original_form_name")[-first]
+  # fields <- fields[, c(first, move, last)]
+  # data_list$metadata$fields <- fields
+  # cli_alert_wrap(
+  #   paste0(
+  #     "Added mod fields to ",
+  #     data_list$short_name,
+  #     " `data_list$transformation`"
+  #   ),
+  #   bullet_type = "v"
+  # )
+  # data_list$metadata$choices <- fields_to_choices(fields)
+  # data_list$metadata$form_key_cols <-
+  #   get_key_col_list(project = data_list, transform = TRUE)
   #end --------
   # row_match <- which(all_records[[id_col]]%in%new_records)
   #TODO

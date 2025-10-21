@@ -148,10 +148,10 @@ transform_project <- function(data_list,transformation_list) {
   forms_transformation <- transformation_list$forms
   forms_transformation_original <- forms_transformation
   all_records <- data_list$summary$all_records
-  check_logical <- !all_records$was_transformed
+  # check_logical <- !all_records$was_transformed
   id_col <- data_list$redcap$id_col
-  needs_full <- all(check_logical)
-  needs_nothing <- !any(check_logical)
+  needs_full <- TRUE #all(check_logical)
+  needs_nothing <- FALSE #!any(check_logical)
   needs_partial <- !needs_full && !needs_nothing
   if (needs_nothing) {
     cli_alert_success("Everything transformed already.")

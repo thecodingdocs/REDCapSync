@@ -639,12 +639,6 @@ generate_project_summary <- function(
         raw_to_labelled_form(project = project)
     }
   }
-  if (transform) {
-    data_list <- transform_project(
-      data_list = data_list,
-      transformation_list = project$transformation
-    )
-  }
   data_list$data <- filter_data_list(
     data_list = data_list,
     field_names = field_names,
@@ -654,6 +648,12 @@ generate_project_summary <- function(
     filter_list = filter_list,
     filter_strict = filter_strict
   )
+  if (transform) {
+    data_list <- transform_project(
+      data_list = data_list,
+      transformation_list = project$transformation
+    )
+  }
   if (exclude_identifiers) {
     data_list$data <- deidentify_data_list(
       data_list = data_list,

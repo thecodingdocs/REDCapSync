@@ -28,7 +28,8 @@ generate_project_summary(
   annotate_metadata = TRUE,
   include_record_summary = TRUE,
   include_users = TRUE,
-  include_log = FALSE
+  include_log = FALSE,
+  include_summary_details = TRUE
 )
 }
 \arguments{
@@ -109,6 +110,9 @@ included in the summary. Default is \code{TRUE}.}
 
 \item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in
 the summary. Default is \code{TRUE}.}
+
+\item{include_summary_details}{Logical. If \code{TRUE}, Details of the summary
+will be included in the final file. Default is \code{TRUE}.}
 }
 \value{
 A list containing the generated summary based on the specified options. The

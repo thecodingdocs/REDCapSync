@@ -340,6 +340,8 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' included in the summary. Default is `TRUE`.
 #' @param include_log Logical. If `TRUE`, the log of changes will be included in
 #' the summary. Default is `TRUE`.
+#' @param include_summary_details Logical. If `TRUE`, Details of the summary
+#' will be included in the final file. Default is `TRUE`.
 #' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the
 #' function will avoid including duplicate columns in the output. Defaults to
 #' `FALSE`.
@@ -388,6 +390,7 @@ add_project_summary <- function(
     include_record_summary = TRUE,
     include_users = TRUE,
     include_log = FALSE,
+    include_summary_details = TRUE,
     with_links = TRUE,
     separate = FALSE,
     use_csv,
@@ -484,6 +487,12 @@ save_summary <- function(project, summary_name) {
     generate_project_summary(
       summary_name = summary_name
     )
+  # with_links = TRUE
+  # separate = FALSE
+  # use_csv
+  # dir_other = file.path(project$dir_path, "output")
+  # file_name = paste0(project$short_name, "_", summary_name)
+  # hard_reset = FALSE
   link_col_list <- list()
   if (summary_list$with_links) {
     if (project$internals$project_type == "redcap") {
@@ -599,7 +608,9 @@ generate_project_summary <- function(
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
     include_users = TRUE,
-    include_log = FALSE) {
+    include_log = FALSE,
+    include_summary_details = TRUE
+    ) {
   lifecycle::signal_stage("experimental", "generate_project_summary()")
   provided_summary_name <- !missing(summary_name)
   if (provided_summary_name) {

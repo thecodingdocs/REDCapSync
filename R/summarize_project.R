@@ -629,15 +629,19 @@ generate_project_summary <- function(
     include_users <- summary_list$include_users
     include_log <- summary_list$include_log
   }
-  if (missing(transform)) {
-    transform <- project$internals$is_transformed
-  }
   data_list <- NULL
   data_list$metadata <- project$metadata
   data_list$data <- project$data
+  if(labelled){
+    # project <- raw_to_labelled_project(project)
+    for (form_name in names(data_list$data)) {
+      data_list$data[[form_name]] <- data_list$data[[form_name]] %>%
+        raw_to_labelled_form(project = project)
+    }
+  }
   if (transform) {
-    # project$metadata <- project$transformation$metadata
-    # project$data <- project$transformation$data
+    data_list$metadata <- project$transformation$metadata
+    data_list$data <- project$transformation$data
   }
   data_list$data <- filter_data_list(
     data_list = data_list,
@@ -648,13 +652,6 @@ generate_project_summary <- function(
     filter_list = filter_list,
     filter_strict = filter_strict
   )
-  if(labelled){
-    # project <- raw_to_labelled_project(project)
-    for (form_name in names(data_list$data)) {
-      data_list$data[[form_name]] <- data_list$data[[form_name]] %>%
-        raw_to_labelled_form(project = project)
-    }
-  }
   if (exclude_identifiers) {
     data_list$data <- deidentify_data_list(
       data_list = data_list,

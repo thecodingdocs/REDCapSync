@@ -131,11 +131,11 @@ add_default_summaries <- function(project,
 }
 #' @title transform_project
 #' @noRd
-transform_project <- function(project) {
-  has_data <- is_something(project$data)
-  the_names <- project$transformation$fields$field_name
+transform_project <- function(data_list,transformation_list) {
+  has_data <- is_something(data_list$data)
+  the_names <- transformation_list$fields$field_name
   has_fields <- !is.null(the_names)
-  has_transformation <- is_something(project$transformation$forms)
+  has_transformation <- is_something(transformation_list$forms)
   if (!has_data) {
     cli_alert_warning("No data... nothing to do!")
   }
@@ -145,11 +145,11 @@ transform_project <- function(project) {
   if (!has_transformation) {
     cli_alert_warning("No transformation. Use `add_project_transformation()`")
   }
-  forms_transformation <- project$transformation$forms
+  forms_transformation <- transformation_list$forms
   forms_transformation_original <- forms_transformation
-  all_records <- project$summary$all_records
+  all_records <- data_list$summary$all_records
   check_logical <- !all_records$was_transformed
-  id_col <- project$redcap$id_col
+  id_col <- data_list$redcap$id_col
   needs_full <- all(check_logical)
   needs_nothing <- !any(check_logical)
   needs_partial <- !needs_full && !needs_nothing
@@ -157,70 +157,10 @@ transform_project <- function(project) {
     cli_alert_success("Everything transformed already.")
   }
   if (needs_nothing || !has_transformation || !has_data) {
-    return(invisible(project))
+    return(invisible(data_list))
   }
-  named_df_list <- project$data
-  # right now do not want to reconcile multiple uploads
-  # if(needs_partial) {
-  #   named_df_list <- generate_project_summary(
-  #     project = project,
-  #     transform = FALSE,
-  #     filter_field = id_col,
-  #     filter_choices = all_records[[id_col]][which(check_logical)],
-  #     filter_strict = FALSE,
-  #     no_duplicate_cols = FALSE,
-  #     exclude_identifiers = FALSE,
-  #     exclude_free_text = FALSE,
-  #     clean = FALSE,
-  #     drop_blanks = FALSE,
-  #     include_metadata = FALSE,
-  #     annotate_metadata = FALSE,
-  #     include_record_summary = FALSE,
-  #     include_users = FALSE,
-  #     include_log = FALSE
-  #     )
-  # }
-  original_fields <- project$metadata$fields
-  the_names_existing <- the_names[which(the_names %in% original_fields$field_name)]
-  the_names_new <- the_names[which(!the_names %in% original_fields$field_name)]
-  field_names <- c(the_names_existing, the_names_new)
-  for (field_name in field_names) {
-    field <- NA
-    row_of_interest <- project$transformation$fields[which(project$transformation$fields$field_name == field_name), ]
-    form_name <- row_of_interest$form_name
-    field_func <- project$transformation$field_functions[[field_name]]
-    environment(field_func) <- environment()
-    if (is_something(field_func)) {
-      if (form_name %in% names(named_df_list)) {
-        field <- field_func(project = project,
-                            field_name = field_name,
-                            form_name = form_name)
-      }
-    }
-    if (field_name %in% the_names_existing) {
-      form_old <- named_df_list[[form_name]][[field_name]]
-      if (!identical(field, form_old)) {
-        ref_cols <- project$metadata$form_key_cols[[form_name]]
-        new <- old <- named_df_list[[form_name]][, c(ref_cols, field_name)]
-        new[[field_name]] <- field
-        form <- find_form_diff2(
-          new = new,
-          old = old,
-          ref_cols = ref_cols,
-          view_old = FALSE,
-          message_pass = paste0(form_name, " - ", field_name, ": ")
-        )
-        if (is_something(form)) {
-          project$transformation$data_updates[[field_name]] <- form
-        }
-      }
-    }
-    if (form_name %in% names(named_df_list)) {
-      named_df_list[[form_name]][[field_name]] <- field
-    }
-  }
-  cli_alert_wrap(paste0("Added new fields to ", project$short_name, " `project$data`"), bullet_type = "v")
-  form_list <- NULL
+  named_df_list <- data_list$data
+ form_list <- NULL
   for (i in (seq_len(nrow(forms_transformation)))) {
     form_name <- forms_transformation$form_name[i]
     ref <- named_df_list[[form_name]]
@@ -319,45 +259,28 @@ transform_project <- function(project) {
   }
   if (is_something(form_list)) {
     if(needs_full || needs_partial){
-      project$transformation$data <- form_list
+      data_list$data <- form_list
     }
-    # if(needs_partial){
-    #   new_records <- extract_values_from_form_list(
-    #     form_list = form_list,
-    #     col_name = id_col
-    #   )
-    #   project$transformation$data <- remove_from_form_list(
-    #     form_list = project$transformation$data,
-    #     id_col = id_col,
-    #     records = new_records
-    #   )
-    #   for (form_name in names(form_list)) {
-    #     project$transformation$data[[form_name]] <-
-    #       project$transformation$data[[form_name]] %>%
-    #       dplyr::bind_rows(form_list[[form_name]])
-    #   }
-    # }
   }
-  if (!is.null(project$metadata$form_key_cols)) {
+  if (!is.null(data_list$metadata$form_key_cols)) {
     forms_transformation$key_cols <- forms_transformation$form_name %>%
       lapply(function(x) {
-        project$metadata$form_key_cols[[x]] %>% paste0(collapse = "+")
+        data_list$metadata$form_key_cols[[x]] %>% paste0(collapse = "+")
       }) %>%
       unlist()
     forms_transformation$key_names <- forms_transformation$form_name %>%
       lapply(function(x) {
         row_match <- which(forms_transformation$form_name == x)
         if (!forms_transformation$repeating[row_match]) {
-          return(project$metadata$form_key_cols[[x]])
+          return(data_list$metadata$form_key_cols[[x]])
         }
         paste0(forms_transformation$form_name[row_match], "_key")
       })
   }
-  project$internals$is_transformed <- TRUE
   cli_alert_wrap(
     paste0(
-      project$short_name,
-      " transformed according to `project$transformation`"
+      data_list$short_name,
+      " transformed according to `transformation_list`"
     ),
     bullet_type = "v"
   )
@@ -375,9 +298,9 @@ transform_project <- function(project) {
     }) %>%
     unlist() %>%
     as.character()
-  project$transformation$metadata$forms <- forms_transformation
+  data_list$metadata$forms <- forms_transformation
   # fields------------
-  fields <- combine_project_fields(project)
+  fields <- combine_project_fields(data_list)
   fields$original_form_name <- fields$form_name
   fields$form_name <- forms_transformation_original$form_name_remap[match(fields$form_name, forms_transformation_original$form_name)]
   fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]
@@ -386,38 +309,39 @@ transform_project <- function(project) {
   move <- which(colnames(fields) == "original_form_name")
   last <- which(colnames(fields) != "original_form_name")[-first]
   fields <- fields[, c(first, move, last)]
-  project$transformation$metadata$fields <- fields
+  data_list$metadata$fields <- fields
   cli_alert_wrap(
     paste0(
       "Added mod fields to ",
-      project$short_name,
-      " `project$transformation`"
+      data_list$short_name,
+      " `data_list$transformation`"
     ),
     bullet_type = "v"
   )
-  project$transformation$metadata$choices <- fields_to_choices(fields)
-  project$transformation$metadata$form_key_cols <-
-    get_key_col_list(project = project, transform = TRUE)
-  project$transformation$metadata$missing_codes <-
-    project$metadata$missing_codes
+  data_list$metadata$choices <- fields_to_choices(fields)
+  data_list$metadata$form_key_cols <-
+    get_key_col_list(data_list = data_list, transform = TRUE)
   #end --------
   # row_match <- which(all_records[[id_col]]%in%new_records)
-  all_records$was_transformed <- TRUE
-  all_records$was_saved <- FALSE
-  project$summary$all_records <- all_records
-  # if(project$internals$offload_transformation){
+  #TODO
+  # all_records$was_transformed <- TRUE
+  # all_records$was_saved <- FALSE
+  # data_list$summary$all_records <- all_records
+  #TODO
+  # if(data_list$internals$offload_transformation){
   #   saveRDS(
-  #     project$transformation$data,
+  #     data_list$transformation$data,
   #     file = get_project_path2(
-  #       project = project,
+  #       data_list = data_list,
   #       type = "transformation",
   #       check_dir = TRUE
   #     )
   #   )
-  #   project$transformation$data <- NULL
+  #   data_list$transformation$data <- NULL
   # }
-  project$internals$last_data_transformation <- now_time()
-  invisible(project)
+  #TODO
+  # data_list$internals$last_data_transformation <- now_time()
+  invisible(data_list)
 }
 #' @noRd
 missing_form_names <- function(project) {

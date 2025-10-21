@@ -240,7 +240,7 @@ sync_project <- function(
   }
   #turn off transform for now
   # first_stamp <- project$internals$last_data_transformation
-  # project <- transform_project(project)
+  project <- transform_project(project,transformation_list = project$transformation)
   # second_stamp <- project$internals$last_data_transformation
   # was_updated <- was_updated || !identical(first_stamp,second_stamp)
   if (save_to_dir && !is.null(project$dir_path)) {

@@ -416,10 +416,26 @@ add_project_summary <- function(
 save_summary <- function(project, summary_name) {
   id_col <- project$metadata$id_col
   summary_list <- project$summary[[summary_name]]
-  to_save_list <- project %>%
+  data_list <- project %>%
     generate_project_summary(
       summary_name = summary_name
     )
+  to_save_list <- NULL
+  if(summary_list$include_metadata){
+    if(summary_list$annotate_metadata){
+      # to_save_list$forms <- data_list %>% annotate_forms()
+      # to_save_list$fields <- data_list %>% annotate_fields()
+      # to_save_list$choices <- data_list %>% annotate_choices()
+    }else{
+      to_save_list$forms <- data_list$metadata$forms
+      to_save_list$fields <- data_list$metadata$fields
+      to_save_list$choices <- data_list$metadata$choices
+    }
+  }
+  form_names <- names(data_list$data)
+  for(form_name in form_names){
+    to_save_list[[form_name]] <- data_list$data[[form_name]]
+  }
   # with_links = TRUE
   # separate = FALSE
   # use_csv
@@ -429,10 +445,6 @@ save_summary <- function(project, summary_name) {
   link_col_list <- list()
   if (summary_list$with_links) {
     if (project$internals$project_type == "redcap") {
-      form_names <- names(project$data)
-      if(summary_list$transformation_type){
-        form_names <- project$transformation$forms$form_name_remap %>% unique()
-      }
       add_links <- which(names(to_save_list) %in% form_names)
       if (length(add_links) > 0) {
         to_save_list[add_links] <- to_save_list[add_links] %>%
@@ -449,10 +461,7 @@ save_summary <- function(project, summary_name) {
   header_df_list <- to_save_list %>%
     construct_header_list(fields = project$metadata$fields) %>%
     process_df_list(silent = TRUE)
-  key_cols_list <- project$metadata$form_key_cols
-  if(summary_list$transformation_type){
-    key_cols_list <- project$transformation$metadata$form_key_cols
-  }
+  key_cols_list <- to_save_list$metadata$form_key_cols
   if (summary_name == "REDCapSync_raw") {
     header_df_list <- NULL
     key_cols_list <- NULL
@@ -669,32 +678,51 @@ generate_project_summary <- function(
       drop_others = drop_others
     )
   }
-  to_save_list <- data_list$data
   if (include_metadata) {
-    if (annotate_metadata && is_something(to_save_list)) {
+    if (annotate_metadata && is_something(data_list$metadata)) {
       #need to decouple from project
-      to_save_list$forms <- annotate_forms(data_list)
-      to_save_list$fields <- annotate_fields(data_list)
-      to_save_list$choices <- annotate_choices(data_list)
-    } else {
-      to_save_list$forms <- project$metadata$forms
-      to_save_list$fields <- project$metadata$fields
-      to_save_list$choices <- project$metadata$choices
+      # data_list$metadata$forms <- annotate_forms(data_list)
+      # data_list$metadata$fields <- annotate_fields(data_list)
+      # data_list$metadata$choices <- annotate_choices(data_list)
     }
   }
-  records <- extract_project_records(project)[[1]]
-  if (include_record_summary) {
-    if (!is.null(records)) {
-      to_save_list$records <- summarize_records_from_log(project, records = records)
-    }
-  }
-  if (include_users) {
-    to_save_list$users <- summarize_users_from_log(project, records = records)
-  }
-  if (include_log) {
-    to_save_list$log <- get_log(project, records = records)
-  }
-  invisible(to_save_list)
+  # records <- extract_project_records(project)[[1]]
+  # if (include_record_summary) {
+  #   if (!is.null(records)) {
+  #     data_list$records <- summarize_records_from_log(project, records = records)
+  #   }
+  # }
+  # if (include_users) {
+  #   data_list$users <- summarize_users_from_log(project, records = records)
+  # }
+  # if (include_log) {
+  #   data_list$log <- get_log(project, records = records)
+  # }
+  data_list$summary_details
+  # data_list$summary_details <- list(
+  #   transformation_type = summary_list$transformation_type,
+  #   merge_form_name <- summary_list$merge_form_name
+  #   filter_list <- summary_list$filter_list
+  #   filter_strict <- summary_list$filter_strict
+  #   field_names <- summary_list$field_names
+  #   form_names <- summary_list$form_names
+  #   no_duplicate_cols <- summary_list$no_duplicate_cols
+  #   exclude_identifiers <- summary_list$exclude_identifiers
+  #   exclude_free_text <- summary_list$exclude_free_text
+  #   date_handling <- summary_list$date_handling
+  #   upload_compatible <- summary_list$upload_compatible
+  #   labelled <- summary_list$labelled
+  #   clean <- summary_list$clean
+  #   drop_blanks <- summary_list$drop_blanks
+  #   drop_missings <- summary_list$drop_missings
+  #   drop_others <- summary_list$drop_others
+  #   include_metadata <- summary_list$include_metadata
+  #   annotate_metadata <- summary_list$annotate_metadata
+  #   include_record_summary <- summary_list$include_record_summary
+  #   include_users <- summary_list$include_users
+  #   include_log <- summary_list$include_log
+  # )
+  invisible(data_list)
 }
 #' @noRd
 merge_non_repeating <- function(data_list,merge_form_name){

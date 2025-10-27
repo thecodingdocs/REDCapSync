@@ -290,75 +290,18 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #'
 #' @inheritParams save_project
 #' @inheritParams setup_project
+#' @inheritParams generate_project_summary
 #' @param summary_name Character. The name of the summary to create.
-#' @param transformation_type Character vector.
-#' Default is "default".
-#' Also have "none", "flat", "merge-non-repeating"
-#' "default" first merges non-repeating and if there are repeating forms it
-#' merges non-repeating variables to the right of repeating instruments
-#' "flat" is one-record, one-row, even if there are repeating forms
-#' "none" does not transform anything
-#' "merge-non-repeating" still merges all non-repeating instruments but
-#' does not merge them to repeating instruments
-#' @param merge_form_name A character string representing the name of the merged
-#' form. Default is "merged".
-#' @param filter_field Character. The name of the field in the database to
-#' filter on.
-#' @param filter_choices Vector. The values of `filter_field` used to define the
-#' summary.
-#' @param filter_list Vector. The values of `filter_field` used to define the
-#' summary.
-#' @param filter_strict Logical. If `TRUE`, all forms will be filtered by
-#' criteria. If `FALSE`, will convert original filter to id column and filter
-#' all other forms by that record. Default is `TRUE`.
-#' @param dir_other Character. The directory where the summary file will be
-#' saved. Default is the `output` folder within the database directory.
-#' @param file_name Character. The base name of the file where the summary will
-#' be saved. Default is `<project$short_name>_<summary_name>`.
-#' @param form_names Character vector. Names of forms to include in the summary.
-#' Default is `NULL`, which includes all forms.
-#' @param field_names Character vector. Names of specific fields to include in
-#' the summary. Default is `NULL`, which includes all fields.
-#' @param exclude_identifiers Logical. Whether to exlude identifiers in the data
-#' in the summary. Default is `TRUE`.
-#' @param exclude_free_text Logical for excluding free text. Default is `FALSE`.
-#' @param date_handling character string. One of `none`,`lowest-overall-zero`,
-#' `lowest-record-zero`, `shuffle-record-randomly`, or zero date date in form of
-#' `2012-12-05`
-#' @param upload_compatible Logical. If `TRUE`, the data will be compatible with
-#' REDCap API upload. The main conflict is numeric or date variables in a
-#' project with missing codes while `clean` = `TRUE`. R converts these to `NA`.
-#' Default is `TRUE`.
-#' @param labelled Logical. If `TRUE`, the data will be converted to labelled.
-#' Default is `TRUE`.
-#' @param clean Logical. If `TRUE`, the data will be cleaned before summarizing.
-#' Default is `TRUE`.
-#' @param drop_blanks Logical. If `TRUE`, records with blank fields will be
-#' dropped. Default is `TRUE`.
-#' @param drop_missings Logical. If `TRUE`, will convert missing codes to NA.
-#' Default is `FALSE`.
-#' @param drop_others Character vector of other values that should be dropped.
-#' @param include_metadata Logical. If `TRUE`, metadata will be included in the
-#' summary. Default is `TRUE`.
-#' @param annotate_metadata Logical. If `TRUE`, metadata will be annotated in
-#' the summary. Default is `TRUE`.
-#' @param include_record_summary Logical. If `TRUE`, a record summary will be
-#' included in the generated summary. Default is `TRUE`.
-#' @param include_users Logical. If `TRUE`, user-related information will be
-#' included in the summary. Default is `TRUE`.
-#' @param include_log Logical. If `TRUE`, the log of changes will be included in
-#' the summary. Default is `TRUE`.
-#' @param include_summary_details Logical. If `TRUE`, Details of the summary
-#' will be included in the final file. Default is `TRUE`.
-#' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the
-#' function will avoid including duplicate columns in the output. Defaults to
-#' `FALSE`.
 #' @param hard_reset Logical. If `TRUE`, overwrite existing summary files with the
 #' same name. Default is `FALSE`.
 #' @param with_links Optional logical (TRUE/FALSE) for including links in Excel
 #' sheets. Default is `FALSE`.
 #' @param separate Optional logical (TRUE/FALSE) separating each form into
 #' separate files as opposed to multi-tab Excel. Default is `FALSE`.
+#' @param dir_other Character. The directory where the summary file will be
+#' saved. Default is the `output` folder within the database directory.
+#' @param file_name Character. The base name of the file where the summary will
+#' be saved. Default is `<project$short_name>_<summary_name>`.
 #' @return
 #' A modified `project` object that includes the newly created summary.
 #' The summary is also saved as a file in the specified directory.
@@ -580,10 +523,67 @@ save_summary <- function(project, summary_name) {
 #' data, including metadata, and annotating metadata.
 #'
 #' @inheritParams save_project
-#' @inheritParams add_project_summary
 #' @param summary_name Character. The name of the summary from which to generate
 #' the summary. *If you provide `summary_name` all other parameters are
 #' inherited according to what was set with `add_project_summary`.
+#' @param transformation_type Character vector.
+#' Default is "default".
+#' Also have "none", "flat", "merge-non-repeating"
+#' "default" first merges non-repeating and if there are repeating forms it
+#' merges non-repeating variables to the right of repeating instruments
+#' "flat" is one-record, one-row, even if there are repeating forms
+#' "none" does not transform anything
+#' "merge-non-repeating" still merges all non-repeating instruments but
+#' does not merge them to repeating instruments
+#' @param merge_form_name A character string representing the name of the merged
+#' form. Default is "merged".
+#' @param filter_field Character. The name of the field in the database to
+#' filter on.
+#' @param filter_choices Vector. The values of `filter_field` used to define the
+#' summary.
+#' @param filter_list Vector. The values of `filter_field` used to define the
+#' summary.
+#' @param filter_strict Logical. If `TRUE`, all forms will be filtered by
+#' criteria. If `FALSE`, will convert original filter to id column and filter
+#' all other forms by that record. Default is `TRUE`.
+#' @param form_names Character vector. Names of forms to include in the summary.
+#' Default is `NULL`, which includes all forms.
+#' @param field_names Character vector. Names of specific fields to include in
+#' the summary. Default is `NULL`, which includes all fields.
+#' @param exclude_identifiers Logical. Whether to exlude identifiers in the data
+#' in the summary. Default is `TRUE`.
+#' @param exclude_free_text Logical for excluding free text. Default is `FALSE`.
+#' @param date_handling character string. One of `none`,`lowest-overall-zero`,
+#' `lowest-record-zero`, `shuffle-record-randomly`, or zero date date in form of
+#' `2012-12-05`
+#' @param upload_compatible Logical. If `TRUE`, the data will be compatible with
+#' REDCap API upload. The main conflict is numeric or date variables in a
+#' project with missing codes while `clean` = `TRUE`. R converts these to `NA`.
+#' Default is `TRUE`.
+#' @param labelled Logical. If `TRUE`, the data will be converted to labelled.
+#' Default is `TRUE`.
+#' @param clean Logical. If `TRUE`, the data will be cleaned before summarizing.
+#' Default is `TRUE`.
+#' @param drop_blanks Logical. If `TRUE`, records with blank fields will be
+#' dropped. Default is `TRUE`.
+#' @param drop_missings Logical. If `TRUE`, will convert missing codes to NA.
+#' Default is `FALSE`.
+#' @param drop_others Character vector of other values that should be dropped.
+#' @param include_metadata Logical. If `TRUE`, metadata will be included in the
+#' summary. Default is `TRUE`.
+#' @param annotate_metadata Logical. If `TRUE`, metadata will be annotated in
+#' the summary. Default is `TRUE`.
+#' @param include_record_summary Logical. If `TRUE`, a record summary will be
+#' included in the generated summary. Default is `TRUE`.
+#' @param include_users Logical. If `TRUE`, user-related information will be
+#' included in the summary. Default is `TRUE`.
+#' @param include_log Logical. If `TRUE`, the log of changes will be included in
+#' the summary. Default is `TRUE`.
+#' @param include_summary_details Logical. If `TRUE`, Details of the summary
+#' will be included in the final file. Default is `TRUE`.
+#' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the
+#' function will avoid including duplicate columns in the output. Defaults to
+#' `FALSE`.
 #' @return
 #' A list containing the generated summary based on the specified options. The
 #' list includes filtered and cleaned data, metadata, and other summary details.
@@ -597,7 +597,8 @@ save_summary <- function(project, summary_name) {
 generate_project_summary <- function(
     project,
     summary_name,
-    transformation_type,
+    transformation_type = "default",
+    merge_form_name = "merged",
     filter_field = NULL,
     filter_choices = NULL,
     filter_list = NULL,
@@ -630,6 +631,7 @@ generate_project_summary <- function(
     summary_list <- project$summary[[summary_name]]
     #warning about other params?
     transformation_type <- summary_list$transformation_type
+    merge_form_name <- summary_list$merge_form_name
     filter_list <- summary_list$filter_list
     filter_strict <- summary_list$filter_strict
     field_names <- summary_list$field_names

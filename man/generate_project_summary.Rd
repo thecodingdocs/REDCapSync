@@ -7,7 +7,8 @@
 generate_project_summary(
   project,
   summary_name,
-  transformation_type,
+  transformation_type = "default",
+  merge_form_name = "merged",
   filter_field = NULL,
   filter_choices = NULL,
   filter_list = NULL,
@@ -50,6 +51,9 @@ merges non-repeating variables to the right of repeating instruments
 "none" does not transform anything
 "merge-non-repeating" still merges all non-repeating instruments but
 does not merge them to repeating instruments}
+
+\item{merge_form_name}{A character string representing the name of the merged
+form. Default is "merged".}
 
 \item{filter_field}{Character. The name of the field in the database to
 filter on.}

@@ -291,9 +291,17 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' @inheritParams save_project
 #' @inheritParams setup_project
 #' @param summary_name Character. The name of the summary to create.
-#' @param transform Logical. Whether to transform the data in the summary.
-#' Default
-#' is `TRUE`.
+#' @param transformation_type Character vector.
+#' Default is "default".
+#' Also have "none", "flat", "merge-non-repeating"
+#' "default" first merges non-repeating and if there are repeating forms it
+#' merges non-repeating variables to the right of repeating instruments
+#' "flat" is one-record, one-row, even if there are repeating forms
+#' "none" does not transform anything
+#' "merge-non-repeating" still merges all non-repeating instruments but
+#' does not merge them to repeating instruments
+#' @param merge_form_name A character string representing the name of the merged
+#' form. Default is "merged".
 #' @param filter_field Character. The name of the field in the database to
 #' filter on.
 #' @param filter_choices Vector. The values of `filter_field` used to define the
@@ -368,7 +376,8 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 add_project_summary <- function(
     project,
     summary_name,
-    transform = TRUE,
+    transformation_type = "default",
+    merge_form_name = "merged",
     filter_field = NULL,
     filter_choices = NULL,
     filter_list = NULL,
@@ -418,7 +427,8 @@ add_project_summary <- function(
   file_ext <- ifelse(use_csv, ".csv", ".xlsx")
   summary_list_new <- list(
     summary_name = summary_name,
-    transform = transform,
+    transformation_type = transformation_type,
+    merge_form_name = merge_form_name,
     filter_list = filter_list,
     filter_strict = filter_strict,
     field_names = field_names,
@@ -497,7 +507,7 @@ save_summary <- function(project, summary_name) {
   if (summary_list$with_links) {
     if (project$internals$project_type == "redcap") {
       form_names <- names(project$data)
-      if(summary_list$transform){
+      if(summary_list$transformation_type){
         form_names <- project$transformation$forms$form_name_remap %>% unique()
       }
       add_links <- which(names(to_save_list) %in% form_names)
@@ -517,7 +527,7 @@ save_summary <- function(project, summary_name) {
     construct_header_list(fields = project$metadata$fields) %>%
     process_df_list(silent = TRUE)
   key_cols_list <- project$metadata$form_key_cols
-  if(summary_list$transform){
+  if(summary_list$transformation_type){
     key_cols_list <- project$transformation$metadata$form_key_cols
   }
   if (summary_name == "REDCapSync_raw") {
@@ -587,7 +597,7 @@ save_summary <- function(project, summary_name) {
 generate_project_summary <- function(
     project,
     summary_name,
-    transform,
+    transformation_type,
     filter_field = NULL,
     filter_choices = NULL,
     filter_list = NULL,
@@ -619,7 +629,7 @@ generate_project_summary <- function(
     }
     summary_list <- project$summary[[summary_name]]
     #warning about other params?
-    transform <- summary_list$transform
+    transformation_type <- summary_list$transformation_type
     filter_list <- summary_list$filter_list
     filter_strict <- summary_list$filter_strict
     field_names <- summary_list$field_names
@@ -659,11 +669,8 @@ generate_project_summary <- function(
     filter_list = filter_list,
     filter_strict = filter_strict
   )
-  if (transform) {
-    data_list <- transform_project(
-      data_list = data_list,
-      transformation_list = project$transformation
-    )
+  if (transformation_type == "default") {
+ #TODO
   }
   if (exclude_identifiers) {
     data_list$data <- deidentify_data_list(
@@ -902,7 +909,7 @@ get_summary_records <- function(project, summary_name) {
   summary_list <- project$summary[[summary_name]]
   to_save_list <- generate_project_summary(
     project = project,
-    transform = summary_list$transform,
+    transformation_type = summary_list$transformation_type,
     filter_list = summary_list$filter_list,
     filter_strict = FALSE,
     form_names = summary_list$form_names,

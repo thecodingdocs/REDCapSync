@@ -27,7 +27,6 @@ setup_project(
   get_files = FALSE,
   get_file_repository = FALSE,
   original_file_names = FALSE,
-  merge_form_name = "merged",
   add_default_fields = FALSE,
   add_default_transformation = TRUE,
   add_default_summaries = TRUE,
@@ -108,9 +107,6 @@ Default is \code{FALSE}.}
 
 \item{original_file_names}{Logical (TRUE/FALSE). If TRUE, uses original file
 names for retrieved files. Default is \code{FALSE}.}
-
-\item{merge_form_name}{A character string representing the name of the merged
-form. Default is "merged".}
 
 \item{add_default_fields}{Logical (TRUE/FALSE). If TRUE,
 will add default fields}

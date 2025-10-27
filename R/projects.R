@@ -111,7 +111,6 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
   "add_default_fields",
   "add_default_transformation",
   "add_default_summaries",
-  "merge_form_name",
   "use_csv",
   "get_type",
   "batch_size_download",
@@ -152,7 +151,6 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
     add_default_fields = logical(0),
     add_default_transformation = logical(0),
     add_default_summaries = logical(0),
-    merge_form_name = character(0),
     use_csv = logical(0),
     get_type = character(0),
     batch_size_download = integer(0),
@@ -221,7 +219,6 @@ extract_project_details <- function(project) {
     project$internals$add_default_summaries
   project_details$use_csv <- project$internals$use_csv
   project_details$get_type <- project$internals$get_type
-  project_details$merge_form_name <- project$internals$merge_form_name
   project_details$batch_size_download <-
     project$internals$batch_size_download %>%
     as.integer()
@@ -323,7 +320,6 @@ add_project_details_to_project <- function(project, project_details) {
     project_details$add_default_summaries
   project$internals$use_csv <- project_details$use_csv
   project$internals$get_type <- project_details$get_type # should trigger hard_reset
-  project$internals$merge_form_name <- project_details$merge_form_name
   project$internals$batch_size_download <-
     project_details$batch_size_download %>%
     as.integer()

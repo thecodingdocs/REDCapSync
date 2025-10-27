@@ -126,8 +126,6 @@ sync_project <- function(
     }
     if (hard_reset) {
       project <- project %>% get_REDCap_metadata(include_users = !project$internals$metadata_only)
-      # project$internals$is_transformed <- FALSE
-      # project <- clear_project_transformation(project)
       if (!project$internals$metadata_only) {
         project$data <- list()
         project$data_updates <- list()
@@ -148,8 +146,6 @@ sync_project <- function(
             project %>% get_REDCap_log2(log_begin_date = log_begin_date)
           ) %>%
           sort_redcap_log()
-        # project <- annotate_fields(project)
-        # project <- annotate_choices(project)
         project$summary$all_records <- extract_project_records(project)
         project$summary$all_records$last_api_call <-
           project$internals$last_full_update <-
@@ -159,13 +155,6 @@ sync_project <- function(
         was_updated <- TRUE
       }
     } else {
-      # if(interim_log_metadata_minor){
-      #   # what if transformed already
-      #   # if(project$internals$is_transformed){
-      #   #   # untransform
-      #   # }
-      #   project <- project %>% get_REDCap_metadata(include_users = !metadata_only)
-      # }
       if (will_update) {
         project$data <- project$data %>% all_character_cols_list()
         if (length(deleted_records) > 0) {
@@ -227,17 +216,17 @@ sync_project <- function(
   #     project <- add_default_fields(project)
   #   }
   # }
-  if (project$internals$add_default_transformation) {
-    if(!is_something(project$transformation$forms)){
-      project <- add_default_transformation(project)
-    }
-  }
-  if (project$internals$add_default_summaries) {
-    if (!is_something(project$summary$REDCapSync) ||
-        !is_something(project$summary$REDCapSync_raw)) {
-      project <- add_default_summaries(project)
-    }
-  }
+  # if (project$internals$add_default_transformation) {
+  #   if(!is_something(project$transformation$forms)){
+  #     project <- add_default_transformation(project)
+  #   }
+  # }
+  # if (project$internals$add_default_summaries) {
+  #   if (!is_something(project$summary$REDCapSync) ||
+  #       !is_something(project$summary$REDCapSync_raw)) {
+  #     project <- add_default_summaries(project)
+  #   }
+  # }
   #turn off transform for now
   # first_stamp <- project$internals$last_data_transformation
   # project <- transform_project(project,transformation_list = project$transformation)

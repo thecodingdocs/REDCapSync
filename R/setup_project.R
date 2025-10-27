@@ -38,8 +38,6 @@
 #' Default is `daily`
 #' @param hard_reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the
 #' `project` object already exists. Default is `FALSE`.
-#' @param merge_form_name A character string representing the name of the merged
-#' form. Default is "merged".
 #' @param use_csv Logical (TRUE/FALSE). If TRUE, uses CSV files for data
 #' storage. Default is `FALSE`.
 #' @param days_of_log Integer. Number of days to be checked in the log if a
@@ -108,7 +106,6 @@ setup_project <- function(
     get_files = FALSE,
     get_file_repository = FALSE,
     original_file_names = FALSE,
-    merge_form_name = "merged",
     add_default_fields = FALSE,
     add_default_transformation = TRUE,
     add_default_summaries = TRUE,
@@ -139,12 +136,12 @@ setup_project <- function(
   assert_logical(add_default_fields, len = 1, add = collected)
   assert_logical(add_default_transformation, len = 1, add = collected)
   assert_logical(add_default_summaries, len = 1, add = collected)
-  assert_env_name(
-    merge_form_name,
-    max.chars = 31,
-    arg_name = "merge_form_name",
-    add = collected
-  )
+  # assert_env_name(
+  #   merge_form_name,
+  #   max.chars = 31,
+  #   arg_name = "merge_form_name",
+  #   add = collected
+  # )
   assert_logical(use_csv, len = 1, add = collected)
   assert_choice(
     get_type,
@@ -285,7 +282,6 @@ setup_project <- function(
     project$links$redcap_uri <- redcap_uri # add test function, should end in / or add it
     project$links$redcap_base <- redcap_uri %>% dirname() %>% paste0("/") # add test function
   }
-  project$internals$merge_form_name <- merge_form_name
   project$internals$use_csv <- use_csv
   project$internals$is_blank <- FALSE
   project$data <- project$data %>% all_character_cols_list()
@@ -512,99 +508,6 @@ nav_to_dir <- function(project) {
                                "TEST_longitudinal",
                                "TEST_multiarm")
 #' @noRd
-.blank_project_new <- list(
-  short_name = NULL,
-  dir_path = NULL,
-  redcap = list(
-    token_name = NULL,
-    project_id = NULL,
-    project_title = NULL,
-    id_col = NULL,
-    version = NULL,
-    project_info = NULL,
-    log = NULL,
-    users = NULL,
-    current_user = NULL,
-    choices = NULL,
-    raw_structure_cols = NULL,
-    is_longitudinal = NULL,
-    has_arms = NULL,
-    has_multiple_arms = NULL,
-    has_arms_that_matter = NULL,
-    has_repeating_forms_or_events = NULL,
-    has_repeating_forms = NULL,
-    has_repeating_events = NULL,
-    project_type = "redcap"
-  ),
-  metadata = list(
-    forms = NULL,
-    fields = NULL,
-    choices = NULL,
-    form_key_cols = NULL,
-    arms = NULL,
-    events = NULL,
-    event_mapping = NULL,
-    missing_codes = NULL
-  ),
-  data = NULL,
-  data_updates = NULL,
-  quality_checks = NULL,
-  transformation = list(
-    forms = NULL,
-    fields = NULL,
-    field_functions = NULL,
-    original_forms = NULL,
-    original_fields = NULL,
-    data_updates = NULL
-  ),
-  summary = list(),
-  settings = list(
-    sync_frequency = NULL,
-    get_files = NULL,
-    get_file_repository = NULL,
-    original_file_names = NULL,
-    days_of_log = NULL,
-    entire_log = NULL,
-    merge_form_name = "merged",
-    use_csv = FALSE
-  ),
-  internals = list(
-    last_test_connection_attempt = NULL,
-    last_test_connection_outcome = NULL,
-    last_metadata_update = NULL,
-    last_metadata_dir_save = NULL,
-    last_full_update = NULL,
-    last_data_update = NULL,
-    last_data_dir_save = NULL,
-    last_data_transformation = NULL,
-    last_summary = NULL,
-    last_quality_check = NULL,
-    last_clean = NULL,
-    last_directory_save = NULL,
-    last_sync = NULL,
-    timezone = NULL,
-    is_blank = TRUE,
-    is_test = FALSE,
-    is_transformed = FALSE,
-    is_clean = FALSE,
-    ever_connected = FALSE
-  ),
-  links = list(
-    redcap_uri = NULL,
-    redcap_base = NULL,
-    redcap_home = NULL,
-    redcap_record_home = NULL,
-    redcap_record_subpage = NULL,
-    redcap_records_dashboard = NULL,
-    redcap_api = NULL,
-    redcap_api_playground = NULL,
-    redcap_codebook = NULL,
-    pkgdown = "https://thecodingdocs.github.io/REDCapSync/",
-    github = "https://github.com/thecodingdocs/REDCapSync/",
-    thecodingdocs = "https://www.thecodingdocs.com/"
-  )
-)
-#' @noRd
 .blank_project <- list(
   short_name = NULL,
   dir_path = NULL,
@@ -670,12 +573,10 @@ nav_to_dir <- function(project) {
     days_of_log = NULL,
     entire_log = NULL,
     data_extract_merged = NULL,
-    merge_form_name = "merged",
     project_type = "redcap",
     is_blank = TRUE,
     is_test = FALSE,
     ever_connected = FALSE,
-    is_transformed = FALSE,
     is_clean = FALSE,
     use_csv = FALSE
   ),

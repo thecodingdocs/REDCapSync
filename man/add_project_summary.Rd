@@ -7,7 +7,8 @@
 add_project_summary(
   project,
   summary_name,
-  transform = TRUE,
+  transformation_type = "default",
+  merge_form_name = "merged",
   filter_field = NULL,
   filter_choices = NULL,
   filter_list = NULL,
@@ -45,9 +46,18 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{summary_name}{Character. The name of the summary to create.}
 
-\item{transform}{Logical. Whether to transform the data in the summary.
-Default
-is \code{TRUE}.}
+\item{transformation_type}{Character vector.
+Default is "default".
+Also have "none", "flat", "merge-non-repeating"
+"default" first merges non-repeating and if there are repeating forms it
+merges non-repeating variables to the right of repeating instruments
+"flat" is one-record, one-row, even if there are repeating forms
+"none" does not transform anything
+"merge-non-repeating" still merges all non-repeating instruments but
+does not merge them to repeating instruments}
+
+\item{merge_form_name}{A character string representing the name of the merged
+form. Default is "merged".}
 
 \item{filter_field}{Character. The name of the field in the database to
 filter on.}

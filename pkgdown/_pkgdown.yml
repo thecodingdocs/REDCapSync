@@ -67,7 +67,6 @@ reference:
       - find_upload_diff
       - raw_to_labelled_form
       - labelled_to_raw_form
-      - read_from_REDCap_upload
   - subtitle: Download from, Upload to, and Delete from REDCap
     desc: Always use with caution! Package takes several steps to test and confirm uploads but ultimately the user is responsible for data changes. Remember REDCap always keeps a log of changes.
     contents:

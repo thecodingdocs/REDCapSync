@@ -46,29 +46,9 @@ annotate_fields <- function(project, summarize_data = TRUE, drop_blanks = TRUE) 
     fields <- fields[which(fields$field_name %in% get_all_field_names(project)), ]
   }
   if (nrow(fields) > 0) {
-    fields <- fields[which(fields$field_type != "descriptive"), ]
-    fields <- add_labels_to_checkbox(fields)
-    fields <- fields[which(fields$field_type != "checkbox"), ]
-    fields$field_label[which(is.na(fields$field_label))] <- fields$field_name[which(is.na(fields$field_label))]
-    fields <- unique(fields$form_name) %>%
-      lapply(function(x) {
-        fields[which(fields$form_name == x), ]
-      }) %>%
-      dplyr::bind_rows()
-    if (!"field_type_R" %in% colnames(fields)) fields$field_type_R <- "character"
-    fields$field_type_R[which(fields$field_type %in% c("radio", "yesno", "dropdown", "checkbox_choice"))] <- "factor"
-    fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "integer")] <- "integer"
-    fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "date_mdy")] <- "date"
-    fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "date_ymd")] <- "date"
-    fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "datetime_dmy")] <- "datetime"
-    fields$in_original_redcap <- TRUE
-    fields$original_form_name <- fields$form_name
-    if (project$internals$is_transformed) {
-      fields$in_original_redcap <- fields$field_name %in% project$transformation$original_fields$field_name
-      fields$original_form_name <- project$transformation$original_fields$form_name[match(fields$field_name, project$transformation$original_fields$field_name)]
-    }
-    if (!"units" %in% colnames(fields)) fields$units <- NA
-    if (!"field_label_short" %in% colnames(fields)) fields$field_label_short <- fields$field_label
+    #need to account for original
+    fields$in_original_redcap <- fields$field_name %in% project$transformation$original_fields$field_name
+    fields$original_form_name <- project$transformation$original_fields$form_name[match(fields$field_name, project$transformation$original_fields$field_name)]
     # if(!"field_label_short" %in% colnames(fields))fields$ <- fields$field_label
     if (summarize_data) {
       skimmed <- NULL
@@ -653,8 +633,9 @@ generate_project_summary <- function(
     include_log <- summary_list$include_log
   }
   data_list <- NULL
-  data_list$metadata <- project$metadata # %>% annotate_fields()
+  data_list$metadata <- project$metadata
   data_list$data <- project$data
+  data_list <- metadata_add_default_cols(data_list)
   if(labelled){
     # project <- raw_to_labelled_project(project)
     for (form_name in names(data_list$data)) {
@@ -770,22 +751,54 @@ merge_non_repeating <- function(data_list,merge_form_name){
   data_list$metadata$form_key_cols <- get_key_col_list(project = data_list)
   # data_list$data
   merge_form <- NULL
+  non_rep_form_names <- non_rep_form_names[non_rep_form_names %>% lapply(function(non_rep_form_name){
+    is_something(data_list$data[[non_rep_form_name]])
+  }) %>% unlist() %>% which()]
   # non_rep_form_name <- non_rep_form_names[[2]]
+  i <- 0
   for(non_rep_form_name in non_rep_form_names){
     if(non_rep_form_name == non_rep_form_names[[1]]){
       merge_form <- data_list$data[[non_rep_form_name]]
     }else{
+      to_be_merged <- data_list$data[[non_rep_form_name]]
+      to_be_merged$arm_number <- NULL
       merge_form <- merge(
         x = merge_form,
-        y = data_list$data[[non_rep_form_name]],
+        y = to_be_merged,
         by = data_list$metadata$id_col,
         all = TRUE,
-        sort = FALSE
+        sort = FALSE,
+        suffixes = c("",paste0("_merged_",i))
       )
     }
     data_list$data[[non_rep_form_name]] <- NULL
+    i <- i + 1
   }
   data_list$data[[merge_form_name]] <- merge_form
+  data_list
+}
+metadata_add_default_cols <- function(data_list){
+  fields <- data_list$metadata$fields
+  fields <- fields[which(fields$field_type != "descriptive"), ]
+  fields <- add_labels_to_checkbox(fields)
+  fields <- fields[which(fields$field_type != "checkbox"), ]
+  fields$field_label[which(is.na(fields$field_label))] <- fields$field_name[which(is.na(fields$field_label))]
+  fields <- unique(fields$form_name) %>%
+    lapply(function(x) {
+      fields[which(fields$form_name == x), ]
+    }) %>%
+    dplyr::bind_rows()
+  if (!"field_type_R" %in% colnames(fields)) fields$field_type_R <- "character"
+  fields$field_type_R[which(fields$field_type %in% c("radio", "yesno", "dropdown", "checkbox_choice"))] <- "factor"
+  fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "integer")] <- "integer"
+  fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "date_mdy")] <- "date"
+  fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "date_ymd")] <- "date"
+  fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "datetime_dmy")] <- "datetime"
+  fields$in_original_redcap <- TRUE
+  fields$original_form_name <- fields$form_name
+  if (!"units" %in% colnames(fields)) fields$units <- NA
+  if (!"field_label_short" %in% colnames(fields)) fields$field_label_short <- fields$field_label
+  data_list$metadata$fields <- fields
   data_list
 }
 #' @title Summarize REDCap Database

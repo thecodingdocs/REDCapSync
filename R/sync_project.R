@@ -296,7 +296,6 @@ sync_all <- function(
   #consider adding message/df
   invisible()
 }
-
 due_for_sync <- function(project_name) {
   now <- now_time()
   projects <- get_projects()

@@ -71,7 +71,8 @@ data, including metadata, and annotating metadata.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate_project_summary</span><span class="op">(</span></span>
 <span>  <span class="va">project</span>,</span>
 <span>  <span class="va">summary_name</span>,</span>
-<span>  <span class="va">transformation_type</span>,</span>
+<span>  transformation_type <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  merge_form_name <span class="op">=</span> <span class="st">"merged"</span>,</span>
 <span>  filter_field <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  filter_choices <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  filter_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -123,6 +124,11 @@ merges non-repeating variables to the right of repeating instruments
 "none" does not transform anything
 "merge-non-repeating" still merges all non-repeating instruments but
 does not merge them to repeating instruments</p></dd>
+
+
+<dt id="arg-merge-form-name">merge_form_name<a class="anchor" aria-label="anchor" href="#arg-merge-form-name"></a></dt>
+<dd><p>A character string representing the name of the merged
+form. Default is "merged".</p></dd>
 
 
 <dt id="arg-filter-field">filter_field<a class="anchor" aria-label="anchor" href="#arg-filter-field"></a></dt>

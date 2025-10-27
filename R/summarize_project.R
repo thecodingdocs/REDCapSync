@@ -672,7 +672,7 @@ generate_project_summary <- function(
     filter_strict = filter_strict
   )
   if (transformation_type == "default") {
-    data_list <- merge_non_repeating(data_list,merge_form_name,by=project$redcap$id_col)
+    data_list <- merge_non_repeating(data_list,merge_form_name)
   }
   if (exclude_identifiers) {
     data_list$data <- deidentify_data_list(
@@ -692,9 +692,9 @@ generate_project_summary <- function(
   if (include_metadata) {
     if (annotate_metadata && is_something(to_save_list)) {
       #need to decouple from project
-      to_save_list$forms <- annotate_forms(project)
-      to_save_list$fields <- annotate_fields(project)
-      to_save_list$choices <- annotate_choices(project)
+      to_save_list$forms <- annotate_forms(data_list)
+      to_save_list$fields <- annotate_fields(data_list)
+      to_save_list$choices <- annotate_choices(data_list)
     } else {
       to_save_list$forms <- project$metadata$forms
       to_save_list$fields <- project$metadata$fields
@@ -716,7 +716,8 @@ generate_project_summary <- function(
   invisible(to_save_list)
 }
 #' @noRd
-merge_non_repeating <- function(data_list,merge_form_name,by){
+merge_non_repeating <- function(data_list,merge_form_name){
+  #data_list$metadata$id_col assert
   # data_list$metadata
   # data_list$metadata$forms
   forms_transformation <- data_list$metadata$forms
@@ -777,7 +778,7 @@ merge_non_repeating <- function(data_list,merge_form_name,by){
       merge_form <- merge(
         x = merge_form,
         y = data_list$data[[non_rep_form_name]],
-        by = by,
+        by = data_list$metadata$id_col,
         all = TRUE,
         sort = FALSE
       )

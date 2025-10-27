@@ -256,6 +256,47 @@ sync_project <- function(
   }
   invisible(project)
 }
+#' @title Synchronize REDCap Data
+#' @description
+#' Updates the REDCap database (`project` object) by fetching the latest data
+#' from the REDCap server.
+#'
+#' @details
+#' syncs multiple projects as defined
+#'
+#' @inheritParams save_project
+#' @inheritParams sync_project
+#' @param short_names character vector of project short_names previously setup.
+#' If = NULL, will get all from `get_projects()`
+#' @return projects synced to dir.
+#' @seealso
+#' \link{setup_project} for initializing the `project` object.
+#' @family db_functions
+#' @export
+sync_all <- function(
+    short_names = NULL,
+    summarize = TRUE,
+    hard_check = FALSE,
+    hard_reset = FALSE,
+    silent = FALSE
+    ) {
+  if(is.null(short_names)){
+    projects <- get_projects()
+    short_names <- projects$short_name
+  }
+  for(short_name in short_names){
+    load_project(short_name) %>%
+      sync_project(
+        summarize = summarize,
+        hard_check = hard_check,
+        hard_reset = hard_reset,
+        silent = silent
+      )
+  }
+  #consider adding message/df
+  invisible()
+}
+
 due_for_sync <- function(project_name) {
   now <- now_time()
   projects <- get_projects()

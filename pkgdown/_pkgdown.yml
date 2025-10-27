@@ -52,6 +52,7 @@ reference:
     desc: sync_project uses project object in the environment.
     contents:
       - sync_project
+      - sync_all
   - subtitle: project setup Object Modifications
     desc: One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
     contents:

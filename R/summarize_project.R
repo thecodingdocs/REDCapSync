@@ -174,7 +174,7 @@ annotate_choices <- function(project, summarize_data = TRUE, drop_blanks = TRUE)
 }
 #' @noRd
 annotate_records <- function(project) {
-  id_col <- project$redcap$id_col
+  id_col <- project$metadata$id_col
   all_records <- project$summary$all_records
   redcap_log <- project$redcap$log[which(!is.na(project$redcap$log$record)), ]
   if (! is_something(all_records) || ! is_something(redcap_log)) {
@@ -352,7 +352,7 @@ add_project_summary <- function(
   lifecycle::signal_stage("experimental", "add_project_summary()")
   # sync_frequency ... project$internals$sync_frequency
   forbiden_summary_names <- c(
-    project$redcap$id_col,
+    project$metadata$id_col,
     .forbiden_summary_names
   )
   if (summary_name %in% forbiden_summary_names) {
@@ -434,7 +434,7 @@ add_project_summary <- function(
 )
 #' @noRd
 save_summary <- function(project, summary_name) {
-  id_col <- project$redcap$id_col
+  id_col <- project$metadata$id_col
   summary_list <- project$summary[[summary_name]]
   to_save_list <- project %>%
     generate_project_summary(
@@ -653,7 +653,7 @@ generate_project_summary <- function(
     include_log <- summary_list$include_log
   }
   data_list <- NULL
-  data_list$metadata <- project$metadata
+  data_list$metadata <- project$metadata # %>% annotate_fields()
   data_list$data <- project$data
   if(labelled){
     # project <- raw_to_labelled_project(project)
@@ -672,7 +672,7 @@ generate_project_summary <- function(
     filter_strict = filter_strict
   )
   if (transformation_type == "default") {
- #TODO
+    data_list <- merge_non_repeating(data_list,merge_form_name,by=project$redcap$id_col)
   }
   if (exclude_identifiers) {
     data_list$data <- deidentify_data_list(
@@ -714,6 +714,78 @@ generate_project_summary <- function(
     to_save_list$log <- get_log(project, records = records)
   }
   invisible(to_save_list)
+}
+#' @noRd
+merge_non_repeating <- function(data_list,merge_form_name,by){
+  # data_list$metadata
+  # data_list$metadata$forms
+  forms_transformation <- data_list$metadata$forms
+  is_longitudinal <- "repeating_via_events" %in% colnames(data_list$metadata$forms)
+  if (is_longitudinal) {
+    forms_transformation <- forms_transformation[order(forms_transformation$repeating_via_events), ]
+  }
+  forms_transformation <- forms_transformation[order(forms_transformation$repeating), ]
+  forms_transformation$form_name_remap <- forms_transformation$form_name
+  forms_transformation$form_label_remap <- forms_transformation$form_label
+  row_check <- !forms_transformation$repeating
+  if (is_longitudinal) {
+    row_check <- row_check & !forms_transformation$repeating_via_events
+  }
+  forms_transformation$form_name_remap[which(row_check)] <- merge_form_name
+  merge_form_name_label <- merge_form_name # can captialize here
+  if (merge_form_name %in% forms_transformation$form_name) {
+    merge_form_name_label <- forms_transformation$form_label[which(forms_transformation$form_name == merge_form_name)]
+  }
+  non_rep_form_names <- forms_transformation$form_name[which(row_check)]
+  forms_transformation$form_label_remap[which(row_check)] <- merge_form_name_label
+  forms_transformation_original <- forms_transformation
+  cols_to_keep <- c("form_name_remap", "form_label_remap", "repeating", "repeating_via_events", "key_cols", "key_names")
+  cols_to_keep <- cols_to_keep[which(cols_to_keep %in% colnames(forms_transformation))]
+  forms_transformation <- forms_transformation[, cols_to_keep] %>% unique()
+  colnames(forms_transformation)[which(colnames(forms_transformation) == "form_name_remap")] <- "form_name"
+  colnames(forms_transformation)[which(colnames(forms_transformation) == "form_label_remap")] <- "form_label"
+  forms_transformation$original_form_name <- forms_transformation$form_name %>%
+    lapply(function(form_name) {
+      forms_transformation_original$form_name[which(forms_transformation_original$form_name_remap == form_name)] %>% paste0(collapse = " | ")
+    }) %>%
+    unlist() %>%
+    as.character()
+  data_list$metadata$forms <- forms_transformation
+  # data_list$metadata$fields
+  # fields <- combine_project_fields(data_list)
+  fields <- data_list$metadata$fields
+  fields$original_form_name <- fields$form_name
+  fields$form_name <- forms_transformation_original$form_name_remap[match(fields$form_name, forms_transformation_original$form_name)]
+  fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]
+  # new function RosyUtils
+  first <- 1:which(colnames(fields) == "form_name")
+  move <- which(colnames(fields) == "original_form_name")
+  last <- which(colnames(fields) != "original_form_name")[-first]
+  fields <- fields[, c(first, move, last)]
+  data_list$metadata$fields <- fields
+  # data_list$metadata$choices
+  data_list$metadata$choices <- fields_to_choices(fields)
+  data_list
+  data_list$metadata$form_key_cols <- get_key_col_list(project = data_list)
+  # data_list$data
+  merge_form <- NULL
+  # non_rep_form_name <- non_rep_form_names[[2]]
+  for(non_rep_form_name in non_rep_form_names){
+    if(non_rep_form_name == non_rep_form_names[[1]]){
+      merge_form <- data_list$data[[non_rep_form_name]]
+    }else{
+      merge_form <- merge(
+        x = merge_form,
+        y = data_list$data[[non_rep_form_name]],
+        by = by,
+        all = TRUE,
+        sort = FALSE
+      )
+    }
+    data_list$data[[non_rep_form_name]] <- NULL
+  }
+  data_list$data[[merge_form_name]] <- merge_form
+  data_list
 }
 #' @title Summarize REDCap Database
 #' @noRd
@@ -780,7 +852,7 @@ extract_values_from_form_list <- function(form_list, col_name) {
 #' @noRd
 extract_project_records <- function(project) {
   all_records <- NULL
-  id_col <- project$redcap$id_col
+  id_col <- project$metadata$id_col
   if (project$data %>% is_something()) {
     record_id_col <- extract_values_from_form_list(
       form_list = project$data,
@@ -870,10 +942,10 @@ summarize_records_from_log <- function(project, records) {
   # all_records <- unique(redcap_log$record)
   summary_records <- project$summary$all_records
   record_groups <- redcap_log %>% split(redcap_log$record)
-  summary_records <- summary_records[which(summary_records[[project$redcap$id_col]] %in% names(record_groups)), , drop = FALSE]
+  summary_records <- summary_records[which(summary_records[[project$metadata$id_col]] %in% names(record_groups)), , drop = FALSE]
   # users_log_rows <- users %>% lapply(function(user){which(redcap_log$username==user)})
   # records_log_rows <- records %>% lapply(function(record){which(redcap_log$record==record)})
-  record_groups <- record_groups[match(summary_records[[project$redcap$id_col]], names(record_groups))]
+  record_groups <- record_groups[match(summary_records[[project$metadata$id_col]], names(record_groups))]
   summary_records$last_timestamp <- record_groups %>%
     lapply(function(group) {
       group$timestamp[[1]]
@@ -904,7 +976,7 @@ summarize_records_from_log <- function(project, records) {
 }
 #' @noRd
 get_summary_records <- function(project, summary_name) {
-  id_col <- project$redcap$id_col
+  id_col <- project$metadata$id_col
   if (missing(summary_name)) {
     return(project$summary$all_records[[id_col]])
   }
@@ -915,7 +987,7 @@ get_summary_records <- function(project, summary_name) {
     filter_list = summary_list$filter_list,
     filter_strict = FALSE,
     form_names = summary_list$form_names,
-    field_names = project$redcap$id_col,
+    field_names = project$metadata$id_col,
     exclude_identifiers = FALSE,
     exclude_free_text = FALSE,
     clean = FALSE,
@@ -942,7 +1014,7 @@ get_summary_records <- function(project, summary_name) {
 #' @noRd
 summary_records_due <- function(project, summary_name) {
   summary_list <- project$summary[[summary_name]]
-  id_col <- project$redcap$id_col
+  id_col <- project$metadata$id_col
   if (is.null(summary_list$last_save_time)) {
     return(TRUE)
   }
@@ -1290,7 +1362,7 @@ stripped_project <- function(project) {
 field_names_metadata <- function(project, field_names, col_names) {
   fields <- project$metadata$fields # project$metadata$fields
   # if(!deparse(substitute(form_name))%in%project$metadata$forms$form_name)stop("To avoid potential issues the form name should match one of the instrument names" )
-  bad_field_names <- field_names[which(!field_names %in% c(project$metadata$fields$field_name, project$redcap$raw_structure_cols, "arm_number", "event_name"))]
+  bad_field_names <- field_names[which(!field_names %in% c(project$metadata$fields$field_name, project$metadata$raw_structure_cols, "arm_number", "event_name"))]
   if (length(bad_field_names) > 0) stop("All column names in your form must match items in your metadata, `project$metadata$fields$field_name`... ", toString(bad_field_names))
   # metadata <- project$metadata$fields[which(project$metadata$fields$form_name%in%instruments),]
   fields <- fields[which(fields$field_name %in% field_names), ]

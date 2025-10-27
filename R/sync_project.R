@@ -46,7 +46,7 @@ sync_project <- function(
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
-  id_col <- project$redcap$id_col
+  id_col <- project$metadata$id_col
   do_it <- due_for_sync(project_name = project$short_name) || hard_reset || hard_check
   was_updated <- FALSE
   if (!do_it) {

@@ -64,7 +64,7 @@ find_upload_diff <- function(to_be_uploaded,
   }
   for (user_name in names(to_be_uploaded)) { # form_name <- names(new_list) %>% sample(1)
     new <- to_be_uploaded[[user_name]]
-    ref_cols <- project$redcap$raw_structure_cols
+    ref_cols <- project$metadata$raw_structure_cols
     ref_cols <- ref_cols[which(ref_cols %in% colnames(new))]
     data_cols <- colnames(new)[which(!colnames(new) %in% ref_cols)]
     form_names <- field_names_to_form_names(project, data_cols)
@@ -111,29 +111,29 @@ find_upload_diff <- function(to_be_uploaded,
 #' @noRd
 check_field <- function(project, form, field_name, autofill_new = TRUE) {
   form <- field_names_to_form_names(project, field_name)
-  records <- form[[project$redcap$id_col]] %>% unique()
-  bad_records <- records[which(!records %in% project$summary$all_records[[project$redcap$id_col]])]
+  records <- form[[project$metadata$id_col]] %>% unique()
+  bad_records <- records[which(!records %in% project$summary$all_records[[project$metadata$id_col]])]
   if (length(bad_records) > 0) stop("Records not included in project: ", records %>% toString())
   cols_mandatory_structure <- project$metadata$form_key_cols[[form]]
   cols_mandatory <- c(cols_mandatory_structure, field_name)
   old <- project$data[[form]][, cols_mandatory]
-  old <- old[which(old[[project$redcap$id_col]] %in% records), ]
+  old <- old[which(old[[project$metadata$id_col]] %in% records), ]
   new <- form
   missing_structure_cols <- cols_mandatory[which(!cols_mandatory %in% colnames(new))]
   col_names <- cols_mandatory[which(cols_mandatory %in% colnames(new))]
   new <- new[, col_names]
-  included_records <- records[which(records %in% old[[project$redcap$id_col]])]
+  included_records <- records[which(records %in% old[[project$metadata$id_col]])]
   if (length(missing_structure_cols) > 0) {
     included_records_many_rows <- included_records[which(unlist(lapply(included_records, function(record) {
-      length(which(old[[project$redcap$id_col]] == record)) > 1
+      length(which(old[[project$metadata$id_col]] == record)) > 1
     })))]
     if (length(included_records_many_rows) > 0) stop("form is missing structural columns (", missing_structure_cols %>% toString(), ") and has ", form, " rows with multiple entries... remove them or add the intended columns: ", included_records_many_rows %>% toString())
     if ("redcap_repeat_instrument" %in% missing_structure_cols) new$redcap_repeat_instrument <- form
     if ("redcap_repeat_instance" %in% missing_structure_cols) {
-      new$redcap_repeat_instance <- new[[project$redcap$id_col]] %>%
+      new$redcap_repeat_instance <- new[[project$metadata$id_col]] %>%
         lapply(function(record) {
           if (record %in% included_records) {
-            return(old$redcap_repeat_instance[which(old[[project$redcap$id_col]] == record)])
+            return(old$redcap_repeat_instance[which(old[[project$metadata$id_col]] == record)])
           }
           "1"
         }) %>%
@@ -177,7 +177,7 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
           message("Did not change anything")
         }
         if (choice == 3) {
-          project %>% link_REDCap_record(form[[project$redcap$id_col]])
+          project %>% link_REDCap_record(form[[project$metadata$id_col]])
           form[[field_name]] <- readline("What would you like it to be? ")
           print.data.frame(form)
           form %>%
@@ -185,7 +185,7 @@ check_field <- function(project, form, field_name, autofill_new = TRUE) {
             upload_form_to_REDCap(project)
         }
         if (choice == 4) { # account for repeat? instance
-          project %>% link_REDCap_record(form[[project$redcap$id_col]], form, instance = form[["redcap_repeat_instance"]])
+          project %>% link_REDCap_record(form[[project$metadata$id_col]], form, instance = form[["redcap_repeat_instance"]])
         }
       }
     }
@@ -236,7 +236,7 @@ edit_REDCap_while_viewing <- function(project,
   view_forms <- field_names_to_form_names(project, field_names_to_view)
   field_names_to_view <- c(field_name_to_change, field_names_to_view) %>% unique()
   # if(length(view_forms)>1)stop("only one form combinations are allowed.")
-  if (missing(records)) records <- project$data[[view_forms]][[project$redcap$id_col]] %>% unique()
+  if (missing(records)) records <- project$data[[view_forms]][[project$metadata$id_col]] %>% unique()
   # all_forms <- c(change_form, view_forms) %>% unique()
   ref_cols_change <- project$metadata$form_key_cols[[change_form]]
   # ref_cols_view <- project$metadata$form_key_cols[[view_forms]]
@@ -262,8 +262,8 @@ edit_REDCap_while_viewing <- function(project,
     form_change <- form_change[, unique(c(ref_cols_change, field_name_to_change))]
     for (record in records) { # record <- records%>% sample(1)
       record_was_updated <- FALSE
-      form_view <- optional_form[which(optional_form[[project$redcap$id_col]] == record), ]
-      form_view_simp <- form_view[, unique(c(project$redcap$id_col, field_names_to_view))] %>% unique()
+      form_view <- optional_form[which(optional_form[[project$metadata$id_col]] == record), ]
+      form_view_simp <- form_view[, unique(c(project$metadata$id_col, field_names_to_view))] %>% unique()
       row.names(form_view_simp) <- NULL
       form_view_simp %>%
         t() %>%
@@ -273,7 +273,7 @@ edit_REDCap_while_viewing <- function(project,
         blank_row <- data.frame(
           record
         )
-        colnames(blank_row)[[1]] <- project$redcap$id_col
+        colnames(blank_row)[[1]] <- project$metadata$id_col
         if ("redcap_repeat_instance" %in% ref_cols_change) {
           blank_row$redcap_repeat_instance <- "1"
           blank_row$redcap_repeat_instrument <- change_form
@@ -342,7 +342,7 @@ edit_REDCap_while_viewing <- function(project,
                 redcap_repeat_instance = as.character(the_max + 1),
                 stringsAsFactors = FALSE
               )
-              colnames(form_sub)[1] <- project$redcap$id_col
+              colnames(form_sub)[1] <- project$metadata$id_col
               choice2 <- utils::menu(choices2, title = paste0("What would you like to do?"))
               choice <- choices2[choice2]
               if (choice %in% c("Manual Entry", "Do Nothing", "Launch Redcap Link Only")) {

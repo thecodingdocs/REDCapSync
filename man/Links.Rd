@@ -24,7 +24,7 @@ and settings. Generated using \code{project <- \link{load_project}("PROJ")}
 or \link{setup_project}()}
 
 \item{record}{REDCap record id or study id etc, any column names that match
-\code{project$redcap$id_col}}
+\code{project$metadata$id_col}}
 
 \item{page}{REDCap page for the record. Must be one of
 \code{project$metadata$forms$form_name}}

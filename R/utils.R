@@ -1,19 +1,19 @@
 #' @noRd
 add_redcap_links_to_form <- function(form, project) { # add instance links
-  if (project$redcap$id_col %in% colnames(form)) {
-    form_structure_cols <- project$redcap$raw_structure_cols[
+  if (project$metadata$id_col %in% colnames(form)) {
+    form_structure_cols <- project$metadata$raw_structure_cols[
       which(
-        project$redcap$raw_structure_cols %in% colnames(form)
+        project$metadata$raw_structure_cols %in% colnames(form)
       )
     ]
-    form_structure_cols <- project$redcap$raw_structure_cols[
+    form_structure_cols <- project$metadata$raw_structure_cols[
       which(
-        project$redcap$raw_structure_cols %in% colnames(form) &
-          project$redcap$raw_structure_cols != project$redcap$id_col
+        project$metadata$raw_structure_cols %in% colnames(form) &
+          project$metadata$raw_structure_cols != project$metadata$id_col
       )
     ]
     link_head <- project$links$redcap_record_home
-    link_tail <- paste0("&id=", form[[project$redcap$id_col]])
+    link_tail <- paste0("&id=", form[[project$metadata$id_col]])
     if ("redcap_repeat_instrument" %in% form_structure_cols) {
       link_head <- project$links$redcap_record_subpage
       link_tail <- paste0(link_tail, "&page=", form[["redcap_repeat_instrument"]])
@@ -57,7 +57,7 @@ remove_from_form_list <- function(form_list,
 }
 #' @noRd
 remove_records_from_project <- function(project, records) {
-  id_col <- project$redcap$id_col
+  id_col <- project$metadata$id_col
   if (length(records) == 0L) {
     stop(
       "no records supplied to remove_records_from_project, but it's used in",

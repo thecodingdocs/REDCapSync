@@ -230,16 +230,16 @@ extract_project_details <- function(project) {
   project_details$token_name <- project$redcap$token_name %>% na_if_null()
   project_details$project_id <- project$redcap$project_id %>% na_if_null()
   project_details$project_title <- project$redcap$project_title %>% na_if_null()
-  project_details$id_col <- project$redcap$id_col %>% na_if_null()
-  project_details$is_longitudinal <- project$redcap$is_longitudinal %>%
+  project_details$id_col <- project$metadata$id_col %>% na_if_null()
+  project_details$is_longitudinal <- project$metadata$is_longitudinal %>%
     na_if_null()
   project_details$has_repeating_forms_or_events <-
-    project$redcap$has_repeating_forms_or_events %>%
+    project$metadata$has_repeating_forms_or_events %>%
     na_if_null()
   project_details$has_multiple_arms <-
-    project$redcap$has_multiple_arms %>% na_if_null()
+    project$metadata$has_multiple_arms %>% na_if_null()
   project_details$n_records <-
-    length(project$summary$all_records[[project$redcap$id_col]]) %>%
+    length(project$summary$all_records[[project$metadata$id_col]]) %>%
     na_if_null() %>%
     as.integer()
   project_details$redcap_uri <- project$links$redcap_uri %>% na_if_null()
@@ -332,11 +332,11 @@ add_project_details_to_project <- function(project, project_details) {
   #   project$redcap$project_id <- project_details$project_id
   # }
   # project$redcap$project_title <- project_details$project_title
-  # project$redcap$id_col <- project_details$id_col # check identical unless NA
-  # project$redcap$is_longitudinal <- project_details$is_longitudinal
-  # project$redcap$has_repeating_forms_or_events <- project_details$has_repeating_forms_or_events
-  # project$redcap$has_multiple_arms <- project_details$has_multiple_arms
-  # project$summary$all_records[[project$redcap$id_col]] <- project_details$n_records %>% as.integer()
+  # project$metadata$id_col <- project_details$id_col # check identical unless NA
+  # project$metadata$is_longitudinal <- project_details$is_longitudinal
+  # project$metadata$has_repeating_forms_or_events <- project_details$has_repeating_forms_or_events
+  # project$metadata$has_multiple_arms <- project_details$has_multiple_arms
+  # project$summary$all_records[[project$metadata$id_col]] <- project_details$n_records %>% as.integer()
   # project$links$redcap_uri <- project_details$redcap_uri # check identical unless NA
   # project$links$redcap_home <- project_details$redcap_home
   # project$links$redcap_api_playground <- project_details$redcap_api_playground

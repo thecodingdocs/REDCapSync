@@ -108,7 +108,7 @@ filter_data_list <- function(data_list,
                              filter_strict = TRUE) {
   if (is.null(field_names)) field_names <- data_list %>% get_all_field_names()
   if (is.null(form_names)) form_names <- data_list$metadata$forms$form_name
-  field_names_minus <- field_names[which(!field_names %in% data_list$redcap$raw_structure_cols)]
+  field_names_minus <- field_names[which(!field_names %in% data_list$metadata$raw_structure_cols)]
   if (length(field_names_minus) > 0) {
     form_names_minus <- data_list %>%
       field_names_to_form_names(
@@ -140,7 +140,7 @@ filter_data_list <- function(data_list,
     # filter_field_names %>% vec1_not_in_vec2(data_list$metadata$fields$field_name) # should be empty
     filter_form <- data_list %>% field_names_to_form_names(field_names = filter_field_names)
     if (length(filter_field_names) == 1L) {
-      if (filter_field_names == data_list$redcap$id_col) {
+      if (filter_field_names == data_list$metadata$id_col) {
         filter_form <- data_list$metadata$forms$form_name[1L] # RISKY? id_position
       }
     }
@@ -167,7 +167,7 @@ filter_data_list <- function(data_list,
           if (!filter_strict) {
             if (!is_key) { # need to account for instances
               if (form_name != filter_form) {
-                filter_field_final <- data_list$redcap$id_col
+                filter_field_final <- data_list$metadata$id_col
                 filter_choices_final <- data_list$data[[filter_form]][[filter_field_final]][which(data_list$data[[filter_form]][[filter_field_name]] %in% filter_choices_final)] %>% unique()
               }
             }
@@ -302,7 +302,7 @@ link_REDCap_project <- function(project) {
   utils::browseURL(project$links$redcap_home)
 }
 #' @param record REDCap record id or study id etc, any column names that match
-#' `project$redcap$id_col`
+#' `project$metadata$id_col`
 #' @param page REDCap page for the record. Must be one of
 #' `project$metadata$forms$form_name`
 #' @param instance REDCap instance if it's a repeating instrument
@@ -322,7 +322,7 @@ link_REDCap_record <- function(project,
     "/DataEntry/record_home.php?pid=",
     project$redcap$project_id
   )
-  id_col <- project$redcap$id_col
+  id_col <- project$metadata$id_col
   if (!missing(record)) {
     if (!record %in% project$summary$all_records[[id_col]]) {
       stop(record, " is not one of the records inside project")
@@ -368,7 +368,7 @@ link_REDCap_record <- function(project,
 #   form_names <- names(form_list)
 #   key_cols_list <- form_names %>% lapply(function(form_name) {
 #     key_cols <- which(
-#       data_field_list[[form_name]] %in% project$redcap$raw_structure_cols
+#       data_field_list[[form_name]] %in% project$metadata$raw_structure_cols
 #     )
 #     data_field_list[[form_name]][key_cols]
 #   })
@@ -376,17 +376,14 @@ link_REDCap_record <- function(project,
 #   key_cols_list
 # }
 #' @noRd
-get_key_col_list <- function(project, transform = FALSE) {
+get_key_col_list <- function(project) {
   forms <- project$metadata$forms
-  if (transform) {
-    forms <- project$transformation$metadata$forms
-  }
   if (!is_something(forms)) {
     stop("Empty --> `project$metadata$forms`")
   }
   out_list <- seq_len(nrow(forms)) %>% lapply(function(i) {
-    out <- project$redcap$id_col
-    if (project$redcap$is_longitudinal) out <- append(out, "redcap_event_name")
+    out <- project$metadata$id_col
+    if (project$metadata$is_longitudinal) out <- append(out, "redcap_event_name")
     if (forms$repeating[i]) {
       out <- append(out, "redcap_repeat_instrument")
       out <- append(out, "redcap_repeat_instance")
@@ -404,10 +401,10 @@ normalize_redcap <- function(denormalized, project, labelled) {
   event_mapping <- project$metadata$event_mapping
   form_list <- list()
   if (nrow(denormalized) > 0) {
-    is_longitudinal <- project$redcap$is_longitudinal
+    is_longitudinal <- project$metadata$is_longitudinal
     denormalized <- denormalized %>% all_character_cols()
     add_ons <- c(
-      project$redcap$id_col,
+      project$metadata$id_col,
       "arm_number",
       "event_name",
       "redcap_event_name",
@@ -437,21 +434,21 @@ normalize_redcap <- function(denormalized, project, labelled) {
       denormalized$id_temp <- NULL
     }
     add_ons <- add_ons[which(add_ons %in% colnames(denormalized))]
-    if (!all(project$redcap$raw_structure_cols %in% colnames(denormalized))) {
+    if (!all(project$metadata$raw_structure_cols %in% colnames(denormalized))) {
       stop(
         "denormalized is missing one of the following... and that's weird: ",
-        toString(project$redcap$raw_structure_cols)
+        toString(project$metadata$raw_structure_cols)
       )
     }
     form_rows <- which(forms$form_name %in% unique(fields$form_name))
     form_names <- forms$form_name[form_rows]
-    has_repeating_forms <- project$redcap$has_repeating_forms
+    has_repeating_forms <- project$metadata$has_repeating_forms
     repeating_forms <- forms$form_name[which(forms$repeating)]
     for (form_name in form_names) {
       form_field_names <- fields$field_name[which(
         fields$form_name == form_name &
           fields$field_name %in% colnames(denormalized) &
-          fields$field_name != project$redcap$id_col
+          fields$field_name != project$metadata$id_col
       )]
       if (length(form_field_names) == 0) {
         cli_alert_danger(

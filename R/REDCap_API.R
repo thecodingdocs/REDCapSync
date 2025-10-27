@@ -21,7 +21,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   )[["data"]] # remove at some point
   project$redcap$project_title <- project$redcap$project_info$project_title
   project$redcap$project_id <- project$redcap$project_info$project_id %>% as.character()
-  project$redcap$is_longitudinal <- project$redcap$project_info$is_longitudinal
+  project$metadata$is_longitudinal <- project$redcap$project_info$is_longitudinal
   project$metadata$missing_codes <- missing_codes2(project)
   # instruments --------
   project$metadata$forms <- REDCapR::redcap_instruments(
@@ -29,9 +29,9 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     token = get_project_token(project)
   )[["data"]] %>% rename_forms_redcap_to_default()
   project$metadata$forms$repeating <- FALSE
-  project$redcap$has_repeating_forms <- FALSE
-  project$redcap$has_repeating_events <- FALSE
-  project$redcap$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events
+  project$metadata$has_repeating_forms <- FALSE
+  project$metadata$has_repeating_events <- FALSE
+  project$metadata$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events
   # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
   repeating_forms_events <- redcapAPI::exportRepeatingInstrumentsEvents(rcon = rcon)
   if (is.data.frame(repeating_forms_events)) { # TODOPLEASE test if you can do this if you dont have designer privilages or would have to use another package
@@ -40,7 +40,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     }
   }
   if (any(project$metadata$forms$repeating)) {
-    project$redcap$has_repeating_forms <- TRUE
+    project$metadata$has_repeating_forms <- TRUE
   }
   # metadata ----------
   project$metadata$fields <- REDCapR::redcap_metadata_read(
@@ -49,9 +49,9 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   )[["data"]]
   project$metadata$fields$section_header <- project$metadata$fields$section_header %>% remove_html_tags()
   project$metadata$fields$field_label <- project$metadata$fields$field_label %>% remove_html_tags()
-  project$redcap$id_col <- project$metadata$fields[1, 1] %>% as.character() # RISKY?
-  project$metadata$form_key_cols <- get_key_col_list(project, transform = FALSE)
-  project$redcap$raw_structure_cols <- project$metadata$form_key_cols %>%
+  project$metadata$id_col <- project$metadata$fields[1, 1] %>% as.character() # RISKY?
+  project$metadata$form_key_cols <- get_key_col_list(project)
+  project$metadata$raw_structure_cols <- project$metadata$form_key_cols %>%
     unlist() %>%
     unique()
   form_names <- project$metadata$forms$form_name # [which(project$metadata$forms$form_name%in%unique(project$metadata$fields$form_name))]
@@ -114,9 +114,9 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   # project$metadata$fields <- project %>% annotate_fields(summarize_data = FALSE, drop_blanks = FALSE)
   project$metadata$choices <- fields_to_choices(fields = project$metadata$fields)
   # is longitudinal ------
-  if (project$redcap$is_longitudinal) {
-    project$redcap$raw_structure_cols <- c(
-      project$redcap$raw_structure_cols,
+  if (project$metadata$is_longitudinal) {
+    project$metadata$raw_structure_cols <- c(
+      project$metadata$raw_structure_cols,
       "arm_number",
       "event_name"
     ) %>% unique()
@@ -124,9 +124,9 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
       redcap_uri = project$links$redcap_uri,
       token = get_project_token(project)
     )[["data"]] %>% all_character_cols()
-    project$redcap$has_arms <- TRUE
-    project$redcap$has_multiple_arms <- nrow(project$metadata$arms) > 1
-    project$redcap$has_arms_that_matter <- project$redcap$has_multiple_arms
+    project$metadata$has_arms <- TRUE
+    project$metadata$has_multiple_arms <- nrow(project$metadata$arms) > 1
+    project$metadata$has_arms_that_matter <- project$metadata$has_multiple_arms
     project$metadata$event_mapping <- REDCapR::redcap_event_instruments(
       redcap_uri = project$links$redcap_uri,
       token = get_project_token(project)
@@ -163,8 +163,8 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
           paste0(collapse = " | ")
       }) %>%
       unlist()
-    if (project$redcap$has_arms_that_matter) {
-      project$redcap$has_arms_that_matter <- project$metadata$arms$arm_number %>%
+    if (project$metadata$has_arms_that_matter) {
+      project$metadata$has_arms_that_matter <- project$metadata$arms$arm_number %>%
         lapply(function(arm) {
           project$metadata$event_mapping$form[which(project$metadata$event_mapping$arm_number == arm)]
         }) %>%
@@ -184,9 +184,9 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
       anyDuplicated(project$metadata$event_mapping$arm_num[which(project$metadata$event_mapping$form == form_name)]) > 0
     })))] <- TRUE
   } else {
-    project$redcap$has_arms <- FALSE
-    project$redcap$has_multiple_arms <- FALSE
-    project$redcap$has_arms_that_matter <- FALSE
+    project$metadata$has_arms <- FALSE
+    project$metadata$has_multiple_arms <- FALSE
+    project$metadata$has_arms_that_matter <- FALSE
     project$metadata$event_mapping <- NA
     project$metadata$events <- NA
   }
@@ -277,7 +277,7 @@ get_REDCap_files <- function(project,
       rows_to_save <- which(!is.na(form[[field_name]]))
       for (i in rows_to_save) {
         file_name <- form[[field_name]][i]
-        record_id <- form[[project$redcap$id_col]][i]
+        record_id <- form[[project$metadata$id_col]][i]
         repeat_instance <- form[["redcap_repeat_instance"]][i]
         redcap_event_name <- form[["redcap_event_name"]][i]
         if (!original_file_names) {
@@ -314,7 +314,7 @@ get_REDCap_files <- function(project,
             redcap_uri = project$links$redcap_uri,
             token = get_project_token(project),
             field = field_name,
-            record = form[[project$redcap$id_col]][i],
+            record = form[[project$metadata$id_col]][i],
             directory = out_dir_folder,
             file_name = file_name,
             event = redcap_event_name,

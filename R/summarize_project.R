@@ -511,6 +511,7 @@ save_summary <- function(project, summary_name) {
 #' The summary can be customized based on various options, such as cleaning the
 #' data, including metadata, and annotating metadata.
 #'
+#' @inheritParams setup_project
 #' @inheritParams save_project
 #' @param summary_name Character. The name of the summary from which to generate
 #' the summary. *If you provide `summary_name` all other parameters are
@@ -548,8 +549,6 @@ save_summary <- function(project, summary_name) {
 #' @param upload_compatible Logical. If `TRUE`, the data will be compatible with
 #' REDCap API upload. The main conflict is numeric or date variables in a
 #' project with missing codes while `clean` = `TRUE`. R converts these to `NA`.
-#' Default is `TRUE`.
-#' @param labelled Logical. If `TRUE`, the data will be converted to labelled.
 #' Default is `TRUE`.
 #' @param clean Logical. If `TRUE`, the data will be cleaned before summarizing.
 #' Default is `TRUE`.
@@ -645,11 +644,11 @@ generate_project_summary <- function(
   data_list$metadata <- project$metadata
   data_list$data <- project$data
   data_list <- metadata_add_default_cols(data_list)
-  if(labelled){
-    # project <- raw_to_labelled_project(project)
-    for (form_name in names(data_list$data)) {
-      data_list$data[[form_name]] <- data_list$data[[form_name]] %>%
-        raw_to_labelled_form(project = project)
+  if(labelled != project$internals$labelled){
+    if(labelled){
+      # project <- raw_to_labelled_project(project)
+    }
+    if(!labelled){
     }
   }
   data_list$data <- filter_data_list(
@@ -1211,6 +1210,14 @@ labelled_to_raw_form <- function(form, project) {
 #' @return project object
 #' @export
 raw_to_labelled_form <- function(form, project) {
+  if(project$metadata$has_coding_conflicts){
+    stop(
+      "You cannot use labelled = 'TRUE' because you have a coding conflict ",
+      "in your data dictionary... Try `setup_project` with labelled = 'FALSE'.",
+      "The conflicts are from: ",
+      project$metadata$coding_conflict_field_names %>% paste0(collapse = ", ")
+    )
+  }
   if (nrow(form) > 0) {
     use_missing_codes <- is.data.frame(project$metadata$missing_codes)
     metadata <- filter_fields_from_form(form = form, project = project)
@@ -1264,6 +1271,32 @@ raw_to_labelled_form <- function(form, project) {
     }
   }
   form
+}
+#' @noRd
+labelled_to_raw_project <- function(project) {
+  project <- assert_blank_project(project)
+  if (!project$internals$labelled) {
+    stop("project is already raw/coded (not labelled values)")
+  }
+  for (form_name in names(project$data)) {
+    project$data[[form_name]] <- project$data[[form_name]] %>%
+      labelled_to_raw_form(project = project)
+  }
+  project$internals$labelled <- FALSE
+  invisible(project)
+}
+#' @noRd
+raw_to_labelled_project <- function(project) {
+  project <- assert_blank_project(project)
+  if (project$internals$labelled) {
+    stop("project is already labelled (not raw/coded values)")
+  }
+  for (form_name in names(project$data)) {
+    project$data[[form_name]] <- project$data[[form_name]] %>%
+      raw_to_labelled_form(project = project)
+  }
+  project$internals$labelled <- TRUE
+  invisible(project)
 }
 #' @noRd
 stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
@@ -1392,13 +1425,6 @@ construct_header_list <- function(form_list,
     x
   })
   header_df_list
-}
-#' @noRd
-stripped_project <- function(project) {
-  project$redcap$log <- list()
-  project$data <- list()
-  project$data_updates <- list()
-  invisible(project)
 }
 #' @noRd
 field_names_metadata <- function(project, field_names, col_names) {

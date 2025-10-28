@@ -36,6 +36,8 @@
 #' 'daily', 'weekly', "monthly",and "never". The check is only triggered by
 #' calling the function, but can be automated with other packages.
 #' Default is `daily`
+#' @param labelled Logical. If `TRUE`, the data will be converted to labelled.
+#' Default is `TRUE`.
 #' @param hard_reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the
 #' `project` object already exists. Default is `FALSE`.
 #' @param use_csv Logical (TRUE/FALSE). If TRUE, uses CSV files for data
@@ -91,6 +93,7 @@ setup_project <- function(
     redcap_uri,
     token_name = paste0("REDCapSync_", short_name),
     sync_frequency = "daily",
+    labelled = TRUE,
     hard_reset = FALSE,
     records = NULL,
     fields = NULL,
@@ -127,6 +130,7 @@ setup_project <- function(
     add = collected
   )
   assert_logical(hard_reset, len = 1, add = collected)
+  assert_logical(labelled, len = 1, add = collected)
   assert_integerish(days_of_log, len = 1, lower = 1, add = collected)
   assert_logical(get_files, len = 1, add = collected)
   assert_logical(get_file_repository, len = 1, add = collected)
@@ -226,6 +230,25 @@ setup_project <- function(
         silent = silent
       )
     }
+    if (was_loaded) {
+      # compare current setting to previous settings...
+      original_details <- project %>% extract_project_details()
+      if (!is.null(project$internals$labelled)) {
+        if (project$internals$labelled != labelled) {
+          if (!hard_reset) {
+            load_type <- ifelse(project$internals$labelled, "labelled", "raw")
+            chosen_type <- ifelse(labelled, "labelled", "raw")
+            hard_reset <- TRUE
+            warning(
+              "The project that was loaded was ",
+              load_type, " and you chose ", chosen_type,
+              ". Therefore, a full update was triggered to avoid data conflicts",
+              immediate. = TRUE
+            )
+          }
+        }
+      }
+    }
   }
   if (hard_reset) { # load blank if hard_reset = TRUE
     project <- .blank_project
@@ -251,6 +274,7 @@ setup_project <- function(
   project$short_name <- short_name
   project$redcap$token_name <- token_name
   project$internals$sync_frequency <- sync_frequency
+  project$internals$labelled <- labelled
   project$internals$use_csv <- use_csv
   project$internals$original_file_names <- original_file_names
   project$internals$entire_log <- entire_log
@@ -565,6 +589,7 @@ nav_to_dir <- function(project) {
     last_clean = NULL,
     last_directory_save = NULL,
     last_sync = NULL,
+    labelled = NULL,
     timezone = NULL,
     get_files = NULL,
     get_file_repository = NULL,

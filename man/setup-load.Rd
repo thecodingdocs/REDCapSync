@@ -12,6 +12,7 @@ setup_project(
   redcap_uri,
   token_name = paste0("REDCapSync_", short_name),
   sync_frequency = "daily",
+  labelled = TRUE,
   hard_reset = FALSE,
   records = NULL,
   fields = NULL,
@@ -57,6 +58,9 @@ Default is \verb{REDCapSync_<short_name>}}
 'daily', 'weekly', "monthly",and "never". The check is only triggered by
 calling the function, but can be automated with other packages.
 Default is \code{daily}}
+
+\item{labelled}{Logical. If \code{TRUE}, the data will be converted to labelled.
+Default is \code{TRUE}.}
 
 \item{hard_reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the
 \code{project} object already exists. Default is \code{FALSE}.}

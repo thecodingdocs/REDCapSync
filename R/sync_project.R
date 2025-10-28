@@ -131,7 +131,7 @@ sync_project <- function(
         project$data_updates <- list()
         project$summary <- list()
         project$data <- project %>% get_REDCap_data(
-          labelled = FALSE,
+          labelled = project$internals$labelled,
           batch_size = project$internals$batch_size_download
         )
         #if error records comma
@@ -164,7 +164,7 @@ sync_project <- function(
         }
         message_string <- "No new records to update!"
         if (length(stale_records) > 0) {
-          form_list <- project %>% get_REDCap_data(labelled = FALSE,
+          form_list <- project %>% get_REDCap_data(labelled = project$internals$labelled,
                                                    records = stale_records)
           missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[id_col]])]
           if (length(missing_from_summary) > 0) {

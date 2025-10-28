@@ -218,6 +218,7 @@ extract_project_details <- function(project) {
   project_details$add_default_summaries <-
     project$internals$add_default_summaries
   project_details$use_csv <- project$internals$use_csv
+  project_details$labelled <- project$internals$labelled
   project_details$get_type <- project$internals$get_type
   project_details$batch_size_download <-
     project$internals$batch_size_download %>%

@@ -190,9 +190,21 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     project$metadata$event_mapping <- NA
     project$metadata$events <- NA
   }
-  # othdevter-------
+  # othter-------
   if (include_users) {
     project <- get_REDCap_users(project)
+  }
+  # add a check for exisiting conflict possibilities
+  project$metadata$has_coding_conflicts <- FALSE
+  field_names <- project$metadata$choices$field_name %>% unique()
+  if(length(field_name)>0){
+    row_of_conflicts <- field_names %>% lapply(function(field_name){
+      anyDuplicated(project$metadata$choices$name[which(project$metadata$choices$field_name==field_name)])>0
+    }) %>% unlist()
+    project$metadata$has_coding_conflicts <- any(row_of_conflicts)
+    if(project$metadata$has_coding_conflicts){
+      project$metadata$coding_conflict_field_names <- field_names[which(row_of_conflicts)]
+    }
   }
   project <- update_project_links(project)
   invisible(project)

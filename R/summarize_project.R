@@ -802,6 +802,8 @@ merge_non_repeating <- function(data_list,merge_form_name){
     i <- i + 1
   }
   data_list$data[[merge_form_name]] <- merge_form
+  other_forms <- setdiff(names(data_list$data), merge_form_name)
+  data_list$data <- data_list$data[c(merge_form_name,other_forms)]
   data_list
 }
 metadata_add_default_cols <- function(data_list){

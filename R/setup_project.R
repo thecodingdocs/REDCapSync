@@ -198,9 +198,14 @@ setup_project <- function(
           NULL
         }
       )
+      bad_details <- TRUE
       if (!is.null(project_details)) {
-        add_project_details_to_cache(project_details)
-      } else {
+        if(identical(colnames(project_details),colnames(.blank_project_details))){
+          add_project_details_to_cache(project_details)
+          bad_details <- FALSE
+        }
+      }
+      if(bad_details) {
         cli_alert_warning("currupted project_details so will be overwritten")
       }
       # add check for if it was loaded from right place

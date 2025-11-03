@@ -330,7 +330,9 @@ assert_project_details <- function(projects, nrows = NULL) {
   assert_data_frame(
     x = projects,
     nrows = nrows,
-    ncols = length(.blank_project_cols)
+    ncols = length(.blank_project_cols),
+    col.names = .blank_project_cols,
+    any.missing = FALSE
   )
 }
 assert_project_path <- function(project_path) {

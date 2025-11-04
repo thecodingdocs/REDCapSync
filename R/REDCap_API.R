@@ -23,6 +23,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$redcap$project_id <- project$redcap$project_info$project_id %>% as.character()
   project$metadata$is_longitudinal <- project$redcap$project_info$is_longitudinal
   project$metadata$missing_codes <- missing_codes2(project)
+  project$redcap$has_log_access <- test_redcap_log_access(project)
   # instruments --------
   project$metadata$forms <- REDCapR::redcap_instruments(
     redcap_uri = project$links$redcap_uri,
@@ -190,7 +191,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     project$metadata$event_mapping <- NA
     project$metadata$events <- NA
   }
-  # othter-------
+  # other-------
   if (include_users) {
     project <- get_REDCap_users(project)
   }
@@ -428,18 +429,23 @@ get_REDCap_log2 <- function(project,
     encode = "form"
   )
   if (httr::http_error(response)) {
+    message(httr::content(response)$error)
     return(NULL)
   }
   redcap_log <- httr::content(response) %>% dplyr::bind_rows()
   if (is.data.frame(redcap_log)) {
     if(nrow(redcap_log)>0){
       redcap_log[redcap_log == ""] <- NA
-    }
-    if (clean) {
-      redcap_log <- redcap_log %>% clean_redcap_log()
+      if (clean) {
+        redcap_log <- redcap_log %>% clean_redcap_log()
+      }
     }
   }
   redcap_log # deal with if NA if user does not have log privileges.
+}
+test_redcap_log_access <- function(project) {
+  the_test <- get_REDCap_log2(project = project, log_begin_date = Sys.Date())
+  ! is.null(the_test)
 }
 #' @noRd
 get_REDCap_denormalized <- function(
@@ -484,7 +490,7 @@ get_REDCap_data <- function(project,
     labelled = FALSE,
     records = records,
     batch_size = batch_size
-  )
+  )# add check for dag and api
   form_list <- denormalized %>% normalize_redcap(project = project, labelled = labelled)
   return(form_list)
 }

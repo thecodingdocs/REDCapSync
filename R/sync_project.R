@@ -356,9 +356,11 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
       if (file.exists(expected_path)) {
         to_cache <- tryCatch(
           expr = {
-            suppressWarnings({
+            x <- suppressWarnings({
               readRDS(expected_path)
             })
+            assert_project_details(x,nrows = 1)
+            x
           },
           error = function(e) {
             NULL

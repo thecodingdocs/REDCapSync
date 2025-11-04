@@ -1052,7 +1052,7 @@ get_summary_records <- function(project, summary_name) {
     include_users = FALSE,
     include_log = FALSE,
     no_duplicate_cols = TRUE
-  )
+  )$data
   records <- to_save_list %>%
     lapply(function(form) {
       form[[id_col]]

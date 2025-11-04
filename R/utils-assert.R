@@ -327,12 +327,13 @@ assert_collection <- function(collection) {
   invisible(collection)
 }
 assert_project_details <- function(projects, nrows = NULL) {
-  assert_data_frame(
+  OUT <- assert_data_frame(
     x = projects,
     nrows = nrows,
     ncols = length(.blank_project_cols),
   )
   assert_names(colnames(projects), permutation.of = .blank_project_cols)
+  OUT
 }
 assert_project_path <- function(project_path) {
   assert_path_for_output(

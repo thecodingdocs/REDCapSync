@@ -30,7 +30,6 @@ add_project_summary(
   include_record_summary = TRUE,
   include_users = TRUE,
   include_log = FALSE,
-  include_summary_details = TRUE,
   with_links = TRUE,
   separate = FALSE,
   use_csv,
@@ -124,9 +123,6 @@ included in the summary. Default is \code{TRUE}.}
 
 \item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in
 the summary. Default is \code{TRUE}.}
-
-\item{include_summary_details}{Logical. If \code{TRUE}, Details of the summary
-will be included in the final file. Default is \code{TRUE}.}
 
 \item{with_links}{Optional logical (TRUE/FALSE) for including links in Excel
 sheets. Default is \code{FALSE}.}

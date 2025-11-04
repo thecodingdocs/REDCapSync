@@ -221,12 +221,12 @@ sync_project <- function(
   #     project <- add_default_transformation(project)
   #   }
   # }
-  # if (project$internals$add_default_summaries) {
-  #   if (!is_something(project$summary$REDCapSync) ||
-  #       !is_something(project$summary$REDCapSync_raw)) {
-  #     project <- add_default_summaries(project)
-  #   }
-  # }
+  if (project$internals$add_default_summaries) {
+    if (!is_something(project$summary$REDCapSync) ||
+        !is_something(project$summary$REDCapSync_raw)) {
+      project <- add_default_summaries(project)
+    }
+  }
   #turn off transform for now
   # first_stamp <- project$internals$last_data_transformation
   # project <- transform_project(project,transformation_list = project$transformation)

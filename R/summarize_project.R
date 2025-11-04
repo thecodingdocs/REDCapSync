@@ -322,7 +322,6 @@ add_project_summary <- function(
     include_record_summary = TRUE,
     include_users = TRUE,
     include_log = FALSE,
-    include_summary_details = TRUE,
     with_links = TRUE,
     separate = FALSE,
     use_csv,
@@ -421,20 +420,24 @@ save_summary <- function(project, summary_name) {
       summary_name = summary_name
     )
   to_save_list <- NULL
+  #check for conflicts
+  form_names <- names(data_list$data)
+  for(form_name in form_names){
+    to_save_list[[form_name]] <- data_list$data[[form_name]]
+  }
   if(summary_list$include_metadata){
     if(summary_list$annotate_metadata){
       # to_save_list$forms <- data_list %>% annotate_forms()
       # to_save_list$fields <- data_list %>% annotate_fields()
       # to_save_list$choices <- data_list %>% annotate_choices()
+      to_save_list$forms <- data_list$metadata$forms
+      to_save_list$fields <- data_list$metadata$fields
+      to_save_list$choices <- data_list$metadata$choices
     }else{
       to_save_list$forms <- data_list$metadata$forms
       to_save_list$fields <- data_list$metadata$fields
       to_save_list$choices <- data_list$metadata$choices
     }
-  }
-  form_names <- names(data_list$data)
-  for(form_name in form_names){
-    to_save_list[[form_name]] <- data_list$data[[form_name]]
   }
   # with_links = TRUE
   # separate = FALSE
@@ -466,6 +469,29 @@ save_summary <- function(project, summary_name) {
     header_df_list <- NULL
     key_cols_list <- NULL
   }
+  records <- to_save_list[form_names] %>%
+    lapply(function(form) {
+      form[[id_col]]
+    }) %>%
+    unlist() %>%
+    sort() %>%
+    unique()
+  n_records <- length(records)
+  last_save_time <-  now_time()
+  final_form_tab_names <-
+    rename_list_names_excel(list_names = names(to_save_list))
+  names(final_form_tab_names) <- names(to_save_list)
+  last_summary <- now_time()
+  summary_details <- project$summary[[summary_name]]
+  summary_details$n_records <- n_records
+  summary_details$last_save_time <- last_save_time
+  summary_details$final_form_tab_names <- final_form_tab_names
+  to_save_list$summary_details <- data.frame(
+    paramater = names(summary_details),
+    value = summary_details %>% lapply(function(row) {
+      row %>% paste0(collapse = " | ")
+    }) %>% unlist() %>% unname()
+  )
   if (summary_list$use_csv) {
     to_save_list %>% list_to_csv(
       dir = summary_list$dir_other,
@@ -485,23 +511,13 @@ save_summary <- function(project, summary_name) {
       overwrite = TRUE
     )
   }
-  records <- to_save_list %>%
-    lapply(function(form) {
-      form[[id_col]]
-    }) %>%
-    unlist() %>%
-    sort() %>%
-    unique()
-  project$summary[[summary_name]]$n_records <- length(records)
-  project$summary[[summary_name]]$last_save_time <-  now_time()
-  project$summary[[summary_name]]$final_form_tab_names <-
-    rename_list_names_excel(list_names = names(to_save_list))
-  names(project$summary[[summary_name]]$final_form_tab_names) <-
-    names(to_save_list)
+  project$summary[[summary_name]]$n_records <- n_records
+  project$summary[[summary_name]]$last_save_time <- last_save_time
+  project$summary[[summary_name]]$final_form_tab_names <- final_form_tab_names
   row_match <- which(project$summary$all_records[[id_col]] %in% records)
   project$summary$all_records[[summary_name]][row_match] <- TRUE
   project$summary$all_records$was_saved[row_match] <- TRUE
-  project$internals$last_summary <- now_time()
+  project$internals$last_summary <- last_summary
   invisible(project)
 }
 #' @title Generate a Summary from a Subset Name
@@ -567,8 +583,6 @@ save_summary <- function(project, summary_name) {
 #' included in the summary. Default is `TRUE`.
 #' @param include_log Logical. If `TRUE`, the log of changes will be included in
 #' the summary. Default is `TRUE`.
-#' @param include_summary_details Logical. If `TRUE`, Details of the summary
-#' will be included in the final file. Default is `TRUE`.
 #' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the
 #' function will avoid including duplicate columns in the output. Defaults to
 #' `FALSE`.
@@ -607,8 +621,7 @@ generate_project_summary <- function(
     annotate_metadata = TRUE,
     include_record_summary = TRUE,
     include_users = TRUE,
-    include_log = FALSE,
-    include_summary_details = TRUE
+    include_log = FALSE
     ) {
   lifecycle::signal_stage("experimental", "generate_project_summary()")
   provided_summary_name <- !missing(summary_name)
@@ -697,7 +710,6 @@ generate_project_summary <- function(
   # if (include_log) {
   #   data_list$log <- get_log(project, records = records)
   # }
-  data_list$summary_details
   # data_list$summary_details <- list(
   #   transformation_type = summary_list$transformation_type,
   #   merge_form_name <- summary_list$merge_form_name
@@ -1107,6 +1119,65 @@ check_summaries <- function(project, summary_names) {
     cli_alert_wrap("Refresh of summaries not needed!", bullet_type = "v")
   }
   needs_refresh
+}
+#' @noRd
+add_default_summaries <- function(project,
+                                  exclude_identifiers = FALSE,
+                                  exclude_free_text = FALSE,
+                                  date_handling = "none") {
+  assert_logical(exclude_identifiers)
+  assert_logical(exclude_free_text)
+  summary_name <- "REDCapSync_raw"
+  project <- add_project_summary(
+    project = project,
+    summary_name = summary_name,
+    transformation_type = "none",
+    filter_list = NULL,
+    exclude_identifiers = exclude_identifiers,
+    exclude_free_text = exclude_free_text,
+    date_handling = "none",
+    labelled = FALSE,
+    clean = FALSE,
+    drop_blanks = FALSE,
+    drop_others = NULL,
+    include_metadata = TRUE,
+    annotate_metadata = FALSE,
+    include_record_summary = FALSE,
+    include_users = TRUE,
+    include_log = FALSE,
+    with_links = nrow(project$summary$all_records) <= 3000,
+    separate = TRUE,
+    use_csv = project$internals$use_csv,
+    dir_other = file.path(project$dir_path, "REDCap", project$short_name),
+    file_name = project$short_name
+  )
+  summary_name <- "REDCapSync"
+  !is_something(project$transformation$forms)
+  project <- add_project_summary(
+    project = project,
+    summary_name = summary_name,
+    transformation_type = "default",
+    filter_list = NULL,
+    exclude_identifiers = exclude_identifiers,
+    exclude_free_text = exclude_free_text,
+    date_handling = "none",
+    upload_compatible = TRUE,
+    labelled = TRUE,
+    clean = TRUE,
+    drop_blanks = FALSE,
+    drop_others = NULL,
+    include_metadata = TRUE,
+    annotate_metadata = TRUE,
+    include_record_summary = TRUE,
+    include_users = TRUE,
+    include_log = FALSE,
+    with_links = nrow(project$summary$all_records) <= 3000,
+    separate = FALSE,
+    use_csv = project$internals$use_csv,
+    dir_other = file.path(project$dir_path, "output"),
+    file_name = paste0(project$short_name, "_", summary_name)
+  )
+  invisible(project)
 }
 #' @title rmarkdown_project
 #' @description

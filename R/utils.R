@@ -107,8 +107,8 @@ split_choices <- function(x) {
   check_length <- length(x)
   result <- stringr::str_match(string = x, pattern = "([^,]+),(.*)")
   x <- data.frame(
-    code = result[, 2L],
-    name = result[, 3L],
+    code = result[, 2L] %>% trimws(),
+    name = result[, 3L] %>% trimws(),
     stringsAsFactors = FALSE
   )
   rownames(x) <- NULL

@@ -346,7 +346,10 @@ get_REDCap_files <- function(project,
 }
 get_REDCap_users <- function(project) {
   assert_setup_project(project)
-  x<- REDCapR::redcap_users_export(project$links$redcap_uri,sanitize_token(Sys.getenv(project$redcap$token_name)))
+  x <- REDCapR::redcap_users_export(
+    redcap_uri = project$links$redcap_uri,
+    token = sanitize_token(Sys.getenv(project$redcap$token_name))
+  )
   if(!x$success)return(invisible(project))
   data_user <- x$data_user
   # data_user_form <- x$data_user_form

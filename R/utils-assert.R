@@ -331,9 +331,8 @@ assert_project_details <- function(projects, nrows = NULL) {
     x = projects,
     nrows = nrows,
     ncols = length(.blank_project_cols),
-    col.names = .blank_project_cols,
-    any.missing = FALSE
   )
+  assert_names(colnames(projects), permutation.of = .blank_project_cols)
 }
 assert_project_path <- function(project_path) {
   assert_path_for_output(

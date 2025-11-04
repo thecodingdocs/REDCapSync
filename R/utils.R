@@ -105,13 +105,15 @@ split_choices <- function(x) {
     strsplit(" [:|:] ") %>%
     unlist()
   check_length <- length(x)
-  result <- stringr::str_match(string = x, pattern = "([^,]+), (.*)")
+  result <- stringr::str_match(string = x, pattern = "([^,]+),(.*)")
   x <- data.frame(
     code = result[, 2L],
     name = result[, 3L],
     stringsAsFactors = FALSE
   )
   rownames(x) <- NULL
+  if (any(is.na(x$code))) stop("split choice error: ", oops)
+  if (any(is.na(x$name))) stop("split choice error: ", oops)
   if (nrow(x) != check_length) stop("split choice error: ", oops)
   x
 }

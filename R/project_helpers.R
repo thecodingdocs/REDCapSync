@@ -510,6 +510,9 @@ normalize_redcap <- function(denormalized, project, labelled) {
 }
 #' @noRd
 sort_redcap_log <- function(redcap_log) {
+  if(nrow(redcap_log)==0){
+    return(redcap_log)
+  }
   unique(redcap_log[order(redcap_log$timestamp, decreasing = TRUE), ])
 }
 #' @noRd

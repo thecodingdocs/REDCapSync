@@ -61,7 +61,6 @@ test_project_token <- function(project,
     utils::browseURL(url = ifelse(is_something(project$redcap$version), project$links$redcap_api, project$links$redcap_base))
     # this will fail to bring you to right URL if redcap version changes at the same time a previously valid token is no longer valid
   }
-  changed_in_console <- FALSE
   if (version_error) {
     cli_alert_danger("Your REDCap API token check failed. Check privileges.")
     return(invisible(project))

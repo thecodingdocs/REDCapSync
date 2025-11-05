@@ -181,7 +181,10 @@ sync_project <- function(
             project$summary$all_records <- project$summary$all_records %>% dplyr::bind_rows(x)
             project$summary$all_records <- project$summary$all_records[order(project$summary$all_records[[id_col]], decreasing = TRUE), ]
           }
-          project <- remove_records_from_project(project = project, records = stale_records)
+          project <- remove_records_from_project(
+            project = project,
+            records = stale_records
+          )
           if (!all(names(form_list) %in% project$metadata$forms$form_name)) {
             stop(
               "Imported data names doesn't match project$data names. If this",
@@ -213,27 +216,12 @@ sync_project <- function(
     }
     project$internals$last_sync <- now_time()
   }
-  # if (project$internals$add_default_fields) {
-  #   if(!is_something(project$transformation$fields)){
-  #     project <- add_default_fields(project)
-  #   }
-  # }
-  # if (project$internals$add_default_transformation) {
-  #   if(!is_something(project$transformation$forms)){
-  #     project <- add_default_transformation(project)
-  #   }
-  # }
   if (project$internals$add_default_summaries) {
     if (!is_something(project$summary$REDCapSync) ||
       !is_something(project$summary$REDCapSync_raw)) {
       project <- add_default_summaries(project)
     }
   }
-  # turn off transform for now
-  # first_stamp <- project$internals$last_data_transformation
-  # project <- transform_project(project,transformation_list = project$transformation)
-  # second_stamp <- project$internals$last_data_transformation
-  # was_updated <- was_updated || !identical(first_stamp,second_stamp)
   if (save_to_dir && !is.null(project$dir_path)) {
     if (is_something(project$data)) {
       if (project$internals$get_files) { # test now
@@ -301,10 +289,8 @@ sync_all <- function(
 due_for_sync <- function(project_name) {
   now <- now_time()
   projects <- get_projects()
-  # early escapes ----
   assert_data_frame(projects, min.rows = 1)
   assert_names(projects$short_name, must.include = project_name)
-  #-----
   project_row <- which(projects$short_name == project_name)
   last_sync <- projects$last_sync[project_row]
   # assert_posixct(last_data_update, len = 1, any.missing = TRUE)

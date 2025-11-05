@@ -493,7 +493,9 @@ save_summary <- function(project, summary_name) {
     paramater = names(summary_details),
     value = summary_details %>% lapply(function(row) {
       row %>% paste0(collapse = " | ")
-    }) %>% unlist() %>% unname()
+    }) %>%
+      unlist() %>%
+      unname()
   )
   if (summary_list$use_csv) {
     to_save_list %>% list_to_csv(
@@ -626,6 +628,12 @@ generate_project_summary <- function(
   include_users = TRUE,
   include_log = FALSE
 ) {
+  assert_env_name(
+    merge_form_name,
+    max.chars = 31,
+    arg_name = "merge_form_name",
+    add = collected
+  )
   lifecycle::signal_stage("experimental", "generate_project_summary()")
   provided_summary_name <- !missing(summary_name)
   if (provided_summary_name) {

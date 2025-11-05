@@ -16,15 +16,18 @@ add_redcap_links_to_form <- function(form, project) { # add instance links
     link_tail <- paste0("&id=", form[[project$metadata$id_col]])
     if ("redcap_repeat_instrument" %in% form_structure_cols) {
       link_head <- project$links$redcap_record_subpage
-      link_tail <- paste0(link_tail, "&page=", form[["redcap_repeat_instrument"]])
+      link_tail <- link_tail %>%
+        paste0("&page=", form[["redcap_repeat_instrument"]])
     }
     if ("redcap_repeat_instance" %in% form_structure_cols) {
       link_head <- project$links$redcap_record_subpage
-      link_tail <- paste0(link_tail, "&instance=", form[["redcap_repeat_instance"]])
+      link_tail <- link_tail %>%
+        paste0("&instance=", form[["redcap_repeat_instance"]])
     }
     form$redcap_link <- paste0(link_head, link_tail)
     if ("arm_number" %in% colnames(form)) {
-      form$redcap_link <- paste0(form$redcap_link, "&arm=", form[["arm_number"]])
+      form$redcap_link <- form$redcap_link %>%
+        paste0("&arm=", form[["arm_number"]])
     }
   }
   form

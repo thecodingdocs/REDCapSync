@@ -875,22 +875,6 @@ clear_project_summaries <- function(project) {
   cli_alert_success("Cleared project summaries!")
   invisible(project)
 }
-#' @title Run Quality Checks
-#' @inheritParams save_project
-#' @return project object
-#' @export
-run_quality_checks <- function(project) {
-  project <- assert_blank_project(project)
-  if (is_something(project$quality_checks)) {
-    for (qual_check in names(project$quality_checks)) {
-      the_function <- project$quality_checks[[qual_check]]
-      if (is.function(the_function)) {
-        project <- the_function(project)
-      }
-    }
-  }
-  invisible(project)
-}
 #' @noRd
 extract_values_from_form_list <- function(form_list, col_name) {
   names(form_list) %>% lapply(function(form_name) {
@@ -1174,45 +1158,6 @@ add_default_summaries <- function(project,
     file_name = paste0(project$short_name, "_", summary_name)
   )
   invisible(project)
-}
-#' @title rmarkdown_project
-#' @description
-#' `r lifecycle::badge("experimental")`
-#' Generates an RMarkdown report for the given REDCap database (`project`
-#' object). This function creates an RMarkdown file in the specified directory
-#' or default directory, allowing users to create custom reports based on the
-#' database content.
-#'
-#' @details
-#' This function checks if a directory is specified, and if not, defaults to the
-#' `output` folder within the project's directory. It generates the RMarkdown
-#' file that can then be used for further processing or rendering into HTML,
-#' PDF, or other formats.
-#'
-#' @inheritParams save_project
-#' @param dir_other Character string specifying the directory where the
-#' RMarkdown report will be saved. If not provided, it defaults to the `output`
-#' directory inside the project's main directory.
-#' @return A message indicating the creation of the RMarkdown report and the
-#' path to the generated file.
-#' @seealso
-#' \code{\link[REDCapSync]{save_project}} for saving the `project` object.
-#' @family db_functions
-#' @export
-rmarkdown_project <- function(project, dir_other) {
-  if (missing(dir_other)) {
-    dir <- get_dir(project) %>% file.path("output")
-  } else {
-    dir <- dir_other
-  }
-  filename <- paste0(project$short_name, "_full_summary_", gsub("-", "_", Sys.Date()), ".pdf")
-  rmarkdown::render(
-    input = system.file("rmarkdown", "pdf.Rmd", package = pkg_name),
-    output_format = "pdf_document",
-    output_file = dir %>% file.path(filename),
-    output_dir = dir,
-    quiet = FALSE
-  )
 }
 #' @title Clean to Raw REDCap forms
 #' @inheritParams save_project

@@ -39,7 +39,6 @@ syncs multiple projects as defined
 \link{setup_project} for initializing the \code{project} object.
 
 Other db_functions: 
-\code{\link{rmarkdown_project}()},
 \code{\link{sync_project}()}
 }
 \concept{db_functions}

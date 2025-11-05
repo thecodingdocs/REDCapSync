@@ -38,7 +38,6 @@ Imports:
     redcapAPI,
     REDCapR,
     rlang,
-    rmarkdown,
     skimr,
     stats,
     stringr,
@@ -47,6 +46,7 @@ Imports:
 Suggests: 
     knitr,
     mockery,
+    rmarkdown,
     testthat (>= 3.0.0),
     withr
 VignetteBuilder: 

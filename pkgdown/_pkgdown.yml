@@ -73,12 +73,6 @@ reference:
     contents:
       - get_REDCap_report
       - upload_form_to_REDCap
-  - subtitle: Experimental/Dev Functions
-    desc: These functions are still in development and is subject to changes.
-    contents:
-      - rmarkdown_project
-      - run_quality_checks
-      - edit_REDCap_while_viewing
   - subtitle: Other Helpers
     contents:
       - "%>%"

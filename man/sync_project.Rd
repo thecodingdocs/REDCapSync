@@ -48,7 +48,6 @@ processing.
 \link{setup_project} for initializing the \code{project} object.
 
 Other db_functions: 
-\code{\link{rmarkdown_project}()},
 \code{\link{sync_all}()}
 }
 \concept{db_functions}

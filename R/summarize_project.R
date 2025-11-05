@@ -630,9 +630,7 @@ generate_project_summary <- function(
 ) {
   assert_env_name(
     merge_form_name,
-    max.chars = 31,
-    arg_name = "merge_form_name",
-    add = collected
+    max.chars = 31
   )
   lifecycle::signal_stage("experimental", "generate_project_summary()")
   provided_summary_name <- !missing(summary_name)

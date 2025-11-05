@@ -1377,7 +1377,7 @@ stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
   fields <- project$metadata$fields
   if (!all(vars %in% fields$field_name)) stop("all vars must be in metadata.")
   the_stack <- NULL
-  for (var in vars) { # var <- vars %>% sample1()
+  for (var in vars) {
     form <- generate_project_summary(
       project,
       field_names = var,

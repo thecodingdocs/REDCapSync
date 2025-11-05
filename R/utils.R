@@ -77,26 +77,6 @@ remove_records_from_project <- function(project, records) {
   invisible(project)
 }
 #' @noRd
-ignore_redcap_log <- function(collapse = TRUE) {
-  ignores <- c(
-    "export",
-    "download ",
-    "edit report",
-    "Switch DAG",
-    "Copy report",
-    "Multi-Language",
-    "File Repository ",
-    "custom record dashboard",
-    "User regenerate own API token",
-    "Create report",
-    " external module"
-  )
-  if (collapse) {
-    return(paste0(ignores, collapse = "|"))
-  }
-  return(ignores)
-}
-#' @noRd
 split_choices <- function(x) {
   oops <- x
   # added this to account for redcap metadata output if not a number

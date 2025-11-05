@@ -862,38 +862,6 @@ remove_html_tags <- function(text_vector) {
   cleaned_vector <- gsub(html_pattern, "", text_vector)
   cleaned_vector
 }
-find_match <- function(x, ref, count_only = FALSE) {
-  final_match <- list()
-  final_match[seq_along(x)] <- NA
-  next_match <- match(x, ref)
-  next_match_index <- which(!is.na(next_match))
-  while (length(next_match_index) > 0L) {
-    final_match[next_match_index] <-
-      next_match_index %>% lapply(function(index) {
-        out <- NULL
-        if (all(is.na(final_match[[index]]))) {
-          out <- next_match[index]
-        } else {
-          out <- c(final_match[[index]], next_match[index])
-        }
-        out
-      })
-    ref[next_match[which(!is.na(next_match))]] <- NA
-    next_match <- match(x, ref)
-    next_match_index <- which(!is.na(next_match))
-  }
-  if (count_only) {
-    final_match <- final_match %>%
-      lapply(function(x) {
-        if (is.na(x[1])) {
-          return(NA)
-        }
-        length(x)
-      }) %>%
-      unlist()
-  }
-  final_match
-}
 choice_vector_string <- function(vec) {
   if (!is_something(vec)) {
     return(NA)
@@ -909,9 +877,6 @@ file_size <- function(path) {
 drop_if <- function(x, drops) {
   x[which(!x %in% drops)]
 }
-sample1 <- function(x) {
-  sample(x, 1L)
-}
 list_files_real <- function(path, full_names = TRUE, recursive = FALSE) {
   grep(
     "~$",
@@ -923,25 +888,6 @@ list_files_real <- function(path, full_names = TRUE, recursive = FALSE) {
     value = TRUE,
     invert = TRUE
   )
-}
-wrap_text <- function(text, max_length = 40L, spacer = "\n") {
-  words <- unlist(strsplit(text, " "))
-  current_line <- ""
-  result <- ""
-  for (word in words) {
-    if (nchar(current_line) + nchar(word) + 1L > max_length) {
-      result <- paste0(result, current_line, spacer)
-      current_line <- word
-    } else {
-      if (nchar(current_line) == 0L) {
-        current_line <- word
-      } else {
-        current_line <- paste0(current_line, " ", word)
-      }
-    }
-  }
-  result <- paste0(result, current_line)
-  return(result)
 }
 clean_env_names <- function(env_names, silent = FALSE, lowercase = TRUE) {
   cleaned_names <- character(length(env_names))
@@ -1029,7 +975,4 @@ is_nested_list <- function(x) {
     outcome <- outcome || is_nested_list(x[[i]])
   }
   outcome
-}
-clean_num <- function(num) {
-  formatC(num, format = "d", big.mark = ",")
 }

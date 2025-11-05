@@ -444,22 +444,3 @@ delete_project_by_name <- function(short_name) {
   "matrix_ranking",
   "field_annotation"
 )
-#' @noRd
-form_colnames <- function(type) {
-  if (missing(type))
-    type <- "default"
-  final <- NULL
-  if (type == "default") {
-    final <- c("form_name",
-               "form_label",
-               "repeating",
-               "repeating_via_events")
-  }
-  if (type == "redcap") {
-    final <- c("form_name",
-               "form_label",
-               "repeating",
-               "repeating_via_events")
-  }
-  final
-}

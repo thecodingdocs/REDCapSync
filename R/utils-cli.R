@@ -21,9 +21,3 @@ cli_message_maker <- function(collected, function_name, info, internal = TRUE) {
   message <- append(message, mistakes)
   return(message)
 }
-#' @noRd
-generate_hex <- function(length = 32) {
-  toupper(
-    paste0(sample(c(0:9, letters[1:6]), length, replace = TRUE), collapse = "")
-  )
-}

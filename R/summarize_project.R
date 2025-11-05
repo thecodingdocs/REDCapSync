@@ -40,21 +40,24 @@ add_labels_to_checkbox <- function(fields) {
   fields
 }
 #' @noRd
-annotate_fields <- function(project, summarize_data = TRUE, drop_blanks = TRUE) {
-  fields <- project$metadata$fields # [,colnames(project$metadata$fields)]
+annotate_fields <- function(data_list,
+                            transformation,
+                            summarize_data = TRUE,
+                            drop_blanks = TRUE) {
+  fields <- data_list$metadata$fields # [,colnames(data_list$metadata$fields)]
   if (drop_blanks) {
-    fields <- fields[which(fields$field_name %in% get_all_field_names(project)), ]
+    fields <- fields[which(fields$field_name %in% get_all_field_names(data_list)), ]
   }
   if (nrow(fields) > 0) {
     # need to account for original
-    fields$in_original_redcap <- fields$field_name %in% project$transformation$original_fields$field_name
-    fields$original_form_name <- project$transformation$original_fields$form_name[match(fields$field_name, project$transformation$original_fields$field_name)]
+    fields$in_original_redcap <- fields$field_name %in% transformation$original_fields$field_name
+    fields$original_form_name <- transformation$original_fields$form_name[match(fields$field_name, transformation$original_fields$field_name)]
     # if(!"field_label_short" %in% colnames(fields))fields$ <- fields$field_label
     if (summarize_data) {
       skimmed <- NULL
       for (form_name in unique(fields$form_name)) {
         col_names <- fields$field_name[which(fields$form_name == form_name)]
-        form <- project$data[[form_name]]
+        form <- data_list$data[[form_name]]
         col_names <- col_names[which(col_names %in% colnames(form))]
         skimmed <- skimmed %>% dplyr::bind_rows(form[, col_names] %>% skimr::skim())
       }
@@ -66,15 +69,15 @@ annotate_fields <- function(project, summarize_data = TRUE, drop_blanks = TRUE) 
         }) %>%
         dplyr::bind_rows()
     }
-    # cli_alert_wrap("Annotated `project$metadata$fields`",bullet_type = "v")
+    # cli_alert_wrap("Annotated `data_list$metadata$fields`",bullet_type = "v")
   }
   fields
 }
 #' @noRd
-annotate_forms <- function(project, summarize_data = TRUE, drop_blanks = TRUE) {
-  forms <- project$metadata$forms
+annotate_forms <- function(data_list, summarize_data = TRUE, drop_blanks = TRUE) {
+  forms <- data_list$metadata$forms
   if (drop_blanks) {
-    forms <- forms[which(forms$form_name %in% names(project$data)), ]
+    forms <- forms[which(forms$form_name %in% names(data_list$data)), ]
   }
   if (nrow(forms) > 0) {
     # add metadata info like n fields
@@ -100,12 +103,12 @@ annotate_forms <- function(project, summarize_data = TRUE, drop_blanks = TRUE) {
   forms
 }
 #' @noRd
-annotate_choices <- function(project, summarize_data = TRUE, drop_blanks = TRUE) {
-  # forms <- project$metadata$forms
-  # fields <- project$metadata$fields
-  choices <- project$metadata$choices
+annotate_choices <- function(data_list, summarize_data = TRUE, drop_blanks = TRUE) {
+  # forms <- data_list$metadata$forms
+  # fields <- data_list$metadata$fields
+  choices <- data_list$metadata$choices
   if (drop_blanks) {
-    choices <- choices[which(choices$field_name %in% get_all_field_names(project)), ]
+    choices <- choices[which(choices$field_name %in% get_all_field_names(data_list)), ]
   }
   # choices$field_name_raw <- choices$field_name
   # choices$field_name_raw[which(choices$field_type=="checkbox_choice")] <- choices$field_name[which(choices$field_type=="checkbox_choice")] %>%
@@ -114,12 +117,12 @@ annotate_choices <- function(project, summarize_data = TRUE, drop_blanks = TRUE)
   # choices$field_label_raw <- choices$field_label
   # choices$field_label_raw[which(choices$field_type=="checkbox_choice")] <- choices$field_name_raw[which(choices$field_type=="checkbox_choice")] %>%
   #   lapply(function(X){
-  #     project$metadata$fields$field_label[which(fields$field_name==X)] %>% unique()
+  #     data_list$metadata$fields$field_label[which(fields$field_name==X)] %>% unique()
   #   })
   if (summarize_data) {
     choices$n <- seq_len(nrow(choices)) %>%
       lapply(function(i) {
-        form <- project$data[[choices$form_name[i]]]
+        form <- data_list$data[[choices$form_name[i]]]
         if (is.null(form)) {
           return(0)
         }
@@ -132,7 +135,7 @@ annotate_choices <- function(project, summarize_data = TRUE, drop_blanks = TRUE)
       unlist()
     choices$n_total <- seq_len(nrow(choices)) %>%
       lapply(function(i) {
-        form <- project$data[[choices$form_name[i]]]
+        form <- data_list$data[[choices$form_name[i]]]
         if (is.null(form)) {
           return(0)
         }
@@ -147,18 +150,18 @@ annotate_choices <- function(project, summarize_data = TRUE, drop_blanks = TRUE)
       magrittr::multiply_by(100) %>%
       round(1) %>%
       paste0("%")
-    # project$summary$choices <- choices
-    # cli_alert_wrap("Annotated `project$summary$choices`",bullet_type = "v")
+    # data_list$summary$choices <- choices
+    # cli_alert_wrap("Annotated `data_list$summary$choices`",bullet_type = "v")
   }
   choices
 }
 #' @noRd
-annotate_records <- function(project) {
-  id_col <- project$metadata$id_col
-  all_records <- project$summary$all_records
-  redcap_log <- project$redcap$log[which(!is.na(project$redcap$log$record)), ]
+annotate_records <- function(data_list) {
+  id_col <- data_list$metadata$id_col
+  all_records <- data_list$summary$all_records
+  redcap_log <- data_list$redcap$log[which(!is.na(data_list$redcap$log$record)), ]
   if (!is_something(all_records) || !is_something(redcap_log)) {
-    return(project)
+    return(data_list)
   }
   redcap_log <- redcap_log[which(redcap_log$action_type != "Users"), ]
   redcap_log <- redcap_log[which(redcap_log$record %in% all_records[[id_col]]), ]
@@ -175,7 +178,7 @@ annotate_records <- function(project) {
     unlist()
   all_records$first_timestamp[cool_list_match] <- cool_list_first
   all_records$last_timestamp[cool_list_match] <- cool_list_last
-  invisible(project)
+  invisible(data_list)
 }
 #' @noRd
 clean_form <- function(form, fields, drop_blanks = TRUE, drop_others = NULL) {
@@ -1376,8 +1379,8 @@ stack_vars <- function(project, vars, new_name, drop_na = TRUE) {
   return(the_stack)
 }
 #' @noRd
-get_all_field_names <- function(project) {
-  project$data %>%
+get_all_field_names <- function(data_list) {
+  data_list$data %>%
     lapply(colnames) %>%
     unlist() %>%
     unique()

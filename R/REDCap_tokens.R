@@ -53,7 +53,7 @@ test_project_token <- function(project,
       NULL
     }
   )
-  #add timezone
+  # add timezone
   project$internals$last_test_connection_attempt <- now_time()
   version_error <- is.null(redcap_version)
   project$internals$last_test_connection_outcome <- !version_error
@@ -73,7 +73,7 @@ test_project_token <- function(project,
   }
   project$redcap$version <- redcap_version
   if (version_changed) {
-    #message here
+    # message here
     project <- update_project_links(project)
   }
   project$internals$ever_connected <- TRUE

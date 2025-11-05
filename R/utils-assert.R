@@ -90,11 +90,12 @@ assert_web_link <- function(link) {
 }
 #' @noRd
 assert_env_name <- function(
-    env_name,
-    arg_name = "env_name",
-    max.chars = 26,
-    underscore_allowed_first = FALSE,
-    add = NULL) {
+  env_name,
+  arg_name = "env_name",
+  max.chars = 26,
+  underscore_allowed_first = FALSE,
+  add = NULL
+) {
   collected <- makeAssertCollection()
   assert_character(
     arg_name,
@@ -162,10 +163,11 @@ assert_env_name <- function(
 }
 #' @noRd
 assert_blank_project <- function(
-    project,
-    silent = TRUE,
-    warn_only = FALSE,
-    add = NULL) {
+  project,
+  silent = TRUE,
+  warn_only = FALSE,
+  add = NULL
+) {
   standalone <- is.null(add)
   if (!standalone) {
     assert_collection(add)
@@ -214,10 +216,11 @@ assert_blank_project <- function(
 }
 #' @noRd
 assert_setup_project <- function(
-    project,
-    silent = TRUE,
-    warn_only = FALSE,
-    add = NULL) {
+  project,
+  silent = TRUE,
+  warn_only = FALSE,
+  add = NULL
+) {
   standalone <- is.null(add)
   if (!standalone) {
     assert_collection(add)
@@ -265,11 +268,13 @@ assert_setup_project <- function(
   )
   assert_logical(project$internals$get_files, len = 1, add = collected)
   assert_logical(project$internals$get_file_repository,
-                 len = 1,
-                 add = collected)
+    len = 1,
+    add = collected
+  )
   assert_logical(project$internals$original_file_names,
-                 len = 1,
-                 add = collected)
+    len = 1,
+    add = collected
+  )
   assert_logical(project$internals$entire_log, len = 1, add = collected)
   assert_logical(project$internals$metadata_only, len = 1, add = collected)
   assert_logical(project$internals$add_default_fields, len = 1, add = collected)

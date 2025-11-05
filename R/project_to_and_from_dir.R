@@ -1,6 +1,6 @@
 #' @noRd
 default_sheet_drops <- function(project) {
-  #outdated! generate from summary
+  # outdated! generate from summary
   project$summary %>%
     process_df_list() %>%
     names()

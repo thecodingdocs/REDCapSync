@@ -70,7 +70,7 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
     stringsAsFactors = FALSE
   )
   df <- df[which((df$file_ext == "RData") &
-                   (endsWith(df$file_name, "_REDCapSync"))), ]
+    (endsWith(df$file_name, "_REDCapSync"))), ]
   if (nrow(df) == 0) {
     return(character(0))
   }
@@ -118,45 +118,45 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
 )
 #' @noRd
 .blank_project_details <- data.frame(
-    short_name = character(0),
-    dir_path = character(0),
-    sync_frequency = character(0),
-    last_sync = character(0) %>% as.POSIXct(tz = Sys.timezone()),
-    timezone = character(0),
-    last_directory_save = character(0) %>% as.POSIXct(tz = Sys.timezone()),
-    last_metadata_update = character(0) %>% as.POSIXct(tz = Sys.timezone()),
-    last_data_update = character(0) %>% as.POSIXct(tz = Sys.timezone()),
-    version = character(0),
-    token_name = character(0),
-    project_id = character(0),
-    project_title = character(0),
-    labelled = logical(0),
-    id_col = character(0),
-    is_longitudinal = logical(0),
-    has_repeating_forms_or_events = logical(0),
-    has_multiple_arms = logical(0),
-    R_object_size = numeric(0),
-    file_size = numeric(0),
-    n_records = integer(0),
-    redcap_uri = character(0),
-    redcap_base = character(0),
-    redcap_home = character(0),
-    redcap_api_playground = character(0),
-    days_of_log = integer(0),
-    get_files = logical(0),
-    get_file_repository = logical(0),
-    original_file_names = logical(0),
-    entire_log = logical(0),
-    metadata_only = logical(0),
-    add_default_fields = logical(0),
-    add_default_transformation = logical(0),
-    add_default_summaries = logical(0),
-    use_csv = logical(0),
-    get_type = character(0),
-    batch_size_download = integer(0),
-    batch_size_upload = integer(0),
-    stringsAsFactors = FALSE
-  )
+  short_name = character(0),
+  dir_path = character(0),
+  sync_frequency = character(0),
+  last_sync = character(0) %>% as.POSIXct(tz = Sys.timezone()),
+  timezone = character(0),
+  last_directory_save = character(0) %>% as.POSIXct(tz = Sys.timezone()),
+  last_metadata_update = character(0) %>% as.POSIXct(tz = Sys.timezone()),
+  last_data_update = character(0) %>% as.POSIXct(tz = Sys.timezone()),
+  version = character(0),
+  token_name = character(0),
+  project_id = character(0),
+  project_title = character(0),
+  labelled = logical(0),
+  id_col = character(0),
+  is_longitudinal = logical(0),
+  has_repeating_forms_or_events = logical(0),
+  has_multiple_arms = logical(0),
+  R_object_size = numeric(0),
+  file_size = numeric(0),
+  n_records = integer(0),
+  redcap_uri = character(0),
+  redcap_base = character(0),
+  redcap_home = character(0),
+  redcap_api_playground = character(0),
+  days_of_log = integer(0),
+  get_files = logical(0),
+  get_file_repository = logical(0),
+  original_file_names = logical(0),
+  entire_log = logical(0),
+  metadata_only = logical(0),
+  add_default_fields = logical(0),
+  add_default_transformation = logical(0),
+  add_default_summaries = logical(0),
+  use_csv = logical(0),
+  get_type = character(0),
+  batch_size_download = integer(0),
+  batch_size_upload = integer(0),
+  stringsAsFactors = FALSE
+)
 #' @noRd
 save_projects_to_cache <- function(projects, silent = TRUE) {
   assert_project_details(projects)

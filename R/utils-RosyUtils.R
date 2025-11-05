@@ -1,4 +1,4 @@
-clean_for_cli <- function(path){
+clean_for_cli <- function(path) {
   gsub("'", "\\\\'", path)
 }
 cli_alert_wrap <- function(text = "",
@@ -28,9 +28,9 @@ cli_alert_wrap <- function(text = "",
     if (collapse) url_if <- paste0(url_if, collapse = " and ")
     url_if <- paste0(
       " {cli::col_blue(cli::style_hyperlink('",
-      url_names%>% clean_for_cli(),
+      url_names %>% clean_for_cli(),
       "', '",
-      url%>% clean_for_cli(),
+      url %>% clean_for_cli(),
       "'))}"
     )
   }
@@ -279,8 +279,9 @@ find_form_diff2 <- function(new,
           done <- TRUE
         } else {
           indices <- 1:ifelse(length_of_rows_to_keep < n_row_view,
-                              length_of_rows_to_keep,
-                              n_row_view) #TODO
+            length_of_rows_to_keep,
+            n_row_view
+          ) # TODO
           rows_to_keep3 <- rows_to_keep2[indices]
           print.data.frame(merged_df[rows_to_keep3, unique(cols_to_view)])
           choice <- utils::menu(
@@ -539,7 +540,7 @@ form_to_wb <- function(form,
       startCol = startCol,
       tableStyle = tableStyle
     )
-    #add derived style
+    # add derived style
     style_cols <- seq_len(ncol(form)) + pad_cols
     openxlsx::addStyle(
       wb,
@@ -591,20 +592,21 @@ form_to_wb <- function(form,
   }
 }
 list_to_wb <- function(
-    list,
-    key_cols_list = list(),
-    derived_cols_list = list(),
-    link_col_list = list(),
-    str_trunc_length = 32000,
-    header_df_list = NULL,
-    tableStyle = "none",
-    header_style = default_header_style,
-    body_style = default_body_style,
-    freeze_header = TRUE,
-    pad_rows = 0,
-    pad_cols = 0,
-    freeze_keys = TRUE,
-    drop_empty = TRUE) {
+  list,
+  key_cols_list = list(),
+  derived_cols_list = list(),
+  link_col_list = list(),
+  str_trunc_length = 32000,
+  header_df_list = NULL,
+  tableStyle = "none",
+  header_style = default_header_style,
+  body_style = default_body_style,
+  freeze_header = TRUE,
+  pad_rows = 0,
+  pad_cols = 0,
+  freeze_keys = TRUE,
+  drop_empty = TRUE
+) {
   wb <- openxlsx::createWorkbook()
   list <- process_df_list(list, drop_empty = drop_empty)
   list_names <- names(list)
@@ -699,24 +701,25 @@ unique_trimmed_strings <- function(strings, max_length) {
   unique_strings
 }
 list_to_excel <- function(
-    list,
-    dir,
-    file_name = NULL,
-    separate = FALSE,
-    overwrite = TRUE,
-    key_cols_list = list(),
-    derived_cols_list = list(),
-    link_col_list = list(),
-    str_trunc_length = 32000,
-    header_df_list = NULL,
-    tableStyle = "none",
-    header_style = default_header_style,
-    body_style = default_body_style,
-    freeze_header = TRUE,
-    pad_rows = 0,
-    pad_cols = 0,
-    freeze_keys = TRUE,
-    drop_empty = TRUE) {
+  list,
+  dir,
+  file_name = NULL,
+  separate = FALSE,
+  overwrite = TRUE,
+  key_cols_list = list(),
+  derived_cols_list = list(),
+  link_col_list = list(),
+  str_trunc_length = 32000,
+  header_df_list = NULL,
+  tableStyle = "none",
+  header_style = default_header_style,
+  body_style = default_body_style,
+  freeze_header = TRUE,
+  pad_rows = 0,
+  pad_cols = 0,
+  freeze_keys = TRUE,
+  drop_empty = TRUE
+) {
   list <- process_df_list(list, drop_empty = drop_empty)
   list_names <- names(list)
   if (length(list) == 0) {

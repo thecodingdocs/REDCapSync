@@ -31,15 +31,14 @@ add_redcap_links_to_form <- function(form, project) { # add instance links
 }
 remove_from_form_list <- function(form_list,
                                   id_col,
-                                  records = NULL
-                                  ) {
+                                  records = NULL) {
   if (!is_something(form_list)) {
     return(form_list)
   }
   if (!is_df_list(form_list)) {
     stop("form_list is not a list of data.frames as expected.")
   }
-  if(is.null(records)){
+  if (is.null(records)) {
     return(form_list)
   }
   form_names <- names(form_list)[
@@ -68,7 +67,7 @@ remove_records_from_project <- function(project, records) {
     form_list = project$data,
     id_col = id_col,
     records = records
-    )
+  )
   project$transformation$data <- remove_from_form_list(
     form_list = project$transformation$data,
     id_col = id_col,

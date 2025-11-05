@@ -181,7 +181,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     #   )
     # }
     project$metadata$forms$repeating_via_events <- FALSE
-    project$metadata$forms$repeating_via_events[which(unlist(lapply(project$metadata$forms$form_name,function(form_name) {
+    project$metadata$forms$repeating_via_events[which(unlist(lapply(project$metadata$forms$form_name, function(form_name) {
       anyDuplicated(project$metadata$event_mapping$arm_num[which(project$metadata$event_mapping$form == form_name)]) > 0
     })))] <- TRUE
   } else {
@@ -198,12 +198,14 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   # add a check for exisiting conflict possibilities
   project$metadata$has_coding_conflicts <- FALSE
   field_names <- project$metadata$choices$field_name %>% unique()
-  if(length(field_name)>0){
-    row_of_conflicts <- field_names %>% lapply(function(field_name){
-      anyDuplicated(project$metadata$choices$name[which(project$metadata$choices$field_name==field_name)])>0
-    }) %>% unlist()
+  if (length(field_name) > 0) {
+    row_of_conflicts <- field_names %>%
+      lapply(function(field_name) {
+        anyDuplicated(project$metadata$choices$name[which(project$metadata$choices$field_name == field_name)]) > 0
+      }) %>%
+      unlist()
     project$metadata$has_coding_conflicts <- any(row_of_conflicts)
-    if(project$metadata$has_coding_conflicts){
+    if (project$metadata$has_coding_conflicts) {
       project$metadata$coding_conflict_field_names <- field_names[which(row_of_conflicts)]
     }
   }
@@ -351,7 +353,9 @@ get_REDCap_users <- function(project) {
     redcap_uri = project$links$redcap_uri,
     token = sanitize_token(Sys.getenv(project$redcap$token_name))
   )
-  if(!x$success)return(invisible(project))
+  if (!x$success) {
+    return(invisible(project))
+  }
   data_user <- x$data_user
   # data_user_form <- x$data_user_form
   # add feedback of access
@@ -434,7 +438,7 @@ get_REDCap_log2 <- function(project,
   }
   redcap_log <- httr::content(response) %>% dplyr::bind_rows()
   if (is.data.frame(redcap_log)) {
-    if(nrow(redcap_log)>0){
+    if (nrow(redcap_log) > 0) {
       redcap_log[redcap_log == ""] <- NA
       if (clean) {
         redcap_log <- redcap_log %>% clean_redcap_log()
@@ -445,14 +449,15 @@ get_REDCap_log2 <- function(project,
 }
 test_redcap_log_access <- function(project) {
   the_test <- get_REDCap_log2(project = project, log_begin_date = Sys.Date())
-  ! is.null(the_test)
+  !is.null(the_test)
 }
 #' @noRd
 get_REDCap_denormalized <- function(
-    project,
-    labelled = FALSE,
-    records = NULL,
-    batch_size = 1000) {
+  project,
+  labelled = FALSE,
+  records = NULL,
+  batch_size = 1000
+) {
   denormalized <- REDCapR::redcap_read(
     redcap_uri = project$links$redcap_uri,
     token = get_project_token(project),
@@ -490,7 +495,7 @@ get_REDCap_data <- function(project,
     labelled = FALSE,
     records = records,
     batch_size = batch_size
-  )# add check for dag and api
+  ) # add check for dag and api
   form_list <- denormalized %>% normalize_redcap(project = project, labelled = labelled)
   return(form_list)
 }

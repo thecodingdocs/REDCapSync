@@ -15,12 +15,13 @@ deidentify_data_list <- function(data_list,
       "`project$metadata$fields$identifier`. ",
       "You can set it in REDCap Project Setup and update ",
       "project OR define your idenitifiers in this functions ",
-      "`identifiers` argument."
-      ,
+      "`identifiers` argument.",
       immediate. = TRUE
     )
   }
-  identifiers <- initial_identifiers %>% append(identifiers) %>% unique()
+  identifiers <- initial_identifiers %>%
+    append(identifiers) %>%
+    unique()
   bad_identifiers <- identifiers[
     which(
       !identifiers %in% fields$field_name
@@ -32,7 +33,9 @@ deidentify_data_list <- function(data_list,
       toString(bad_identifiers)
     )
   }
-  id_cols <- metadata$form_key_cols %>% unlist() %>% unique()
+  id_cols <- metadata$form_key_cols %>%
+    unlist() %>%
+    unique()
   if (is_something(id_cols)) {
     if (any(id_cols %in% identifiers)) {
       stop(
@@ -43,15 +46,15 @@ deidentify_data_list <- function(data_list,
     }
   }
   if (exclude_free_text) { # placeholder
-    #drop free text only if there is no validation
-    #make function for that ?external
+    # drop free text only if there is no validation
+    # make function for that ?external
     free_text_rows <- which(
       fields$field_type == "notes" |
         (
           fields$field_type == "text" &
             is.na(fields$text_validation_type_or_show_slider_number)
         ) &
-        !fields$field_name %in% id_cols
+          !fields$field_name %in% id_cols
     )
     identifiers <- identifiers %>%
       append(fields$field_name[free_text_rows]) %>%
@@ -75,7 +78,7 @@ deidentify_data_list <- function(data_list,
       #
       # }
       min_dates$difference <- (min_dates$date - as.Date(date_handling))
-      for (form_name in names(date_list)){
+      for (form_name in names(date_list)) {
         field_record <- data[[form_name]][[id_cols[1]]]
         match_date_diff <- match(field_record, min_dates$record_id)
         difference <- min_dates$difference[match_date_diff]
@@ -84,7 +87,7 @@ deidentify_data_list <- function(data_list,
           data[[form_name]][[field_name]] <- as.Date(field) - difference
         }
       }
-      #if you have dates you already mutated no need to drop anymore
+      # if you have dates you already mutated no need to drop anymore
       identifiers <- identifiers[which(!identifiers %in% date_vector)]
     }
     drop_list <- Map(function(x, col_names) {
@@ -195,7 +198,7 @@ filter_data_list <- function(data_list,
         if (is.null(row_logic)) row_logic <- NA
         row_index <- which(row_logic)
       }
-      field_names_adj <- c(field_names,filter_field_names)
+      field_names_adj <- c(field_names, filter_field_names)
       # if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(form_name, data_list, original_only = FALSE))
       col_names <- colnames(form)[which(colnames(form) %in% field_names_adj)]
       if (length(row_index) > 0 && length(col_names) > 0) {
@@ -208,7 +211,7 @@ filter_data_list <- function(data_list,
 }
 #' @noRd
 clean_data_list <- function(data_list, drop_blanks = TRUE, drop_others = NULL) {
-  #assert data list
+  # assert data list
   data <- data_list$data
   metadata <- data_list$metadata
   for (form_name in names(data)) {
@@ -226,7 +229,9 @@ get_min_dates <- function(data_list) {
   data <- data_list$data
   metadata <- data_list$metadata
   fields <- metadata$fields
-  id_cols <- metadata$form_key_cols %>% unlist() %>% unique()
+  id_cols <- metadata$form_key_cols %>%
+    unlist() %>%
+    unique()
   empty <- data.frame(
     record_id = character(),
     min_date = as.Date(character()),
@@ -247,9 +252,11 @@ get_min_dates <- function(data_list) {
       existing_fields <- intersect(names(form), date_vector)
       if (length(existing_fields) > 0L) {
         df_subset <- form[, c(id_cols[1], existing_fields), drop = FALSE]
-        df_long <- stats::reshape(df_subset, varying = existing_fields,
-                                  v.names = "date", times = existing_fields,
-                                  timevar = "field", direction = "long")
+        df_long <- stats::reshape(df_subset,
+          varying = existing_fields,
+          v.names = "date", times = existing_fields,
+          timevar = "field", direction = "long"
+        )
         df_long$date <- as.Date(df_long$date, format = "%Y-%m-%d")
         all_dates <- c(all_dates, list(df_long))
       }
@@ -314,7 +321,7 @@ link_REDCap_record <- function(project,
                                page,
                                instance,
                                text_only = FALSE) {
-  #FIX
+  # FIX
   link <- paste0(
     project$links$redcap_base,
     "redcap_v",
@@ -473,7 +480,7 @@ normalize_redcap <- function(denormalized, project, labelled) {
             row_index <- which(
               denormalized$redcap_repeat_instrument == form_name |
                 denormalized$redcap_event_name %in% event_mapping$unique_event_name[which(!event_mapping$repeating &
-                                                                                   event_mapping$form == form_name)]
+                  event_mapping$form == form_name)]
             )
           }
           if (!is_longitudinal) {
@@ -510,7 +517,7 @@ normalize_redcap <- function(denormalized, project, labelled) {
 }
 #' @noRd
 sort_redcap_log <- function(redcap_log) {
-  if(nrow(redcap_log)==0){
+  if (nrow(redcap_log) == 0) {
     return(redcap_log)
   }
   unique(redcap_log[order(redcap_log$timestamp, decreasing = TRUE), ])

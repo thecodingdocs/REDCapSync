@@ -88,32 +88,33 @@
 #' @family project object
 #' @export
 setup_project <- function(
-    short_name,
-    dir_path,
-    redcap_uri,
-    token_name = paste0("REDCapSync_", short_name),
-    sync_frequency = "daily",
-    labelled = TRUE,
-    hard_reset = FALSE,
-    records = NULL,
-    fields = NULL,
-    forms = NULL,
-    events = NULL,
-    filter_logic = NULL,
-    get_type = "identified",
-    metadata_only = FALSE,
-    batch_size_download = 2000,
-    batch_size_upload = 500,
-    entire_log = FALSE,
-    days_of_log = 10,
-    get_files = FALSE,
-    get_file_repository = FALSE,
-    original_file_names = FALSE,
-    add_default_fields = FALSE,
-    add_default_transformation = TRUE,
-    add_default_summaries = TRUE,
-    use_csv = FALSE,
-    silent = FALSE) {
+  short_name,
+  dir_path,
+  redcap_uri,
+  token_name = paste0("REDCapSync_", short_name),
+  sync_frequency = "daily",
+  labelled = TRUE,
+  hard_reset = FALSE,
+  records = NULL,
+  fields = NULL,
+  forms = NULL,
+  events = NULL,
+  filter_logic = NULL,
+  get_type = "identified",
+  metadata_only = FALSE,
+  batch_size_download = 2000,
+  batch_size_upload = 500,
+  entire_log = FALSE,
+  days_of_log = 10,
+  get_files = FALSE,
+  get_file_repository = FALSE,
+  original_file_names = FALSE,
+  add_default_fields = FALSE,
+  add_default_transformation = TRUE,
+  add_default_summaries = TRUE,
+  use_csv = FALSE,
+  silent = FALSE
+) {
   collected <- makeAssertCollection()
   assert_env_name(
     env_name = short_name,
@@ -174,8 +175,7 @@ setup_project <- function(
   projects <- get_projects() # add short_name conflict check id-base url differs
   short_name <- assert_env_name(short_name)
   sweep_dirs_for_cache(project_names = short_name)
-  if (paste0(.token_prefix, short_name) != token_name) {
-  } # maybe a message
+  if (paste0(.token_prefix, short_name) != token_name) {} # maybe a message
   token_name <- assert_env_name(token_name)
   in_proj_cache <- short_name %in% projects$short_name
   missing_dir_path <- missing(dir_path)
@@ -183,9 +183,11 @@ setup_project <- function(
   was_loaded <- FALSE
   original_details <- NULL
   if (!in_proj_cache && !missing_dir_path) {
-    project_details_path <- get_project_path(short_name = short_name,
-                                             dir_path = dir_path,
-                                             type = "details")
+    project_details_path <- get_project_path(
+      short_name = short_name,
+      dir_path = dir_path,
+      type = "details"
+    )
     if (file.exists(project_details_path)) {
       project_details <- tryCatch(
         expr = {
@@ -304,7 +306,9 @@ setup_project <- function(
     )
   } else {
     project$links$redcap_uri <- redcap_uri # add test function, should end in / or add it
-    project$links$redcap_base <- redcap_uri %>% dirname() %>% paste0("/") # add test function
+    project$links$redcap_base <- redcap_uri %>%
+      dirname() %>%
+      paste0("/") # add test function
   }
   project$internals$use_csv <- use_csv
   project$internals$is_blank <- FALSE
@@ -331,14 +335,14 @@ get_project_path <- function(short_name,
   }
   checkmate::assert_choice(type, .project_file_types)
   file_name <- paste0(short_name, "_REDCapSync")
-  if(type != "") file_name <- file_name %>% paste0("_",type)
+  if (type != "") file_name <- file_name %>% paste0("_", type)
   file_name <- file_name %>% paste0(".RData")
   file_path <- file.path(dir_path, "R_objects", file_name)
   sanitize_path(file_path)
 }
 get_project_path2 <- function(project,
-                             type = "",
-                             check_dir = FALSE) {
+                              type = "",
+                              check_dir = FALSE) {
   assert_setup_project(project)
   short_name <- project$short_name
   dir_path <- project$dir_path
@@ -349,12 +353,12 @@ get_project_path2 <- function(project,
     check_dir = check_dir
   )
 }
-.project_file_types <- c("","transformation","details")
+.project_file_types <- c("", "transformation", "details")
 .project_path_suffix <- "_REDCapSync.RData"
 #' @rdname setup-load
 #' @export
 load_project <- function(short_name) {
-  #add load by path option
+  # add load by path option
   projects <- get_projects()
   if (nrow(projects) == 0) {
     stop("No projects in cache")
@@ -421,14 +425,10 @@ load_test_project <- function(short_name = "TEST_repeating", with_data = FALSE) 
   project$short_name <- short_name
   project$internals$is_test <- TRUE
   if (with_data) {
-    if (short_name == "TEST_classic") {
-    }
-    if (short_name == "TEST_repeating") {
-    }
-    if (short_name == "TEST_longitudinal") {
-    }
-    if (short_name == "TEST_multiarm") {
-    }
+    if (short_name == "TEST_classic") {}
+    if (short_name == "TEST_repeating") {}
+    if (short_name == "TEST_longitudinal") {}
+    if (short_name == "TEST_multiarm") {}
   }
   invisible(project)
 }
@@ -513,8 +513,9 @@ get_dir <- function(project) {
   stop_mes <- "Did you use `set_dir()`?"
   if (!file.exists(dir_path)) {
     cli_alert_wrap("Searched for directory --> '",
-                   file = dir_path,
-                   bullet_type = "x")
+      file = dir_path,
+      bullet_type = "x"
+    )
     stop("Does not exist. ", stop_mes)
   }
   assert_dir(dir_path, silent = TRUE)
@@ -527,10 +528,12 @@ nav_to_dir <- function(project) {
   utils::browseURL(project$dir_path)
 }
 #' @noRd
-.allowed_test_short_names <- c("TEST_classic",
-                               "TEST_repeating",
-                               "TEST_longitudinal",
-                               "TEST_multiarm")
+.allowed_test_short_names <- c(
+  "TEST_classic",
+  "TEST_repeating",
+  "TEST_longitudinal",
+  "TEST_multiarm"
+)
 #' @noRd
 .blank_project <- list(
   short_name = NULL,

@@ -23,13 +23,13 @@
 #' @family db_functions
 #' @export
 sync_project <- function(
-    project,
-    summarize = TRUE,
-    save_to_dir = TRUE,
-    hard_check = FALSE,
-    hard_reset = FALSE,
-    silent = FALSE
-   ) {
+  project,
+  summarize = TRUE,
+  save_to_dir = TRUE,
+  hard_check = FALSE,
+  hard_reset = FALSE,
+  silent = FALSE
+) {
   collected <- makeAssertCollection()
   assert_blank_project(project)
   assert_logical(hard_reset, any.missing = FALSE, len = 1, add = collected)
@@ -52,7 +52,7 @@ sync_project <- function(
   if (!do_it) {
     cli::cli_alert_info("{project$short_name} not due for sync ({project$internals$sync_frequency})")
   }
-  if(do_it){
+  if (do_it) {
     stale_records <- NULL
     will_update <- TRUE
     # project$internals$last_directory_save
@@ -73,8 +73,8 @@ sync_project <- function(
     if (!hard_reset) { # check log interim
       if (
         !is_something(project$internals$last_metadata_update) ||
-        !is_something(project$internals$last_data_update) ||
-        !is_something(project$internals$last_full_update)
+          !is_something(project$internals$last_data_update) ||
+          !is_something(project$internals$last_full_update)
       ) {
         hard_reset <- TRUE
       } else {
@@ -134,7 +134,7 @@ sync_project <- function(
           labelled = project$internals$labelled,
           batch_size = project$internals$batch_size_download
         )
-        #if error records comma
+        # if error records comma
         redcap_log <- project$redcap$log # in case there is a log already
         if (project$internals$entire_log) {
           log_begin_date <- as.POSIXct(project$redcap$project_info$creation_time) %>% as.Date()
@@ -164,8 +164,10 @@ sync_project <- function(
         }
         message_string <- "No new records to update!"
         if (length(stale_records) > 0) {
-          form_list <- project %>% get_REDCap_data(labelled = project$internals$labelled,
-                                                   records = stale_records)
+          form_list <- project %>% get_REDCap_data(
+            labelled = project$internals$labelled,
+            records = stale_records
+          )
           missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[id_col]])]
           if (length(missing_from_summary) > 0) {
             x <- data.frame(
@@ -223,17 +225,17 @@ sync_project <- function(
   # }
   if (project$internals$add_default_summaries) {
     if (!is_something(project$summary$REDCapSync) ||
-        !is_something(project$summary$REDCapSync_raw)) {
+      !is_something(project$summary$REDCapSync_raw)) {
       project <- add_default_summaries(project)
     }
   }
-  #turn off transform for now
+  # turn off transform for now
   # first_stamp <- project$internals$last_data_transformation
   # project <- transform_project(project,transformation_list = project$transformation)
   # second_stamp <- project$internals$last_data_transformation
   # was_updated <- was_updated || !identical(first_stamp,second_stamp)
   if (save_to_dir && !is.null(project$dir_path)) {
-    if(is_something(project$data)){
+    if (is_something(project$data)) {
       if (project$internals$get_files) { # test now
         get_REDCap_files( # would want track internally?
           project,
@@ -245,7 +247,7 @@ sync_project <- function(
       first_stamp <- project$internals$last_summary
       project <- summarize_project(project = project, hard_reset = hard_reset)
       second_stamp <- project$internals$last_summary
-      was_updated <- was_updated || !identical(first_stamp,second_stamp)
+      was_updated <- was_updated || !identical(first_stamp, second_stamp)
     }
     if (was_updated) {
       project <- save_project(project)
@@ -274,17 +276,17 @@ sync_project <- function(
 #' @family db_functions
 #' @export
 sync_all <- function(
-    short_names = NULL,
-    summarize = TRUE,
-    hard_check = FALSE,
-    hard_reset = FALSE,
-    silent = FALSE
-    ) {
-  if(is.null(short_names)){
+  short_names = NULL,
+  summarize = TRUE,
+  hard_check = FALSE,
+  hard_reset = FALSE,
+  silent = FALSE
+) {
+  if (is.null(short_names)) {
     projects <- get_projects()
     short_names <- projects$short_name
   }
-  for(short_name in short_names){
+  for (short_name in short_names) {
     load_project(short_name) %>%
       sync_project(
         summarize = summarize,
@@ -293,7 +295,7 @@ sync_all <- function(
         silent = silent
       )
   }
-  #consider adding message/df
+  # consider adding message/df
   invisible()
 }
 due_for_sync <- function(project_name) {
@@ -350,16 +352,18 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
     project_names <- project_names[which(project_names %in% all_project_names)]
     for (project_name in project_names) {
       from_cache <- project_list[[project_name]]
-      expected_path <- get_project_path(short_name = project_name,
-                                        dir_path = from_cache$dir_path,
-                                        type = "details")
+      expected_path <- get_project_path(
+        short_name = project_name,
+        dir_path = from_cache$dir_path,
+        type = "details"
+      )
       if (file.exists(expected_path)) {
         to_cache <- tryCatch(
           expr = {
             x <- suppressWarnings({
               readRDS(expected_path)
             })
-            assert_project_details(x,nrows = 1)
+            assert_project_details(x, nrows = 1)
             x
           },
           error = function(e) {

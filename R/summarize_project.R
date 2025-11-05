@@ -172,10 +172,6 @@ annotate_records <- function(project) {
   invisible(project)
 }
 #' @noRd
-fields_with_no_data <- function(project) {
-  project$metadata$fields$field_name[which(is.na(project$metadata$fields$complete_rate) & !project$metadata$fields$field_type %in% .field_types_not_in_data)]
-}
-#' @noRd
 clean_form <- function(form, fields, drop_blanks = TRUE, drop_others = NULL) {
   for (field_name in colnames(form)) {
     if (field_name %in% fields$field_name) {

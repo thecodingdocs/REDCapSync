@@ -976,3 +976,6 @@ is_nested_list <- function(x) {
   }
   outcome
 }
+generate_hex <- function(length = 32) {
+  toupper(paste0(sample(c(0:9, letters[1:6]), length, replace = TRUE), collapse = ""))
+}

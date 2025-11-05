@@ -51,7 +51,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$metadata$fields$section_header <- project$metadata$fields$section_header %>% remove_html_tags()
   project$metadata$fields$field_label <- project$metadata$fields$field_label %>% remove_html_tags()
   project$metadata$id_col <- project$metadata$fields[1, 1] %>% as.character() # RISKY?
-  project$metadata$form_key_cols <- get_key_col_list(project)
+  project$metadata$form_key_cols <- get_key_col_list(data_list = data_list)
   project$metadata$raw_structure_cols <- project$metadata$form_key_cols %>%
     unlist() %>%
     unique()

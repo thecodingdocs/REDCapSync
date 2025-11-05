@@ -795,7 +795,7 @@ merge_non_repeating <- function(data_list, merge_form_name) {
   # data_list$metadata$choices
   data_list$metadata$choices <- fields_to_choices(fields)
   data_list
-  data_list$metadata$form_key_cols <- get_key_col_list(project = data_list)
+  data_list$metadata$form_key_cols <- get_key_col_list(data_list = data_list)
   # data_list$data
   merge_form <- NULL
   non_rep_form_names <- non_rep_form_names[non_rep_form_names %>%

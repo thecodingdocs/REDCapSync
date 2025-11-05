@@ -383,14 +383,14 @@ link_REDCap_record <- function(project,
 #   key_cols_list
 # }
 #' @noRd
-get_key_col_list <- function(project) {
-  forms <- project$metadata$forms
+get_key_col_list <- function(data_list) {
+  forms <- data_list$metadata$forms
   if (!is_something(forms)) {
     stop("Empty --> `project$metadata$forms`")
   }
   out_list <- seq_len(nrow(forms)) %>% lapply(function(i) {
-    out <- project$metadata$id_col
-    if (project$metadata$is_longitudinal) out <- append(out, "redcap_event_name")
+    out <- data_list$metadata$id_col
+    if (data_list$metadata$is_longitudinal) out <- append(out, "redcap_event_name")
     if (forms$repeating[i]) {
       out <- append(out, "redcap_repeat_instrument")
       out <- append(out, "redcap_repeat_instance")

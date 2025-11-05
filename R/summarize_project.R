@@ -842,12 +842,11 @@ metadata_add_default_cols <- function(data_list) {
       fields[which(fields$form_name == x), ]
     }) %>%
     dplyr::bind_rows()
-  if (!"field_type_R" %in% colnames(fields)) fields$field_type_R <- "character"
-  fields$field_type_R[which(fields$field_type %in% c("radio", "yesno", "dropdown", "checkbox_choice"))] <- "factor"
-  fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "integer")] <- "integer"
-  fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "date_mdy")] <- "date"
-  fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "date_ymd")] <- "date"
-  fields$field_type_R[which(fields$text_validation_type_or_show_slider_number == "datetime_dmy")] <- "datetime"
+  fields$field_type_R <- field_types_to_R(fields$field_type)
+  # for (x in names(.redcap_field_conversion2)){
+  #   y <- .redcap_field_conversion2[[x]]
+  #   fields$field_type_R[which(fields$field_type %in% y)] <- x
+  # }
   fields$in_original_redcap <- TRUE
   fields$original_form_name <- fields$form_name
   if (!"units" %in% colnames(fields)) fields$units <- NA
@@ -855,6 +854,30 @@ metadata_add_default_cols <- function(data_list) {
   data_list$metadata$fields <- fields
   data_list
 }
+field_types_to_R <- function(field_types){
+  field_types_R <- rep("character",length(field_types))
+  for(x in names(.redcap_field_conversion)){
+    rows_match <- which(field_types == x)
+    field_types_R[rows_match] <- .redcap_field_conversion[[x]]
+  }
+  field_types_R
+}
+.redcap_field_conversion <- list(
+  "radio" = "factor",
+  "yesno" = "factor",
+  "dropdown" = "factor",
+  "checkbox_choice" = "factor",
+  "integer" = "integer",
+  "date_mdy" = "date",
+  "date_ymd" = "date",
+  "datetime_dmy" = "datetime"
+)
+# .redcap_field_conversion2 <- list(
+#   "factor" = c("radio","yesno","dropdown","checkbox_choice"),
+#   "integer" = "integer",
+#   "date" = c("date_mdy","date_ymd"),
+#   "datetime" = "datetime_dmy"
+# )
 #' @title Summarize REDCap Database
 #' @noRd
 summarize_project <- function(

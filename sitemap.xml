@@ -25,7 +25,6 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/cache_path.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/check_folder_for_projects.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/clear_project_summaries.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/reference/edit_REDCap_while_viewing.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/find_upload_diff.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/generate_project_summary.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/get_REDCap_report.html</loc></url>
@@ -35,8 +34,6 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/nav_to_dir.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/raw_to_labelled_form.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/reexports.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/reference/rmarkdown_project.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/reference/run_quality_checks.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/save-deleteproject.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/setup-load.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/sync_all.html</loc></url>

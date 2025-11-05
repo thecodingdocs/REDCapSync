@@ -502,11 +502,3 @@ rename_forms_redcap_to_default <- function(forms) {
   colnames(forms) <- the_names
   forms
 }
-#' @noRd
-rename_forms_default_to_redcap <- function(forms) {
-  the_names <- colnames(forms)
-  the_names[which(the_names == "form_name")] <- "instrument_name"
-  the_names[which(the_names == "form_label")] <- "instrument_label"
-  colnames(forms) <- the_names
-  forms
-}

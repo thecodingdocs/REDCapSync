@@ -65,7 +65,6 @@ reference:
   - subtitle: Data Helpers
     desc: Used for managing to-be-upload data
     contents:
-      - find_upload_diff
       - raw_to_labelled_form
       - labelled_to_raw_form
   - subtitle: Download from, Upload to, and Delete from REDCap

@@ -1270,7 +1270,12 @@ check_summaries <- function(project, summary_names) {
 add_default_summaries <- function(project,
                                   exclude_identifiers = TRUE,
                                   exclude_free_text = TRUE,
-                                  date_handling = "none") {
+                                  date_handling = "none"
+                                  ) {
+  with_links <- FALSE
+  if(is_something(project$data)){
+    with_links <- nrow(project$summary$all_records) <= 3000
+  }
   assert_logical(exclude_identifiers)
   assert_logical(exclude_free_text)
   summary_name <- "REDCapSync_raw"
@@ -1291,7 +1296,7 @@ add_default_summaries <- function(project,
     include_users = TRUE,
     include_log = FALSE,
     annotate_from_log = FALSE,
-    with_links = nrow(project$summary$all_records) <= 3000,
+    with_links = with_links,
     separate = TRUE,
     use_csv = project$internals$use_csv,
     dir_other = file.path(project$dir_path, "REDCap", project$short_name),
@@ -1317,7 +1322,7 @@ add_default_summaries <- function(project,
     include_users = TRUE,
     include_log = FALSE,
     annotate_from_log = TRUE,
-    with_links = nrow(project$summary$all_records) <= 3000,
+    with_links = with_links,
     separate = FALSE,
     use_csv = project$internals$use_csv,
     dir_other = file.path(project$dir_path, "output"),

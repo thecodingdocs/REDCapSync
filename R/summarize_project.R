@@ -506,7 +506,7 @@ save_summary <- function(project, summary_name) {
   link_col_list <- list()
   if (summary_list$with_links) {
     if (project$internals$project_type == "redcap") {
-      add_links <- which(names(to_save_list) %in% form_names)
+      add_links <- which(names(data_list) %in% form_names)
       if (length(add_links) > 0) {
         data_list[add_links] <- data_list[add_links] %>%
           lapply(function(form) {
@@ -546,7 +546,6 @@ save_summary <- function(project, summary_name) {
   # dir_other = file.path(project$dir_path, "output")
   # file_name = paste0(project$short_name, "_", summary_name)
   # hard_reset = FALSE
-
   # save -----
   last_save_time <- now_time()
   final_form_tab_names <-

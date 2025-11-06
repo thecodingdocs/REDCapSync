@@ -186,7 +186,7 @@
         <dd>Synchronize REDCap Data</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="project-setup-object-modifications">project setup Object Modifications<a class="anchor" aria-label="anchor" href="#project-setup-object-modifications"></a></h3>
+      <h3 id="project-summaries">Project Summaries<a class="anchor" aria-label="anchor" href="#project-summaries"></a></h3>
       <div class="section-desc"><p>One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.</p></div>
 
 
@@ -197,39 +197,22 @@
 
       <dl><dt>
 
-          <code><a href="add_project_field.html">add_project_field()</a></code>
-          <span class="badge lifecycle lifecycle-experimental">experimental</span>
-        </dt>
-        <dd>Add Field Transformation to the Database</dd>
-      </dl><dl><dt>
-
           <code><a href="add_project_summary.html">add_project_summary()</a></code>
           <span class="badge lifecycle lifecycle-experimental">experimental</span>
         </dt>
         <dd>Add a Subset to a REDCap Database</dd>
       </dl><dl><dt>
 
-          <code><a href="clear_project_summaries.html">clear_project_summaries()</a></code>
-          <span class="badge lifecycle lifecycle-experimental">experimental</span>
-        </dt>
-        <dd>clear_project_summaries</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="project-object-outputs">project Object Outputs<a class="anchor" aria-label="anchor" href="#project-object-outputs"></a></h3>
-      <div class="section-desc"><p>Mirror your project object to a local/cloud file system. If you have summaries, will only update file if record belonging to that summary was updated.</p></div>
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
           <code><a href="generate_project_summary.html">generate_project_summary()</a></code>
           <span class="badge lifecycle lifecycle-experimental">experimental</span>
         </dt>
         <dd>Generate a Summary from a Subset Name</dd>
+      </dl><dl><dt>
+
+          <code><a href="clear_project_summaries.html">clear_project_summaries()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>clear_project_summaries</dd>
       </dl></div><div class="section level2">
 
       <h3 id="data-helpers">Data Helpers<a class="anchor" aria-label="anchor" href="#data-helpers"></a></h3>
@@ -305,6 +288,29 @@
 
         </dt>
         <dd>Open Links to REDCap Pages</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="advanced-experimental">Advanced/Experimental<a class="anchor" aria-label="anchor" href="#advanced-experimental"></a></h3>
+      <div class="section-desc"><p>This is diffult to explain experimental function for adding derived fields and overwritting existing fields for advanced pipelines.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="add_project_field.html">add_project_field()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Add Field Transformation to the Database</dd>
+      </dl><dl><dt>
+
+          <code><a href="clear_project_fields.html">clear_project_fields()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>clear_project_fields</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

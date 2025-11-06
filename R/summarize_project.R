@@ -1206,7 +1206,7 @@ add_default_summaries <- function(project,
   assert_logical(exclude_identifiers)
   assert_logical(exclude_free_text)
   summary_name <- "REDCapSync_raw"
-  project <- ?add_project_summary(
+  project <- add_project_summary(
     project = project,
     summary_name = summary_name,
     transformation_type = "none",

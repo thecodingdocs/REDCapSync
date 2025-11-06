@@ -80,13 +80,6 @@ a project, and 3.) running sync. See [Getting
 Started](https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html "Getting Started")
 page for the basics!
 
-… If you want to be guided through your first setup, simply run the
-following!
-
-``` r
-REDCapSync::sync()
-```
-
 ![](man/figures/cover.jpg)
 
 ## Minimum Requirements
@@ -94,6 +87,8 @@ REDCapSync::sync()
 - R (and RStudio) installed on your computer or server.
 - Access to at least one REDCap project (real or test) with API Token
   privileges according to user rights.
+- Ideally, you should have User Permissions to logging in order to use
+  the package effeciently
 - Appropriate permission to export and analyze data for projects for
   which you have a token.
 - Basic R knowledge such as installing a package and running code.

@@ -127,6 +127,13 @@ add_project_field <- function(
   message("added '", field_name, "' column")
   invisible(project)
 }
+clean_function <- function (func) {
+  if (!is.function(func)) {
+    stop("Input must be a function")
+  }
+  environment(func) <- emptyenv()
+  return(func)
+}
 #' @noRd
 add_default_fields <- function(project) {
   forms <- project$metadata$forms

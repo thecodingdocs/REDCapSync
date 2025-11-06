@@ -411,7 +411,6 @@ add_project_summary <- function(
   "last_timestamp",
   "last_api_call",
   "all_records",
-  "was_transformed",
   "was_saved"
 )
 .not_important_summary_names <- c(
@@ -980,12 +979,6 @@ clear_project_fields <- function(project) {
     field_functions = NULL,
     data_updates = NULL
   )
-  project$internals$is_transformed <- FALSE
-  if(length(project$summary$all_records$was_transformed)>0){
-    project$summary$all_records$was_transformed <- FALSE
-  }
-  transformation_path <- get_project_path2(project, type = "transformation")
-  unlink(transformation_path)
   cli_alert_success("Cleared project transformations!")
   invisible(project)
 }
@@ -1013,7 +1006,6 @@ extract_project_records <- function(data_list) {
       first_timestamp = NA,
       last_timestamp = NA,
       last_api_call = NA,
-      was_transformed = FALSE,
       was_saved = FALSE,
       stringsAsFactors = FALSE
     )

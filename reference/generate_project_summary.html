@@ -93,7 +93,8 @@ data, including metadata, and annotating metadata.</p>
 <span>  annotate_metadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_record_summary <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_users <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  include_log <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  include_log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  internal_use <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -163,8 +164,7 @@ Default is <code>NULL</code>, which includes all forms.</p></dd>
 
 <dt id="arg-no-duplicate-cols">no_duplicate_cols<a class="anchor" aria-label="anchor" href="#arg-no-duplicate-cols"></a></dt>
 <dd><p>A logical flag (<code>TRUE</code> or <code>FALSE</code>). If <code>TRUE</code>, the
-function will avoid including duplicate columns in the output. Defaults to
-<code>FALSE</code>.</p></dd>
+function will avoid including duplicate columns in the output. Defaults to</p></dd>
 
 
 <dt id="arg-exclude-identifiers">exclude_identifiers<a class="anchor" aria-label="anchor" href="#arg-exclude-identifiers"></a></dt>
@@ -236,6 +236,11 @@ included in the summary. Default is <code>TRUE</code>.</p></dd>
 <dt id="arg-include-log">include_log<a class="anchor" aria-label="anchor" href="#arg-include-log"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, the log of changes will be included in
 the summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-internal-use">internal_use<a class="anchor" aria-label="anchor" href="#arg-internal-use"></a></dt>
+<dd><p>A logical flag (<code>TRUE</code> or <code>FALSE</code>). If <code>TRUE</code>, then will
+return data_list meant for internal use. Defaults to <code>FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

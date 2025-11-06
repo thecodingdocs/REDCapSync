@@ -70,7 +70,9 @@ annotate_fields <- function(data_list,
   fields
 }
 #' @noRd
-annotate_forms <- function(data_list, summarize_data = TRUE, drop_blanks = TRUE) {
+annotate_forms <- function(data_list,
+                           summarize_data = TRUE,
+                           drop_blanks = TRUE) {
   forms <- data_list$metadata$forms
   if (drop_blanks) {
     forms <- forms[which(forms$form_name %in% names(data_list$data)), ]
@@ -107,7 +109,9 @@ annotate_forms <- function(data_list, summarize_data = TRUE, drop_blanks = TRUE)
   forms
 }
 #' @noRd
-annotate_choices <- function(data_list, summarize_data = TRUE, drop_blanks = TRUE) {
+annotate_choices <- function(data_list,
+                             summarize_data = TRUE,
+                             drop_blanks = TRUE) {
   # forms <- data_list$metadata$forms
   # fields <- data_list$metadata$fields
   choices <- data_list$metadata$choices
@@ -160,29 +164,34 @@ annotate_choices <- function(data_list, summarize_data = TRUE, drop_blanks = TRU
   choices
 }
 #' @noRd
-annotate_records <- function(data_list) {
+annotate_records <- function(data_list,
+                             summarize_data = TRUE) {
   id_col <- data_list$metadata$id_col
-  all_records <- data_list$summary$all_records
-  redcap_log <- data_list$redcap$log[which(!is.na(data_list$redcap$log$record)), ]
+  records <- extract_project_records(data_list)[[1]]
+  the_rows <- which(data_list$summary$all_records[[id_col]]%in% records)
+  all_records <- data_list$summary$all_records[the_rows,]
   if (!is_something(all_records) || !is_something(redcap_log)) {
     return(data_list)
   }
-  redcap_log <- redcap_log[which(redcap_log$action_type != "Users"), ]
-  redcap_log <- redcap_log[which(redcap_log$record %in% all_records[[id_col]]), ]
-  cool_list <- split(redcap_log$timestamp, redcap_log$record)
-  cool_list_match <- cool_list %>%
-    names() %>%
-    match(all_records[[id_col]])
-  # test matched all_records[[id_col]][cool_list_match]
-  cool_list_first <- cool_list %>%
-    lapply(dplyr::first) %>%
-    unlist()
-  cool_list_last <- cool_list %>%
-    lapply(dplyr::last) %>%
-    unlist()
-  all_records$first_timestamp[cool_list_match] <- cool_list_first
-  all_records$last_timestamp[cool_list_match] <- cool_list_last
-  invisible(data_list)
+  if(summarize_data){
+    redcap_log <- get_log(data_list = data_list, records = records)
+    redcap_log <- redcap_log[which(redcap_log$action_type != "Users"), ]
+    redcap_log <- redcap_log[which(redcap_log$record %in% all_records[[id_col]]), ]
+    cool_list <- split(redcap_log$timestamp, redcap_log$record)
+    cool_list_match <- cool_list %>%
+      names() %>%
+      match(all_records[[id_col]])
+    # test matched all_records[[id_col]][cool_list_match]
+    cool_list_first <- cool_list %>%
+      lapply(dplyr::first) %>%
+      unlist()
+    cool_list_last <- cool_list %>%
+      lapply(dplyr::last) %>%
+      unlist()
+    all_records$first_timestamp[cool_list_match] <- cool_list_first
+    all_records$last_timestamp[cool_list_match] <- cool_list_last
+  }
+  invisible(all_records)
 }
 #' @noRd
 clean_form <- function(form, fields, drop_blanks = TRUE, drop_others = NULL) {
@@ -755,28 +764,51 @@ generate_project_summary <- function(
     )
   }
   if (include_metadata) {
-    if (annotate_from_log && is_something(data_list$metadata)) {
+    if (is_something(data_list$metadata)) {
       # need to decouple from project
       #would want to control for merge
-      data_list$metadata$forms <- annotate_forms(data_list)
-      data_list$metadata$fields <- annotate_fields(data_list)
-      data_list$metadata$choices <- annotate_choices(data_list)
+      data_list$metadata$forms <- annotate_forms(
+        data_list = data_list,
+        summarize_data = annotate_from_log,
+        drop_blanks = drop_blanks
+      )
+      data_list$metadata$fields <- annotate_fields(
+        data_list = data_list,
+        summarize_data = annotate_from_log,
+        drop_blanks = drop_blanks
+      )
+      data_list$metadata$choices <- annotate_choices(
+        data_list = data_list,
+        summarize_data = annotate_from_log,
+        drop_blanks = drop_blanks
+      )
     }
   }
   records <- extract_project_records(data_list)[[1]]
   data_list$redcap <- project$redcap
   data_list$summary$all_records <- project$summary$all_records
   if (include_log) {
-    data_list$log <- get_log(data_list, records = records)
+    data_list$log <- get_log(
+      data_list = data_list,
+      records = records
+    )
   }
   if (include_records) {
     if (!is.null(records)) {
-      data_list$records <- summarize_records_from_log(data_list, records = records)
+      data_list$records <- annotate_records(
+        data_list = data_list,
+        summarize_data = annotate_from_log
+      )
     }
   }
   if (include_users) {
     #add check to see if setup included users
-    data_list$users <- summarize_users_from_log(data_list, records = records)
+    data_list$users <- annotate_users(
+      data_list = data_list,
+      records = records,
+      summarize_data = annotate_from_log,
+      drop_blanks = drop_blanks
+    )
   }
   data_list$redcap <- NULL
   data_list$summary <- NULL
@@ -1030,7 +1062,10 @@ get_log <- function(data_list, records) {
   redcap_log
 }
 #' @noRd
-summarize_users_from_log <- function(data_list, records, drop_if_not_in_log = FALSE) {
+annotate_users <- function(data_list,
+                           records,
+                           summarize_data = TRUE,
+                           drop_blanks = FALSE) {
   redcap_log <- get_log(data_list, records)
   # role_label not inculded now
   summary_users <- data_list$redcap$users %>% dplyr::select(c("username", "email", "firstname", "lastname"))
@@ -1039,31 +1074,33 @@ summarize_users_from_log <- function(data_list, records, drop_if_not_in_log = FA
   if (!is_something(user_groups)||length(names_in_log)==0) {
     return(summary_users)
   }
-  only_in_log <- names_in_log %>% vec1_not_in_vec2(summary_users$username)
-  if(length(only_in_log)>0){
-    summary_users <-summary_users %>% dplyr::bind_rows(
-      data.frame(username = only_in_log)
-    )
-  }
   # maybe dropping people at this step
-  if(drop_if_not_in_log){
+  if(drop_blanks){
     summary_users <- summary_users[which(summary_users$username %in% names_in_log), ]
     user_groups <- user_groups[drop_nas(match(summary_users$username, names_in_log))]
   }
-  summary_users$first_timestamp <- NA
-  summary_users$last_timestamp <- NA
-  summary_users$last_record_timestamp <- NA
-  summary_users$unique_records_n <- NA
-  for(user_group_name in names_in_log){
-    the_row <- match(user_group_name,summary_users$username)
-    group <- user_groups[[user_group_name]]
-    record_rows <- which(!is.na(group$record))
-    summary_users$first_timestamp[the_row] <- group$timestamp %>% dplyr::last()
-    summary_users$last_timestamp[the_row] <- group$timestamp[[1]]
-    if(length(record_rows)>0){
-      summary_users$last_record_timestamp[the_row] <- group$timestamp[record_rows][[1]]
+  if (summarize_data) {
+    only_in_log <- names_in_log %>% vec1_not_in_vec2(summary_users$username)
+    if(length(only_in_log)>0){
+      summary_users <-summary_users %>% dplyr::bind_rows(
+        data.frame(username = only_in_log)
+      )
     }
-    summary_users$unique_records_n[the_row] <- unique_length(group$record)
+    summary_users$first_timestamp <- NA
+    summary_users$last_timestamp <- NA
+    # summary_users$last_record_timestamp <- NA
+    summary_users$unique_records_n <- NA
+    for(user_group_name in names_in_log){
+      the_row <- match(user_group_name,summary_users$username)
+      group <- user_groups[[user_group_name]]
+      # record_rows <- which(!is.na(group$record))
+      summary_users$first_timestamp[the_row] <- group$timestamp %>% dplyr::last()
+      summary_users$last_timestamp[the_row] <- group$timestamp[[1]]
+      # if(length(record_rows)>0){
+      #   summary_users$last_record_timestamp[the_row] <- group$timestamp[record_rows][[1]]
+      # }
+      summary_users$unique_records_n[the_row] <- unique_length(group$record)
+    }
   }
   # summary_users$timestamp_diff_days<- (as.Date(summary_users$last_timestamp) - as.Date(summary_users$first_timestamp)+1) %>% as.integer()
   # summary_users$records_per_day <- as.integer(summary_users$unique_records_n/summary_users$timestamp_diff_days)
@@ -1079,7 +1116,10 @@ summarize_comments_from_log <- function(data_list, records) {
   redcap_log
 }
 #' @noRd
-summarize_records_from_log <- function(data_list, records) {
+annotate_log <- function(data_list,
+                         records,
+                         summarize_data = TRUE,
+                         drop_blanks = TRUE) {
   redcap_log <- data_list$redcap$log
   redcap_log <- redcap_log[which(!is.na(redcap_log$username)), ]
   redcap_log <- redcap_log[which(!is.na(redcap_log$record)), ]

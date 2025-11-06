@@ -74,16 +74,12 @@ deidentify_data_list <- function(data_list,
     )
     if (date_handling != "none") {
       if(date_handling == "shifted-by-record") {
-
       }
       if(date_handling == "shifted-by-project") {
-
       }
       if(date_handling == "zero-by-record") {
-
       }
       if(date_handling == "zero-by-project") {
-
       }
       min_dates <- get_min_dates(data_list)
       min_dates$difference <- (min_dates$date - as.Date(date_handling))

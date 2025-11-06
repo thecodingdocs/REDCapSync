@@ -25,10 +25,10 @@ add_project_summary(
   drop_missings = FALSE,
   drop_others = NULL,
   include_metadata = TRUE,
-  annotate_from_log = TRUE,
   include_records = TRUE,
   include_users = TRUE,
   include_log = FALSE,
+  annotate_from_log = TRUE,
   with_links = TRUE,
   separate = FALSE,
   use_csv,
@@ -107,9 +107,6 @@ Default is \code{FALSE}.}
 \item{include_metadata}{Logical. If \code{TRUE}, metadata will be included in the
 summary. Default is \code{TRUE}.}
 
-\item{annotate_from_log}{Logical. If \code{TRUE}, the metadata, users, and records
-will be annotated using the log. Default is \code{TRUE}.}
-
 \item{include_records}{Logical. If \code{TRUE}, a record summary will be
 included in the generated summary. Default is \code{TRUE}.}
 
@@ -118,6 +115,9 @@ included in the summary. Default is \code{TRUE}.}
 
 \item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in
 the summary. Default is \code{TRUE}.}
+
+\item{annotate_from_log}{Logical. If \code{TRUE}, the metadata, users, and records
+will be annotated using the log. Default is \code{TRUE}.}
 
 \item{with_links}{Optional logical (TRUE/FALSE) for including links in Excel
 sheets. Default is \code{FALSE}.}

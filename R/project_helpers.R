@@ -73,10 +73,19 @@ deidentify_data_list <- function(data_list,
       lapply(data, colnames)
     )
     if (date_handling != "none") {
+      if(date_handling == "shifted-by-record") {
+
+      }
+      if(date_handling == "shifted-by-project") {
+
+      }
+      if(date_handling == "zero-by-record") {
+
+      }
+      if(date_handling == "zero-by-project") {
+
+      }
       min_dates <- get_min_dates(data_list)
-      # if(date_handling == "lowest-record-zero"){
-      #
-      # }
       min_dates$difference <- (min_dates$date - as.Date(date_handling))
       for (form_name in names(date_list)) {
         field_record <- data[[form_name]][[id_cols[1]]]

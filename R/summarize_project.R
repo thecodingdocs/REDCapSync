@@ -326,10 +326,10 @@ add_project_summary <- function(
   drop_missings = FALSE,
   drop_others = NULL,
   include_metadata = TRUE,
-  annotate_from_log = TRUE,
   include_records = TRUE,
   include_users = TRUE,
   include_log = FALSE,
+  annotate_from_log = TRUE,
   with_links = TRUE,
   separate = FALSE,
   use_csv,
@@ -374,10 +374,10 @@ add_project_summary <- function(
     drop_missings = drop_missings,
     drop_others = drop_others,
     include_metadata = include_metadata,
-    annotate_from_log = annotate_from_log,
     include_records = include_records,
     include_users = include_users,
     include_log = include_log,
+    annotate_from_log = annotate_from_log,
     with_links = with_links,
     separate = separate,
     use_csv = use_csv,
@@ -700,10 +700,10 @@ generate_project_summary <- function(
     drop_missings <- summary_list$drop_missings
     drop_others <- summary_list$drop_others
     include_metadata <- summary_list$include_metadata
-    annotate_from_log <- summary_list$annotate_from_log
     include_records <- summary_list$include_records
     include_users <- summary_list$include_users
     include_log <- summary_list$include_log
+    annotate_from_log <- summary_list$annotate_from_log
   }
   data_list <- NULL
   data_list$metadata <- project$metadata
@@ -1142,10 +1142,10 @@ get_summary_records <- function(project, summary_name) {
     exclude_free_text = FALSE,
     clean = FALSE,
     include_metadata = FALSE,
-    annotate_from_log = FALSE,
     include_records = FALSE,
     include_users = FALSE,
     include_log = FALSE,
+    annotate_from_log = FALSE,
     internal_use = TRUE
   )$data
   records <- to_save_list %>%
@@ -1217,8 +1217,8 @@ check_summaries <- function(project, summary_names) {
 }
 #' @noRd
 add_default_summaries <- function(project,
-                                  exclude_identifiers = FALSE,
-                                  exclude_free_text = FALSE,
+                                  exclude_identifiers = TRUE,
+                                  exclude_free_text = TRUE,
                                   date_handling = "none") {
   assert_logical(exclude_identifiers)
   assert_logical(exclude_free_text)
@@ -1236,10 +1236,10 @@ add_default_summaries <- function(project,
     drop_blanks = FALSE,
     drop_others = NULL,
     include_metadata = TRUE,
-    annotate_from_log = FALSE,
     include_records = FALSE,
     include_users = TRUE,
     include_log = FALSE,
+    annotate_from_log = FALSE,
     with_links = nrow(project$summary$all_records) <= 3000,
     separate = TRUE,
     use_csv = project$internals$use_csv,
@@ -1262,10 +1262,10 @@ add_default_summaries <- function(project,
     drop_blanks = FALSE,
     drop_others = NULL,
     include_metadata = TRUE,
-    annotate_from_log = TRUE,
     include_records = TRUE,
     include_users = TRUE,
     include_log = FALSE,
+    annotate_from_log = TRUE,
     with_links = nrow(project$summary$all_records) <= 3000,
     separate = FALSE,
     use_csv = project$internals$use_csv,

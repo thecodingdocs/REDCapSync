@@ -503,22 +503,6 @@ save_summary <- function(project, summary_name) {
     construct_header_list(fields = data_list$metadata$fields) %>%
     process_df_list(silent = TRUE)
   key_cols_list <- data_list$metadata$form_key_cols
-  link_col_list <- list()
-  if (summary_list$with_links) {
-    if (project$internals$project_type == "redcap") {
-      add_links <- which(names(data_list) %in% form_names)
-      if (length(add_links) > 0) {
-        data_list[add_links] <- data_list[add_links] %>%
-          lapply(function(form) {
-            add_redcap_links_to_form(form, project)
-          })
-        link_col_list <- list(
-          "redcap_link"
-        )
-        names(link_col_list) <- id_col
-      }
-    }
-  }
   if (summary_name == "REDCapSync_raw") {
     header_df_list <- NULL
     key_cols_list <- NULL
@@ -538,6 +522,22 @@ save_summary <- function(project, summary_name) {
     include_records = summary_list$include_records,
     include_log = summary_list$include_log
   )
+  link_col_list <- list()
+  if (summary_list$with_links) {
+    if (project$internals$project_type == "redcap") {
+      add_links <- which(names(data_list) %in% form_names)
+      if (length(add_links) > 0) {
+        data_list[add_links] <- data_list[add_links] %>%
+          lapply(function(form) {
+            add_redcap_links_to_form(form, project)
+          })
+        link_col_list <- list(
+          "redcap_link"
+        )
+        names(link_col_list) <- id_col
+      }
+    }
+  }
   # check for conflicts
   # data_list
   # with_links = TRUE

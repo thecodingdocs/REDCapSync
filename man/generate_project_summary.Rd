@@ -29,7 +29,8 @@ generate_project_summary(
   annotate_metadata = TRUE,
   include_record_summary = TRUE,
   include_users = TRUE,
-  include_log = FALSE
+  include_log = FALSE,
+  internal_use = FALSE
 )
 }
 \arguments{
@@ -74,8 +75,7 @@ the summary. Default is \code{NULL}, which includes all fields.}
 Default is \code{NULL}, which includes all forms.}
 
 \item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the
-function will avoid including duplicate columns in the output. Defaults to
-\code{FALSE}.}
+function will avoid including duplicate columns in the output. Defaults to}
 
 \item{exclude_identifiers}{Logical. Whether to exlude identifiers in the data
 in the summary. Default is \code{TRUE}.}
@@ -119,6 +119,9 @@ included in the summary. Default is \code{TRUE}.}
 
 \item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in
 the summary. Default is \code{TRUE}.}
+
+\item{internal_use}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, then will
+return data_list meant for internal use. Defaults to \code{FALSE}.}
 }
 \value{
 A list containing the generated summary based on the specified options. The

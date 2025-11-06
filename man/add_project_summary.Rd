@@ -78,8 +78,7 @@ the summary. Default is \code{NULL}, which includes all fields.}
 Default is \code{NULL}, which includes all forms.}
 
 \item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the
-function will avoid including duplicate columns in the output. Defaults to
-\code{FALSE}.}
+function will avoid including duplicate columns in the output. Defaults to}
 
 \item{exclude_identifiers}{Logical. Whether to exlude identifiers in the data
 in the summary. Default is \code{TRUE}.}

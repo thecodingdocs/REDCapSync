@@ -222,6 +222,9 @@ sync_project <- function(
       project <- add_default_summaries(project)
     }
   }
+  if (project$internals$add_default_fields) {
+    project <- add_default_fields(project)
+  }
   if (save_to_dir && !is.null(project$dir_path)) {
     if (is_something(project$data)) {
       if (project$internals$get_files) { # test now

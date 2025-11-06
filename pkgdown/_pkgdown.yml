@@ -56,6 +56,7 @@ reference:
   - subtitle: project setup Object Modifications
     desc: One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
     contents:
+      - add_project_field
       - add_project_summary
       - clear_project_summaries
   - subtitle: project Object Outputs

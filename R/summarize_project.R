@@ -42,7 +42,7 @@ add_labels_to_checkbox <- function(fields) {
 #' @noRd
 annotate_fields <- function(data_list,
                             summarize_data = TRUE,
-                            drop_blanks = TRUE) {
+                            drop_blanks = FALSE) {
   fields <- data_list$metadata$fields # [,colnames(data_list$metadata$fields)]
   if (drop_blanks) {
     fields <- fields[which(fields$field_name %in% get_all_field_names(data_list)), ]
@@ -72,7 +72,7 @@ annotate_fields <- function(data_list,
 #' @noRd
 annotate_forms <- function(data_list,
                            summarize_data = TRUE,
-                           drop_blanks = TRUE) {
+                           drop_blanks = FALSE) {
   forms <- data_list$metadata$forms
   if (drop_blanks) {
     forms <- forms[which(forms$form_name %in% names(data_list$data)), ]
@@ -111,7 +111,7 @@ annotate_forms <- function(data_list,
 #' @noRd
 annotate_choices <- function(data_list,
                              summarize_data = TRUE,
-                             drop_blanks = TRUE) {
+                             drop_blanks = FALSE) {
   # forms <- data_list$metadata$forms
   # fields <- data_list$metadata$fields
   choices <- data_list$metadata$choices
@@ -137,8 +137,11 @@ annotate_choices <- function(data_list,
         if (nrow(form) == 0) {
           return(0)
         }
-        sum(form[, choices$field_name[i]] == choices$name[i], na.rm = TRUE)
-        # print(i)
+        the_col <- choices$field_name[i]
+        if(!the_col %in% colnames(form)){
+          return(0)
+        }
+        sum(form[, the_col] == choices$name[i], na.rm = TRUE)
       }) %>%
       unlist()
     choices$n_total <- seq_len(nrow(choices)) %>%
@@ -150,7 +153,11 @@ annotate_choices <- function(data_list,
         if (nrow(form) == 0) {
           return(0)
         }
-        sum(!is.na(form[, choices$field_name[i]]), na.rm = TRUE)
+        the_col <- choices$field_name[i]
+        if(!the_col %in% colnames(form)){
+          return(0)
+        }
+        sum(!is.na(form[, the_col]), na.rm = TRUE)
       }) %>%
       unlist()
     choices$perc <- (choices$n / choices$n_total) %>% round(4)
@@ -158,7 +165,6 @@ annotate_choices <- function(data_list,
       magrittr::multiply_by(100) %>%
       round(1) %>%
       paste0("%")
-    # data_list$summary$choices <- choices
     # cli_alert_wrap("Annotated `data_list$summary$choices`",bullet_type = "v")
   }
   choices
@@ -331,7 +337,7 @@ add_project_summary <- function(
   upload_compatible = TRUE,
   labelled = TRUE,
   clean = TRUE,
-  drop_blanks = TRUE,
+  drop_blanks = FALSE,
   drop_missings = FALSE,
   drop_others = NULL,
   include_metadata = TRUE,
@@ -765,8 +771,6 @@ generate_project_summary <- function(
   }
   if (include_metadata) {
     if (is_something(data_list$metadata)) {
-      # need to decouple from project
-      #would want to control for merge
       data_list$metadata$forms <- annotate_forms(
         data_list = data_list,
         summarize_data = annotate_from_log,
@@ -1299,7 +1303,7 @@ add_default_summaries <- function(project,
     upload_compatible = TRUE,
     labelled = TRUE,
     clean = TRUE,
-    drop_blanks = FALSE,
+    drop_blanks = TRUE,
     drop_others = NULL,
     include_metadata = TRUE,
     include_records = TRUE,

@@ -316,7 +316,6 @@ add_project_summary <- function(
   filter_strict = TRUE,
   field_names = NULL,
   form_names = NULL,
-  no_duplicate_cols = FALSE,
   exclude_identifiers = TRUE,
   exclude_free_text = FALSE,
   date_handling = "none",
@@ -327,8 +326,8 @@ add_project_summary <- function(
   drop_missings = FALSE,
   drop_others = NULL,
   include_metadata = TRUE,
-  annotate_metadata = TRUE,
-  include_record_summary = TRUE,
+  annotate_from_log = TRUE,
+  include_records = TRUE,
   include_users = TRUE,
   include_log = FALSE,
   with_links = TRUE,
@@ -365,7 +364,6 @@ add_project_summary <- function(
     filter_strict = filter_strict,
     field_names = field_names,
     form_names = form_names,
-    no_duplicate_cols = no_duplicate_cols,
     exclude_identifiers = exclude_identifiers,
     exclude_free_text = exclude_free_text,
     date_handling = date_handling,
@@ -376,8 +374,8 @@ add_project_summary <- function(
     drop_missings = drop_missings,
     drop_others = drop_others,
     include_metadata = include_metadata,
-    annotate_metadata = annotate_metadata,
-    include_record_summary = include_record_summary,
+    annotate_from_log = annotate_from_log,
+    include_records = include_records,
     include_users = include_users,
     include_log = include_log,
     with_links = with_links,
@@ -424,7 +422,7 @@ add_project_summary <- function(
 data_list_to_save <- function(data_list,
                               include_metadata,
                               include_users,
-                              include_record_summary,
+                              include_records,
                               include_log) {
   to_save_list <- NULL
   for(form_name in names(data_list$data)){
@@ -455,7 +453,7 @@ data_list_to_save <- function(data_list,
       to_save_list[[users_name_alt]] <- data_list$users
     }
   }
-  if (include_record_summary) {
+  if (include_records) {
     records_name <- "records"
     records_name_alt <- records_name
     if (any(records_name %in% names(data_list$data))) {
@@ -628,16 +626,14 @@ save_summary <- function(project, summary_name) {
 #' @param drop_others Character vector of other values that should be dropped.
 #' @param include_metadata Logical. If `TRUE`, metadata will be included in the
 #' summary. Default is `TRUE`.
-#' @param annotate_metadata Logical. If `TRUE`, metadata will be annotated in
-#' the summary. Default is `TRUE`.
-#' @param include_record_summary Logical. If `TRUE`, a record summary will be
-#' included in the generated summary. Default is `TRUE`.
 #' @param include_users Logical. If `TRUE`, user-related information will be
 #' included in the summary. Default is `TRUE`.
+#' @param include_records Logical. If `TRUE`, a record summary will be
+#' included in the generated summary. Default is `TRUE`.
 #' @param include_log Logical. If `TRUE`, the log of changes will be included in
 #' the summary. Default is `TRUE`.
-#' @param no_duplicate_cols A logical flag (`TRUE` or `FALSE`). If `TRUE`, the
-#' function will avoid including duplicate columns in the output. Defaults to
+#' @param annotate_from_log Logical. If `TRUE`, the metadata, users, and records
+#' will be annotated using the log. Default is `TRUE`.
 #' @param internal_use A logical flag (`TRUE` or `FALSE`). If `TRUE`, then will
 #' return data_list meant for internal use. Defaults to `FALSE`.
 #' @return
@@ -661,7 +657,6 @@ generate_project_summary <- function(
   filter_strict = TRUE,
   field_names = NULL,
   form_names = NULL,
-  no_duplicate_cols = FALSE,
   exclude_identifiers = TRUE,
   exclude_free_text = FALSE,
   date_handling = "none",
@@ -672,10 +667,10 @@ generate_project_summary <- function(
   drop_missings = FALSE,
   drop_others = NULL,
   include_metadata = TRUE,
-  annotate_metadata = TRUE,
-  include_record_summary = TRUE,
   include_users = TRUE,
+  include_records = TRUE,
   include_log = FALSE,
+  annotate_from_log = TRUE,
   internal_use = FALSE
 ) {
   assert_env_name(
@@ -696,7 +691,6 @@ generate_project_summary <- function(
     filter_strict <- summary_list$filter_strict
     field_names <- summary_list$field_names
     form_names <- summary_list$form_names
-    no_duplicate_cols <- summary_list$no_duplicate_cols
     exclude_identifiers <- summary_list$exclude_identifiers
     exclude_free_text <- summary_list$exclude_free_text
     date_handling <- summary_list$date_handling
@@ -707,8 +701,8 @@ generate_project_summary <- function(
     drop_missings <- summary_list$drop_missings
     drop_others <- summary_list$drop_others
     include_metadata <- summary_list$include_metadata
-    annotate_metadata <- summary_list$annotate_metadata
-    include_record_summary <- summary_list$include_record_summary
+    annotate_from_log <- summary_list$annotate_from_log
+    include_records <- summary_list$include_records
     include_users <- summary_list$include_users
     include_log <- summary_list$include_log
   }
@@ -731,11 +725,17 @@ generate_project_summary <- function(
     filter_list = filter_list,
     filter_strict = filter_strict
   )
-  if (is_something(project$transformation$field_functions)){
-    data_list <- add_fields_to_data_list(
-      data_list = data_list,
-      transformation = project$transformation
-    )
+  if (is_something(project$transformation$field_functions)) {
+    add_fields <- TRUE
+    if(provided_summary_name){
+      if(summary_name == "REDCapSync_raw"){
+        add_fields <- FALSE
+      }
+    }
+    if (add_fields) {
+      data_list <- add_fields_to_data_list(data_list = data_list,
+                                           transformation = project$transformation)
+    }
   }
   if (transformation_type == "default") {
     data_list <- merge_non_repeating(data_list, merge_form_name)
@@ -748,6 +748,7 @@ generate_project_summary <- function(
     )
   }
   if (clean) {
+    #include warning for if missing codes will prevent uploads
     data_list$data <- clean_data_list(
       data_list = data_list,
       drop_blanks = drop_blanks,
@@ -755,7 +756,7 @@ generate_project_summary <- function(
     )
   }
   if (include_metadata) {
-    if (annotate_metadata && is_something(data_list$metadata)) {
+    if (annotate_from_log && is_something(data_list$metadata)) {
       # need to decouple from project
       #would want to control for merge
       data_list$metadata$forms <- annotate_forms(data_list)
@@ -769,7 +770,7 @@ generate_project_summary <- function(
   if (include_log) {
     data_list$log <- get_log(data_list, records = records)
   }
-  if (include_record_summary) {
+  if (include_records) {
     if (!is.null(records)) {
       data_list$records <- summarize_records_from_log(data_list, records = records)
     }
@@ -787,7 +788,7 @@ generate_project_summary <- function(
     data_list = data_list,
     include_metadata = include_metadata,
     include_users = include_users,
-    include_record_summary = include_record_summary,
+    include_records = include_records,
     include_log = include_log
   )
   invisible(to_save_list)
@@ -1124,11 +1125,10 @@ get_summary_records <- function(project, summary_name) {
     exclude_free_text = FALSE,
     clean = FALSE,
     include_metadata = FALSE,
-    annotate_metadata = FALSE,
-    include_record_summary = FALSE,
+    annotate_from_log = FALSE,
+    include_records = FALSE,
     include_users = FALSE,
     include_log = FALSE,
-    no_duplicate_cols = TRUE,
     internal_use = TRUE
   )$data
   records <- to_save_list %>%
@@ -1206,7 +1206,7 @@ add_default_summaries <- function(project,
   assert_logical(exclude_identifiers)
   assert_logical(exclude_free_text)
   summary_name <- "REDCapSync_raw"
-  project <- add_project_summary(
+  project <- ?add_project_summary(
     project = project,
     summary_name = summary_name,
     transformation_type = "none",
@@ -1219,8 +1219,8 @@ add_default_summaries <- function(project,
     drop_blanks = FALSE,
     drop_others = NULL,
     include_metadata = TRUE,
-    annotate_metadata = FALSE,
-    include_record_summary = FALSE,
+    annotate_from_log = FALSE,
+    include_records = FALSE,
     include_users = TRUE,
     include_log = FALSE,
     with_links = nrow(project$summary$all_records) <= 3000,
@@ -1245,8 +1245,8 @@ add_default_summaries <- function(project,
     drop_blanks = FALSE,
     drop_others = NULL,
     include_metadata = TRUE,
-    annotate_metadata = TRUE,
-    include_record_summary = TRUE,
+    annotate_from_log = TRUE,
+    include_records = TRUE,
     include_users = TRUE,
     include_log = FALSE,
     with_links = nrow(project$summary$all_records) <= 3000,

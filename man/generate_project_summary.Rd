@@ -15,7 +15,6 @@ generate_project_summary(
   filter_strict = TRUE,
   field_names = NULL,
   form_names = NULL,
-  no_duplicate_cols = FALSE,
   exclude_identifiers = TRUE,
   exclude_free_text = FALSE,
   date_handling = "none",
@@ -26,10 +25,10 @@ generate_project_summary(
   drop_missings = FALSE,
   drop_others = NULL,
   include_metadata = TRUE,
-  annotate_metadata = TRUE,
-  include_record_summary = TRUE,
   include_users = TRUE,
+  include_records = TRUE,
   include_log = FALSE,
+  annotate_from_log = TRUE,
   internal_use = FALSE
 )
 }
@@ -74,9 +73,6 @@ the summary. Default is \code{NULL}, which includes all fields.}
 \item{form_names}{Character vector. Names of forms to include in the summary.
 Default is \code{NULL}, which includes all forms.}
 
-\item{no_duplicate_cols}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, the
-function will avoid including duplicate columns in the output. Defaults to}
-
 \item{exclude_identifiers}{Logical. Whether to exlude identifiers in the data
 in the summary. Default is \code{TRUE}.}
 
@@ -108,17 +104,17 @@ Default is \code{FALSE}.}
 \item{include_metadata}{Logical. If \code{TRUE}, metadata will be included in the
 summary. Default is \code{TRUE}.}
 
-\item{annotate_metadata}{Logical. If \code{TRUE}, metadata will be annotated in
-the summary. Default is \code{TRUE}.}
-
-\item{include_record_summary}{Logical. If \code{TRUE}, a record summary will be
-included in the generated summary. Default is \code{TRUE}.}
-
 \item{include_users}{Logical. If \code{TRUE}, user-related information will be
 included in the summary. Default is \code{TRUE}.}
 
+\item{include_records}{Logical. If \code{TRUE}, a record summary will be
+included in the generated summary. Default is \code{TRUE}.}
+
 \item{include_log}{Logical. If \code{TRUE}, the log of changes will be included in
 the summary. Default is \code{TRUE}.}
+
+\item{annotate_from_log}{Logical. If \code{TRUE}, the metadata, users, and records
+will be annotated using the log. Default is \code{TRUE}.}
 
 \item{internal_use}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, then will
 return data_list meant for internal use. Defaults to \code{FALSE}.}

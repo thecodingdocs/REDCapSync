@@ -199,7 +199,6 @@ filter_data_list <- function(data_list,
         row_index <- which(row_logic)
       }
       field_names_adj <- c(field_names, filter_field_names)
-      # if (no_duplicate_cols) field_names_adj <- field_names_adj %>% vec1_in_vec2(form_names_to_field_names(form_name, data_list, original_only = FALSE))
       col_names <- colnames(form)[which(colnames(form) %in% field_names_adj)]
       if (length(row_index) > 0 && length(col_names) > 0) {
         col_names <- colnames(form)[which(colnames(form) %in% unique(c(data_list$metadata$form_key_cols[[form_name]], field_names_adj)))]

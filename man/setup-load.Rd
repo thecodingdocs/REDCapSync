@@ -29,7 +29,7 @@ setup_project(
   get_file_repository = FALSE,
   original_file_names = FALSE,
   add_default_fields = FALSE,
-  add_default_transformation = TRUE,
+  add_default_transformation = FALSE,
   add_default_summaries = TRUE,
   use_csv = FALSE,
   silent = FALSE

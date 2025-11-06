@@ -92,10 +92,10 @@ options.</p>
 <span>  drop_missings <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  drop_others <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  include_metadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  annotate_from_log <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_records <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_users <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  annotate_from_log <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  with_links <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  separate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">use_csv</span>,</span>
@@ -218,11 +218,6 @@ Default is <code>FALSE</code>.</p></dd>
 summary. Default is <code>TRUE</code>.</p></dd>
 
 
-<dt id="arg-annotate-from-log">annotate_from_log<a class="anchor" aria-label="anchor" href="#arg-annotate-from-log"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, the metadata, users, and records
-will be annotated using the log. Default is <code>TRUE</code>.</p></dd>
-
-
 <dt id="arg-include-records">include_records<a class="anchor" aria-label="anchor" href="#arg-include-records"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, a record summary will be
 included in the generated summary. Default is <code>TRUE</code>.</p></dd>
@@ -236,6 +231,11 @@ included in the summary. Default is <code>TRUE</code>.</p></dd>
 <dt id="arg-include-log">include_log<a class="anchor" aria-label="anchor" href="#arg-include-log"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, the log of changes will be included in
 the summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-annotate-from-log">annotate_from_log<a class="anchor" aria-label="anchor" href="#arg-annotate-from-log"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, the metadata, users, and records
+will be annotated using the log. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-with-links">with_links<a class="anchor" aria-label="anchor" href="#arg-with-links"></a></dt>

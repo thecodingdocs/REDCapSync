@@ -176,11 +176,11 @@ annotate_records <- function(data_list,
   records <- extract_project_records(data_list)[[1]]
   the_rows <- which(data_list$summary$all_records[[id_col]]%in% records)
   all_records <- data_list$summary$all_records[the_rows,]
+  redcap_log <- get_log(data_list = data_list, records = records)
   if (!is_something(all_records) || !is_something(redcap_log)) {
     return(data_list)
   }
   if(summarize_data){
-    redcap_log <- get_log(data_list = data_list, records = records)
     redcap_log <- redcap_log[which(redcap_log$action_type != "Users"), ]
     redcap_log <- redcap_log[which(redcap_log$record %in% all_records[[id_col]]), ]
     cool_list <- split(redcap_log$timestamp, redcap_log$record)

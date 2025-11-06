@@ -496,18 +496,10 @@ save_summary <- function(project, summary_name) {
   id_col <- project$metadata$id_col
   summary_list <- project$summary[[summary_name]]
   data_list <- project %>%
-    generate_project_summary(summary_name = summary_name, internal_use = FALSE)
-  # check for conflicts
-  # to_save_list
-  # with_links = TRUE
-  # separate = FALSE
-  # use_csv
-  # dir_other = file.path(project$dir_path, "output")
-  # file_name = paste0(project$short_name, "_", summary_name)
-  # hard_reset = FALSE
+    generate_project_summary(summary_name = summary_name, internal_use = TRUE)
   # add headers-------
-  form_names <- names(data_list)
-  header_df_list <- to_save_list %>%
+  form_names <- names(data_list$data)
+  header_df_list <- data_list %>%
     construct_header_list(fields = data_list$metadata$fields) %>%
     process_df_list(silent = TRUE)
   key_cols_list <- data_list$metadata$form_key_cols
@@ -516,7 +508,7 @@ save_summary <- function(project, summary_name) {
     if (project$internals$project_type == "redcap") {
       add_links <- which(names(to_save_list) %in% form_names)
       if (length(add_links) > 0) {
-        to_save_list[add_links] <- to_save_list[add_links] %>%
+        data_list[add_links] <- data_list[add_links] %>%
           lapply(function(form) {
             add_redcap_links_to_form(form, project)
           })
@@ -531,7 +523,7 @@ save_summary <- function(project, summary_name) {
     header_df_list <- NULL
     key_cols_list <- NULL
   }
-  records <- to_save_list[form_names] %>%
+  records <- data_list[form_names] %>%
     lapply(function(form) {
       form[[id_col]]
     }) %>%
@@ -539,17 +531,33 @@ save_summary <- function(project, summary_name) {
     sort() %>%
     unique()
   n_records <- length(records)
+  data_list <- data_list_to_save(
+    data_list = data_list,
+    include_metadata = summary_list$include_metadata,
+    include_users = summary_list$include_users,
+    include_records = summary_list$include_records,
+    include_log = summary_list$include_log
+  )
+  # check for conflicts
+  # data_list
+  # with_links = TRUE
+  # separate = FALSE
+  # use_csv
+  # dir_other = file.path(project$dir_path, "output")
+  # file_name = paste0(project$short_name, "_", summary_name)
+  # hard_reset = FALSE
+
   # save -----
   last_save_time <- now_time()
   final_form_tab_names <-
-    rename_list_names_excel(list_names = names(to_save_list))
-  names(final_form_tab_names) <- names(to_save_list)
+    rename_list_names_excel(list_names = names(data_list))
+  names(final_form_tab_names) <- names(data_list)
   last_summary <- now_time()
   summary_details <- project$summary[[summary_name]]
   summary_details$n_records <- n_records
   summary_details$last_save_time <- last_save_time
   summary_details$final_form_tab_names <- final_form_tab_names
-  to_save_list$summary_details <- data.frame(
+  data_list$summary_details <- data.frame(
     paramater = names(summary_details),
     value = summary_details %>% lapply(function(row) {
       row %>% paste0(collapse = " | ")
@@ -558,14 +566,14 @@ save_summary <- function(project, summary_name) {
       unname()
   )
   if (summary_list$use_csv) {
-    to_save_list %>% list_to_csv(
+    data_list %>% list_to_csv(
       dir = summary_list$dir_other,
       file_name = summary_list$file_name,
       overwrite = TRUE
     ) # account for links with CSV like new column
   } else {
     list_to_excel(
-      list = to_save_list,
+      list = data_list,
       dir = summary_list$dir_other,
       separate = summary_list$separate,
       link_col_list = link_col_list,
@@ -677,7 +685,7 @@ generate_project_summary <- function(
   upload_compatible = TRUE,
   labelled = TRUE,
   clean = TRUE,
-  drop_blanks = TRUE,
+  drop_blanks = FALSE,
   drop_missings = FALSE,
   drop_others = NULL,
   include_metadata = TRUE,
@@ -1123,7 +1131,7 @@ summarize_comments_from_log <- function(data_list, records) {
 annotate_log <- function(data_list,
                          records,
                          summarize_data = TRUE,
-                         drop_blanks = TRUE) {
+                         drop_blanks = FALSE) {
   redcap_log <- data_list$redcap$log
   redcap_log <- redcap_log[which(!is.na(redcap_log$username)), ]
   redcap_log <- redcap_log[which(!is.na(redcap_log$record)), ]
@@ -1303,7 +1311,7 @@ add_default_summaries <- function(project,
     upload_compatible = TRUE,
     labelled = TRUE,
     clean = TRUE,
-    drop_blanks = TRUE,
+    drop_blanks = FALSE,
     drop_others = NULL,
     include_metadata = TRUE,
     include_records = TRUE,

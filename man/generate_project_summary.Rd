@@ -21,7 +21,7 @@ generate_project_summary(
   upload_compatible = TRUE,
   labelled = TRUE,
   clean = TRUE,
-  drop_blanks = TRUE,
+  drop_blanks = FALSE,
   drop_missings = FALSE,
   drop_others = NULL,
   include_metadata = TRUE,

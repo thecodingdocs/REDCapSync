@@ -66,7 +66,7 @@ add_project_field <- function(
     if (missing(form_name)) form_name <- original_fields_row$form_name
     if (missing(field_type)) {
       field_type <- original_fields_row$field_type
-      field_type_R <- field_types_to_R(field_type)
+      field_type_R <- field_types_to_R(fields)
     }
     if (is.na(field_label)) field_label <- original_fields_row$field_label
     if (is.na(select_choices_or_calculations)) {

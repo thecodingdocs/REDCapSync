@@ -758,15 +758,14 @@ generate_project_summary <- function(
                                            transformation = project$transformation)
     }
   }
+  data_list$data <- deidentify_data_list(
+    data_list = data_list,
+    exclude_identifiers = exclude_identifiers,
+    exclude_free_text = exclude_free_text,
+    date_handling = date_handling
+  )
   if (transformation_type == "default") {
     data_list <- merge_non_repeating(data_list, merge_form_name)
-  }
-  if (exclude_identifiers) {
-    data_list$data <- deidentify_data_list(
-      data_list = data_list,
-      exclude_free_text = exclude_free_text,
-      date_handling = date_handling
-    )
   }
   if (clean) {
     #include warning for if missing codes will prevent uploads
@@ -934,7 +933,7 @@ metadata_add_default_cols <- function(data_list) {
       fields[which(fields$form_name == x), ]
     }) %>%
     dplyr::bind_rows()
-  fields$field_type_R <- field_types_to_R(fields$field_type)
+  fields$field_type_R <- field_types_to_R(fields)
   # for (x in names(.redcap_field_conversion2)){
   #   y <- .redcap_field_conversion2[[x]]
   #   fields$field_type_R[which(fields$field_type %in% y)] <- x
@@ -946,30 +945,31 @@ metadata_add_default_cols <- function(data_list) {
   data_list$metadata$fields <- fields
   data_list
 }
-field_types_to_R <- function(field_types){
-  field_types_R <- rep("character",length(field_types))
-  for(x in names(.redcap_field_conversion)){
-    rows_match <- which(field_types == x)
-    field_types_R[rows_match] <- .redcap_field_conversion[[x]]
-  }
+field_types_to_R <- function(fields){
+  field_types_R <- rep("character",nrow(fields))
+  field_types <- fields$field_type
+  field_validations <- fields$text_validation_type_or_show_slider_number
+  field_types_R[which(field_types %in% .redcap_factor_fields)] <- "factor"
+  field_types_R[which(
+    field_types == "text" &
+      field_validations %in% .redcap_text_date_fields)] <- "date"
+  field_types_R[which(
+    field_types == "text" &
+      field_validations %in% .redcap_text_datetime_fields)] <- "datetime"
+  field_types_R[which(
+    field_types == "text" &
+      field_validations %in% .redcap_integer_fields)] <- "integer"
+  field_types_R[which(
+    field_types == "text" &
+      field_validations %in% .redcap_numeric_fields)] <- "numeric"
   field_types_R
 }
-.redcap_field_conversion <- list(
-  "radio" = "factor",
-  "yesno" = "factor",
-  "dropdown" = "factor",
-  "checkbox_choice" = "factor",
-  "integer" = "integer",
-  "date_mdy" = "date",
-  "date_ymd" = "date",
-  "datetime_dmy" = "datetime"
-)
-# .redcap_field_conversion2 <- list(
-#   "factor" = c("radio","yesno","dropdown","checkbox_choice"),
-#   "integer" = "integer",
-#   "date" = c("date_mdy","date_ymd"),
-#   "datetime" = "datetime_dmy"
-# )
+.redcap_factor_fields <- c("radio","yesno","dropdown","checkbox_choice")
+.redcap_text_date_fields <- c("date_mdy","date_ymd","date_dmy")
+.redcap_text_datetime_fields <- c("datetime_dmy","datetime_seconds_ymd")
+.redcap_integer_fields <- c("integer")
+.redcap_numeric_fields <- c("number")
+# there are more
 #' @title Summarize REDCap Database
 #' @noRd
 summarize_project <- function(

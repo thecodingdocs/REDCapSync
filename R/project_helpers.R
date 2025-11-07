@@ -1,30 +1,38 @@
 deidentify_data_list <- function(data_list,
-                                 identifiers = NULL,
-                                 date_handling = "none",
-                                 exclude_free_text = FALSE) {
+                                 exclude_identifiers = TRUE,
+                                 exclude_free_text = FALSE,
+                                 exclude_additional = NULL,
+                                 date_handling = "none") {
   # assert_data_list contains data and metadata with forms and fields
   data <- data_list$data
   metadata <- data_list$metadata
   fields <- metadata$fields
-  initial_identifiers <- fields$field_name[
-    which(fields$identifier == "y")
-  ]
-  if (length(initial_identifiers) == 0L) {
-    warning(
-      "You have no identifiers marked in ",
-      "`project$metadata$fields$identifier`. ",
-      "You can set it in REDCap Project Setup and update ",
-      "project OR define your idenitifiers in this functions ",
-      "`identifiers` argument.",
-      immediate. = TRUE
-    )
+  exclusions <- exclude_additional
+  if(exclude_identifiers){
+    additional_ids <- c("zipcode","email","phone")
+    initial_identifiers <- fields$field_name[
+      which(
+        fields$identifier == "y" |
+          fields$text_validation_type_or_show_slider_number %in% additional_ids
+        )
+    ]
+    if (length(initial_identifiers) == 0L) {
+      warning(
+        "You have no identifiers marked in ",
+        "`project$metadata$fields$identifier`. ",
+        "You can set it in REDCap Project Setup and update ",
+        "project OR define your idenitifiers in this functions ",
+        "`identifiers` argument.",
+        immediate. = TRUE
+      )
+    }
+    exclusions <- exclusions %>%
+      append(initial_identifiers) %>%
+      unique()
   }
-  identifiers <- initial_identifiers %>%
-    append(identifiers) %>%
-    unique()
-  bad_identifiers <- identifiers[
+  bad_identifiers <- exclusions[
     which(
-      !identifiers %in% fields$field_name
+      !exclusions %in% fields$field_name
     )
   ]
   if (length(bad_identifiers) > 0L) {
@@ -37,7 +45,7 @@ deidentify_data_list <- function(data_list,
     unlist() %>%
     unique()
   if (is_something(id_cols)) {
-    if (any(id_cols %in% identifiers)) {
+    if (any(id_cols %in% exclusions)) {
       stop(
         "ID cols not allowed... ",
         toString(id_cols),
@@ -56,8 +64,9 @@ deidentify_data_list <- function(data_list,
         ) &
           !fields$field_name %in% id_cols
     )
-    identifiers <- identifiers %>%
-      append(fields$field_name[free_text_rows]) %>%
+    free_text_fields <- fields$field_name[free_text_rows]
+    exclusions <- exclusions %>%
+      append(free_text_fields) %>%
       unique()
   }
   if (is_something(data)) {
@@ -73,13 +82,18 @@ deidentify_data_list <- function(data_list,
       lapply(data, colnames)
     )
     if (date_handling != "none") {
-      if(date_handling == "shifted-by-record") {
+      if (date_handling == "exclude_dates") {
+        exclusions <- exclusions %>%
+          append(date_vector) %>%
+          unique()
       }
-      if(date_handling == "shifted-by-project") {
+      if(date_handling == "record_random_shift") {
       }
-      if(date_handling == "zero-by-record") {
+      if(date_handling == "project_random_shift") {
       }
-      if(date_handling == "zero-by-project") {
+      if(date_handling == "record_zero") {
+      }
+      if(date_handling == "project_zero") {
       }
       min_dates <- get_min_dates(data_list)
       min_dates$difference <- (min_dates$date - as.Date(date_handling))
@@ -93,10 +107,10 @@ deidentify_data_list <- function(data_list,
         }
       }
       # if you have dates you already mutated no need to drop anymore
-      identifiers <- identifiers[which(!identifiers %in% date_vector)]
+      exclusions <- exclusions[which(!exclusions %in% date_vector)]
     }
     drop_list <- Map(function(x, col_names) {
-      identifiers[which(identifiers %in% col_names)]
+      exclusions[which(exclusions %in% col_names)]
     }, names(data), lapply(data, colnames))
     drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0L]
     for (form_name in names(drop_list)) {

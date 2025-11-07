@@ -765,7 +765,18 @@ generate_project_summary <- function(
     date_handling = date_handling
   )
   if (transformation_type == "default") {
-    data_list <- merge_non_repeating(data_list, merge_form_name)
+    data_list <- merge_non_repeating(
+      data_list = data_list,
+      merge_form_name = merge_form_name,
+      merge_to_rep = TRUE
+    )
+  }
+  if (transformation_type == "merge-non-repeating") {
+    data_list <- merge_non_repeating(
+      data_list = data_list,
+      merge_form_name = merge_form_name,
+      merge_to_rep = FALSE
+    )
   }
   if (clean) {
     #include warning for if missing codes will prevent uploads
@@ -835,7 +846,9 @@ generate_project_summary <- function(
   invisible(to_save_list)
 }
 #' @noRd
-merge_non_repeating <- function(data_list, merge_form_name) {
+merge_non_repeating <- function(data_list,
+                                merge_form_name,
+                                merge_to_rep = FALSE) {
   # data_list$metadata$id_col assert
   # data_list$metadata
   # data_list$metadata$forms
@@ -918,6 +931,18 @@ merge_non_repeating <- function(data_list, merge_form_name) {
     }
     data_list$data[[merge_form_name]] <- merge_form
     other_forms <- setdiff(names(data_list$data), merge_form_name)
+    if(merge_to_rep){
+      for(other_form in other_forms){
+        data_list$data[[other_form]] <- merge(
+          x = data_list$data[[other_form]],
+          y = merge_form,
+          by = data_list$metadata$id_col,
+          all.x = TRUE,
+          sort = FALSE,
+          suffixes = c("", "_merged")
+        )
+      }
+    }
     data_list$data <- data_list$data[c(merge_form_name, other_forms)]
   }
   data_list

@@ -62,7 +62,8 @@ deidentify_data_list <- function(data_list,
           fields$field_type == "text" &
             is.na(fields$text_validation_type_or_show_slider_number)
         ) &
-          !fields$field_name %in% id_cols
+        !fields$field_name %in% id_cols &
+        fields$in_original_redcap
     )
     free_text_fields <- fields$field_name[free_text_rows]
     exclusions <- exclusions %>%

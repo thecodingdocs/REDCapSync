@@ -174,29 +174,6 @@ excel_to_list <- function(path) {
   names(out) <- clean_sheets
   out
 }
-csv_to_list <- function(paths) {
-  paths <- sanitize_path(paths)
-  form_list <- list()
-  clean_names <- paths %>%
-    basename() %>%
-    tools::file_path_sans_ext() %>%
-    clean_env_names()
-  for (i in seq_along(paths)) {
-    form_list[[i]] <- utils::read.csv(paths[i],
-                                      stringsAsFactors = FALSE,
-                                      na.strings = c("", "NA"))
-  }
-  names(form_list) <- clean_names
-  form_list
-}
-csv_folder_to_list <- function(folder) {
-  folder <- sanitize_path(folder)
-  if (!dir.exists(folder))
-    stop("Folder does not exist: ", folder)
-  paths <- list_files_real(folder)
-  paths <- paths[which(endsWith(paths, ".csv"))]
-  csv_to_list(paths = paths)
-}
 is_named_df_list <- function(x, strict = FALSE) {
   is_named_list(x) && is_df_list(x, strict = strict)
 }

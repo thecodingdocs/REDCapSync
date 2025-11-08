@@ -205,6 +205,53 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
   }
   invisible(all_records)
 }
+annotate_records2 <- function(data_list,
+                              records,
+                              summarize_data = TRUE,
+                              drop_blanks = FALSE) {
+  redcap_log <- data_list$redcap$log
+  redcap_log <- redcap_log[which(!is.na(redcap_log$username)), ]
+  redcap_log <- redcap_log[which(!is.na(redcap_log$record)), ]
+  if (!missing(records)) {
+    if (!is.null(records)) {
+      redcap_log <- redcap_log[which(redcap_log$record %in% records), ]
+    }
+  }
+  # records -------------
+  # all_records <- unique(redcap_log$record)
+  summary_records <- data_list$summary$all_records
+  record_groups <- redcap_log %>% split(redcap_log$record)
+  summary_records <- summary_records[which(summary_records[[data_list$metadata$id_col]] %in% names(record_groups)), , drop = FALSE]
+  # users_log_rows <- users %>% lapply(function(user){which(redcap_log$username==user)})
+  # records_log_rows <- records %>% lapply(function(record){which(redcap_log$record==record)})
+  record_groups <- record_groups[match(summary_records[[data_list$metadata$id_col]], names(record_groups))]
+  summary_records$last_timestamp <- record_groups %>%
+    lapply(function(group) {
+      group$timestamp[[1]]
+    }) %>%
+    unlist()
+  summary_records$first_timestamp <- record_groups %>%
+    lapply(function(group) {
+      group$timestamp %>% dplyr::last()
+    }) %>%
+    unlist()
+  summary_records$last_user <- record_groups %>%
+    lapply(function(group) {
+      group$username[[1]]
+    }) %>%
+    unlist()
+  user_rows <- match(summary_records$last_user,
+                     data_list$redcap$users$username)
+  summary_records$last_user_name <- paste(data_list$redcap$users$firstname[user_rows],
+                                          data_list$redcap$users$lastname[user_rows])
+  summary_records$unique_users_n <- record_groups %>%
+    lapply(function(group) {
+      unique_length(group$username)
+    }) %>%
+    unlist() %>%
+    as.integer()
+  summary_records
+}
 #' @noRd
 clean_form <- function(form,
                        fields,
@@ -1148,54 +1195,6 @@ summarize_comments_from_log <- function(data_list, records) {
   redcap_log
 }
 #' @noRd
-annotate_log <- function(data_list,
-                         records,
-                         summarize_data = TRUE,
-                         drop_blanks = FALSE) {
-  redcap_log <- data_list$redcap$log
-  redcap_log <- redcap_log[which(!is.na(redcap_log$username)), ]
-  redcap_log <- redcap_log[which(!is.na(redcap_log$record)), ]
-  if (!missing(records)) {
-    if (!is.null(records)) {
-      redcap_log <- redcap_log[which(redcap_log$record %in% records), ]
-    }
-  }
-  # records -------------
-  # all_records <- unique(redcap_log$record)
-  summary_records <- data_list$summary$all_records
-  record_groups <- redcap_log %>% split(redcap_log$record)
-  summary_records <- summary_records[which(summary_records[[data_list$metadata$id_col]] %in% names(record_groups)), , drop = FALSE]
-  # users_log_rows <- users %>% lapply(function(user){which(redcap_log$username==user)})
-  # records_log_rows <- records %>% lapply(function(record){which(redcap_log$record==record)})
-  record_groups <- record_groups[match(summary_records[[data_list$metadata$id_col]], names(record_groups))]
-  summary_records$last_timestamp <- record_groups %>%
-    lapply(function(group) {
-      group$timestamp[[1]]
-    }) %>%
-    unlist()
-  summary_records$first_timestamp <- record_groups %>%
-    lapply(function(group) {
-      group$timestamp %>% dplyr::last()
-    }) %>%
-    unlist()
-  summary_records$last_user <- record_groups %>%
-    lapply(function(group) {
-      group$username[[1]]
-    }) %>%
-    unlist()
-  user_rows <- match(summary_records$last_user,
-                     data_list$redcap$users$username)
-  summary_records$last_user_name <- paste(data_list$redcap$users$firstname[user_rows],
-                                          data_list$redcap$users$lastname[user_rows])
-  summary_records$unique_users_n <- record_groups %>%
-    lapply(function(group) {
-      unique_length(group$username)
-    }) %>%
-    unlist() %>%
-    as.integer()
-  summary_records
-}
-#' @noRd
 get_summary_records <- function(project, summary_name) {
   id_col <- project$metadata$id_col
   if (missing(summary_name)) {
@@ -1634,48 +1633,4 @@ filter_fields_from_form <- function(form, project) {
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
   fields$has_choices[which(fields$field_type == "calc")] <- FALSE
   fields
-}
-#' @noRd
-form_list_to_text <- function(form_list,
-                              project,
-                              drop_nas = TRUE,
-                              clean_names = TRUE) {
-  output_list <- NULL
-  for (i in seq_along(form_list)) {
-    form <- form_list[[i]]
-    the_raw_name <- names(form_list)[[i]]
-    the_name <- the_raw_name
-    if (clean_names)
-      the_name <- project$metadata$forms$form_label[which(project$metadata$forms$form_name == the_raw_name)]
-    df_name <- paste0("----- ", the_name, " Table -----")
-    output_list <- output_list %>%
-      append(paste0("&nbsp;&nbsp;<strong>", df_name, "</strong><br>"))
-    key_col_names <- project$metadata$form_key_cols[[the_raw_name]]
-    for (j in seq_len(nrow(form))) {
-      for (col_name in colnames(form)) {
-        entry <- form[j, col_name]
-        if (!col_name %in% key_col_names) {
-          if (!is.na(entry) || !drop_nas) {
-            entry <- gsub("\\n", "<br>", entry)
-            col_name_clean <- col_name
-            if (clean_names)
-              col_name_clean <- project$metadata$fields$field_label[which(project$metadata$fields$field_name == col_name)]
-            output_list <- output_list %>%
-              append(
-                paste0(
-                  "&nbsp;&nbsp;<strong>",
-                  col_name_clean,
-                  ":</strong> <br>&nbsp;&nbsp;&nbsp;&nbsp;",
-                  entry,
-                  "<br>"
-                )
-              )
-          }
-        }
-      }
-      # output_list <- c(output_list, "<br>")
-    }
-    output_list <- c(output_list, "<br>")
-  }
-  output_list
 }

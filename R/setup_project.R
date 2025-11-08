@@ -499,40 +499,6 @@ save_project <- function(project, silent = FALSE) {
   )
   invisible(project)
 }
-#' @rdname save-deleteproject
-#' @export
-delete_project <- function(project) {
-  project <- assert_blank_project(project)
-  dir_path <- project$dir_path
-  dir_path <- assert_dir(dir_path, silent = FALSE)
-  deleted_stuff <- FALSE
-  for (type in .project_file_types) {
-    delete_this <- get_project_path2(project, type = type)
-    if (file.exists(delete_this)) {
-      unlink(delete_this)
-      deleted_stuff <- TRUE
-    }
-  }
-  if (deleted_stuff) {
-    cli_alert_wrap("Deleted saved project", bullet_type = "v")
-  } else {
-    warning("The project object you wanted to is not there. Did you delete already? ",
-            delete_this)
-  }
-  invisible()
-}
-#' @noRd
-get_dir <- function(project) {
-  dir_path <- project$dir_path
-  stop_mes <- "Did you use `set_dir()`?"
-  if (!file.exists(dir_path)) {
-    cli_alert_wrap("Searched for directory --> '",
-                   file = dir_path,
-                   bullet_type = "x")
-    stop("Does not exist. ", stop_mes)
-  }
-  assert_dir(dir_path, silent = TRUE)
-}
 #' @title nav_to_dir
 #' @inheritParams save_project
 #' @return opens browser link

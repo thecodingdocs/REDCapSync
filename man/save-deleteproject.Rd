@@ -2,12 +2,9 @@
 % Please edit documentation in R/setup_project.R
 \name{save_project}
 \alias{save_project}
-\alias{delete_project}
 \title{Save or Delete project file from the directory}
 \usage{
 save_project(project, silent = FALSE)
-
-delete_project(project)
 }
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data

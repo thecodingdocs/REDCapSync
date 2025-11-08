@@ -356,20 +356,6 @@ save_project_details <- function(project, silent = TRUE) {
   return(invisible())
 }
 #' @noRd
-delete_project_by_name <- function(short_name) {
-  projects <- get_projects()
-  row <- which(projects$short_name == short_name)
-  other_projects <- which(projects$short_name != short_name)
-  if (!is_something(row)) {
-    message("Nothing to delete named: ", short_name)
-    return(invisible())
-  }
-  projects <- projects[other_projects, ]
-  message("Deleted: ", short_name)
-  save_projects_to_cache(projects)
-  projects
-}
-#' @noRd
 .field_colnames <- c(
   "field_name",
   "form_name",

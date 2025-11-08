@@ -103,6 +103,77 @@ test_that("view_project_token works when token is set", {
                    paste0("Never share your token: ", token))
   })
 })
+test_that("test_project_token succeeds when exportVersion returns a version (no API calls)", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
+  project <- mock_project()
+  # Stub project_rcon to avoid creating a real connection and stub exportVersion to simulate success
+  mockery::stub(test_project_token, "project_rcon", function(project) list())
+  mockery::stub(test_project_token, "redcapAPI::exportVersion", "12.1.1")
+  out <- test_project_token(project, launch_browser = FALSE)
+  expect_true(out$internals$last_test_connection_outcome)
+  expect_true(!is.null(out$internals$last_test_connection_attempt))
+})
+test_that("test_project_token marks failure when exportVersion returns NULL (no API calls)", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
+  project <- mock_project()
+  # Stub project_rcon and simulate exportVersion failure
+  mockery::stub(test_project_token, "project_rcon", function(project) list())
+  mockery::stub(test_project_token, "redcapAPI::exportVersion", NULL)
+  out <- test_project_token(project, launch_browser = FALSE)
+  expect_false(out$internals$last_test_connection_outcome)
+  expect_true(!is.null(out$internals$last_test_connection_attempt))
+})
+test_that("test_project_token only launches browser when launch_browser = TRUE", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
+  project <- mock_project()
+  project$links$redcap_api <- "https://api.example.com"
+  project$links$redcap_base <- "https://base.example.com"
+  # Stub dependencies to force version_error = TRUE
+  mockery::stub(test_project_token, "project_rcon", function(project) list())
+  mockery::stub(test_project_token, "redcapAPI::exportVersion", NULL)
+  # Environment to capture URL calls (CRAN-safe)
+  e <- new.env(parent = emptyenv())
+  e$called_url <- NULL
+  mockery::stub(
+    test_project_token, "utils::browseURL",
+    function(url) e$called_url <- url
+  )
+  # Case 1: launch_browser = TRUE → call browseURL with api
+  e$called_url <- NULL
+  test_project_token(project, launch_browser = TRUE)
+  expect_equal(e$called_url, "https://api.example.com")
+  # Case 2: launch_browser = FALSE → do NOT call browseURL
+  e$called_url <- NULL
+  test_project_token(project, launch_browser = FALSE)
+  expect_null(e$called_url)
+})
 # test_that("set_REDCap_token sets a new token", {
 #   project <- mock_project()
 #   mockery::stub(set_REDCap_token, "readline", .TEST_classic_token)

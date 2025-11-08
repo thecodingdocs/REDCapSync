@@ -22,32 +22,40 @@
 #' \link{setup_project} for initializing the `project` object.
 #' @family db_functions
 #' @export
-sync_project <- function(
-  project,
-  summarize = TRUE,
-  save_to_dir = TRUE,
-  hard_check = FALSE,
-  hard_reset = FALSE,
-  silent = FALSE
-) {
+sync_project <- function(project,
+                         summarize = TRUE,
+                         save_to_dir = TRUE,
+                         hard_check = FALSE,
+                         hard_reset = FALSE,
+                         silent = FALSE) {
   collected <- makeAssertCollection()
   assert_blank_project(project)
-  assert_logical(hard_reset, any.missing = FALSE, len = 1, add = collected)
+  assert_logical(hard_reset,
+                 any.missing = FALSE,
+                 len = 1,
+                 add = collected)
   # assert_logical(
   #   ask_about_overwrites,
   #   any.missing = FALSE,
   #   len = 1,
   #   add = collected
   # )
-  assert_logical(save_to_dir, any.missing = FALSE, len = 1, add = collected)
-  assert_logical(silent, any.missing = FALSE, len = 1, add = collected)
+  assert_logical(save_to_dir,
+                 any.missing = FALSE,
+                 len = 1,
+                 add = collected)
+  assert_logical(silent,
+                 any.missing = FALSE,
+                 len = 1,
+                 add = collected)
   current_function <- as.character(current_call())[[1]]
   if (!collected$isEmpty()) {
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
   id_col <- project$metadata$id_col
-  do_it <- due_for_sync(project_name = project$short_name) || hard_reset || hard_check
+  do_it <- due_for_sync(project_name = project$short_name) ||
+    hard_reset || hard_check
   was_updated <- FALSE
   if (!do_it) {
     cli::cli_alert_info("{project$short_name} not due for sync ({project$internals$sync_frequency})")
@@ -70,15 +78,16 @@ sync_project <- function(
         "There is data in 'project$transformation$data_updates' that has not been pushed to REDCap yet..."
       )
     }
-    if (!hard_reset) { # check log interim
-      if (
-        !is_something(project$internals$last_metadata_update) ||
+    if (!hard_reset) {
+      # check log interim
+      if (!is_something(project$internals$last_metadata_update) ||
           !is_something(project$internals$last_data_update) ||
-          !is_something(project$internals$last_full_update)
-      ) {
+          !is_something(project$internals$last_full_update)) {
         hard_reset <- TRUE
       } else {
-        interim_log <- get_REDCap_log2(project, log_begin_date = as.Date(strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d"))) %>% unique()
+        interim_log <- get_REDCap_log2(project, log_begin_date = as.Date(
+          strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d")
+        )) %>% unique()
         if (nrow(interim_log) <= nrow(project$redcap$log)) {
           head_of_log <- project$redcap$log %>% utils::head(n = nrow(interim_log))
         } else {
@@ -98,7 +107,9 @@ sync_project <- function(
           interim_log_metadata <- interim_log_metadata[which(interim_log_metadata$action_type == "Metadata Change Major"), ] # inclusion
           interim_log_metadata_minor <- any(interim_log_metadata$action_type == "Metadata Change Minor")
           # interim_log_metadata <- interim_log_metadata[grep(ignore_redcap_log(),interim_log_metadata$details,ignore.case = TRUE,invert = TRUE) %>% unique(),]
-          if (nrow(interim_log_metadata) > 0 || interim_log_metadata_minor) { # account for minor changes later
+          if (nrow(interim_log_metadata) > 0 ||
+              interim_log_metadata_minor) {
+            # account for minor changes later
             hard_reset <- TRUE
             message("Update because: Metadata was changed!")
           } else {
@@ -145,18 +156,15 @@ sync_project <- function(
           log_begin_date <- Sys.Date() - project$internals$days_of_log
         }
         project$redcap$log <- redcap_log %>%
-          dplyr::bind_rows(
-            project %>% get_REDCap_log2(log_begin_date = log_begin_date)
-          ) %>%
+          dplyr::bind_rows(project %>% get_REDCap_log2(log_begin_date = log_begin_date)) %>%
           sort_redcap_log()
         project$summary$all_records <- extract_project_records(project)
         project$summary$all_records$last_api_call <-
           project$internals$last_full_update <-
           project$internals$last_metadata_update <-
           project$internals$last_data_update <- now_time()
-        cli_alert_wrap(
-          paste0("Full ", project$short_name, " update!"),
-          bullet_type = "v")
+        cli_alert_wrap(paste0("Full ", project$short_name, " update!"),
+                       bullet_type = "v")
         was_updated <- TRUE
       }
     } else {
@@ -170,12 +178,9 @@ sync_project <- function(
         }
         message_string <- "No new records to update!"
         if (length(stale_records) > 0) {
-          form_list <- project %>% get_REDCap_data(
-            labelled = project$internals$labelled,
-            records = stale_records
-          )
-          missing_from_summary <- stale_records[
-            which(!stale_records %in% project$summary$all_records[[id_col]])]
+          form_list <- project %>% get_REDCap_data(labelled = project$internals$labelled,
+                                                   records = stale_records)
+          missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[id_col]])]
           if (length(missing_from_summary) > 0) {
             x <- data.frame(
               record = missing_from_summary,
@@ -189,10 +194,7 @@ sync_project <- function(
             x <- order(project$summary$all_records[[id_col]], decreasing = TRUE)
             project$summary$all_records <- project$summary$all_records[x, ]
           }
-          project <- remove_records_from_project(
-            project = project,
-            records = stale_records
-          )
+          project <- remove_records_from_project(project = project, records = stale_records)
           if (!all(names(form_list) %in% project$metadata$forms$form_name)) {
             stop(
               "Imported data names doesn't match project$data names. If this",
@@ -204,9 +206,7 @@ sync_project <- function(
               all_character_cols() %>%
               dplyr::bind_rows(form_list[[form_name]])
           }
-          row_match <- which(
-            project$summary$all_records[[id_col]] %in% stale_records
-          )
+          row_match <- which(project$summary$all_records[[id_col]] %in% stale_records)
           project$summary$all_records$last_api_call[row_match] <-
             project$internals$last_data_update <-
             now_time()
@@ -236,8 +236,10 @@ sync_project <- function(
   }
   if (save_to_dir && !is.null(project$dir_path)) {
     if (is_something(project$data)) {
-      if (project$internals$get_files) { # test now
-        get_REDCap_files( # would want track internally?
+      if (project$internals$get_files) {
+        # test now
+        get_REDCap_files(
+          # would want track internally?
           project,
           original_file_names = project$internals$original_file_names
         )
@@ -247,7 +249,8 @@ sync_project <- function(
       first_stamp <- project$internals$last_summary
       project <- summarize_project(project = project, hard_reset = hard_reset)
       second_stamp <- project$internals$last_summary
-      was_updated <- was_updated || !identical(first_stamp, second_stamp)
+      was_updated <- was_updated ||
+        !identical(first_stamp, second_stamp)
     }
     if (was_updated) {
       project <- save_project(project)
@@ -275,13 +278,11 @@ sync_project <- function(
 #' \link{setup_project} for initializing the `project` object.
 #' @family db_functions
 #' @export
-sync_all <- function(
-  short_names = NULL,
-  summarize = TRUE,
-  hard_check = FALSE,
-  hard_reset = FALSE,
-  silent = FALSE
-) {
+sync_all <- function(short_names = NULL,
+                     summarize = TRUE,
+                     hard_check = FALSE,
+                     hard_reset = FALSE,
+                     silent = FALSE) {
   if (is.null(short_names)) {
     projects <- get_projects()
     short_names <- projects$short_name
@@ -321,7 +322,8 @@ due_for_sync <- function(project_name) {
     return(FALSE)
   }
   have_to_check <- sync_frequency %in% c("hourly", "daily", "weekly", "monthly")
-  if (have_to_check) { # turn to function
+  if (have_to_check) {
+    # turn to function
     if (sync_frequency == "hourly") {
       return(now >= (then + lubridate::dhours(1)))
     }
@@ -369,15 +371,14 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
           }
         )
         if (is.null(to_cache)) {
-          cli_alert_warning(
-            paste0("issue loading project_details: ", project_name)
-          )
+          cli_alert_warning(paste0("issue loading project_details: ", project_name))
           to_cache <- from_cache
           had_change <- TRUE
           unlink(expected_path)
         }
         if (!had_change) {
-          if (!is.na(from_cache$last_directory_save)) { # should I compare?
+          if (!is.na(from_cache$last_directory_save)) {
+            # should I compare?
             if (to_cache$last_directory_save !=
                 from_cache$last_directory_save) {
               if (!identical(to_cache$dir_path, from_cache$dir_path)) {
@@ -394,7 +395,7 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
       }
       # else {
       #   # project_list[[project_name]] <- NULL
-        # cli_alert_info(paste0("Dropped cache for ",
+      # cli_alert_info(paste0("Dropped cache for ",
       #project_name," because it didn't exist"))
       #   # had_change <- TRUE
       # }

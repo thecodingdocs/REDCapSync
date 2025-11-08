@@ -41,8 +41,7 @@ view_project_token <- function(project) {
 #' @family Token Functions
 #' @keywords Token Functions
 #' @export
-test_project_token <- function(project,
-                               launch_browser = TRUE) {
+test_project_token <- function(project, launch_browser = TRUE) {
   assert_setup_project(project)
   rcon <- project_rcon(project)
   redcap_version <- tryCatch(
@@ -58,14 +57,20 @@ test_project_token <- function(project,
   version_error <- is.null(redcap_version)
   project$internals$last_test_connection_outcome <- !version_error
   if (version_error && launch_browser) {
-    utils::browseURL(url = ifelse(is_something(project$redcap$version), project$links$redcap_api, project$links$redcap_base))
+    utils::browseURL(url = ifelse(
+      is_something(project$redcap$version),
+      project$links$redcap_api,
+      project$links$redcap_base
+    ))
     # this will fail to bring you to right URL if redcap version changes at the same time a previously valid token is no longer valid
   }
   if (version_error) {
     cli_alert_danger("Your REDCap API token check failed. Check privileges.")
     return(invisible(project))
   }
-  cli_alert_wrap("Connected to REDCap!", url = project$links$redcap_home, bullet_type = "v")
+  cli_alert_wrap("Connected to REDCap!",
+                 url = project$links$redcap_home,
+                 bullet_type = "v")
   version_changed <- FALSE
   if (!is.null(project$redcap$version)) {
     version_changed <- !identical(project$redcap$version, redcap_version)
@@ -79,7 +84,9 @@ test_project_token <- function(project,
   invisible(project)
 }
 #' @noRd
-is_valid_REDCap_token <- function(token, silent = TRUE, is_a_test = FALSE) {
+is_valid_REDCap_token <- function(token,
+                                  silent = TRUE,
+                                  is_a_test = FALSE) {
   start_text <- "The token "
   token_text <- NULL
   end_text <- "is not a valid 32-character hexademical value."
@@ -139,10 +146,7 @@ is_hexadecimal <- function(string, length = NULL) {
 }
 #' @noRd
 get_REDCap_token_name <- function(project) {
-  token_name <- paste0(
-    .token_prefix,
-    assert_env_name(project$short_name)
-  )
+  token_name <- paste0(.token_prefix, assert_env_name(project$short_name))
   if (is_something(project$redcap$token_name)) {
     token_name <- project$redcap$token_name
   }
@@ -162,9 +166,12 @@ get_REDCap_token_name <- function(project) {
 get_test_token <- function(short_name) {
   em <- "`short_name` must be character of length 1 equal ..." %>%
     paste0(toString(.allowed_test_short_names))
-  if (!is.character(short_name)) stop(em)
-  if (length(short_name) != 1) stop(em)
-  if (!is_test_short_name(short_name = short_name)) stop(em)
+  if (!is.character(short_name))
+    stop(em)
+  if (length(short_name) != 1)
+    stop(em)
+  if (!is_test_short_name(short_name = short_name))
+    stop(em)
   token <- NA
   if (short_name == "TEST_classic") {
     token <- .TEST_classic_token

@@ -87,34 +87,32 @@
 #' project <- load_project("TEST")
 #' @family project object
 #' @export
-setup_project <- function(
-  short_name,
-  dir_path,
-  redcap_uri,
-  token_name = paste0("REDCapSync_", short_name),
-  sync_frequency = "daily",
-  labelled = TRUE,
-  hard_reset = FALSE,
-  records = NULL,
-  fields = NULL,
-  forms = NULL,
-  events = NULL,
-  filter_logic = NULL,
-  get_type = "identified",
-  metadata_only = FALSE,
-  batch_size_download = 2000,
-  batch_size_upload = 500,
-  entire_log = FALSE,
-  days_of_log = 10,
-  get_files = FALSE,
-  get_file_repository = FALSE,
-  original_file_names = FALSE,
-  add_default_fields = FALSE,
-  add_default_transformation = FALSE,
-  add_default_summaries = TRUE,
-  use_csv = FALSE,
-  silent = FALSE
-) {
+setup_project <- function(short_name,
+                          dir_path,
+                          redcap_uri,
+                          token_name = paste0("REDCapSync_", short_name),
+                          sync_frequency = "daily",
+                          labelled = TRUE,
+                          hard_reset = FALSE,
+                          records = NULL,
+                          fields = NULL,
+                          forms = NULL,
+                          events = NULL,
+                          filter_logic = NULL,
+                          get_type = "identified",
+                          metadata_only = FALSE,
+                          batch_size_download = 2000,
+                          batch_size_upload = 500,
+                          entire_log = FALSE,
+                          days_of_log = 10,
+                          get_files = FALSE,
+                          get_file_repository = FALSE,
+                          original_file_names = FALSE,
+                          add_default_fields = FALSE,
+                          add_default_transformation = FALSE,
+                          add_default_summaries = TRUE,
+                          use_csv = FALSE,
+                          silent = FALSE) {
   collected <- makeAssertCollection()
   assert_env_name(
     env_name = short_name,
@@ -132,7 +130,10 @@ setup_project <- function(
   )
   assert_logical(hard_reset, len = 1, add = collected)
   assert_logical(labelled, len = 1, add = collected)
-  assert_integerish(days_of_log, len = 1, lower = 1, add = collected)
+  assert_integerish(days_of_log,
+                    len = 1,
+                    lower = 1,
+                    add = collected)
   assert_logical(get_files, len = 1, add = collected)
   assert_logical(get_file_repository, len = 1, add = collected)
   assert_logical(original_file_names, len = 1, add = collected)
@@ -158,8 +159,14 @@ setup_project <- function(
     choices = c("always", "hourly", "daily", "weekly", "monthly", "never"),
     add = collected
   )
-  assert_integerish(batch_size_download, len = 1, lower = 1, add = collected)
-  assert_integerish(batch_size_upload, len = 1, lower = 1, add = collected)
+  assert_integerish(batch_size_download,
+                    len = 1,
+                    lower = 1,
+                    add = collected)
+  assert_integerish(batch_size_upload,
+                    len = 1,
+                    lower = 1,
+                    add = collected)
   assert_logical(silent, len = 1, add = collected)
   if (missing(redcap_uri)) {
     REDCapSync_REDCAP_URI <- Sys.getenv("REDCapSync_REDCAP_URI")
@@ -175,7 +182,8 @@ setup_project <- function(
   projects <- get_projects() # add short_name conflict check id-base url differs
   short_name <- assert_env_name(short_name)
   sweep_dirs_for_cache(project_names = short_name)
-  if (paste0(.token_prefix, short_name) != token_name) {} # maybe a message
+  if (paste0(.token_prefix, short_name) != token_name) {
+  } # maybe a message
   token_name <- assert_env_name(token_name)
   in_proj_cache <- short_name %in% projects$short_name
   missing_dir_path <- missing(dir_path)
@@ -183,11 +191,9 @@ setup_project <- function(
   was_loaded <- FALSE
   original_details <- NULL
   if (!in_proj_cache && !missing_dir_path) {
-    project_details_path <- get_project_path(
-      short_name = short_name,
-      dir_path = dir_path,
-      type = "details"
-    )
+    project_details_path <- get_project_path(short_name = short_name,
+                                             dir_path = dir_path,
+                                             type = "details")
     if (file.exists(project_details_path)) {
       project_details <- tryCatch(
         expr = {
@@ -243,7 +249,9 @@ setup_project <- function(
             hard_reset <- TRUE
             warning(
               "The project that was loaded was ",
-              load_type, " and you chose ", chosen_type,
+              load_type,
+              " and you chose ",
+              chosen_type,
               ". Therefore, a full update was triggered to avoid data conflicts",
               immediate. = TRUE
             )
@@ -252,15 +260,16 @@ setup_project <- function(
       }
     }
   }
-  if (hard_reset) { # load blank if hard_reset = TRUE
+  if (hard_reset) {
+    # load blank if hard_reset = TRUE
     project <- .blank_project
-    cli_alert_wrap(
-      paste0("Setup blank project object because `hard_reset = TRUE`"),
-      silent = silent
-    )
+    cli_alert_wrap(paste0("Setup blank project object because `hard_reset = TRUE`"),
+                   silent = silent)
   }
-  if (missing_dir_path) { # if missing the directory path from setup or load then let user know nothing will be stored
-    if (!is_something(project$dir_path)) { # only show message if load_project wasn't used internally (that has a directory)
+  if (missing_dir_path) {
+    # if missing the directory path from setup or load then let user know nothing will be stored
+    if (!is_something(project$dir_path)) {
+      # only show message if load_project wasn't used internally (that has a directory)
       cli::cli_alert_warning(
         "If you don't supply a directory, REDCapSync will only run in R session. Package is best with a directory."
       )
@@ -335,7 +344,8 @@ get_project_path <- function(short_name,
   }
   checkmate::assert_choice(type, .project_file_types)
   file_name <- paste0(short_name, "_REDCapSync")
-  if (type != "") file_name <- file_name %>% paste0("_", type)
+  if (type != "")
+    file_name <- file_name %>% paste0("_", type)
   file_name <- file_name %>% paste0(".RData")
   file_path <- file.path(dir_path, "R_objects", file_name)
   sanitize_path(file_path)
@@ -376,10 +386,7 @@ load_project <- function(short_name) {
   if (!file.exists(dir_path)) {
     stop("`dir_path` doesn't exist: '", dir_path, "'")
   }
-  project_path <- get_project_path(
-    short_name = short_name,
-    dir_path = dir_path
-  )
+  project_path <- get_project_path(short_name = short_name, dir_path = dir_path)
   assert_project_path(project_path)
   if (!file.exists(project_path)) {
     stop(
@@ -394,14 +401,14 @@ load_project <- function(short_name) {
   # SAVE
   loaded_dir <- project$dir_path %>% sanitize_path()
   if (!identical(dir_path, loaded_dir)) {
-    cli_alert_warning("loaded dir_path did not match your cached dir_path. This should only happen with cloud/shared directories.")
+    cli_alert_warning(
+      "loaded dir_path did not match your cached dir_path. This should only happen with cloud/shared directories."
+    )
   }
   project$dir_path <- dir_path
   project_details_path <- get_project_path2(project, type = "details")
-  project <- add_project_details_to_project(
-    project = project,
-    project_details = readRDS(file = project_details_path)
-  )
+  project <- add_project_details_to_project(project = project,
+                                            project_details = readRDS(file = project_details_path))
   project$dir_path <- dir_path # why twice?
   save_project_details(project)
   invisible(project)
@@ -416,19 +423,27 @@ compare_project_details <- function(from, to) {
 }
 #' @rdname setup-load
 #' @export
-load_test_project <- function(short_name = "TEST_repeating", with_data = FALSE) {
+load_test_project <- function(short_name = "TEST_repeating",
+                              with_data = FALSE) {
   em <- "`short_name` must be character string of length 1 equal to one of the following: " %>% paste0(toString(.allowed_test_short_names))
-  if (!is.character(short_name)) stop(em)
-  if (length(short_name) != 1) stop(em)
-  if (!is_test_short_name(short_name = short_name)) stop(em)
+  if (!is.character(short_name))
+    stop(em)
+  if (length(short_name) != 1)
+    stop(em)
+  if (!is_test_short_name(short_name = short_name))
+    stop(em)
   project <- .blank_project
   project$short_name <- short_name
   project$internals$is_test <- TRUE
   if (with_data) {
-    if (short_name == "TEST_classic") {}
-    if (short_name == "TEST_repeating") {}
-    if (short_name == "TEST_longitudinal") {}
-    if (short_name == "TEST_multiarm") {}
+    if (short_name == "TEST_classic") {
+    }
+    if (short_name == "TEST_repeating") {
+    }
+    if (short_name == "TEST_longitudinal") {
+    }
+    if (short_name == "TEST_multiarm") {
+    }
   }
   invisible(project)
 }
@@ -438,7 +453,8 @@ is_test_short_name <- function(short_name) {
 }
 #' @noRd
 is_test_project <- function(project) {
-  (project$short_name %in% .allowed_test_short_names) && project$internals$is_test
+  (project$short_name %in% .allowed_test_short_names) &&
+    project$internals$is_test
 }
 #' @rdname save-deleteproject
 #' @title Save or Delete project file from the directory
@@ -473,10 +489,7 @@ save_project <- function(project, silent = FALSE) {
   }
   project$internals$last_directory_save <- now_time()
   save_project_path <- get_project_path2(project = project)
-  saveRDS(
-    object = project,
-    file = save_project_path
-  ) # add error check
+  saveRDS(object = project, file = save_project_path) # add error check
   save_project_details(project)
   cli_alert_wrap(
     paste0("Saved ", project$short_name, "!"),
@@ -503,7 +516,8 @@ delete_project <- function(project) {
   if (deleted_stuff) {
     cli_alert_wrap("Deleted saved project", bullet_type = "v")
   } else {
-    warning("The project object you wanted to is not there. Did you delete already? ", delete_this)
+    warning("The project object you wanted to is not there. Did you delete already? ",
+            delete_this)
   }
   invisible()
 }
@@ -513,9 +527,8 @@ get_dir <- function(project) {
   stop_mes <- "Did you use `set_dir()`?"
   if (!file.exists(dir_path)) {
     cli_alert_wrap("Searched for directory --> '",
-      file = dir_path,
-      bullet_type = "x"
-    )
+                   file = dir_path,
+                   bullet_type = "x")
     stop("Does not exist. ", stop_mes)
   }
   assert_dir(dir_path, silent = TRUE)
@@ -528,12 +541,10 @@ nav_to_dir <- function(project) {
   utils::browseURL(project$dir_path)
 }
 #' @noRd
-.allowed_test_short_names <- c(
-  "TEST_classic",
-  "TEST_repeating",
-  "TEST_longitudinal",
-  "TEST_multiarm"
-)
+.allowed_test_short_names <- c("TEST_classic",
+                               "TEST_repeating",
+                               "TEST_longitudinal",
+                               "TEST_multiarm")
 #' @noRd
 .blank_project <- list(
   short_name = NULL,
@@ -625,7 +636,14 @@ nav_to_dir <- function(project) {
 set_dir <- function(dir_path) {
   dir_path <- clean_dir_path(dir_path)
   if (!file.exists(dir_path)) {
-    if (utils::menu(choices = c("Yes", "No"), title = paste0("No file path found for chosen directory, create? (", dir_path, ")")) == 1) {
+    if (utils::menu(
+      choices = c("Yes", "No"),
+      title = paste0(
+        "No file path found for chosen directory, create? (",
+        dir_path,
+        ")"
+      )
+    ) == 1) {
       dir.create(file.path(dir_path))
     }
     if (!file.exists(dir_path)) {
@@ -643,7 +661,8 @@ set_dir <- function(dir_path) {
 .dir_folders <- c("R_objects", "output", "scripts", "input", "REDCap")
 #' @noRd
 clean_dir_path <- function(dir_path) {
-  if (!is.character(dir_path)) stop("dir must be a character string")
+  if (!is.character(dir_path))
+    stop("dir must be a character string")
   dir_path <- dir_path %>%
     trimws(whitespace = "[\\h\\v]") %>%
     sanitize_path()

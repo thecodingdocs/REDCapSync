@@ -20,7 +20,8 @@ get_projects <- function() {
       message("You have no projects cached. Try `setup_project()`")
     }
     is_ok <- all(colnames(.blank_project_details %in% colnames(projects)))
-    if (!is_ok) cache_clear()
+    if (!is_ok)
+      cache_clear()
   }
   if (!does_exist || !is_ok) {
     return(.blank_project_details)
@@ -70,7 +71,7 @@ check_folder_for_projects <- function(file_path, validate = TRUE) {
     stringsAsFactors = FALSE
   )
   df <- df[which((df$file_ext == "RData") &
-    (endsWith(df$file_name, "_REDCapSync"))), ]
+                   (endsWith(df$file_name, "_REDCapSync"))), ]
   if (nrow(df) == 0) {
     return(character(0))
   }
@@ -195,10 +196,7 @@ extract_project_details <- function(project) {
     data = NA,
     ncol = length(.blank_project_cols),
     nrow = 1,
-    dimnames = list(
-      NULL,
-      .blank_project_cols
-    )
+    dimnames = list(NULL, .blank_project_cols)
   ) %>% as.data.frame()
   # top -----
   project_details$short_name <- project$short_name
@@ -402,10 +400,7 @@ save_project_details <- function(project, silent = TRUE) {
         )
       }
     }
-    saveRDS(
-      object = project_details,
-      file = save_project_details_path
-    ) # add error check
+    saveRDS(object = project_details, file = save_project_details_path) # add error check
   }
   return(invisible())
 }

@@ -39,9 +39,7 @@ cache_path <- function() {
 cache_clear <- function() {
   cache <- get_cache()
   cache$delete_all()
-  cli_alert_warning(
-    "You must delete any/all other files manually from the directory."
-  )
+  cli_alert_warning("You must delete any/all other files manually from the directory.")
   cli_alert_wrap(
     "REDCapSync cache cleared!",
     file = cache$cache_path_get(),

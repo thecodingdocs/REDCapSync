@@ -1,10 +1,8 @@
 #' @noRd
 project_rcon <- function(project) {
   assert_setup_project(project)
-  rcon <- redcapAPI::redcapConnection(
-    url = project$links$redcap_uri,
-    token = get_project_token(project)
-  )
+  rcon <- redcapAPI::redcapConnection(url = project$links$redcap_uri,
+                                      token = get_project_token(project))
   # test connection
   rcon
 }
@@ -15,27 +13,24 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$metadata <- list()
   rcon <- project_rcon(project)
   # info ----------
-  project$redcap$project_info <- REDCapR::redcap_project_info_read(
-    redcap_uri = project$links$redcap_uri,
-    token = get_project_token(project)
-  )[["data"]] # remove at some point
+  project$redcap$project_info <- REDCapR::redcap_project_info_read(redcap_uri = project$links$redcap_uri,
+                                                                   token = get_project_token(project))[["data"]] # remove at some point
   project$redcap$project_title <- project$redcap$project_info$project_title
   project$redcap$project_id <- project$redcap$project_info$project_id %>% as.character()
   project$metadata$is_longitudinal <- project$redcap$project_info$is_longitudinal
   project$metadata$missing_codes <- missing_codes2(project)
   project$redcap$has_log_access <- test_redcap_log_access(project)
   # instruments --------
-  project$metadata$forms <- REDCapR::redcap_instruments(
-    redcap_uri = project$links$redcap_uri,
-    token = get_project_token(project)
-  )[["data"]] %>% rename_forms_redcap_to_default()
+  project$metadata$forms <- REDCapR::redcap_instruments(redcap_uri = project$links$redcap_uri,
+                                                        token = get_project_token(project))[["data"]] %>% rename_forms_redcap_to_default()
   project$metadata$forms$repeating <- FALSE
   project$metadata$has_repeating_forms <- FALSE
   project$metadata$has_repeating_events <- FALSE
   project$metadata$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events
   # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
   repeating_forms_events <- redcapAPI::exportRepeatingInstrumentsEvents(rcon = rcon)
-  if (is.data.frame(repeating_forms_events)) { # TODOPLEASE test if you can do this if you dont have designer privilages or would have to use another package
+  if (is.data.frame(repeating_forms_events)) {
+    # TODOPLEASE test if you can do this if you dont have designer privilages or would have to use another package
     if (nrow(repeating_forms_events) > 0) {
       project$metadata$forms$repeating <- project$metadata$forms$form_name %in% repeating_forms_events$form_name
     }
@@ -44,10 +39,8 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
     project$metadata$has_repeating_forms <- TRUE
   }
   # metadata ----------
-  project$metadata$fields <- REDCapR::redcap_metadata_read(
-    redcap_uri = project$links$redcap_uri,
-    token = get_project_token(project)
-  )[["data"]]
+  project$metadata$fields <- REDCapR::redcap_metadata_read(redcap_uri = project$links$redcap_uri,
+                                                           token = get_project_token(project))[["data"]]
   project$metadata$fields$section_header <- project$metadata$fields$section_header %>% remove_html_tags()
   project$metadata$fields$field_label <- project$metadata$fields$field_label %>% remove_html_tags()
   project$metadata$id_col <- project$metadata$fields[1, 1] %>% as.character() # RISKY?
@@ -116,26 +109,18 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$metadata$choices <- fields_to_choices(fields = project$metadata$fields)
   # is longitudinal ------
   if (project$metadata$is_longitudinal) {
-    project$metadata$raw_structure_cols <- c(
-      project$metadata$raw_structure_cols,
-      "arm_number",
-      "event_name"
-    ) %>% unique()
-    project$metadata$arms <- REDCapR::redcap_arm_export(
-      redcap_uri = project$links$redcap_uri,
-      token = get_project_token(project)
-    )[["data"]] %>% all_character_cols()
+    project$metadata$raw_structure_cols <- c(project$metadata$raw_structure_cols,
+                                             "arm_number",
+                                             "event_name") %>% unique()
+    project$metadata$arms <- REDCapR::redcap_arm_export(redcap_uri = project$links$redcap_uri,
+                                                        token = get_project_token(project))[["data"]] %>% all_character_cols()
     project$metadata$has_arms <- TRUE
     project$metadata$has_multiple_arms <- nrow(project$metadata$arms) > 1
     project$metadata$has_arms_that_matter <- project$metadata$has_multiple_arms
-    project$metadata$event_mapping <- REDCapR::redcap_event_instruments(
-      redcap_uri = project$links$redcap_uri,
-      token = get_project_token(project)
-    )[["data"]] %>% all_character_cols()
-    project$metadata$events <- REDCapR::redcap_event_read(
-      redcap_uri = project$links$redcap_uri,
-      token = get_project_token(project)
-    )[["data"]] %>% all_character_cols()
+    project$metadata$event_mapping <- REDCapR::redcap_event_instruments(redcap_uri = project$links$redcap_uri,
+                                                                        token = get_project_token(project))[["data"]] %>% all_character_cols()
+    project$metadata$events <- REDCapR::redcap_event_read(redcap_uri = project$links$redcap_uri,
+                                                          token = get_project_token(project))[["data"]] %>% all_character_cols()
     colnames(project$metadata$events)[which(colnames(project$metadata$events) == "arm_num")] <- "arm_number"
     project$metadata$events$repeating <- FALSE
     project$metadata$event_mapping$repeating <- FALSE
@@ -281,11 +266,9 @@ get_REDCap_files <- function(project,
     dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
     for (field_name in project$metadata$fields$field_name[file_rows]) {
       out_dir_folder <- file.path(out_dir, field_name)
-      dir.create(
-        out_dir_folder,
-        showWarnings = FALSE,
-        recursive = TRUE
-      )
+      dir.create(out_dir_folder,
+                 showWarnings = FALSE,
+                 recursive = TRUE)
       form_name <- project$metadata$fields$form_name[which(project$metadata$fields$field_name == field_name)]
       is_repeating <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == form_name)]
       form <- project$data[[form_name]]
@@ -324,7 +307,8 @@ get_REDCap_files <- function(project,
             tools::file_ext(file_name)
           )
         )
-        if (!file.exists(file.path(out_dir_folder, file_name)) || overwrite) {
+        if (!file.exists(file.path(out_dir_folder, file_name)) ||
+            overwrite) {
           REDCapR::redcap_file_download_oneshot(
             redcap_uri = project$links$redcap_uri,
             token = get_project_token(project),
@@ -341,18 +325,14 @@ get_REDCap_files <- function(project,
       }
     }
   }
-  cli_alert_wrap(
-    "Checked for files! Stored at ...",
-    file = out_dir,
-    bullet_type = "v"
-  )
+  cli_alert_wrap("Checked for files! Stored at ...",
+                 file = out_dir,
+                 bullet_type = "v")
 }
 get_REDCap_users <- function(project) {
   assert_setup_project(project)
-  x <- REDCapR::redcap_users_export(
-    redcap_uri = project$links$redcap_uri,
-    token = sanitize_token(Sys.getenv(project$redcap$token_name))
-  )
+  x <- REDCapR::redcap_users_export(redcap_uri = project$links$redcap_uri,
+                                    token = sanitize_token(Sys.getenv(project$redcap$token_name)))
   if (!x$success) {
     return(invisible(project))
   }
@@ -449,15 +429,13 @@ get_REDCap_log2 <- function(project,
 }
 test_redcap_log_access <- function(project) {
   the_test <- get_REDCap_log2(project = project, log_begin_date = Sys.Date())
-  !is.null(the_test)
+  ! is.null(the_test)
 }
 #' @noRd
-get_REDCap_denormalized <- function(
-  project,
-  labelled = FALSE,
-  records = NULL,
-  batch_size = 1000
-) {
+get_REDCap_denormalized <- function(project,
+                                    labelled = FALSE,
+                                    records = NULL,
+                                    batch_size = 1000) {
   denormalized <- REDCapR::redcap_read(
     redcap_uri = project$links$redcap_uri,
     token = get_project_token(project),

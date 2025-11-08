@@ -31,10 +31,8 @@ read_xl_to_project_for_upload <- function(project,
     openxlsx::loadWorkbook() %>%
     wb_to_list()
   if (is_something(drop_sheets)) {
-    message(
-      "dropping sheets from `drop_sheets` ... ",
-      toString(drop_sheets)
-    )
+    message("dropping sheets from `drop_sheets` ... ",
+            toString(drop_sheets))
     for (drop_sheet in drop_sheets) {
       form_list[[drop_sheet]] <- NULL
     }

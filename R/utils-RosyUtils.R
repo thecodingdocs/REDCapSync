@@ -24,8 +24,10 @@ cli_alert_wrap <- function(text = "",
       }
       url <- unlist(url)
     }
-    if (is.null(url_names)) url_names <- url
-    if (collapse) url_if <- paste0(url_if, collapse = " and ")
+    if (is.null(url_names))
+      url_names <- url
+    if (collapse)
+      url_if <- paste0(url_if, collapse = " and ")
     url_if <- paste0(
       " {cli::col_blue(cli::style_hyperlink('",
       url_names %>% clean_for_cli(),
@@ -38,11 +40,14 @@ cli_alert_wrap <- function(text = "",
     file_names <- names(file)
     if (is.list(file)) {
       file_names <- unlist(file)
-      if (is_named_list(file)) file_names <- names(file)
+      if (is_named_list(file))
+        file_names <- names(file)
       file <- unlist(file)
     }
-    if (is.null(file_names)) file_names <- file
-    if (collapse) file_if <- paste0(file_if, collapse = " and ")
+    if (is.null(file_names))
+      file_names <- file
+    if (collapse)
+      file_if <- paste0(file_if, collapse = " and ")
     file_if <- paste0(
       " {cli::col_blue(cli::style_hyperlink('",
       sanitize_path(file_names) %>% clean_for_cli(),
@@ -51,17 +56,22 @@ cli_alert_wrap <- function(text = "",
       "'))}"
     )
   }
-  for (i in seq_along(url_if)) text[i] <- paste0(text[i], url_if[i])
-  for (i in seq_along(file_if)) text[i] <- paste0(text[i], file_if[i])
+  for (i in seq_along(url_if))
+    text[i] <- paste0(text[i], url_if[i])
+  for (i in seq_along(file_if))
+    text[i] <- paste0(text[i], file_if[i])
   names(text)[seq_along(text)] <- bullet_type
   cli::cli_bullets(text)
 }
 now_time <- function() {
   as.POSIXct(Sys.time(), tz = Sys.timezone())
 }
-process_df_list <- function(list, drop_empty = TRUE, silent = FALSE) {
+process_df_list <- function(list,
+                            drop_empty = TRUE,
+                            silent = FALSE) {
   if (is_something(list)) {
-    if (!is_df_list(list)) stop("list must be ...... a list :)")
+    if (!is_df_list(list))
+      stop("list must be ...... a list :)")
     if (drop_empty) {
       is_a_df_with_rows <- list %>%
         lapply(function(x) {
@@ -77,10 +87,8 @@ process_df_list <- function(list, drop_empty = TRUE, silent = FALSE) {
       drops <- which(!is_a_df_with_rows)
       if (length(drops) > 0) {
         if (!silent) {
-          cli_alert_wrap(
-            "Dropping non-data.frames and empties... ",
-            toString(names(drops))
-          )
+          cli_alert_wrap("Dropping non-data.frames and empties... ",
+                         toString(names(drops)))
         }
       }
       list <- list[keeps]
@@ -174,18 +182,17 @@ csv_to_list <- function(paths) {
     tools::file_path_sans_ext() %>%
     clean_env_names()
   for (i in seq_along(paths)) {
-    form_list[[i]] <- utils::read.csv(
-      paths[i],
-      stringsAsFactors = FALSE,
-      na.strings = c("", "NA")
-    )
+    form_list[[i]] <- utils::read.csv(paths[i],
+                                      stringsAsFactors = FALSE,
+                                      na.strings = c("", "NA"))
   }
   names(form_list) <- clean_names
   form_list
 }
 csv_folder_to_list <- function(folder) {
   folder <- sanitize_path(folder)
-  if (!dir.exists(folder)) stop("Folder does not exist: ", folder)
+  if (!dir.exists(folder))
+    stop("Folder does not exist: ", folder)
   paths <- list_files_real(folder)
   paths <- paths[which(endsWith(paths, ".csv"))]
   csv_to_list(paths = paths)
@@ -193,7 +200,9 @@ csv_folder_to_list <- function(folder) {
 is_named_df_list <- function(x, strict = FALSE) {
   is_named_list(x) && is_df_list(x, strict = strict)
 }
-is_named_list <- function(x, silent = TRUE, recursive = FALSE) {
+is_named_list <- function(x,
+                          silent = TRUE,
+                          recursive = FALSE) {
   if (!is.list(x)) {
     return(FALSE)
   }
@@ -206,7 +215,8 @@ is_named_list <- function(x, silent = TRUE, recursive = FALSE) {
       element <- x[[n]]
       if (is.list(element)) {
         named_all <- named_all && is_named_list(element)
-        if (!silent && !named_all) message("'", n, "' is not named")
+        if (!silent && !named_all)
+          message("'", n, "' is not named")
       }
     }
   }
@@ -222,11 +232,7 @@ wb_to_list <- function(wb) {
     x <- openxlsx::getTables(wb, sheet = i)
     if (length(x) > 0) {
       # test for xlsx without letters for cols
-      col_row <- gsub(
-        "[A-Za-z]",
-        "",
-        unlist(x %>% attr("refs") %>% strsplit(":"))[[1]]
-      ) %>%
+      col_row <- gsub("[A-Za-z]", "", unlist(x %>% attr("refs") %>% strsplit(":"))[[1]]) %>%
         as.integer()
     }
     out[[i]] <- openxlsx::read.xlsx(wb, sheet = i, startRow = col_row)
@@ -249,7 +255,8 @@ form_to_wb <- function(form,
                        pad_rows = 0,
                        pad_cols = 0,
                        freeze_keys = TRUE) {
-  if (nchar(form_name) > 31) stop(form_name, " is longer than 31 char")
+  if (nchar(form_name) > 31)
+    stop(form_name, " is longer than 31 char")
   form[] <- lapply(form, function(col) {
     out <- col
     if (is.character(col)) {
@@ -260,7 +267,8 @@ form_to_wb <- function(form,
   hyperlink_col <- NULL
   if (freeze_keys) {
     all_cols <- colnames(form)
-    if (!all(key_cols %in% all_cols)) stop("all key_cols must be in the forms")
+    if (!all(key_cols %in% all_cols))
+      stop("all key_cols must be in the forms")
     freeze_key_cols <- which(all_cols %in% key_cols)
     if (length(freeze_key_cols) > 0) {
       if (!is_consecutive_srt_1(freeze_key_cols)) {
@@ -365,39 +373,33 @@ form_to_wb <- function(form,
             firstActiveCol <- firstActiveCol +
               freeze_key_cols[length(freeze_key_cols)]
           } else {
-            warning(
-              "key_cols must be consecutive and start from left most column.",
-              immediate. = TRUE
-            )
+            warning("key_cols must be consecutive and start from left most column.",
+                    immediate. = TRUE)
           }
         }
-        openxlsx::freezePane(
-          wb,
-          form_name,
-          firstActiveRow = firstActiveRow,
-          firstActiveCol = firstActiveCol
-        )
+        openxlsx::freezePane(wb,
+                             form_name,
+                             firstActiveRow = firstActiveRow,
+                             firstActiveCol = firstActiveCol)
       }
     }
     return(wb)
   }
 }
-list_to_wb <- function(
-  list,
-  key_cols_list = list(),
-  derived_cols_list = list(),
-  link_col_list = list(),
-  str_trunc_length = 32000,
-  header_df_list = NULL,
-  tableStyle = "none",
-  header_style = default_header_style,
-  body_style = default_body_style,
-  freeze_header = TRUE,
-  pad_rows = 0,
-  pad_cols = 0,
-  freeze_keys = TRUE,
-  drop_empty = TRUE
-) {
+list_to_wb <- function(list,
+                       key_cols_list = list(),
+                       derived_cols_list = list(),
+                       link_col_list = list(),
+                       str_trunc_length = 32000,
+                       header_df_list = NULL,
+                       tableStyle = "none",
+                       header_style = default_header_style,
+                       body_style = default_body_style,
+                       freeze_header = TRUE,
+                       pad_rows = 0,
+                       pad_cols = 0,
+                       freeze_keys = TRUE,
+                       drop_empty = TRUE) {
   wb <- openxlsx::createWorkbook()
   list <- process_df_list(list, drop_empty = drop_empty)
   list_names <- names(list)
@@ -434,28 +436,21 @@ list_to_wb <- function(
   wb
 }
 rename_list_names_excel <- function(list_names) {
-  list_names_rename <- stringr::str_trunc(
-    list_names,
-    width = 31,
-    side = "right",
-    ellipsis = ""
-  )
+  list_names_rename <- stringr::str_trunc(list_names,
+                                          width = 31,
+                                          side = "right",
+                                          ellipsis = "")
   bad_names <- duplicated_which(list_names_rename)
   if (length(bad_names) > 0) {
-    cli_alert_danger(
-      "Duplicated names when trimmed from right 31 max in Excel: ",
-      toString(list_names[bad_names])
-    )
+    cli_alert_danger("Duplicated names when trimmed from right 31 max in Excel: ",
+                     toString(list_names[bad_names]))
     cli_alert_info(
       paste0(
         "Use CSV or shorten the names and make sure they are unique if they",
         " are trimmed to 31 char. For now will make unique by adding number."
       )
     )
-    list_names_rename <- unique_trimmed_strings(
-      list_names_rename,
-      max_length = 31
-    )
+    list_names_rename <- unique_trimmed_strings(list_names_rename, max_length = 31)
   }
   list_names_rename
 }
@@ -491,26 +486,24 @@ unique_trimmed_strings <- function(strings, max_length) {
   }
   unique_strings
 }
-list_to_excel <- function(
-  list,
-  dir,
-  file_name = NULL,
-  separate = FALSE,
-  overwrite = TRUE,
-  key_cols_list = list(),
-  derived_cols_list = list(),
-  link_col_list = list(),
-  str_trunc_length = 32000,
-  header_df_list = NULL,
-  tableStyle = "none",
-  header_style = default_header_style,
-  body_style = default_body_style,
-  freeze_header = TRUE,
-  pad_rows = 0,
-  pad_cols = 0,
-  freeze_keys = TRUE,
-  drop_empty = TRUE
-) {
+list_to_excel <- function(list,
+                          dir,
+                          file_name = NULL,
+                          separate = FALSE,
+                          overwrite = TRUE,
+                          key_cols_list = list(),
+                          derived_cols_list = list(),
+                          link_col_list = list(),
+                          str_trunc_length = 32000,
+                          header_df_list = NULL,
+                          tableStyle = "none",
+                          header_style = default_header_style,
+                          body_style = default_body_style,
+                          freeze_header = TRUE,
+                          pad_rows = 0,
+                          pad_cols = 0,
+                          freeze_keys = TRUE,
+                          drop_empty = TRUE) {
   list <- process_df_list(list, drop_empty = drop_empty)
   list_names <- names(list)
   if (length(list) == 0) {
@@ -590,17 +583,17 @@ list_to_csv <- function(list,
   }
 }
 save_wb <- function(wb, dir, file_name, overwrite = TRUE) {
-  if (!dir.exists(dir)) stop("dir doesn't exist")
+  if (!dir.exists(dir))
+    stop("dir doesn't exist")
   path <- file.path(dir, paste0(file_name, ".xlsx")) %>% sanitize_path()
-  openxlsx::saveWorkbook(
-    wb = wb,
-    file = path,
-    overwrite = overwrite
-  )
+  openxlsx::saveWorkbook(wb = wb,
+                         file = path,
+                         overwrite = overwrite)
   cli_alert_wrap(paste0("Saved '", basename(path), "'!"), file = path)
 }
 save_csv <- function(form, dir, file_name, overwrite = TRUE) {
-  if (!dir.exists(dir)) stop("dir doesn't exist")
+  if (!dir.exists(dir))
+    stop("dir doesn't exist")
   path <- file.path(dir, paste0(file_name, ".csv")) %>% sanitize_path()
   write_it <- TRUE
   if (!overwrite) {
@@ -610,10 +603,7 @@ save_csv <- function(form, dir, file_name, overwrite = TRUE) {
     }
   }
   if (write_it) {
-    utils::write.csv(
-      x = form,
-      file = path
-    )
+    utils::write.csv(x = form, file = path)
     cli_alert_wrap(paste0("Saved '", basename(path), "'!"), file = path)
   }
 }
@@ -628,11 +618,9 @@ default_header_style <-
     border = "TopBottomLeftRight"
   )
 default_body_style <-
-  openxlsx::createStyle(
-    halign = "left",
-    valign = "center",
-    fontSize = 12
-  )
+  openxlsx::createStyle(halign = "left",
+                        valign = "center",
+                        fontSize = 12)
 duplicated_which <- function(x) {
   which(duplicated(x))
 }
@@ -671,31 +659,39 @@ file_size <- function(path) {
 drop_if <- function(x, drops) {
   x[which(!x %in% drops)]
 }
-list_files_real <- function(path, full_names = TRUE, recursive = FALSE) {
+list_files_real <- function(path,
+                            full_names = TRUE,
+                            recursive = FALSE) {
   grep(
     "~$",
-    sanitize_path(list.files(
-      path,
-      full.names = full_names, recursive = recursive
-    )),
+    sanitize_path(
+      list.files(path, full.names = full_names, recursive = recursive)
+    ),
     fixed = TRUE,
     value = TRUE,
     invert = TRUE
   )
 }
-clean_env_names <- function(env_names, silent = FALSE, lowercase = TRUE) {
+clean_env_names <- function(env_names,
+                            silent = FALSE,
+                            lowercase = TRUE) {
   cleaned_names <- character(length(env_names))
   for (i in seq_along(env_names)) {
     name <- env_names[i]
     is_valid <- is_env_name(name, silent = TRUE)
-    if (is_valid) cleaned_names[i] <- name
+    if (is_valid)
+      cleaned_names[i] <- name
     if (!is_valid) {
-      if (!silent) message("Invalid environment name: '", name)
+      if (!silent)
+        message("Invalid environment name: '", name)
       cleaned_name <- gsub("__", "_", gsub(" ", "_", gsub("-", "", name)))
-      if (lowercase) cleaned_name <- tolower(cleaned_name)
+      if (lowercase)
+        cleaned_name <- tolower(cleaned_name)
       if (cleaned_name %in% cleaned_names) {
         if (!silent) {
-          message("Non-unique environment name: '", name, "', added numbers...")
+          message("Non-unique environment name: '",
+                  name,
+                  "', added numbers...")
         }
         cleaned_name <- cleaned_name %>%
           paste0("_", max(which_length(cleaned_name %in% cleaned_names)) + 1L)
@@ -723,38 +719,31 @@ is_df_list <- function(x, strict = FALSE) {
 }
 check_match <- function(vec_list) {
   sorted_vecs <- lapply(vec_list, sort)
-  all(
-    unlist(
-      lapply(sorted_vecs[-1], function(x) {
-        identical(sorted_vecs[[1]], x)
-      })
-    )
-  )
+  all(unlist(lapply(sorted_vecs[-1], function(x) {
+    identical(sorted_vecs[[1]], x)
+  })))
 }
 is_env_name <- function(env_name, silent = FALSE) {
-  result <- tryCatch(
-    {
-      if (is.null(env_name)) {
-        stop("env_name is NULL")
-      }
-      if (nchar(env_name) == 0L) {
-        stop("Short name cannot be empty.")
-      }
-      if (grepl("^\\d", env_name)) {
-        stop("Short name cannot start with a number.")
-      }
-      if (grepl("[^A-Za-z0-9_]", env_name)) {
-        stop("Short name can only contain letters, numbers, and underscores.")
-      }
-      return(TRUE)
-    },
-    error = function(e) {
-      if (!silent) {
-        message(e$message)
-      }
-      FALSE
+  result <- tryCatch({
+    if (is.null(env_name)) {
+      stop("env_name is NULL")
     }
-  )
+    if (nchar(env_name) == 0L) {
+      stop("Short name cannot be empty.")
+    }
+    if (grepl("^\\d", env_name)) {
+      stop("Short name cannot start with a number.")
+    }
+    if (grepl("[^A-Za-z0-9_]", env_name)) {
+      stop("Short name can only contain letters, numbers, and underscores.")
+    }
+    return(TRUE)
+  }, error = function(e) {
+    if (!silent) {
+      message(e$message)
+    }
+    FALSE
+  })
   result
 }
 is_nested_list <- function(x) {

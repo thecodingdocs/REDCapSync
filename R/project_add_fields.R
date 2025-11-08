@@ -42,18 +42,17 @@
 #' \code{\link{save_project}} for saving the database or summaries.
 #'
 #' @export
-add_project_field <- function(
-    project,
-    field_name,
-    form_name,
-    field_type,
-    field_type_R = NA,
-    field_label = NA,
-    select_choices_or_calculations = NA,
-    field_note = NA,
-    identifier = "",
-    units = NA,
-    data_func = NA) {
+add_project_field <- function(project,
+                              field_name,
+                              form_name,
+                              field_type,
+                              field_type_R = NA,
+                              field_label = NA,
+                              select_choices_or_calculations = NA,
+                              field_note = NA,
+                              identifier = "",
+                              units = NA,
+                              data_func = NA) {
   project <- assert_blank_project(project, silent = TRUE)
   # if(!project$data %>% is_something())stop("Must have transformed data to add new vars.")
   fields <- project$metadata$fields
@@ -63,20 +62,25 @@ add_project_field <- function(
   }
   if (in_original_redcap) {
     original_fields_row <- fields[which(fields$field_name == field_name), ]
-    if (missing(form_name)) form_name <- original_fields_row$form_name
+    if (missing(form_name))
+      form_name <- original_fields_row$form_name
     if (missing(field_type)) {
       field_type <- original_fields_row$field_type
       field_type_R <- field_types_to_R(original_fields_row)
     }
-    if (is.na(field_label)) field_label <- original_fields_row$field_label
+    if (is.na(field_label))
+      field_label <- original_fields_row$field_label
     if (is.na(select_choices_or_calculations)) {
       select_choices_or_calculations <- original_fields_row$select_choices_or_calculations
     }
-    if (is.na(field_note)) field_note <- original_fields_row$field_note
-    if (identifier == "") identifier <- original_fields_row$identifier
+    if (is.na(field_note))
+      field_note <- original_fields_row$field_note
+    if (identifier == "")
+      identifier <- original_fields_row$identifier
   }
   if (!is_something(data_func)) {
-    warning("if no `data_func` is provided, the column is only added to the metadata", immediate. = TRUE)
+    warning("if no `data_func` is provided, the column is only added to the metadata",
+            immediate. = TRUE)
   }
   if (is_something(data_func)) {
     func_template <- "data_func = function(project,field_name){YOUR FUNCTION}"
@@ -107,10 +111,10 @@ add_project_field <- function(
   row_match <- which(project$transformation$fields$field_name == field_name)
   included_already <- length(row_match) > 0
   if (included_already) {
-    compare_this <- project$transformation$fields[row_match,]
+    compare_this <- project$transformation$fields[row_match, ]
     rownames(compare_this) <- NULL
     rownames(field_row) <- NULL
-    if (identical(field_row,compare_this)) {
+    if (identical(field_row, compare_this)) {
       # should there be a message?
       return(invisible(project)) #return if the same
     }
@@ -220,7 +224,7 @@ find_match <- function(x, ref, count_only = FALSE) {
   final_match
 }
 #' @noRd
-combine_project_fields <- function(data_list,transformation) {
+combine_project_fields <- function(data_list, transformation) {
   the_names <- transformation$fields$field_name
   fields <- data_list$metadata$fields
   if (is.null(the_names)) {
@@ -235,9 +239,13 @@ combine_project_fields <- function(data_list,transformation) {
     if (length(current_row) > 0) {
       fields <- fields[-current_row, ]
       i <- current_row
-      if (i > 1) i <- i - 1
+      if (i > 1)
+        i <- i - 1
     } else {
-      i <- which(fields$form_name == form_name & fields$field_name == paste0(form_name, "_complete"))
+      i <- which(
+        fields$form_name == form_name &
+          fields$field_name == paste0(form_name, "_complete")
+      )
       if (length(i) > 0) {
         if (i[[1]] > 1) {
           i <- i - 1
@@ -249,12 +257,15 @@ combine_project_fields <- function(data_list,transformation) {
       if (length(i) > 1) {
         i <- i[[1]]
       }
-      if (length(i) == 0) i <- nrow(fields)
+      if (length(i) == 0)
+        i <- nrow(fields)
     }
-    if (length(i) == 0) stop("insert_after error")
+    if (length(i) == 0)
+      stop("insert_after error")
     top <- fields[1:i, ]
     bottom <- NULL
-    if (i < nrow(fields)) bottom <- fields[(i + 1):nrow(fields), ]
+    if (i < nrow(fields))
+      bottom <- fields[(i + 1):nrow(fields), ]
     fields <- top %>%
       dplyr::bind_rows(field_row) %>%
       dplyr::bind_rows(bottom)
@@ -279,16 +290,18 @@ add_fields_to_data_list <- function(data_list, transformation) {
     environment(field_func) <- environment()
     if (is_something(field_func)) {
       if (form_name %in% names(named_df_list)) {
-        field <- field_func(project = data_list,
-                            field_name = field_name,
-                            form_name = form_name)
+        field <- field_func(
+          project = data_list,
+          field_name = field_name,
+          form_name = form_name
+        )
       }
     }
     if (form_name %in% names(named_df_list)) {
       named_df_list[[form_name]][[field_name]] <- field
     }
   }
-  fields <- combine_project_fields(data_list,transformation)
+  fields <- combine_project_fields(data_list, transformation)
   fields$original_form_name <- fields$form_name
   # fields$form_name <- forms_transformation_original$form_name_remap[match(fields$form_name, forms_transformation_original$form_name)]
   # fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]

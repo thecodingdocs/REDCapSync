@@ -8,14 +8,12 @@ deidentify_data_list <- function(data_list,
   metadata <- data_list$metadata
   fields <- metadata$fields
   exclusions <- exclude_additional
-  if(exclude_identifiers){
-    additional_ids <- c("zipcode","email","phone")
-    initial_identifiers <- fields$field_name[
-      which(
-        fields$identifier == "y" |
-          fields$text_validation_type_or_show_slider_number %in% additional_ids
-        )
-    ]
+  if (exclude_identifiers) {
+    additional_ids <- c("zipcode", "email", "phone")
+    initial_identifiers <- fields$field_name[which(
+      fields$identifier == "y" |
+        fields$text_validation_type_or_show_slider_number %in% additional_ids
+    )]
     if (length(initial_identifiers) == 0L) {
       warning(
         "You have no identifiers marked in ",
@@ -30,30 +28,23 @@ deidentify_data_list <- function(data_list,
       append(initial_identifiers) %>%
       unique()
   }
-  bad_identifiers <- exclusions[
-    which(
-      !exclusions %in% fields$field_name
-    )
-  ]
+  bad_identifiers <- exclusions[which(!exclusions %in% fields$field_name)]
   if (length(bad_identifiers) > 0L) {
-    stop(
-      "There is a bad identifier. see `fields$field_name`: ",
-      toString(bad_identifiers)
-    )
+    stop("There is a bad identifier. see `fields$field_name`: ",
+         toString(bad_identifiers))
   }
   id_cols <- metadata$form_key_cols %>%
     unlist() %>%
     unique()
   if (is_something(id_cols)) {
     if (any(id_cols %in% exclusions)) {
-      stop(
-        "ID cols not allowed... ",
-        toString(id_cols),
-        " <-- use hashing (in dev)"
-      )
+      stop("ID cols not allowed... ",
+           toString(id_cols),
+           " <-- use hashing (in dev)")
     }
   }
-  if (exclude_free_text) { # placeholder
+  if (exclude_free_text) {
+    # placeholder
     # drop free text only if there is no validation
     # make function for that ?external
     free_text_rows <- which(
@@ -88,13 +79,17 @@ deidentify_data_list <- function(data_list,
           append(date_vector) %>%
           unique()
       }
-      if(date_handling == "record_random_shift") {
+      if (date_handling == "record_random_shift") {
+
       }
-      if(date_handling == "project_random_shift") {
+      if (date_handling == "project_random_shift") {
+
       }
-      if(date_handling == "record_zero") {
+      if (date_handling == "record_zero") {
+
       }
-      if(date_handling == "project_zero") {
+      if (date_handling == "project_zero") {
+
       }
       min_dates <- get_min_dates(data_list)
       min_dates$difference <- (min_dates$date - as.Date(date_handling))
@@ -129,15 +124,14 @@ filter_data_list <- function(data_list,
                              filter_choices = NULL,
                              filter_list = NULL,
                              filter_strict = TRUE) {
-  if (is.null(field_names)) field_names <- data_list %>% get_all_field_names()
-  if (is.null(form_names)) form_names <- data_list$metadata$forms$form_name
+  if (is.null(field_names))
+    field_names <- data_list %>% get_all_field_names()
+  if (is.null(form_names))
+    form_names <- data_list$metadata$forms$form_name
   field_names_minus <- field_names[which(!field_names %in% data_list$metadata$raw_structure_cols)]
   if (length(field_names_minus) > 0) {
     form_names_minus <- data_list %>%
-      field_names_to_form_names(
-        field_names = field_names_minus,
-        strict = TRUE
-      )
+      field_names_to_form_names(field_names = field_names_minus, strict = TRUE)
     form_names <- form_names %>% vec1_in_vec2(form_names_minus)
   }
   missing_filter <- is.null(filter_list) &&
@@ -188,7 +182,8 @@ filter_data_list <- function(data_list,
           filter_field_final <- filter_field_name
           filter_choices_final <- filter_list[[filter_field_name]]
           if (!filter_strict) {
-            if (!is_key) { # need to account for instances
+            if (!is_key) {
+              # need to account for instances
               if (form_name != filter_form) {
                 filter_field_final <- data_list$metadata$id_col
                 filter_choices_final <- data_list$data[[filter_form]][[filter_field_final]][which(data_list$data[[filter_form]][[filter_field_name]] %in% filter_choices_final)] %>% unique()
@@ -215,13 +210,16 @@ filter_data_list <- function(data_list,
             }
           }
         }
-        if (is.null(row_logic)) row_logic <- NA
+        if (is.null(row_logic))
+          row_logic <- NA
         row_index <- which(row_logic)
       }
       field_names_adj <- c(field_names, filter_field_names)
       col_names <- colnames(form)[which(colnames(form) %in% field_names_adj)]
       if (length(row_index) > 0 && length(col_names) > 0) {
-        col_names <- colnames(form)[which(colnames(form) %in% unique(c(data_list$metadata$form_key_cols[[form_name]], field_names_adj)))]
+        col_names <- colnames(form)[which(colnames(form) %in% unique(
+          c(data_list$metadata$form_key_cols[[form_name]], field_names_adj)
+        ))]
         out_list[[form_name]] <- form[row_index, col_names, drop = FALSE]
       }
     }
@@ -229,7 +227,9 @@ filter_data_list <- function(data_list,
   invisible(out_list)
 }
 #' @noRd
-clean_data_list <- function(data_list, drop_blanks = TRUE, drop_others = NULL) {
+clean_data_list <- function(data_list,
+                            drop_blanks = TRUE,
+                            drop_others = NULL) {
   # assert data list
   data <- data_list$data
   metadata <- data_list$metadata
@@ -271,10 +271,13 @@ get_min_dates <- function(data_list) {
       existing_fields <- intersect(names(form), date_vector)
       if (length(existing_fields) > 0L) {
         df_subset <- form[, c(id_cols[1], existing_fields), drop = FALSE]
-        df_long <- stats::reshape(df_subset,
+        df_long <- stats::reshape(
+          df_subset,
           varying = existing_fields,
-          v.names = "date", times = existing_fields,
-          timevar = "field", direction = "long"
+          v.names = "date",
+          times = existing_fields,
+          timevar = "field",
+          direction = "long"
         )
         df_long$date <- as.Date(df_long$date, format = "%Y-%m-%d")
         all_dates <- c(all_dates, list(df_long))
@@ -370,9 +373,7 @@ link_REDCap_record <- function(project,
     }
     link <- link %>% paste0("&page=", page)
     if (!missing(instance)) {
-      repeating_form_names <- project$metadata$forms$form_name[
-        which(project$metadata$forms$repeating)
-      ]
+      repeating_form_names <- project$metadata$forms$form_name[which(project$metadata$forms$repeating)]
       if (!page %in% repeating_form_names) {
         stop(
           "If you provide an instance, it has to be a repeating instrument: ",
@@ -409,7 +410,8 @@ get_key_col_list <- function(data_list) {
   }
   out_list <- seq_len(nrow(forms)) %>% lapply(function(i) {
     out <- data_list$metadata$id_col
-    if (data_list$metadata$is_longitudinal) out <- append(out, "redcap_event_name")
+    if (data_list$metadata$is_longitudinal)
+      out <- append(out, "redcap_event_name")
     if (forms$repeating[i]) {
       out <- append(out, "redcap_repeat_instrument")
       out <- append(out, "redcap_repeat_instance")
@@ -449,14 +451,11 @@ normalize_redcap <- function(denormalized, project, labelled) {
       )
       add_ons <- add_ons[which(add_ons %in% colnames(denormalized))]
       col_names <- c(add_ons, colnames(denormalized)) %>% unique()
-      denormalized <- denormalized[
-        order(denormalized$id_temp),
-        col_names %>% lapply(function(c) {
-          which(colnames(denormalized) == c)
-        }) %>%
-          unlist() %>%
-          as.integer()
-      ]
+      denormalized <- denormalized[order(denormalized$id_temp), col_names %>% lapply(function(c) {
+        which(colnames(denormalized) == c)
+      }) %>%
+        unlist() %>%
+        as.integer()]
       denormalized$id_temp <- NULL
     }
     add_ons <- add_ons[which(add_ons %in% colnames(denormalized))]
@@ -477,13 +476,11 @@ normalize_redcap <- function(denormalized, project, labelled) {
           fields$field_name != project$metadata$id_col
       )]
       if (length(form_field_names) == 0) {
-        cli_alert_danger(
-          paste0(
-            "You might not have access to ",
-            form_name,
-            ". Unable to obtain."
-          )
-        )
+        cli_alert_danger(paste0(
+          "You might not have access to ",
+          form_name,
+          ". Unable to obtain."
+        ))
       }
       # consider message for what variables you are missing with vec1_not_in_vec2
       row_index <- NULL
@@ -499,7 +496,7 @@ normalize_redcap <- function(denormalized, project, labelled) {
             row_index <- which(
               denormalized$redcap_repeat_instrument == form_name |
                 denormalized$redcap_event_name %in% event_mapping$unique_event_name[which(!event_mapping$repeating &
-                  event_mapping$form == form_name)]
+                                                                                            event_mapping$form == form_name)]
             )
           }
           if (!is_longitudinal) {
@@ -507,18 +504,26 @@ normalize_redcap <- function(denormalized, project, labelled) {
           }
         }
         if (!is_repeating_form) {
-          add_ons_x <- add_ons_x[which(!add_ons_x %in% c("redcap_repeat_instrument", "redcap_repeat_instance"))]
+          add_ons_x <- add_ons_x[which(!add_ons_x %in% c(
+            "redcap_repeat_instrument",
+            "redcap_repeat_instance"
+          ))]
         }
-        if (!is_repeating_form && is_longitudinal && has_repeating_forms) {
+        if (!is_repeating_form &&
+            is_longitudinal && has_repeating_forms) {
           row_index <- which(
             is.na(denormalized$redcap_repeat_instrument) &
               denormalized$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)])
           )
         }
-        if (!is_repeating_form && is_longitudinal && !has_repeating_forms) {
-          row_index <- which(denormalized$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)]))
+        if (!is_repeating_form &&
+            is_longitudinal && !has_repeating_forms) {
+          row_index <- which(
+            denormalized$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)])
+          )
         }
-        if (!is_repeating_form && !is_longitudinal && has_repeating_forms) {
+        if (!is_repeating_form &&
+            !is_longitudinal && has_repeating_forms) {
           row_index <- which(is.na(denormalized$redcap_repeat_instrument))
         }
       }
@@ -567,94 +572,25 @@ clean_redcap_log <- function(redcap_log) {
       x[[1]]
     }) %>%
     unlist()
-  redcap_log$action_type[
-    not_design_rows[
-      dplyr::starts_with(
-        match = .log_action_exports,
-        vars = redcap_log$action[not_design_rows]
-      )
-    ]
-  ] <- "Exports"
-  redcap_log$action_type[
-    not_design_rows[
-      dplyr::starts_with(
-        match = .log_action_users,
-        vars = redcap_log$action[not_design_rows]
-      )
-    ]
-  ] <- "Users"
-  redcap_log$action_type[
-    not_design_rows[
-      dplyr::starts_with(
-        match = .log_action_no_changes,
-        vars = redcap_log$action[not_design_rows]
-      )
-    ]
-  ] <- "No Changes"
+  redcap_log$action_type[not_design_rows[dplyr::starts_with(match = .log_action_exports, vars = redcap_log$action[not_design_rows])]] <- "Exports"
+  redcap_log$action_type[not_design_rows[dplyr::starts_with(match = .log_action_users, vars = redcap_log$action[not_design_rows])]] <- "Users"
+  redcap_log$action_type[not_design_rows[dplyr::starts_with(match = .log_action_no_changes, vars = redcap_log$action[not_design_rows])]] <- "No Changes"
   # design details  -------------------
-  comment_rows <- design_rows[
-    dplyr::starts_with(
-      match = .log_details_comments,
-      vars = redcap_log$details[design_rows]
-    )
-  ]
-  redcap_log$record_id[comment_rows] <- stringr::str_extract(
-    string = redcap_log$details[comment_rows],
-    pattern = "(?<=Record: )[^,]+"
-  )
+  comment_rows <- design_rows[dplyr::starts_with(match = .log_details_comments, vars = redcap_log$details[design_rows])]
+  redcap_log$record_id[comment_rows] <- stringr::str_extract(string = redcap_log$details[comment_rows], pattern = "(?<=Record: )[^,]+")
   redcap_log$action_type[comment_rows] <- "Comment"
-  redcap_log$action_type[
-    design_rows[
-      dplyr::starts_with(
-        match = .log_details_exports,
-        vars = redcap_log$details[design_rows]
-      )
-    ]
-  ] <- "Exports"
-  redcap_log$action_type[
-    design_rows[
-      dplyr::starts_with(
-        match = .log_details_metadata_major,
-        vars = redcap_log$details[design_rows]
-      )
-    ]
-  ] <- "Metadata Change Major"
-  redcap_log$action_type[
-    design_rows[
-      dplyr::starts_with(
-        match = .log_details_metadata_minor,
-        vars = redcap_log$details[design_rows]
-      )
-    ]
-  ] <- "Metadata Change Minor"
-  redcap_log$action_type[
-    design_rows[
-      dplyr::starts_with(
-        match = .log_details_no_changes,
-        vars = redcap_log$details[design_rows]
-      )
-    ]
-  ] <- "No Changes"
-  redcap_log$action_type[
-    design_rows[
-      dplyr::starts_with(
-        match = .log_details_tokens,
-        vars = redcap_log$details[design_rows]
-      )
-    ]
-  ] <- "Tokens"
-  redcap_log$action_type[
-    design_rows[
-      dplyr::starts_with(
-        match = .log_details_repository,
-        vars = redcap_log$details[design_rows]
-      )
-    ]
-  ] <- "Repository"
+  redcap_log$action_type[design_rows[dplyr::starts_with(match = .log_details_exports, vars = redcap_log$details[design_rows])]] <- "Exports"
+  redcap_log$action_type[design_rows[dplyr::starts_with(match = .log_details_metadata_major, vars = redcap_log$details[design_rows])]] <- "Metadata Change Major"
+  redcap_log$action_type[design_rows[dplyr::starts_with(match = .log_details_metadata_minor, vars = redcap_log$details[design_rows])]] <- "Metadata Change Minor"
+  redcap_log$action_type[design_rows[dplyr::starts_with(match = .log_details_no_changes, vars = redcap_log$details[design_rows])]] <- "No Changes"
+  redcap_log$action_type[design_rows[dplyr::starts_with(match = .log_details_tokens, vars = redcap_log$details[design_rows])]] <- "Tokens"
+  redcap_log$action_type[design_rows[dplyr::starts_with(match = .log_details_repository, vars = redcap_log$details[design_rows])]] <- "Repository"
   # end ------------
-  row_index <- which(is.na(redcap_log$record) & !is.na(redcap_log$record_id))
+  row_index <- which(is.na(redcap_log$record) &
+                       !is.na(redcap_log$record_id))
   redcap_log$record[row_index] <- redcap_log$record_id[row_index]
-  row_index <- which(!is.na(redcap_log$record) & is.na(redcap_log$record_id))
+  row_index <- which(!is.na(redcap_log$record) &
+                       is.na(redcap_log$record_id))
   redcap_log$action_type[row_index] <- "Users"
   redcap_log$record_id <- NULL
   redcap_log$username[which(redcap_log$username == "[survey respondent]")] <- NA
@@ -663,15 +599,9 @@ clean_redcap_log <- function(redcap_log) {
   redcap_log
 }
 #' @noRd
-.log_action_exports <- c(
-  "Data export",
-  "Download uploaded "
-)
+.log_action_exports <- c("Data export", "Download uploaded ")
 #' @noRd
-.log_details_exports <- c(
-  "Export ",
-  "Download "
-)
+.log_details_exports <- c("Export ", "Download ")
 #' @noRd
 .log_action_users <- c(
   "User assigned to role ",
@@ -683,18 +613,12 @@ clean_redcap_log <- function(redcap_log) {
   "Create user role"
 )
 #' @noRd
-.log_details_comments <- c(
-  "Add field comment ",
-  "Edit field comment ",
-  "Delete field comment "
-)
+.log_details_comments <- c("Add field comment ", "Edit field comment ", "Delete field comment ")
 #' @noRd
-.log_action_records <- c(
-  "Update record ",
-  "Delete record ",
-  "Lock/Unlock Record ",
-  "Create record "
-)
+.log_action_records <- c("Update record ",
+                         "Delete record ",
+                         "Lock/Unlock Record ",
+                         "Create record ")
 #' @noRd
 .log_action_no_changes <- c(
   "Enable external module ",
@@ -737,10 +661,7 @@ clean_redcap_log <- function(redcap_log) {
   "Send request to copy project"
 )
 #' @noRd
-.log_details_tokens <- c(
-  "Create API token",
-  "User regenerate own API token"
-)
+.log_details_tokens <- c("Create API token", "User regenerate own API token")
 #' @noRd
 .log_details_repository <- c(
   "Upload file to File Repository",

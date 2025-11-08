@@ -1,17 +1,12 @@
 #' @noRd
-add_redcap_links_to_form <- function(form, project) { # add instance links
+add_redcap_links_to_form <- function(form, project) {
+  # add instance links
   if (project$metadata$id_col %in% colnames(form)) {
-    form_structure_cols <- project$metadata$raw_structure_cols[
-      which(
-        project$metadata$raw_structure_cols %in% colnames(form)
-      )
-    ]
-    form_structure_cols <- project$metadata$raw_structure_cols[
-      which(
-        project$metadata$raw_structure_cols %in% colnames(form) &
-          project$metadata$raw_structure_cols != project$metadata$id_col
-      )
-    ]
+    form_structure_cols <- project$metadata$raw_structure_cols[which(project$metadata$raw_structure_cols %in% colnames(form))]
+    form_structure_cols <- project$metadata$raw_structure_cols[which(
+      project$metadata$raw_structure_cols %in% colnames(form) &
+        project$metadata$raw_structure_cols != project$metadata$id_col
+    )]
     link_head <- project$links$redcap_record_home
     link_tail <- paste0("&id=", form[[project$metadata$id_col]])
     if ("redcap_repeat_instrument" %in% form_structure_cols) {
@@ -32,9 +27,7 @@ add_redcap_links_to_form <- function(form, project) { # add instance links
   }
   form
 }
-remove_from_form_list <- function(form_list,
-                                  id_col,
-                                  records = NULL) {
+remove_from_form_list <- function(form_list, id_col, records = NULL) {
   if (!is_something(form_list)) {
     return(form_list)
   }
@@ -44,13 +37,9 @@ remove_from_form_list <- function(form_list,
   if (is.null(records)) {
     return(form_list)
   }
-  form_names <- names(form_list)[
-    which(
-      unlist(lapply(names(form_list), function(form_name) {
-        nrow(form_list[[form_name]]) > 0L
-      }))
-    )
-  ]
+  form_names <- names(form_list)[which(unlist(lapply(names(form_list), function(form_name) {
+    nrow(form_list[[form_name]]) > 0L
+  })))]
   for (form_name in form_names) {
     chosen_rows <- which(!form_list[[form_name]][[id_col]] %in% records)
     form_list[[form_name]] <- form_list[[form_name]][chosen_rows, ]
@@ -66,11 +55,9 @@ remove_records_from_project <- function(project, records) {
       "update which depends on records."
     )
   }
-  project$data <- remove_from_form_list(
-    form_list = project$data,
-    id_col = id_col,
-    records = records
-  )
+  project$data <- remove_from_form_list(form_list = project$data,
+                                        id_col = id_col,
+                                        records = records)
   project$transformation$data <- remove_from_form_list(
     form_list = project$transformation$data,
     id_col = id_col,
@@ -94,12 +81,13 @@ split_choices <- function(x) {
     stringsAsFactors = FALSE
   )
   rownames(x) <- NULL
-  if (any(is.na(x$code))) stop("split choice error: ", oops)
-  if (any(is.na(x$name))) stop("split choice error: ", oops)
-  if (nrow(x) != check_length) stop("split choice error: ", oops)
+  if (any(is.na(x$code)))
+    stop("split choice error: ", oops)
+  if (any(is.na(x$name)))
+    stop("split choice error: ", oops)
+  if (nrow(x) != check_length)
+    stop("split choice error: ", oops)
   x
 }
 #' @noRd
-.field_types_not_in_data <- c(
-  "descriptive", "checkbox"
-)
+.field_types_not_in_data <- c("descriptive", "checkbox")

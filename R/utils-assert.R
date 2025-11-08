@@ -39,13 +39,13 @@ get_project_token <- function(project, silent = TRUE) {
         token_name,
         "='",
         message_about_token,
-        "')`... or for higher security run `edit_r_environ()` from `usethis` package and add
-        `",
+        "')`... or for higher security run `edit_r_environ()` from `usethis`",
+        "package and add `",
         token_name,
         " = '",
         message_about_token,
-        "'` to that file...(then restart R under session tab after saving file)... The way to tell it worked is to run the
-        code, `Sys.getenv('",
+        "'` to that file...(then restart R under session tab after saving",
+        "file)... The way to tell it worked is to run the code, `Sys.getenv('",
         token_name,
         "')`"
       )
@@ -53,7 +53,8 @@ get_project_token <- function(project, silent = TRUE) {
     if (is_something(project$links$redcap_api)) {
       cli_alert_wrap(
         paste0(
-          "You can request/regenerate/delete with `link_API_token(project)` or go here: "
+          "You can request/regenerate/delete with `link_API_token(project)`",
+          "or go here: "
         ),
         url = project$links$redcap_api
       )
@@ -73,6 +74,7 @@ get_project_token <- function(project, silent = TRUE) {
 }
 #' @noRd
 assert_web_link <- function(link) {
+  #change to validate api endpoint
   if (is.null(link)) stop("link is NULL")
   # Check if the link starts with "https://" or "http://"
   if (!grepl("^https?://", link)) {
@@ -82,7 +84,10 @@ assert_web_link <- function(link) {
   link <- gsub("/$", "", link)
   # Check if the link ends with one of the specified web endings
   if (!grepl("\\.(edu|com|org|net|gov|io|xyz|info|co|uk)$", link)) {
-    stop("Invalid web link. It must end with a valid web ending (.edu, .com, etc.).")
+    stop(
+      "Invalid web link. It must end with a valid web ending",
+      "(.edu, .com, etc.)."
+    )
   }
   # Add a trailing slash
   link <- paste0(link, "/")
@@ -337,13 +342,13 @@ assert_collection <- function(collection) {
   invisible(collection)
 }
 assert_project_details <- function(projects, nrows = NULL) {
-  OUT <- assert_data_frame(
+  the_output <- assert_data_frame(
     x = projects,
     nrows = nrows,
     ncols = length(.blank_project_cols),
   )
   assert_names(colnames(projects), permutation.of = .blank_project_cols)
-  OUT
+  the_output
 }
 assert_project_path <- function(project_path) {
   assert_path_for_output(

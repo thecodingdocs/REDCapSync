@@ -773,5 +773,6 @@ is_nested_list <- function(x) {
 generate_hex <- function(length = 32) {
   c(0:9, letters[1:6]) %>%
     sample(length, replace = TRUE) %>%
-    paste0(collapse = "") %>% toupper()
+    paste0(collapse = "") %>%
+    toupper()
 }

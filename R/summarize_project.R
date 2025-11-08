@@ -223,7 +223,14 @@ clean_form <- function(form, fields, drop_blanks = TRUE, drop_others = NULL) {
             duplicate_levels <- levels %>%
               duplicated() %>%
               which()
-            warning("You have a variable (", field_name, ") with dupplicate names (", levels[duplicate_levels] %>% toString(), "). This is not great but for this proccess they will be merged and treated as identical responses.")
+            warning(
+              "You have a variable (",
+              field_name,
+              ") with dupplicate names (",
+              levels[duplicate_levels] %>% toString(),
+              "). This is not great but for this proccess they will be merged",
+              "and treated as identical responses."
+            )
             levels <- levels %>% unique()
           }
           if (drop_blanks) {

@@ -107,8 +107,8 @@ sync_project <- function(
             deleted_records <- interim_log_data$record[which(interim_log_data$action_type == "Delete")]
             if (length(deleted_records) > 0) {
               warning(
-                "There were recent records deleted from redcap Consider running",
-                " with 'hard_reset = TRUE'. Records: ",
+                "There were recent records deleted from redcap",
+                "Consider running with 'hard_reset = TRUE'. Records: ",
                 deleted_records %>% toString(),
                 immediate. = TRUE
               )
@@ -125,7 +125,8 @@ sync_project <- function(
       }
     }
     if (hard_reset) {
-      project <- project %>% get_REDCap_metadata(include_users = !project$internals$metadata_only)
+      project <- project %>%
+        get_REDCap_metadata(include_users = !project$internals$metadata_only)
       if (!project$internals$metadata_only) {
         project$data <- list()
         project$data_updates <- list()
@@ -137,7 +138,9 @@ sync_project <- function(
         # if error records comma
         redcap_log <- project$redcap$log # in case there is a log already
         if (project$internals$entire_log) {
-          log_begin_date <- as.POSIXct(project$redcap$project_info$creation_time) %>% as.Date()
+          log_begin_date <-
+            as.POSIXct(project$redcap$project_info$creation_time) %>%
+            as.Date()
         } else {
           log_begin_date <- Sys.Date() - project$internals$days_of_log
         }
@@ -151,7 +154,9 @@ sync_project <- function(
           project$internals$last_full_update <-
           project$internals$last_metadata_update <-
           project$internals$last_data_update <- now_time()
-        cli_alert_wrap(paste0("Full ", project$short_name, " update!"), bullet_type = "v")
+        cli_alert_wrap(
+          paste0("Full ", project$short_name, " update!"),
+          bullet_type = "v")
         was_updated <- TRUE
       }
     } else {
@@ -160,7 +165,8 @@ sync_project <- function(
         if (length(deleted_records) > 0) {
           stale_records <- stale_records[which(!stale_records %in% deleted_records)]
           project <- remove_records_from_project(project = project, records = deleted_records)
-          project$summary$all_records <- project$summary$all_records[which(!project$summary$all_records[[id_col]] %in% deleted_records), ]
+          x <- !project$summary$all_records[[id_col]] %in% deleted_records
+          project$summary$all_records <- project$summary$all_records[which(x), ]
         }
         message_string <- "No new records to update!"
         if (length(stale_records) > 0) {
@@ -168,7 +174,8 @@ sync_project <- function(
             labelled = project$internals$labelled,
             records = stale_records
           )
-          missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[id_col]])]
+          missing_from_summary <- stale_records[
+            which(!stale_records %in% project$summary$all_records[[id_col]])]
           if (length(missing_from_summary) > 0) {
             x <- data.frame(
               record = missing_from_summary,
@@ -177,8 +184,10 @@ sync_project <- function(
               stringsAsFactors = FALSE
             )
             colnames(x)[1] <- id_col
-            project$summary$all_records <- project$summary$all_records %>% dplyr::bind_rows(x)
-            project$summary$all_records <- project$summary$all_records[order(project$summary$all_records[[id_col]], decreasing = TRUE), ]
+            project$summary$all_records <- project$summary$all_records %>%
+              dplyr::bind_rows(x)
+            x <- order(project$summary$all_records[[id_col]], decreasing = TRUE)
+            project$summary$all_records <- project$summary$all_records[x, ]
           }
           project <- remove_records_from_project(
             project = project,
@@ -195,7 +204,9 @@ sync_project <- function(
               all_character_cols() %>%
               dplyr::bind_rows(form_list[[form_name]])
           }
-          row_match <- which(project$summary$all_records[[id_col]] %in% stale_records)
+          row_match <- which(
+            project$summary$all_records[[id_col]] %in% stale_records
+          )
           project$summary$all_records$last_api_call[row_match] <-
             project$internals$last_data_update <-
             now_time()
@@ -216,7 +227,7 @@ sync_project <- function(
   }
   if (project$internals$add_default_summaries) {
     if (!is_something(project$summary$REDCapSync) ||
-      !is_something(project$summary$REDCapSync_raw)) {
+        !is_something(project$summary$REDCapSync_raw)) {
       project <- add_default_summaries(project)
     }
   }
@@ -367,7 +378,8 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
         }
         if (!had_change) {
           if (!is.na(from_cache$last_directory_save)) { # should I compare?
-            if (to_cache$last_directory_save != from_cache$last_directory_save) {
+            if (to_cache$last_directory_save !=
+                from_cache$last_directory_save) {
               if (!identical(to_cache$dir_path, from_cache$dir_path)) {
                 to_cache$dir_path <- from_cache$dir_path
                 # SAVE
@@ -382,7 +394,8 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
       }
       # else {
       #   # project_list[[project_name]] <- NULL
-      #   # cli_alert_info(paste0("Dropped cache for ",project_name," because it didn't exist"))
+        # cli_alert_info(paste0("Dropped cache for ",
+      #project_name," because it didn't exist"))
       #   # had_change <- TRUE
       # }
     }

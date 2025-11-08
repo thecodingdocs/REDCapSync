@@ -1316,7 +1316,8 @@ add_default_summaries <- function(project,
     dir_other = file.path(project$dir_path, "REDCap", project$short_name),
     file_name = project$short_name
   )
-  summary_name <- "REDCapSync"!is_something(project$transformation$forms)
+  summary_name <- "REDCapSync"
+  !is_something(project$transformation$forms)
   project <- add_project_summary(
     project = project,
     summary_name = summary_name,

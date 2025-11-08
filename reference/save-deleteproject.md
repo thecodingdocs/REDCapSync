@@ -9,8 +9,6 @@ given that `save_project` is a also handled by a default parameter in
 
 ``` r
 save_project(project, silent = FALSE)
-
-delete_project(project)
 ```
 
 ## Arguments

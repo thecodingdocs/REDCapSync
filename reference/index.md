@@ -54,7 +54,6 @@ via `RosyREDCap::run_RosyREDCap`.
   [`load_test_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   : Setup or Load REDCapSync Project
 - [`save_project()`](https://thecodingdocs.github.io/REDCapSync/reference/save-deleteproject.md)
-  [`delete_project()`](https://thecodingdocs.github.io/REDCapSync/reference/save-deleteproject.md)
   : Save or Delete project file from the directory
 
 ### Sync Function

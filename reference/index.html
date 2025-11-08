@@ -56,8 +56,7 @@
 
       <div class="section-desc"><p>For basic users use these core functions to maintain REDCap data pipelines. Setup or Load your project. Update from REDCap using what is already saved. Save the outputs to a directory.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -68,13 +67,15 @@
 
         </dt>
         <dd>Get your REDCap projects used by REDCapSync</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="setup-load.html">setup_project()</a></code> <code><a href="setup-load.html">load_project()</a></code> <code><a href="setup-load.html">load_test_project()</a></code>
 
         </dt>
         <dd>Setup or Load REDCapSync Project</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="sync_project.html">sync_project()</a></code>
 
@@ -85,14 +86,12 @@
 
       <div class="section-desc"><p>Expands on functionality and breaksdown core feautures into more customizable parts</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
       <h3 id="project-cache">Project Cache<a class="anchor" aria-label="anchor" href="#project-cache"></a></h3>
       <div class="section-desc"><p>REDCapSync cahces user-level project metadata (name, directory, links, last update and other details). Tokens and data are NOT stored here.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -103,13 +102,15 @@
 
         </dt>
         <dd>Get your REDCap projects used by REDCapSync</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="cache_clear.html">cache_clear()</a></code>
 
         </dt>
         <dd>Clear your cached projects</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="cache_path.html">cache_path()</a></code>
 
@@ -120,8 +121,7 @@
       <h3 id="tokens">Tokens<a class="anchor" aria-label="anchor" href="#tokens"></a></h3>
       <div class="section-desc"><p>Tokens are required to use the REDCap API. Never share your tokens.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -132,7 +132,8 @@
 
         </dt>
         <dd>View the REDCap API Token Stored in the Session</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="test_project_token.html">test_project_token()</a></code>
 
@@ -143,8 +144,7 @@
       <h3 id="setup-load-save-delete-project-object">Setup/Load/Save/Delete project Object<a class="anchor" aria-label="anchor" href="#setup-load-save-delete-project-object"></a></h3>
       <div class="section-desc"><p>project objects are R lists meant to store all metadata and data for a single REDCap project. They utilize the REDCap log to only fetch recent updates. The can be “mirrored” to a local/cloud directory to maintain file pipelines and/or used for an exploratory data analysis shiny app via <code>RosyREDCap::run_RosyREDCap</code>.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -155,7 +155,8 @@
 
         </dt>
         <dd>Setup or Load REDCapSync Project</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="save-deleteproject.html">save_project()</a></code> <code><a href="save-deleteproject.html">delete_project()</a></code>
 
@@ -166,8 +167,7 @@
       <h3 id="sync-function">Sync Function<a class="anchor" aria-label="anchor" href="#sync-function"></a></h3>
       <div class="section-desc"><p>sync_project uses project object in the environment.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -178,7 +178,8 @@
 
         </dt>
         <dd>Synchronize REDCap Data</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="sync_all.html">sync_all()</a></code>
 
@@ -189,8 +190,7 @@
       <h3 id="project-summaries">Project Summaries<a class="anchor" aria-label="anchor" href="#project-summaries"></a></h3>
       <div class="section-desc"><p>One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -201,13 +201,15 @@
           <span class="badge lifecycle lifecycle-experimental">experimental</span>
         </dt>
         <dd>Add a Subset to a REDCap Database</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="generate_project_summary.html">generate_project_summary()</a></code>
           <span class="badge lifecycle lifecycle-experimental">experimental</span>
         </dt>
         <dd>Generate a Summary from a Subset Name</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="clear_project_summaries.html">clear_project_summaries()</a></code>
           <span class="badge lifecycle lifecycle-experimental">experimental</span>
@@ -218,8 +220,7 @@
       <h3 id="data-helpers">Data Helpers<a class="anchor" aria-label="anchor" href="#data-helpers"></a></h3>
       <div class="section-desc"><p>Used for managing to-be-upload data</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -230,7 +231,8 @@
 
         </dt>
         <dd>Raw to Labelled REDCap forms</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="labelled_to_raw_form.html">labelled_to_raw_form()</a></code>
 
@@ -241,8 +243,7 @@
       <h3 id="download-from-upload-to-and-delete-from-redcap">Download from, Upload to, and Delete from REDCap<a class="anchor" aria-label="anchor" href="#download-from-upload-to-and-delete-from-redcap"></a></h3>
       <div class="section-desc"><p>Always use with caution! Package takes several steps to test and confirm uploads but ultimately the user is responsible for data changes. Remember REDCap always keeps a log of changes.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -253,7 +254,8 @@
 
         </dt>
         <dd>Get REDCap Report</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="upload_form_to_REDCap.html">upload_form_to_REDCap()</a></code>
 
@@ -264,8 +266,7 @@
       <h3 id="other-helpers">Other Helpers<a class="anchor" aria-label="anchor" href="#other-helpers"></a></h3>
 
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -276,13 +277,15 @@
 
         </dt>
         <dd>Objects exported from other packages</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="nav_to_dir.html">nav_to_dir()</a></code>
 
         </dt>
         <dd>nav_to_dir</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="Links.html">link_API_token()</a></code> <code><a href="Links.html">link_API_playground()</a></code> <code><a href="Links.html">link_REDCap_home()</a></code> <code><a href="Links.html">link_REDCap_project()</a></code> <code><a href="Links.html">link_REDCap_record()</a></code>
 
@@ -293,8 +296,7 @@
       <h3 id="advanced-experimental">Advanced/Experimental<a class="anchor" aria-label="anchor" href="#advanced-experimental"></a></h3>
       <div class="section-desc"><p>This is diffult to explain experimental function for adding derived fields and overwritting existing fields for advanced pipelines.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -305,7 +307,8 @@
           <span class="badge lifecycle lifecycle-experimental">experimental</span>
         </dt>
         <dd>Add Field Transformation to the Database</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="clear_project_fields.html">clear_project_fields()</a></code>
           <span class="badge lifecycle lifecycle-experimental">experimental</span>
@@ -321,7 +324,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

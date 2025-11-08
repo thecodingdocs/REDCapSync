@@ -1,0 +1,19 @@
+# Security Measures
+
+REDCapSync made several design choices to ensure as much security as
+possible. The owner of the token is ultimately responsible for the path
+that their data takes. The most important considerations of the user
+should be the privacy of their token. Regenerate or deactivate if your
+token has or may have been shared as if your username and password were
+shared. Never save your token in shared spaces, cloud storage, or in
+git/github repositories. REDCapSync cannot control what is done with
+data once the owner of the token. Ultimately all data coming out of
+REDCap is recorded in the log.
+
+REDCapSync encrypts the project objects that are saved in the
+user-chosen directory. That file can only be imported into R if that
+user also has the API token.
+
+``` r
+library(REDCapSync)
+```

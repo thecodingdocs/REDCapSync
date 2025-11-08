@@ -1,0 +1,90 @@
+# Tokens
+
+## REDCap API tokens
+
+REDCap API tokens are equivalent to your username and password. They
+should never be shared with anyone. Ideally, they should never be
+directly written in an R script, especially if you plan on sharing it in
+the future. **Never commit a file containing your token on git or GitHub
+because this will forever be in the history.** If there is ever any
+doubt in your mind you should quickly regenerate your token on the
+REDCap website. If you are working on a *real* REDCap project it’s good
+practice to regenerate your token periodically, such as once a week,
+just to be safe.
+
+Precisely because tokens are sensitive, REDCapSync is designed to only
+reference the name of your token, such as “REDCapSync_TEST”. If
+REDCapSync ever wants to use the token to make an API call to REDCap, it
+will check `Sys.getenv("REDCapSync_TEST")`. By default are token names
+start with “REDCapSync\_”, followed by the `short_name` you chose in
+[`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).Below
+demonstrates how to set and check your tokens…
+
+### Setting Your Token for One Session
+
+You can set manually with base R. Unless you specifically set the token
+`Sys.getenv("REDCapSync_TEST")` will be blank.
+
+``` r
+# Set your token manually
+Sys.setenv(REDCapSync_TEST="a_FaKe_TOkEn") # again having this in a script is not advised but possible
+
+# Get your token
+Sys.getenv("REDCapSync_TEST")
+#>[1] "a_FaKe_TOkEn"
+```
+
+Now the token is set for this R session only. If you restarted R, it
+would be blank again.
+
+### Setting Your Token for Any Session
+
+You may find want to reuse a token, and you may have several projects,
+so a convenient way to store the tokens in a separate location. One way
+to do this is your personal .Renviron file. Again, you should check
+always confirm the location of this file and make sure it’s not a part
+of any cloud storage or git or GitHub. You can use
+`usethis::edit_r_environ()` to semi-permanently save your token. Each
+time you launch an R session this file will run and your token will be
+visible to you if specifically called with
+`Sys.getenv("REDCapSync_TEST")`.
+
+1.  Open the .Renviron file with `usethis::edit_r_environ()`
+2.  Add the token like this… `REDCapSync_TEST = "faKeTokeN"`
+3.  Save the file and Close
+4.  Restart R Session (Session tab or `.rs.restartR()`).
+5.  Confirm with `Sys.getenv("REDCapSync_TEST")`
+
+``` r
+#Install usethis if you don't have it.
+#install.packages("usethis") 
+usethis::edit_r_environ()
+# Now save your token.... (without the comment symbol '#')
+# REDCapSync_TEST = "faKeTokeN"
+# Save the file and Close
+# Restart R Session (session tab)
+# .rs.restartR() # this will also restart R session for you.
+Sys.getenv("REDCapSync_TEST") # now should contain your token
+```
+
+The only reference to your token that is ever made or saved in
+REDCapSync is with its name. For example, any REDCap project object will
+have the token name at `project$token_name`. In the future, we may set
+our token in a different way.
+
+### Testing Your Token (optional)
+
+If you are ever having any issues with your token, you can test your
+project object with `view_project_token(project)` and/or
+`test_project_token(project)`
+
+``` r
+
+view_project_token(project)
+
+test_project_token(project)
+```
+
+### Additional Resources
+
+- <https://www.dartistics.com/renviron.html>

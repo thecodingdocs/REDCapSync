@@ -80,16 +80,12 @@ deidentify_data_list <- function(data_list,
           unique()
       }
       if (date_handling == "record_random_shift") {
-
       }
       if (date_handling == "project_random_shift") {
-
       }
       if (date_handling == "record_zero") {
-
       }
       if (date_handling == "project_zero") {
-
       }
       min_dates <- get_min_dates(data_list)
       min_dates$difference <- (min_dates$date - as.Date(date_handling))
@@ -613,7 +609,9 @@ clean_redcap_log <- function(redcap_log) {
   "Create user role"
 )
 #' @noRd
-.log_details_comments <- c("Add field comment ", "Edit field comment ", "Delete field comment ")
+.log_details_comments <- c("Add field comment ",
+                           "Edit field comment ",
+                           "Delete field comment ")
 #' @noRd
 .log_action_records <- c("Update record ",
                          "Delete record ",

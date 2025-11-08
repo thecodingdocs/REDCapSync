@@ -16,7 +16,8 @@
 #' the directory. Default is `TRUE`.
 #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
 #' parameter from `setup_project()`)
-#' @param hard_reset Logical that forces a fresh update if TRUE. Default is `FALSE`.
+#' @param hard_reset Logical that forces a fresh update if TRUE. Default is
+#' `FALSE`.
 #' @return Messages for confirmation.
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.

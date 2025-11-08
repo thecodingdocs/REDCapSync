@@ -26,7 +26,8 @@ the directory. Default is \code{TRUE}.}
 \item{hard_check}{Will check REDCap even if not due (see \code{sync_frequency}
 parameter from \code{setup_project()})}
 
-\item{hard_reset}{Logical that forces a fresh update if TRUE. Default is \code{FALSE}.}
+\item{hard_reset}{Logical that forces a fresh update if TRUE. Default is
+\code{FALSE}.}
 
 \item{silent}{Logical (TRUE/FALSE). For messages.}
 }

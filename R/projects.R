@@ -28,55 +28,6 @@ get_projects <- function() {
   }
   projects
 }
-#' @title List File Paths of REDCapSync Projects in a Folder
-#' @description
-#' Searches a specified folder for files related to REDCapSync projects and
-#' returns their file paths.
-#' Optionally validates the folder to ensure it was previously set up using
-#' `setup_project()`.
-#'
-#' @param file_path Character. The path to the folder to search.
-#' @param validate Logical. If `TRUE`, the function will only accept valid
-#' directories previously set up with `setup_project()`. Default is `TRUE`.
-#'
-#' @return
-#' A character vector of file paths for valid REDCapSync project files in the
-#' folder. Returns an empty character vector if no valid files are found.
-#'
-#' @details
-#' This function checks a folder (and optionally validates its setup) for
-#' `.RData` files that correspond to REDCapSync projects.
-#' It identifies files with the extension `.RData` and names ending in
-#' `_REDCapSync`, filtering out any unrelated files.
-#'
-#' @seealso
-#' \link{setup_project} for setting up valid directories.
-#' @keywords internal
-check_folder_for_projects <- function(file_path, validate = TRUE) {
-  check_path <- file_path
-  if (validate) {
-    file_path <- assert_dir(file_path)
-    check_path <- file.path(file_path, "R_objects")
-  }
-  files <- list_files_real(check_path, full_names = TRUE, recursive = TRUE)
-  if (length(file) == 0) {
-    return(character(0))
-  }
-  file_name <- tools::file_path_sans_ext(basename(files))
-  file_ext <- tools::file_ext(files)
-  df <- data.frame(
-    file_path = files,
-    file_name = file_name,
-    file_ext = file_ext,
-    stringsAsFactors = FALSE
-  )
-  df <- df[which((df$file_ext == "RData") &
-                   (endsWith(df$file_name, "_REDCapSync"))), ]
-  if (nrow(df) == 0) {
-    return(character(0))
-  }
-  df$file_path
-}
 #' @noRd
 .blank_project_cols <- c(
   "short_name",

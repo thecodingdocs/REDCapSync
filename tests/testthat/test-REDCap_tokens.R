@@ -70,6 +70,39 @@ test_that("get_REDCap_token_name works", {
   project <- mock_project()
   expect_equal(get_REDCap_token_name(project), "REDCapSync_TEST_PROJECT")
 })
+test_that("view_project_token works when no token set", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
+  project <- mock_project()
+  expect_message(view_project_token(project), "Never share your token:")
+})
+test_that("view_project_token works when token is set", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
+  project <- mock_project()
+  token_name <- get_REDCap_token_name(project)
+  token <- generate_hex(32)
+  withr::with_envvar(c(REDCapSync_TEST_PROJECT = token), {
+    expect_message(view_project_token(project),
+                   paste0("Never share your token: ", token))
+  })
+})
 # test_that("set_REDCap_token sets a new token", {
 #   project <- mock_project()
 #   mockery::stub(set_REDCap_token, "readline", .TEST_classic_token)

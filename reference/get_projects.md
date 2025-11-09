@@ -19,4 +19,5 @@ data.frame of projects from the cache
 
 Other Project Cache Functions:
 [`cache_clear()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_clear.md),
-[`cache_path()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_path.md)
+[`cache_path()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_path.md),
+[`cache_remove_project()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_remove_project.md)

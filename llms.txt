@@ -152,6 +152,8 @@ last update and other details). Tokens and data are NOT stored here.
   : Clear your cached projects
 - [`cache_path()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_path.md)
   : Get your Get Cache Path
+- [`cache_remove_project()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_remove_project.md)
+  : Remove project from cache
 
 ### Tokens
 
@@ -237,7 +239,7 @@ Remember REDCap always keeps a log of changes.
 
 ### Advanced/Experimental
 
-This is diffult to explain experimental function for adding derived
+This is a diffult to explain experimental function for adding derived
 fields and overwritting existing fields for advanced pipelines.
 
 - [`add_project_field()`](https://thecodingdocs.github.io/REDCapSync/reference/add_project_field.md)

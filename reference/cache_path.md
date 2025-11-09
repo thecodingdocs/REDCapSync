@@ -29,6 +29,7 @@ For more details, see
 
 Other Project Cache Functions:
 [`cache_clear()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_clear.md),
+[`cache_remove_project()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_remove_project.md),
 [`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)
 
 ## Examples

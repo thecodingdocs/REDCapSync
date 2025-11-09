@@ -23,4 +23,5 @@ deletes it! This will not delete project data, just the packages stored
 
 Other Project Cache Functions:
 [`cache_path()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_path.md),
+[`cache_remove_project()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_remove_project.md),
 [`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)

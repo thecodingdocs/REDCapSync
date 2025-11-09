@@ -66,6 +66,6 @@ mock_project <- function() {
         var_yesno = "Yes"
       )
     )
-  form_example
+  # form_example
   return(project)
 }

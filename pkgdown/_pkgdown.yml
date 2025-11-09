@@ -37,6 +37,7 @@ reference:
       - get_projects
       - cache_clear
       - cache_path
+      - cache_remove_project
   - subtitle: Tokens
     desc: Tokens are required to use the REDCap API. Never share your tokens.
     contents:
@@ -79,7 +80,7 @@ reference:
       - link_REDCap_project
       - link_REDCap_record
   - subtitle: Advanced/Experimental
-    desc: This is diffult to explain experimental function for adding derived fields and overwritting existing fields for advanced pipelines.
+    desc: This is a diffult to explain experimental function for adding derived fields and overwritting existing fields for advanced pipelines.
     contents:
       - add_project_field
       - clear_project_fields

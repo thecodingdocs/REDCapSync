@@ -19,7 +19,8 @@ which can be used to find, move, edit, delete that data.
 \seealso{
 Other Project Cache Functions: 
 \code{\link{cache_clear}()},
-\code{\link{cache_path}()}
+\code{\link{cache_path}()},
+\code{\link{cache_remove_project}()}
 }
 \concept{Project Cache Functions}
 \keyword{Cache}

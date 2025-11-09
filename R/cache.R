@@ -71,7 +71,29 @@ get_cache <- function() {
   cache$mkdir()
   cache
 }
-#' @noRd
-remove_project_from_cahce <- function(short_name){
-  #
+#' @title Remove project from cache
+#' @description
+#' This will remove a project from cache. Remember cache only stores information
+#' like short_name, token_name, directory location, and more from setup_project.
+#' If you want to truly delete the project files go the folder you setup.
+#' @return data.frame of projects from the cache
+#' @family Project Cache Functions
+#' @keywords Project Cache Functions
+#' @export
+cache_remove_project <- function(short_name){
+  projects <- get_projects()
+  is_in_cache <- short_name %in% projects$short_name
+  if (!is_in_cache) {
+    cli_alert_warning(
+      paste0("'", short_name, "' is not saved in your cache. ",
+             "Nothing to do. "))
+    return(invisible())
+  }
+  projects <- projects[which(projects$short_name != short_name), ]
+  save_projects_to_cache(projects, silent = TRUE)
+  cli_alert_success(
+    paste0("'", short_name, "' removed from cache but if you wish to delete ",
+           "files you must do this manually at the folder you previously chose."
+           ))
 }
+# need checks on setup project if project id is same etc

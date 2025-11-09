@@ -20,6 +20,7 @@ This will not delete project data, just the packages stored "memory" of it.
 \seealso{
 Other Project Cache Functions: 
 \code{\link{cache_path}()},
+\code{\link{cache_remove_project}()},
 \code{\link{get_projects}()}
 }
 \concept{Project Cache Functions}

@@ -71,3 +71,7 @@ get_cache <- function() {
   cache$mkdir()
   cache
 }
+#' @noRd
+remove_project_from_cahce <- function(short_name){
+  #
+}

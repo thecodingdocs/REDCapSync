@@ -35,12 +35,6 @@ sync_project <- function(project,
                  any.missing = FALSE,
                  len = 1,
                  add = collected)
-  # assert_logical(
-  #   ask_about_overwrites,
-  #   any.missing = FALSE,
-  #   len = 1,
-  #   add = collected
-  # )
   assert_logical(save_to_dir,
                  any.missing = FALSE,
                  len = 1,
@@ -51,17 +45,18 @@ sync_project <- function(project,
                  add = collected)
   current_function <- as.character(current_call())[[1]]
   if (!collected$isEmpty()) {
-    message <- collected %>% cli_message_maker(function_name = current_function)
+    message <- collected %>%
+      cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
   id_col <- project$metadata$id_col
-  do_it <- due_for_sync(project_name = project$short_name) ||
+  do_sync <- due_for_sync(project_name = project$short_name) ||
     hard_reset || hard_check
   was_updated <- FALSE
-  if (!do_it) {
+  if (!do_sync) {
     cli::cli_alert_info("{project$short_name} not due for sync ({project$internals$sync_frequency})")
   }
-  if (do_it) {
+  if (do_sync) {
     stale_records <- NULL
     will_update <- TRUE
     # project$internals$last_directory_save
@@ -90,7 +85,8 @@ sync_project <- function(project,
           strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d")
         )) %>% unique()
         if (nrow(interim_log) <= nrow(project$redcap$log)) {
-          head_of_log <- project$redcap$log %>% utils::head(n = nrow(interim_log))
+          head_of_log <- project$redcap$log %>%
+            utils::head(n = nrow(interim_log))
         } else {
           head_of_log <- project$redcap$log
         }
@@ -157,7 +153,9 @@ sync_project <- function(project,
           log_begin_date <- Sys.Date() - project$internals$days_of_log
         }
         project$redcap$log <- redcap_log %>%
-          dplyr::bind_rows(project %>% get_REDCap_log2(log_begin_date = log_begin_date)) %>%
+          dplyr::bind_rows(
+            project %>%
+              get_REDCap_log2(log_begin_date = log_begin_date)) %>%
           sort_redcap_log()
         project$summary$all_records <- extract_project_records(project)
         project$summary$all_records$last_api_call <-

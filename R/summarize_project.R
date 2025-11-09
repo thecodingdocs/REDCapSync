@@ -499,7 +499,7 @@ data_list_to_save <- function(data_list,
   if (include_metadata) {
     metadata_form_names <- c("forms", "fields", "choices", "missing_codes")
     metadata_names <- data_list$metadata[metadata_form_names] %>%
-      process_df_list(silent = T) %>%
+      process_df_list(silent = TRUE) %>%
       names()
     metadata_names_alt <- metadata_names
     if (any(metadata_names %in% names(data_list$data))) {
@@ -1240,7 +1240,7 @@ summary_records_due <- function(project, summary_name) {
   }
   if (!file.exists(summary_list$file_path) &&
       !summary_list$separate) {
-    # can't do this for separate = T unless more code is written
+    # can't do this for separate = TRUE unless more code is written
     return(TRUE)
   }
   old_records <- project$summary$all_records[[id_col]][which(project$summary$all_records[[summary_name]])] %>% sort()

@@ -6,8 +6,12 @@
 \usage{
 cache_remove_project(short_name)
 }
+\arguments{
+\item{short_name}{A character string with no spaces or symbols representing
+the unique short name for the REDCap project.}
+}
 \value{
-data.frame of projects from the cache
+message of outcome
 }
 \description{
 This will remove a project from cache. Remember cache only stores information

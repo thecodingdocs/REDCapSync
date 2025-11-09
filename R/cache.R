@@ -72,11 +72,12 @@ get_cache <- function() {
   cache
 }
 #' @title Remove project from cache
+#' @inheritParams setup_project
 #' @description
 #' This will remove a project from cache. Remember cache only stores information
 #' like short_name, token_name, directory location, and more from setup_project.
 #' If you want to truly delete the project files go the folder you setup.
-#' @return data.frame of projects from the cache
+#' @return message of outcome
 #' @family Project Cache Functions
 #' @keywords Project Cache Functions
 #' @export

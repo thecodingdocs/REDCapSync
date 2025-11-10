@@ -6,35 +6,43 @@ Interface (API) such as,
 [redcapAPI](https://github.com/vubiostat/redcapAPI/ "redcapAPI R package"),
 and
 [tidyREDCap](https://raymondbalise.github.io/tidyREDCap/ "redcapAPI R package").
-However, there is no R package for maintaining synchronized data
-pipelines from REDCap. Enter
-[REDCapSync](https://github.com/thecodingdocs/REDCapSync), which
-streamlines comprehensive extraction from one or multiples REDCap
-projects with `REDCapSync::sync()`.
+However, there is no “get-everything-from-REDCap” R package that can
+produce a standardized R object for any REDCap project.
+[REDCapSync](https://github.com/thecodingdocs/REDCapSync) streamlines
+comprehensive extraction with two key functions:
+[`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+and
+[`sync_project()`](https://thecodingdocs.github.io/REDCapSync/reference/sync_project.md).
+When a sync is performed
+[REDCapSync](https://github.com/thecodingdocs/REDCapSync) uses the
+REDCap log to only update data that has changed since the last API call.
+The final project-agnostic object facilitates further pipelining for
+deidenification, deriving additional variables, linked excel sheets, and
+exploratory data analysis with
+[RosyREDCap](https://thecodingdocs.github.io/RosyREDCap/ "RosyREDCap").
 
 ## What is `{REDCapSync}`?
 
 Using a cache of previous saves, a file directory, and the REDCap log,
 {REDCapSync} updates only the data that has been changed since the last
-call. Each project becomes a standardized nested R list object that can
-be used for the best that R has to offer via statistics, visualization,
-shiny apps, and more! REDCapSync unleashes the full power of the REDCap
-API even for the basic R user.
+API call. Each project becomes a standardized nested R list object that
+can be used for the best that R has to offer via statistics,
+visualization, shiny apps, and more! REDCapSync unleashes the full power
+of the REDCap API even for the basic R user.
 
-The evolving aims of
-[REDCapSync](https://github.com/thecodingdocs/REDCapSync) are to…
+The aims of [REDCapSync](https://github.com/thecodingdocs/REDCapSync)
+are to…
 
 1.  Wrap the REDCap API functionality “behind-the-scenes” to streamline
     its use.
 2.  Maintain local/cloud versions of one or many REDCap projects by only
     updating recently changed records on a user-defined schedule, such
     as daily, weekly, or monthly.
-3.  Automate standard tasks such as cleaning, deidentification and
-    quality control.
-4.  Standardize creation of custom data transformations and subsets that
-    are passed down to a directory.
-5.  Allow bulk imports of ***uncoded*** data using R or Excel/CSV.
-6.  Power the companion shiny app
+3.  Automate tasks such as cleaning, deidentification and standard
+    transformations.
+4.  Allow bulk exports AND imports of ***uncoded*** REDCap data using R
+    and Excel.
+5.  Power the companion shiny app
     [RosyREDCap](https://thecodingdocs.github.io/RosyREDCap/ "RosyREDCap R package")
 
 By leveraging the combined strengths of R and REDCap, users can maintain

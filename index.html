@@ -88,19 +88,18 @@
 <!-- badges: start -->
 
 <!-- badges: end -->
-<p>Several R packages exist for using the REDCap Application Program Interface (API) such as, <a href="https://ouhscbbmc.github.io/REDCapR/" title="REDCapR R package" class="external-link">REDCapR</a>, <a href="https://github.com/vubiostat/redcapAPI/" title="redcapAPI R package" class="external-link">redcapAPI</a>, and <a href="https://raymondbalise.github.io/tidyREDCap/" title="redcapAPI R package" class="external-link">tidyREDCap</a>. However, there is no R package for maintaining synchronized data pipelines from REDCap. Enter <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a>, which streamlines comprehensive extraction from one or multiples REDCap projects with <code>REDCapSync::sync()</code>.</p>
+<p>Several R packages exist for using the REDCap Application Program Interface (API) such as, <a href="https://ouhscbbmc.github.io/REDCapR/" title="REDCapR R package" class="external-link">REDCapR</a>, <a href="https://github.com/vubiostat/redcapAPI/" title="redcapAPI R package" class="external-link">redcapAPI</a>, and <a href="https://raymondbalise.github.io/tidyREDCap/" title="redcapAPI R package" class="external-link">tidyREDCap</a>. However, there is no “get-everything-from-REDCap” R package that can produce a standardized R object for any REDCap project. <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> streamlines comprehensive extraction with two key functions: <code><a href="reference/setup-load.html">setup_project()</a></code> and <code><a href="reference/sync_project.html">sync_project()</a></code>. When a sync is performed <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> uses the REDCap log to only update data that has changed since the last API call. The final project-agnostic object facilitates further pipelining for deidenification, deriving additional variables, linked excel sheets, and exploratory data analysis with <a href="https://thecodingdocs.github.io/RosyREDCap/" title="RosyREDCap" class="external-link">RosyREDCap</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="what-is-redcapsync">What is <code>{REDCapSync}</code>?<a class="anchor" aria-label="anchor" href="#what-is-redcapsync"></a>
 </h2>
-<p>Using a cache of previous saves, a file directory, and the REDCap log, {REDCapSync} updates only the data that has been changed since the last call. Each project becomes a standardized nested R list object that can be used for the best that R has to offer via statistics, visualization, shiny apps, and more! REDCapSync unleashes the full power of the REDCap API even for the basic R user.</p>
-<p>The evolving aims of <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> are to…</p>
+<p>Using a cache of previous saves, a file directory, and the REDCap log, {REDCapSync} updates only the data that has been changed since the last API call. Each project becomes a standardized nested R list object that can be used for the best that R has to offer via statistics, visualization, shiny apps, and more! REDCapSync unleashes the full power of the REDCap API even for the basic R user.</p>
+<p>The aims of <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> are to…</p>
 <ol style="list-style-type: decimal">
 <li>Wrap the REDCap API functionality “behind-the-scenes” to streamline its use.</li>
 <li>Maintain local/cloud versions of one or many REDCap projects by only updating recently changed records on a user-defined schedule, such as daily, weekly, or monthly.</li>
-<li>Automate standard tasks such as cleaning, deidentification and quality control.</li>
-<li>Standardize creation of custom data transformations and subsets that are passed down to a directory.</li>
-<li>Allow bulk imports of <strong><em>uncoded</em></strong> data using R or Excel/CSV.</li>
+<li>Automate tasks such as cleaning, deidentification and standard transformations.</li>
+<li>Allow bulk exports AND imports of <strong><em>uncoded</em></strong> REDCap data using R and Excel.</li>
 <li>Power the companion shiny app <a href="https://thecodingdocs.github.io/RosyREDCap/" title="RosyREDCap R package" class="external-link">RosyREDCap</a>
 </li>
 </ol>

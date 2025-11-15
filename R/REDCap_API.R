@@ -48,63 +48,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$metadata$raw_structure_cols <- project$metadata$form_key_cols %>%
     unlist() %>%
     unique()
-  form_names <- project$metadata$forms$form_name # [which(project$metadata$forms$form_name%in%unique(project$metadata$fields$form_name))]
-  for (form_name in form_names) {
-    field_name <- paste0(form_name, "_complete")
-    field_label <- field_name %>%
-      strsplit("_") %>%
-      unlist() %>%
-      stringr::str_to_title() %>%
-      paste(collapse = " ")
-    new_row <- data.frame(
-      field_name = field_name,
-      form_name = form_name,
-      field_type = "radio",
-      field_label = field_label,
-      select_choices_or_calculations = "0, Incomplete | 1, Unverified | 2, Complete",
-      stringsAsFactors = FALSE
-    )
-    last_row <- nrow(project$metadata$fields)
-    row_index <- which(project$metadata$fields$form_name == form_name)
-    if (length(row_index) == 0) {
-      row_index <- last_row
-    }
-    row <- dplyr::last(row_index)
-    top <- project$metadata$fields[1:row, ]
-    bottom <- NULL
-    if (last_row > row) {
-      bottom <- project$metadata$fields[(row + 1):last_row, ]
-    }
-    project$metadata$fields <- top %>%
-      dplyr::bind_rows(new_row) %>%
-      dplyr::bind_rows(bottom)
-  }
-  if (any(project$metadata$fields$field_type == "checkbox")) {
-    for (field_name in project$metadata$fields$field_name[which(project$metadata$fields$field_type == "checkbox")]) {
-      x <- project$metadata$fields$select_choices_or_calculations[which(project$metadata$fields$field_name == field_name)] %>% split_choices()
-      new_rows <- data.frame(
-        field_name = paste0(field_name, "___", x$code),
-        form_name = project$metadata$fields$form_name[which(project$metadata$fields$field_name == field_name)],
-        field_label = x$name,
-        field_type = "checkbox_choice",
-        select_choices_or_calculations = "0, Unchecked | 1, Checked",
-        stringsAsFactors = FALSE
-      )
-      row <- which(project$metadata$fields$field_name == field_name)
-      last_row <- nrow(project$metadata$fields)
-      top <- project$metadata$fields[1:row, ]
-      bottom <- NULL
-      if (last_row > row) {
-        bottom <- project$metadata$fields[(row + 1):last_row, ]
-      }
-      project$metadata$fields <- top %>%
-        dplyr::bind_rows(new_rows) %>%
-        dplyr::bind_rows(bottom)
-    }
-  }
-  if (any(project$metadata$fields$field_type == "yesno")) {
-    project$metadata$fields$select_choices_or_calculations[which(project$metadata$fields$field_type == "yesno")] <- "0, No | 1, Yes"
-  }
+  project$metadata$fields <- add_field_elements(project$metadata$fields)
   # project$metadata$fields <- project %>% annotate_fields(summarize_data = FALSE, drop_blanks = FALSE)
   project$metadata$choices <- fields_to_choices(fields = project$metadata$fields)
   # is longitudinal ------
@@ -197,6 +141,68 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project <- update_project_links(project)
   invisible(project)
 }
+#' @noRd
+add_field_elements <- function(fields) {
+  #assert_fields should be here
+  form_names <- unique(fields$form_name)
+  for (form_name in form_names) {
+    field_name <- paste0(form_name, "_complete")
+    new_row <- data.frame(
+      field_name = field_name, # check if conflicts,
+      form_name = form_name,
+      field_type = "radio",
+      field_label = field_name %>%
+        strsplit("_") %>%
+        unlist() %>%
+        stringr::str_to_title() %>%
+        paste(collapse = " "),
+      select_choices_or_calculations = "0, Incomplete | 1, Unverified | 2, Complete",
+      stringsAsFactors = FALSE
+    )
+    last_row <- nrow(fields)
+    row_index <- which(fields$form_name == form_name)
+    if (length(row_index) == 0) {
+      row_index <- last_row
+    }
+    row <- dplyr::last(row_index)
+    top <- fields[1:row, ]
+    bottom <- NULL
+    if (last_row > row) {
+      bottom <- fields[(row + 1):last_row, ]
+    }
+    fields <- top %>%
+      dplyr::bind_rows(new_row) %>%
+      dplyr::bind_rows(bottom)
+  }
+  if (any(fields$field_type == "checkbox")) {
+    for (field_name in fields$field_name[which(fields$field_type == "checkbox")]) {
+      x <- fields$select_choices_or_calculations[which(fields$field_name == field_name)] %>% split_choices()
+      new_rows <- data.frame(
+        field_name = paste0(field_name, "___", x$code),
+        form_name = fields$form_name[which(fields$field_name == field_name)],
+        field_label = x$name,
+        field_type = "checkbox_choice",
+        select_choices_or_calculations = "0, Unchecked | 1, Checked",
+        stringsAsFactors = FALSE
+      )
+      row <- which(fields$field_name == field_name)
+      last_row <- nrow(fields)
+      top <- fields[1:row, ]
+      bottom <- NULL
+      if (last_row > row) {
+        bottom <- fields[(row + 1):last_row, ]
+      }
+      fields <- top %>%
+        dplyr::bind_rows(new_rows) %>%
+        dplyr::bind_rows(bottom)
+    }
+  }
+  if (any(fields$field_type == "yesno")) {
+    fields$select_choices_or_calculations[which(fields$field_type == "yesno")] <- "0, No | 1, Yes"
+  }
+  fields
+}
+#' @noRd
 update_project_links <- function(project) {
   project$links$redcap_home <- paste0(
     project$links$redcap_base,
@@ -329,6 +335,7 @@ get_REDCap_files <- function(project,
                  file = out_dir,
                  bullet_type = "v")
 }
+#' @noRd
 get_REDCap_users <- function(project) {
   assert_setup_project(project)
   x <- REDCapR::redcap_users_export(redcap_uri = project$links$redcap_uri,

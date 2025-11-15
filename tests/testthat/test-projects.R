@@ -25,24 +25,6 @@ test_that("extract_project_details works", {
                                nrows = 1)
   expect_equal(colnames(project_details), colnames(.blank_project_details))
 })
-test_that("extract_project_details works", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      return(fake_cache)
-    }
-  )
-  project <- mock_project()
-  project_details <- extract_project_details(project)
-  checkmate::expect_data_frame(project_details,
-                               ncols = ncol(.blank_project_details),
-                               nrows = 1)
-  expect_equal(colnames(project_details), colnames(.blank_project_details))
-})
 test_that("save_projects_to_cache works", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")

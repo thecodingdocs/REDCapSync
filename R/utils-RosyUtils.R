@@ -267,101 +267,99 @@ form_to_wb <- function(form,
       }
     }
   }
-  if (nrow(form) > 0) {
-    openxlsx::addWorksheet(wb, form_name)
-    start_row_header <- pad_rows + 1
-    start_row_table <- start_row_header
-    startCol <- pad_cols + 1
-    if (is_something(header_df)) {
-      openxlsx::writeData(
-        wb,
-        sheet = form_name,
-        x = header_df,
-        startRow = start_row_header,
-        startCol = startCol,
-        colNames = FALSE
-      )
-      start_row_table <- start_row_header + nrow(header_df)
-    }
-    if (length(link_col_list) > 0) {
-      has_names <- !is.null(names(link_col_list))
-      for (i in seq_along(link_col_list)) {
-        if (link_col_list[[i]] %in% colnames(form)) {
-          class(form[[link_col_list[[i]]]]) <- "hyperlink"
+  openxlsx::addWorksheet(wb, form_name)
+  start_row_header <- pad_rows + 1
+  start_row_table <- start_row_header
+  startCol <- pad_cols + 1
+  if (is_something(header_df)) {
+    openxlsx::writeData(
+      wb,
+      sheet = form_name,
+      x = header_df,
+      startRow = start_row_header,
+      startCol = startCol,
+      colNames = FALSE
+    )
+    start_row_table <- start_row_header + nrow(header_df)
+  }
+  if (length(link_col_list) > 0) {
+    has_names <- !is.null(names(link_col_list))
+    for (i in seq_along(link_col_list)) {
+      if (link_col_list[[i]] %in% colnames(form)) {
+        class(form[[link_col_list[[i]]]]) <- "hyperlink"
+      } else {
+        # warning("",immediate. = TRUE)
+      }
+      if (has_names) {
+        if (names(link_col_list)[i] %in% colnames(form)) {
+          hyperlink_col <- which(colnames(form) == names(link_col_list)[i])
+          openxlsx::writeData(
+            wb,
+            sheet = form_name,
+            x = form[[link_col_list[[i]]]],
+            startRow = start_row_table + 1,
+            startCol = hyperlink_col + pad_cols
+          )
+          form[[link_col_list[[i]]]] <- NULL
         } else {
           # warning("",immediate. = TRUE)
         }
-        if (has_names) {
-          if (names(link_col_list)[i] %in% colnames(form)) {
-            hyperlink_col <- which(colnames(form) == names(link_col_list)[i])
-            openxlsx::writeData(
-              wb,
-              sheet = form_name,
-              x = form[[link_col_list[[i]]]],
-              startRow = start_row_table + 1,
-              startCol = hyperlink_col + pad_cols
-            )
-            form[[link_col_list[[i]]]] <- NULL
-          } else {
-            # warning("",immediate. = TRUE)
-          }
-        }
       }
     }
-    openxlsx::writeDataTable(
-      wb,
-      sheet = form_name,
-      x = form,
-      startRow = start_row_table,
-      startCol = startCol,
-      tableStyle = tableStyle
-    )
-    # add derived style
-    style_cols <- seq_len(ncol(form)) + pad_cols
-    openxlsx::addStyle(
-      wb,
-      sheet = form_name,
-      style = header_style,
-      rows = seq(from = start_row_header, to = start_row_table),
-      cols = style_cols,
-      gridExpand = TRUE,
-      stack = TRUE
-    )
-    openxlsx::addStyle(
-      wb,
-      sheet = form_name,
-      style = body_style,
-      rows = seq_len(nrow(form)) + start_row_table,
-      cols = style_cols,
-      gridExpand = TRUE,
-      stack = TRUE
-    )
-    if (freeze_header || freeze_keys) {
-      firstActiveRow <- NULL
-      if (freeze_header) {
-        firstActiveRow <- start_row_table + 1
-      }
-      firstActiveCol <- NULL
-      if (freeze_keys) {
-        firstActiveCol <- startCol
-        freeze_key_cols <- which(colnames(form) %in% key_cols)
-        if (length(freeze_key_cols) > 0) {
-          if (is_consecutive_srt_1(freeze_key_cols)) {
-            firstActiveCol <- firstActiveCol +
-              freeze_key_cols[length(freeze_key_cols)]
-          } else {
-            warning("key_cols must be consecutive and start from left most column.",
-                    immediate. = TRUE)
-          }
-        }
-        openxlsx::freezePane(wb,
-                             form_name,
-                             firstActiveRow = firstActiveRow,
-                             firstActiveCol = firstActiveCol)
-      }
-    }
-    return(wb)
   }
+  openxlsx::writeDataTable(
+    wb,
+    sheet = form_name,
+    x = form,
+    startRow = start_row_table,
+    startCol = startCol,
+    tableStyle = tableStyle
+  )
+  # add derived style
+  style_cols <- seq_len(ncol(form)) + pad_cols
+  openxlsx::addStyle(
+    wb,
+    sheet = form_name,
+    style = header_style,
+    rows = seq(from = start_row_header, to = start_row_table),
+    cols = style_cols,
+    gridExpand = TRUE,
+    stack = TRUE
+  )
+  openxlsx::addStyle(
+    wb,
+    sheet = form_name,
+    style = body_style,
+    rows = seq_len(nrow(form)) + start_row_table,
+    cols = style_cols,
+    gridExpand = TRUE,
+    stack = TRUE
+  )
+  if (freeze_header || freeze_keys) {
+    firstActiveRow <- NULL
+    if (freeze_header) {
+      firstActiveRow <- start_row_table + 1
+    }
+    firstActiveCol <- NULL
+    if (freeze_keys) {
+      firstActiveCol <- startCol
+      freeze_key_cols <- which(colnames(form) %in% key_cols)
+      if (length(freeze_key_cols) > 0) {
+        if (is_consecutive_srt_1(freeze_key_cols)) {
+          firstActiveCol <- firstActiveCol +
+            freeze_key_cols[length(freeze_key_cols)]
+        } else {
+          warning("key_cols must be consecutive and start from left most column.",
+                  immediate. = TRUE)
+        }
+      }
+      openxlsx::freezePane(wb,
+                           form_name,
+                           firstActiveRow = firstActiveRow,
+                           firstActiveCol = firstActiveCol)
+    }
+  }
+  return(wb)
 }
 list_to_wb <- function(list,
                        key_cols_list = list(),

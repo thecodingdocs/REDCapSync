@@ -22,6 +22,7 @@ mock_project <- function() {
   project$redcap$has_multiple_arms <- FALSE
   project$links$redcap_home <- project$links$redcap_uri
   project$links$redcap_API_playground <- project$links$redcap_uri
+  # metadata -------
   project$metadata$fields <- data.frame(
     field_name = character(0),
     form_name = character(0),
@@ -42,11 +43,34 @@ mock_project <- function() {
     matrix_ranking = character(0),
     field_annotation = character(0)
   )
+  project$data$form_example <- project$data$form_example %>%
+    dplyr::bind_rows(
+      data.frame(
+        field_name = "var_yesno",
+        form_name = "form_example",
+        field_type = "yesno",
+        field_label = "Variable Yes/No",
+        select_choices_or_calculations = "0, No | 1, Yes",
+        field_note = NA,
+        text_validation_type_or_show_slider_number = NA,
+        text_validation_min = NA,
+        text_validation_max = NA,
+        identifier = NA,
+        branching_logic = NA,
+        required_field = NA,
+        custom_alignment = NA,
+        question_number = NA,
+        matrix_group_name = NA,
+        matrix_ranking = NA,
+        field_annotation = NA
+      )
+    )
   project$metadata$forms <- data.frame(
     form_name = character(0),
     form_label = character(0),
     repeating = character(0)
   )
+  #data -------
   project$data$form_example <- data.frame(
     record_id = character(0),
     var_id = character(0),

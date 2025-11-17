@@ -1,9 +1,9 @@
 #' @keywords internal
 "_PACKAGE"
 ## usethis namespace: start
-#' @import rlang
 #' @importFrom checkmate makeAssertCollection
 #' @importFrom checkmate assert_choice
+#' @importFrom checkmate assert_date
 #' @importFrom checkmate assert_date
 #' @importFrom checkmate assert_character
 #' @importFrom checkmate assert_logical
@@ -13,6 +13,7 @@
 #' @importFrom checkmate assert_names
 #' @importFrom checkmate assert_posixct
 #' @importFrom checkmate assert_data_frame
+#' @importFrom checkmate assert_tibble
 #' @importFrom checkmate assert_path_for_output
 #' @importFrom checkmate assert_true
 #' @importFrom checkmate assert_class
@@ -26,5 +27,10 @@
 #' @importFrom cli cli_alert_info
 #' @importFrom cli cli_alert_success
 #' @importFrom cli cli_alert_warning
+#' @importFrom redcapAPI REDCAP_METADATA_FIELDTYPE
+#' @importFrom redcapAPI REDCAP_METADATA_VALIDATION_TYPE
+#' @importFrom redcapAPI REDCAP_PROJECT_PURPOSE
+#' @importFrom redcapAPI REDCAP_SYSTEM_FIELDS
+#' @importFrom rlang current_call
 ## usethis namespace: end
 NULL

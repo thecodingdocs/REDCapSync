@@ -127,7 +127,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   # add a check for exisiting conflict possibilities
   project$metadata$has_coding_conflicts <- FALSE
   field_names <- project$metadata$choices$field_name %>% unique()
-  if (length(field_name) > 0) {
+  if (length(field_names) > 0) {
     row_of_conflicts <- field_names %>%
       lapply(function(field_name) {
         anyDuplicated(project$metadata$choices$name[which(project$metadata$choices$field_name == field_name)]) > 0

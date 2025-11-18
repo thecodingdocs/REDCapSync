@@ -107,9 +107,10 @@ generate_project_summary(
 
 - date_handling:
 
-  character string. One of `none`,`lowest-overall-zero`,
-  `lowest-record-zero`, `shuffle-record-randomly`, or zero date date in
-  form of `2012-12-05`
+  character string. One of `none`,`exclude_dates`,
+  `random_shift_by_record`, `random_shift_by_project`, `zero_by_record`,
+  or `zero_by_project` random shift is +/- 90 unless changed with
+  options
 
 - upload_compatible:
 

@@ -79,11 +79,6 @@ reference:
       - link_REDCap_home
       - link_REDCap_project
       - link_REDCap_record
-  - subtitle: Advanced/Experimental
-    desc: This is a diffult to explain experimental function for adding derived fields and overwritting existing fields for advanced pipelines.
-    contents:
-      - add_project_field
-      - clear_project_fields
 
 articles:
   - title: Feautures by R User Level

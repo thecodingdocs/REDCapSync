@@ -795,18 +795,18 @@ generate_project_summary <- function(project,
     filter_list = filter_list,
     filter_strict = filter_strict
   )
-  if (is_something(project$transformation$field_functions)) {
-    add_fields <- TRUE
-    if (provided_summary_name) {
-      if (summary_name == "REDCapSync_raw") {
-        add_fields <- FALSE
-      }
-    }
-    if (add_fields) {
-      data_list <- add_fields_to_data_list(data_list = data_list,
-                                           transformation = project$transformation)
-    }
-  }
+  # if (is_something(project$transformation$field_functions)) {
+  #   add_fields <- TRUE
+  #   if (provided_summary_name) {
+  #     if (summary_name == "REDCapSync_raw") {
+  #       add_fields <- FALSE
+  #     }
+  #   }
+  #   if (add_fields) {
+  #     data_list <- add_fields_to_data_list(data_list = data_list,
+  #                                          transformation = project$transformation)
+  #   }
+  # }
   data_list$data <- deidentify_data_list(
     data_list = data_list,
     exclude_identifiers = exclude_identifiers,
@@ -1077,25 +1077,6 @@ clear_project_summaries <- function(project) {
     project$summary$all_records[[summary_name]] <- NULL
   }
   cli_alert_success("Cleared project summaries!")
-  invisible(project)
-}
-#' @title clear_project_fields
-#' @inheritParams save_project
-#' @description
-#' `r lifecycle::badge("experimental")`
-#' Clears and project fields that were added with `add_project_fields()`
-#' or if `setup_project()` contained `add_default_fields = TRUE`
-#' @export
-clear_project_fields <- function(project) {
-  lifecycle::signal_stage("experimental", "clear_project_transformation()")
-  assert_setup_project(project)
-  project$transformation <- list(
-    forms = NULL,
-    fields = NULL,
-    field_functions = NULL,
-    data_updates = NULL
-  )
-  cli_alert_success("Cleared project transformations!")
   invisible(project)
 }
 #' @noRd

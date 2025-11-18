@@ -1094,7 +1094,10 @@ extract_project_records <- function(data_list) {
   all_records <- NULL
   id_col <- data_list$metadata$id_col
   if (data_list$data %>% is_something()) {
-    record_id_col <- extract_values_from_form_list(form_list = data_list$data, col_name = id_col)
+    record_id_col <- extract_values_from_form_list(
+      form_list = data_list$data,
+      col_name = id_col
+    )
     all_records <- data.frame(
       record_id_col = record_id_col,
       first_timestamp = NA,

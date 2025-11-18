@@ -399,11 +399,10 @@ add_project_summary <- function(project,
                                 exclude_identifiers = TRUE,
                                 exclude_free_text = FALSE,
                                 date_handling = "none",
-                                upload_compatible = TRUE,
                                 labelled = TRUE,
                                 clean = TRUE,
                                 drop_blanks = FALSE,
-                                drop_missings = FALSE,
+                                drop_missing_codes = FALSE,
                                 drop_others = NULL,
                                 include_metadata = TRUE,
                                 include_records = TRUE,
@@ -445,11 +444,10 @@ add_project_summary <- function(project,
     exclude_identifiers = exclude_identifiers,
     exclude_free_text = exclude_free_text,
     date_handling = date_handling,
-    upload_compatible = upload_compatible,
     labelled = labelled,
     clean = clean,
     drop_blanks = drop_blanks,
-    drop_missings = drop_missings,
+    drop_missing_codes = drop_missing_codes,
     drop_others = drop_others,
     include_metadata = include_metadata,
     include_records = include_records,
@@ -686,15 +684,12 @@ save_summary <- function(project, summary_name) {
 #' @param date_handling character string. One of `none`,`exclude_dates`,
 #' `random_shift_by_record`, `random_shift_by_project`, `zero_by_record`, or
 #' `zero_by_project` random shift is +/- 90 unless changed with options
-#' @param upload_compatible Logical. If `TRUE`, the data will be compatible with
-#' REDCap API upload. The main conflict is numeric or date variables in a
-#' project with missing codes while `clean` = `TRUE`. R converts these to `NA`.
-#' Default is `TRUE`.
 #' @param clean Logical. If `TRUE`, the data will be cleaned before summarizing.
-#' Default is `TRUE`.
+#' Default is `TRUE`. If missing codes present AND number or date type, R will
+#' convert to those to NA and would make that variable not upload compatible
 #' @param drop_blanks Logical. If `TRUE`, records with blank fields will be
 #' dropped. Default is `TRUE`.
-#' @param drop_missings Logical. If `TRUE`, will convert missing codes to NA.
+#' @param drop_missing_codes Logical. If `TRUE`, will convert missing codes to NA.
 #' Default is `FALSE`.
 #' @param drop_others Character vector of other values that should be dropped.
 #' @param include_metadata Logical. If `TRUE`, metadata will be included in the
@@ -732,11 +727,10 @@ generate_project_summary <- function(project,
                                      exclude_identifiers = TRUE,
                                      exclude_free_text = FALSE,
                                      date_handling = "none",
-                                     upload_compatible = TRUE,
                                      labelled = TRUE,
                                      clean = TRUE,
                                      drop_blanks = FALSE,
-                                     drop_missings = FALSE,
+                                     drop_missing_codes = FALSE,
                                      drop_others = NULL,
                                      include_metadata = TRUE,
                                      include_users = TRUE,
@@ -763,11 +757,10 @@ generate_project_summary <- function(project,
     exclude_identifiers <- summary_list$exclude_identifiers
     exclude_free_text <- summary_list$exclude_free_text
     date_handling <- summary_list$date_handling
-    upload_compatible <- summary_list$upload_compatible
     labelled <- summary_list$labelled
     clean <- summary_list$clean
     drop_blanks <- summary_list$drop_blanks
-    drop_missings <- summary_list$drop_missings
+    drop_missing_codes <- summary_list$drop_missing_codes
     drop_others <- summary_list$drop_others
     include_metadata <- summary_list$include_metadata
     include_records <- summary_list$include_records
@@ -777,15 +770,16 @@ generate_project_summary <- function(project,
   }
   data_list <- NULL
   data_list$metadata <- project$metadata
-  data_list$data <- project$data
-  data_list <- metadata_add_default_cols(data_list)
   if (labelled != project$internals$labelled) {
     if (labelled) {
-      # project <- raw_to_labelled_project(project)
+      project <- labelled_to_raw_data_list(project)
     }
     if (!labelled) {
+      project <- raw_to_labelled_data_list(project)
     }
   }
+  data_list$data <- project$data
+  data_list <- metadata_add_default_cols(data_list)
   data_list$data <- filter_data_list(
     data_list = data_list,
     field_names = field_names,
@@ -1308,7 +1302,6 @@ add_default_summaries <- function(project,
     exclude_identifiers = exclude_identifiers,
     exclude_free_text = exclude_free_text,
     date_handling = "none",
-    upload_compatible = TRUE,
     labelled = TRUE,
     clean = TRUE,
     drop_blanks = FALSE,
@@ -1478,7 +1471,7 @@ raw_to_labelled_form <- function(form, project) {
   form
 }
 #' @noRd
-labelled_to_raw_project <- function(project) {
+labelled_to_raw_data_list <- function(project) {
   project <- assert_blank_project(project)
   if (!project$internals$labelled) {
     stop("project is already raw/coded (not labelled values)")
@@ -1491,10 +1484,13 @@ labelled_to_raw_project <- function(project) {
   invisible(project)
 }
 #' @noRd
-raw_to_labelled_project <- function(project) {
+raw_to_labelled_data_list <- function(project) {
   project <- assert_blank_project(project)
   if (project$internals$labelled) {
     stop("project is already labelled (not raw/coded values)")
+  }
+  if(project$metadata$has_coding_conflicts){
+    stop("project has codebook conflict(s), so will not convert to labelled!")
   }
   for (form_name in names(project$data)) {
     project$data[[form_name]] <- project$data[[form_name]] %>%

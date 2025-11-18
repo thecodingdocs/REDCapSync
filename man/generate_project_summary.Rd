@@ -18,11 +18,10 @@ generate_project_summary(
   exclude_identifiers = TRUE,
   exclude_free_text = FALSE,
   date_handling = "none",
-  upload_compatible = TRUE,
   labelled = TRUE,
   clean = TRUE,
   drop_blanks = FALSE,
-  drop_missings = FALSE,
+  drop_missing_codes = FALSE,
   drop_others = NULL,
   include_metadata = TRUE,
   include_users = TRUE,
@@ -82,21 +81,17 @@ in the summary. Default is \code{TRUE}.}
 \code{random_shift_by_record}, \code{random_shift_by_project}, \code{zero_by_record}, or
 \code{zero_by_project} random shift is +/- 90 unless changed with options}
 
-\item{upload_compatible}{Logical. If \code{TRUE}, the data will be compatible with
-REDCap API upload. The main conflict is numeric or date variables in a
-project with missing codes while \code{clean} = \code{TRUE}. R converts these to \code{NA}.
-Default is \code{TRUE}.}
-
 \item{labelled}{Logical. If \code{TRUE}, the data will be converted to labelled.
 Default is \code{TRUE}.}
 
 \item{clean}{Logical. If \code{TRUE}, the data will be cleaned before summarizing.
-Default is \code{TRUE}.}
+Default is \code{TRUE}. If missing codes present AND number or date type, R will
+convert to those to NA and would make that variable not upload compatible}
 
 \item{drop_blanks}{Logical. If \code{TRUE}, records with blank fields will be
 dropped. Default is \code{TRUE}.}
 
-\item{drop_missings}{Logical. If \code{TRUE}, will convert missing codes to NA.
+\item{drop_missing_codes}{Logical. If \code{TRUE}, will convert missing codes to NA.
 Default is \code{FALSE}.}
 
 \item{drop_others}{Character vector of other values that should be dropped.}

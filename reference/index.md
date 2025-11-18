@@ -115,13 +115,3 @@ Remember REDCap always keeps a log of changes.
   [`link_REDCap_project()`](https://thecodingdocs.github.io/REDCapSync/reference/Links.md)
   [`link_REDCap_record()`](https://thecodingdocs.github.io/REDCapSync/reference/Links.md)
   : Open Links to REDCap Pages
-
-### Advanced/Experimental
-
-This is a diffult to explain experimental function for adding derived
-fields and overwritting existing fields for advanced pipelines.
-
-- [`add_project_field()`](https://thecodingdocs.github.io/REDCapSync/reference/add_project_field.md)
-  **\[experimental\]** : Add Field Transformation to the Database
-- [`clear_project_fields()`](https://thecodingdocs.github.io/REDCapSync/reference/clear_project_fields.md)
-  **\[experimental\]** : clear_project_fields

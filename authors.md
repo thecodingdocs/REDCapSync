@@ -23,13 +23,13 @@ Source:
 [`DESCRIPTION`](https://github.com/thecodingdocs/REDCapSync/blob/main/DESCRIPTION)
 
 Rose B (2025). *REDCapSync: Synchronize Data Pipelines from the REDCap
-API*. R package version 0.0.0.9017,
+API*. R package version 0.0.0.9018,
 <https://github.com/thecodingdocs/REDCapSync>.
 
     @Manual{,
       title = {REDCapSync: Synchronize Data Pipelines from the REDCap API},
       author = {Brandon Rose},
       year = {2025},
-      note = {R package version 0.0.0.9017},
+      note = {R package version 0.0.0.9018},
       url = {https://github.com/thecodingdocs/REDCapSync},
     }

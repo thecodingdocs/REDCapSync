@@ -22,11 +22,10 @@ add_project_summary(
   exclude_identifiers = TRUE,
   exclude_free_text = FALSE,
   date_handling = "none",
-  upload_compatible = TRUE,
   labelled = TRUE,
   clean = TRUE,
   drop_blanks = FALSE,
-  drop_missings = FALSE,
+  drop_missing_codes = FALSE,
   drop_others = NULL,
   include_metadata = TRUE,
   include_records = TRUE,
@@ -115,13 +114,6 @@ add_project_summary(
   or `zero_by_project` random shift is +/- 90 unless changed with
   options
 
-- upload_compatible:
-
-  Logical. If `TRUE`, the data will be compatible with REDCap API
-  upload. The main conflict is numeric or date variables in a project
-  with missing codes while `clean` = `TRUE`. R converts these to `NA`.
-  Default is `TRUE`.
-
 - labelled:
 
   Logical. If `TRUE`, the data will be converted to labelled. Default is
@@ -130,14 +122,16 @@ add_project_summary(
 - clean:
 
   Logical. If `TRUE`, the data will be cleaned before summarizing.
-  Default is `TRUE`.
+  Default is `TRUE`. If missing codes present AND number or date type, R
+  will convert to those to NA and would make that variable not upload
+  compatible
 
 - drop_blanks:
 
   Logical. If `TRUE`, records with blank fields will be dropped. Default
   is `TRUE`.
 
-- drop_missings:
+- drop_missing_codes:
 
   Logical. If `TRUE`, will convert missing codes to NA. Default is
   `FALSE`.

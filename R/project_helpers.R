@@ -1,9 +1,20 @@
+.date_handling_choices <- c(
+  "none",
+  "exclude_dates",
+  "random_shift_by_record",
+  "random_shift_by_project",
+  "zero_by_record",
+  "zero_by_project"
+)
 deidentify_data_list <- function(data_list,
                                  exclude_identifiers = TRUE,
                                  exclude_free_text = FALSE,
                                  exclude_additional = NULL,
                                  date_handling = "none") {
   # assert_data_list contains data and metadata with forms and fields
+  assert_choice(date_handling, choices = .date_handling_choices)
+  assert_logical(exclude_identifiers)
+  assert_logical(exclude_free_text)
   data <- data_list$data
   metadata <- data_list$metadata
   fields <- metadata$fields
@@ -79,27 +90,39 @@ deidentify_data_list <- function(data_list,
           append(date_vector) %>%
           unique()
       }
-      if (date_handling == "record_random_shift") {
-      }
-      if (date_handling == "project_random_shift") {
-      }
-      if (date_handling == "record_zero") {
-      }
-      if (date_handling == "project_zero") {
-      }
-      min_dates <- get_min_dates(data_list)
-      min_dates$difference <- (min_dates$date - as.Date(date_handling))
-      for (form_name in names(date_list)) {
-        field_record <- data[[form_name]][[id_cols[1]]]
-        match_date_diff <- match(field_record, min_dates$record_id)
-        difference <- min_dates$difference[match_date_diff]
-        for (field_name in date_list[[form_name]]) {
-          field <- data[[form_name]][[field_name]]
-          data[[form_name]][[field_name]] <- as.Date(field) - difference
+      if (date_handling %in% c("random_shift_by_record",
+                               "random_shift_by_project",
+                               "zero_by_record",
+                               "zero_by_project")) {
+        number <- 90 # can set in options
+        shift_range <- -number:number
+        min_dates <- get_min_dates(data_list)
+        if (date_handling == "random_shift_by_record") {
+          min_dates$shift_amount <- sample(shift_range,size = nrow(min_dates),replace = TRUE)
+        }
+        if (date_handling == "random_shift_by_project") {
+          min_dates$shift_amount <- sample(shift_range,size = 1,replace = TRUE)
+        }
+        if (date_handling == "zero_by_record") {
+          # should you edit fields to now be field_type_R integer?
+          min_dates$shift_amount <- min_dates$date
+        }
+        if (date_handling == "zero_by_project") {
+          # should you edit fields to now be field_type_R integer?
+          min_dates$shift_amount <- min_dates$date %>% min()
+        }
+        for (form_name in names(date_list)) {
+          field_record <- data[[form_name]][[id_cols[1]]]
+          match_date_diff <- match(field_record, min_dates$record_id)
+          difference <- min_dates$shift_amount[match_date_diff]
+          for (field_name in date_list[[form_name]]) {
+            field <- data[[form_name]][[field_name]]
+            data[[form_name]][[field_name]] <- as.character(as.Date(field) - difference)
+          }
         }
       }
       # if you have dates you already mutated no need to drop anymore
-      exclusions <- exclusions[which(!exclusions %in% date_vector)]
+      # exclusions <- exclusions[which(!exclusions %in% date_vector)]
     }
     drop_list <- Map(function(x, col_names) {
       exclusions[which(exclusions %in% col_names)]

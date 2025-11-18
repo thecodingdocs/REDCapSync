@@ -683,9 +683,9 @@ save_summary <- function(project, summary_name) {
 #' @param exclude_identifiers Logical. Whether to exlude identifiers in the data
 #' in the summary. Default is `TRUE`.
 #' @param exclude_free_text Logical for excluding free text. Default is `FALSE`.
-#' @param date_handling character string. One of `none`,`lowest-overall-zero`,
-#' `lowest-record-zero`, `shuffle-record-randomly`, or zero date date in form of
-#' `2012-12-05`
+#' @param date_handling character string. One of `none`,`exclude_dates`,
+#' `random_shift_by_record`, `random_shift_by_project`, `zero_by_record`, or
+#' `zero_by_project` random shift is +/- 90 unless changed with options
 #' @param upload_compatible Logical. If `TRUE`, the data will be compatible with
 #' REDCap API upload. The main conflict is numeric or date variables in a
 #' project with missing codes while `clean` = `TRUE`. R converts these to `NA`.

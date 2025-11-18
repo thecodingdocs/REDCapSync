@@ -78,9 +78,9 @@ in the summary. Default is \code{TRUE}.}
 
 \item{exclude_free_text}{Logical for excluding free text. Default is \code{FALSE}.}
 
-\item{date_handling}{character string. One of \code{none},\code{lowest-overall-zero},
-\code{lowest-record-zero}, \code{shuffle-record-randomly}, or zero date date in form of
-\code{2012-12-05}}
+\item{date_handling}{character string. One of \code{none},\code{exclude_dates},
+\code{random_shift_by_record}, \code{random_shift_by_project}, \code{zero_by_record}, or
+\code{zero_by_project} random shift is +/- 90 unless changed with options}
 
 \item{upload_compatible}{Logical. If \code{TRUE}, the data will be compatible with
 REDCap API upload. The main conflict is numeric or date variables in a

@@ -561,7 +561,7 @@ save_summary <- function(project, summary_name) {
     header_df_list <- NULL
     key_cols_list <- NULL
   }
-  records <- data_list[form_names] %>%
+  records <- data_list$data[form_names] %>%
     lapply(function(form) {
       form[[id_col]]
     }) %>%
@@ -589,7 +589,7 @@ save_summary <- function(project, summary_name) {
         names(link_col_list) <- id_col
       }
     }
-  }
+  }# maybe move this up
   # check for conflicts
   # data_list
   # with_links = TRUE
@@ -1201,7 +1201,7 @@ get_summary_records <- function(project, summary_name) {
     return(project$summary$all_records[[id_col]])
   }
   summary_list <- project$summary[[summary_name]]
-  to_save_list <- generate_project_summary(
+  data_list <- generate_project_summary(
     project = project,
     transformation_type = summary_list$transformation_type,
     filter_list = summary_list$filter_list,
@@ -1217,8 +1217,8 @@ get_summary_records <- function(project, summary_name) {
     include_log = FALSE,
     annotate_from_log = FALSE,
     internal_use = TRUE
-  )$data
-  records <- to_save_list %>%
+  )
+  records <- data_list$data %>%
     lapply(function(form) {
       form[[id_col]]
     }) %>%

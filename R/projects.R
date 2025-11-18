@@ -124,6 +124,7 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
   assert_project_details(projects)
   projects <- projects[order(projects$short_name), ]
   saveRDS(projects, file = cache_path() %>% file.path("projects.rds"))
+  pkg_name <- getPackageName()
   if (!silent) {
     cli_alert_success(
       paste0(

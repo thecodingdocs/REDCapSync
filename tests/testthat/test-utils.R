@@ -1,11 +1,11 @@
 # add_redcap_links_to_form ( Internal )
-test_that("add_redcap_links_to_form  works!", {
+test_that("add_redcap_links_to_form works!", {
 })
 # remove_from_form_list ( Internal )
-test_that("remove_from_form_list  works!", {
+test_that("remove_from_form_list works!", {
 })
 # remove_records_from_project ( Internal )
-test_that("remove_records_from_project  works!", {
+test_that("remove_records_from_project works!", {
 })
 # split_choices ( Internal )
 test_that("split_choices works!", {

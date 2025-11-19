@@ -51,95 +51,95 @@ test_that("fields_to_choices works", {
   expect_false(anyDuplicated(should_be_unique)>0)
 })
 # add_labels_to_checkbox ( Internal )
-test_that("add_labels_to_checkbox  works!", {
+test_that("add_labels_to_checkbox works!", {
 })
 # annotate_fields ( Internal )
-test_that("annotate_fields  works!", {
+test_that("annotate_fields works!", {
 })
 # annotate_forms ( Internal )
-test_that("annotate_forms  works!", {
+test_that("annotate_forms works!", {
 })
 # annotate_choices ( Internal )
-test_that("annotate_choices  works!", {
+test_that("annotate_choices works!", {
 })
 # annotate_records ( Internal )
-test_that("annotate_records  works!", {
+test_that("annotate_records works!", {
 })
 # clean_form ( Internal )
-test_that("clean_form  works!", {
+test_that("clean_form works!", {
 })
 # clean_column_for_table ( Internal )
-test_that("clean_column_for_table  works!", {
+test_that("clean_column_for_table works!", {
 })
 # add_project_summary ( Exported )
-test_that("add_project_summary  works!", {
+test_that("add_project_summary works!", {
 })
 # save_summary ( Internal )
-test_that("save_summary  works!", {
+test_that("save_summary works!", {
 })
 # generate_project_summary ( Exported )
-test_that("generate_project_summary  works!", {
+test_that("generate_project_summary works!", {
 })
 # merge_non_repeating ( Internal )
-test_that("merge_non_repeating  works!", {
+test_that("merge_non_repeating works!", {
 })
 # summarize_project ( Internal )
-test_that("summarize_project  works!", {
+test_that("summarize_project works!", {
 })
 # clear_project_summaries ( Exported )
-test_that("clear_project_summaries  works!", {
+test_that("clear_project_summaries works!", {
 })
 # extract_values_from_form_list ( Internal )
-test_that("extract_values_from_form_list  works!", {
+test_that("extract_values_from_form_list works!", {
 })
 # extract_project_records ( Internal )
-test_that("extract_project_records  works!", {
+test_that("extract_project_records works!", {
 })
 # get_log ( Internal )
-test_that("get_log  works!", {
+test_that("get_log works!", {
 })
 # annotate_users ( Internal )
-test_that("annotate_users  works!", {
+test_that("annotate_users works!", {
 })
 # summarize_comments_from_log ( Internal )
-test_that("summarize_comments_from_log  works!", {
+test_that("summarize_comments_from_log works!", {
 })
 # get_summary_records ( Internal )
-test_that("get_summary_records  works!", {
+test_that("get_summary_records works!", {
 })
 # summary_records_due ( Internal )
-test_that("summary_records_due  works!", {
+test_that("summary_records_due works!", {
 })
 # check_summaries ( Internal )
-test_that("check_summaries  works!", {
+test_that("check_summaries works!", {
 })
 # add_default_summaries ( Internal )
-test_that("add_default_summaries  works!", {
+test_that("add_default_summaries works!", {
 })
 # labelled_to_raw_form ( Exported )
-test_that("labelled_to_raw_form  works!", {
+test_that("labelled_to_raw_form works!", {
 })
 # raw_to_labelled_form ( Exported )
-test_that("raw_to_labelled_form  works!", {
+test_that("raw_to_labelled_form works!", {
 })
 # labelled_to_raw_data_list ( Internal )
-test_that("labelled_to_raw_data_list  works!", {
+test_that("labelled_to_raw_data_list works!", {
 })
 # raw_to_labelled_data_list ( Internal )
-test_that("raw_to_labelled_data_list  works!", {
+test_that("raw_to_labelled_data_list works!", {
 })
 # get_all_field_names ( Internal )
-test_that("get_all_field_names  works!", {
+test_that("get_all_field_names works!", {
 })
 # field_names_to_form_names ( Internal )
-test_that("field_names_to_form_names  works!", {
+test_that("field_names_to_form_names works!", {
 })
 # construct_header_list ( Internal )
-test_that("construct_header_list  works!", {
+test_that("construct_header_list works!", {
 })
 # field_names_metadata ( Internal )
-test_that("field_names_metadata  works!", {
+test_that("field_names_metadata works!", {
 })
 # filter_fields_from_form ( Internal )
-test_that("filter_fields_from_form  works!", {
+test_that("filter_fields_from_form works!", {
 })

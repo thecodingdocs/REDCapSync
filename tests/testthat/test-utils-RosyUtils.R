@@ -1,19 +1,19 @@
 # clean_for_cli ( Internal )
-test_that("clean_for_cli  works!", {
+test_that("clean_for_cli works!", {
 })
 # cli_alert_wrap ( Internal )
-test_that("cli_alert_wrap  works!", {
+test_that("cli_alert_wrap works!", {
 })
 # now_time ( Internal )
-test_that("now_time  works!", {
+test_that("now_time works!", {
   checkmate::expect_class(now_time(),"POSIXct")
   checkmate::expect_class(now_time(),"POSIXt")
 })
 # process_df_list ( Internal )
-test_that("process_df_list  works!", {
+test_that("process_df_list works!", {
 })
 # is_something ( Internal )
-test_that("is_something  works!", {
+test_that("is_something works!", {
   expect_true(is_something("a"))
   expect_true(is_something(list(one = NA)))
   expect_true(is_something(mtcars))
@@ -25,10 +25,10 @@ test_that("is_something  works!", {
   expect_false(is_something(tibble()))
 })
 # sanitize_path ( Internal )
-test_that("sanitize_path  works!", {
+test_that("sanitize_path works!", {
 })
 # all_character_cols ( Internal )
-test_that("all_character_cols  works!", {
+test_that("all_character_cols works!", {
   form <- mtcars
   form$name <- form %>% rownames()
   form$cyl_more_then_4 <- form$cyl >4
@@ -41,7 +41,7 @@ test_that("all_character_cols  works!", {
   expect_equal(col_types, "character")
 })
 # all_character_cols_list ( Internal )
-test_that("all_character_cols_list  works!", {
+test_that("all_character_cols_list works!", {
   form <- mtcars
   form$name <- form %>% rownames()
   form$cyl_more_then_4 <- form$cyl >4
@@ -74,39 +74,65 @@ test_that("vec1_in_vec2 and vec1_not_in_vec2 works!", {
   expect_false("c"%in%out)
 })
 # length_unique ( Internal )
-test_that("length_unique  works!", {
+test_that("length_unique works!", {
   expect_equal(length_unique(c("a","a","b","b","c","c","c")),3)
   expect_equal(length_unique(c("a","a","b","b","c","d")),4)
 })
 # length_which ( Internal )
-test_that("length_which  works!", {
+test_that("length_which works!", {
 })
 # drop_nas ( Internal )
-test_that("drop_nas  works!", {
+test_that("drop_nas works!", {
 })
 # excel_to_list ( Internal )
-test_that("excel_to_list  works!", {
+test_that("excel_to_list works!", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  expect_true(file.exists(test_dir))
+  test_file <- file.path(test_dir, "cars.xlsx")
+  expect_false(file.exists(test_file))
+  df_list <- list(one = mtcars, two = cars)
+  list_to_excel(df_list,dir = test_dir,file_name = "cars")
+  expect_true(file.exists(test_file))
+  df_list_saved <- excel_to_list(test_file)
+  checkmate::expect_list(df_list,len = 2)
+  expect_equal(names(df_list),names(df_list_saved))
+  expect_equal(nrow(df_list$one),nrow(df_list_saved$one))
+  expect_equal(nrow(df_list$two),nrow(df_list_saved$two))
+  expect_error(list_to_excel(file.path(test_dir, "fake_cars.xlsx")))
 })
 # is_named_df_list ( Internal )
-test_that("is_named_df_list  works!", {
+test_that("is_named_df_list works!", {
 })
 # is_named_list ( Internal )
-test_that("is_named_list  works!", {
+test_that("is_named_list works!", {
 })
 # wb_to_list ( Internal )
-test_that("wb_to_list  works!", {
+test_that("wb_to_list works!", {
 })
 # form_to_wb ( Internal )
-test_that("form_to_wb  works!", {
+test_that("form_to_wb works!", {
 })
 # list_to_wb ( Internal )
-test_that("list_to_wb  works!", {
+test_that("list_to_wb works!", {
 })
 # rename_list_names_excel ( Internal )
-test_that("rename_list_names_excel  works!", {
+test_that("rename_list_names_excel works!", {
+})
+# trim_string ( Internal )
+test_that("trim_string works!", {
+  expect_equal(trim_string("one",5),"one")
+  expect_equal(trim_string("one123",5),"one12")
+  expect_equal(trim_string("one123",3),"one")
 })
 # unique_trimmed_strings ( Internal )
-test_that("unique_trimmed_strings  works!", {
+test_that("unique_trimmed_strings works!", {
+  unique_trimmed_strings()
+  expect_equal(unique_trimmed_strings("one",5),"one")
+  test_vector <- c("one_version_1", "one_version_2", "one_version_3")
+  expect_equal(unique_trimmed_strings(test_vector, 6),
+               c("one_ve", "one_v1", "one_v2"))
+  expect_equal(unique_trimmed_strings(test_vector, 20),
+               test_vector)
 })
 # list_to_excel ( Internal )
 test_that("list_to_excel works!", {
@@ -118,6 +144,7 @@ test_that("list_to_excel works!", {
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
   list_to_excel(df_list,dir = test_dir,file_name = "cars")
+  expect_true(file.exists(test_file))
   list_to_excel(df_list,dir = test_dir,file_name = "cars",separate = TRUE)
   expect_true(file.exists(test_file_one))
   expect_true(file.exists(test_file_two))
@@ -129,7 +156,7 @@ test_that("list_to_excel works!", {
   expect_equal(colnames(two),colnames(cars))
 })
 # list_to_csv ( Internal )
-test_that("list_to_csv  works!", {
+test_that("list_to_csv works!", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   expect_true(file.exists(test_dir))
   test_file <- file.path(test_dir, "cars.csv")
@@ -148,51 +175,48 @@ test_that("list_to_csv  works!", {
   expect_equal(colnames(two),colnames(cars))
 })
 # save_wb ( Internal )
-test_that("save_wb  works!", {
+test_that("save_wb works!", {
 })
 # save_csv ( Internal )
-test_that("save_csv  works!", {
+test_that("save_csv works!", {
 })
 # which_duplicated ( Internal )
-test_that("which_duplicated  works!", {
+test_that("which_duplicated works!", {
 })
 # is_consecutive_srt_1 ( Internal )
-test_that("is_consecutive_srt_1  works!", {
+test_that("is_consecutive_srt_1 works!", {
 })
 # remove_html_tags ( Internal )
-test_that("remove_html_tags  works!", {
+test_that("remove_html_tags works!", {
 })
 # choice_vector_string ( Internal )
-test_that("choice_vector_string  works!", {
+test_that("choice_vector_string works!", {
 })
 # object_size ( Internal )
-test_that("object_size  works!", {
+test_that("object_size works!", {
 })
 # file_size ( Internal )
-test_that("file_size  works!", {
+test_that("file_size works!", {
 })
 # drop_if ( Internal )
-test_that("drop_if  works!", {
-})
-# list_files_real ( Internal )
-test_that("list_files_real  works!", {
+test_that("drop_if works!", {
 })
 # clean_env_names ( Internal )
-test_that("clean_env_names  works!", {
+test_that("clean_env_names works!", {
 })
 # is_df_list ( Internal )
-test_that("is_df_list  works!", {
+test_that("is_df_list works!", {
 })
 # check_match ( Internal )
-test_that("check_match  works!", {
+test_that("check_match works!", {
 })
 # is_env_name ( Internal )
-test_that("is_env_name  works!", {
+test_that("is_env_name works!", {
 })
 # is_nested_list ( Internal )
-test_that("is_nested_list  works!", {
+test_that("is_nested_list works!", {
 })
 # generate_hex ( Internal )
-test_that("generate_hex  works!", {
-  expect_true(is_hexadecimal(generate_hex(10)))
+test_that("generate_hex works!", {
+ expect_true(is_hexadecimal(generate_hex(10)))
 })

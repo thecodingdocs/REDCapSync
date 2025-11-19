@@ -1,3 +1,3 @@
 # cli_message_maker ( Internal )
-test_that("cli_message_maker  works!", {
+test_that("cli_message_maker works!", {
 })

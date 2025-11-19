@@ -1,11 +1,11 @@
 # assert_dir ( Internal )
-test_that("assert_dir  works!", {
+test_that("assert_dir works!", {
 })
 # get_project_token ( Internal )
-test_that("get_project_token  works!", {
+test_that("get_project_token works!", {
 })
 # assert_web_link ( Internal )
-test_that("assert_web_link  works!", {
+test_that("assert_web_link works!", {
 })
 # assert_env_name ( Internal )
 test_that("assert_env_name works!", {
@@ -25,17 +25,17 @@ test_that("assert_env_name works!", {
   expect_no_error(assert_env_name("_ABCD", underscore_allowed_first = TRUE))
 })
 # assert_blank_project ( Internal )
-test_that("assert_blank_project  works!", {
+test_that("assert_blank_project works!", {
 })
 # assert_setup_project ( Internal )
-test_that("assert_setup_project  works!", {
+test_that("assert_setup_project works!", {
 })
 # assert_collection ( Internal )
-test_that("assert_collection  works!", {
+test_that("assert_collection works!", {
 })
 # assert_project_details ( Internal )
-test_that("assert_project_details  works!", {
+test_that("assert_project_details works!", {
 })
 # assert_project_path ( Internal )
-test_that("assert_project_path  works!", {
+test_that("assert_project_path works!", {
 })

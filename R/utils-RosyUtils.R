@@ -450,10 +450,11 @@ rename_list_names_excel <- function(list_names) {
   list_names_rename
 }
 #' @noRd
+trim_string <- function(string, max_length) {
+  substr(string, 1, max_length)
+}
+#' @noRd
 unique_trimmed_strings <- function(strings, max_length) {
-  trim_string <- function(s, max_length) {
-    substr(s, 1, max_length)
-  }
   trimmed_strings <- lapply(strings, trim_string, max_length = max_length) %>%
     unlist()
   # Initialize a vector to store unique strings
@@ -469,7 +470,7 @@ unique_trimmed_strings <- function(strings, max_length) {
       new_string <- paste0(
         stringr::str_trunc(
           base_string,
-          width = max_length - (counter),
+          width = max_length - stringr::str_length(counter),
           side = "right",
           ellipsis = ""
         ),
@@ -667,20 +668,6 @@ file_size <- function(path) {
 #' @noRd
 drop_if <- function(x, drops) {
   x[which(!x %in% drops)]
-}
-#' @noRd
-list_files_real <- function(path,
-                            full_names = TRUE,
-                            recursive = FALSE) {
-  grep(
-    "~$",
-    sanitize_path(
-      list.files(path, full.names = full_names, recursive = recursive)
-    ),
-    fixed = TRUE,
-    value = TRUE,
-    invert = TRUE
-  )
 }
 #' @noRd
 clean_env_names <- function(env_names,

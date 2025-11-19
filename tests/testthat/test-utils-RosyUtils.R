@@ -60,16 +60,26 @@ test_that("all_character_cols_list  works!", {
   expect_equal(col_types2,"character")
 })
 # vec1_in_vec2 ( Internal )
-test_that("vec1_in_vec2  works!", {
-})
 # vec1_not_in_vec2 ( Internal )
-test_that("vec1_not_in_vec2  works!", {
+test_that("vec1_in_vec2 and vec1_not_in_vec2 works!", {
+  vec1 <- c("a","b","c")
+  vec2 <- c("b","d","c")
+  out <- vec1 %>% vec1_in_vec2(vec2)
+  expect_contains(out,"b")
+  expect_contains(out,"c")
+  expect_false("a"%in%out)
+  out <- vec1 %>% vec1_not_in_vec2(vec2)
+  expect_contains(out,"a")
+  expect_false("b"%in%out)
+  expect_false("c"%in%out)
 })
-# unique_length ( Internal )
-test_that("unique_length  works!", {
+# unique_which ( Internal )
+test_that("unique_which  works!", {
+  expect_equal(unique_which(c("a","a","b","b","c","c","c")),3)
+  expect_equal(unique_which(c("a","a","b","b","c","d")),4)
 })
-# which_length ( Internal )
-test_that("which_length  works!", {
+# length_which ( Internal )
+test_that("length_which  works!", {
 })
 # drop_nas ( Internal )
 test_that("drop_nas  works!", {
@@ -110,8 +120,8 @@ test_that("save_wb  works!", {
 # save_csv ( Internal )
 test_that("save_csv  works!", {
 })
-# duplicated_which ( Internal )
-test_that("duplicated_which  works!", {
+# which_duplicated ( Internal )
+test_that("which_duplicated  works!", {
 })
 # is_consecutive_srt_1 ( Internal )
 test_that("is_consecutive_srt_1  works!", {

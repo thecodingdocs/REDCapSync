@@ -163,11 +163,11 @@ vec1_not_in_vec2 <- function(vec1, vec2) {
   vec1[which(!vec1 %in% vec2)]
 }
 #' @noRd
-unique_length <- function(x) {
+length_unique <- function(x) {
   length(unique(x))
 }
 #' @noRd
-which_length <- function(x) {
+length_which <- function(x) {
   length(which(x))
 }
 #' @noRd
@@ -435,7 +435,7 @@ rename_list_names_excel <- function(list_names) {
                                           width = 31,
                                           side = "right",
                                           ellipsis = "")
-  bad_names <- duplicated_which(list_names_rename)
+  bad_names <- which_duplicated(list_names_rename)
   if (length(bad_names) > 0) {
     cli_alert_danger("Duplicated names when trimmed from right 31 max in Excel: ",
                      toString(list_names[bad_names]))
@@ -624,7 +624,7 @@ default_body_style <-
                         valign = "center",
                         fontSize = 12)
 #' @noRd
-duplicated_which <- function(x) {
+which_duplicated <- function(x) {
   which(duplicated(x))
 }
 #' @noRd
@@ -705,7 +705,7 @@ clean_env_names <- function(env_names,
                   "', added numbers...")
         }
         cleaned_name <- cleaned_name %>%
-          paste0("_", max(which_length(cleaned_name %in% cleaned_names)) + 1L)
+          paste0("_", max(length_which(cleaned_name %in% cleaned_names)) + 1L)
       }
       cleaned_names[i] <- cleaned_name
     }

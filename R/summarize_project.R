@@ -247,7 +247,7 @@ annotate_records2 <- function(data_list,
                                           data_list$redcap$users$lastname[user_rows])
   summary_records$unique_users_n <- record_groups %>%
     lapply(function(group) {
-      unique_length(group$username)
+      length_unique(group$username)
     }) %>%
     unlist() %>%
     as.integer()
@@ -1199,7 +1199,7 @@ annotate_users <- function(data_list,
       # if(length(record_rows)>0){
       #   summary_users$last_record_timestamp[the_row] <- group$timestamp[record_rows][[1]]
       # }
-      summary_users$unique_records_n[the_row] <- unique_length(group$record)
+      summary_users$unique_records_n[the_row] <- length_unique(group$record)
     }
   }
   # summary_users$timestamp_diff_days<- (as.Date(summary_users$last_timestamp) - as.Date(summary_users$first_timestamp)+1) %>% as.integer()

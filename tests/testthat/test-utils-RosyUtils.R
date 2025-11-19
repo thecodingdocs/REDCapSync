@@ -126,7 +126,7 @@ test_that("trim_string works!", {
 })
 # unique_trimmed_strings ( Internal )
 test_that("unique_trimmed_strings works!", {
-  unique_trimmed_strings()
+  expect_error(unique_trimmed_strings())
   expect_equal(unique_trimmed_strings("one",5),"one")
   test_vector <- c("one_version_1", "one_version_2", "one_version_3")
   expect_equal(unique_trimmed_strings(test_vector, 6),
@@ -179,6 +179,31 @@ test_that("save_wb works!", {
 })
 # save_csv ( Internal )
 test_that("save_csv works!", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  expect_true(file.exists(test_dir))
+  test_file <- file.path(test_dir, "cars.csv")
+  expect_false(file.exists(test_file))
+  save_csv(
+    form = mtcars,
+    dir = test_dir,
+    file_name = "cars",
+    overwrite = TRUE
+  )
+  expect_true(file.exists(test_file))
+  test_saved_csv <- read.csv(test_file)
+  checkmate::expect_data_frame(test_saved_csv,
+                               nrows = nrow(mtcars),
+                               ncols = ncol(mtcars))
+  expect_message(save_csv(
+    form = cars,
+    dir = test_dir,
+    file_name = "cars",
+    overwrite = FALSE
+  ),"Already a file")
+  test_saved_csv <- read.csv(test_file)
+  checkmate::expect_data_frame(test_saved_csv,
+                               nrows = nrow(mtcars),
+                               ncols = ncol(mtcars))
 })
 # which_duplicated ( Internal )
 test_that("which_duplicated works!", {

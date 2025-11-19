@@ -60,25 +60,18 @@ reference:
       - add_project_summary
       - generate_project_summary
       - clear_project_summaries
-  - subtitle: Data Helpers
-    desc: Used for managing to-be-upload data
-    contents:
-      - raw_to_labelled_form
-      - labelled_to_raw_form
   - subtitle: Download from, Upload to, and Delete from REDCap
     desc: Always use with caution! Package takes several steps to test and confirm uploads but ultimately the user is responsible for data changes. Remember REDCap always keeps a log of changes.
     contents:
-      - get_REDCap_report
+      - raw_to_labelled_form
+      - labelled_to_raw_form
       - upload_form_to_REDCap
   - subtitle: Other Helpers
     contents:
       - "%>%"
-      - nav_to_dir
-      - link_API_playground
-      - link_API_token
-      - link_REDCap_home
-      - link_REDCap_project
-      - link_REDCap_record
+      - get_project_url
+      - get_record_url
+      - get_redcap_report
 
 articles:
   - title: Feautures by R User Level

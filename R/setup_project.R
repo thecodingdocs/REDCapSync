@@ -504,13 +504,6 @@ save_project <- function(project, silent = FALSE) {
   )
   invisible(project)
 }
-#' @title nav_to_dir
-#' @inheritParams save_project
-#' @return opens browser link
-#' @export
-nav_to_dir <- function(project) {
-  utils::browseURL(project$dir_path)
-}
 #' @noRd
 .allowed_test_short_names <- c("TEST_classic",
                                "TEST_repeating",
@@ -594,10 +587,18 @@ nav_to_dir <- function(project) {
     redcap_base = NULL,
     redcap_home = NULL,
     redcap_record_home = NULL,
-    redcap_record_subpage = NULL,
+    # redcap_record_subpage = NULL,
     redcap_records_dashboard = NULL,
     redcap_api = NULL,
     redcap_api_playground = NULL,
+    redcap_setup = NULL,
+    redcap_user_rights = NULL,
+    redcap_logging = NULL,
+    redcap_designer = NULL,
+    redcap_codebook = NULL,
+    redcap_dictionary = NULL,
+    redcap_data_quality = NULL,
+    redcap_identifiers = NULL,
     pkgdown = "https://thecodingdocs.github.io/REDCapSync/",
     github = "https://github.com/thecodingdocs/REDCapSync/",
     thecodingdocs = "https://www.thecodingdocs.com/"

@@ -81,7 +81,7 @@ sync_project <- function(project,
           !is_something(project$internals$last_full_update)) {
         hard_reset <- TRUE
       } else {
-        interim_log <- get_REDCap_log2(project, log_begin_date = as.Date(
+        interim_log <- get_redcap_log2(project, log_begin_date = as.Date(
           strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d")
         )) %>% unique()
         if (nrow(interim_log) <= nrow(project$redcap$log)) {
@@ -134,12 +134,12 @@ sync_project <- function(project,
     }
     if (hard_reset) {
       project <- project %>%
-        get_REDCap_metadata(include_users = !project$internals$metadata_only)
+        get_redcap_metadata(include_users = !project$internals$metadata_only)
       if (!project$internals$metadata_only) {
         project$data <- list()
         project$data_updates <- list()
         project$summary <- list()
-        project$data <- project %>% get_REDCap_data(
+        project$data <- project %>% get_redcap_data(
           labelled = project$internals$labelled,
           batch_size = project$internals$batch_size_download
         )
@@ -155,7 +155,7 @@ sync_project <- function(project,
         project$redcap$log <- redcap_log %>%
           bind_rows(
             project %>%
-              get_REDCap_log2(log_begin_date = log_begin_date)) %>%
+              get_redcap_log2(log_begin_date = log_begin_date)) %>%
           sort_redcap_log()
         project$summary$all_records <- extract_project_records(project)
         project$summary$all_records$last_api_call <-
@@ -177,7 +177,7 @@ sync_project <- function(project,
         }
         message_string <- "No new records to update!"
         if (length(stale_records) > 0) {
-          form_list <- project %>% get_REDCap_data(labelled = project$internals$labelled,
+          form_list <- project %>% get_redcap_data(labelled = project$internals$labelled,
                                                    records = stale_records)
           missing_from_summary <- stale_records[which(!stale_records %in% project$summary$all_records[[id_col]])]
           if (length(missing_from_summary) > 0) {
@@ -237,7 +237,7 @@ sync_project <- function(project,
     if (is_something(project$data)) {
       if (project$internals$get_files) {
         # test now
-        get_REDCap_files(
+        get_redcap_files(
           # would want track internally?
           project,
           original_file_names = project$internals$original_file_names

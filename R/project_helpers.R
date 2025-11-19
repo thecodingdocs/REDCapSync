@@ -338,40 +338,55 @@ get_min_dates <- function(data_list) {
 #' @param project A validated `project` object containing REDCap project data
 #' and settings. Generated using \code{project <- \link{load_project}("PROJ")}
 #' or \link{setup_project}()
-#' @return Nothing will be returned in R. Instead, a browser link
+#' @param link_type choose one of "base", "home", "record_home",
+#' "records_dashboard", "api", "api_playground", "codebook", "user_rights",
+#' "setup", "logging", "designer", "dictionary", "data_quality", "identifiers"
+#' @param open_browser logical for launching the link in internet browser
+#' @return internet link
 #' @family Link Functions
 #' @export
-link_API_token <- function(project) {
-  utils::browseURL(project$links$redcap_api)
-}
-#' @rdname Links
-#' @export
-link_API_playground <- function(project) {
-  utils::browseURL(project$links$redcap_api_playground)
-}
-#' @rdname Links
-#' @export
-link_REDCap_home <- function(project) {
-  utils::browseURL(project$links$redcap_base)
-}
-#' @rdname Links
-#' @export
-link_REDCap_project <- function(project) {
-  utils::browseURL(project$links$redcap_home)
+get_project_url <- function(project,
+                            link_type = "home",
+                            open_browser = TRUE) {
+  assert_choice(
+    link_type,
+    c(
+      "base",
+      "home",
+      "record_home",
+      "records_dashboard",
+      "api",
+      "api_playground",
+      "codebook",
+      "user_rights",
+      "setup",
+      "logging",
+      "designer",
+      "dictionary",
+      "data_quality",
+      "identifiers"
+    )
+  )
+  the_link <- project$links[[paste0("redcap_",link_type)]]
+  if(open_browser){
+    utils::browseURL(the_link)
+    return(invisible())
+  }
+  the_link
 }
 #' @param record REDCap record id or study id etc, any column names that match
 #' `project$metadata$id_col`
 #' @param page REDCap page for the record. Must be one of
 #' `project$metadata$forms$form_name`
 #' @param instance REDCap instance if it's a repeating instrument
-#' @param text_only logical for only returning text
+#' @param open_browser logical for launching the link in internet browser
 #' @rdname Links
 #' @export
-link_REDCap_record <- function(project,
-                               record,
-                               page,
-                               instance,
-                               text_only = FALSE) {
+get_record_url <- function(project,
+                           record,
+                           page,
+                           instance,
+                           open_browser = TRUE) {
   # FIX
   link <- paste0(
     project$links$redcap_base,
@@ -415,10 +430,11 @@ link_REDCap_record <- function(project,
       link <- link %>% paste0("&instance=", instance)
     }
   }
-  if (text_only) {
-    return(link)
+  if (open_browser) {
+    utils::browseURL(link)
+    return(invisible())
   }
-  utils::browseURL(link)
+  link
 }
 #' @noRd
 # construct_key_col_list <- function(project) {

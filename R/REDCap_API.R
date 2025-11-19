@@ -7,7 +7,7 @@ project_rcon <- function(project) {
   rcon
 }
 #' @noRd
-get_REDCap_metadata <- function(project, include_users = TRUE) {
+get_redcap_metadata <- function(project, include_users = TRUE) {
   assert_setup_project(project)
   project$internals$last_metadata_update <- now_time()
   project$metadata <- list()
@@ -124,7 +124,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   }
   # other-------
   if (include_users) {
-    project <- get_REDCap_users(project)
+    project <- get_redcap_users(project)
   }
   # add a check for exisiting conflict possibilities
   project$metadata$has_coding_conflicts <- FALSE
@@ -206,66 +206,42 @@ add_field_elements <- function(fields) {
 }
 #' @noRd
 update_project_links <- function(project) {
-  project$links$redcap_home <- paste0(
-    project$links$redcap_base,
-    "redcap_v",
-    project$redcap$version,
-    "/index.php?pid=",
-    project$redcap$project_id
-  )
-  project$links$redcap_record_home <- paste0(
-    project$links$redcap_base,
-    "redcap_v",
-    project$redcap$version,
-    "/DataEntry/record_home.php?pid=",
-    project$redcap$project_id
-  )
-  project$links$redcap_record_subpage <- paste0(
-    project$links$redcap_base,
-    "redcap_v",
-    project$redcap$version,
-    "/DataEntry/index.php?pid=",
-    project$redcap$project_id
-  )
-  project$links$redcap_records_dashboard <- paste0(
-    project$links$redcap_base,
-    "redcap_v",
-    project$redcap$version,
-    "/DataEntry/record_status_dashboard.php?pid=",
-    project$redcap$project_id
-  )
-  project$links$redcap_api <- paste0(
-    project$links$redcap_base,
-    "redcap_v",
-    project$redcap$version,
-    "/API/project_api.php?pid=",
-    project$redcap$project_id
-  )
-  project$links$redcap_api_playground <- paste0(
-    project$links$redcap_base,
-    "redcap_v",
-    project$redcap$version,
-    "/API/playground.php?pid=",
-    project$redcap$project_id
-  )
-  project$links$redcap_codebook <- paste0(
-    project$links$redcap_base,
-    "redcap_v",
-    project$redcap$version,
-    "/Design/data_dictionary_codebook.php?pid=",
-    project$redcap$project_id
-  )
-  project$links$redcap_user_rights <- paste0(
-    project$links$redcap_base,
-    "redcap_v",
-    project$redcap$version,
-    "/UserRights/index.php?pid=",
-    project$redcap$project_id
-  )
+  redcap_base <- project$links$redcap_base
+  version <- project$redcap$version
+  head <- paste0(redcap_base, "redcap_v", version)
+  tail <- paste0("?pid=", project$redcap$project_id)
+  home <- "/index.php" %>% paste0(tail)
+  record_home <- "/DataEntry/record_home.php" %>% paste0(tail)
+  # record_subpage <- "/DataEntry/index.php" %>% paste0(tail)
+  records_dashboard <- "/DataEntry/record_status_dashboard.php" %>% paste0(tail)
+  api <- "/API/project_api.php" %>% paste0(tail)
+  api_playground <- "/API/playground.php" %>% paste0(tail)
+  setup <- "/ProjectSetup/index.php" %>% paste0(tail)
+  user_rights <- "/UserRights/index.php" %>% paste0(tail)
+  logging <- "/Logging/index.php" %>% paste0(tail)
+  designer <- "/Design/online_designer.php" %>% paste0(tail)
+  codebook <- "/Design/data_dictionary_codebook.php" %>% paste0(tail)
+  dictionary <- "/Design/data_dictionary_upload.php" %>% paste0(tail)
+  data_quality <- "/DataQuality/index.php" %>% paste0(tail)
+  identifiers <- home %>% paste0("&route=IdentifierCheckController:index")
+  project$links$redcap_home <- paste0(head, home)
+  project$links$redcap_record_home <- paste0(head, record_home)
+  # project$links$redcap_record_subpage <- paste0(head, record_subpage)
+  project$links$redcap_records_dashboard <- paste0(head, records_dashboard)
+  project$links$redcap_api <- paste0(head, api)
+  project$links$redcap_api_playground <- paste0(head, api_playground)
+  project$links$redcap_setup <- paste0(head, setup)
+  project$links$redcap_user_rights <- paste0(head, user_rights)
+  project$links$redcap_logging <- paste0(head, logging)
+  project$links$redcap_designer <- paste0(head, designer)
+  project$links$redcap_codebook <- paste0(head, codebook)
+  project$links$redcap_dictionary <- paste0(head, dictionary)
+  project$links$redcap_data_quality <- paste0(head, data_quality)
+  project$links$redcap_identifiers <- paste0(head, identifiers)
   invisible(project)
 }
 #' @noRd
-get_REDCap_files <- function(project,
+get_redcap_files <- function(project,
                              original_file_names = FALSE,
                              overwrite = FALSE) {
   file_rows <- which(project$metadata$fields$field_type == "file")
@@ -338,7 +314,7 @@ get_REDCap_files <- function(project,
                  bullet_type = "v")
 }
 #' @noRd
-get_REDCap_users <- function(project) {
+get_redcap_users <- function(project) {
   assert_setup_project(project)
   x <- REDCapR::redcap_users_export(redcap_uri = project$links$redcap_uri,
                                     token = sanitize_token(Sys.getenv(project$redcap$token_name)))
@@ -366,7 +342,7 @@ get_REDCap_users <- function(project) {
   invisible(project)
 }
 #' @noRd
-get_REDCap_log <- function(project,
+get_redcap_log <- function(project,
                            log_begin_date = Sys.Date() - 10L,
                            clean = TRUE,
                            record = NULL,
@@ -398,7 +374,7 @@ get_REDCap_log <- function(project,
   }
   redcap_log # deal with if NA if user does not have log privileges.
 }
-get_REDCap_log2 <- function(project,
+get_redcap_log2 <- function(project,
                             log_begin_date = Sys.Date() - 10L,
                             clean = TRUE,
                             record = NULL,
@@ -437,11 +413,11 @@ get_REDCap_log2 <- function(project,
   redcap_log # deal with if NA if user does not have log privileges.
 }
 test_redcap_log_access <- function(project) {
-  the_test <- get_REDCap_log2(project = project, log_begin_date = Sys.Date())
+  the_test <- get_redcap_log2(project = project, log_begin_date = Sys.Date())
   ! is.null(the_test)
 }
 #' @noRd
-get_REDCap_denormalized <- function(project,
+get_redcap_denormalized <- function(project,
                                     labelled = FALSE,
                                     records = NULL,
                                     batch_size = 1000) {
@@ -461,7 +437,7 @@ get_REDCap_denormalized <- function(project,
 #' at the end of the URL of the report.
 #' @return data.frame of REDCap report
 #' @export
-get_REDCap_report <- function(project, report_id, silent = TRUE) {
+get_redcap_report <- function(project, report_id, silent = TRUE) {
   report_id <- as.integer(report_id)
   report <- REDCapR::redcap_report(
     redcap_uri = project$links$redcap_uri,
@@ -472,12 +448,12 @@ get_REDCap_report <- function(project, report_id, silent = TRUE) {
   return(report)
 }
 #' @noRd
-get_REDCap_data <- function(project,
+get_redcap_data <- function(project,
                             labelled = TRUE,
                             records = NULL,
                             batch_size = 2000) {
   form_list <- list()
-  denormalized <- get_REDCap_denormalized(
+  denormalized <- get_redcap_denormalized(
     project = project,
     labelled = FALSE,
     records = records,

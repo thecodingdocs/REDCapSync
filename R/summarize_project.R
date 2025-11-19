@@ -1090,6 +1090,7 @@ summarize_project <- function(project, hard_reset = FALSE) {
 #' @description
 #' `r lifecycle::badge("experimental")`
 #' @inheritParams save_project
+#' @return invisible return of project and a message
 #' @export
 clear_project_summaries <- function(project) {
   lifecycle::signal_stage("experimental", "clear_project_summaries()")

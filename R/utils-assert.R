@@ -24,7 +24,7 @@ assert_dir <- function(dir_path, silent = TRUE) {
 #' @noRd
 get_project_token <- function(project, silent = TRUE) {
   assert_setup_project(project)
-  token_name <- get_REDCap_token_name(project)
+  token_name <- get_redcap_token_name(project)
   token <- Sys.getenv(token_name)
   is_a_test <- is_test_project(project)
   valid <- token %>%

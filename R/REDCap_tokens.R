@@ -145,7 +145,7 @@ is_hexadecimal <- function(string, length = NULL) {
   return(grepl(pattern, string))
 }
 #' @noRd
-get_REDCap_token_name <- function(project) {
+get_redcap_token_name <- function(project) {
   token_name <- paste0(.token_prefix, assert_env_name(project$short_name))
   if (is_something(project$redcap$token_name)) {
     token_name <- project$redcap$token_name

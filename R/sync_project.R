@@ -97,7 +97,7 @@ sync_project <- function(project,
         interim_log <- unique_log[which(!duplicated(rbind(unique_log, head_of_log), fromLast = TRUE)[seq_len(nrow(unique_log))]), ]
         if (nrow(interim_log) > 0) {
           project$redcap$log <- interim_log %>%
-            dplyr::bind_rows(project$redcap$log) %>%
+            bind_rows(project$redcap$log) %>%
             unique()
           interim_log$timestamp <- NULL
           interim_log_metadata <- interim_log[which(is.na(interim_log$record)), ]
@@ -153,7 +153,7 @@ sync_project <- function(project,
           log_begin_date <- Sys.Date() - project$internals$days_of_log
         }
         project$redcap$log <- redcap_log %>%
-          dplyr::bind_rows(
+          bind_rows(
             project %>%
               get_REDCap_log2(log_begin_date = log_begin_date)) %>%
           sort_redcap_log()
@@ -189,7 +189,7 @@ sync_project <- function(project,
             )
             colnames(x)[1] <- id_col
             project$summary$all_records <- project$summary$all_records %>%
-              dplyr::bind_rows(x)
+              bind_rows(x)
             x <- order(project$summary$all_records[[id_col]], decreasing = TRUE)
             project$summary$all_records <- project$summary$all_records[x, ]
           }
@@ -203,7 +203,7 @@ sync_project <- function(project,
           for (form_name in names(form_list)) {
             project$data[[form_name]] <- project$data[[form_name]] %>%
               all_character_cols() %>%
-              dplyr::bind_rows(form_list[[form_name]])
+              bind_rows(form_list[[form_name]])
           }
           row_match <- which(project$summary$all_records[[id_col]] %in% stale_records)
           project$summary$all_records$last_api_call[row_match] <-
@@ -400,7 +400,7 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
       # }
     }
     if (had_change) {
-      projects <- project_list %>% dplyr::bind_rows()
+      projects <- project_list %>% bind_rows()
       save_projects_to_cache(projects, silent = FALSE)
     }
   }

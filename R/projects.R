@@ -31,12 +31,12 @@ get_projects <- function() {
 #' @noRd
 blank_tibble <- function(col_names){
   if(missing(col_names)) {
-    return(dplyr::tibble())
+    return(tibble())
   }
   checkmate::assert_vector(col_names, unique = TRUE)
   df <- matrix(data = character(0),ncol = length(col_names))
   colnames(df) <- col_names
-  dplyr::as_tibble(df)
+  as_tibble(df)
 }
 #' @noRd
 .blank_project_cols <- c(
@@ -124,7 +124,7 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
   assert_project_details(projects)
   projects <- projects[order(projects$short_name), ]
   saveRDS(projects, file = cache_path() %>% file.path("projects.rds"))
-  pkg_name <- getPackageName()
+  pkg_name <- "REDCapSync"
   if (!silent) {
     cli_alert_success(
       paste0(
@@ -249,7 +249,7 @@ add_project_details_to_cache <- function(project_details) {
       )
     )
   }
-  projects <- projects %>% dplyr::bind_rows(project_details)
+  projects <- projects %>% bind_rows(project_details)
   save_projects_to_cache(projects)
 }
 #' @noRd

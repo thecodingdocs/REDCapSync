@@ -166,15 +166,15 @@ add_field_elements <- function(fields) {
     if (length(row_index) == 0) {
       row_index <- last_row
     }
-    row <- dplyr::last(row_index)
+    row <- last(row_index)
     top <- fields[1:row, ]
     bottom <- NULL
     if (last_row > row) {
       bottom <- fields[(row + 1):last_row, ]
     }
     fields <- top %>%
-      dplyr::bind_rows(new_row) %>%
-      dplyr::bind_rows(bottom)
+      bind_rows(new_row) %>%
+      bind_rows(bottom)
   }
   if (any(fields$field_type == "checkbox")) {
     for (field_name in fields$field_name[which(fields$field_type == "checkbox")]) {
@@ -195,8 +195,8 @@ add_field_elements <- function(fields) {
         bottom <- fields[(row + 1):last_row, ]
       }
       fields <- top %>%
-        dplyr::bind_rows(new_rows) %>%
-        dplyr::bind_rows(bottom)
+        bind_rows(new_rows) %>%
+        bind_rows(bottom)
     }
   }
   if (any(fields$field_type == "yesno")) {
@@ -425,7 +425,7 @@ get_REDCap_log2 <- function(project,
     message(httr::content(response)$error)
     return(NULL)
   }
-  redcap_log <- httr::content(response) %>% dplyr::bind_rows()
+  redcap_log <- httr::content(response) %>% bind_rows()
   if (is.data.frame(redcap_log)) {
     if (nrow(redcap_log) > 0) {
       redcap_log[redcap_log == ""] <- NA

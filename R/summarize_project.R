@@ -10,7 +10,7 @@ fields_to_choices <- function(fields) {
     field_label <- fields$field_label[i]
     field_type <- fields$field_type[i]
     selections <- fields$select_choices_or_calculations[i] %>% split_choices()
-    choices <- choices %>% dplyr::bind_rows(
+    choices <- choices %>% bind_rows(
       data.frame(
         form_name = form_name,
         field_name = field_name,
@@ -59,7 +59,7 @@ annotate_fields <- function(data_list,
         col_names <- fields$field_name[which(fields$form_name == form_name)]
         form <- data_list$data[[form_name]]
         col_names <- col_names[which(col_names %in% colnames(form))]
-        skimmed <- skimmed %>% dplyr::bind_rows(form[, col_names] %>% skimr::skim())
+        skimmed <- skimmed %>% bind_rows(form[, col_names] %>% skimr::skim())
       }
       field_names <- fields$field_name
       fields <- fields %>% merge(skimmed,
@@ -70,7 +70,7 @@ annotate_fields <- function(data_list,
         lapply(function(x) {
           fields[which(fields$field_name == x), ]
         }) %>%
-        dplyr::bind_rows()
+        bind_rows()
     }
     # cli_alert_wrap("Annotated `data_list$metadata$fields`",bullet_type = "v")
   }
@@ -195,10 +195,10 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
       match(all_records[[id_col]])
     # test matched all_records[[id_col]][cool_list_match]
     cool_list_first <- cool_list %>%
-      lapply(dplyr::first) %>%
+      lapply(first) %>%
       unlist()
     cool_list_last <- cool_list %>%
-      lapply(dplyr::last) %>%
+      lapply(last) %>%
       unlist()
     all_records$first_timestamp[cool_list_match] <- cool_list_first
     all_records$last_timestamp[cool_list_match] <- cool_list_last
@@ -232,7 +232,7 @@ annotate_records2 <- function(data_list,
     unlist()
   summary_records$first_timestamp <- record_groups %>%
     lapply(function(group) {
-      group$timestamp %>% dplyr::last()
+      group$timestamp %>% last()
     }) %>%
     unlist()
   summary_records$last_user <- record_groups %>%
@@ -1015,7 +1015,7 @@ metadata_add_default_cols <- function(data_list) {
     lapply(function(x) {
       fields[which(fields$form_name == x), ]
     }) %>%
-    dplyr::bind_rows()
+    bind_rows()
   fields$field_type_R <- field_types_to_R(fields)
   # for (x in names(.redcap_field_conversion2)){
   #   y <- .redcap_field_conversion2[[x]]
@@ -1157,7 +1157,7 @@ annotate_users <- function(data_list,
                            drop_blanks = FALSE) {
   redcap_log <- get_log(data_list, records)
   # role_label not inculded now
-  summary_users <- data_list$redcap$users %>% dplyr::select(c("username", "email", "firstname", "lastname"))
+  summary_users <- data_list$redcap$users %>% select(c("username", "email", "firstname", "lastname"))
   user_groups <- redcap_log %>% split(redcap_log$username)
   names_in_log <- names(user_groups)
   if (!is_something(user_groups) || length(names_in_log) == 0) {
@@ -1171,7 +1171,7 @@ annotate_users <- function(data_list,
   if (summarize_data) {
     only_in_log <- names_in_log %>% vec1_not_in_vec2(summary_users$username)
     if (length(only_in_log) > 0) {
-      summary_users <- summary_users %>% dplyr::bind_rows(data.frame(username = only_in_log))
+      summary_users <- summary_users %>% bind_rows(data.frame(username = only_in_log))
     }
     summary_users$first_timestamp <- NA
     summary_users$last_timestamp <- NA
@@ -1181,7 +1181,7 @@ annotate_users <- function(data_list,
       the_row <- match(user_group_name, summary_users$username)
       group <- user_groups[[user_group_name]]
       # record_rows <- which(!is.na(group$record))
-      summary_users$first_timestamp[the_row] <- group$timestamp %>% dplyr::last()
+      summary_users$first_timestamp[the_row] <- group$timestamp %>% last()
       summary_users$last_timestamp[the_row] <- group$timestamp[[1]]
       # if(length(record_rows)>0){
       #   summary_users$last_record_timestamp[the_row] <- group$timestamp[record_rows][[1]]
@@ -1251,13 +1251,16 @@ summary_records_due <- function(project, summary_name) {
     # can't do this for separate = TRUE unless more code is written
     return(TRUE)
   }
-  old_records <- project$summary$all_records[[id_col]][which(project$summary$all_records[[summary_name]])] %>% sort()
-  records <- get_summary_records(project = project, summary_name = summary_name) %>% sort()
+  old_rec_rows <- which(project$summary$all_records[[summary_name]])
+  old_records <- project$summary$all_records[[id_col]][old_rec_rows] %>% sort()
+  records <- get_summary_records(project = project,
+                                 summary_name = summary_name) %>% sort()
   if (!identical(records, old_records)) {
     return(TRUE)
   }
   record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  relevant_records <- project$summary$all_records[record_rows, c(id_col, "last_api_call", "was_saved", summary_name)]
+  record_cols <- c(id_col, "last_api_call", "was_saved", summary_name)
+  relevant_records <- project$summary$all_records[record_rows, record_cols]
   if (length(which(!relevant_records$was_saved)) > 0) {
     return(TRUE) # maybe was_saved not needed at all
   }
@@ -1606,7 +1609,9 @@ field_names_to_form_names <- function(project,
 }
 #' @noRd
 construct_header_list <- function(form_list,
-                                  md_elements = c("form_name", "field_type", "field_label"),
+                                  md_elements = c("form_name",
+                                                  "field_type",
+                                                  "field_label"),
                                   fields) {
   if (anyDuplicated(fields$field_name) > 0)
     stop("dup names not allowed in fields")

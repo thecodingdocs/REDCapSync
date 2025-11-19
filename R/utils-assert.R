@@ -229,7 +229,7 @@ assert_setup_project <- function(project,
                  any.missing = FALSE,
                  len = 1,
                  add = collected)
-  current_function <- as.character(current_call()) %>% dplyr::first()
+  current_function <- as.character(current_call()) %>% first()
   if (!collected$isEmpty()) {
     message <- cli_message_maker(collected, function_name = current_function)
     cli::cli_abort(message)

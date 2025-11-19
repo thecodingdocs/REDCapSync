@@ -6,8 +6,8 @@ test_that("cli_alert_wrap  works!", {
 })
 # now_time ( Internal )
 test_that("now_time  works!", {
-  expect_class(now_time(),"POSIXct")
-  expect_class(now_time(),"POSIXt")
+  checkmate::expect_class(now_time(),"POSIXct")
+  checkmate::expect_class(now_time(),"POSIXt")
 })
 # process_df_list ( Internal )
 test_that("process_df_list  works!", {

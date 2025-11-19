@@ -1,6 +1,6 @@
 mock_project <- function() {
   short_name <- "TEST_PROJECT"
-  redcap_uri <- "https://redcap.miami.edu/api/"
+  redcap_uri <- "https://redcap.fake.edu/api/"
   project <- setup_project(
     short_name = short_name,
     redcap_uri = redcap_uri
@@ -20,8 +20,9 @@ mock_project <- function() {
   project$redcap$is_longitudinal <- FALSE
   project$redcap$has_repeating_forms_or_events <- FALSE
   project$redcap$has_multiple_arms <- FALSE
-  project$links$redcap_home <- project$links$redcap_uri
-  project$links$redcap_API_playground <- project$links$redcap_uri
+  project$links$redcap_base <- redcap_uri %>%
+    dirname() %>%
+    paste0("/") # add test function
   # metadata -------
   project$metadata$fields <- data.frame(
     field_name = character(0),

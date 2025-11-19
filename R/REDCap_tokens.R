@@ -84,7 +84,7 @@ test_project_token <- function(project, launch_browser = TRUE) {
   invisible(project)
 }
 #' @noRd
-is_valid_REDCap_token <- function(token,
+is_valid_redcap_token <- function(token,
                                   silent = TRUE,
                                   is_a_test = FALSE) {
   start_text <- "The token "

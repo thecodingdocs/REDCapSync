@@ -1,4 +1,4 @@
-test_that("link_ helpers work", {
+test_that("update_project_links works", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
@@ -10,45 +10,67 @@ test_that("link_ helpers work", {
     }
   )
   project <- mock_project()
-  project$links$redcap_base <- "https://fakeredcap.com/"
-  project$links$redcap_home <- "https://fakeredcap.com/version/project"
-  project$links$redcap_api <- "https://fakeredcap.com/version/project/api"
-  project$links$redcap_api_playground <- "https://fakeredcap.com/version/project/api_playground"
-  e <- new.env(parent = emptyenv())
-  # link_API_token
-  e$called_url <- NULL
-  mockery::stub(
-    link_API_token, "utils::browseURL",
-    function(url) e$called_url <- url
-  )
-  link_API_token(project)
-  expect_equal(e$called_url, project$links$redcap_api)
-  # link_API_playground
-  e$called_url <- NULL
-  mockery::stub(
-    link_API_playground, "utils::browseURL",
-    function(url) e$called_url <- url
-  )
-  link_API_playground(project)
-  expect_equal(e$called_url, project$links$redcap_api_playground)
-  # link_REDCap_home
-  e$called_url <- NULL
-  mockery::stub(
-    link_REDCap_home, "utils::browseURL",
-    function(url) e$called_url <- url
-  )
-  link_REDCap_home(project)
-  expect_equal(e$called_url, project$links$redcap_base)
-  # link_REDCap_project
-  e$called_url <- NULL
-  mockery::stub(
-    link_REDCap_project, "utils::browseURL",
-    function(url) e$called_url <- url
-  )
-  link_REDCap_project(project)
-  expect_equal(e$called_url, project$links$redcap_home)
+  expect_false(is.null(project$links$redcap_uri))
+  expect_false(is.null(project$links$redcap_base))
+  link_vector <- paste0("redcap_",.link_types)
+  link_vector <- setdiff(link_vector,"redcap_base")
+  #check null
+  for(the_link in link_vector){
+    expect_null(project$links[[the_link]])
+  }
+  #do it!
+  project <- update_project_links(project)
+  pid_pattern <-paste0("pid=",project$redcap$project_id)
+  version_pattern <-paste0("redcap_v",project$redcap$version)
+  for(the_link in link_vector){
+    expect_false(is.null(project$links[[the_link]]))
+    expect_true(grepl(pid_pattern,project$links[[the_link]]))
+    expect_true(grepl(version_pattern,project$links[[the_link]]))
+  }
+  # version changed!
+  version_old <- project$redcap$version
+  version_new <- "14.2.3"
+  project$redcap$version <- version_new
+  project <- update_project_links(project)
+  expect_equal(project$redcap$version,version_new)
+  pid_pattern <-paste0("pid=",project$redcap$project_id)
+  version_pattern <-paste0("redcap_v",project$redcap$version)
+  for(the_link in link_vector){
+    expect_false(is.null(project$links[[the_link]]))
+    expect_true(grepl(pid_pattern,project$links[[the_link]]))
+    expect_true(grepl(version_pattern,project$links[[the_link]]))
+  }
 })
-test_that("link_REDCap_record works", {
+test_that("get_project_url works", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
+  project <- mock_project()
+  project <- update_project_links(project)
+
+  e <- new.env(parent = emptyenv())
+  # get_project_url
+  e$called_url <- NULL
+  mockery::stub(
+    get_project_url, "utils::browseURL",
+    function(url) e$called_url <- url
+  )
+  for(link_type in .link_types){
+    e$called_url <- NULL
+    get_project_url(project, link_type = link_type, open_browser = TRUE)
+    expect_equal(e$called_url, project$links[[paste0("redcap_",link_type)]])
+    out <- get_project_url(project, link_type = link_type, open_browser = FALSE)
+    expect_equal(out, project$links[[paste0("redcap_",link_type)]])
+  }
+})
+test_that("get_record_url works", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
@@ -69,17 +91,17 @@ test_that("link_REDCap_record works", {
     project$redcap$project_id
   )
   e <- new.env(parent = emptyenv())
-  # link_API_token
+  # get_project_url
   e$called_url <- NULL
   mockery::stub(
-    link_REDCap_record, "utils::browseURL",
+    get_record_url, "utils::browseURL",
     function(url) e$called_url <- url
   )
-  expect_equal(link_REDCap_record(project, text_only = TRUE), expected_link)
+  expect_equal(get_record_url(project, open_browser = FALSE), expected_link)
   expect_null(e$called_url) # does not call url
   e$called_url <- NULL
-  link_REDCap_record(project, text_only = FALSE)
+  get_record_url(project, open_browser = TRUE)
   expect_equal(e$called_url, expected_link)
   e$called_url <- NULL
-  # link_REDCap_record(project,page = "2", text_only = TRUE)
+  # get_record_url(project,page = "2", text_only = TRUE)
 })

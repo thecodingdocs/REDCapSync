@@ -350,22 +350,7 @@ get_project_url <- function(project,
                             open_browser = TRUE) {
   assert_choice(
     link_type,
-    c(
-      "base",
-      "home",
-      "record_home",
-      "records_dashboard",
-      "api",
-      "api_playground",
-      "codebook",
-      "user_rights",
-      "setup",
-      "logging",
-      "designer",
-      "dictionary",
-      "data_quality",
-      "identifiers"
-    )
+    .link_types
   )
   the_link <- project$links[[paste0("redcap_",link_type)]]
   if(open_browser){
@@ -374,6 +359,22 @@ get_project_url <- function(project,
   }
   the_link
 }
+.link_types <- c(
+  "base",
+  "home",
+  "record_home",
+  "records_dashboard",
+  "api",
+  "api_playground",
+  "codebook",
+  "user_rights",
+  "setup",
+  "logging",
+  "designer",
+  "dictionary",
+  "data_quality",
+  "identifiers"
+)
 #' @param record REDCap record id or study id etc, any column names that match
 #' `project$metadata$id_col`
 #' @param page REDCap page for the record. Must be one of

@@ -20,7 +20,7 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$redcap$project_id <- project$redcap$project_info$project_id %>%
     as.character()
   project$metadata$is_longitudinal <- project$redcap$project_info$is_longitudinal
-  project$metadata$missing_codes <- missing_codes2(project)
+  project$metadata$missing_codes <- check_missing_codes(project)
   project$redcap$has_log_access <- test_redcap_log_access(project)
   # instruments --------
   project$metadata$forms <- REDCapR::redcap_instruments(redcap_uri = project$links$redcap_uri,

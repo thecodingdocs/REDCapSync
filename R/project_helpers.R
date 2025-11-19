@@ -779,7 +779,7 @@ clean_redcap_log <- function(redcap_log) {
   stringsAsFactors = FALSE
 )
 #' @noRd
-missing_codes2 <- function(project) {
+check_missing_codes <- function(project) {
   included <- "missing_data_codes" %in% colnames(project$redcap$project_info)
   if (included) {
     is_na <- is.na(project$redcap$project_info$missing_data_codes)

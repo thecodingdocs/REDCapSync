@@ -771,10 +771,10 @@ generate_project_summary <- function(project,
   data_list <- NULL
   data_list$metadata <- project$metadata
   if (labelled != project$internals$labelled) {
-    if (labelled) {
+    if (project$internals$labelled) {
       project <- labelled_to_raw_data_list(project)
     }
-    if (!labelled) {
+    if (!project$internals$labelled) {
       project <- raw_to_labelled_data_list(project)
     }
   }

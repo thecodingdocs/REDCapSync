@@ -73,10 +73,10 @@ test_that("vec1_in_vec2 and vec1_not_in_vec2 works!", {
   expect_false("b"%in%out)
   expect_false("c"%in%out)
 })
-# unique_which ( Internal )
-test_that("unique_which  works!", {
-  expect_equal(unique_which(c("a","a","b","b","c","c","c")),3)
-  expect_equal(unique_which(c("a","a","b","b","c","d")),4)
+# length_unique ( Internal )
+test_that("length_unique  works!", {
+  expect_equal(length_unique(c("a","a","b","b","c","c","c")),3)
+  expect_equal(length_unique(c("a","a","b","b","c","d")),4)
 })
 # length_which ( Internal )
 test_that("length_which  works!", {

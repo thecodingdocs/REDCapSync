@@ -39,7 +39,7 @@ cache_path <- function() {
 cache_clear <- function() {
   cache <- get_cache()
   cache$delete_all()
-  cli_alert_warning("You must delete any/all other files manually from the directory.")
+  cli_alert_warning("You must delete other files manually from the directory.")
   cli_alert_wrap(
     "REDCapSync cache cleared!",
     file = cache$cache_path_get(),
@@ -97,4 +97,3 @@ cache_remove_project <- function(short_name){
            "files you must do this manually at the folder you previously chose."
            ))
 }
-# need checks on setup project if project id is same etc

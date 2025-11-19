@@ -121,6 +121,7 @@ setup_project <- function(short_name,
     add = collected
   )
   # DIRPATH
+  # need checks on setup project if project id is same
   assert_env_name(
     env_name = token_name,
     max.chars = 50,

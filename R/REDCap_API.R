@@ -13,10 +13,12 @@ get_REDCap_metadata <- function(project, include_users = TRUE) {
   project$metadata <- list()
   rcon <- project_rcon(project)
   # info ----------
-  project$redcap$project_info <- REDCapR::redcap_project_info_read(redcap_uri = project$links$redcap_uri,
-                                                                   token = get_project_token(project))[["data"]] # remove at some point
+  project$redcap$project_info <- REDCapR::redcap_project_info_read(
+    redcap_uri = project$links$redcap_uri,
+    token = get_project_token(project))[["data"]] # remove at some point
   project$redcap$project_title <- project$redcap$project_info$project_title
-  project$redcap$project_id <- project$redcap$project_info$project_id %>% as.character()
+  project$redcap$project_id <- project$redcap$project_info$project_id %>%
+    as.character()
   project$metadata$is_longitudinal <- project$redcap$project_info$is_longitudinal
   project$metadata$missing_codes <- missing_codes2(project)
   project$redcap$has_log_access <- test_redcap_log_access(project)
@@ -481,7 +483,8 @@ get_REDCap_data <- function(project,
     records = records,
     batch_size = batch_size
   ) # add check for dag and api
-  form_list <- denormalized %>% normalize_redcap(project = project, labelled = labelled)
+  form_list <- denormalized %>%
+    normalize_redcap(project = project, labelled = labelled)
   return(form_list)
 }
 #' @noRd

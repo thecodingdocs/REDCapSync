@@ -22,7 +22,8 @@ deidentify_data_list <- function(data_list,
   if (exclude_identifiers) {
     initial_identifiers <- fields$field_name[which(
       fields$identifier == "y" |
-        fields$text_validation_type_or_show_slider_number %in% .redcap_possible_id_fields_strict
+        fields$text_validation_type_or_show_slider_number %in%
+        .redcap_possible_id_fields_strict
     )]
     if (length(initial_identifiers) == 0L) {
       warning(
@@ -97,7 +98,9 @@ deidentify_data_list <- function(data_list,
         shift_range <- -number:number
         min_dates <- get_min_dates(data_list)
         if (date_handling == "random_shift_by_record") {
-          min_dates$shift_amount <- sample(shift_range,size = nrow(min_dates),replace = TRUE)
+          min_dates$shift_amount <- sample(shift_range,
+                                           size = nrow(min_dates),
+                                           replace = TRUE)
         }
         if (date_handling == "random_shift_by_project") {
           min_dates$shift_amount <- sample(shift_range,size = 1,replace = TRUE)
@@ -116,7 +119,8 @@ deidentify_data_list <- function(data_list,
           difference <- min_dates$shift_amount[match_date_diff]
           for (field_name in date_list[[form_name]]) {
             field <- data[[form_name]][[field_name]]
-            data[[form_name]][[field_name]] <- as.character(as.Date(field) - difference)
+            data[[form_name]][[field_name]] <-
+              as.character(as.Date(field) - difference)
           }
         }
       }
@@ -146,7 +150,8 @@ filter_data_list <- function(data_list,
     field_names <- data_list %>% get_all_field_names()
   if (is.null(form_names))
     form_names <- data_list$metadata$forms$form_name
-  field_names_minus <- field_names[which(!field_names %in% data_list$metadata$raw_structure_cols)]
+  the_rows <- which(!field_names %in% data_list$metadata$raw_structure_cols)
+  field_names_minus <- field_names[the_rows]
   if (length(field_names_minus) > 0) {
     form_names_minus <- data_list %>%
       field_names_to_form_names(field_names = field_names_minus, strict = TRUE)
@@ -163,7 +168,8 @@ filter_data_list <- function(data_list,
     }
   } else {
     if (!is.null(filter_field) || !is.null(filter_choices)) {
-      cli_alert_warning("use `filter_list` only... or `filter_field` & `filter_choices`")
+      cli_alert_warning(
+        "use `filter_list` or `filter_field` & `filter_choices`")
     }
   }
   filter_field_names <- NULL
@@ -172,22 +178,26 @@ filter_data_list <- function(data_list,
       names() %>%
       drop_if("")
     # should be unique
-    # filter_field_names %>% vec1_not_in_vec2(data_list$metadata$fields$field_name) # should be empty
-    filter_form <- data_list %>% field_names_to_form_names(field_names = filter_field_names)
+    # filter_field_names %>%
+    # vec1_not_in_vec2(data_list$metadata$fields$field_name) # should be empty
+    filter_form <- data_list %>%
+      field_names_to_form_names(field_names = filter_field_names)
     if (length(filter_field_names) == 1L) {
       if (filter_field_names == data_list$metadata$id_col) {
-        filter_form <- data_list$metadata$forms$form_name[1L] # RISKY? id_position
+        filter_form <- data_list$metadata$forms$form_name[1L]
+        # RISKY? id_position like REDCapR, add to setup
       }
     }
     # should be length 1
     if (length(filter_form) > 1) {
-      stop("You can only filter_list by multiple columns part of one single reference form")
+      stop("You can only filter_list by multiple columns part of one form")
     }
     form_key_cols <- data_list$metadata$form_key_cols %>%
       unlist() %>%
       unique()
     is_key <- all(filter_field_names %in% form_key_cols)
-    is_repeating_filter_form <- filter_form %in% data_list$metadata$forms$form_name[which(data_list$metadata$forms$repeating)]
+    is_repeating_filter_form <- filter_form %in%
+      data_list$metadata$forms$form_name[which(data_list$metadata$forms$repeating)]
   }
   # can use this to have repeats capture non-rep events
   for (form_name in form_names) {
@@ -210,7 +220,8 @@ filter_data_list <- function(data_list,
           }
           index_test <- rep(FALSE, nrow(form))
           if (filter_field_final %in% colnames(data_list$data[[form_name]])) {
-            index_test <- data_list$data[[form_name]][[filter_field_final]] %in% filter_choices_final
+            index_test <- data_list$data[[form_name]][[filter_field_final]] %in%
+              filter_choices_final
           }
           if (is.null(row_logic)) {
             row_logic <- index_test
@@ -376,7 +387,9 @@ link_REDCap_record <- function(project,
     }
     if ("arm_number" %in% colnames(project$summary$all_records)) {
       arm_row <- which(project$summary$all_records[[id_col]] == record)
-      link <- paste0(link, "&arm=", project$summary$all_records$arm_number[arm_row])
+      link <- paste0(link,
+                     "&arm=",
+                     project$summary$all_records$arm_number[arm_row])
     }
     link <- link %>% paste0("&id=", record)
   }
@@ -391,7 +404,8 @@ link_REDCap_record <- function(project,
     }
     link <- link %>% paste0("&page=", page)
     if (!missing(instance)) {
-      repeating_form_names <- project$metadata$forms$form_name[which(project$metadata$forms$repeating)]
+      repeating_form_names <- project$metadata$forms$form_name[
+        which(project$metadata$forms$repeating)]
       if (!page %in% repeating_form_names) {
         stop(
           "If you provide an instance, it has to be a repeating instrument: ",
@@ -469,11 +483,12 @@ normalize_redcap <- function(denormalized, project, labelled) {
       )
       add_ons <- add_ons[which(add_ons %in% colnames(denormalized))]
       col_names <- c(add_ons, colnames(denormalized)) %>% unique()
-      denormalized <- denormalized[order(denormalized$id_temp), col_names %>% lapply(function(c) {
-        which(colnames(denormalized) == c)
-      }) %>%
-        unlist() %>%
-        as.integer()]
+      denormalized <- denormalized[order(denormalized$id_temp), col_names %>%
+                                     lapply(function(c) {
+                                       which(colnames(denormalized) == c)
+                                     }) %>%
+                                     unlist() %>%
+                                     as.integer()]
       denormalized$id_temp <- NULL
     }
     add_ons <- add_ons[which(add_ons %in% colnames(denormalized))]
@@ -513,8 +528,9 @@ normalize_redcap <- function(denormalized, project, labelled) {
           if (is_longitudinal) {
             row_index <- which(
               denormalized$redcap_repeat_instrument == form_name |
-                denormalized$redcap_event_name %in% event_mapping$unique_event_name[which(!event_mapping$repeating &
-                                                                                            event_mapping$form == form_name)]
+                denormalized$redcap_event_name %in%
+                event_mapping$unique_event_name[which(!event_mapping$repeating &
+                                                        event_mapping$form == form_name)]
             )
           }
           if (!is_longitudinal) {

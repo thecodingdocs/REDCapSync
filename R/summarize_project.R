@@ -554,9 +554,7 @@ save_summary <- function(project, summary_name) {
     generate_project_summary(summary_name = summary_name, internal_use = TRUE)
   # add headers-------
   form_names <- names(data_list$data)
-  header_df_list <- data_list %>%
-    construct_header_list(fields = data_list$metadata$fields) %>%
-    process_df_list(silent = TRUE)
+  header_df_list <- construct_header_list(data_list)
   key_cols_list <- data_list$metadata$form_key_cols
   if (summary_name == "REDCapSync_raw") {
     header_df_list <- NULL
@@ -1622,14 +1620,14 @@ field_names_to_form_names <- function(project,
   form_names
 }
 #' @noRd
-construct_header_list <- function(form_list,
+construct_header_list <- function(data_list,
                                   md_elements = c("form_name",
                                                   "field_type",
-                                                  "field_label"),
-                                  fields) {
+                                                  "field_label")) {
+  fields <- data_list$metadata$fields
   if (anyDuplicated(fields$field_name) > 0)
     stop("dup names not allowed in fields")
-  data_field_list <- form_list %>% lapply(colnames)
+  data_field_list <- data_list %>% lapply(colnames)
   header_df_list <- data_field_list %>% lapply(function(field_names) {
     x <- field_names %>%
       lapply(function(field_name) {
@@ -1645,7 +1643,7 @@ construct_header_list <- function(form_list,
       any(row != "")
     })), ]
     x
-  })
+  }) %>% process_df_list(silent = TRUE)
   header_df_list
 }
 #' @noRd

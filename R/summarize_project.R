@@ -656,12 +656,12 @@ save_summary <- function(project, summary_name) {
 #' inherited according to what was set with `add_project_summary`.
 #' @param transformation_type Character vector.
 #' Default is "default".
-#' Also have "none", "flat", "merge-non-repeating"
+#' Also have "none", "flat", "merge_non_repeating"
 #' "default" first merges non-repeating and if there are repeating forms it
 #' merges non-repeating variables to the right of repeating instruments
 #' "flat" is one-record, one-row, even if there are repeating forms
 #' "none" does not transform anything
-#' "merge-non-repeating" still merges all non-repeating instruments but
+#' "merge_non_repeating" still merges all non-repeating instruments but
 #' does not merge them to repeating instruments
 #' @param merge_form_name A character string representing the name of the merged
 #' form. Default is "merged".
@@ -814,7 +814,7 @@ generate_project_summary <- function(project,
       merge_to_rep = TRUE
     )
   }
-  if (transformation_type == "merge-non-repeating") {
+  if (transformation_type == "merge_non_repeating") {
     data_list <- merge_non_repeating(
       data_list = data_list,
       merge_form_name = merge_form_name,
@@ -823,6 +823,19 @@ generate_project_summary <- function(project,
   }
   if (clean) {
     #include warning for if missing codes will prevent uploads
+    if(is_something(data_list$metadata$missing_codes)){
+      if(drop_missing_codes){
+        if(labelled){
+          exclude_these <- data_list$metadata$missing_codes$name
+        }else{
+          exclude_these <- data_list$metadata$missing_codes$code
+        }
+        drop_others <- drop_others %>%
+          append(exclude_these) %>%
+          unique() %>%
+          drop_nas()
+      }
+    }
     data_list$data <- clean_data_list(
       data_list = data_list,
       drop_blanks = drop_blanks,

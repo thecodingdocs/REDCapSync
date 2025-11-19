@@ -45,12 +45,12 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 
 \item{transformation_type}{Character vector.
 Default is "default".
-Also have "none", "flat", "merge-non-repeating"
+Also have "none", "flat", "merge_non_repeating"
 "default" first merges non-repeating and if there are repeating forms it
 merges non-repeating variables to the right of repeating instruments
 "flat" is one-record, one-row, even if there are repeating forms
 "none" does not transform anything
-"merge-non-repeating" still merges all non-repeating instruments but
+"merge_non_repeating" still merges all non-repeating instruments but
 does not merge them to repeating instruments}
 
 \item{merge_form_name}{A character string representing the name of the merged

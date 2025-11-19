@@ -335,6 +335,7 @@ assert_collection <- function(collection) {
   assert_names(names(collection), identical.to = names(makeAssertCollection()))
   invisible(collection)
 }
+#' @noRd
 assert_project_details <- function(projects, nrows = NULL) {
   the_output <- assert_data_frame(
     x = projects,
@@ -344,6 +345,7 @@ assert_project_details <- function(projects, nrows = NULL) {
   assert_names(colnames(projects), permutation.of = .blank_project_cols)
   the_output
 }
+#' @noRd
 assert_project_path <- function(project_path) {
   assert_path_for_output(x = project_path,
                          overwrite = TRUE,

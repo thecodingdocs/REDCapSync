@@ -298,6 +298,7 @@ sync_all <- function(short_names = NULL,
   # consider adding message/df
   invisible()
 }
+#' @noRd
 due_for_sync <- function(project_name) {
   now <- now_time()
   projects <- get_projects()
@@ -339,6 +340,7 @@ due_for_sync <- function(project_name) {
   TRUE
 }
 # for if others are using the same object
+#' @noRd
 sweep_dirs_for_cache <- function(project_names = NULL) {
   projects <- get_projects()
   if (nrow(projects) > 0) {

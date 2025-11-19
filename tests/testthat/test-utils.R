@@ -1,0 +1,31 @@
+# add_redcap_links_to_form ( Internal )
+test_that("add_redcap_links_to_form  works!", {
+})
+# remove_from_form_list ( Internal )
+test_that("remove_from_form_list  works!", {
+})
+# remove_records_from_project ( Internal )
+test_that("remove_records_from_project  works!", {
+})
+# split_choices ( Internal )
+test_that("split_choices works!", {
+  choices <- split_choices("1, one | 2, two")
+  checkmate::expect_data_frame(choices, nrows = 2, ncols = 2)
+  expect_false(anyNA(choices$code))
+  expect_false(anyNA(choices$name))
+  expect_true(choices$code[[1]]=="1")
+  expect_true(choices$code[[2]]=="2")
+  expect_true(choices$name[[1]]=="one")
+  expect_true(choices$name[[2]]=="two")
+  expect_error(split_choices("1. one | 2, two"))
+  choices <- split_choices("1, one even with , second comma | 2, two")
+  checkmate::expect_data_frame(choices, nrows = 2, ncols = 2)
+  expect_false(anyNA(choices$code))
+  expect_false(anyNA(choices$name))
+})
+test_that("split_choices works if space missing!", {
+  choices <- split_choices("1,one | 2,two")
+  checkmate::expect_data_frame(choices, nrows = 2, ncols = 2)
+  expect_false(anyNA(choices$code))
+  expect_false(anyNA(choices$name))
+})

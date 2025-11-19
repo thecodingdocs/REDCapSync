@@ -335,10 +335,12 @@ setup_project <- function(short_name,
   save_project_details(project)
   invisible(project)
 }
+#' @noRd
 .get_type <- c("identified",
                "deidentified",
                "deidentified_strict",
                "deidentified_super_strict")
+#' @noRd
 get_project_path <- function(short_name,
                              dir_path,
                              type = "",
@@ -355,6 +357,7 @@ get_project_path <- function(short_name,
   file_path <- file.path(dir_path, "R_objects", file_name)
   sanitize_path(file_path)
 }
+#' @noRd
 get_project_path2 <- function(project,
                               type = "",
                               check_dir = FALSE) {
@@ -368,7 +371,9 @@ get_project_path2 <- function(project,
     check_dir = check_dir
   )
 }
+#' @noRd
 .project_file_types <- c("", "transformation", "details")
+#' @noRd
 .project_path_suffix <- "_REDCapSync.RData"
 #' @rdname setup-load
 #' @export
@@ -418,6 +423,7 @@ load_project <- function(short_name) {
   save_project_details(project)
   invisible(project)
 }
+#' @noRd
 compare_project_details <- function(from, to) {
   assert_project_details(from)
   assert_project_details(to)

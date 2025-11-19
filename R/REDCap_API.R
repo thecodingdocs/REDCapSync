@@ -374,6 +374,7 @@ get_redcap_log <- function(project,
   }
   redcap_log # deal with if NA if user does not have log privileges.
 }
+#' @noRd
 get_redcap_log2 <- function(project,
                             log_begin_date = Sys.Date() - 10L,
                             clean = TRUE,
@@ -412,6 +413,7 @@ get_redcap_log2 <- function(project,
   }
   redcap_log # deal with if NA if user does not have log privileges.
 }
+#' @noRd
 test_redcap_log_access <- function(project) {
   the_test <- get_redcap_log2(project = project, log_begin_date = Sys.Date())
   ! is.null(the_test)

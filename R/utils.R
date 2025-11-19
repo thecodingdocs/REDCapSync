@@ -27,6 +27,7 @@ add_redcap_links_to_form <- function(form, project) {
   }
   form
 }
+#' @noRd
 remove_from_form_list <- function(form_list, id_col, records = NULL) {
   if (!is_something(form_list)) {
     return(form_list)

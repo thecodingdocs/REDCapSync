@@ -41,6 +41,7 @@ test_that("update_project_links works", {
     expect_true(grepl(version_pattern,project$links[[the_link]]))
   }
 })
+# get_project_url ( Exported )
 test_that("get_project_url works", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
@@ -54,7 +55,6 @@ test_that("get_project_url works", {
   )
   project <- mock_project()
   project <- update_project_links(project)
-
   e <- new.env(parent = emptyenv())
   # get_project_url
   e$called_url <- NULL
@@ -70,6 +70,7 @@ test_that("get_project_url works", {
     expect_equal(out, project$links[[paste0("redcap_",link_type)]])
   }
 })
+# get_record_url ( Exported )
 test_that("get_record_url works", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
@@ -105,3 +106,9 @@ test_that("get_record_url works", {
   e$called_url <- NULL
   # get_record_url(project,page = "2", text_only = TRUE)
 })
+# clean_data_list ( Internal )
+# get_key_col_list ( Internal )
+# normalize_redcap ( Internal )
+# sort_redcap_log ( Internal )
+# clean_redcap_log ( Internal )
+# check_missing_codes ( Internal )

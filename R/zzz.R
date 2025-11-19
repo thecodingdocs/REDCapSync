@@ -1,3 +1,4 @@
+#' @noRd
 .onLoad <- function(libname, pkgname) {
   # op <- options()
   # op.REDCapSync <- list(

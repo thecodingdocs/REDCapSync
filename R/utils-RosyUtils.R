@@ -1,6 +1,8 @@
+#' @noRd
 clean_for_cli <- function(path) {
   gsub("'", "\\\\'", path)
 }
+#' @noRd
 cli_alert_wrap <- function(text = "",
                            url = NULL,
                            bullet_type = "i",
@@ -63,9 +65,11 @@ cli_alert_wrap <- function(text = "",
   names(text)[seq_along(text)] <- bullet_type
   cli::cli_bullets(text)
 }
+#' @noRd
 now_time <- function() {
   as.POSIXct(Sys.time(), tz = Sys.timezone())
 }
+#' @noRd
 process_df_list <- function(list,
                             drop_empty = TRUE,
                             silent = FALSE) {
@@ -101,6 +105,7 @@ process_df_list <- function(list,
   }
   list
 }
+#' @noRd
 is_something <- function(thing, row = 0) {
   out <- FALSE
   if (is.function(thing)) {
@@ -135,35 +140,44 @@ is_something <- function(thing, row = 0) {
   }
   out
 }
+#' @noRd
 sanitize_path <- function(path) {
   sanitized <- gsub("\\\\", "/", path)
   sanitized <- normalizePath(sanitized, winslash = "/", mustWork = FALSE)
   sanitized
 }
+#' @noRd
 all_character_cols <- function(form) {
   as.data.frame(lapply(form, as.character))
 }
+#' @noRd
 all_character_cols_list <- function(list) {
   lapply(list, all_character_cols)
 }
+#' @noRd
 vec1_in_vec2 <- function(vec1, vec2) {
   vec1[which(vec1 %in% vec2)]
 }
+#' @noRd
 vec1_not_in_vec2 <- function(vec1, vec2) {
   vec1[which(!vec1 %in% vec2)]
 }
+#' @noRd
 unique_length <- function(x) {
   length(unique(x))
 }
+#' @noRd
 which_length <- function(x) {
   length(which(x))
 }
+#' @noRd
 drop_nas <- function(x) {
   if (length(x) == 0) {
     return(x)
   }
   x[!unlist(lapply(x, is.na))]
 }
+#' @noRd
 excel_to_list <- function(path) {
   sheets <- readxl::excel_sheets(path)
   clean_sheets <- clean_env_names(sheets)
@@ -174,9 +188,11 @@ excel_to_list <- function(path) {
   names(out) <- clean_sheets
   out
 }
+#' @noRd
 is_named_df_list <- function(x, strict = FALSE) {
   is_named_list(x) && is_df_list(x, strict = strict)
 }
+#' @noRd
 is_named_list <- function(x,
                           silent = TRUE,
                           recursive = FALSE) {
@@ -199,6 +215,7 @@ is_named_list <- function(x,
   }
   named_all
 }
+#' @noRd
 wb_to_list <- function(wb) {
   # consider test for if user does not have excel
   sheets <- openxlsx::sheets(wb)
@@ -217,6 +234,7 @@ wb_to_list <- function(wb) {
   names(out) <- clean_sheets
   out
 }
+#' @noRd
 form_to_wb <- function(form,
                        form_name,
                        wb = openxlsx::createWorkbook(),
@@ -361,6 +379,7 @@ form_to_wb <- function(form,
   }
   return(wb)
 }
+#' @noRd
 list_to_wb <- function(list,
                        key_cols_list = list(),
                        derived_cols_list = list(),
@@ -410,6 +429,7 @@ list_to_wb <- function(list,
   }
   wb
 }
+#' @noRd
 rename_list_names_excel <- function(list_names) {
   list_names_rename <- stringr::str_trunc(list_names,
                                           width = 31,
@@ -429,6 +449,7 @@ rename_list_names_excel <- function(list_names) {
   }
   list_names_rename
 }
+#' @noRd
 unique_trimmed_strings <- function(strings, max_length) {
   trim_string <- function(s, max_length) {
     substr(s, 1, max_length)
@@ -461,6 +482,7 @@ unique_trimmed_strings <- function(strings, max_length) {
   }
   unique_strings
 }
+#' @noRd
 list_to_excel <- function(list,
                           dir,
                           file_name = NULL,
@@ -537,6 +559,7 @@ list_to_excel <- function(list,
     )
   }
 }
+#' @noRd
 list_to_csv <- function(list,
                         dir,
                         file_name = NULL,
@@ -557,6 +580,7 @@ list_to_csv <- function(list,
     )
   }
 }
+#' @noRd
 save_wb <- function(wb, dir, file_name, overwrite = TRUE) {
   if (!dir.exists(dir))
     stop("dir doesn't exist")
@@ -566,6 +590,7 @@ save_wb <- function(wb, dir, file_name, overwrite = TRUE) {
                          overwrite = overwrite)
   cli_alert_wrap(paste0("Saved '", basename(path), "'!"), file = path)
 }
+#' @noRd
 save_csv <- function(form, dir, file_name, overwrite = TRUE) {
   if (!dir.exists(dir))
     stop("dir doesn't exist")
@@ -582,6 +607,7 @@ save_csv <- function(form, dir, file_name, overwrite = TRUE) {
     cli_alert_wrap(paste0("Saved '", basename(path), "'!"), file = path)
   }
 }
+#' @noRd
 default_header_style <-
   openxlsx::createStyle(
     fgFill = "#74DFFF",
@@ -592,13 +618,16 @@ default_header_style <-
     fontColour = "black",
     border = "TopBottomLeftRight"
   )
+#' @noRd
 default_body_style <-
   openxlsx::createStyle(halign = "left",
                         valign = "center",
                         fontSize = 12)
+#' @noRd
 duplicated_which <- function(x) {
   which(duplicated(x))
 }
+#' @noRd
 is_consecutive_srt_1 <- function(vec) {
   if (vec[1] != 1L) {
     return(FALSE)
@@ -612,6 +641,7 @@ is_consecutive_srt_1 <- function(vec) {
   }
   TRUE
 }
+#' @noRd
 remove_html_tags <- function(text_vector) {
   # Regular expression to match HTML tags
   html_pattern <- "<[^>]+>"
@@ -619,21 +649,26 @@ remove_html_tags <- function(text_vector) {
   cleaned_vector <- gsub(html_pattern, "", text_vector)
   cleaned_vector
 }
+#' @noRd
 choice_vector_string <- function(vec) {
   if (!is_something(vec)) {
     return(NA)
   }
   paste0(paste0(seq_along(vec), ", ", vec), collapse = " | ")
 }
+#' @noRd
 object_size <- function(x) {
   format(utils::object.size(x), units = "auto")
 }
+#' @noRd
 file_size <- function(path) {
   format(structure(file.size(path), class = "object_size"), units = "auto")
 }
+#' @noRd
 drop_if <- function(x, drops) {
   x[which(!x %in% drops)]
 }
+#' @noRd
 list_files_real <- function(path,
                             full_names = TRUE,
                             recursive = FALSE) {
@@ -647,6 +682,7 @@ list_files_real <- function(path,
     invert = TRUE
   )
 }
+#' @noRd
 clean_env_names <- function(env_names,
                             silent = FALSE,
                             lowercase = TRUE) {
@@ -676,6 +712,7 @@ clean_env_names <- function(env_names,
   }
   return(cleaned_names)
 }
+#' @noRd
 is_df_list <- function(x, strict = FALSE) {
   if (!is.list(x)) {
     return(FALSE)
@@ -692,12 +729,14 @@ is_df_list <- function(x, strict = FALSE) {
   }
   return(any(out))
 }
+#' @noRd
 check_match <- function(vec_list) {
   sorted_vecs <- lapply(vec_list, sort)
   all(unlist(lapply(sorted_vecs[-1], function(x) {
     identical(sorted_vecs[[1]], x)
   })))
 }
+#' @noRd
 is_env_name <- function(env_name, silent = FALSE) {
   result <- tryCatch({
     if (is.null(env_name)) {
@@ -721,6 +760,7 @@ is_env_name <- function(env_name, silent = FALSE) {
   })
   result
 }
+#' @noRd
 is_nested_list <- function(x) {
   if (!is.list(x)) {
     return(FALSE)
@@ -734,6 +774,7 @@ is_nested_list <- function(x) {
   }
   outcome
 }
+#' @noRd
 generate_hex <- function(length = 32) {
   c(0:9, letters[1:6]) %>%
     sample(length, replace = TRUE) %>%

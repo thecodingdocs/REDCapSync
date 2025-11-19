@@ -1,11 +1,4 @@
-.date_handling_choices <- c(
-  "none",
-  "exclude_dates",
-  "random_shift_by_record",
-  "random_shift_by_project",
-  "zero_by_record",
-  "zero_by_project"
-)
+#' @noRd
 deidentify_data_list <- function(data_list,
                                  exclude_identifiers = TRUE,
                                  exclude_free_text = FALSE,
@@ -139,6 +132,7 @@ deidentify_data_list <- function(data_list,
   }
   invisible(data)
 }
+#' @noRd
 filter_data_list <- function(data_list,
                              field_names = NULL,
                              form_names = NULL,
@@ -272,6 +266,7 @@ clean_data_list <- function(data_list,
   }
   invisible(data)
 }
+#' @noRd
 get_min_dates <- function(data_list) {
   # assert_data_list contains data and metadata with forms and fields
   data <- data_list$data
@@ -359,22 +354,6 @@ get_project_url <- function(project,
   }
   the_link
 }
-.link_types <- c(
-  "base",
-  "home",
-  "record_home",
-  "records_dashboard",
-  "api",
-  "api_playground",
-  "codebook",
-  "user_rights",
-  "setup",
-  "logging",
-  "designer",
-  "dictionary",
-  "data_quality",
-  "identifiers"
-)
 #' @param record REDCap record id or study id etc, any column names that match
 #' `project$metadata$id_col`
 #' @param page REDCap page for the record. Must be one of
@@ -807,3 +786,29 @@ check_missing_codes <- function(project) {
   }
   NA
 }
+#' @noRd
+.link_types <- c(
+  "base",
+  "home",
+  "record_home",
+  "records_dashboard",
+  "api",
+  "api_playground",
+  "codebook",
+  "user_rights",
+  "setup",
+  "logging",
+  "designer",
+  "dictionary",
+  "data_quality",
+  "identifiers"
+)
+#' @noRd
+.date_handling_choices <- c(
+  "none",
+  "exclude_dates",
+  "random_shift_by_record",
+  "random_shift_by_project",
+  "zero_by_record",
+  "zero_by_project"
+)

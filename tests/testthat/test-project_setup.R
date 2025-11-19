@@ -6,7 +6,7 @@ test_that("test_dir works", {
   file.create(test_file)
   expect_true(file.exists(test_file))
 })
-## test-setup_project
+# setup_project ( Exported )
 test_that("setup_project creates a valid project object and valid directory", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   expect_error(assert_dir(dir_path = test_dir))
@@ -58,12 +58,13 @@ test_that("setup_project creates a valid project object and valid directory", {
   project$dir_path <- file.path(test_dir, "another_fake_folder") %>% sanitize_path()
   expect_error(assert_dir(project$dir_path))
 })
-## test-load_test_project
-test_that("works", {
+# load_project ( Exported )
+# load_test_project ( Exported )
+test_that("load_project works", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   expect_error(assert_dir(test_dir))
 })
-## test-save_project
+# save_project ( Exported )
 test_that("save_project doesn't save if it's blank but will save and cache if valid, also loads", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
@@ -111,6 +112,7 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   # expect_warning(delete_project(project)) # warning for deleting twice
   # expect_error(load_project(short_name = short_name)) # wont load deleted project
 })
+# set_dir ( Internal )
 test_that("set_dir creates a new directory if it does not exist", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   dir_path <- file.path(test_dir, "new_dir")
@@ -159,3 +161,6 @@ test_that("set_dir validates the directory structure", {
   expect_true(file.exists(dir_path))
   expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
+# is_test_short_name ( Internal )
+# is_test_project ( Internal )
+# clean_dir_path ( Internal )

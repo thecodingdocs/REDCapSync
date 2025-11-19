@@ -205,6 +205,7 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
   }
   invisible(all_records)
 }
+#' @noRd
 annotate_records2 <- function(data_list,
                               records,
                               summarize_data = TRUE,
@@ -484,7 +485,9 @@ add_project_summary <- function(project,
                              "last_api_call",
                              "all_records",
                              "was_saved")
+#' @noRd
 .not_important_summary_names <- c("n_records", "last_save_time", "final_form_tab_names")
+#' @noRd
 data_list_to_save <- function(data_list,
                               include_metadata,
                               include_users,
@@ -1005,6 +1008,7 @@ merge_non_repeating <- function(data_list,
   }
   data_list
 }
+#' @noRd
 metadata_add_default_cols <- function(data_list) {
   fields <- data_list$metadata$fields
   fields <- fields[which(fields$field_type != "descriptive"), ]
@@ -1030,6 +1034,7 @@ metadata_add_default_cols <- function(data_list) {
   data_list$metadata$fields <- fields
   data_list
 }
+#' @noRd
 field_types_to_R <- function(fields) {
   field_types_R <- rep("character", nrow(fields))
   field_types <- fields$field_type
@@ -1045,15 +1050,22 @@ field_types_to_R <- function(fields) {
                         field_validations %in% .redcap_numeric_fields)] <- "numeric"
   field_types_R
 }
+#' @noRd
 .redcap_factor_fields <- c("radio", "yesno", "dropdown", "checkbox_choice")
+#' @noRd
 .redcap_text_date_fields <- c("date_mdy", "date_ymd", "date_dmy")
+#' @noRd
 .redcap_text_datetime_fields <- c("datetime_dmy", "datetime_seconds_ymd")
+#' @noRd
 .redcap_integer_fields <- c("integer")
+#' @noRd
 .redcap_numeric_fields <- c("number")
+#' @noRd
 .redcap_possible_id_fields_strict <- c("email",
                                        "phone",
                                        "vmrn",
                                        "zipcode")
+#' @noRd
 .redcap_possible_id_fields_super_strict <- c("date_dmy",
                                              "date_mdy",
                                              "date_ymd",
@@ -1540,6 +1552,7 @@ get_all_field_names <- function(data_list) {
     unlist() %>%
     unique()
 }
+#' @noRd
 get_identifier_fields <- function(data_list,
                                   get_type = "deidentified",
                                   invert = FALSE) {

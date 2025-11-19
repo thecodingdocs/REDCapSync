@@ -5,15 +5,7 @@ test_that("internal constants are correct", {
   expect_equal(.TEST_longitudinal_token, "FAKE32TESTTOKENLONGITUDINAL33333")
   expect_equal(.TEST_multiarm_token, "FAKE32TESTTOKENMULTIARM444444444")
 })
-test_that("get_test_token works correctly", {
-  expect_equal(get_test_token("TEST_classic"), .TEST_classic_token)
-  expect_equal(get_test_token("TEST_repeating"), .TEST_repeating_token)
-  expect_equal(get_test_token("TEST_longitudinal"), .TEST_longitudinal_token)
-  expect_equal(get_test_token("TEST_multiarm"), .TEST_multiarm_token)
-  expect_error(get_test_token("INVALID_SHORT_NAME"))
-  expect_error(get_test_token(1213123))
-  expect_error(get_test_token(c("TEST_classic", "TEST_repeating")))
-})
+# is_valid_redcap_token ( Internal )
 test_that("is_valid_redcap_token respects the rules of 32L hexidecimal", {
   expect_true(is_valid_redcap_token(generate_hex(32)))
   expect_false(is_valid_redcap_token(NA))
@@ -56,6 +48,7 @@ test_that("get_project_token checks_env", {
     expect_equal(get_project_token(project), "")
   })
 })
+# get_redcap_token_name ( Internal )
 test_that("get_redcap_token_name works", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
@@ -70,6 +63,7 @@ test_that("get_redcap_token_name works", {
   project <- mock_project()
   expect_equal(get_redcap_token_name(project), "REDCapSync_TEST_PROJECT")
 })
+# view_project_token ( Exported )
 test_that("view_project_token works when no token set", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
@@ -103,6 +97,17 @@ test_that("view_project_token works when token is set", {
                    paste0("Never share your token: ", token))
   })
 })
+# get_test_token ( Internal )
+test_that("get_test_token works!", {
+  expect_equal(get_test_token("TEST_classic"), .TEST_classic_token)
+  expect_equal(get_test_token("TEST_repeating"), .TEST_repeating_token)
+  expect_equal(get_test_token("TEST_longitudinal"), .TEST_longitudinal_token)
+  expect_equal(get_test_token("TEST_multiarm"), .TEST_multiarm_token)
+  expect_error(get_test_token("INVALID_SHORT_NAME"))
+  expect_error(get_test_token(1213123))
+  expect_error(get_test_token(c("TEST_classic", "TEST_repeating")))
+})
+# test_project_token ( Exported )
 test_that("test_project_token succeeds when exportVersion returns a version (no API calls)", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
@@ -174,67 +179,18 @@ test_that("test_project_token only launches browser when launch_browser = TRUE",
   test_project_token(project, launch_browser = FALSE)
   expect_null(e$called_url)
 })
-# test_that("set_REDCap_token sets a new token", {
-#   project <- mock_project()
-#   mockery::stub(set_REDCap_token, "readline", .TEST_classic_token)
-#   set_REDCap_token(project, ask = FALSE)
-#   token_name <- get_REDCap_token_name(project)
-#   expect_equal(Sys.getenv(token_name), .TEST_classic_token)
-# })
-# test_that("set_REDCap_token handles existing valid token", {
-#   project <- mock_project("TEST_classic")
-#
-#   # Set an existing valid token
-#   Sys.setenv(REDCapSync_TEST_classic = .TEST_classic_token)
-#
-#   # Mock user input to not change the token
-#   stub(set_REDCap_token, "utils::menu", 2)
-#
-#   expect_message(set_REDCap_token(project, ask = TRUE), "You already have a valid token in your R session")
-#   token_name <- get_REDCap_token_name(project)
-#   expect_equal(Sys.getenv(token_name), .TEST_classic_token)
-# })
-# test_that("set_REDCap_token changes existing token when user confirms", {
-#   project <- mock_project("TEST_classic")
-#
-#   # Set an existing valid token
-#   Sys.setenv(REDCapSync_TEST_classic = .TEST_classic_token)
-#
-#   # Mock user input to change the token
-#   stub(set_REDCap_token, "utils::menu", 1)
-#   stub(set_REDCap_token, "readline", "NEW_FAKE32TESTTOKENCLASSIC1111111111")
-#
-#   set_REDCap_token(project, ask = TRUE)
-#   token_name <- get_REDCap_token_name(project)
-#   expect_equal(Sys.getenv(token_name), "NEW_FAKE32TESTTOKENCLASSIC1111111111")
-# })
-# test_that("set_REDCap_token validates the token", {
-#   project <- mock_project("TEST_classic")
-#
-#   # Mock user input for an invalid token
-#   stub(set_REDCap_token, "readline", "INVALID_TOKEN")
-#
-#   expect_error(set_REDCap_token(project, ask = FALSE), "The token is not a valid test token.")
-# })
-#
-# test_that("set_REDCap_token handles test tokens", {
-#   project <- mock_project("TEST_classic")
-#
-#   # Mock user input for a test token
-#   stub(set_REDCap_token, "readline", .TEST_classic_token)
-#
-#   set_REDCap_token(project, ask = FALSE)
-#   token_name <- get_REDCap_token_name(project)
-#   expect_equal(Sys.getenv(token_name), .TEST_classic_token)
-# })
-#
-# test_that("set_REDCap_token handles invalid project object", {
-#   expect_error(set_REDCap_token(NULL), "project must be a valid REDCap database object")
-# })
-#
-# test_that("set_REDCap_token handles missing API link", {
-#   project <- mock_project("TEST_classic")
-#   project$links$redcap_API <- NULL
-#
-#   expect_error(set_REDCap_token(project, ask = FALSE), "REDCap API link is missing in the project object")
-# })
+# is_hexadecimal ( Internal )
+test_that("is_hexadecimal works!",{
+  x<-generate_hex(length = 32)
+  expect_true(is_hexadecimal(x))
+  expect_true(is_hexadecimal(x,length = 32))
+  expect_false(is_hexadecimal(x,length = 31))
+  x<-generate_hex(length = 30)
+  expect_true(is_hexadecimal(x,length = 30))
+  expect_false(is_hexadecimal(x,length = 31))
+  expect_true(is_hexadecimal("C234"))
+  expect_true(is_hexadecimal("C"))
+  expect_false(is_hexadecimal("C*"))
+  expect_true(is_hexadecimal("abd3"))
+  expect_true(is_hexadecimal("123"))
+})

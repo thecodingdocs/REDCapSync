@@ -5,15 +5,9 @@ Opens browser page for a given project object.
 ## Usage
 
 ``` r
-link_API_token(project)
+get_project_url(project, link_type = "home", open_browser = TRUE)
 
-link_API_playground(project)
-
-link_REDCap_home(project)
-
-link_REDCap_project(project)
-
-link_REDCap_record(project, record, page, instance, text_only = FALSE)
+get_record_url(project, record, page, instance, open_browser = TRUE)
 ```
 
 ## Arguments
@@ -25,6 +19,16 @@ link_REDCap_record(project, record, page, instance, text_only = FALSE)
   `project <- `[`load_project`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)`("PROJ")`
   or
   [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)()
+
+- link_type:
+
+  choose one of "base", "home", "record_home", "records_dashboard",
+  "api", "api_playground", "codebook", "user_rights", "setup",
+  "logging", "designer", "dictionary", "data_quality", "identifiers"
+
+- open_browser:
+
+  logical for launching the link in internet browser
 
 - record:
 
@@ -40,13 +44,9 @@ link_REDCap_record(project, record, page, instance, text_only = FALSE)
 
   REDCap instance if it's a repeating instrument
 
-- text_only:
-
-  logical for only returning text
-
 ## Value
 
-Nothing will be returned in R. Instead, a browser link
+internet link
 
 ## Details
 

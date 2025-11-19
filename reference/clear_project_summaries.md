@@ -17,3 +17,7 @@ clear_project_summaries(project)
   [load_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   or
   [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+
+## Value
+
+invisible return of project and a message

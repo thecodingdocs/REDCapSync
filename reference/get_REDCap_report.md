@@ -5,7 +5,7 @@ Get REDCap Report
 ## Usage
 
 ``` r
-get_REDCap_report(project, report_id, silent = TRUE)
+get_redcap_report(project, report_id, silent = TRUE)
 ```
 
 ## Arguments

@@ -81,23 +81,16 @@ functions might not be utilized by the average user.
 - [`clear_project_summaries()`](https://thecodingdocs.github.io/REDCapSync/reference/clear_project_summaries.md)
   **\[experimental\]** : clear_project_summaries
 
-### Data Helpers
-
-Used for managing to-be-upload data
-
-- [`raw_to_labelled_form()`](https://thecodingdocs.github.io/REDCapSync/reference/raw_to_labelled_form.md)
-  : Raw to Labelled REDCap forms
-- [`labelled_to_raw_form()`](https://thecodingdocs.github.io/REDCapSync/reference/labelled_to_raw_form.md)
-  : Clean to Raw REDCap forms
-
 ### Download from, Upload to, and Delete from REDCap
 
 Always use with caution! Package takes several steps to test and confirm
 uploads but ultimately the user is responsible for data changes.
 Remember REDCap always keeps a log of changes.
 
-- [`get_REDCap_report()`](https://thecodingdocs.github.io/REDCapSync/reference/get_REDCap_report.md)
-  : Get REDCap Report
+- [`raw_to_labelled_form()`](https://thecodingdocs.github.io/REDCapSync/reference/raw_to_labelled_form.md)
+  : Raw to Labelled REDCap forms
+- [`labelled_to_raw_form()`](https://thecodingdocs.github.io/REDCapSync/reference/labelled_to_raw_form.md)
+  : Clean to Raw REDCap forms
 - [`upload_form_to_REDCap()`](https://thecodingdocs.github.io/REDCapSync/reference/upload_form_to_REDCap.md)
   : Upload to REDCap
 
@@ -107,11 +100,8 @@ Remember REDCap always keeps a log of changes.
   [`%>%`](https://thecodingdocs.github.io/REDCapSync/reference/reexports.md)
   [`sanitize_token`](https://thecodingdocs.github.io/REDCapSync/reference/reexports.md)
   : Objects exported from other packages
-- [`nav_to_dir()`](https://thecodingdocs.github.io/REDCapSync/reference/nav_to_dir.md)
-  : nav_to_dir
-- [`link_API_token()`](https://thecodingdocs.github.io/REDCapSync/reference/Links.md)
-  [`link_API_playground()`](https://thecodingdocs.github.io/REDCapSync/reference/Links.md)
-  [`link_REDCap_home()`](https://thecodingdocs.github.io/REDCapSync/reference/Links.md)
-  [`link_REDCap_project()`](https://thecodingdocs.github.io/REDCapSync/reference/Links.md)
-  [`link_REDCap_record()`](https://thecodingdocs.github.io/REDCapSync/reference/Links.md)
+- [`get_project_url()`](https://thecodingdocs.github.io/REDCapSync/reference/Links.md)
+  [`get_record_url()`](https://thecodingdocs.github.io/REDCapSync/reference/Links.md)
   : Open Links to REDCap Pages
+- [`get_redcap_report()`](https://thecodingdocs.github.io/REDCapSync/reference/get_REDCap_report.md)
+  : Get REDCap Report

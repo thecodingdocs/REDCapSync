@@ -603,7 +603,7 @@ save_csv <- function(form, dir, file_name, overwrite = TRUE) {
     }
   }
   if (write_it) {
-    utils::write.csv(x = form, file = path)
+    utils::write.csv(x = form, file = path,row.names = FALSE)
     cli_alert_wrap(paste0("Saved '", basename(path), "'!"), file = path)
   }
 }

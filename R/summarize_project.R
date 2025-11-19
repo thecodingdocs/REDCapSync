@@ -1037,6 +1037,23 @@ field_types_to_R <- function(fields) {
 .redcap_text_datetime_fields <- c("datetime_dmy", "datetime_seconds_ymd")
 .redcap_integer_fields <- c("integer")
 .redcap_numeric_fields <- c("number")
+.redcap_possible_id_fields_strict <- c("email",
+                                       "phone",
+                                       "vmrn",
+                                       "zipcode")
+.redcap_possible_id_fields_super_strict <- c("date_dmy",
+                                             "date_mdy",
+                                             "date_ymd",
+                                             "datetime_dmy",
+                                             "datetime_mdy",
+                                             "datetime_seconds_dmy",
+                                             "datetime_seconds_mdy",
+                                             "datetime_seconds_ymd",
+                                             "datetime_ymd",
+                                             "email",
+                                             "phone",
+                                             "vmrn",
+                                             "zipcode")
 # there are more
 #' @title Summarize REDCap Database
 #' @noRd
@@ -1505,6 +1522,33 @@ get_all_field_names <- function(data_list) {
     lapply(colnames) %>%
     unlist() %>%
     unique()
+}
+get_identifier_fields <- function(data_list,
+                                  get_type = "deidentified",
+                                  invert = FALSE) {
+  assert_choice(get_type, choices = setdiff(.get_type, "identified"))
+  fields <- data_list$metadata$fields
+  all_fields <- fields$field_name
+  if(get_type == "deidentified"){
+    id_fields <- fields$field_name[which(fields$identifier=="y")]
+  }
+  if(get_type == "deidentified_strict"){
+    id_fields <- fields$field_name[which(
+      fields$identifier=="y" |
+        fields$text_validation_type_or_show_slider_number %in% .redcap_possible_id_fields_strict
+      )]
+  }
+  if(get_type == "deidentified_super_strict"){
+    id_fields <- fields$field_name[which(
+      fields$identifier=="y" |
+        fields$text_validation_type_or_show_slider_number %in% .redcap_possible_id_fields_super_strict
+    )]
+  }
+  final_output <- id_fields
+  if(invert){
+    final_output <- setdiff(all_fields,id_fields)
+  }
+  final_output
 }
 #' @noRd
 field_names_to_form_names <- function(project,

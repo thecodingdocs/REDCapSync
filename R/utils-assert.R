@@ -304,7 +304,7 @@ assert_setup_project <- function(project,
   )
   assert_choice(
     project$internals$get_type,
-    choices = c("identified", "deidentified", "strict-deidentified")
+    choices = .get_type
   )
   # assert_web_link(project$links$redcap_base) # argName #collected
   if (!collected$isEmpty()) {

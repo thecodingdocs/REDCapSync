@@ -151,7 +151,7 @@ setup_project <- function(short_name,
   assert_logical(use_csv, len = 1, add = collected)
   assert_choice(
     get_type,
-    choices = c("identified", "deidentified", "strict-deidentified"),
+    choices = .get_type,
     add = collected
   )
   assert_choice(
@@ -334,6 +334,10 @@ setup_project <- function(short_name,
   save_project_details(project)
   invisible(project)
 }
+.get_type <- c("identified",
+               "deidentified",
+               "deidentified_strict",
+               "deidentified_super_strict")
 get_project_path <- function(short_name,
                              dir_path,
                              type = "",

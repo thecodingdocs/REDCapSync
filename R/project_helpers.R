@@ -20,10 +20,9 @@ deidentify_data_list <- function(data_list,
   fields <- metadata$fields
   exclusions <- exclude_additional
   if (exclude_identifiers) {
-    additional_ids <- c("zipcode", "email", "phone")
     initial_identifiers <- fields$field_name[which(
       fields$identifier == "y" |
-        fields$text_validation_type_or_show_slider_number %in% additional_ids
+        fields$text_validation_type_or_show_slider_number %in% .redcap_possible_id_fields_strict
     )]
     if (length(initial_identifiers) == 0L) {
       warning(

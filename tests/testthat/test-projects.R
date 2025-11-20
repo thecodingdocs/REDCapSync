@@ -69,20 +69,16 @@ test_that("add_project_details_to_cache works", {
       return(fake_cache)
     }
   )
-
   # start empty
   projects <- get_projects()
   checkmate::expect_data_frame(projects, nrows = 0)
-
   # add project details to cache
   project <- mock_project()
   project_details <- extract_project_details(project)
   expect_no_error(add_project_details_to_cache(project_details))
-
   projects <- get_projects()
   checkmate::expect_data_frame(projects, nrows = 1)
   expect_true(project_details$short_name %in% projects$short_name)
-
   # conflict: same project_id & same base redcap_uri but different short_name -> error
   project_details_conflict <- project_details
   project_details_conflict$short_name <- "TEST_OTHER"
@@ -100,19 +96,15 @@ test_that("add_project_details_to_project works", {
       return(fake_cache)
     }
   )
-
   project <- mock_project()
   project_details <- extract_project_details(project)
-
   # modify some details
   project_details$sync_frequency <- "weekly"
   project_details$days_of_log <- 7L
   project_details$get_files <- !project$internals$get_files
   project_details$labelled <- !project$internals$labelled
-
   # apply details and capture returned project
   project <- add_project_details_to_project(project, project_details)
-
   # check internals updated
   expect_equal(project$internals$sync_frequency, "weekly")
   expect_equal(project$internals$days_of_log, as.integer(7))

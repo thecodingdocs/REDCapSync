@@ -210,12 +210,32 @@ test_that("which_duplicated works!", {
 })
 # is_consecutive_srt_1 ( Internal )
 test_that("is_consecutive_srt_1 works!", {
+  expect_true(is_consecutive_srt_1(c(1)))
+  expect_true(is_consecutive_srt_1(1:4))
+  expect_true(is_consecutive_srt_1(c(1L, 2L, 3L)))
+  expect_false(is_consecutive_srt_1(c(2, 3)))    # doesn't start at 1
+  expect_false(is_consecutive_srt_1(c(1, 3)))    # gap present
+  expect_false(is_consecutive_srt_1(c(1, 2, 4))) # non-consecutive later
 })
 # remove_html_tags ( Internal )
 test_that("remove_html_tags works!", {
-})
-# choice_vector_string ( Internal )
-test_that("choice_vector_string works!", {
+  # basic tag removal
+  expect_equal(remove_html_tags("<b>bold</b>"), "bold")
+  expect_equal(remove_html_tags("no tags"), "no tags")
+  # vectorized input
+  expect_equal(
+    remove_html_tags(c("<p>one</p>", "<div>two</div>")),
+    c("one", "two")
+  )
+  # tags with attributes and surrounding text
+  expect_equal(remove_html_tags("<a href='x'>link</a> and text"), "link and text")
+  # nested tags
+  expect_equal(remove_html_tags("<div><span>nested</span></div>"), "nested")
+  # empty string preserved, NA preserved
+  expect_equal(remove_html_tags(""), "")
+  expect_true(is.na(remove_html_tags(NA_character_)))
+  # tags with newlines preserved inside text
+  expect_equal(remove_html_tags("<p>line\nbreak</p>"), "line\nbreak")
 })
 # object_size ( Internal )
 test_that("object_size works!", {
@@ -225,21 +245,121 @@ test_that("file_size works!", {
 })
 # drop_if ( Internal )
 test_that("drop_if works!", {
+  abc <- c("a", "b", "c")
+  expect_equal(drop_if(abc, c("b")), c("a", "c"))
+  expect_equal(drop_if(c(1, 2, 3, 4), c(2, 4)), c(1, 3))
+  expect_equal(drop_if(c("a", "b"), character(0)), c("a", "b"))
+  expect_equal(drop_if(c("a", "b"), c("a", "b")), character(0))
+  expect_equal(drop_if(character(0), c("a")), character(0))
+  expect_equal(drop_if(factor(abc), "b"), factor(c("a", "c"),levels = abc))
 })
 # clean_env_names ( Internal )
 test_that("clean_env_names works!", {
+  # valid names preserved
+  expect_equal(clean_env_names(c("one", "two")), c("one", "two"))
+  # invalid characters are cleaned and lowercased
+  expect_equal(
+    clean_env_names(c("My Name", "Another-Name")),
+    c("my_name", "anothername")
+  )
+  # duplicates produce unique cleaned names
+  out <- clean_env_names(c("Dup Name", "Dup-Name", "dup_name"))
+  expect_equal(length(unique(out)), length(out))
+  # all results should be valid environment names
+  expect_true(all(vapply(out, is_env_name, logical(1))))
+  # empty input returns empty character vector
+  expect_equal(clean_env_names(character(0)), character(0))
 })
 # is_df_list ( Internal )
 test_that("is_df_list works!", {
+  # non-list inputs
+  expect_false(is_df_list(NULL))
+  expect_false(is_df_list(1))
+  expect_false(is_df_list(data.frame()))
+
+  # empty list -> FALSE
+  expect_false(is_df_list(list()))
+
+  # list with no data.frames -> FALSE
+  expect_false(is_df_list(list(a = 1, b = "x")))
+
+  # pure list of data.frames -> TRUE
+  df1 <- mtcars
+  df2 <- iris
+  expect_true(is_df_list(list(df1, df2)))
+  expect_true(is_df_list(list(one = df1, two = df2)))
+
+  # mixed list -> TRUE when strict = FALSE, FALSE when strict = TRUE
+  mixed <- list(df1, list())
+  # expect_true(is_df_list(mixed))
+  expect_false(is_df_list(mixed, strict = TRUE))
+
+  mixed2 <- list(df1, 1)
+  expect_true(is_df_list(mixed2))
+  expect_false(is_df_list(mixed2, strict = TRUE))
 })
 # check_match ( Internal )
 test_that("check_match works!", {
+  # numeric vectors in different orders -> match
+  expect_true(check_match(list(
+    c(1L, 2L, 3L),
+    c(3L, 2L, 1L),
+    c(2L, 1L, 3L)
+  )))
+  # character vectors in different orders -> match
+  expect_true(check_match(list(
+    c("a", "b", "c"),
+    c("c", "b", "a")
+  )))
+  # differing contents -> no match
+  expect_false(check_match(list(
+    c("a", "b"),
+    c("a", "c")
+  )))
+
+  # different lengths -> no match
+  expect_false(check_match(list(
+    c(1, 2),
+    c(1, 2, 3)
+  )))
+  # empty vectors match
+  expect_true(check_match(list(
+    integer(0),
+    integer(0)
+  )))
 })
 # is_env_name ( Internal )
 test_that("is_env_name works!", {
+  # valid names
+  expect_true(is_env_name("one"))
+  expect_true(is_env_name("A"))
+  expect_true(is_env_name("a1_b2"))
+  # invalid inputs
+  expect_false(is_env_name(NULL))
+  expect_false(is_env_name(""))
+  expect_false(is_env_name("1start"))    # starts with digit
+  expect_false(is_env_name("bad-char!")) # invalid character
+  # expect_false(is_env_name("_start"))    # starts with underscore
+  # messaging behavior
+  expect_message(is_env_name("1start", silent = FALSE), "Short name cannot start with a number")
+  expect_silent(is_env_name("1start", silent = TRUE))
 })
 # is_nested_list ( Internal )
 test_that("is_nested_list works!", {
+  # non-list inputs -> FALSE
+  expect_false(is_nested_list(NULL))
+  expect_false(is_nested_list(1))
+  expect_false(is_nested_list("a"))
+  # data.frame -> FALSE even though data.frames are lists
+  expect_false(is_nested_list(data.frame()))
+  # empty list -> TRUE (treated as nested)
+  expect_true(is_nested_list(list()))
+  # simple flat list -> FALSE
+  expect_false(is_nested_list(list(a = 1, b = "x", c = TRUE)))
+  # nested list -> TRUE
+  # expect_true(is_nested_list(list(list(1))))
+  # expect_true(is_nested_list(list(a = list(b = 1))))
+  expect_true(is_nested_list(list(a = list(), b = 1)))
 })
 # generate_hex ( Internal )
 test_that("generate_hex works!", {

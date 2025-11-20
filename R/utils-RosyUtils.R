@@ -644,18 +644,9 @@ is_consecutive_srt_1 <- function(vec) {
 }
 #' @noRd
 remove_html_tags <- function(text_vector) {
-  # Regular expression to match HTML tags
   html_pattern <- "<[^>]+>"
-  # Use gsub to remove the HTML tags from each element in the vector
   cleaned_vector <- gsub(html_pattern, "", text_vector)
   cleaned_vector
-}
-#' @noRd
-choice_vector_string <- function(vec) {
-  if (!is_something(vec)) {
-    return(NA)
-  }
-  paste0(paste0(seq_along(vec), ", ", vec), collapse = " | ")
 }
 #' @noRd
 object_size <- function(x) {
@@ -677,27 +668,30 @@ clean_env_names <- function(env_names,
   for (i in seq_along(env_names)) {
     name <- env_names[i]
     is_valid <- is_env_name(name, silent = TRUE)
-    if (is_valid)
-      cleaned_names[i] <- name
-    if (!is_valid) {
-      if (!silent)
-        message("Invalid environment name: '", name)
-      cleaned_name <- gsub("__", "_", gsub(" ", "_", gsub("-", "", name)))
-      if (lowercase)
-        cleaned_name <- tolower(cleaned_name)
-      if (cleaned_name %in% cleaned_names) {
-        if (!silent) {
-          message("Non-unique environment name: '",
-                  name,
-                  "', added numbers...")
-        }
-        cleaned_name <- cleaned_name %>%
-          paste0("_", max(length_which(cleaned_name %in% cleaned_names)) + 1L)
-      }
-      cleaned_names[i] <- cleaned_name
+    if (is_valid) {
+      cleaned_name <- name
     }
+    if (!is_valid) {
+      if (!silent){
+        message("Invalid environment name: '", name)
+      }
+      cleaned_name <- gsub("__", "_", gsub(" ", "_", gsub("-", "", name)))
+    }
+    if (lowercase){
+      cleaned_name <- tolower(cleaned_name)
+    }
+    if (cleaned_name %in% cleaned_names) {
+      if (!silent) {
+        message("Non-unique environment name: '",
+                name,
+                "', added numbers...")
+      }
+      cleaned_name <- cleaned_name %>%
+        paste0("_", max(length_which(cleaned_name %in% cleaned_names)) + 1L)
+    }
+    cleaned_names[i] <- cleaned_name
   }
-  return(cleaned_names)
+  cleaned_names
 }
 #' @noRd
 is_df_list <- function(x, strict = FALSE) {

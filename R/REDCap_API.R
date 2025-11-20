@@ -15,7 +15,7 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   # info ----------
   project$redcap$project_info <- REDCapR::redcap_project_info_read(
     redcap_uri = project$links$redcap_uri,
-    token = get_project_token(project))[["data"]] # remove at some point
+    token = get_project_token(project))[["data"]]
   project$redcap$project_title <- project$redcap$project_info$project_title
   project$redcap$project_id <- project$redcap$project_info$project_id %>%
     as.character()

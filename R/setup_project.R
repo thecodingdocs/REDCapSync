@@ -434,7 +434,7 @@ compare_project_details <- function(from, to) {
 }
 #' @rdname setup-load
 #' @export
-load_test_project <- function(short_name = "TEST_repeating",
+load_test_project <- function(short_name = "TEST_REPEATING",
                               with_data = FALSE) {
   em <- "`short_name` must be character string of length 1 equal to one of the following: " %>% paste0(toString(.allowed_test_short_names))
   if (!is.character(short_name))
@@ -447,13 +447,17 @@ load_test_project <- function(short_name = "TEST_repeating",
   project$short_name <- short_name
   project$internals$is_test <- TRUE
   if (with_data) {
-    if (short_name == "TEST_classic") {
+    if (short_name == "TEST_CLASSIC") {
     }
-    if (short_name == "TEST_repeating") {
+    if (short_name == "TEST_REPEATING") {
     }
-    if (short_name == "TEST_longitudinal") {
+    if (short_name == "TEST_LONGITUDINAL") {
     }
-    if (short_name == "TEST_multiarm") {
+    if (short_name == "TEST_MULTIARM") {
+    }
+    if (short_name == "TEST_EDGE") {
+    }
+    if (short_name == "TEST_CANCER") {
     }
   }
   invisible(project)
@@ -511,10 +515,12 @@ save_project <- function(project, silent = FALSE) {
   invisible(project)
 }
 #' @noRd
-.allowed_test_short_names <- c("TEST_classic",
-                               "TEST_repeating",
-                               "TEST_longitudinal",
-                               "TEST_multiarm")
+.allowed_test_short_names <- c("TEST_CLASSIC",
+                               "TEST_REPEATING",
+                               "TEST_LONGITUDINAL",
+                               "TEST_MULTIARM",
+                               "TEST_EDGE",
+                               "TEST_CANCER")
 #' @noRd
 .blank_project <- list(
   short_name = NULL,

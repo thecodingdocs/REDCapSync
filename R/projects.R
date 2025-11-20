@@ -39,6 +39,16 @@ blank_tibble <- function(col_names){
   as_tibble(df)
 }
 #' @noRd
+blank_data_frame <- function(col_names){
+  if(missing(col_names)) {
+    return(data.frame())
+  }
+  checkmate::assert_vector(col_names, unique = TRUE)
+  df <- matrix(data = character(0),ncol = length(col_names))
+  colnames(df) <- col_names
+  as.data.frame(df)
+}
+#' @noRd
 .blank_project_cols <- c(
   "short_name",
   "dir_path",
@@ -366,3 +376,127 @@ save_project_details <- function(project, silent = TRUE) {
   }
   return(invisible())
 }
+#' @noRd
+.arms_colnames <- c(
+  "arm_number",
+  "arm_name"
+)
+#' @noRd
+.events_colnames <- c(
+  "event_name",
+  "arm_number",
+  "unique_event_name",
+  "custom_event_label",
+  "event_id"
+)
+#' @noRd
+.event_mapping_colnames <- c(
+  "arm_num",
+  "unique_event_name",
+  "form"
+)
+#' @noRd
+.forms_colnames <- c(
+  "form_name",
+  "form_label"
+)
+.choices_colnames <- c(
+  "field_name",
+  "code",
+  "name"
+)
+#' @noRd
+.project_info_colnames <- c(
+  "project_id",
+  "project_title",
+  "creation_time",
+  "production_time",
+  "in_production",
+  "project_language",
+  "purpose",
+  "purpose_other",
+  "project_notes",
+  "custom_record_label",
+  "secondary_unique_field",
+  "is_longitudinal",
+  "has_repeating_instruments_or_events",
+  "surveys_enabled",
+  "scheduling_enabled",
+  "record_autonumbering_enabled",
+  "randomization_enabled",
+  "ddp_enabled",
+  "project_irb_number",
+  "project_grant_number",
+  "project_pi_firstname",
+  "project_pi_lastname",
+  "display_today_now_button",
+  "missing_data_codes",
+  "external_modules",
+  "bypass_branching_erase_field_prompt"
+)
+#' @noRd
+.log_colnames <- c(
+  "timestamp",
+  "username",
+  "action",
+  "details",
+  "record",
+  "action_type"
+)
+#' @noRd
+.users_colnames <- c(
+  "username",
+  "email",
+  "firstname",
+  "lastname",
+  "expiration",
+  "data_access_group",
+  "data_access_group_id",
+  "design",
+  "alerts",
+  "user_rights",
+  "data_access_groups",
+  "reports",
+  "stats_and_charts",
+  "manage_survey_participants",
+  "calendar",
+  "data_import_tool",
+  "data_comparison_tool",
+  "logging",
+  "file_repository",
+  "data_quality_create",
+  "data_quality_execute",
+  "api_export",
+  "api_import",
+  "api_modules",
+  "mobile_app",
+  "mobile_app_download_data",
+  "record_create",
+  "record_rename",
+  "record_delete",
+  "lock_records_all_forms",
+  "lock_records",
+  "lock_records_customization",
+  "forms_export"
+)
+#' @noRd
+.field_colnames <- c(
+  "field_name",
+  "form_name",
+  "section_header",
+  "field_type",
+  "field_label",
+  "select_choices_or_calculations",
+  "field_note",
+  "text_validation_type_or_show_slider_number",
+  "text_validation_min",
+  "text_validation_max",
+  "identifier",
+  "branching_logic",
+  "required_field",
+  "custom_alignment",
+  "question_number",
+  "matrix_group_name",
+  "matrix_ranking",
+  "field_annotation"
+)

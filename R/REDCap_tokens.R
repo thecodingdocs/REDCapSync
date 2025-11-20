@@ -93,10 +93,12 @@ is_valid_redcap_token <- function(token,
   trimmed_token <- token %>% trimws(whitespace = "[\\h\\v]")
   if (is_a_test) {
     allowed <- c(
-      .TEST_classic_token,
-      .TEST_repeating_token,
-      .TEST_longitudinal_token,
-      .TEST_multiarm_token
+      .TEST_CLASSIC_token,
+      .TEST_REPEATING_token,
+      .TEST_LONGITUDINAL_token,
+      .TEST_MULTIARM_token,
+      .TEST_EDGE_token,
+      .TEST_CANCER_token
     )
     end_text <- "not a valid test token."
     if (!token %in% allowed) {
@@ -155,13 +157,17 @@ get_redcap_token_name <- function(project) {
 #' @noRd
 .token_prefix <- "REDCapSync_"
 #' @noRd
-.TEST_classic_token <- "FAKE32TESTTOKENCLASSIC1111111111"
+.TEST_CLASSIC_token <- "FAKE32TESTTOKENCLASSIC1111111111"
 #' @noRd
-.TEST_repeating_token <- "FAKE32TESTTOKENREPEATING22222222"
+.TEST_REPEATING_token <- "FAKE32TESTTOKENREPEATING11111111"
 #' @noRd
-.TEST_longitudinal_token <- "FAKE32TESTTOKENLONGITUDINAL33333"
+.TEST_LONGITUDINAL_token <- "FAKE32TESTTOKENLONGITUDINAL11111"
 #' @noRd
-.TEST_multiarm_token <- "FAKE32TESTTOKENMULTIARM444444444"
+.TEST_MULTIARM_token <- "FAKE32TESTTOKENMULTIARM111111111"
+#' @noRd
+.TEST_EDGE_token <- "FAKE32TESTTOKENEDGE1111111111111"
+#' @noRd
+.TEST_CANCER_token <- "FAKE32TESTTOKENCANCER11111111111"
 #' @noRd
 get_test_token <- function(short_name) {
   em <- "`short_name` must be character of length 1 equal ..." %>%
@@ -173,17 +179,23 @@ get_test_token <- function(short_name) {
   if (!is_test_short_name(short_name = short_name))
     stop(em)
   token <- NA
-  if (short_name == "TEST_classic") {
-    token <- .TEST_classic_token
+  if (short_name == "TEST_CLASSIC") {
+    token <- .TEST_CLASSIC_token
   }
-  if (short_name == "TEST_repeating") {
-    token <- .TEST_repeating_token
+  if (short_name == "TEST_REPEATING") {
+    token <- .TEST_REPEATING_token
   }
-  if (short_name == "TEST_longitudinal") {
-    token <- .TEST_longitudinal_token
+  if (short_name == "TEST_LONGITUDINAL") {
+    token <- .TEST_LONGITUDINAL_token
   }
-  if (short_name == "TEST_multiarm") {
-    token <- .TEST_multiarm_token
+  if (short_name == "TEST_MULTIARM") {
+    token <- .TEST_MULTIARM_token
+  }
+  if (short_name == "TEST_EDGE") {
+    token <- .TEST_EDGE_token
+  }
+  if (short_name == "TEST_CANCER") {
+    token <- .TEST_CANCER_token
   }
   token
 }

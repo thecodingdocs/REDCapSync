@@ -1,9 +1,11 @@
 test_that("internal constants are correct", {
   expect_equal(.token_prefix, "REDCapSync_")
-  expect_equal(.TEST_classic_token, "FAKE32TESTTOKENCLASSIC1111111111")
-  expect_equal(.TEST_repeating_token, "FAKE32TESTTOKENREPEATING22222222")
-  expect_equal(.TEST_longitudinal_token, "FAKE32TESTTOKENLONGITUDINAL33333")
-  expect_equal(.TEST_multiarm_token, "FAKE32TESTTOKENMULTIARM444444444")
+  expect_equal(.TEST_CLASSIC_token, "FAKE32TESTTOKENCLASSIC1111111111")
+  expect_equal(.TEST_REPEATING_token, "FAKE32TESTTOKENREPEATING11111111")
+  expect_equal(.TEST_LONGITUDINAL_token, "FAKE32TESTTOKENLONGITUDINAL11111")
+  expect_equal(.TEST_MULTIARM_token, "FAKE32TESTTOKENMULTIARM111111111")
+  expect_equal(.TEST_EDGE_token, "FAKE32TESTTOKENEDGE1111111111111")
+  expect_equal(.TEST_CANCER_token, "FAKE32TESTTOKENCANCER11111111111")
 })
 # is_valid_redcap_token ( Internal )
 test_that("is_valid_redcap_token respects the rules of 32L hexidecimal", {

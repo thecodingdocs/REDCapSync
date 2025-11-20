@@ -37,7 +37,7 @@ setup_project(
 
 load_project(short_name)
 
-load_test_project(short_name = "TEST_repeating", with_data = FALSE)
+load_test_project(short_name = "TEST_REPEATING", with_data = FALSE)
 }
 \arguments{
 \item{short_name}{A character string with no spaces or symbols representing

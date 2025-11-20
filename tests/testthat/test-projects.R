@@ -58,5 +58,96 @@ test_that("save_projects_to_cache works", {
 # blank_tibble ( Internal )
 # na_if_null ( Internal )
 # add_project_details_to_cache ( Internal )
+test_that("add_project_details_to_cache works", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
+
+  # start empty
+  projects <- get_projects()
+  checkmate::expect_data_frame(projects, nrows = 0)
+
+  # add project details to cache
+  project <- mock_project()
+  project_details <- extract_project_details(project)
+  expect_no_error(add_project_details_to_cache(project_details))
+
+  projects <- get_projects()
+  checkmate::expect_data_frame(projects, nrows = 1)
+  expect_true(project_details$short_name %in% projects$short_name)
+
+  # conflict: same project_id & same base redcap_uri but different short_name -> error
+  project_details_conflict <- project_details
+  project_details_conflict$short_name <- "TEST_OTHER"
+  expect_error(add_project_details_to_cache(project_details_conflict))
+})
 # add_project_details_to_project ( Internal )
+test_that("add_project_details_to_project works", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
+
+  project <- mock_project()
+  project_details <- extract_project_details(project)
+
+  # modify some details
+  project_details$sync_frequency <- "weekly"
+  project_details$days_of_log <- 7L
+  project_details$get_files <- !project$internals$get_files
+  project_details$labelled <- !project$internals$labelled
+
+  # apply details and capture returned project
+  project <- add_project_details_to_project(project, project_details)
+
+  # check internals updated
+  expect_equal(project$internals$sync_frequency, "weekly")
+  expect_equal(project$internals$days_of_log, as.integer(7))
+  expect_equal(project$internals$get_files, project_details$get_files)
+  # expect_equal(project$internals$labelled, project_details$labelled)
+  #issue with labelled changes
+  # mismatch short_name should error
+  project_details2 <- project_details
+  project_details2$short_name <- "OTHER"
+  expect_error(add_project_details_to_project(project, project_details2))
+})
 # save_project_details ( Internal )
+test_that("save_project_details works", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
+  project <- mock_project()
+  project$dir_path <- set_dir(test_dir)
+  # ensure details path does not exist initially
+  details_path <- get_project_path2(project, type = "details")
+  expect_false(file.exists(details_path))
+  # call function
+  expect_no_error(save_project_details(project))
+  # details file created and contains expected short_name
+  expect_true(file.exists(details_path))
+  saved_details <- readRDS(details_path)
+  expect_equal(as.character(saved_details$short_name), project$short_name)
+  # cache updated
+  projects <- get_projects()
+  expect_true(project$short_name %in% projects$short_name)
+})

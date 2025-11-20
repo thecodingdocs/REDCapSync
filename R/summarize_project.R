@@ -1450,13 +1450,13 @@ raw_to_labelled_form <- function(form, project) {
   }
   if (nrow(form) > 0) {
     use_missing_codes <- is.data.frame(project$metadata$missing_codes)
-    metadata <- filter_fields_from_form(form = form, project = project)
-    for (i in seq_len(nrow(metadata))) {
-      # i <-  seq_len(nrow(metadata)) %>% sample(1)
-      field_name <- metadata$field_name[i]
-      has_choices <- metadata$has_choices[i]
+    fields <- filter_fields_from_form(form = form, project = project)
+    for (i in seq_len(nrow(fields))) {
+      # i <-  seq_len(nrow(fields)) %>% sample(1)
+      field_name <- fields$field_name[i]
+      has_choices <- fields$has_choices[i]
       if (has_choices) {
-        z <- metadata$select_choices_or_calculations[i] %>% split_choices()
+        z <- fields$select_choices_or_calculations[i] %>% split_choices()
         form[[field_name]] <- form[[field_name]] %>%
           lapply(function(x) {
             form <- NA
@@ -1685,6 +1685,6 @@ filter_fields_from_form <- function(form, project) {
   fields <- project %>% field_names_metadata(field_names = colnames(form))
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
-  fields$has_choices[which(fields$field_type %in% c("calc","text"))] <- FALSE
+  fields$has_choices[which(fields$field_type %in% c("calc","text","slider"))] <- FALSE
   fields
 }

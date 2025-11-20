@@ -1685,6 +1685,6 @@ filter_fields_from_form <- function(form, project) {
   fields <- project %>% field_names_metadata(field_names = colnames(form))
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
-  fields$has_choices[which(fields$field_type == "calc")] <- FALSE
+  fields$has_choices[which(fields$field_type %in% c("calc","text"))] <- FALSE
   fields
 }

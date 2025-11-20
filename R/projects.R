@@ -244,10 +244,13 @@ add_project_details_to_cache <- function(project_details) {
   assert_project_details(project_details, nrows = 1)
   projects <- get_projects()
   projects <- projects[which(projects$short_name != project_details$short_name), ]
-  bad_row <- which(
-    projects$project_id == project_details$project_id &
-      basename(projects$redcap_uri) == basename(project_details$redcap_uri)
-  )
+  bad_row <- NULL
+  if(!is.na(project_details$project_id)){
+    bad_row <- which(
+      projects$project_id == project_details$project_id &
+        dirname(projects$redcap_uri) == dirname(project_details$redcap_uri)
+    )
+  }
   if (length(bad_row) > 0) {
     cli::cli_abort(
       paste0(

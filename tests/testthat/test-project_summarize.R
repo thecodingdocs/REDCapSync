@@ -73,6 +73,41 @@ test_that("clean_column_for_table works!", {
 })
 # add_project_summary ( Exported )
 test_that("add_project_summary works!", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
+  project <- mock_project()
+  summary_name <- "MY_SUMMARY_TEST"
+  project <- add_project_summary(
+    project = project,
+    summary_name = summary_name,
+    transformation_type = "default",
+    include_metadata = TRUE,
+    include_records = FALSE,
+    include_users = TRUE,
+    include_log = FALSE,
+    annotate_from_log = FALSE,
+    with_links = FALSE,
+    separate = FALSE,
+    use_csv = FALSE
+  )
+  expect_true(summary_name %in% names(project$summary))
+  s <- project$summary[[summary_name]]
+  expect_equal(s$summary_name, summary_name)
+  expect_equal(s$transformation_type, "default")
+  expect_equal(s$include_metadata, TRUE)
+  expect_equal(s$include_records, FALSE)
+  expect_equal(s$include_users, TRUE)
+  expect_equal(s$with_links, FALSE)
+  expect_equal(s$separate, FALSE)
+  expect_true(is.character(s$file_name))
 })
 # save_summary ( Internal )
 test_that("save_summary works!", {

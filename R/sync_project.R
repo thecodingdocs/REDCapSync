@@ -81,6 +81,7 @@ sync_project <- function(project,
           !is_something(project$internals$last_full_update)) {
         hard_reset <- TRUE
       } else {
+        # if(project$redcap$has_log_access){}else{}
         interim_log <- get_redcap_log2(project, log_begin_date = as.Date(
           strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d")
         )) %>% unique()

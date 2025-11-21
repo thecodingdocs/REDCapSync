@@ -1373,6 +1373,7 @@ add_default_summaries <- function(project,
 #' records
 #' @export
 labelled_to_raw_form <- function(form, project) {
+  form <- all_character_cols(form)
   use_missing_codes <- is.data.frame(project$metadata$missing_codes)
   fields <- filter_fields_from_form(form = form, project = project)
   for (i in seq_len(nrow(fields))) {

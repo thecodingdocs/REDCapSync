@@ -86,19 +86,11 @@ test_project_token <- function(project, launch_browser = TRUE) {
   invisible(project)
 }
 #' @noRd
-is_valid_redcap_token <- function(token,
-                                  silent = TRUE,
-                                  is_a_test = FALSE) {
+is_valid_redcap_token <- function(token, silent = TRUE) {
   start_text <- "The token "
   token_text <- NULL
   end_text <- "is not a valid 32-character hexademical value."
   trimmed_token <- token %>% trimws(whitespace = "[\\h\\v]")
-  if (is_a_test) {
-    if (!token %in% .test_tokens_and_names) {
-      cli_alert_danger(paste0(start_text, token_text, end_text))
-      return(FALSE)
-    }
-  }
   if (is.null(token)) {
     token_text <- "is `NULL`,"
     cli_alert_danger(paste0(start_text, token_text, end_text))
@@ -119,12 +111,10 @@ is_valid_redcap_token <- function(token,
     cli_alert_danger(paste0(start_text, token_text, end_text))
     return(FALSE)
   }
-  if (!is_a_test) {
     if (!is_hexadecimal(token, length = 32)) {
       cli_alert_danger(paste0(start_text, token_text, end_text))
       return(FALSE)
     }
-  }
   return(TRUE)
 }
 #' @noRd

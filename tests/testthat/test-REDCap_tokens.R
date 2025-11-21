@@ -8,14 +8,6 @@ test_that("is_valid_redcap_token respects the rules of 32L hexidecimal", {
   expect_false(is_valid_redcap_token(paste0(" ", generate_hex(31))))
   expect_false(is_valid_redcap_token(paste0("J", generate_hex(31))))
   expect_false(is_valid_redcap_token(paste0("_", generate_hex(31))))
-  expect_false(is_valid_redcap_token(.test_tokens_and_names["TEST_CLASSIC"]))
-  expect_all_true(
-    names(.test_tokens_and_names) %>%
-      lapply(function(test_name){
-        is_valid_redcap_token(.test_tokens_and_names[test_name],is_a_test = TRUE)
-      }) %>% unlist()
-  )
-  expect_false(is_valid_redcap_token(generate_hex(32), is_a_test = TRUE))
 })
 test_that("get_project_token checks_env", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()

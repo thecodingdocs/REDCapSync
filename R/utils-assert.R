@@ -26,27 +26,20 @@ get_project_token <- function(project, silent = TRUE) {
   assert_setup_project(project)
   token_name <- project$redcap$token_name
   token <- Sys.getenv(token_name)
-  is_a_test <-
-    (project$short_name %in% names(.test_tokens_and_names)) &&
-    project$internals$is_test
-  valid <- token %>%
-    is_valid_redcap_token(silent = silent, is_a_test = is_a_test)
-  message_about_token <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
-  if(is_a_test){
-    message_about_token <- .test_tokens_and_names[project$short_name]
-  }
+  valid <- token %>% is_valid_redcap_token(silent = silent)
+  fake_token <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
   if (!silent) {
     cli_alert_wrap(
       paste0(
         "You can set REDCap tokens each session with `Sys.setenv(",
         token_name,
         "='",
-        message_about_token,
+        fake_token,
         "')`... or for higher security run `edit_r_environ()` from `usethis`",
         "package and add `",
         token_name,
         " = '",
-        message_about_token,
+        fake_token,
         "'` to that file...(then restart R under session tab after saving ",
         "file)... The way to tell it worked is to run the code, `Sys.getenv('",
         token_name,

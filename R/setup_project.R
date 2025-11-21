@@ -187,7 +187,6 @@ setup_project <- function(short_name,
   missing_dir_path <- missing(dir_path)
   was_loaded <- FALSE
   original_details <- NULL
-  is_a_test <- FALSE
   if (!in_proj_cache && !missing_dir_path) {
     project_details_path <- get_project_path(short_name = short_name,
                                              dir_path = dir_path,
@@ -419,8 +418,7 @@ compare_project_details <- function(from, to) {
 #' @export
 load_test_project <- function(short_name = "TEST_CLASSIC",
                               with_data = FALSE) {
-  assert_choice(short_name,names(.test_tokens_and_names))
-  .test_tokens_and_names[match(short_name,names(.test_tokens_and_names))]
+  assert_choice(short_name,.test_project_names)
   project <- .blank_project
   invisible(project)
 }
@@ -468,14 +466,14 @@ save_project <- function(project, silent = FALSE) {
   invisible(project)
 }
 #' @noRd
-.test_tokens_and_names <- c(
-  TEST_CLASSIC = "FAKE32TESTTOKENCLASSIC1111111111",
-  TEST_REPEATING = "FAKE32TESTTOKENREPEATING11111111",
-  TEST_LONGITUDINAL = "FAKE32TESTTOKENLONGITUDINAL11111",
-  TEST_MULTIARM = "FAKE32TESTTOKENMULTIARM111111111",
-  TEST_EDGE = "FAKE32TESTTOKENEDGE1111111111111",
-  TEST_DATA = "FAKE32TESTTOKENEDGE1111111111111",
-  TEST_CANCER = "FAKE32TESTTOKENCANCER11111111111"
+.test_project_names <- c(
+  "TEST_CLASSIC",
+  "TEST_REPEATING",
+  "TEST_LONGITUDINAL",
+  "TEST_MULTIARM",
+  "TEST_EDGE",
+  "TEST_DATA",
+  "TEST_CANCER"
 )
 #' @noRd
 .blank_project <- list(

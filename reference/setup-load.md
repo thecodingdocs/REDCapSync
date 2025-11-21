@@ -36,7 +36,7 @@ setup_project(
 
 load_project(short_name)
 
-load_test_project(short_name = "TEST_REPEATING", with_data = FALSE)
+load_test_project(short_name = "TEST_CLASSIC", with_data = FALSE)
 ```
 
 ## Arguments

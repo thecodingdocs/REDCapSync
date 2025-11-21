@@ -161,6 +161,4 @@ test_that("set_dir validates the directory structure", {
   expect_true(file.exists(dir_path))
   expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
-# is_test_short_name ( Internal )
-# is_test_project ( Internal )
 # clean_dir_path ( Internal )

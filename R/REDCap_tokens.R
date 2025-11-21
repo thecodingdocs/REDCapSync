@@ -18,7 +18,9 @@
 view_project_token <- function(project) {
   project <- assert_blank_project(project)
   token <- get_project_token(project, silent = FALSE)
-  cli_alert_warning(paste0("Never share your token: ", token))
+  if(is_something(token)){
+    cli_alert_warning(paste0("Never share your token: ", token))
+  }
   invisible()
 }
 #' @title Test REDCap API Token linked to a project Object

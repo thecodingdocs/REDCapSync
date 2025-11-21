@@ -143,6 +143,7 @@ setup_project <- function(short_name,
   assert_logical(add_default_fields, len = 1, add = collected)
   assert_logical(add_default_transformation, len = 1, add = collected)
   assert_logical(add_default_summaries, len = 1, add = collected)
+  assert_env_name(short_name)
   # assert_env_name(
   #   merge_form_name,
   #   max.chars = 31,
@@ -178,19 +179,15 @@ setup_project <- function(short_name,
     cli::cli_abort(message)
   }
   projects <- get_projects() # add short_name conflict check id-base url differs
-  short_name <- assert_env_name(short_name)
   sweep_dirs_for_cache(project_names = short_name)
   if (paste0(.token_prefix, short_name) != token_name) {
     # maybe a message
   }
-  token_name <- assert_env_name(token_name)
   in_proj_cache <- short_name %in% projects$short_name
   missing_dir_path <- missing(dir_path)
-  is_a_test <-
-    (project$short_name %in% names(.test_tokens_and_names)) &&
-    project$internals$is_test
   was_loaded <- FALSE
   original_details <- NULL
+  is_a_test <- FALSE
   if (!in_proj_cache && !missing_dir_path) {
     project_details_path <- get_project_path(short_name = short_name,
                                              dir_path = dir_path,
@@ -228,11 +225,7 @@ setup_project <- function(short_name,
     )
     was_loaded <- !is.null(project)
     if (!was_loaded) {
-      if (is_a_test) {
-        project <- load_test_project(short_name = short_name, with_data = FALSE)
-      } else {
-        project <- .blank_project
-      }
+      project <- .blank_project
       cli_alert_wrap(
         "Setup blank project object because nothing found in cache or directory.",
         bullet_type = "!",
@@ -244,19 +237,17 @@ setup_project <- function(short_name,
       original_details <- project %>% extract_project_details()
       if (!is.null(project$internals$labelled)) {
         if (project$internals$labelled != labelled) {
-          if (!hard_reset) {
-            load_type <- ifelse(project$internals$labelled, "labelled", "raw")
-            chosen_type <- ifelse(labelled, "labelled", "raw")
-            hard_reset <- TRUE
-            warning(
-              "The project that was loaded was ",
-              load_type,
-              " and you chose ",
-              chosen_type,
-              ". Therefore, a full update was triggered to avoid data conflicts",
-              immediate. = TRUE
-            )
-          }
+          load_type <- ifelse(project$internals$labelled, "labelled", "raw")
+          chosen_type <- ifelse(labelled, "labelled", "raw")
+          hard_reset <- TRUE
+          warning(
+            "The project that was loaded was ",
+            load_type,
+            " and you chose ",
+            chosen_type,
+            ". Therefore, a full update was triggered to avoid data conflicts",
+            immediate. = TRUE
+          )
         }
       }
     }
@@ -309,22 +300,14 @@ setup_project <- function(short_name,
     assert_integerish() %>%
     as.integer()
   project$internals$get_file_repository <- get_file_repository
-  if (is_a_test) {
-    cli_alert_wrap(
-      "Test objects ignore the `redcap_uri` argument and will not communicate with the REDCap API.",
-      silent = silent
-    )
-  } else {
-    project$links$redcap_uri <- redcap_uri # add test function, should end in / or add it
-    project$links$redcap_base <- redcap_uri %>%
-      dirname() %>%
-      paste0("/") # add test function
-  }
-  project$internals$use_csv <- use_csv
+  #test theese
+  project$links$redcap_uri <- redcap_uri # add test function, should end in / or add it
+  project$links$redcap_base <- redcap_uri %>% dirname() %>% paste0("/")
   project$internals$is_blank <- FALSE
   project$data <- project$data %>% all_character_cols_list()
-  if (!is_valid_redcap_token(get_project_token(project), is_a_test = is_a_test)) {
-    cli::cli_alert_warning(paste0("No valid token in session: Sys.getenv('", token_name, "')"))
+  if (!is_valid_redcap_token(get_project_token(project))) {
+    cli::cli_alert_warning(
+      paste0("No valid token in session: Sys.getenv('", token_name, "')"))
   }
   project <- assert_setup_project(project, silent = silent)
   if (!is.null(original_details)) {

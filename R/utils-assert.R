@@ -24,7 +24,8 @@ assert_dir <- function(dir_path, silent = TRUE) {
 #' @noRd
 get_project_token <- function(project, silent = TRUE) {
   assert_setup_project(project)
-  token <- Sys.getenv(project$redcap$token_name)
+  token_name <- project$redcap$token_name
+  token <- Sys.getenv(token_name)
   is_a_test <-
     (project$short_name %in% names(.test_tokens_and_names)) &&
     project$internals$is_test
@@ -46,7 +47,7 @@ get_project_token <- function(project, silent = TRUE) {
         token_name,
         " = '",
         message_about_token,
-        "'` to that file...(then restart R under session tab after saving",
+        "'` to that file...(then restart R under session tab after saving ",
         "file)... The way to tell it worked is to run the code, `Sys.getenv('",
         token_name,
         "')`"

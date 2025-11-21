@@ -56,7 +56,8 @@ test_that("view_project_token works when no token set", {
     }
   )
   project <- mock_project()
-  expect_message(view_project_token(project), "Never share your token:")
+  expect_true(project$internals$is_test)
+  expect_message(view_project_token(project), "is not a valid 32-character")
 })
 test_that("view_project_token works when token is set", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()

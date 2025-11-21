@@ -1,6 +1,6 @@
 #' @noRd
 fields_to_choices <- function(fields) {
-  fields <- fields[which(fields$field_type %in% c("radio", "dropdown", "checkbox_choice", "yesno")), ]
+  fields <- fields[which(fields$field_type %in% c("radio", "dropdown", "checkbox_choice", "yesno","truefalse")), ]
   # fields$field_name[which(fields$field_type=="checkbox_choice")] <- fields$field_name[which(fields$field_type=="checkbox_choice")] %>% strsplit("___") %>% lapply(function(X){X[[1]]})
   fields <- fields[which(!is.na(fields$select_choices_or_calculations)), ]
   choices <- NULL
@@ -1049,7 +1049,9 @@ field_types_to_R <- function(fields) {
   field_types_R
 }
 #' @noRd
-.redcap_factor_fields <- c("radio", "yesno", "dropdown", "checkbox_choice")
+.redcap_factor_fields <- c("radio", "yesno", "dropdown", "checkbox_choice", "truefalse")
+#' @noRd
+.redcap_logical_fields <- c("yesno", "checkbox_choice", "truefalse") # tbd
 #' @noRd
 .redcap_text_date_fields <- c("date_mdy", "date_ymd", "date_dmy")
 #' @noRd

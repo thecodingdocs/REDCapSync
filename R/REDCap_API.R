@@ -184,7 +184,7 @@ add_field_elements <- function(fields) {
         form_name = fields$form_name[which(fields$field_name == field_name)],
         field_label = x$name,
         field_type = "checkbox_choice",
-        select_choices_or_calculations = "0, Unchecked | 1, Checked",
+        select_choices_or_calculations = "1, Checked | 0, Unchecked",
         stringsAsFactors = FALSE
       )
       row <- which(fields$field_name == field_name)
@@ -200,7 +200,10 @@ add_field_elements <- function(fields) {
     }
   }
   if (any(fields$field_type == "yesno")) {
-    fields$select_choices_or_calculations[which(fields$field_type == "yesno")] <- "0, No | 1, Yes"
+    fields$select_choices_or_calculations[which(fields$field_type == "yesno")] <- "1, Yes | 0, No"
+  }
+  if (any(fields$field_type == "truefalse")) {
+    fields$select_choices_or_calculations[which(fields$field_type == "truefalse")] <- "1, True | 0, False"
   }
   fields
 }

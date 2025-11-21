@@ -258,7 +258,7 @@ add_project_details_to_cache <- function(project_details) {
         "PID {projects$project_id[bad_row]}] that you have already setup ",
         "[{projects$short_name[bad_row]} PID {project_details$project_id}] ",
         "You can load the old project or run ",
-        "`delete_project_by_name(\"{projects$short_name[bad_row]}\")`"
+        "`cache_remove_project(\"{projects$short_name[bad_row]}\")`"
       )
     )
   }

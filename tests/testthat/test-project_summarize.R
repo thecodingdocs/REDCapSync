@@ -152,6 +152,15 @@ test_that("extract_project_records works!", {
 })
 # get_log ( Internal )
 test_that("get_log works!", {
+  project <- TEST_CLASSIC
+  records <- as.character(1:50) %>% sample(10)
+  log <- project$redcap$log
+  all_record_ids <- log$record %>% unique()
+  expect_length(all_record_ids,50)
+  log_subset <- get_log(project,records)
+  subset_record_ids <- log_subset$record %>% unique()
+  expect_length(subset_record_ids,10)
+  expect_contains(subset_record_ids,records)
 })
 # annotate_users ( Internal )
 test_that("annotate_users works!", {
@@ -172,10 +181,29 @@ test_that("check_summaries works!", {
 test_that("add_default_summaries works!", {
 })
 # labelled_to_raw_form ( Exported )
-test_that("labelled_to_raw_form works!", {
-})
-# raw_to_labelled_form ( Exported )
-test_that("raw_to_labelled_form works!", {
+test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
+  project <- TEST_CLASSIC
+  project_summary <- project %>% generate_project_summary()
+  merged <- project_summary$merged %>% all_character_cols()
+  var_yesno_labelled <- merged$var_yesno
+  values <- merged$var_yesno %>% unique()
+  expect_vector(values,size = 2)
+  expect_contains(values,c("Yes","No"))
+  merged <- merged %>% labelled_to_raw_form(project)
+  var_yesno_coded <- merged$var_yesno
+  values <- merged$var_yesno %>% unique()
+  expect_vector(values,size = 2)
+  expect_contains(values,c("1","0"))
+  var_yesno_labelled_check <- (var_yesno_labelled == "Yes") %>%
+    as.integer() %>%
+    as.character()
+  expect_identical(var_yesno_labelled_check,var_yesno_coded)
+  merged <- merged %>% raw_to_labelled_form(project)
+  var_yesno_labelled_again <- merged$var_yesno
+  values <- merged$var_yesno %>% unique()
+  expect_vector(values,size = 2)
+  expect_contains(values,c("Yes","No"))
+  expect_identical(var_yesno_labelled,var_yesno_labelled_again)
 })
 # labelled_to_raw_data_list ( Internal )
 test_that("labelled_to_raw_data_list works!", {

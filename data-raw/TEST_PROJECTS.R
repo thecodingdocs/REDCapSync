@@ -8,7 +8,8 @@ project <- setup_project(
 project <- setup_project(
   short_name = "TEST_CLASSIC",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
-  dir_path =  Sys.getenv("dir_path_UTTEST")
+  dir_path =  Sys.getenv("dir_path_UTTEST"),
+  entire_log = TRUE
 ) %>% sync_project(hard_reset = TRUE)
 project <- setup_project(
   short_name = "TEST_DATA",
@@ -41,7 +42,10 @@ scrub_test_project <- function(project){
   project$dir_path <- "fake/path"
   project$redcap$project_info$project_id <-
     project$redcap$project_id <- "12340"
-  project$redcap$log <- data.frame()
+  project$redcap$log$username <- "u1230"
+  project$redcap$log$details <- NA
+  project$redcap$log <- project$redcap$log[which(!is.na(project$redcap$log$record)),]
+  project$redcap$log <- project$redcap$log[which(project$redcap$log$action_type != "Users"),]
   project$redcap$users$username <- "u1230"
   project$redcap$users$email <- "thecodingdocs@gmail.com"
   project$links$redcap_uri <- "https://redcap.fake.edu/api/"
@@ -60,7 +64,6 @@ for(short_name in .test_project_names){
     envir = globalenv()
   )
 }
-
 .test_project_names %>% paste0(",\n") %>% cat()
 usethis::use_data(
   TEST_CLASSIC,

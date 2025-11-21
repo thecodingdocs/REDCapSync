@@ -157,7 +157,7 @@ setup_project <- function(short_name,
   )
   assert_choice(
     sync_frequency,
-    choices = c("always", "hourly", "daily", "weekly", "monthly", "never"),
+    choices = c("always", "hourly", "daily", "weekly", "monthly","once", "never"),
     add = collected
   )
   assert_integerish(batch_size_download,
@@ -170,10 +170,7 @@ setup_project <- function(short_name,
                     add = collected)
   assert_logical(silent, len = 1, add = collected)
   if (missing(redcap_uri)) {
-    REDCapSync_REDCAP_URI <- Sys.getenv("REDCapSync_REDCAP_URI")
-    if (is_something(REDCapSync_REDCAP_URI)) {
-      redcap_uri <- REDCapSync_REDCAP_URI
-    }
+    #use options or Renviron?
   }
   current_function <- as.character(current_call())[[1]]
   if (!collected$isEmpty()) {
@@ -184,11 +181,14 @@ setup_project <- function(short_name,
   short_name <- assert_env_name(short_name)
   sweep_dirs_for_cache(project_names = short_name)
   if (paste0(.token_prefix, short_name) != token_name) {
-  } # maybe a message
+    # maybe a message
+  }
   token_name <- assert_env_name(token_name)
   in_proj_cache <- short_name %in% projects$short_name
   missing_dir_path <- missing(dir_path)
-  is_a_test <- is_test_short_name(short_name = short_name)
+  is_a_test <-
+    (project$short_name %in% names(.test_tokens_and_names)) &&
+    project$internals$is_test
   was_loaded <- FALSE
   original_details <- NULL
   if (!in_proj_cache && !missing_dir_path) {
@@ -434,42 +434,12 @@ compare_project_details <- function(from, to) {
 }
 #' @rdname setup-load
 #' @export
-load_test_project <- function(short_name = "TEST_REPEATING",
+load_test_project <- function(short_name = "TEST_CLASSIC",
                               with_data = FALSE) {
-  em <- "`short_name` must be character string of length 1 equal to one of the following: " %>% paste0(toString(.allowed_test_short_names))
-  if (!is.character(short_name))
-    stop(em)
-  if (length(short_name) != 1)
-    stop(em)
-  if (!is_test_short_name(short_name = short_name))
-    stop(em)
+  assert_choice(short_name,names(.test_tokens_and_names))
+  .test_tokens_and_names[match(short_name,names(.test_tokens_and_names))]
   project <- .blank_project
-  project$short_name <- short_name
-  project$internals$is_test <- TRUE
-  if (with_data) {
-    if (short_name == "TEST_CLASSIC") {
-    }
-    if (short_name == "TEST_REPEATING") {
-    }
-    if (short_name == "TEST_LONGITUDINAL") {
-    }
-    if (short_name == "TEST_MULTIARM") {
-    }
-    if (short_name == "TEST_EDGE") {
-    }
-    if (short_name == "TEST_CANCER") {
-    }
-  }
   invisible(project)
-}
-#' @noRd
-is_test_short_name <- function(short_name) {
-  short_name %in% .allowed_test_short_names
-}
-#' @noRd
-is_test_project <- function(project) {
-  (project$short_name %in% .allowed_test_short_names) &&
-    project$internals$is_test
 }
 #' @rdname save-deleteproject
 #' @title Save or Delete project file from the directory
@@ -515,12 +485,15 @@ save_project <- function(project, silent = FALSE) {
   invisible(project)
 }
 #' @noRd
-.allowed_test_short_names <- c("TEST_CLASSIC",
-                               "TEST_REPEATING",
-                               "TEST_LONGITUDINAL",
-                               "TEST_MULTIARM",
-                               "TEST_EDGE",
-                               "TEST_CANCER")
+.test_tokens_and_names <- c(
+  TEST_CLASSIC = "FAKE32TESTTOKENCLASSIC1111111111",
+  TEST_REPEATING = "FAKE32TESTTOKENREPEATING11111111",
+  TEST_LONGITUDINAL = "FAKE32TESTTOKENLONGITUDINAL11111",
+  TEST_MULTIARM = "FAKE32TESTTOKENMULTIARM111111111",
+  TEST_EDGE = "FAKE32TESTTOKENEDGE1111111111111",
+  TEST_DATA = "FAKE32TESTTOKENEDGE1111111111111",
+  TEST_CANCER = "FAKE32TESTTOKENCANCER11111111111"
+)
 #' @noRd
 .blank_project <- list(
   short_name = NULL,

@@ -276,24 +276,19 @@ test_that("is_df_list works!", {
   expect_false(is_df_list(NULL))
   expect_false(is_df_list(1))
   expect_false(is_df_list(data.frame()))
-
   # empty list -> FALSE
   expect_false(is_df_list(list()))
-
   # list with no data.frames -> FALSE
   expect_false(is_df_list(list(a = 1, b = "x")))
-
   # pure list of data.frames -> TRUE
   df1 <- mtcars
   df2 <- iris
   expect_true(is_df_list(list(df1, df2)))
   expect_true(is_df_list(list(one = df1, two = df2)))
-
   # mixed list -> TRUE when strict = FALSE, FALSE when strict = TRUE
   mixed <- list(df1, list())
   # expect_true(is_df_list(mixed))
   expect_false(is_df_list(mixed, strict = TRUE))
-
   mixed2 <- list(df1, 1)
   expect_true(is_df_list(mixed2))
   expect_false(is_df_list(mixed2, strict = TRUE))
@@ -316,7 +311,6 @@ test_that("check_match works!", {
     c("a", "b"),
     c("a", "c")
   )))
-
   # different lengths -> no match
   expect_false(check_match(list(
     c(1, 2),

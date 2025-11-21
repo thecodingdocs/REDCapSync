@@ -1,12 +1,3 @@
-test_that("internal constants are correct", {
-  expect_equal(.token_prefix, "REDCapSync_")
-  expect_equal(.TEST_CLASSIC_token, "FAKE32TESTTOKENCLASSIC1111111111")
-  expect_equal(.TEST_REPEATING_token, "FAKE32TESTTOKENREPEATING11111111")
-  expect_equal(.TEST_LONGITUDINAL_token, "FAKE32TESTTOKENLONGITUDINAL11111")
-  expect_equal(.TEST_MULTIARM_token, "FAKE32TESTTOKENMULTIARM111111111")
-  expect_equal(.TEST_EDGE_token, "FAKE32TESTTOKENEDGE1111111111111")
-  expect_equal(.TEST_CANCER_token, "FAKE32TESTTOKENCANCER11111111111")
-})
 # is_valid_redcap_token ( Internal )
 test_that("is_valid_redcap_token respects the rules of 32L hexidecimal", {
   expect_true(is_valid_redcap_token(generate_hex(32)))
@@ -17,13 +8,13 @@ test_that("is_valid_redcap_token respects the rules of 32L hexidecimal", {
   expect_false(is_valid_redcap_token(paste0(" ", generate_hex(31))))
   expect_false(is_valid_redcap_token(paste0("J", generate_hex(31))))
   expect_false(is_valid_redcap_token(paste0("_", generate_hex(31))))
-  expect_false(is_valid_redcap_token(.TEST_CLASSIC_token))
-  expect_true(is_valid_redcap_token(.TEST_CLASSIC_token, is_a_test = TRUE))
-  expect_true(is_valid_redcap_token(.TEST_REPEATING_token, is_a_test = TRUE))
-  expect_true(is_valid_redcap_token(.TEST_LONGITUDINAL_token, is_a_test = TRUE))
-  expect_true(is_valid_redcap_token(.TEST_MULTIARM_token, is_a_test = TRUE))
-  expect_true(is_valid_redcap_token(.TEST_EDGE_token, is_a_test = TRUE))
-  expect_true(is_valid_redcap_token(.TEST_CANCER_token, is_a_test = TRUE))
+  expect_false(is_valid_redcap_token(.test_tokens_and_names["TEST_CLASSIC"]))
+  expect_all_true(
+    names(.test_tokens_and_names) %>%
+      lapply(function(test_name){
+        is_valid_redcap_token(.test_tokens_and_names[test_name],is_a_test = TRUE)
+      }) %>% unlist()
+  )
   expect_false(is_valid_redcap_token(generate_hex(32), is_a_test = TRUE))
 })
 test_that("get_project_token checks_env", {
@@ -38,7 +29,7 @@ test_that("get_project_token checks_env", {
     }
   )
   project <- mock_project()
-  token_name <- get_redcap_token_name(project)
+  token_name <- project$redcap$token_name
   token <- generate_hex(32)
   withr::with_envvar(c(REDCapSync_TEST_PROJECT = token), {
     expect_equal(get_project_token(project), token)
@@ -51,21 +42,6 @@ test_that("get_project_token checks_env", {
   withr::with_envvar(c(REDCapSync_TEST_PROJECT = NULL), {
     expect_equal(get_project_token(project), "")
   })
-})
-# get_redcap_token_name ( Internal )
-test_that("get_redcap_token_name works", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      return(fake_cache)
-    }
-  )
-  project <- mock_project()
-  expect_equal(get_redcap_token_name(project), "REDCapSync_TEST_PROJECT")
 })
 # view_project_token ( Exported )
 test_that("view_project_token works when no token set", {
@@ -94,24 +70,12 @@ test_that("view_project_token works when token is set", {
     }
   )
   project <- mock_project()
-  token_name <- get_redcap_token_name(project)
+  token_name <- project$redcap$token_name
   token <- generate_hex(32)
   withr::with_envvar(c(REDCapSync_TEST_PROJECT = token), {
     expect_message(view_project_token(project),
                    paste0("Never share your token: ", token))
   })
-})
-# get_test_token ( Internal )
-test_that("get_test_token works!", {
-  expect_equal(get_test_token("TEST_CLASSIC"), .TEST_CLASSIC_token)
-  expect_equal(get_test_token("TEST_REPEATING"), .TEST_REPEATING_token)
-  expect_equal(get_test_token("TEST_LONGITUDINAL"), .TEST_LONGITUDINAL_token)
-  expect_equal(get_test_token("TEST_MULTIARM"), .TEST_MULTIARM_token)
-  expect_equal(get_test_token("TEST_EDGE"), .TEST_EDGE_token)
-  expect_equal(get_test_token("TEST_CANCER"), .TEST_CANCER_token)
-  expect_error(get_test_token("INVALID_SHORT_NAME"))
-  expect_error(get_test_token(1213123))
-  expect_error(get_test_token(c("TEST_CLASSIC", "TEST_REPEATING")))
 })
 # test_project_token ( Exported )
 test_that("test_project_token succeeds when exportVersion returns a version (no API calls)", {

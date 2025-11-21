@@ -13,7 +13,7 @@ mock_project <- function() {
   project$internals$last_sync <- fake_time
   project$internals$timezone <- Sys.timezone()
   project$redcap$version <- "12.1.1"
-  project$redcap$token_name <- project$redcap$token_name
+  project$redcap$token_name <- "REDCapSync_TEST_PROJECT"
   project$redcap$project_id <- "01234"
   project$redcap$project_title <- "A Fake Project"
   project$redcap$id_col <- "record_id"

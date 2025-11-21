@@ -24,16 +24,16 @@ assert_dir <- function(dir_path, silent = TRUE) {
 #' @noRd
 get_project_token <- function(project, silent = TRUE) {
   assert_setup_project(project)
-  token_name <- get_redcap_token_name(project)
-  token <- Sys.getenv(token_name)
-  is_a_test <- is_test_project(project)
+  token <- Sys.getenv(project$redcap$token_name)
+  is_a_test <-
+    (project$short_name %in% names(.test_tokens_and_names)) &&
+    project$internals$is_test
   valid <- token %>%
     is_valid_redcap_token(silent = silent, is_a_test = is_a_test)
-  message_about_token <- ifelse(
-    is_a_test,
-    get_test_token(project$short_name),
-    "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
-  )
+  message_about_token <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
+  if(is_a_test){
+    message_about_token <- .test_tokens_and_names[project$short_name]
+  }
   if (!silent) {
     cli_alert_wrap(
       paste0(

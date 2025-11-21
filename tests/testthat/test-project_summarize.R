@@ -114,6 +114,26 @@ test_that("save_summary works!", {
 })
 # generate_project_summary ( Exported )
 test_that("generate_project_summary works!", {
+  project <- TEST_CLASSIC
+  project_summary <- project %>%
+    generate_project_summary(
+      summary_name = "REDCapSync"
+    )
+  expect_true(is_df_list(project_summary))
+  project_summary <- project %>%
+    generate_project_summary(
+      include_metadata = TRUE
+    )
+  expect_contains(names(project_summary),"forms")
+  expect_contains(names(project_summary),"fields")
+  expect_contains(names(project_summary),"choices")
+  project_summary <- project %>%
+    generate_project_summary(
+      include_metadata = FALSE
+    )
+  expect_false("forms" %in% names(project_summary))
+  expect_false("fields" %in% names(project_summary))
+  expect_false("choices" %in% names(project_summary))
 })
 # merge_non_repeating ( Internal )
 test_that("merge_non_repeating works!", {

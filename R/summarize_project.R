@@ -184,37 +184,39 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
   all_records <- data_list$summary$all_records[the_rows, ]
   redcap_log <- get_log(data_list = data_list, records = records)
   # redcap_log$date <- redcap_log$timestamp %>% strsplit(" ") %>% lapply(first) %>% unlist()
-  redcap_log <- redcap_log[,c("timestamp","username","record")]
   if (!is_something(all_records) || !is_something(redcap_log)) {
     return(all_records)
   }
   if (summarize_data) {
-    has_users <- is_something(data_list$redcap$users)
-    if(has_users){
-      users <- data_list$redcap$users
-      users <- users[,c("username","firstname","lastname","email")]
-      redcap_log <- merge(redcap_log, users,by="username",all.x = TRUE)
-    }
-    cool_list <- split(redcap_log, redcap_log$record)
-    if(length(cool_list)>1){
-      cool_df <- seq_len(length(cool_list)) %>% lapply(function(i){
-        df <- cool_list[[i]]
-        the_last <- first(df)
-        the_first <- last(df)
-        out_df <- data.frame(
-          record = the_first$record,
-          first_timestamp = the_first$timestamp,
-          last_timestamp = the_last$timestamp,
-          unique_users = length_unique(df$username)
-        )
-        if(has_users){
-          out_df$last_username <- the_last$username
-          out_df$last_user <- the_last$firstname %>% paste(the_last$lastname)
-        }
-        out_df
-      }) %>% bind_rows()
-      colnames(cool_df)[1] <- id_col
-      all_records <- merge(all_records, cool_df, by = id_col, all.x = TRUE)
+    if(is_something(redcap_log)){
+      redcap_log <- redcap_log[,c("timestamp","username","record")]
+      has_users <- is_something(data_list$redcap$users)
+      if(has_users){
+        users <- data_list$redcap$users
+        users <- users[,c("username","firstname","lastname","email")]
+        redcap_log <- merge(redcap_log, users,by="username",all.x = TRUE)
+      }
+      cool_list <- split(redcap_log, redcap_log$record)
+      if(length(cool_list)>1){
+        cool_df <- seq_len(length(cool_list)) %>% lapply(function(i){
+          df <- cool_list[[i]]
+          the_last <- first(df)
+          the_first <- last(df)
+          out_df <- data.frame(
+            record = the_first$record,
+            first_timestamp = the_first$timestamp,
+            last_timestamp = the_last$timestamp,
+            unique_users = length_unique(df$username)
+          )
+          if(has_users){
+            out_df$last_username <- the_last$username
+            out_df$last_user <- the_last$firstname %>% paste(the_last$lastname)
+          }
+          out_df
+        }) %>% bind_rows()
+        colnames(cool_df)[1] <- id_col
+        all_records <- merge(all_records, cool_df, by = id_col, all.x = TRUE)
+      }
     }
   }
   invisible(all_records)

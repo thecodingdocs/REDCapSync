@@ -183,75 +183,41 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
   the_rows <- which(data_list$summary$all_records[[id_col]] %in% records)
   all_records <- data_list$summary$all_records[the_rows, ]
   redcap_log <- get_log(data_list = data_list, records = records)
+  # redcap_log$date <- redcap_log$timestamp %>% strsplit(" ") %>% lapply(first) %>% unlist()
+  redcap_log <- redcap_log[,c("timestamp","username","record")]
   if (!is_something(all_records) || !is_something(redcap_log)) {
-    return(data_list)
+    return(all_records)
   }
   if (summarize_data) {
-    redcap_log <- redcap_log[which(redcap_log$action_type != "Users"), ]
-    redcap_log <- redcap_log[which(redcap_log$record %in% all_records[[id_col]]), ]
-    cool_list <- split(redcap_log$timestamp, redcap_log$record)
-    cool_list_match <- cool_list %>%
-      names() %>%
-      match(all_records[[id_col]])
-    # test matched all_records[[id_col]][cool_list_match]
-    cool_list_first <- cool_list %>%
-      lapply(first) %>%
-      unlist()
-    cool_list_last <- cool_list %>%
-      lapply(last) %>%
-      unlist()
-    all_records$first_timestamp[cool_list_match] <- cool_list_first
-    all_records$last_timestamp[cool_list_match] <- cool_list_last
-  }
-  invisible(all_records)
-}
-#' @noRd
-annotate_records2 <- function(data_list,
-                              records,
-                              summarize_data = TRUE,
-                              drop_blanks = FALSE) {
-  redcap_log <- data_list$redcap$log
-  redcap_log <- redcap_log[which(!is.na(redcap_log$username)), ]
-  redcap_log <- redcap_log[which(!is.na(redcap_log$record)), ]
-  if (!missing(records)) {
-    if (!is.null(records)) {
-      redcap_log <- redcap_log[which(redcap_log$record %in% records), ]
+    has_users <- is_something(data_list$redcap$users)
+    if(has_users){
+      users <- data_list$redcap$users
+      users <- users[,c("username","firstname","lastname","email")]
+      redcap_log <- merge(redcap_log, users,by="username",all.x = TRUE)
+    }
+    cool_list <- split(redcap_log, redcap_log$record)
+    if(length(cool_list)>1){
+      cool_df <- seq_len(length(cool_list)) %>% lapply(function(i){
+        df <- cool_list[[i]]
+        the_last <- first(df)
+        the_first <- last(df)
+        out_df <- data.frame(
+          record = the_first$record,
+          first_timestamp = the_first$timestamp,
+          last_timestamp = the_last$timestamp,
+          unique_users = length_unique(df$username)
+        )
+        if(has_users){
+          out_df$last_username <- the_last$username
+          out_df$last_user <- the_last$firstname %>% paste(the_last$lastname)
+        }
+        out_df
+      }) %>% bind_rows()
+      colnames(cool_df)[1] <- id_col
+      all_records <- merge(all_records, cool_df, by = id_col, all.x = TRUE)
     }
   }
-  # records -------------
-  # all_records <- unique(redcap_log$record)
-  summary_records <- data_list$summary$all_records
-  record_groups <- redcap_log %>% split(redcap_log$record)
-  summary_records <- summary_records[which(summary_records[[data_list$metadata$id_col]] %in% names(record_groups)), , drop = FALSE]
-  # users_log_rows <- users %>% lapply(function(user){which(redcap_log$username==user)})
-  # records_log_rows <- records %>% lapply(function(record){which(redcap_log$record==record)})
-  record_groups <- record_groups[match(summary_records[[data_list$metadata$id_col]], names(record_groups))]
-  summary_records$last_timestamp <- record_groups %>%
-    lapply(function(group) {
-      group$timestamp[[1]]
-    }) %>%
-    unlist()
-  summary_records$first_timestamp <- record_groups %>%
-    lapply(function(group) {
-      group$timestamp %>% last()
-    }) %>%
-    unlist()
-  summary_records$last_user <- record_groups %>%
-    lapply(function(group) {
-      group$username[[1]]
-    }) %>%
-    unlist()
-  user_rows <- match(summary_records$last_user,
-                     data_list$redcap$users$username)
-  summary_records$last_user_name <- paste(data_list$redcap$users$firstname[user_rows],
-                                          data_list$redcap$users$lastname[user_rows])
-  summary_records$unique_users_n <- record_groups %>%
-    lapply(function(group) {
-      length_unique(group$username)
-    }) %>%
-    unlist() %>%
-    as.integer()
-  summary_records
+  invisible(all_records)
 }
 #' @noRd
 clean_form <- function(form,
@@ -480,9 +446,7 @@ add_project_summary <- function(project,
   invisible(project)
 }
 #' @noRd
-.forbiden_summary_names <- c("first_timestamp",
-                             "last_timestamp",
-                             "last_api_call",
+.forbiden_summary_names <- c("last_api_call",
                              "all_records",
                              "was_saved")
 #' @noRd
@@ -1137,8 +1101,6 @@ extract_project_records <- function(data_list) {
     )
     all_records <- data.frame(
       record_id_col = record_id_col,
-      first_timestamp = NA,
-      last_timestamp = NA,
       last_api_call = NA,
       was_saved = FALSE,
       stringsAsFactors = FALSE

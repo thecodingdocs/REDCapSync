@@ -419,7 +419,9 @@ compare_project_details <- function(from, to) {
 load_test_project <- function(short_name = "TEST_CLASSIC",
                               with_data = FALSE) {
   assert_choice(short_name,.test_project_names)
-  project <- .blank_project
+  if(short_name == "TEST_CLASSIC"){
+    project <- TEST_CLASSIC
+  }
   invisible(project)
 }
 #' @rdname save-deleteproject

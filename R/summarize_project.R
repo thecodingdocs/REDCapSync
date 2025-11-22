@@ -354,7 +354,6 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #'
 #' @seealso
 #' \code{\link{save_project}} for saving the main database or summaries.
-#' @export
 add_project_summary <- function(project,
                                 summary_name,
                                 transformation_type = "default",
@@ -680,7 +679,6 @@ save_summary <- function(project, summary_name) {
 #' of records within the REDCap project. The function provides flexible options
 #' for cleaning, annotating, and including metadata, as well as controlling
 #' whether to include record summaries, user information, and logs.
-#' @export
 generate_project_summary <- function(project,
                                      summary_name,
                                      transformation_type = "default",
@@ -1069,7 +1067,6 @@ summarize_project <- function(project, hard_reset = FALSE) {
 #' `r lifecycle::badge("experimental")`
 #' @inheritParams save_project
 #' @return invisible return of project and a message
-#' @export
 clear_project_summaries <- function(project) {
   lifecycle::signal_stage("experimental", "clear_project_summaries()")
   assert_setup_project(project)

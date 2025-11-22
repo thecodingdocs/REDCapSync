@@ -11,6 +11,9 @@ A \code{project} R6 object.
 Main class for managing REDCap data, metadata, and sync operations.
 Users should construct objects using \code{\link[=setup_project]{setup_project()}}.
 }
+\seealso{
+\link{setup_project} for initializing the \code{project} object.'
+}
 \keyword{internal}
 \section{Methods}{
 \subsection{Public methods}{
@@ -95,11 +98,44 @@ Add a new summary entry
 \if{html}{\out{<a id="method-project-sync"></a>}}
 \if{latex}{\out{\hypertarget{method-project-sync}{}}}
 \subsection{Method \code{sync()}}{
-Add a new summary entry
+Updates the REDCap database (\code{project} object) by fetching the latest data
+from the REDCap server.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{project$sync()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{project$sync(
+  summarize = TRUE,
+  save_to_dir = TRUE,
+  hard_check = FALSE,
+  hard_reset = FALSE
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{summarize}}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
+
+\item{\code{save_to_dir}}{Logical (TRUE/FALSE). If TRUE, saves the updated data to
+the directory. Default is \code{TRUE}.}
+
+\item{\code{hard_check}}{Will check REDCap even if not due (see \code{sync_frequency}
+parameter from \code{setup_project()})}
+
+\item{\code{hard_reset}}{Logical that forces a fresh update if TRUE. Default is
+\code{FALSE}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+This function updates the REDCap database by fetching the latest data from
+the REDCap server. It supports various options such as forcing a fresh
+update, checking logs for a specified number of days, and retrieving files
+from REDCap. The function can also handle metadata-only updates and batch
+processing.
+}
+
+\subsection{Returns}{
+Messages for confirmation.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-project-save"></a>}}

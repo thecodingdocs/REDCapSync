@@ -26,11 +26,13 @@ reference:
   - title: Core Pipeline Functions (Basic)
     desc: For basic users use these core functions to maintain REDCap data pipelines. Setup or Load your project. Update from REDCap using what is already saved. Save the outputs to a directory.
     contents:
-      - get_projects
       - setup_project
-      - sync_project
+      - load_project
+      - load_test_project
+      - project
+      - project$sync
 
-  - title: Everything by Topic (Intermediate/Advanced)
+  - title: Other (Intermediate/Advanced)
     desc: Expands on functionality and breaksdown core feautures into more customizable parts
   - subtitle: Project Cache
     desc: REDCapSync cahces user-level project metadata (name, directory, links, last update and other details). Tokens and data are NOT stored here.
@@ -39,43 +41,13 @@ reference:
       - cache_clear
       - cache_path
       - cache_remove_project
-      - project
+      - sync_multiple
 
-  - subtitle: Tokens
-    desc: Tokens are required to use the REDCap API. Never share your tokens.
-    contents:
-      - view_project_token
-      - test_project_token
-  - subtitle: Setup/Load/Save/Delete project Object
-    desc: project objects are R lists meant to store all metadata and data for a single REDCap project. They utilize the REDCap log to only fetch recent updates. The can be "mirrored" to a local/cloud directory to maintain file pipelines and/or used for an exploratory data analysis shiny app via `RosyREDCap::run_RosyREDCap`.
-    contents:
-      - setup_project
-      - load_project
-      - save_project
-  - subtitle: Sync Function
-    desc: sync_project uses project object in the environment.
-    contents:
-      - sync_project
-      - sync_all
-  - subtitle: Project Summaries
-    desc: One of the core internal motivations for REDCapSync development was to have REDCap-project-agnositic functions that perform key transformations such as deidentify, derive fields, and transform (merge). However, these functions might not be utilized by the average user.
-    contents:
-      - add_project_summary
-      - generate_project_summary
-      - clear_project_summaries
-  - subtitle: Download from, Upload to, and Delete from REDCap
-    desc: Always use with caution! Package takes several steps to test and confirm uploads but ultimately the user is responsible for data changes. Remember REDCap always keeps a log of changes.
-    contents:
-      - raw_to_labelled_form
-      - labelled_to_raw_form
-      - upload_form_to_REDCap
   - subtitle: Other Helpers
     contents:
       - "%>%"
-      - get_project_url
-      - get_record_url
-      - get_redcap_report
-      - setup_r6_test
+      - raw_to_labelled_form
+      - labelled_to_raw_form
 
 articles:
   - title: Feautures by R User Level

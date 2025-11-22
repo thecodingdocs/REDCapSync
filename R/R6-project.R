@@ -36,9 +36,37 @@ project <- R6::R6Class(
     add_field = function(){
       message("Added field!")
     },
-    #' @description  Add a new summary entry
-    sync = function(){
-      private$project <- sync_project(private$project,summarize = FALSE)
+    #' @description
+    #' Updates the REDCap database (`project` object) by fetching the latest data
+    #' from the REDCap server.
+    #'
+    #' @details
+    #' This function updates the REDCap database by fetching the latest data from
+    #' the REDCap server. It supports various options such as forcing a fresh
+    #' update, checking logs for a specified number of days, and retrieving files
+    #' from REDCap. The function can also handle metadata-only updates and batch
+    #' processing.
+    #'
+    #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
+    #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
+    #' the directory. Default is `TRUE`.
+    #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
+    #' parameter from `setup_project()`)
+    #' @param hard_reset Logical that forces a fresh update if TRUE. Default is
+    #' `FALSE`.
+    #' @return Messages for confirmation.
+    #' @seealso
+    #' \link{setup_project} for initializing the `project` object.'
+    sync = function(summarize = TRUE,
+                    save_to_dir = TRUE,
+                    hard_check = FALSE,
+                    hard_reset = FALSE){
+      private$project <- sync_project(
+        project = private$project,
+        summarize = summarize,
+        save_to_dir = save_to_dir,
+        hard_check = hard_check,
+        hard_reset = hard_reset)
     },
     #' @description  Add a new summary entry
     save = function(){
@@ -94,7 +122,6 @@ project <- R6::R6Class(
 #'   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 #' )
 #' project <- load_project("TEST")
-#' @export
 setup_r6_test <- function(short_name,
                           dir_path,
                           redcap_uri,

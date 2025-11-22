@@ -40,6 +40,7 @@
 #' @importFrom redcapAPI REDCAP_METADATA_VALIDATION_TYPE
 #' @importFrom redcapAPI REDCAP_PROJECT_PURPOSE
 #' @importFrom redcapAPI REDCAP_SYSTEM_FIELDS
+#' @importFrom REDCapR sanitize_token
 #' @importFrom rlang current_call
 ## usethis namespace: end
 NULL

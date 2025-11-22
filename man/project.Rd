@@ -7,9 +7,9 @@
 A \code{project} R6 object.
 }
 \description{
-Project class (REDCapSync)
+\link[R6:R6Class]{R6} project object for \link{REDCapSync}
 Main class for managing REDCap data, metadata, and sync operations.
-Users should construct objects using \code{\link[=setup_project]{setup_project()}}
+Users should construct objects using \code{\link[=setup_project]{setup_project()}}.
 }
 \keyword{internal}
 \section{Methods}{
@@ -29,7 +29,9 @@ Users should construct objects using \code{\link[=setup_project]{setup_project()
 \if{html}{\out{<a id="method-project-new"></a>}}
 \if{latex}{\out{\hypertarget{method-project-new}{}}}
 \subsection{Method \code{new()}}{
-Creates a new instance of this project  \link[R6:R6Class]{R6} class.
+The end user will not see \code{project$new()}. This is handled internally.
+Users should construct objects using \code{\link[=setup_project]{setup_project()}}. The remain methods
+will be accessible to any user.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{project$new(short_name)}\if{html}{\out{</div>}}
 }

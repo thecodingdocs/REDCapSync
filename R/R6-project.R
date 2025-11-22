@@ -1,15 +1,17 @@
 #' @title Setup or Load REDCapSync Project
 #' @description
-#' Project class (REDCapSync)
+#' [R6][R6::R6Class] project object for [REDCapSync]
 #' Main class for managing REDCap data, metadata, and sync operations.
-#' Users should construct objects using [setup_project()]
+#' Users should construct objects using [setup_project()].
 #' @return A `project` R6 object.
 #' @keywords internal
 project <- R6::R6Class(
   "project",
   public = list(
     #' @description
-    #' Creates a new instance of this project  [R6][R6::R6Class] class.
+    #' The end user will not see `project$new()`. This is handled internally.
+    #' Users should construct objects using [setup_project()]. The remain methods
+    #' will be accessible to any user.
     #' @param short_name Character project identifier.
     initialize = function(short_name) {
       if(missing(short_name)){
@@ -48,99 +50,7 @@ project <- R6::R6Class(
     }
   ),
   private = list(
-    project = list(
-      short_name = NULL,
-      dir_path = NULL,
-      redcap = list(
-        token_name = NULL,
-        project_id = NULL,
-        project_title = NULL,
-        version = NULL,
-        project_info = NULL,
-        log = NULL,
-        users = NULL,
-        current_user = NULL
-      ),
-      metadata = list(
-        forms = NULL,
-        fields = NULL,
-        choices = NULL,
-        id_col = NULL,
-        form_key_cols = NULL,
-        arms = NULL,
-        events = NULL,
-        event_mapping = NULL,
-        missing_codes = NULL,
-        raw_structure_cols = NULL,
-        is_longitudinal = NULL,
-        has_arms = NULL,
-        has_multiple_arms = NULL,
-        has_arms_that_matter = NULL,
-        has_repeating_forms_or_events = NULL,
-        has_repeating_forms = NULL,
-        has_repeating_events = NULL
-      ),
-      data = NULL,
-      quality_checks = NULL,
-      transformation = list(
-        forms = NULL,
-        fields = NULL,
-        field_functions = NULL,
-        data_updates = NULL
-      ),
-      summary = list(),
-      internals = list(
-        last_test_connection_attempt = NULL,
-        last_test_connection_timezone = NULL,
-        last_test_connection_outcome = NULL,
-        last_metadata_update = NULL,
-        last_metadata_dir_save = NULL,
-        last_full_update = NULL,
-        last_data_update = NULL,
-        last_data_dir_save = NULL,
-        last_data_transformation = NULL,
-        last_summary = NULL,
-        last_quality_check = NULL,
-        last_clean = NULL,
-        last_directory_save = NULL,
-        last_sync = NULL,
-        labelled = NULL,
-        timezone = NULL,
-        get_files = NULL,
-        get_file_repository = NULL,
-        original_file_names = NULL,
-        days_of_log = NULL,
-        entire_log = NULL,
-        data_extract_merged = NULL,
-        project_type = "redcap",
-        is_blank = TRUE,
-        is_test = FALSE,
-        ever_connected = FALSE,
-        is_clean = FALSE,
-        use_csv = FALSE
-      ),
-      links = list(
-        redcap_uri = NULL,
-        redcap_base = NULL,
-        redcap_home = NULL,
-        redcap_record_home = NULL,
-        # redcap_record_subpage = NULL,
-        redcap_records_dashboard = NULL,
-        redcap_api = NULL,
-        redcap_api_playground = NULL,
-        redcap_setup = NULL,
-        redcap_user_rights = NULL,
-        redcap_logging = NULL,
-        redcap_designer = NULL,
-        redcap_codebook = NULL,
-        redcap_dictionary = NULL,
-        redcap_data_quality = NULL,
-        redcap_identifiers = NULL,
-        pkgdown = "https://thecodingdocs.github.io/REDCapSync/",
-        github = "https://github.com/thecodingdocs/REDCapSync/",
-        thecodingdocs = "https://www.thecodingdocs.com/"
-      )
-    ),
+    project = NULL,
     load = function(short_name) {
       private$project <- load_project(short_name)
     }
@@ -149,7 +59,8 @@ project <- R6::R6Class(
 )
 #' @title Setup or Load REDCapSync Project
 #' @description
-#' Setup or Load the `project` object for pipeline.
+#' Setup or Load the `project` object for pipeline. Once it is setup see
+#' [project] for the methods
 #'
 #' @details
 #' This function sets up the `project` object by storing the REDCap API token

@@ -124,7 +124,8 @@ storage. Default is \code{FALSE}.}
 REDCapSync \code{project} list object.
 }
 \description{
-Setup or Load the \code{project} object for pipeline.
+Setup or Load the \code{project} object for pipeline. Once it is setup see
+\link{project} for the methods
 }
 \details{
 This function sets up the \code{project} object by storing the REDCap API token

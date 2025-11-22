@@ -14,6 +14,8 @@ already saved. Save the outputs to a directory.
   : Setup or Load REDCapSync Project
 - [`sync_project()`](https://thecodingdocs.github.io/REDCapSync/reference/sync_project.md)
   : Synchronize REDCap Data
+- [`REDCapSyncProject`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSyncProject.md)
+  : Setup or Load REDCapSync Project
 
 ## Everything by Topic (Intermediate/Advanced)
 

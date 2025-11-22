@@ -134,9 +134,45 @@ test_that("generate_project_summary works!", {
   expect_false("forms" %in% names(project_summary))
   expect_false("fields" %in% names(project_summary))
   expect_false("choices" %in% names(project_summary))
+  project_summary <- project %>%
+    generate_project_summary(
+      summary_name = "REDCapSync",
+      exclude_identifiers = FALSE
+    )
+  fields <- project$metadata$fields
+  fields$field_name[which(fields$identifier=="y")]
+  colnames(project_summary$merged)
 })
 # merge_non_repeating ( Internal )
 test_that("merge_non_repeating works!", {
+  project <- TEST_CLASSIC
+  expect_contains(names(project$data),project$metadata$forms$form_name)
+  id_col <- project$metadata$id_col
+  text_field_names <- colnames(project$data$text) %>% setdiff(id_col)
+  other_field_names <- colnames(project$data$other)%>% setdiff(id_col)
+  text_field_names2 <- project$metadata$fields %>%
+    get_match(match_field = "form_name",
+              match_text = "text",
+              return_field = "field_name") %>%
+    setdiff(id_col)
+  other_field_names2 <- project$metadata$fields %>%
+    get_match(match_field = "form_name",
+              match_text = "other",
+              return_field = "field_name") %>%
+    setdiff(id_col)
+  # expect_identical(text_field_names,text_field_names2)
+  # expect_identical(other_field_names,other_field_names2)
+  merge_form_name <- "merged_form"
+  merged <- merge_non_repeating(data_list = project,
+                      merge_form_name = merge_form_name,
+                      merge_to_rep = TRUE) #NA for classic)
+  expect_equal(merge_form_name,names(merged$data))
+  expect_equal(nrow(merged$data[[merge_form_name]]),nrow(project$data$text))
+  expect_equal(nrow(merged$data[[merge_form_name]]),nrow(project$data$other))
+  expected_col_names <-  c(id_col, text_field_names, other_field_names)
+  expected_col_length <- expected_col_names %>% length_unique()
+  expect_equal(ncol(merged$data[[merge_form_name]]),expected_col_length)
+  expect_equal(names(merged$data[[merge_form_name]]),expected_col_names)
 })
 # summarize_project ( Internal )
 test_that("summarize_project works!", {

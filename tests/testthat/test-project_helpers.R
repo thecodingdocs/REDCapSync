@@ -106,12 +106,6 @@ test_that("get_record_url works", {
   e$called_url <- NULL
   # get_record_url(project,page = "2", text_only = TRUE)
 })
-# test_that("deidentify_data_list works", {
-#   project <- TEST_CLASSIC
-#   project_summary <- project %>% generate_project_summary()
-#   merged <- project_summary$merged %>% all_character_cols()
-#   merged_deidentified <-
-# })
 # clean_data_list ( Internal )
 # get_key_col_list ( Internal )
 # normalize_redcap ( Internal )

@@ -92,3 +92,7 @@ split_choices <- function(x) {
 }
 #' @noRd
 .field_types_not_in_data <- c("descriptive", "checkbox")
+#' @noRd
+get_match<-function(df,return_field,match_field,match_text){
+  df[[return_field]][which(df[[match_field]] %in% match_text)]
+}

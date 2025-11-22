@@ -72,6 +72,7 @@ reference:
       - get_project_url
       - get_record_url
       - get_redcap_report
+      - setup_r6_test
 
 articles:
   - title: Feautures by R User Level

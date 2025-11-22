@@ -1,6 +1,8 @@
 # Setup or Load REDCapSync Project
 
-Setup or Load the `project` object for pipeline.
+Setup or Load the `project` object for pipeline. Once it is setup see
+[project](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
+for the methods
 
 ## Usage
 

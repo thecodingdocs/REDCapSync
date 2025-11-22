@@ -1,8 +1,10 @@
 # Setup or Load REDCapSync Project
 
-Project class (REDCapSync) Main class for managing REDCap data,
-metadata, and sync operations. Users should construct objects using
-[`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+[R6](https://r6.r-lib.org/reference/R6Class.html) project object for
+[REDCapSync](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync-package.md)
+Main class for managing REDCap data, metadata, and sync operations.
+Users should construct objects using
+[`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 
 ## Value
 
@@ -32,8 +34,10 @@ A `project` R6 object.
 
 ### Method `new()`
 
-Creates a new instance of this project
-[R6](https://r6.r-lib.org/reference/R6Class.html) class.
+The end user will not see `project$new()`. This is handled internally.
+Users should construct objects using
+[`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
+The remain methods will be accessible to any user.
 
 #### Usage
 

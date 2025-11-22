@@ -1,22 +1,13 @@
 # Setup or Load REDCapSync Project
 
-Project class (REDCapSync)
-
-Main class for managing REDCap data, metadata, and sync operations.
-
-Users should construct objects using
+Project class (REDCapSync) Main class for managing REDCap data,
+metadata, and sync operations. Users should construct objects using
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md),
 not using `REDCapSyncProject$new()` directly.
 
 ## Value
 
 A `REDCapSyncProject` R6 object.
-
-## Private Methods
-
-- `load(short_name)`:
-
-  Load project internals.
 
 ## Methods
 
@@ -53,11 +44,7 @@ Creates a new instance of this REDCapSyncProject
 
 - `short_name`:
 
-  Character. The project short identifier.
-
-- `description`:
-
-  short_name Character project identifier.
+  Character project identifier.
 
 ------------------------------------------------------------------------
 
@@ -93,7 +80,7 @@ Add a new summary entry
 
 - `short_name`:
 
-  Character. The project short identifier.
+  Character project identifier.
 
 ------------------------------------------------------------------------
 

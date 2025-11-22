@@ -1,27 +1,17 @@
 #' @title Setup or Load REDCapSync Project
 #' @description
 #' Project class (REDCapSync)
-#'
 #' Main class for managing REDCap data, metadata, and sync operations.
-#'
 #' Users should construct objects using [setup_project()], not using
 #' `REDCapSyncProject$new()` directly.
-#'
-#' @param short_name Character. The project short identifier.
-#' @section Private Methods:
-#'
-#' \describe{
-#'   \item{\code{load(short_name)}}{Load project internals.}
-#' }
 #' @return A `REDCapSyncProject` R6 object.
-#'
-#' @export
+#' @keywords internal
 REDCapSyncProject <- R6::R6Class(
   "REDCapSyncProject",
   public = list(
     #' @description
     #' Creates a new instance of this REDCapSyncProject  [R6][R6::R6Class] class.
-    #' @param description short_name Character project identifier.
+    #' @param short_name Character project identifier.
     initialize = function(short_name) {
       if(missing(short_name)){
       }
@@ -37,6 +27,7 @@ REDCapSyncProject <- R6::R6Class(
       add_project_summary()
     },
     #' @description  Add a new summary entry
+    #' @param short_name Character project identifier.
     generate_summary = function(short_name){
       private %>% generate_summary(short_name)
     },

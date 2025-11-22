@@ -8,20 +8,11 @@ A \code{REDCapSyncProject} R6 object.
 }
 \description{
 Project class (REDCapSync)
-
 Main class for managing REDCap data, metadata, and sync operations.
-
 Users should construct objects using \code{\link[=setup_project]{setup_project()}}, not using
 \code{REDCapSyncProject$new()} directly.
 }
-\section{Private Methods}{
-
-
-\describe{
-\item{\code{load(short_name)}}{Load project internals.}
-}
-}
-
+\keyword{internal}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -47,9 +38,7 @@ Creates a new instance of this REDCapSyncProject  \link[R6:R6Class]{R6} class.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{short_name}}{Character. The project short identifier.}
-
-\item{\code{description}}{short_name Character project identifier.}
+\item{\code{short_name}}{Character project identifier.}
 }
 \if{html}{\out{</div>}}
 }
@@ -86,7 +75,7 @@ Add a new summary entry
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{short_name}}{Character. The project short identifier.}
+\item{\code{short_name}}{Character project identifier.}
 }
 \if{html}{\out{</div>}}
 }

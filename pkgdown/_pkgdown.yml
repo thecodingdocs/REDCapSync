@@ -30,7 +30,6 @@ reference:
       - load_project
       - load_test_project
       - project
-      - project$sync
 
   - title: Other (Intermediate/Advanced)
     desc: Expands on functionality and breaksdown core feautures into more customizable parts

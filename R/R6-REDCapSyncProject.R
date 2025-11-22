@@ -1,32 +1,60 @@
+#' @title Setup or Load REDCapSync Project
+#' @description
+#' Project class (REDCapSync)
+#'
+#' Main class for managing REDCap data, metadata, and sync operations.
+#'
+#' Users should construct objects using [setup_project()], not using
+#' `REDCapSyncProject$new()` directly.
+#'
+#' @param short_name Character. The project short identifier.
+#' @section Private Methods:
+#'
+#' \describe{
+#'   \item{\code{load(short_name)}}{Load project internals.}
+#' }
+#' @return A `REDCapSyncProject` R6 object.
+#'
+#' @export
 REDCapSyncProject <- R6::R6Class(
   "REDCapSyncProject",
   public = list(
+    #' @description
+    #' Creates a new instance of this REDCapSyncProject  [R6][R6::R6Class] class.
+    #' @param description short_name Character project identifier.
     initialize = function(short_name) {
       if(missing(short_name)){
       }
       private$load(short_name)
     },
+    #' @description Print project metadata
     info = function(){
       message("short_name: ",private$project$short_name)
       message("directory: ",private$project$dir_path)
     },
+    #' @description  Add a new summary entry
     add_summary = function(){
       add_project_summary()
     },
+    #' @description  Add a new summary entry
     generate_summary = function(short_name){
       private %>% generate_summary(short_name)
     },
+    #' @description  Add a new summary entry
     add_field = function(){
       message("Added field!")
     },
+    #' @description  Add a new summary entry
     sync = function(){
       private$project <- sync_project(private$project,summarize = FALSE)
     },
+    #' @description  Add a new summary entry
     save = function(){
       save_project(private$project)
     },
+    #' @description  returns internal list
     use = function(){
-      invisible(private)
+      invisible(private$project)
     }
   ),
   private = list(
@@ -129,7 +157,6 @@ REDCapSyncProject <- R6::R6Class(
   ),
   cloneable = FALSE
 )
-#' @title Setup or Load REDCapSync Project
 #' @title Setup or Load REDCapSync Project
 #' @description
 #' Setup or Load the `project` object for pipeline.

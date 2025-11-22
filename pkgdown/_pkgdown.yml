@@ -29,6 +29,7 @@ reference:
       - get_projects
       - setup_project
       - sync_project
+      - REDCapSyncProject
   - title: Everything by Topic (Intermediate/Advanced)
     desc: Expands on functionality and breaksdown core feautures into more customizable parts
   - subtitle: Project Cache

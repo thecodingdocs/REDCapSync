@@ -240,7 +240,11 @@ sync_project <- function(project,
 #' @details
 #' syncs multiple projects as defined. Will not load projects
 #'
-#' @inheritParams project
+#' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
+#' @param hard_check Will check REDCap even if not due (see `sync_frequency`
+#' parameter from `setup_project()`)
+#' @param hard_reset Logical that forces a fresh update if TRUE. Default is
+#' `FALSE`.
 #' @param short_names character vector of project short_names previously setup.
 #' If = NULL, will get all from `get_projects()`
 #' @return invisible
@@ -250,8 +254,7 @@ sync_project <- function(project,
 sync_multiple <- function(short_names = NULL,
                           summarize = TRUE,
                           hard_check = FALSE,
-                          hard_reset = FALSE,
-                          silent = FALSE) {
+                          hard_reset = FALSE) {
   if (is.null(short_names)) {
     projects <- get_projects()
     short_names <- projects$short_name
@@ -261,6 +264,7 @@ sync_multiple <- function(short_names = NULL,
   }
   for (short_name in short_names) {
     load_project(short_name)$sync(
+      save_to_dir = TRUE,
       summarize = summarize,
       hard_check = hard_check,
       hard_reset = hard_reset

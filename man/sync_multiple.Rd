@@ -8,13 +8,20 @@ sync_multiple(
   short_names = NULL,
   summarize = TRUE,
   hard_check = FALSE,
-  hard_reset = FALSE,
-  silent = FALSE
+  hard_reset = FALSE
 )
 }
 \arguments{
 \item{short_names}{character vector of project short_names previously setup.
 If = NULL, will get all from \code{get_projects()}}
+
+\item{summarize}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
+
+\item{hard_check}{Will check REDCap even if not due (see \code{sync_frequency}
+parameter from \code{setup_project()})}
+
+\item{hard_reset}{Logical that forces a fresh update if TRUE. Default is
+\code{FALSE}.}
 }
 \value{
 invisible

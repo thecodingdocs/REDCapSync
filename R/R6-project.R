@@ -5,7 +5,7 @@
 #' Users should construct objects using [setup_project()].
 #' @return A `project` R6 object.
 #' @keywords internal
-project <- R6::R6Class(
+project <- R6Class(
   "project",
   public = list(
     #' @description

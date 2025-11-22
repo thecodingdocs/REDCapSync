@@ -42,5 +42,6 @@
 #' @importFrom redcapAPI REDCAP_SYSTEM_FIELDS
 #' @importFrom REDCapR sanitize_token
 #' @importFrom rlang current_call
+#' @importFrom R6 R6Class
 ## usethis namespace: end
 NULL

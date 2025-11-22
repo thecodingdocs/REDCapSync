@@ -105,3 +105,5 @@ Remember REDCap always keeps a log of changes.
   : Open Links to REDCap Pages
 - [`get_redcap_report()`](https://thecodingdocs.github.io/REDCapSync/reference/get_REDCap_report.md)
   : Get REDCap Report
+- [`setup_r6_test()`](https://thecodingdocs.github.io/REDCapSync/reference/setup_r6_test.md)
+  : Setup or Load REDCapSync Project

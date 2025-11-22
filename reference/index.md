@@ -14,8 +14,6 @@ already saved. Save the outputs to a directory.
   : Setup or Load REDCapSync Project
 - [`sync_project()`](https://thecodingdocs.github.io/REDCapSync/reference/sync_project.md)
   : Synchronize REDCap Data
-- [`REDCapSyncProject`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSyncProject.md)
-  : Setup or Load REDCapSync Project
 
 ## Everything by Topic (Intermediate/Advanced)
 
@@ -35,6 +33,8 @@ last update and other details). Tokens and data are NOT stored here.
   : Get your Get Cache Path
 - [`cache_remove_project()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_remove_project.md)
   : Remove project from cache
+- [`project`](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
+  : Setup or Load REDCapSync Project
 
 ### Tokens
 

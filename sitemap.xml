@@ -20,7 +20,6 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/news/index.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/Links.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync-package.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/reference/REDCapSyncProject.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/add_project_summary.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/cache_clear.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/cache_path.html</loc></url>
@@ -31,6 +30,7 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/get_projects.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/index.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/labelled_to_raw_form.html</loc></url>
+<url><loc>https://thecodingdocs.github.io/REDCapSync/reference/project.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/raw_to_labelled_form.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/reexports.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/save-deleteproject.html</loc></url>

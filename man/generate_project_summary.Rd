@@ -130,3 +130,4 @@ of records within the REDCap project. The function provides flexible options
 for cleaning, annotating, and including metadata, as well as controlling
 whether to include record summaries, user information, and logs.
 }
+\keyword{internal}

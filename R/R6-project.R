@@ -122,6 +122,7 @@ project <- R6Class(
 #'   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 #' )
 #' project <- load_project("TEST")
+#' @keywords internal
 setup_r6_test <- function(short_name,
                           dir_path,
                           redcap_uri,

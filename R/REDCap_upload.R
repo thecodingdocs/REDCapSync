@@ -10,6 +10,7 @@
 #' data pass your data to `labelled_to_raw_form(form,project)` first.
 #' @param batch_size numeric of how big the REDCap batch upload is. Default 500.
 #' @return messages
+#' @keywords internal
 upload_form_to_REDCap <- function(to_be_uploaded, project, batch_size = 500) {
   REDCapR::redcap_write(
     ds_to_write = to_be_uploaded %>% all_character_cols(),

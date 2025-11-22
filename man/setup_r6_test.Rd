@@ -161,3 +161,4 @@ project <- load_project("TEST")
 \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from
 the directory cache.
 }
+\keyword{internal}

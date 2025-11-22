@@ -36,5 +36,4 @@ Other Token Functions:
 \code{\link{view_project_token}()}
 }
 \concept{Token Functions}
-\keyword{Functions}
-\keyword{Token}
+\keyword{internal}

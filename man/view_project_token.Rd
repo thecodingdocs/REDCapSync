@@ -32,5 +32,4 @@ Other Token Functions:
 \code{\link{test_project_token}()}
 }
 \concept{Token Functions}
-\keyword{Functions}
-\keyword{Token}
+\keyword{internal}

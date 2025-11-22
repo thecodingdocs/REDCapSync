@@ -441,6 +441,7 @@ load_test_project <- function(short_name = "TEST_CLASSIC",
 #' user must delete any other files manually.
 #' @return Message
 #' @family project object
+#' @keywords internal
 save_project <- function(project, silent = FALSE) {
   assert_setup_project(project)
   # assert_setup_project(project)

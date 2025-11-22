@@ -32,3 +32,4 @@ Other project object:
 \code{\link{setup_project}()}
 }
 \concept{project object}
+\keyword{internal}

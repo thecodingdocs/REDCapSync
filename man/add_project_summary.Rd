@@ -153,3 +153,4 @@ fields. The resulting summary is saved to a file for future use.
 \seealso{
 \code{\link{save_project}} for saving the main database or summaries.
 }
+\keyword{internal}

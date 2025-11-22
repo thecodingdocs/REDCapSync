@@ -338,7 +338,7 @@ get_min_dates <- function(data_list) {
 #' "setup", "logging", "designer", "dictionary", "data_quality", "identifiers"
 #' @param open_browser logical for launching the link in internet browser
 #' @return internet link
-#' @family Link Functions
+#' @keywords internal
 get_project_url <- function(project,
                             link_type = "home",
                             open_browser = TRUE) {
@@ -360,7 +360,7 @@ get_project_url <- function(project,
 #' @param instance REDCap instance if it's a repeating instrument
 #' @param open_browser logical for launching the link in internet browser
 #' @rdname Links
-#' @family Link Functions
+#' @keywords internal
 get_record_url <- function(project,
                            record,
                            page,

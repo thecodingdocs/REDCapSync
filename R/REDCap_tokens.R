@@ -13,7 +13,7 @@
 #' @inheritParams save_project
 #' @return Invisible. Prints a message displaying the stored token.
 #' @family Token Functions
-#' @keywords Token Functions
+#' @keywords internal
 view_project_token <- function(project) {
   project <- assert_blank_project(project)
   token <- get_project_token(project, silent = FALSE)
@@ -40,7 +40,7 @@ view_project_token <- function(project) {
 #' \href{../articles/Tokens.html}{pkgdown article on tokens}
 #' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{pkgdown article on tokens}
 #' @family Token Functions
-#' @keywords Token Functions
+#' @keywords internal
 test_project_token <- function(project, launch_browser = TRUE) {
   assert_setup_project(project)
   rcon <- project_rcon(project)

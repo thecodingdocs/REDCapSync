@@ -2,15 +2,14 @@
 #' @description
 #' Project class (REDCapSync)
 #' Main class for managing REDCap data, metadata, and sync operations.
-#' Users should construct objects using [setup_project()], not using
-#' `REDCapSyncProject$new()` directly.
-#' @return A `REDCapSyncProject` R6 object.
+#' Users should construct objects using [setup_project()]
+#' @return A `project` R6 object.
 #' @keywords internal
-REDCapSyncProject <- R6::R6Class(
-  "REDCapSyncProject",
+project <- R6::R6Class(
+  "project",
   public = list(
     #' @description
-    #' Creates a new instance of this REDCapSyncProject  [R6][R6::R6Class] class.
+    #' Creates a new instance of this project  [R6][R6::R6Class] class.
     #' @param short_name Character project identifier.
     initialize = function(short_name) {
       if(missing(short_name)){
@@ -212,5 +211,5 @@ setup_r6_test <- function(short_name,
                           use_csv = FALSE,
                           silent = FALSE){
   projects <- get_projects()
-  REDCapSyncProject$new(short_name)
+  project$new(short_name)
 }

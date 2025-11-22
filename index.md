@@ -11,9 +11,7 @@ produce a standardized R object for any REDCap project.
 [REDCapSync](https://github.com/thecodingdocs/REDCapSync) streamlines
 comprehensive extraction with two key functions:
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-and
-[`sync_project()`](https://thecodingdocs.github.io/REDCapSync/reference/sync_project.md).
-When a sync is performed
+and `sync_project()`. When a sync is performed
 [REDCapSync](https://github.com/thecodingdocs/REDCapSync) uses the
 REDCap log to only update data that has changed since the last API call.
 The final project-agnostic object facilitates further pipelining for

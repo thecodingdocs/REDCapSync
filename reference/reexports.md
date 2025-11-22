@@ -6,7 +6,3 @@ to see their documentation.
 - magrittr:
 
   `%>%`
-
-- REDCapR:
-
-  [`sanitize_token`](https://ouhscbbmc.github.io/REDCapR/reference/sanitize_token.html)

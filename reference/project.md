@@ -10,6 +10,11 @@ Users should construct objects using
 
 A `project` R6 object.
 
+## See also
+
+[setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+for initializing the `project` object.'
+
 ## Methods
 
 ### Public methods
@@ -99,11 +104,49 @@ Add a new summary entry
 
 ### Method `sync()`
 
-Add a new summary entry
+Updates the REDCap database (`project` object) by fetching the latest
+data from the REDCap server.
 
 #### Usage
 
-    project$sync()
+    project$sync(
+      summarize = TRUE,
+      save_to_dir = TRUE,
+      hard_check = FALSE,
+      hard_reset = FALSE
+    )
+
+#### Arguments
+
+- `summarize`:
+
+  Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
+
+- `save_to_dir`:
+
+  Logical (TRUE/FALSE). If TRUE, saves the updated data to the
+  directory. Default is `TRUE`.
+
+- `hard_check`:
+
+  Will check REDCap even if not due (see `sync_frequency` parameter from
+  [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md))
+
+- `hard_reset`:
+
+  Logical that forces a fresh update if TRUE. Default is `FALSE`.
+
+#### Details
+
+This function updates the REDCap database by fetching the latest data
+from the REDCap server. It supports various options such as forcing a
+fresh update, checking logs for a specified number of days, and
+retrieving files from REDCap. The function can also handle metadata-only
+updates and batch processing.
+
+#### Returns
+
+Messages for confirmation.
 
 ------------------------------------------------------------------------
 

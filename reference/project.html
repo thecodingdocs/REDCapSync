@@ -17,7 +17,7 @@ Users should construct objects using setup_project()."><meta property="og:image"
 
     <a class="navbar-brand me-2" href="../index.html">REDCapSync</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9018</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9019</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,6 +67,10 @@ Users should construct objects using <code><a href="setup-load.html">setup_proje
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>project</code> R6 object.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><a href="setup-load.html">setup_project</a> for initializing the <code>project</code> object.'</p></div>
     </div>
     <div class="section level2">
     <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a></h2>
@@ -142,11 +146,53 @@ will be accessible to any user.</p><div class="section">
 
 </div><p></p><hr><a id="method-project-sync"></a><div class="section">
 <h3 id="method-sync-">Method <code>sync()</code><a class="anchor" aria-label="anchor" href="#method-sync-"></a></h3>
-<p>Add a new summary entry</p><div class="section">
+<p>Updates the REDCap database (<code>project</code> object) by fetching the latest data
+from the REDCap server.</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span></span>
+<span>  summarize <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  save_to_dir <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  hard_check <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  hard_reset <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+<div class="section">
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>summarize</code></dt>
+<dd><p>Logical (TRUE/FALSE). If TRUE, summarizes data to directory.</p></dd>
+
+
+<dt><code>save_to_dir</code></dt>
+<dd><p>Logical (TRUE/FALSE). If TRUE, saves the updated data to
+the directory. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>hard_check</code></dt>
+<dd><p>Will check REDCap even if not due (see <code>sync_frequency</code>
+parameter from <code><a href="setup-load.html">setup_project()</a></code>)</p></dd>
+
+
+<dt><code>hard_reset</code></dt>
+<dd><p>Logical that forces a fresh update if TRUE. Default is
+<code>FALSE</code>.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h4>
+<p>This function updates the REDCap database by fetching the latest data from
+the REDCap server. It supports various options such as forcing a fresh
+update, checking logs for a specified number of days, and retrieving files
+from REDCap. The function can also handle metadata-only updates and batch
+processing.</p>
+</div>
+
+<div class="section">
+<h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
+<p>Messages for confirmation.</p>
+</div>
 
 </div><p></p><hr><a id="method-project-save"></a><div class="section">
 <h3 id="method-save-">Method <code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code><a class="anchor" aria-label="anchor" href="#method-save-"></a></h3>

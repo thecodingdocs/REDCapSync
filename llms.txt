@@ -11,9 +11,7 @@ produce a standardized R object for any REDCap project.
 [REDCapSync](https://github.com/thecodingdocs/REDCapSync) streamlines
 comprehensive extraction with two key functions:
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-and
-[`sync_project()`](https://thecodingdocs.github.io/REDCapSync/reference/sync_project.md).
-When a sync is performed
+and `sync_project()`. When a sync is performed
 [REDCapSync](https://github.com/thecodingdocs/REDCapSync) uses the
 REDCap log to only update data that has changed since the last API call.
 The final project-agnostic object facilitates further pipelining for
@@ -135,16 +133,14 @@ For basic users use these core functions to maintain REDCap data
 pipelines. Setup or Load your project. Update from REDCap using what is
 already saved. Save the outputs to a directory.
 
-- [`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)
-  : Get your REDCap projects used by REDCapSync
 - [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   [`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   [`load_test_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   : Setup or Load REDCapSync Project
-- [`sync_project()`](https://thecodingdocs.github.io/REDCapSync/reference/sync_project.md)
-  : Synchronize REDCap Data
+- [`project`](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
+  : Setup or Load REDCapSync Project
 
-## Everything by Topic (Intermediate/Advanced)
+## Other (Intermediate/Advanced)
 
 Expands on functionality and breaksdown core feautures into more
 customizable parts
@@ -162,82 +158,18 @@ last update and other details). Tokens and data are NOT stored here.
   : Get your Get Cache Path
 - [`cache_remove_project()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_remove_project.md)
   : Remove project from cache
-- [`project`](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
-  : Setup or Load REDCapSync Project
-
-### Tokens
-
-Tokens are required to use the REDCap API. Never share your tokens.
-
-- [`view_project_token()`](https://thecodingdocs.github.io/REDCapSync/reference/view_project_token.md)
-  : View the REDCap API Token Stored in the Session
-- [`test_project_token()`](https://thecodingdocs.github.io/REDCapSync/reference/test_project_token.md)
-  : Test REDCap API Token linked to a project Object
-
-### Setup/Load/Save/Delete project Object
-
-project objects are R lists meant to store all metadata and data for a
-single REDCap project. They utilize the REDCap log to only fetch recent
-updates. The can be “mirrored” to a local/cloud directory to maintain
-file pipelines and/or used for an exploratory data analysis shiny app
-via `RosyREDCap::run_RosyREDCap`.
-
-- [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-  [`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-  [`load_test_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-  : Setup or Load REDCapSync Project
-- [`save_project()`](https://thecodingdocs.github.io/REDCapSync/reference/save-deleteproject.md)
-  : Save or Delete project file from the directory
-
-### Sync Function
-
-sync_project uses project object in the environment.
-
-- [`sync_project()`](https://thecodingdocs.github.io/REDCapSync/reference/sync_project.md)
+- [`sync_multiple()`](https://thecodingdocs.github.io/REDCapSync/reference/sync_multiple.md)
   : Synchronize REDCap Data
-- [`sync_all()`](https://thecodingdocs.github.io/REDCapSync/reference/sync_all.md)
-  : Synchronize REDCap Data
-
-### Project Summaries
-
-One of the core internal motivations for REDCapSync development was to
-have REDCap-project-agnositic functions that perform key transformations
-such as deidentify, derive fields, and transform (merge). However, these
-functions might not be utilized by the average user.
-
-- [`add_project_summary()`](https://thecodingdocs.github.io/REDCapSync/reference/add_project_summary.md)
-  **\[experimental\]** : Add a Subset to a REDCap Database
-- [`generate_project_summary()`](https://thecodingdocs.github.io/REDCapSync/reference/generate_project_summary.md)
-  **\[experimental\]** : Generate a Summary from a Subset Name
-- [`clear_project_summaries()`](https://thecodingdocs.github.io/REDCapSync/reference/clear_project_summaries.md)
-  **\[experimental\]** : clear_project_summaries
-
-### Download from, Upload to, and Delete from REDCap
-
-Always use with caution! Package takes several steps to test and confirm
-uploads but ultimately the user is responsible for data changes.
-Remember REDCap always keeps a log of changes.
-
-- [`raw_to_labelled_form()`](https://thecodingdocs.github.io/REDCapSync/reference/raw_to_labelled_form.md)
-  : Raw to Labelled REDCap forms
-- [`labelled_to_raw_form()`](https://thecodingdocs.github.io/REDCapSync/reference/labelled_to_raw_form.md)
-  : Clean to Raw REDCap forms
-- [`upload_form_to_REDCap()`](https://thecodingdocs.github.io/REDCapSync/reference/upload_form_to_REDCap.md)
-  : Upload to REDCap
 
 ### Other Helpers
 
 - [`reexports`](https://thecodingdocs.github.io/REDCapSync/reference/reexports.md)
   [`%>%`](https://thecodingdocs.github.io/REDCapSync/reference/reexports.md)
-  [`sanitize_token`](https://thecodingdocs.github.io/REDCapSync/reference/reexports.md)
   : Objects exported from other packages
-- [`get_project_url()`](https://thecodingdocs.github.io/REDCapSync/reference/Links.md)
-  [`get_record_url()`](https://thecodingdocs.github.io/REDCapSync/reference/Links.md)
-  : Open Links to REDCap Pages
-- [`get_redcap_report()`](https://thecodingdocs.github.io/REDCapSync/reference/get_REDCap_report.md)
-  : Get REDCap Report
-- [`setup_r6_test()`](https://thecodingdocs.github.io/REDCapSync/reference/setup_r6_test.md)
-  : Setup or Load REDCapSync Project
+- [`raw_to_labelled_form()`](https://thecodingdocs.github.io/REDCapSync/reference/raw_to_labelled_form.md)
+  : Raw to Labelled REDCap forms
+- [`labelled_to_raw_form()`](https://thecodingdocs.github.io/REDCapSync/reference/labelled_to_raw_form.md)
+  : Clean to Raw REDCap forms
 
 # Articles
 

@@ -46,6 +46,7 @@ Imports:
     utils
 Suggests: 
     knitr,
+    listviewer,
     mockery,
     rmarkdown,
     testthat (>= 3.0.0),

@@ -31,8 +31,7 @@ setup_project(
   add_default_fields = FALSE,
   add_default_transformation = FALSE,
   add_default_summaries = TRUE,
-  use_csv = FALSE,
-  silent = FALSE
+  use_csv = FALSE
 )
 
 load_project(short_name)
@@ -123,8 +122,6 @@ will add default summaries}
 
 \item{use_csv}{Logical (TRUE/FALSE). If TRUE, uses CSV files for data
 storage. Default is \code{FALSE}.}
-
-\item{silent}{Logical (TRUE/FALSE). For messages.}
 
 \item{with_data}{Logical (TRUE/FALSE). If TRUE, loads the test project
 object with data included.}

@@ -39,7 +39,7 @@ test_that("setup_project creates a valid project object and valid directory", {
     dir_path = test_dir,
     redcap_uri = redcap_uri,
     hard_reset = TRUE
-  )
+  )$use() # change to R6 later
   expect_no_error(assert_dir(dir_path = test_dir))
   expect_no_error(assert_blank_project(project = project))
   # expect_no_error(get_dir(project))
@@ -82,7 +82,7 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
     short_name = short_name,
     dir_path = test_dir,
     redcap_uri = redcap_uri
-  )
+  )$use() # change to R6 later
   save_project(project)
   expect_false(file.exists(file.path(project$dir_path, "R_objects", paste0(short_name, "_REDCapSync.RData"))))
   project$internals$ever_connected <- TRUE
@@ -101,9 +101,10 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   expect_equal(projects$short_name, short_name)
   expect_equal(projects$redcap_uri, redcap_uri)
   expect_equal(projects$dir_path, test_dir)
-  # loading tests
-  expect_error(load_project("a_project")) # wont load unknown project
-  project2 <- load_project(short_name = short_name) # loads what we saved
+  # loading tests wont load unknown project
+  expect_error(load_project("a_project"))
+  # loads what we saved
+  project2 <- load_project(short_name = short_name)$use() # change to R6 later
   # project$internals$last_directory_save %>% attr("tzone")
   # project2$internals$last_directory_save %>% attr("tzone")
   expect_identical(project, project2)

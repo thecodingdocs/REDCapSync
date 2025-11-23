@@ -234,11 +234,13 @@ sync_project <- function(project,
 }
 #' @title Synchronize REDCap Data
 #' @description
-#' Updates the REDCap database (`project` object) by fetching the latest data
-#' from the REDCap server.
+#' Syncs with REDCap via `project` object that user defined with \link{setup_project}
 #'
 #' @details
-#' syncs multiple projects as defined. Will not load projects
+#' Syncs all projects by default but can be used to hands-free sync one or
+#' defined set projects. This is not intended to return project object. User
+#' should use `load_project("short_name")`. However, by default will invisibily
+#' return the last project in the set of short_names.
 #'
 #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
 #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
@@ -247,11 +249,11 @@ sync_project <- function(project,
 #' `FALSE`.
 #' @param short_names character vector of project short_names previously setup.
 #' If = NULL, will get all from `get_projects()`
-#' @return invisible
+#' @return invisible return of last project
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.
 #' @export
-sync_multiple <- function(short_names = NULL,
+sync <- function(short_names = NULL,
                           summarize = TRUE,
                           hard_check = FALSE,
                           hard_reset = FALSE) {
@@ -260,10 +262,11 @@ sync_multiple <- function(short_names = NULL,
     short_names <- projects$short_name
     if(length(short_names)==0){
       cli_alert_info("No projects in cache. Start with `?setup_project()`")
+      invisible()
     }
   }
   for (short_name in short_names) {
-    load_project(short_name)$sync(
+    project <- load_project(short_name)$sync(
       save_to_dir = TRUE,
       summarize = summarize,
       hard_check = hard_check,
@@ -271,7 +274,8 @@ sync_multiple <- function(short_names = NULL,
     )
   }
   # consider adding message/df
-  invisible()
+  cli_alert_success("All projects are synced!")
+  invisible(project)
 }
 #' @noRd
 due_for_sync <- function(project_name) {

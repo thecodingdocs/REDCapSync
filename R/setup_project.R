@@ -71,7 +71,6 @@
 #' batch. Default is `2000`.
 #' @param batch_size_upload Integer. Number of records to process in each batch.
 #' Default is `500`.
-#' @param silent Logical (TRUE/FALSE). For messages.
 #' @inheritParams REDCapR::redcap_read
 #' @return REDCapSync `project` list object.
 #' @seealso
@@ -111,8 +110,8 @@ setup_project <- function(short_name,
                           add_default_fields = FALSE,
                           add_default_transformation = FALSE,
                           add_default_summaries = TRUE,
-                          use_csv = FALSE,
-                          silent = FALSE) {
+                          use_csv = FALSE) {
+  silent <- FALSE
   collected <- makeAssertCollection()
   assert_env_name(
     env_name = short_name,
@@ -315,7 +314,7 @@ setup_project <- function(short_name,
   }
   project$internals$last_directory_save <- now_time()
   save_project_details(project)
-  invisible(project)
+  invisible(REDCapSync_project$new(project))
 }
 #' @noRd
 .get_type <- c("identified",
@@ -403,7 +402,7 @@ load_project <- function(short_name) {
                                             project_details = readRDS(file = project_details_path))
   project$dir_path <- dir_path # why twice?
   save_project_details(project)
-  invisible(project)
+  invisible(REDCapSync_project$new(project))
 }
 #' @noRd
 compare_project_details <- function(from, to) {
@@ -422,7 +421,7 @@ load_test_project <- function(short_name = "TEST_CLASSIC",
   if(short_name == "TEST_CLASSIC"){
     project <- TEST_CLASSIC
   }
-  invisible(project)
+  invisible(REDCapSync_project$new(project))
 }
 #' @rdname save-deleteproject
 #' @title Save or Delete project file from the directory

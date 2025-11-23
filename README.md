@@ -18,35 +18,34 @@ Interface (API) such as,
 and
 [tidyREDCap](https://raymondbalise.github.io/tidyREDCap/ "redcapAPI R package").
 However, there is no “get-everything-from-REDCap” R package that can
-produce a standardized R object for any REDCap project. `{REDCapSync}`
-streamlines comprehensive extraction with two key functions:
-`setup_project()` and `sync_project()`. When a sync is performed
-`{REDCapSync}` uses the REDCap log to only update data that has changed
-since the last API call. The final project-agnostic object facilitates
-further pipelining for deidenification, deriving additional variables,
-linked excel sheets, and exploratory data analysis with
+produce a standardized
+[R6](https://r6.r-lib.org/index.html "R6 R package") object for any
+REDCap project. `{REDCapSync}` streamlines comprehensive extraction.
+When a sync is performed `{REDCapSync}` uses the REDCap log to only
+update data that has changed since the last API call. The final
+project-agnostic object facilitates further pipelining for
+deidenification, deriving additional variables, linked excel sheets, and
+exploratory data analysis with
 [RosyREDCap](https://thecodingdocs.github.io/RosyREDCap/ "RosyREDCap").
 
 ## What is `{REDCapSync}`?
 
 Using a cache of previous saves, a file directory, and the REDCap log,
 {REDCapSync} updates only the data that has been changed since the last
-API call. Each project becomes a standardized nested R list object that
-can be used for the best that R has to offer via statistics,
-visualization, shiny apps, and more! REDCapSync unleashes the full power
-of the REDCap API even for the basic R user.
+API call. Each project becomes a standardized
+[R6](https://r6.r-lib.org/index.html "R6 R package") object that can be
+used for the best that R has to offer via statistics, visualization,
+shiny apps, and more! REDCapSync unleashes the full power of the REDCap
+API even for the basic R user.
 
 The aims of `{REDCapSync}` are to…
 
-1.  Wrap the REDCap API functionality “behind-the-scenes” to streamline
-    its use.
-2.  Maintain local/cloud versions of one or many REDCap projects by only
-    updating recently changed records on a user-defined schedule, such
-    as daily, weekly, or monthly.
-3.  Automate tasks such as cleaning, deidentification and standard
-    transformations.
-4.  Allow bulk exports AND imports of ***uncoded*** REDCap data using R
-    and Excel.
+1.  Encapsulate the REDCap API into one R6 object to streamline use.
+2.  Automate common tasks such as cleaning, deidentification and merges.
+3.  Automate distrubution of user-defined Excel datasets to local/cloud
+    storage for one or many REDCap projects.
+4.  Convert ***uncoded*** REDCap data from R or Excel for upload using
+    REDCap API.
 5.  Power the companion shiny app
     [RosyREDCap](https://thecodingdocs.github.io/RosyREDCap/ "RosyREDCap R package")
 
@@ -71,16 +70,20 @@ using the `pak` package.
 ``` r
 # install.packages("pak")
 pak::pak("thecodingdocs/REDCapSync")
+# or try remotes install.packages("remotes")
+remotes::install_github("thecodingdocs/REDCapSync")
 ```
 
-If you have any issues, try downloading the most recent version of R at
-RStudio and update all packages in RStudio. See
+Windows users may need to install [RTools version
+4.5](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html "R Getting Started")
+to use pak. If you have any issues, try downloading the most recent
+version of R at RStudio and update all packages in RStudio. See
 [thecodingdocs.com/r/getting-started](https://www.thecodingdocs.com/r/getting-started "R Getting Started").
 
 ### Getting Started!
 
 Getting started is as simple as 1.) setting your tokens, 2.) setting up
-a project, and 3.) running sync. See [Getting
+a project, and 3.) running project\$sync(). See [Getting
 Started](https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html "Getting Started")
 page for the basics!
 

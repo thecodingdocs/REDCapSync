@@ -29,7 +29,7 @@ reference:
       - setup_project
       - load_project
       - load_test_project
-      - project
+      - REDCapSync_project
 
   - title: Other (Intermediate/Advanced)
     desc: Expands on functionality and breaksdown core feautures into more customizable parts
@@ -40,7 +40,7 @@ reference:
       - cache_clear
       - cache_path
       - cache_remove_project
-      - sync_multiple
+      - sync
 
   - subtitle: Other Helpers
     contents:

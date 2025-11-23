@@ -200,10 +200,12 @@ add_field_elements <- function(fields) {
     }
   }
   if (any(fields$field_type == "yesno")) {
-    fields$select_choices_or_calculations[which(fields$field_type == "yesno")] <- "1, Yes | 0, No"
+    yn_rows <- which(fields$field_type == "yesno")
+    fields$select_choices_or_calculations[yn_rows] <- "1, Yes | 0, No"
   }
   if (any(fields$field_type == "truefalse")) {
-    fields$select_choices_or_calculations[which(fields$field_type == "truefalse")] <- "1, True | 0, False"
+    tf_rows <- which(fields$field_type == "truefalse")
+    fields$select_choices_or_calculations[tf_rows] <- "1, True | 0, False"
   }
   fields
 }

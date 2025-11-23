@@ -10,7 +10,7 @@ already saved. Save the outputs to a directory.
   [`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   [`load_test_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   : Setup or Load REDCapSync Project
-- [`project`](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
+- [`REDCapSync_project`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync_project.md)
   : Setup or Load REDCapSync Project
 
 ## Other (Intermediate/Advanced)
@@ -31,7 +31,7 @@ last update and other details). Tokens and data are NOT stored here.
   : Get your Get Cache Path
 - [`cache_remove_project()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_remove_project.md)
   : Remove project from cache
-- [`sync_multiple()`](https://thecodingdocs.github.io/REDCapSync/reference/sync_multiple.md)
+- [`sync()`](https://thecodingdocs.github.io/REDCapSync/reference/sync.md)
   : Synchronize REDCap Data
 
 ### Other Helpers

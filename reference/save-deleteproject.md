@@ -21,10 +21,6 @@ save_project(project, silent = FALSE)
   or
   [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
 
-- silent:
-
-  Logical (TRUE/FALSE). For messages.
-
 ## Value
 
 Message

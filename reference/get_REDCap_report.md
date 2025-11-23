@@ -23,10 +23,6 @@ get_redcap_report(project, report_id, silent = TRUE)
   character or integer of REDCap report ID. This can be found at the end
   of the URL of the report.
 
-- silent:
-
-  Logical (TRUE/FALSE). For messages.
-
 ## Value
 
 data.frame of REDCap report

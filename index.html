@@ -88,18 +88,18 @@
 <!-- badges: start -->
 
 <!-- badges: end -->
-<p>Several R packages exist for using the REDCap Application Program Interface (API) such as, <a href="https://ouhscbbmc.github.io/REDCapR/" title="REDCapR R package" class="external-link">REDCapR</a>, <a href="https://github.com/vubiostat/redcapAPI/" title="redcapAPI R package" class="external-link">redcapAPI</a>, and <a href="https://raymondbalise.github.io/tidyREDCap/" title="redcapAPI R package" class="external-link">tidyREDCap</a>. However, there is no “get-everything-from-REDCap” R package that can produce a standardized R object for any REDCap project. <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> streamlines comprehensive extraction with two key functions: <code><a href="reference/setup-load.html">setup_project()</a></code> and <code>sync_project()</code>. When a sync is performed <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> uses the REDCap log to only update data that has changed since the last API call. The final project-agnostic object facilitates further pipelining for deidenification, deriving additional variables, linked excel sheets, and exploratory data analysis with <a href="https://thecodingdocs.github.io/RosyREDCap/" title="RosyREDCap" class="external-link">RosyREDCap</a>.</p>
+<p>Several R packages exist for using the REDCap Application Program Interface (API) such as, <a href="https://ouhscbbmc.github.io/REDCapR/" title="REDCapR R package" class="external-link">REDCapR</a>, <a href="https://github.com/vubiostat/redcapAPI/" title="redcapAPI R package" class="external-link">redcapAPI</a>, and <a href="https://raymondbalise.github.io/tidyREDCap/" title="redcapAPI R package" class="external-link">tidyREDCap</a>. However, there is no “get-everything-from-REDCap” R package that can produce a standardized <a href="https://r6.r-lib.org/index.html" title="R6 R package" class="external-link">R6</a> object for any REDCap project. <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> streamlines comprehensive extraction. When a sync is performed <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> uses the REDCap log to only update data that has changed since the last API call. The final project-agnostic object facilitates further pipelining for deidenification, deriving additional variables, linked excel sheets, and exploratory data analysis with <a href="https://thecodingdocs.github.io/RosyREDCap/" title="RosyREDCap" class="external-link">RosyREDCap</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="what-is-redcapsync">What is <code>{REDCapSync}</code>?<a class="anchor" aria-label="anchor" href="#what-is-redcapsync"></a>
 </h2>
-<p>Using a cache of previous saves, a file directory, and the REDCap log, {REDCapSync} updates only the data that has been changed since the last API call. Each project becomes a standardized nested R list object that can be used for the best that R has to offer via statistics, visualization, shiny apps, and more! REDCapSync unleashes the full power of the REDCap API even for the basic R user.</p>
+<p>Using a cache of previous saves, a file directory, and the REDCap log, {REDCapSync} updates only the data that has been changed since the last API call. Each project becomes a standardized <a href="https://r6.r-lib.org/index.html" title="R6 R package" class="external-link">R6</a> object that can be used for the best that R has to offer via statistics, visualization, shiny apps, and more! REDCapSync unleashes the full power of the REDCap API even for the basic R user.</p>
 <p>The aims of <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> are to…</p>
 <ol style="list-style-type: decimal">
-<li>Wrap the REDCap API functionality “behind-the-scenes” to streamline its use.</li>
-<li>Maintain local/cloud versions of one or many REDCap projects by only updating recently changed records on a user-defined schedule, such as daily, weekly, or monthly.</li>
-<li>Automate tasks such as cleaning, deidentification and standard transformations.</li>
-<li>Allow bulk exports AND imports of <strong><em>uncoded</em></strong> REDCap data using R and Excel.</li>
+<li>Encapsulate the REDCap API into one R6 object to streamline use.</li>
+<li>Automate common tasks such as cleaning, deidentification and merges.</li>
+<li>Automate distrubution of user-defined Excel datasets to local/cloud storage for one or many REDCap projects.</li>
+<li>Convert <strong><em>uncoded</em></strong> REDCap data from R or Excel for upload using REDCap API.</li>
 <li>Power the companion shiny app <a href="https://thecodingdocs.github.io/RosyREDCap/" title="RosyREDCap R package" class="external-link">RosyREDCap</a>
 </li>
 </ol>
@@ -117,13 +117,15 @@
 <p>You can install the development version of REDCapSync from GitHub by using the <code>pak</code> package.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"thecodingdocs/REDCapSync"</span><span class="op">)</span></span></code></pre></div>
-<p>If you have any issues, try downloading the most recent version of R at RStudio and update all packages in RStudio. See <a href="https://www.thecodingdocs.com/r/getting-started" title="R Getting Started" class="external-link">thecodingdocs.com/r/getting-started</a>.</p>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"thecodingdocs/REDCapSync"</span><span class="op">)</span></span>
+<span><span class="co"># or try remotes install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"thecodingdocs/REDCapSync"</span><span class="op">)</span></span></code></pre></div>
+<p>Windows users may need to install <a href="https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html" title="R Getting Started" class="external-link">RTools version 4.5</a> to use pak. If you have any issues, try downloading the most recent version of R at RStudio and update all packages in RStudio. See <a href="https://www.thecodingdocs.com/r/getting-started" title="R Getting Started" class="external-link">thecodingdocs.com/r/getting-started</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="getting-started">Getting Started!<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h3>
-<p>Getting started is as simple as 1.) setting your tokens, 2.) setting up a project, and 3.) running sync. See <a href="https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html" title="Getting Started">Getting Started</a> page for the basics!</p>
+<p>Getting started is as simple as 1.) setting your tokens, 2.) setting up a project, and 3.) running project$sync(). See <a href="https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html" title="Getting Started">Getting Started</a> page for the basics!</p>
 <p><img src="reference/figures/cover.jpg"></p>
 </div>
 </div>

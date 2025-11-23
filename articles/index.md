@@ -22,7 +22,7 @@
 
 - [The Project
   Cache](https://thecodingdocs.github.io/REDCapSync/articles/project_cache.md):
-- [The project
+- [The REDCapSync_project
   Object](https://thecodingdocs.github.io/REDCapSync/articles/project_object.md):
 - [Managing Multiple REDCap
   Projects](https://thecodingdocs.github.io/REDCapSync/articles/multiple_projects.md):

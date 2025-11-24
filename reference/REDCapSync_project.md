@@ -45,6 +45,8 @@ for initializing the `project` object.'
 
 - [`REDCapSync_project$show_token()`](#method-REDCapSync_project-show_token)
 
+- [`REDCapSync_project$url_launch()`](#method-REDCapSync_project-url_launch)
+
 - [`REDCapSync_project$use()`](#method-REDCapSync_project-use)
 
 ------------------------------------------------------------------------
@@ -339,7 +341,8 @@ data from the REDCap server.
 
 - `hard_reset`:
 
-  Logical that forces a fresh update if TRUE. Default is `FALSE`.
+  Logical. If `TRUE`, overwrite existing summary files with the same
+  name. Default is `FALSE`.
 
 #### Details
 
@@ -450,6 +453,28 @@ Displays project token in console for verification
 #### Usage
 
     REDCapSync_project$show_token()
+
+------------------------------------------------------------------------
+
+### Method `url_launch()`
+
+opens links in browser
+
+#### Usage
+
+    REDCapSync_project$url_launch(link_type = "home", open_browser = TRUE)
+
+#### Arguments
+
+- `link_type`:
+
+  choose one of "base", "home", "record_home", "records_dashboard",
+  "api", "api_playground", "codebook", "user_rights", "setup",
+  "logging", "designer", "dictionary", "data_quality", "identifiers"
+
+- `open_browser`:
+
+  logical for launching the link in internet browser
 
 ------------------------------------------------------------------------
 

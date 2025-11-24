@@ -49,7 +49,7 @@ get_project_token <- function(project, silent = TRUE) {
     if (is_something(project$links$redcap_api)) {
       cli_alert_wrap(
         paste0(
-          "You can request/regenerate/delete with `link_API_token(project)`",
+          "You can request/regenerate/delete with `project$url_launch('api')`",
           "or go here: "
         ),
         url = project$links$redcap_api

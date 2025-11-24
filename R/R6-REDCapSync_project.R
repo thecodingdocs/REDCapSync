@@ -71,6 +71,16 @@
 #' @param file_name Character. The base name of the file where the summary will
 #' be saved. Default is `<project$short_name>_<summary_name>`.
 #' @param envir environment variable
+#' @param form string of raw form name such as "survey_one"
+#' @param link_type choose one of "base", "home", "record_home",
+#' "records_dashboard", "api", "api_playground", "codebook", "user_rights",
+#' "setup", "logging", "designer", "dictionary", "data_quality", "identifiers"
+#' @param open_browser logical for launching the link in internet browser
+#' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
+#' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
+#' the directory. Default is `TRUE`.
+#' @param hard_check Will check REDCap even if not due (see `sync_frequency`
+#' parameter from `setup_project()`)
 #' @return An R6ClassGenerator
 #' @keywords internal
 REDCapSync_project <- R6Class(
@@ -191,13 +201,6 @@ REDCapSync_project <- R6Class(
     #' from REDCap. The function can also handle metadata-only updates and batch
     #' processing.
     #'
-    #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
-    #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
-    #' the directory. Default is `TRUE`.
-    #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
-    #' parameter from `setup_project()`)
-    #' @param hard_reset Logical that forces a fresh update if TRUE. Default is
-    #' `FALSE`.
     #' @return Messages for confirmation.
     #' @seealso
     #' \link{setup_project} for initializing the `project` object.'
@@ -251,7 +254,6 @@ REDCapSync_project <- R6Class(
       invisible(return_this)
     },
     #' @description  Returns list of data or the specified form.
-    #' @param form string of raw form name such as "survey_one"
     show_data = function(form = NULL, envir = NULL) {
       assert_environment(envir, null.ok = TRUE)
       return_this <- private$project$data
@@ -266,6 +268,13 @@ REDCapSync_project <- R6Class(
     },
     #' @description Displays project token in console for verification
     show_token = function() {view_project_token(private$project)},
+    #' @description opens links in browser
+    url_launch = function(link_type = "home",
+                          open_browser = TRUE) {
+      get_project_url(private$project,
+                      link_type = link_type,
+                      open_browser = open_browser)
+    },
     #' @description  returns internal list
     use = function(){
       invisible(private$project)

@@ -31,6 +31,7 @@ Users should construct objects using \code{\link[=setup_project]{setup_project()
 \item \href{#method-REDCapSync_project-show_metadata}{\code{REDCapSync_project$show_metadata()}}
 \item \href{#method-REDCapSync_project-show_data}{\code{REDCapSync_project$show_data()}}
 \item \href{#method-REDCapSync_project-show_token}{\code{REDCapSync_project$show_token()}}
+\item \href{#method-REDCapSync_project-url_launch}{\code{REDCapSync_project$url_launch()}}
 \item \href{#method-REDCapSync_project-use}{\code{REDCapSync_project$use()}}
 }
 }
@@ -267,8 +268,8 @@ the directory. Default is \code{TRUE}.}
 \item{\code{hard_check}}{Will check REDCap even if not due (see \code{sync_frequency}
 parameter from \code{setup_project()})}
 
-\item{\code{hard_reset}}{Logical that forces a fresh update if TRUE. Default is
-\code{FALSE}.}
+\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files with the
+same name. Default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -379,6 +380,27 @@ Displays project token in console for verification
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_token()}\if{html}{\out{</div>}}
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSync_project-url_launch"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSync_project-url_launch}{}}}
+\subsection{Method \code{url_launch()}}{
+opens links in browser
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$url_launch(link_type = "home", open_browser = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{link_type}}{choose one of "base", "home", "record_home",
+"records_dashboard", "api", "api_playground", "codebook", "user_rights",
+"setup", "logging", "designer", "dictionary", "data_quality", "identifiers"}
+
+\item{\code{open_browser}}{logical for launching the link in internet browser}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSync_project-use"></a>}}

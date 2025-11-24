@@ -263,11 +263,6 @@ Add a new summary entry
   Logical. If `TRUE`, overwrite existing summary files with the same
   name. Default is `FALSE`.
 
-- `internal_use`:
-
-  A logical flag (`TRUE` or `FALSE`). If `TRUE`, then will return
-  data_list meant for internal use. Defaults to `FALSE`.
-
 ------------------------------------------------------------------------
 
 ### Method `clear_summaries()`
@@ -292,7 +287,9 @@ Add a new summary entry
 
 - `summary_name`:
 
-  Character of summary_name.
+  Character. The name of the summary from which to generate the summary.
+  \*If you provide `summary_name` all other parameters are inherited
+  according to what was set with `add_project_summary`.
 
 - `envir`:
 

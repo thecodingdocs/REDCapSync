@@ -25,6 +25,8 @@ for initializing the `project` object.'
 
 - [`REDCapSync_project$add_summary()`](#method-REDCapSync_project-add_summary)
 
+- [`REDCapSync_project$clear_summaries()`](#method-REDCapSync_project-clear_summaries)
+
 - [`REDCapSync_project$generate_summary()`](#method-REDCapSync_project-generate_summary)
 
 - [`REDCapSync_project$add_field()`](#method-REDCapSync_project-add_field)
@@ -263,6 +265,16 @@ Add a new summary entry
 
   A logical flag (`TRUE` or `FALSE`). If `TRUE`, then will return
   data_list meant for internal use. Defaults to `FALSE`.
+
+------------------------------------------------------------------------
+
+### Method `clear_summaries()`
+
+Clear all project summaries
+
+#### Usage
+
+    REDCapSync_project$clear_summaries()
 
 ------------------------------------------------------------------------
 

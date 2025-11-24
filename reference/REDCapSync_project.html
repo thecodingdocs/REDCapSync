@@ -81,6 +81,7 @@ Users should construct objects using <code><a href="setup-load.html">setup_proje
 <ul><li><p><a href="#method-REDCapSync_project-new"><code>REDCapSync_project$new()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-info"><code>REDCapSync_project$info()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-add_summary"><code>REDCapSync_project$add_summary()</code></a></p></li>
+<li><p><a href="#method-REDCapSync_project-clear_summaries"><code>REDCapSync_project$clear_summaries()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-generate_summary"><code>REDCapSync_project$generate_summary()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-add_field"><code>REDCapSync_project$add_field()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-sync"><code>REDCapSync_project$sync()</code></a></p></li>
@@ -311,10 +312,18 @@ return data_list meant for internal use. Defaults to <code>FALSE</code>.</p></dd
 </dl><p></p></div>
 </div>
 
+</div><p></p><hr><a id="method-REDCapSync_project-clear_summaries"></a><div class="section">
+<h3 id="method-clear-summaries-">Method <code>clear_summaries()</code><a class="anchor" aria-label="anchor" href="#method-clear-summaries-"></a></h3>
+<p>Clear all project summaries</p><div class="section">
+<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">clear_summaries</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+
 </div><p></p><hr><a id="method-REDCapSync_project-generate_summary"></a><div class="section">
 <h3 id="method-generate-summary-">Method <code>generate_summary()</code><a class="anchor" aria-label="anchor" href="#method-generate-summary-"></a></h3>
 <p>Add a new summary entry</p><div class="section">
-<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">generate_summary</span><span class="op">(</span><span class="va">summary_name</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -330,7 +339,7 @@ return data_list meant for internal use. Defaults to <code>FALSE</code>.</p></dd
 </div><p></p><hr><a id="method-REDCapSync_project-add_field"></a><div class="section">
 <h3 id="method-add-field-">Method <code>add_field()</code><a class="anchor" aria-label="anchor" href="#method-add-field-"></a></h3>
 <p>Add a new summary entry</p><div class="section">
-<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">add_field</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -339,7 +348,7 @@ return data_list meant for internal use. Defaults to <code>FALSE</code>.</p></dd
 <h3 id="method-sync-">Method <code><a href="sync.html">sync()</a></code><a class="anchor" aria-label="anchor" href="#method-sync-"></a></h3>
 <p>Updates the REDCap database (<code>project</code> object) by fetching the latest data
 from the REDCap server.</p><div class="section">
-<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span></span>
 <span>  summarize <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  save_to_dir <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -388,7 +397,7 @@ processing.</p>
 </div><p></p><hr><a id="method-REDCapSync_project-summarize"></a><div class="section">
 <h3 id="method-summarize-">Method <code>summarize()</code><a class="anchor" aria-label="anchor" href="#method-summarize-"></a></h3>
 <p>summarize project and save to Excel</p><div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">summarize</span><span class="op">(</span>hard_reset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -404,7 +413,7 @@ processing.</p>
 </div><p></p><hr><a id="method-REDCapSync_project-save_summary"></a><div class="section">
 <h3 id="method-save-summary-">Method <code>save_summary()</code><a class="anchor" aria-label="anchor" href="#method-save-summary-"></a></h3>
 <p>save summary to Excel</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">save_summary</span><span class="op">(</span><span class="va">summary_name</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -422,7 +431,7 @@ inherited according to what was set with <code>add_summary</code>.</p></dd>
 </div><p></p><hr><a id="method-REDCapSync_project-save"></a><div class="section">
 <h3 id="method-save-">Method <code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code><a class="anchor" aria-label="anchor" href="#method-save-"></a></h3>
 <p>Add a new summary entry</p><div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -430,7 +439,7 @@ inherited according to what was set with <code>add_summary</code>.</p></dd>
 </div><p></p><hr><a id="method-REDCapSync_project-show_metadata"></a><div class="section">
 <h3 id="method-show-metadata-">Method <code>show_metadata()</code><a class="anchor" aria-label="anchor" href="#method-show-metadata-"></a></h3>
 <p>Returns list of data or the specified form.</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">show_metadata</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"fields"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -446,7 +455,7 @@ inherited according to what was set with <code>add_summary</code>.</p></dd>
 </div><p></p><hr><a id="method-REDCapSync_project-show_data"></a><div class="section">
 <h3 id="method-show-data-">Method <code>show_data()</code><a class="anchor" aria-label="anchor" href="#method-show-data-"></a></h3>
 <p>Returns list of data or the specified form.</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">show_data</span><span class="op">(</span><span class="va">form</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -462,7 +471,7 @@ inherited according to what was set with <code>add_summary</code>.</p></dd>
 </div><p></p><hr><a id="method-REDCapSync_project-use"></a><div class="section">
 <h3 id="method-use-">Method <code><a href="https://rdrr.io/r/base/use.html" class="external-link">use()</a></code><a class="anchor" aria-label="anchor" href="#method-use-"></a></h3>
 <p>returns internal list</p><div class="section">
-<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
+<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">use</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 

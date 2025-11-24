@@ -121,11 +121,9 @@ test_that("save_summary works", {
       return(fake_cache)
     }
   )
-
   project <- TEST_CLASSIC
   project$dir_path <- test_dir
   dir.create(file.path(test_dir, "output"), recursive = TRUE)
-
   summary_name <- "SAVE_SUMMARY_TEST"
   project <- add_project_summary(
     project = project,
@@ -326,10 +324,24 @@ test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
   expect_identical(var_yesno_labelled,var_yesno_labelled_again)
 })
 # labelled_to_raw_data_list ( Internal )
-test_that("labelled_to_raw_data_list works!", {
-})
-# raw_to_labelled_data_list ( Internal )
-test_that("raw_to_labelled_data_list works!", {
+test_that("labelled_to_raw_data_listand raw_to_labelled_data_list works!", {
+  project <- TEST_CLASSIC
+  # ensure project is marked as labelled and has labelled values present
+  expect_true(project$internals$labelled)
+  # sanity check: labelled value present in example form
+  expect_all_true(project$data$other$var_yesno %in% c("Yes", "No"))
+  # convert and capture returned project
+  expect_no_error({
+    project_converted <- labelled_to_raw_data_list(project)
+  })
+  # internals updated
+  expect_false(project_converted$internals$labelled)
+  # values converted from labelled ("Yes"/"No") to raw codes ("1"/"0")
+  expect_all_true(project_converted$data$other$var_yesno %in% c("0", "1"))
+  expect_no_error({
+    project_again <- raw_to_labelled_data_list(project_converted)
+  })
+  expect_all_true(project_again$data$other$var_yesno %in% c("Yes", "No"))
 })
 # get_all_field_names ( Internal )
 test_that("get_all_field_names works!", {

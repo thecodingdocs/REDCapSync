@@ -84,18 +84,18 @@ test_that("test_project_token succeeds when exportVersion returns a version (no 
   )
   project <- mock_project()
   # Stub rcon to avoid creating a real connection and stub exportVersion to simulate success
-  mockery::stub(test_project_token, "redcapAPI::redcapConnection", list(
+  mockery::stub(test_project_token, "redcapConnection", list(
     projectInformation = function(){list(project_id = project$redcap$project_id)}
   ))
-  mockery::stub(test_project_token, "redcapAPI::exportVersion", "12.1.1")
+  mockery::stub(test_project_token, "exportVersion", "12.1.1")
   expect_message(test_project_token(project),"Connected to REDCap")
   out <- test_project_token(project)
   expect_true(out$internals$last_test_connection_outcome)
   expect_true(!is.null(out$internals$last_test_connection_attempt))
-  mockery::stub(test_project_token, "redcapAPI::redcapConnection", list(
+  mockery::stub(test_project_token, "redcapConnection", list(
     projectInformation = function(){list(project_id = "5678")}
   ))
-  mockery::stub(test_project_token, "redcapAPI::exportVersion", "12.1.1")
+  mockery::stub(test_project_token, "exportVersion", "12.1.1")
   expect_message(test_project_token(project),"Your REDCap project ID changed")
 })
 test_that("test_project_token marks failure when exportVersion returns NULL (no API calls)", {

@@ -29,41 +29,25 @@ view_project_token <- function(project) {
 #' @details
 #' This function tests whether the API token stored in the `project` object is
 #' valid by making a request to the REDCap server.
-#' If the token is invalid, the function can optionally open the REDCap login
-#' page in a browser (`launch_browser`)
 #' @inheritParams save_project
-#' @param launch_browser Logical (TRUE/FALSE). If TRUE, launches the REDCap
-#' login page in the default web browser when validation fails. Default is
-#' `TRUE`.
 #' @return Logical. Returns `TRUE` if the API token is valid, otherwise `FALSE`.
 #' @seealso
 #' \href{../articles/Tokens.html}{pkgdown article on tokens}
 #' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{pkgdown article on tokens}
 #' @family Token Functions
 #' @keywords internal
-test_project_token <- function(project, launch_browser = TRUE) {
+test_project_token <- function(project) {
   assert_setup_project(project)
-  rcon <- project_rcon(project)
+  rcon <- redcapAPI::redcapConnection(url = project$links$redcap_uri,
+                                      token = get_project_token(project))
   redcap_version <- tryCatch(
-    expr = {
-      redcapAPI::exportVersion(rcon)
-    },
-    error = function(e) {
-      NULL
-    }
+    expr = redcapAPI::exportVersion(rcon = rcon),
+    error = function(e) {NULL}
   )
   # add timezone
   project$internals$last_test_connection_attempt <- now_time()
   version_error <- is.null(redcap_version)
   project$internals$last_test_connection_outcome <- !version_error
-  if (version_error && launch_browser) {
-    utils::browseURL(url = ifelse(
-      is_something(project$redcap$version),
-      project$links$redcap_api,
-      project$links$redcap_base
-    ))
-    # this will fail to bring you to right URL if redcap version changes at the same time a previously valid token is no longer valid
-  }
   if (version_error) {
     cli_alert_danger("Your REDCap API token check failed. Check privileges.")
     return(invisible(project))
@@ -76,11 +60,19 @@ test_project_token <- function(project, launch_browser = TRUE) {
     version_changed <- !identical(project$redcap$version, redcap_version)
   }
   project$redcap$version <- redcap_version
-  if (version_changed) {
-    # message here
-    project <- update_project_links(project)
+  if (project$internals$ever_connected) {
+    project_info <- rcon$projectInformation()
+    project_id_changed <- !identical(project$redcap$project_id,
+                                     as.character(project_info$project_id))
+  }
+  if(project_id_changed){
+    cli_alert_danger("Your REDCap project ID changed! Did you mix up tokens?")
+    return(invisible(project))
   }
   project$internals$ever_connected <- TRUE
+  if (version_changed) {
+    project <- update_project_links(project)
+  }
   invisible(project)
 }
 #' @noRd

@@ -268,6 +268,11 @@ REDCapSync_project <- R6Class(
     },
     #' @description Displays project token in console for verification
     show_token = function() {view_project_token(private$project)},
+    #' @description test connection via communication with API
+    test_token = function(){
+      private$project <- test_project_token(private$project)
+      invisible(self)
+    },
     #' @description opens links in browser
     url_launch = function(link_type = "home",
                           open_browser = TRUE) {

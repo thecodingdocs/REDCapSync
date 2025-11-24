@@ -1,48 +1,97 @@
 #' @noRd
-project_rcon <- function(project) {
-  assert_setup_project(project)
+rcon_result <- function(project) {
   rcon <- redcapAPI::redcapConnection(url = project$links$redcap_uri,
                                       token = get_project_token(project))
-  # test connection
-  rcon
+  list(
+    project_info = tryCatch(
+      expr = rcon$projectInformation(),
+      error = function(e) {NULL}),
+    arms = tryCatch(
+      expr = rcon$arms(),
+      error = function(e) {NULL}),
+    events = tryCatch(
+      expr = rcon$events(),
+      error = function(e) {NULL}),
+    mapping = tryCatch(
+      expr = rcon$mapping(),
+      error = function(e) {NULL}),
+    forms = tryCatch(
+      expr = rcon$instruments(),
+      error = function(e) {NULL}),
+    repeating = tryCatch(
+      expr = rcon$repeatInstrumentEvent(),
+      error = function(e) {NULL}),
+    fields = tryCatch(
+      expr = rcon$metadata(),
+      error = function(e) {NULL}),
+    # logging needed
+    logging = tryCatch(
+      expr = exportLogging(rcon = rcon, beginTime = Sys.time() - 100000),
+      error = function(e) {NULL}),
+    # user access needed
+    users = tryCatch(
+      expr = rcon$users(),
+      error = function(e) {NULL}),
+    user_roles = tryCatch(
+      expr = rcon$user_roles(),
+      error = function(e) {NULL}),
+    user_role_assignment = tryCatch(
+      expr = rcon$user_role_assignment(),
+      error = function(e) {NULL}),
+    #DAG access needed
+    dags = tryCatch(
+      expr = rcon$dags(),
+      error = function(e) {NULL}),
+    dag_assignment = tryCatch(
+      expr = rcon$dag_assignment(),
+      error = function(e) {NULL}),
+    # file repo needed
+    file_repository = tryCatch(
+      expr = rcon$fileRepository(),
+      error = function(e) {NULL})
+  )
 }
 #' @noRd
 get_redcap_metadata <- function(project, include_users = TRUE) {
   assert_setup_project(project)
-  project$internals$last_metadata_update <- now_time()
+  result <- rcon_result(project)
   project$metadata <- list()
-  rcon <- project_rcon(project)
+  project$redcap$project_info <- result$project_info
   # info ----------
-  project$redcap$project_info <- REDCapR::redcap_project_info_read(
-    redcap_uri = project$links$redcap_uri,
-    token = get_project_token(project))[["data"]]
   project$redcap$project_title <- project$redcap$project_info$project_title
   project$redcap$project_id <- project$redcap$project_info$project_id %>%
     as.character()
-  project$metadata$is_longitudinal <- project$redcap$project_info$is_longitudinal
-  project$metadata$missing_codes <- check_missing_codes(project)
-  project$redcap$has_log_access <- test_redcap_log_access(project)
+  project$metadata$is_longitudinal <- project$redcap$project_info$is_longitudinal %>% as.logical()
+  missing_data_codes <- NA
+  if ("missing_data_codes" %in% colnames(project$redcap$project_info)) {
+    missing_data_codes <- project$redcap$project_info$missing_data_codes
+    if (!is.na(missing_data_codes)) {
+      missing_data_codes <- missing_data_codes %>% split_choices()
+    }
+  }
+  project$metadata$missing_codes <- missing_data_codes
+  project$redcap$has_log_access <- !is.null(result$logging)
+  project$redcap$has_dag_access <- !is.null(result$dags)
+  project$redcap$has_user_access <- !is.null(result$users)
   # instruments --------
-  project$metadata$forms <- REDCapR::redcap_instruments(redcap_uri = project$links$redcap_uri,
-                                                        token = get_project_token(project))[["data"]] %>% rename_forms_redcap_to_default()
+  project$metadata$forms <- rename_forms_redcap_to_default(result$forms)
+  project$metadata$repeating_forms_events <- result$repeating
   project$metadata$forms$repeating <- FALSE
   project$metadata$has_repeating_forms <- FALSE
   project$metadata$has_repeating_events <- FALSE
   project$metadata$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events
   # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
-  repeating_forms_events <- redcapAPI::exportRepeatingInstrumentsEvents(rcon = rcon)
-  if (is.data.frame(repeating_forms_events)) {
+  if (is.data.frame(project$metadata$repeating_forms_events)) {
     # TODOPLEASE test if you can do this if you dont have designer privilages or would have to use another package
-    if (nrow(repeating_forms_events) > 0) {
-      project$metadata$forms$repeating <- project$metadata$forms$form_name %in% repeating_forms_events$form_name
+    if (nrow(project$metadata$repeating_forms_events) > 0) {
+      project$metadata$forms$repeating <- project$metadata$forms$form_name %in% project$metadata$repeating_forms_events$form_name
     }
   }
   if (any(project$metadata$forms$repeating)) {
     project$metadata$has_repeating_forms <- TRUE
   }
   # metadata ----------
-  project$metadata$fields <- REDCapR::redcap_metadata_read(redcap_uri = project$links$redcap_uri,
-                                                           token = get_project_token(project))[["data"]]
+  project$metadata$fields <- result$fields
   project$metadata$fields$section_header <- project$metadata$fields$section_header %>% remove_html_tags()
   project$metadata$fields$field_label <- project$metadata$fields$field_label %>% remove_html_tags()
   project$metadata$id_col <- project$metadata$fields[1, 1] %>% as.character() # RISKY?
@@ -58,23 +107,20 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
     project$metadata$raw_structure_cols <- c(project$metadata$raw_structure_cols,
                                              "arm_number",
                                              "event_name") %>% unique()
-    project$metadata$arms <- REDCapR::redcap_arm_export(redcap_uri = project$links$redcap_uri,
-                                                        token = get_project_token(project))[["data"]] %>% all_character_cols()
+    project$metadata$arms <- result$arms
     project$metadata$has_arms <- TRUE
     project$metadata$has_multiple_arms <- nrow(project$metadata$arms) > 1
     project$metadata$has_arms_that_matter <- project$metadata$has_multiple_arms
-    project$metadata$event_mapping <- REDCapR::redcap_event_instruments(redcap_uri = project$links$redcap_uri,
-                                                                        token = get_project_token(project))[["data"]] %>% all_character_cols()
-    project$metadata$events <- REDCapR::redcap_event_read(redcap_uri = project$links$redcap_uri,
-                                                          token = get_project_token(project))[["data"]] %>% all_character_cols()
+    project$metadata$event_mapping <- result$mapping
+    project$metadata$events <- result$events
     colnames(project$metadata$events)[which(colnames(project$metadata$events) == "arm_num")] <- "arm_number"
     project$metadata$events$repeating <- FALSE
     project$metadata$event_mapping$repeating <- FALSE
-    if (is.data.frame(repeating_forms_events)) {
-      project$metadata$events$repeating <- project$metadata$events$unique_event_name %in% repeating_forms_events$event_name[which(is.na(repeating_forms_events$form_name))]
-      repeatingFormsEvents_ind <- repeating_forms_events[which(
-        !is.na(repeating_forms_events$event_name) &
-          !is.na(repeating_forms_events$form_name)
+    if (is.data.frame(project$metadata$repeating_forms_events)) {
+      project$metadata$events$repeating <- project$metadata$events$unique_event_name %in% project$metadata$repeating_forms_events$event_name[which(is.na(project$metadata$repeating_forms_events$form_name))]
+      repeatingFormsEvents_ind <- project$metadata$repeating_forms_events[which(
+        !is.na(project$metadata$repeating_forms_events$event_name) &
+          !is.na(project$metadata$repeating_forms_events$form_name)
       ), ]
       if (nrow(repeatingFormsEvents_ind) > 0) {
         rows_event_mapping <- seq_len(nrow(repeatingFormsEvents_ind)) %>%
@@ -123,8 +169,11 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
     project$metadata$events <- NA
   }
   # other-------
-  if (include_users) {
-    project <- get_redcap_users(project)
+  project$redcap$users <- NA
+  if (include_users && project$redcap$has_user_access) {
+    project$redcap$users <-result$user_roles[, c("unique_role_name", "role_label")] %>%
+      merge(result$user_role_assignment, by = "unique_role_name") %>%
+      merge(result$users, by = "username", all.y = TRUE)
   }
   # add a check for exisiting conflict possibilities
   project$metadata$has_coding_conflicts <- FALSE
@@ -140,7 +189,7 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
       project$metadata$coding_conflict_field_names <- field_names[which(row_of_conflicts)]
     }
   }
-  project <- update_project_links(project)
+  project$internals$last_metadata_update <- now_time()
   invisible(project)
 }
 #' @noRd
@@ -317,34 +366,6 @@ get_redcap_files <- function(project,
   cli_alert_wrap("Checked for files! Stored at ...",
                  file = out_dir,
                  bullet_type = "v")
-}
-#' @noRd
-get_redcap_users <- function(project) {
-  assert_setup_project(project)
-  x <- REDCapR::redcap_users_export(redcap_uri = project$links$redcap_uri,
-                                    token = sanitize_token(Sys.getenv(project$redcap$token_name)))
-  if (!x$success) {
-    return(invisible(project))
-  }
-  data_user <- x$data_user
-  # data_user_form <- x$data_user_form
-  # add feedback of access
-  # rcon <- project_rcon(project)
-  # users <- redcapAPI::exportUsers(
-  #   rcon = rcon,
-  #   labels = FALSE,
-  #   form_rights = FALSE
-  # )
-  # user_roles <- redcapAPI::exportUserRoles(
-  #   rcon = rcon,
-  #   labels = FALSE,
-  #   form_rights = FALSE
-  # )
-  # user_role_assignments <- redcapAPI::exportUserRoleAssignments(rcon = rcon)
-  # final <- merge(merge(user_roles[, c("unique_role_name", "role_label")], user_role_assignments, by = "unique_role_name"), users, by = "username", all.y = TRUE)
-  # final
-  project$redcap$users <- x$data_user
-  invisible(project)
 }
 #' @noRd
 get_redcap_log <- function(project,

@@ -31,6 +31,7 @@ Users should construct objects using \code{\link[=setup_project]{setup_project()
 \item \href{#method-REDCapSync_project-show_metadata}{\code{REDCapSync_project$show_metadata()}}
 \item \href{#method-REDCapSync_project-show_data}{\code{REDCapSync_project$show_data()}}
 \item \href{#method-REDCapSync_project-show_token}{\code{REDCapSync_project$show_token()}}
+\item \href{#method-REDCapSync_project-test_token}{\code{REDCapSync_project$test_token()}}
 \item \href{#method-REDCapSync_project-url_launch}{\code{REDCapSync_project$url_launch()}}
 \item \href{#method-REDCapSync_project-use}{\code{REDCapSync_project$use()}}
 }
@@ -378,6 +379,16 @@ Returns list of data or the specified form.
 Displays project token in console for verification
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_token()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSync_project-test_token"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSync_project-test_token}{}}}
+\subsection{Method \code{test_token()}}{
+test connection via communication with API
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$test_token()}\if{html}{\out{</div>}}
 }
 
 }

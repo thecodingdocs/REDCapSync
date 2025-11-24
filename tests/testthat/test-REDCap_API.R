@@ -1,6 +1,3 @@
-# project_rcon ( Internal )
-test_that("project_rcon works!", {
-})
 # get_redcap_metadata ( Internal )
 test_that("get_redcap_metadata works!", {
 })

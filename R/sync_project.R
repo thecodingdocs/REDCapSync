@@ -137,6 +137,7 @@ sync_project <- function(project,
         cli_alert_wrap(paste0("Full ", project$short_name, " update!"),
                        bullet_type = "v")
         was_updated <- TRUE
+        project$internals$sync_vector_clock <- 1
       }
     } else {
       if (will_update) {

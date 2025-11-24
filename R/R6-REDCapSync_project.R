@@ -160,10 +160,20 @@ REDCapSync_project <- R6Class(
     },
     #' @description  Add a new summary entry
     #' @param summary_name Character of summary_name.
-    generate_summary = function(summary_name){
-      private$project %>% generate_project_summary(
+    #' @param envir environment variable
+    generate_summary = function(summary_name, envir) {
+      assert_environment(envir, null.ok = TRUE)
+      summary_names <- private$project$summary %>%
+        names() %>%
+        setdiff("all_records")
+      assert_choice(summary_name, summary_names, null.ok = FALSE)
+      project_summary <- private$project %>% generate_project_summary(
         summary_name = summary_name
-        )
+      )
+      if(!is.null(envir)) {
+        list2env(project_summary, envir = envir)
+      }
+      invisible(project_summary)
     },
     #' @description  Add a new summary entry
     add_field = function(){
@@ -227,19 +237,35 @@ REDCapSync_project <- R6Class(
     },
     #' @description  Returns list of data or the specified form.
     #' @param type string of either "fields","forms", or "choices"
-    show_metadata = function(type = "fields"){
-      if(is.null(type)){
-        return(private$project$metadata)
+    #' @param annotate logical for annotating in reference to data
+    #' @param envir environment variable
+    show_metadata = function(type = NULL,annotate = FALSE, envir = NULL){
+      assert_environment(envir, null.ok = TRUE)
+      assert_choice(type, c("fields", "forms", "choices"), null.ok = TRUE)
+      return_this <- private$project$metadata
+      if(!is.null(type)){
+        #add warning or message?
+        return_this <- private$project$metadata[[type]]
       }
-      private$project$metadata[[type]]
+      if(!is.null(envir)) {
+        list2env(return_this, envir = envir)
+      }
+      invisible(return_this)
     },
     #' @description  Returns list of data or the specified form.
     #' @param form string of raw form name such as "survey_one"
-    show_data = function(form) {
-      if(missing(form)){
-        return(private$project$data)
+    #' @param envir environment variable
+    show_data = function(form = NULL, envir = NULL) {
+      assert_environment(envir, null.ok = TRUE)
+      return_this <- private$project$data
+      if(!is.null(form)){
+        #add warning or message?
+        return_this <- private$project$data[[form]]
       }
-      private$project$data[[form]]
+      if(!is.null(envir)) {
+        list2env(return_this, envir = envir)
+      }
+      invisible(return_this)
     },
     #' @description  returns internal list
     use = function(){

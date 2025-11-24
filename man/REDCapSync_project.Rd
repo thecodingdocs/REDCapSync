@@ -218,13 +218,15 @@ Clear all project summaries
 \subsection{Method \code{generate_summary()}}{
 Add a new summary entry
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$generate_summary(summary_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$generate_summary(summary_name, envir)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{summary_name}}{Character of summary_name.}
+
+\item{\code{envir}}{environment variable}
 }
 \if{html}{\out{</div>}}
 }
@@ -334,13 +336,17 @@ Add a new summary entry
 \subsection{Method \code{show_metadata()}}{
 Returns list of data or the specified form.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_metadata(type = "fields")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_metadata(type = NULL, annotate = FALSE, envir = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{type}}{string of either "fields","forms", or "choices"}
+
+\item{\code{annotate}}{logical for annotating in reference to data}
+
+\item{\code{envir}}{environment variable}
 }
 \if{html}{\out{</div>}}
 }
@@ -351,13 +357,15 @@ Returns list of data or the specified form.
 \subsection{Method \code{show_data()}}{
 Returns list of data or the specified form.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_data(form)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_data(form = NULL, envir = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{form}}{string of raw form name such as "survey_one"}
+
+\item{\code{envir}}{environment variable}
 }
 \if{html}{\out{</div>}}
 }

@@ -330,7 +330,7 @@ get_project_path <- function(short_name,
   if (check_dir) {
     assert_dir(dir_path)
   }
-  checkmate::assert_choice(type, .project_file_types)
+  assert_choice(type, .project_file_types)
   file_name <- paste0(short_name, "_REDCapSync")
   if (type != "")
     file_name <- file_name %>% paste0("_", type)
@@ -525,6 +525,7 @@ save_project <- function(project, silent = FALSE) {
     last_clean = NULL,
     last_directory_save = NULL,
     last_sync = NULL,
+    sync_vector_clock = 0,
     labelled = NULL,
     timezone = NULL,
     get_files = NULL,

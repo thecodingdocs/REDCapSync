@@ -43,6 +43,8 @@ for initializing the `project` object.'
 
 - [`REDCapSync_project$show_data()`](#method-REDCapSync_project-show_data)
 
+- [`REDCapSync_project$show_token()`](#method-REDCapSync_project-show_token)
+
 - [`REDCapSync_project$use()`](#method-REDCapSync_project-use)
 
 ------------------------------------------------------------------------
@@ -441,6 +443,16 @@ Returns list of data or the specified form.
 - `envir`:
 
   environment variable
+
+------------------------------------------------------------------------
+
+### Method `show_token()`
+
+Displays project token in console for verification
+
+#### Usage
+
+    REDCapSync_project$show_token()
 
 ------------------------------------------------------------------------
 

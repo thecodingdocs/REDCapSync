@@ -30,26 +30,6 @@ get_projects <- function() {
   projects
 }
 #' @noRd
-blank_tibble <- function(col_names){
-  if(missing(col_names)) {
-    return(tibble())
-  }
-  checkmate::assert_vector(col_names, unique = TRUE)
-  df <- matrix(data = character(0),ncol = length(col_names))
-  colnames(df) <- col_names
-  as_tibble(df)
-}
-#' @noRd
-blank_data_frame <- function(col_names){
-  if(missing(col_names)) {
-    return(data.frame())
-  }
-  checkmate::assert_vector(col_names, unique = TRUE)
-  df <- matrix(data = character(0),ncol = length(col_names))
-  colnames(df) <- col_names
-  as.data.frame(df)
-}
-#' @noRd
 .blank_project_cols <- c(
   "short_name",
   "dir_path",

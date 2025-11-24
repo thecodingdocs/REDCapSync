@@ -188,4 +188,6 @@ test_that("get_min_dates works", {
 # normalize_redcap ( Internal )
 # sort_redcap_log ( Internal )
 # clean_redcap_log ( Internal )
+test_that("clean_redcap_log works", {
+})
 # check_missing_codes ( Internal )

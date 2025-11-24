@@ -267,6 +267,8 @@ REDCapSync_project <- R6Class(
       }
       invisible(return_this)
     },
+    #' @description Displays project token in console for verification
+    show_token = function() {view_project_token(private$project)},
     #' @description  returns internal list
     use = function(){
       invisible(private$project)

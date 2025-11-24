@@ -30,6 +30,7 @@ Users should construct objects using \code{\link[=setup_project]{setup_project()
 \item \href{#method-REDCapSync_project-save}{\code{REDCapSync_project$save()}}
 \item \href{#method-REDCapSync_project-show_metadata}{\code{REDCapSync_project$show_metadata()}}
 \item \href{#method-REDCapSync_project-show_data}{\code{REDCapSync_project$show_data()}}
+\item \href{#method-REDCapSync_project-show_token}{\code{REDCapSync_project$show_token()}}
 \item \href{#method-REDCapSync_project-use}{\code{REDCapSync_project$use()}}
 }
 }
@@ -369,6 +370,16 @@ Returns list of data or the specified form.
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSync_project-show_token"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSync_project-show_token}{}}}
+\subsection{Method \code{show_token()}}{
+Displays project token in console for verification
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_token()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSync_project-use"></a>}}

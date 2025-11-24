@@ -25,7 +25,7 @@ assert_dir <- function(dir_path, silent = TRUE) {
 get_project_token <- function(project, silent = TRUE) {
   assert_setup_project(project)
   token_name <- project$redcap$token_name
-  token <- sanitize_token(Sys.getenv(token_name))
+  token <- Sys.getenv(token_name)
   valid <- token %>% is_valid_redcap_token(silent = silent)
   fake_token <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
   if (!silent) {

@@ -106,6 +106,81 @@ test_that("get_record_url works", {
   e$called_url <- NULL
   # get_record_url(project,page = "2", text_only = TRUE)
 })
+test_that("deidentify_data_list works", {
+  project <- TEST_CLASSIC
+  data_list <- merge_non_repeating(TEST_CLASSIC,"merged")
+  fields <- data_list$metadata$fields
+  initial_identifiers <- fields$field_name[which(
+    fields$identifier == "y" |
+      fields$text_validation_type_or_show_slider_number %in%
+      .redcap_possible_id_fields_strict
+  )]
+  free_text_rows <- which(
+    fields$field_type == "notes" |
+      (
+        fields$field_type == "text" &
+          is.na(fields$text_validation_type_or_show_slider_number)
+      ) &
+      !fields$field_name %in% id_cols
+  )
+  free_text_fields <- fields$field_name[free_text_rows]
+  id_cols <- data_list$metadata$form_key_cols %>%
+    unlist() %>%
+    unique()
+  expect_all_true(initial_identifiers %in% colnames(data_list$data$merged))
+  no_ids <- data_list %>% deidentify_data_list(
+    exclude_identifiers = TRUE,
+    exclude_free_text = FALSE
+  )
+  expect_all_false(initial_identifiers %in% colnames(no_ids$data$merged))
+  expect_all_true(free_text_fields %in% colnames(data_list$data$merged))
+  no_free_text <- data_list %>% deidentify_data_list(
+    exclude_identifiers = FALSE,
+    exclude_free_text = TRUE
+  )
+  expect_all_false(initial_identifiers %in% colnames(no_free_text$data$merged))
+  keep_rows <- which(!data_list$metadata$fields$field_name %in% initial_identifiers)
+  data_list$metadata$fields <- data_list$metadata$fields[keep_rows,]
+  keep_cols <- which(!colnames(data_list$data$merged) %in% initial_identifiers)
+  data_list$data$merged <- data_list$data$merged[,keep_cols]
+  expect_warning(data_list %>% deidentify_data_list(
+    exclude_identifiers = TRUE,
+    exclude_free_text = FALSE
+  ),"You have no identifiers marked")
+})
+test_that("get_min_dates works", {
+  # construct minimal data_list with date fields across forms
+  data_list <- list(
+    data = list(
+      form1 = data.frame(
+        record_id = c("1", "2"),
+        date1 = c("2020-01-01", "2020-01-05"),
+        stringsAsFactors = FALSE
+      ),
+      form2 = data.frame(
+        record_id = c("2", "3"),
+        date2 = c("2020-02-01", "2020-01-15"),
+        stringsAsFactors = FALSE
+      )
+    ),
+    metadata = list(
+      fields = data.frame(
+        field_name = c("record_id", "date1", "date2"),
+        field_type_R = c(NA, "date", "date"),
+        stringsAsFactors = FALSE
+      ),
+      form_key_cols = list(record_id = "record_id")
+    )
+  )
+  out <- get_min_dates(data_list)
+  # basic structure checks
+  checkmate::expect_data_frame(out, nrows = 3, ncols = 2)
+  expect_true(all(c("record_id", "date") %in% colnames(out)))
+  # values: min date per record across forms
+  expect_equal(as.character(out$date[match("1", out$record_id)]), "2020-01-01")
+  expect_equal(as.character(out$date[match("2", out$record_id)]), "2020-01-05")
+  expect_equal(as.character(out$date[match("3", out$record_id)]), "2020-01-15")
+})
 # clean_data_list ( Internal )
 # get_key_col_list ( Internal )
 # normalize_redcap ( Internal )

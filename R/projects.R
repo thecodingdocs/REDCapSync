@@ -26,6 +26,7 @@ get_projects <- function() {
   if (!does_exist || !is_ok) {
     return(.blank_project_details)
   }
+  # projects$short_name %>% paste0(collapse = "\n") %>% message()
   projects
 }
 #' @noRd

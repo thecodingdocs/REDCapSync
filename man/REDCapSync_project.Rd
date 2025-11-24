@@ -196,9 +196,6 @@ be saved. Default is \verb{<project$short_name>_<summary_name>}.}
 
 \item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files with the
 same name. Default is \code{FALSE}.}
-
-\item{\code{internal_use}}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, then will
-return data_list meant for internal use. Defaults to \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -225,7 +222,9 @@ Add a new summary entry
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{summary_name}}{Character of summary_name.}
+\item{\code{summary_name}}{Character. The name of the summary from which to generate
+the summary. *If you provide \code{summary_name} all other parameters are
+inherited according to what was set with \code{add_project_summary}.}
 
 \item{\code{envir}}{environment variable}
 }

@@ -110,7 +110,59 @@ test_that("add_project_summary works!", {
   expect_true(is.character(s$file_name))
 })
 # save_summary ( Internal )
-test_that("save_summary works!", {
+test_that("save_summary works", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
+
+  project <- TEST_CLASSIC
+  project$dir_path <- test_dir
+  dir.create(file.path(test_dir, "output"), recursive = TRUE)
+
+  summary_name <- "SAVE_SUMMARY_TEST"
+  project <- add_project_summary(
+    project = project,
+    summary_name = summary_name,
+    transformation_type = "default",
+    include_metadata = TRUE,
+    include_records = TRUE,
+    include_users = TRUE,
+    include_log = FALSE,
+    annotate_from_log = FALSE,
+    with_links = FALSE,
+    separate = FALSE,
+    use_csv = FALSE
+  )
+  # save and capture returned project
+  expect_no_error({
+    project <- save_summary(project, summary_name)
+  })
+  # file created
+  file_path <- project$summary[[summary_name]]$file_path
+  expect_true(file.exists(file_path))
+  # summary metadata updated
+  expect_true(!is.null(project$summary[[summary_name]]$n_records))
+  expect_true(!is.null(project$summary[[summary_name]]$last_save_time))
+  what_was_saved <- excel_to_list(file_path)
+  expect_all_true(
+    c(
+      "merged",
+      "forms",
+      "fields",
+      "choices",
+      "missing_codes",
+      "users",
+      "records",
+      "summary_details"
+    ) %in% names(what_was_saved)
+  )
 })
 # generate_project_summary ( Exported )
 test_that("generate_project_summary works!", {
@@ -179,6 +231,13 @@ test_that("summarize_project works!", {
 })
 # clear_project_summaries ( Exported )
 test_that("clear_project_summaries works!", {
+  project <- TEST_CLASSIC
+  summaries <- c("REDCapSync","REDCapSync_raw")
+  expect_all_true(summaries %in% names(project$summary))
+  expect_all_true(summaries %in% names(project$summary$all_records))
+  project <- clear_project_summaries(project)
+  expect_all_false(summaries %in% names(project$summary))
+  expect_all_false(summaries %in% names(project$summary$all_records))
 })
 # extract_values_from_form_list ( Internal )
 test_that("extract_values_from_form_list works!", {
@@ -214,7 +273,32 @@ test_that("summary_records_due works!", {
 test_that("check_summaries works!", {
 })
 # add_default_summaries ( Internal )
-test_that("add_default_summaries works!", {
+test_that("add_default_summaries works", {
+  project <- TEST_CLASSIC %>% clear_project_summaries()
+  project <- clear_project_summaries(project)
+  summaries <- c("REDCapSync","REDCapSync_raw")
+  expect_all_false(summaries %in% names(project$summary))
+  expect_all_false(summaries %in% names(project$summary$all_records))
+  expect_no_error({
+    project <- add_default_summaries(
+      project = project,
+      exclude_identifiers = TRUE,
+      exclude_free_text = TRUE,
+      date_handling = "none"
+    )
+  })
+  expect_all_true(summaries %in% names(project$summary))
+  expect_all_true(summaries %in% names(project$summary$all_records))
+  raw <- project$summary$REDCapSync_raw
+  main <- project$summary$REDCapSync
+  # check expected settings for raw summary
+  expect_equal(raw$transformation_type, "none")
+  expect_false(raw$include_records)
+  expect_true(raw$separate)
+  # check expected settings for main summary
+  expect_equal(main$transformation_type, "default")
+  expect_true(main$include_records)
+  expect_false(main$separate)
 })
 # labelled_to_raw_form ( Exported )
 test_that("labelled_to_raw_form and raw_to_labelled_form works!", {

@@ -152,6 +152,12 @@ REDCapSync_project <- R6Class(
       )
       invisible(self)
     },
+    #' @description  Clear all project summaries
+    clear_summaries = function (){
+      project <- clear_project_summaries(project)
+      private$project <- clear_project_summaries(private$project)
+      invisible(self)
+    },
     #' @description  Add a new summary entry
     #' @param summary_name Character of summary_name.
     generate_summary = function(summary_name){

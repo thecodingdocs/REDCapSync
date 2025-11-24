@@ -127,7 +127,6 @@ test_that("deidentify_data_list works", {
       !fields$field_name %in% id_cols
   )
   free_text_fields <- fields$field_name[free_text_rows]
-
   expect_all_true(initial_identifiers %in% colnames(data_list$data$merged))
   no_ids <- data_list %>% deidentify_data_list(
     exclude_identifiers = TRUE,

@@ -21,6 +21,7 @@ Users should construct objects using \code{\link[=setup_project]{setup_project()
 \item \href{#method-REDCapSync_project-new}{\code{REDCapSync_project$new()}}
 \item \href{#method-REDCapSync_project-info}{\code{REDCapSync_project$info()}}
 \item \href{#method-REDCapSync_project-add_summary}{\code{REDCapSync_project$add_summary()}}
+\item \href{#method-REDCapSync_project-clear_summaries}{\code{REDCapSync_project$clear_summaries()}}
 \item \href{#method-REDCapSync_project-generate_summary}{\code{REDCapSync_project$generate_summary()}}
 \item \href{#method-REDCapSync_project-add_field}{\code{REDCapSync_project$add_field()}}
 \item \href{#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
@@ -200,6 +201,16 @@ return data_list meant for internal use. Defaults to \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSync_project-clear_summaries"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSync_project-clear_summaries}{}}}
+\subsection{Method \code{clear_summaries()}}{
+Clear all project summaries
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$clear_summaries()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSync_project-generate_summary"></a>}}

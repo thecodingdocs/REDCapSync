@@ -84,6 +84,8 @@ Users should construct objects using <code><a href="setup-load.html">setup_proje
 <li><p><a href="#method-REDCapSync_project-generate_summary"><code>REDCapSync_project$generate_summary()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-add_field"><code>REDCapSync_project$add_field()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-sync"><code>REDCapSync_project$sync()</code></a></p></li>
+<li><p><a href="#method-REDCapSync_project-summarize"><code>REDCapSync_project$summarize()</code></a></p></li>
+<li><p><a href="#method-REDCapSync_project-save_summary"><code>REDCapSync_project$save_summary()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-save"><code>REDCapSync_project$save()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-show_metadata"><code>REDCapSync_project$show_metadata()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-show_data"><code>REDCapSync_project$show_data()</code></a></p></li>
@@ -118,9 +120,196 @@ will be accessible to any user.</p><div class="section">
 <h3 id="method-add-summary-">Method <code>add_summary()</code><a class="anchor" aria-label="anchor" href="#method-add-summary-"></a></h3>
 <p>Add a new summary entry</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">add_summary</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">add_summary</span><span class="op">(</span></span>
+<span>  <span class="va">summary_name</span>,</span>
+<span>  transformation_type <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  merge_form_name <span class="op">=</span> <span class="st">"merged"</span>,</span>
+<span>  filter_field <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_choices <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_strict <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  field_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  form_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  exclude_identifiers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_free_text <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  date_handling <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>  labelled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  clean <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  drop_blanks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  drop_missing_codes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  drop_others <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  include_metadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  include_records <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  include_users <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  include_log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  annotate_from_log <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  with_links <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  separate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  use_csv <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  dir_other <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  file_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  hard_reset <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+<div class="section">
+<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>summary_name</code></dt>
+<dd><p>Character. The name of the summary from which to generate
+the summary. *If you provide <code>summary_name</code> all other parameters are
+inherited according to what was set with <code>add_project_summary</code>.</p></dd>
+
+
+<dt><code>transformation_type</code></dt>
+<dd><p>Character vector.
+Default is "default".
+Also have "none", "flat", "merge_non_repeating"
+"default" first merges non-repeating and if there are repeating forms it
+merges non-repeating variables to the right of repeating instruments
+"flat" is one-record, one-row, even if there are repeating forms
+"none" does not transform anything
+"merge_non_repeating" still merges all non-repeating instruments but
+does not merge them to repeating instruments</p></dd>
+
+
+<dt><code>merge_form_name</code></dt>
+<dd><p>A character string representing the name of the merged
+form. Default is "merged".</p></dd>
+
+
+<dt><code>filter_field</code></dt>
+<dd><p>Character. The name of the field in the database to
+filter on.</p></dd>
+
+
+<dt><code>filter_choices</code></dt>
+<dd><p>Vector. The values of <code>filter_field</code> used to define the
+summary.</p></dd>
+
+
+<dt><code>filter_list</code></dt>
+<dd><p>Vector. The values of <code>filter_field</code> used to define the
+summary.</p></dd>
+
+
+<dt><code>filter_strict</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, all forms will be filtered by
+criteria. If <code>FALSE</code>, will convert original filter to id column and filter
+all other forms by that record. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>field_names</code></dt>
+<dd><p>Character vector. Names of specific fields to include in
+the summary. Default is <code>NULL</code>, which includes all fields.</p></dd>
+
+
+<dt><code>form_names</code></dt>
+<dd><p>Character vector. Names of forms to include in the summary.
+Default is <code>NULL</code>, which includes all forms.</p></dd>
+
+
+<dt><code>exclude_identifiers</code></dt>
+<dd><p>Logical. Whether to exlude identifiers in the data
+in the summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>exclude_free_text</code></dt>
+<dd><p>Logical for excluding free text. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt><code>date_handling</code></dt>
+<dd><p>character string. One of <code>none</code>,<code>exclude_dates</code>,
+<code>random_shift_by_record</code>, <code>random_shift_by_project</code>, <code>zero_by_record</code>, or
+<code>zero_by_project</code> random shift is +/- 90 unless changed with options</p></dd>
+
+
+<dt><code>labelled</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, the data will be converted to labelled.
+Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>clean</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, the data will be cleaned before summarizing.
+Default is <code>TRUE</code>. If missing codes present AND number or date type, R will
+convert to those to NA and would make that variable not upload compatible</p></dd>
+
+
+<dt><code>drop_blanks</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, records with blank fields will be
+dropped. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>drop_missing_codes</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, will convert missing codes to NA.
+Default is <code>FALSE</code>.</p></dd>
+
+
+<dt><code>drop_others</code></dt>
+<dd><p>Character vector of other values that should be dropped.</p></dd>
+
+
+<dt><code>include_metadata</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, metadata will be included in the
+summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>include_records</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, a record summary will be
+included in the generated summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>include_users</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, user-related information will be
+included in the summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>include_log</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, the log of changes will be included in
+the summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>annotate_from_log</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, the metadata, users, and records
+will be annotated using the log. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>with_links</code></dt>
+<dd><p>Optional logical (TRUE/FALSE) for including links in Excel
+sheets. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt><code>separate</code></dt>
+<dd><p>Optional logical (TRUE/FALSE) separating each form into
+separate files as opposed to multi-tab Excel. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt><code>use_csv</code></dt>
+<dd><p>Logical (TRUE/FALSE). If TRUE, uses CSV files for data
+storage. Default is <code>FALSE</code></p></dd>
+
+
+<dt><code>dir_other</code></dt>
+<dd><p>Character. The directory where the summary file will be
+saved. Default is the <code>output</code> folder within the database directory.</p></dd>
+
+
+<dt><code>file_name</code></dt>
+<dd><p>Character. The base name of the file where the summary will
+be saved. Default is <code>&lt;project$short_name&gt;_&lt;summary_name&gt;</code>.</p></dd>
+
+
+<dt><code>hard_reset</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, overwrite existing summary files with the
+same name. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt><code>internal_use</code></dt>
+<dd><p>A logical flag (<code>TRUE</code> or <code>FALSE</code>). If <code>TRUE</code>, then will
+return data_list meant for internal use. Defaults to <code>FALSE</code>.</p></dd>
+
+
+</dl><p></p></div>
+</div>
 
 </div><p></p><hr><a id="method-REDCapSync_project-generate_summary"></a><div class="section">
 <h3 id="method-generate-summary-">Method <code>generate_summary()</code><a class="anchor" aria-label="anchor" href="#method-generate-summary-"></a></h3>
@@ -130,7 +319,7 @@ will be accessible to any user.</p><div class="section">
 </div>
 
 <div class="section">
-<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>summary_name</code></dt>
 <dd><p>Character of summary_name.</p></dd>
 
@@ -160,7 +349,7 @@ from the REDCap server.</p><div class="section">
 </div>
 
 <div class="section">
-<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>summarize</code></dt>
 <dd><p>Logical (TRUE/FALSE). If TRUE, summarizes data to directory.</p></dd>
 
@@ -196,10 +385,44 @@ processing.</p>
 <p>Messages for confirmation.</p>
 </div>
 
+</div><p></p><hr><a id="method-REDCapSync_project-summarize"></a><div class="section">
+<h3 id="method-summarize-">Method <code>summarize()</code><a class="anchor" aria-label="anchor" href="#method-summarize-"></a></h3>
+<p>summarize project and save to Excel</p><div class="section">
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">summarize</span><span class="op">(</span>hard_reset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>hard_reset</code></dt>
+<dd><p>Logical that forces a fresh update if TRUE. Default is</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
+</div><p></p><hr><a id="method-REDCapSync_project-save_summary"></a><div class="section">
+<h3 id="method-save-summary-">Method <code>save_summary()</code><a class="anchor" aria-label="anchor" href="#method-save-summary-"></a></h3>
+<p>save summary to Excel</p><div class="section">
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">save_summary</span><span class="op">(</span><span class="va">summary_name</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>summary_name</code></dt>
+<dd><p>Character. The name of the summary from which to generate
+the summary. *If you provide <code>summary_name</code> all other parameters are
+inherited according to what was set with <code>add_summary</code>.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
 </div><p></p><hr><a id="method-REDCapSync_project-save"></a><div class="section">
 <h3 id="method-save-">Method <code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code><a class="anchor" aria-label="anchor" href="#method-save-"></a></h3>
 <p>Add a new summary entry</p><div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -207,12 +430,12 @@ processing.</p>
 </div><p></p><hr><a id="method-REDCapSync_project-show_metadata"></a><div class="section">
 <h3 id="method-show-metadata-">Method <code>show_metadata()</code><a class="anchor" aria-label="anchor" href="#method-show-metadata-"></a></h3>
 <p>Returns list of data or the specified form.</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">show_metadata</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"fields"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>type</code></dt>
 <dd><p>string of either "fields","forms", or "choices"</p></dd>
 
@@ -223,12 +446,12 @@ processing.</p>
 </div><p></p><hr><a id="method-REDCapSync_project-show_data"></a><div class="section">
 <h3 id="method-show-data-">Method <code>show_data()</code><a class="anchor" aria-label="anchor" href="#method-show-data-"></a></h3>
 <p>Returns list of data or the specified form.</p><div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">show_data</span><span class="op">(</span><span class="va">form</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>form</code></dt>
 <dd><p>string of raw form name such as "survey_one"</p></dd>
 
@@ -239,7 +462,7 @@ processing.</p>
 </div><p></p><hr><a id="method-REDCapSync_project-use"></a><div class="section">
 <h3 id="method-use-">Method <code><a href="https://rdrr.io/r/base/use.html" class="external-link">use()</a></code><a class="anchor" aria-label="anchor" href="#method-use-"></a></h3>
 <p>returns internal list</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">use</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 

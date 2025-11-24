@@ -34,9 +34,9 @@ add_project_summary(
   annotate_from_log = TRUE,
   with_links = TRUE,
   separate = FALSE,
-  use_csv,
-  dir_other = file.path(project$dir_path, "output"),
-  file_name = paste0(project$short_name, "_", summary_name),
+  use_csv = NULL,
+  dir_other = NULL,
+  file_name = NULL,
   hard_reset = FALSE
 )
 ```

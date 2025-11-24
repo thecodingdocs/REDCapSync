@@ -284,13 +284,17 @@ Add a new summary entry
 
 #### Usage
 
-    REDCapSync_project$generate_summary(summary_name)
+    REDCapSync_project$generate_summary(summary_name, envir)
 
 #### Arguments
 
 - `summary_name`:
 
   Character of summary_name.
+
+- `envir`:
+
+  environment variable
 
 ------------------------------------------------------------------------
 
@@ -402,13 +406,21 @@ Returns list of data or the specified form.
 
 #### Usage
 
-    REDCapSync_project$show_metadata(type = "fields")
+    REDCapSync_project$show_metadata(type = NULL, annotate = FALSE, envir = NULL)
 
 #### Arguments
 
 - `type`:
 
   string of either "fields","forms", or "choices"
+
+- `annotate`:
+
+  logical for annotating in reference to data
+
+- `envir`:
+
+  environment variable
 
 ------------------------------------------------------------------------
 
@@ -418,13 +430,17 @@ Returns list of data or the specified form.
 
 #### Usage
 
-    REDCapSync_project$show_data(form)
+    REDCapSync_project$show_data(form = NULL, envir = NULL)
 
 #### Arguments
 
 - `form`:
 
   string of raw form name such as "survey_one"
+
+- `envir`:
+
+  environment variable
 
 ------------------------------------------------------------------------
 

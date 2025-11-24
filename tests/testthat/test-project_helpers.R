@@ -109,6 +109,8 @@ test_that("get_record_url works", {
 test_that("deidentify_data_list works", {
   project <- TEST_CLASSIC
   data_list <- merge_non_repeating(TEST_CLASSIC,"merged")
+  data_list$metadata$fields$field_type_R <- NA
+  data_list$metadata$fields$in_original_redcap <- NA
   id_cols <- data_list$metadata$form_key_cols %>%
     unlist() %>%
     unique()

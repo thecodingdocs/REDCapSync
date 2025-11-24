@@ -24,6 +24,8 @@ Users should construct objects using \code{\link[=setup_project]{setup_project()
 \item \href{#method-REDCapSync_project-generate_summary}{\code{REDCapSync_project$generate_summary()}}
 \item \href{#method-REDCapSync_project-add_field}{\code{REDCapSync_project$add_field()}}
 \item \href{#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
+\item \href{#method-REDCapSync_project-summarize}{\code{REDCapSync_project$summarize()}}
+\item \href{#method-REDCapSync_project-save_summary}{\code{REDCapSync_project$save_summary()}}
 \item \href{#method-REDCapSync_project-save}{\code{REDCapSync_project$save()}}
 \item \href{#method-REDCapSync_project-show_metadata}{\code{REDCapSync_project$show_metadata()}}
 \item \href{#method-REDCapSync_project-show_data}{\code{REDCapSync_project$show_data()}}
@@ -65,9 +67,139 @@ Print project metadata
 \subsection{Method \code{add_summary()}}{
 Add a new summary entry
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$add_summary()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$add_summary(
+  summary_name,
+  transformation_type = "default",
+  merge_form_name = "merged",
+  filter_field = NULL,
+  filter_choices = NULL,
+  filter_list = NULL,
+  filter_strict = TRUE,
+  field_names = NULL,
+  form_names = NULL,
+  exclude_identifiers = TRUE,
+  exclude_free_text = FALSE,
+  date_handling = "none",
+  labelled = TRUE,
+  clean = TRUE,
+  drop_blanks = FALSE,
+  drop_missing_codes = FALSE,
+  drop_others = NULL,
+  include_metadata = TRUE,
+  include_records = TRUE,
+  include_users = TRUE,
+  include_log = FALSE,
+  annotate_from_log = TRUE,
+  with_links = TRUE,
+  separate = FALSE,
+  use_csv = FALSE,
+  dir_other = NULL,
+  file_name = NULL,
+  hard_reset = FALSE
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{summary_name}}{Character. The name of the summary from which to generate
+the summary. *If you provide \code{summary_name} all other parameters are
+inherited according to what was set with \code{add_project_summary}.}
+
+\item{\code{transformation_type}}{Character vector.
+Default is "default".
+Also have "none", "flat", "merge_non_repeating"
+"default" first merges non-repeating and if there are repeating forms it
+merges non-repeating variables to the right of repeating instruments
+"flat" is one-record, one-row, even if there are repeating forms
+"none" does not transform anything
+"merge_non_repeating" still merges all non-repeating instruments but
+does not merge them to repeating instruments}
+
+\item{\code{merge_form_name}}{A character string representing the name of the merged
+form. Default is "merged".}
+
+\item{\code{filter_field}}{Character. The name of the field in the database to
+filter on.}
+
+\item{\code{filter_choices}}{Vector. The values of \code{filter_field} used to define the
+summary.}
+
+\item{\code{filter_list}}{Vector. The values of \code{filter_field} used to define the
+summary.}
+
+\item{\code{filter_strict}}{Logical. If \code{TRUE}, all forms will be filtered by
+criteria. If \code{FALSE}, will convert original filter to id column and filter
+all other forms by that record. Default is \code{TRUE}.}
+
+\item{\code{field_names}}{Character vector. Names of specific fields to include in
+the summary. Default is \code{NULL}, which includes all fields.}
+
+\item{\code{form_names}}{Character vector. Names of forms to include in the summary.
+Default is \code{NULL}, which includes all forms.}
+
+\item{\code{exclude_identifiers}}{Logical. Whether to exlude identifiers in the data
+in the summary. Default is \code{TRUE}.}
+
+\item{\code{exclude_free_text}}{Logical for excluding free text. Default is \code{FALSE}.}
+
+\item{\code{date_handling}}{character string. One of \code{none},\code{exclude_dates},
+\code{random_shift_by_record}, \code{random_shift_by_project}, \code{zero_by_record}, or
+\code{zero_by_project} random shift is +/- 90 unless changed with options}
+
+\item{\code{labelled}}{Logical. If \code{TRUE}, the data will be converted to labelled.
+Default is \code{TRUE}.}
+
+\item{\code{clean}}{Logical. If \code{TRUE}, the data will be cleaned before summarizing.
+Default is \code{TRUE}. If missing codes present AND number or date type, R will
+convert to those to NA and would make that variable not upload compatible}
+
+\item{\code{drop_blanks}}{Logical. If \code{TRUE}, records with blank fields will be
+dropped. Default is \code{TRUE}.}
+
+\item{\code{drop_missing_codes}}{Logical. If \code{TRUE}, will convert missing codes to NA.
+Default is \code{FALSE}.}
+
+\item{\code{drop_others}}{Character vector of other values that should be dropped.}
+
+\item{\code{include_metadata}}{Logical. If \code{TRUE}, metadata will be included in the
+summary. Default is \code{TRUE}.}
+
+\item{\code{include_records}}{Logical. If \code{TRUE}, a record summary will be
+included in the generated summary. Default is \code{TRUE}.}
+
+\item{\code{include_users}}{Logical. If \code{TRUE}, user-related information will be
+included in the summary. Default is \code{TRUE}.}
+
+\item{\code{include_log}}{Logical. If \code{TRUE}, the log of changes will be included in
+the summary. Default is \code{TRUE}.}
+
+\item{\code{annotate_from_log}}{Logical. If \code{TRUE}, the metadata, users, and records
+will be annotated using the log. Default is \code{TRUE}.}
+
+\item{\code{with_links}}{Optional logical (TRUE/FALSE) for including links in Excel
+sheets. Default is \code{FALSE}.}
+
+\item{\code{separate}}{Optional logical (TRUE/FALSE) separating each form into
+separate files as opposed to multi-tab Excel. Default is \code{FALSE}.}
+
+\item{\code{use_csv}}{Logical (TRUE/FALSE). If TRUE, uses CSV files for data
+storage. Default is \code{FALSE}}
+
+\item{\code{dir_other}}{Character. The directory where the summary file will be
+saved. Default is the \code{output} folder within the database directory.}
+
+\item{\code{file_name}}{Character. The base name of the file where the summary will
+be saved. Default is \verb{<project$short_name>_<summary_name>}.}
+
+\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files with the
+same name. Default is \code{FALSE}.}
+
+\item{\code{internal_use}}{A logical flag (\code{TRUE} or \code{FALSE}). If \code{TRUE}, then will
+return data_list meant for internal use. Defaults to \code{FALSE}.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSync_project-generate_summary"></a>}}
@@ -137,6 +269,42 @@ processing.
 
 \subsection{Returns}{
 Messages for confirmation.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSync_project-summarize"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSync_project-summarize}{}}}
+\subsection{Method \code{summarize()}}{
+summarize project and save to Excel
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$summarize(hard_reset = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{hard_reset}}{Logical that forces a fresh update if TRUE. Default is}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSync_project-save_summary"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSync_project-save_summary}{}}}
+\subsection{Method \code{save_summary()}}{
+save summary to Excel
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$save_summary(summary_name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{summary_name}}{Character. The name of the summary from which to generate
+the summary. *If you provide \code{summary_name} all other parameters are
+inherited according to what was set with \code{add_summary}.}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}

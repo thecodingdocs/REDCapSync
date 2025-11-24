@@ -380,9 +380,9 @@ add_project_summary <- function(project,
                                 annotate_from_log = TRUE,
                                 with_links = TRUE,
                                 separate = FALSE,
-                                use_csv,
-                                dir_other = file.path(project$dir_path, "output"),
-                                file_name = paste0(project$short_name, "_", summary_name),
+                                use_csv = NULL,
+                                dir_other = NULL,
+                                file_name = NULL,
                                 hard_reset = FALSE) {
   lifecycle::signal_stage("experimental", "add_project_summary()")
   # sync_frequency ... project$internals$sync_frequency
@@ -391,8 +391,15 @@ add_project_summary <- function(project,
     stop(summary_name,
          " is a forbidden summary name. Used for REDCapSync.")
   }
-  if (missing(use_csv))
+  if (is.null(use_csv)){
     use_csv <- project$internals$use_csv
+  }
+  if (is.null(dir_other)){
+    dir_other <- file.path(project$dir_path, "output")
+  }
+  if (is.null(file_name)){
+    file_name <- paste0(project$short_name, "_", summary_name)
+  }
   if (is.null(filter_list)) {
     if (!is.null(filter_choices) && !is.null(filter_field)) {
       filter_list <- list(filter_choices)

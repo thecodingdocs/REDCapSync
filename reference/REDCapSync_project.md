@@ -45,6 +45,8 @@ for initializing the `project` object.'
 
 - [`REDCapSync_project$show_token()`](#method-REDCapSync_project-show_token)
 
+- [`REDCapSync_project$test_token()`](#method-REDCapSync_project-test_token)
+
 - [`REDCapSync_project$url_launch()`](#method-REDCapSync_project-url_launch)
 
 - [`REDCapSync_project$use()`](#method-REDCapSync_project-use)
@@ -453,6 +455,16 @@ Displays project token in console for verification
 #### Usage
 
     REDCapSync_project$show_token()
+
+------------------------------------------------------------------------
+
+### Method `test_token()`
+
+test connection via communication with API
+
+#### Usage
+
+    REDCapSync_project$test_token()
 
 ------------------------------------------------------------------------
 

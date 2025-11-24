@@ -1,6 +1,6 @@
 #' @noRd
 rcon_result <- function(project) {
-  rcon <- redcapAPI::redcapConnection(url = project$links$redcap_uri,
+  rcon <- redcapConnection(url = project$links$redcap_uri,
                                       token = get_project_token(project))
   list(
     project_info = tryCatch(

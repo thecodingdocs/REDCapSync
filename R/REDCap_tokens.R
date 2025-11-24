@@ -38,10 +38,10 @@ view_project_token <- function(project) {
 #' @keywords internal
 test_project_token <- function(project) {
   assert_setup_project(project)
-  rcon <- redcapAPI::redcapConnection(url = project$links$redcap_uri,
+  rcon <- redcapConnection(url = project$links$redcap_uri,
                                       token = get_project_token(project))
   redcap_version <- tryCatch(
-    expr = redcapAPI::exportVersion(rcon = rcon),
+    expr = exportVersion(rcon = rcon),
     error = function(e) {NULL}
   )
   # add timezone

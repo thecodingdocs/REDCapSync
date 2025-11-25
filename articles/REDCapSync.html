@@ -127,14 +127,11 @@ package.</p>
 <h2 id="explore-outputs">Explore Outputs!<a class="anchor" aria-label="anchor" href="#explore-outputs"></a>
 </h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="fu">show_metadata</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">forms</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="fu">show_metadata</span><span class="op">(</span><span class="st">"forms"</span><span class="op">)</span></span>
-<span><span class="va">choices</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="fu">show_metadata</span><span class="op">(</span><span class="st">"choices"</span><span class="op">)</span></span>
-<span><span class="va">form_list</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="fu">generate_summary</span><span class="op">(</span></span>
-<span>  summary_name <span class="op">=</span> <span class="st">"raw"</span></span>
-<span>  <span class="op">)</span> </span>
-<span><span class="co"># Put list to your global environment</span></span>
-<span><span class="va">form_list</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/list2env.html" class="external-link">list2env</a></span><span class="op">(</span>envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">project</span><span class="op">$</span><span class="fu">show_metadata</span><span class="op">(</span>envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">generate_summary</span><span class="op">(</span></span>
+<span>  summary_name <span class="op">=</span> <span class="st">"REDCapSync_raw"</span>,</span>
+<span>  envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> </span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="go-further-by-generating-summaries">Go Further by Generating Summaries!<a class="anchor" aria-label="anchor" href="#go-further-by-generating-summaries"></a>
@@ -142,10 +139,9 @@ package.</p>
 <p>The following default merges all non-repeating forms and adds them to
 the right of any repeating forms. It also uses the REDCap log and REDCap
 data to add key information to metadata, users, and records.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">project</span><span class="op">$</span><span class="fu">generate_summary</span><span class="op">(</span></span>
-<span>  summary_name <span class="op">=</span> <span class="st">"REDCapSync"</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/list2env.html" class="external-link">list2env</a></span><span class="op">(</span>envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>project<span class="sc">$</span><span class="fu">generate_summary</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">summary_name =</span> <span class="st">"REDCapSync"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">envir =</span> <span class="fu">globalenv</span>()</span></code></pre></div>
 <p>This can be customized with <code>add_summary</code> for refreshing
 datasets or <code>generate_summary</code> for R-only use. This can give
 you filtered data (and corresponding annotations to metadata, etc),
@@ -155,8 +151,9 @@ de-identified data, and more!</p>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="at">filter_choices =</span> <span class="st">"Yes"</span>       <span class="co"># REDCap Labelled choice,</span></span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="at">exclude_identifiers =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="at">exclude_free_text =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="at">include_metadata =</span> <span class="cn">TRUE</span></span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">list2env</span>(<span class="at">envir =</span> <span class="fu">globalenv</span>())</span></code></pre></div>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="at">include_metadata =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>    <span class="at">envir =</span> <span class="fu">globalenv</span>()</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

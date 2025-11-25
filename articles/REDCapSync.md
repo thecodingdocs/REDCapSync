@@ -42,14 +42,11 @@ project$sync() # gets all data from REDCap
 ## Explore Outputs!
 
 ``` r
-fields <- project$show_metadata()
-forms <- project$show_metadata("forms")
-choices <- project$show_metadata("choices")
-form_list <- project$generate_summary(
-  summary_name = "raw"
+project$show_metadata(envir = globalenv())
+project$generate_summary(
+  summary_name = "REDCapSync_raw",
+  envir = globalenv()
   ) 
-# Put list to your global environment
-form_list %>% list2env(envir = globalenv())
 ```
 
 ## Go Further by Generating Summaries!
@@ -60,8 +57,8 @@ data to add key information to metadata, users, and records.
 
 ``` r
 project$generate_summary(
-  summary_name = "REDCapSync"
-  ) %>% list2env(envir = globalenv())
+  summary_name = "REDCapSync",
+  envir = globalenv()
 ```
 
 This can be customized with `add_summary` for refreshing datasets or
@@ -75,6 +72,7 @@ project$generate_summary(
     filter_choices = "Yes"       # REDCap Labelled choice,
     exclude_identifiers = TRUE,
     exclude_free_text = TRUE,
-    include_metadata = TRUE
-  ) %>% list2env(envir = globalenv())
+    include_metadata = TRUE,
+    envir = globalenv()
+  )
 ```

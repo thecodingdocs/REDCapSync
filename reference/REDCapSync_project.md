@@ -49,7 +49,7 @@ for initializing the `project` object.'
 
 - [`REDCapSync_project$url_launch()`](#method-REDCapSync_project-url_launch)
 
-- [`REDCapSync_project$use()`](#method-REDCapSync_project-use)
+- [`REDCapSync_project$.internal()`](#method-REDCapSync_project-.internal)
 
 ------------------------------------------------------------------------
 
@@ -285,7 +285,7 @@ Add a new summary entry
 
 #### Usage
 
-    REDCapSync_project$generate_summary(summary_name, envir)
+    REDCapSync_project$generate_summary(summary_name, envir = NULL)
 
 #### Arguments
 
@@ -372,7 +372,8 @@ summarize project and save to Excel
 
 - `hard_reset`:
 
-  Logical that forces a fresh update if TRUE. Default is
+  Logical. If `TRUE`, overwrite existing summary files with the same
+  name. Default is `FALSE`.
 
 ------------------------------------------------------------------------
 
@@ -390,7 +391,7 @@ save summary to Excel
 
   Character. The name of the summary from which to generate the summary.
   \*If you provide `summary_name` all other parameters are inherited
-  according to what was set with `add_summary`.
+  according to what was set with `add_project_summary`.
 
 ------------------------------------------------------------------------
 
@@ -490,10 +491,10 @@ opens links in browser
 
 ------------------------------------------------------------------------
 
-### Method [`use()`](https://rdrr.io/r/base/use.html)
+### Method `.internal()`
 
 returns internal list
 
 #### Usage
 
-    REDCapSync_project$use()
+    REDCapSync_project$.internal()

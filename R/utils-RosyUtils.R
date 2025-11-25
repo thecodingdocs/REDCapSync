@@ -180,9 +180,42 @@ drop_nas <- function(x) {
 #' @noRd
 excel_to_list <- function(path) {
   sheets <- readxl::excel_sheets(path)
+  names(sheets) <- seq_along(sheets)
   clean_sheets <- clean_env_names(sheets)
   out <- list()
-  for (i in seq_along(sheets)) {
+  if("summary_details" %in% sheets){
+    summary_details <- readxl::read_xlsx(
+      path,
+      col_types = "text",
+      sheet = which(sheets == "summary_details")
+    )
+    if (all(c("paramater", "value") %in% colnames(summary_details))) {
+      the_row <- which(summary_details$paramater == "raw_form_names")
+      form_names <- summary_details$value[the_row] %>%
+        strsplit(" [:|:] ") %>%
+        unlist()
+      the_row <- which(summary_details$paramater == "cols_start")
+      cols_start <- summary_details$value[the_row] %>% as.integer()
+      if(cols_start > 1){
+        for(i in as.integer(names(sheets)[match(form_names,sheets)])){
+          suppressMessages({
+            out[[i]] <- readxl::read_xlsx(path,
+                                          col_types = "text",
+                                          sheet = i,
+                                          col_names = FALSE)
+          })
+          final_nrow <- nrow(out[[i]])
+          if(cols_start < final_nrow){
+            true_colnames <- out[[i]][cols_start,] %>% unlist() %>% unname()
+            out[[i]] <- out[[i]][(cols_start+1):final_nrow,]
+            colnames(out[[i]])<- true_colnames
+            sheets <- sheets[which(sheets != sheets[i])]
+          }
+        }
+      }
+    }
+  }
+  for (i in as.integer(names(sheets))) {
     out[[i]] <- readxl::read_xlsx(path, col_types = "text", sheet = i)
   }
   names(out) <- clean_sheets

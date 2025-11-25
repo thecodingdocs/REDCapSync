@@ -529,9 +529,10 @@ save_summary <- function(project, summary_name) {
   form_names <- names(data_list$data)
   header_df_list <- construct_header_list(data_list)
   key_cols_list <- data_list$metadata$form_key_cols
+  cols_start <- 4
   if (summary_name == "REDCapSync_raw") {
+    cols_start <- 1
     header_df_list <- NULL
-    key_cols_list <- NULL
   }
   records <- data_list$data[form_names] %>%
     lapply(function(form) {
@@ -541,6 +542,7 @@ save_summary <- function(project, summary_name) {
     sort() %>%
     unique()
   n_records <- length(records)
+  # track form names
   data_list <- data_list_to_save(
     data_list = data_list,
     include_metadata = summary_list$include_metadata,
@@ -580,6 +582,8 @@ save_summary <- function(project, summary_name) {
   summary_details$n_records <- n_records
   summary_details$last_save_time <- last_save_time
   summary_details$final_form_tab_names <- final_form_tab_names
+  summary_details$raw_form_names <- form_names
+  summary_details$cols_start <- cols_start
   data_list$summary_details <- data.frame(
     paramater = names(summary_details),
     value = summary_details %>% lapply(function(row) {

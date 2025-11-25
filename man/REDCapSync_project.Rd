@@ -33,7 +33,7 @@ Users should construct objects using \code{\link[=setup_project]{setup_project()
 \item \href{#method-REDCapSync_project-show_token}{\code{REDCapSync_project$show_token()}}
 \item \href{#method-REDCapSync_project-test_token}{\code{REDCapSync_project$test_token()}}
 \item \href{#method-REDCapSync_project-url_launch}{\code{REDCapSync_project$url_launch()}}
-\item \href{#method-REDCapSync_project-use}{\code{REDCapSync_project$use()}}
+\item \href{#method-REDCapSync_project-.internal}{\code{REDCapSync_project$.internal()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -218,7 +218,7 @@ Clear all project summaries
 \subsection{Method \code{generate_summary()}}{
 Add a new summary entry
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$generate_summary(summary_name, envir)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$generate_summary(summary_name, envir = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -298,7 +298,8 @@ summarize project and save to Excel
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{hard_reset}}{Logical that forces a fresh update if TRUE. Default is}
+\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files with the
+same name. Default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -317,7 +318,7 @@ save summary to Excel
 \describe{
 \item{\code{summary_name}}{Character. The name of the summary from which to generate
 the summary. *If you provide \code{summary_name} all other parameters are
-inherited according to what was set with \code{add_summary}.}
+inherited according to what was set with \code{add_project_summary}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -414,12 +415,12 @@ opens links in browser
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSync_project-use"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSync_project-use}{}}}
-\subsection{Method \code{use()}}{
+\if{html}{\out{<a id="method-REDCapSync_project-.internal"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSync_project-.internal}{}}}
+\subsection{Method \code{.internal()}}{
 returns internal list
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$use()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$.internal()}\if{html}{\out{</div>}}
 }
 
 }

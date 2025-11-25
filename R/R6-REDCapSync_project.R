@@ -81,6 +81,8 @@
 #' the directory. Default is `TRUE`.
 #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
 #' parameter from `setup_project()`)
+#' @param type string of either "fields","forms", or "choices"
+#' @param annotate logical for annotating in reference to data
 #' @return An R6ClassGenerator
 #' @keywords internal
 REDCapSync_project <- R6Class(
@@ -169,7 +171,7 @@ REDCapSync_project <- R6Class(
       invisible(self)
     },
     #' @description  Add a new summary entry
-    generate_summary = function(summary_name, envir) {
+    generate_summary = function(summary_name, envir = NULL) {
       assert_environment(envir, null.ok = TRUE)
       summary_names <- private$project$summary %>%
         names() %>%
@@ -217,19 +219,19 @@ REDCapSync_project <- R6Class(
       invisible(self)
     },
     #' @description summarize project and save to Excel
-    #' @param hard_reset Logical that forces a fresh update if TRUE. Default is
     summarize = function(hard_reset = FALSE){
       private$project <- private$project %>%
         summarize_project(hard_reset = hard_reset)
       invisible(self)
     },
     #' @description save summary to Excel
-    #' @param summary_name Character. The name of the summary from which to generate
-    #' the summary. *If you provide `summary_name` all other parameters are
-    #' inherited according to what was set with `add_summary`.
     save_summary = function(summary_name){
+      summary_names <- private$project$summary %>%
+        names() %>%
+        setdiff("all_records")
+      assert_choice(summary_name, summary_names, null.ok = FALSE)
       private$project <- private$project %>%
-        summarize_project(hard_reset = hard_reset)
+        save_summary(summary_name)
       invisible(self)
     },
     #' @description  Add a new summary entry
@@ -238,8 +240,6 @@ REDCapSync_project <- R6Class(
       invisible(self)
     },
     #' @description  Returns list of data or the specified form.
-    #' @param type string of either "fields","forms", or "choices"
-    #' @param annotate logical for annotating in reference to data
     show_metadata = function(type = NULL,annotate = FALSE, envir = NULL){
       assert_environment(envir, null.ok = TRUE)
       assert_choice(type, c("fields", "forms", "choices"), null.ok = TRUE)
@@ -281,7 +281,7 @@ REDCapSync_project <- R6Class(
                       open_browser = open_browser)
     },
     #' @description  returns internal list
-    use = function(){
+    .internal = function(){
       invisible(private$project)
     }
   ),

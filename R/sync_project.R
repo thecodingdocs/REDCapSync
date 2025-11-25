@@ -52,8 +52,17 @@ sync_project <- function(project,
           !is_something(project$internals$last_full_update)) {
         hard_reset <- TRUE
       } else {
-        # if(project$redcap$has_log_access){}else{}
-        interim_log <- get_redcap_log2(project, log_begin_date = as.Date(
+        if(!project$redcap$has_log_access){
+          cli_alert_danger(
+            paste0( # fix for when access is changed
+              "You do not have logging access to this REDCap project. If you ",
+              "want to refresh the data use `project$sync(hard_reset = TRUE)`.",
+              " Request logging access for more effecient use of API exports."
+            )
+          )
+          return(project)
+        }
+        interim_log <- get_redcap_log(project, log_begin_date = as.Date(
           strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d")
         )) %>% unique()
         if (nrow(interim_log) <= nrow(project$redcap$log)) {
@@ -117,18 +126,20 @@ sync_project <- function(project,
         )
         # if error records comma
         redcap_log <- project$redcap$log # in case there is a log already
-        if (project$internals$entire_log) {
-          log_begin_date <-
-            as.POSIXct(project$redcap$project_info$creation_time) %>%
-            as.Date()
-        } else {
-          log_begin_date <- Sys.Date() - project$internals$days_of_log
+        if(project$redcap$has_log_access){
+          if (project$internals$entire_log) {
+            log_begin_date <-
+              as.POSIXct(project$redcap$project_info$creation_time) %>%
+              as.Date()
+          } else {
+            log_begin_date <- Sys.Date() - project$internals$days_of_log
+          }
+          project$redcap$log <- redcap_log %>%
+            bind_rows(
+              project %>%
+                get_redcap_log(log_begin_date = log_begin_date)) %>%
+            sort_redcap_log()
         }
-        project$redcap$log <- redcap_log %>%
-          bind_rows(
-            project %>%
-              get_redcap_log2(log_begin_date = log_begin_date)) %>%
-          sort_redcap_log()
         project$summary$all_records <- extract_project_records(project)
         project$summary$all_records$last_api_call <-
           project$internals$last_full_update <-
@@ -170,7 +181,7 @@ sync_project <- function(project,
           if (!all(names(form_list) %in% project$metadata$forms$form_name)) {
             stop(
               "Imported data names doesn't match project$data names. If this",
-              "happens run `sync_project(project, hard_reset = TRUE)`"
+              "happens run `project$sync(hard_reset = TRUE)`"
             )
           }
           for (form_name in names(form_list)) {
@@ -209,13 +220,15 @@ sync_project <- function(project,
   if (save_to_dir && !is.null(project$dir_path)) {
     if (is_something(project$data)) {
       if (project$internals$get_files) {
-        # test now
         get_redcap_files(
           # would want track internally?
           project,
           original_file_names = project$internals$original_file_names
         )
       }
+    }
+    if(project$internals$get_file_repository) {
+      # get_redcap_file_repository()
     }
     if (summarize) {
       first_stamp <- project$internals$last_summary

@@ -16,12 +16,6 @@ test_that("get_redcap_users works!", {
 # get_redcap_log ( Internal )
 test_that("get_redcap_log works!", {
 })
-# get_redcap_log2 ( Internal )
-test_that("get_redcap_log2 works!", {
-})
-# test_redcap_log_access ( Internal )
-test_that("test_redcap_log_access works!", {
-})
 # get_redcap_denormalized ( Internal )
 test_that("get_redcap_denormalized works!", {
 })

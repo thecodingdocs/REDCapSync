@@ -73,6 +73,7 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   project$redcap$has_log_access <- !is.null(result$logging)
   project$redcap$has_dag_access <- !is.null(result$dags)
   project$redcap$has_user_access <- !is.null(result$users)
+  project$redcap$has_file_repository_access <- !is.null(result$file_repository)
   # instruments --------
   project$metadata$forms <- rename_forms_redcap_to_default(result$forms)
   project$metadata$repeating_forms_events <- result$repeating
@@ -102,6 +103,20 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   project$metadata$fields <- add_field_elements(project$metadata$fields)
   # project$metadata$fields <- project %>% annotate_fields(summarize_data = FALSE, drop_blanks = FALSE)
   project$metadata$choices <- fields_to_choices(fields = project$metadata$fields)
+  # add a check for exisiting conflict possibilities
+  project$metadata$has_coding_conflicts <- FALSE
+  field_names <- project$metadata$choices$field_name %>% unique()
+  if (length(field_names) > 0) {
+    row_of_conflicts <- field_names %>%
+      lapply(function(field_name) {
+        anyDuplicated(project$metadata$choices$name[which(project$metadata$choices$field_name == field_name)]) > 0
+      }) %>%
+      unlist()
+    project$metadata$has_coding_conflicts <- any(row_of_conflicts)
+    if (project$metadata$has_coding_conflicts) {
+      project$metadata$coding_conflict_field_names <- field_names[which(row_of_conflicts)]
+    }
+  }
   # is longitudinal ------
   if (project$metadata$is_longitudinal) {
     project$metadata$raw_structure_cols <- c(project$metadata$raw_structure_cols,
@@ -171,24 +186,17 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   # other-------
   project$redcap$users <- NA
   if (include_users && project$redcap$has_user_access) {
-    project$redcap$users <-result$user_roles[, c("unique_role_name", "role_label")] %>%
+    keep_cols <- c("unique_role_name", "role_label")
+    project$redcap$users <- result$user_roles[, keep_cols] %>%
       merge(result$user_role_assignment, by = "unique_role_name") %>%
       merge(result$users, by = "username", all.y = TRUE)
   }
-  # add a check for exisiting conflict possibilities
-  project$metadata$has_coding_conflicts <- FALSE
-  field_names <- project$metadata$choices$field_name %>% unique()
-  if (length(field_names) > 0) {
-    row_of_conflicts <- field_names %>%
-      lapply(function(field_name) {
-        anyDuplicated(project$metadata$choices$name[which(project$metadata$choices$field_name == field_name)]) > 0
-      }) %>%
-      unlist()
-    project$metadata$has_coding_conflicts <- any(row_of_conflicts)
-    if (project$metadata$has_coding_conflicts) {
-      project$metadata$coding_conflict_field_names <- field_names[which(row_of_conflicts)]
-    }
+  project$redcap$file_repository <- NA
+  get_file_repository <- project$internals$get_file_repository
+  if (get_file_repository && project$redcap$has_file_repository_access) {
+    project$redcap$file_repository <- result$file_repository
   }
+  #dags
   project$internals$last_metadata_update <- now_time()
   invisible(project)
 }
@@ -369,39 +377,6 @@ get_redcap_files <- function(project,
 }
 #' @noRd
 get_redcap_log <- function(project,
-                           log_begin_date = Sys.Date() - 10L,
-                           clean = TRUE,
-                           record = NULL,
-                           user = NULL) {
-  assert_setup_project(project)
-  assert_logical(clean)
-  assert_date(log_begin_date)
-  if (log_begin_date == Sys.Date()) {
-    log_begin_date <- log_begin_date - 1 # keep getting errors for same day checks?
-  }
-  redcap_log <- tryCatch(
-    expr = {
-      REDCapR::redcap_log_read(
-        redcap_uri = project$links$redcap_uri,
-        token = get_project_token(project),
-        log_begin_date = log_begin_date,
-        record = record,
-        user = user
-      )[["data"]]
-    },
-    error = function(e) {
-      NULL
-    }
-  )
-  if (is.data.frame(redcap_log)) {
-    if (clean) {
-      redcap_log <- redcap_log %>% clean_redcap_log()
-    }
-  }
-  redcap_log # deal with if NA if user does not have log privileges.
-}
-#' @noRd
-get_redcap_log2 <- function(project,
                             log_begin_date = Sys.Date() - 10L,
                             clean = TRUE,
                             record = NULL,
@@ -438,11 +413,6 @@ get_redcap_log2 <- function(project,
     }
   }
   redcap_log # deal with if NA if user does not have log privileges.
-}
-#' @noRd
-test_redcap_log_access <- function(project) {
-  the_test <- get_redcap_log2(project = project, log_begin_date = Sys.Date())
-  ! is.null(the_test)
 }
 #' @noRd
 get_redcap_denormalized <- function(project,

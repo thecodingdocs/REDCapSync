@@ -1601,7 +1601,7 @@ construct_header_list <- function(data_list,
   fields <- data_list$metadata$fields
   if (anyDuplicated(fields$field_name) > 0)
     stop("dup names not allowed in fields")
-  data_field_list <- data_list %>% lapply(colnames)
+  data_field_list <- data_list$data %>% lapply(colnames)
   header_df_list <- data_field_list %>% lapply(function(field_names) {
     x <- field_names %>%
       lapply(function(field_name) {

@@ -282,8 +282,9 @@ form_to_wb <- function(form,
                        pad_rows = 0,
                        pad_cols = 0,
                        freeze_keys = TRUE) {
-  if (nchar(form_name) > 31)
+  if (nchar(form_name) > 31){
     stop(form_name, " is longer than 31 char")
+  }
   form[] <- lapply(form, function(col) {
     out <- col
     if (is.character(col)) {
@@ -292,21 +293,32 @@ form_to_wb <- function(form,
     out
   })
   hyperlink_col <- NULL
+  if (is_something(header_df)) {
+    names(header_df)[match(names(form),names(header_df))]
+    missing_headers <- names(form) %>%  vec1_not_in_vec2(names(header_df))
+    if(length(missing_headers)>0){
+      for (missing_header in missing_headers){
+        header_df[[missing_header]] <- ""
+        #fix later
+      }
+    }
+  }
   if (freeze_keys) {
     all_cols <- colnames(form)
-    if (!all(key_cols %in% all_cols))
+    if (!all(key_cols %in% all_cols)){
       stop("all key_cols must be in the forms")
+    }
     freeze_key_cols <- which(all_cols %in% key_cols)
     if (length(freeze_key_cols) > 0) {
       if (!is_consecutive_srt_1(freeze_key_cols)) {
-        warning(
-          "please keep your key cols on the left consecutively. Fixing ",
-          form_name,
-          ": ",
-          toString(key_cols),
-          ".",
-          immediate. = TRUE
-        )
+        # warning(
+        #   "please keep your key cols on the left consecutively. Fixing ",
+        #   form_name,
+        #   ": ",
+        #   toString(key_cols),
+        #   ".",
+        #   immediate. = TRUE
+        # ) # instead will fix add on problem
         non_key_cols <- seq_len(ncol(form))
         non_key_cols <- non_key_cols[which(!non_key_cols %in% freeze_key_cols)]
         new_col_order <- c(freeze_key_cols, non_key_cols)

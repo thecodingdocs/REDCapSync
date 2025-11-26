@@ -525,7 +525,7 @@ save_summary <- function(project, summary_name) {
   # add headers-------
   form_names <- names(data_list$data)
   header_df_list <- construct_header_list(data_list)
-  key_cols_list <- data_list$metadata$form_key_cols
+  key_cols_list <- get_key_col_list(data_list)
   cols_start <- 4
   if (summary_name == "REDCapSync_raw") {
     cols_start <- 1
@@ -556,11 +556,19 @@ save_summary <- function(project, summary_name) {
           lapply(function(form) {
             add_redcap_links_to_form(form, project)
           })
+        if(summary_list$include_records){
+          if("records" %in% names (data_list)){
+            data_list$records <- data_list$records %>%
+              add_redcap_links_to_form(project)
+          }
+        }
+        #check for conflicting name
         link_col_list <- list("redcap_link")
         names(link_col_list) <- id_col
       }
     }
-  }# maybe move this up
+  }
+  # maybe move this up
   # check for conflicts
   # data_list
   # with_links = TRUE
@@ -1065,7 +1073,12 @@ summarize_project <- function(project, hard_reset = FALSE) {
     }
     if (is_something(summary_names)) {
       for (summary_name in summary_names) {
-        project <- project %>% save_summary(summary_name)
+        project <- tryCatch(
+          expr = {project %>% save_summary(summary_name)},
+          error = function(e) {
+            cli_alert_warning("Failed to save summary `{summary_name}`.")
+            invisible(project)
+          })
       }
     }
   }

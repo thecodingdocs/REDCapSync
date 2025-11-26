@@ -16,7 +16,7 @@ Precisely because tokens are sensitive, REDCapSync is designed to only
 reference the name of your token, such as “REDCapSync_TEST”. If
 REDCapSync ever wants to use the token to make an API call to REDCap, it
 will check `Sys.getenv("REDCapSync_TEST")`. By default are token names
-start with “REDCapSync\_”, followed by the `short_name` you chose in
+start with “REDCapSync\_”, followed by the `project_name` you chose in
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).Below
 demonstrates how to set and check your tokens…
 

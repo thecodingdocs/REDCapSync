@@ -19,7 +19,7 @@ The file path of your REDCapSync cache
 This function checks the location of the cache established by
 [`hoard`](https://docs.ropensci.org/hoardr/reference/hoard.html). *No
 project data is stored here. Tokens are not stored here either.* Key
-information stored here is `short_name` (primary key for REDCapSync
+information stored here is `project_name` (primary key for REDCapSync
 projects) and other details about project information.
 
 ## See also

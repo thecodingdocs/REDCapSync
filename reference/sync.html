@@ -60,7 +60,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sync</span><span class="op">(</span></span>
-<span>  short_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  project_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  summarize <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  hard_check <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  hard_reset <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -71,8 +71,8 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-short-names">short_names<a class="anchor" aria-label="anchor" href="#arg-short-names"></a></dt>
-<dd><p>character vector of project short_names previously setup.
+<dl><dt id="arg-project-names">project_names<a class="anchor" aria-label="anchor" href="#arg-project-names"></a></dt>
+<dd><p>character vector of project project_names previously setup.
 If = NULL, will get all from <code><a href="get_projects.html">get_projects()</a></code></p></dd>
 
 
@@ -98,8 +98,8 @@ parameter from <code><a href="setup-load.html">setup_project()</a></code>)</p></
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Syncs all projects by default but can be used to hands-free sync one or
 defined set projects. This is not intended to return project object. User
-should use <code>load_project("short_name")</code>. However, by default will invisibily
-return the last project in the set of short_names.</p>
+should use <code>load_project("project_name")</code>. However, by default will invisibily
+return the last project in the set of project_names.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

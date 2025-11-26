@@ -183,7 +183,7 @@ add_project_summary(
 - file_name:
 
   Character. The base name of the file where the summary will be saved.
-  Default is `<project$short_name>_<summary_name>`.
+  Default is `<project$project_name>_<summary_name>`.
 
 - hard_reset:
 

@@ -6,10 +6,10 @@ Setup or Load the `project` object for pipeline.
 
 ``` r
 setup_project(
-  short_name,
+  project_name,
   dir_path,
   redcap_uri,
-  token_name = paste0("REDCapSync_", short_name),
+  token_name = paste0("REDCapSync_", project_name),
   sync_frequency = "daily",
   labelled = TRUE,
   hard_reset = FALSE,
@@ -32,14 +32,14 @@ setup_project(
   add_default_summaries = TRUE
 )
 
-load_project(short_name)
+load_project(project_name)
 
-load_test_project(short_name = "TEST_CLASSIC", with_data = FALSE)
+load_test_project(project_name = "TEST_CLASSIC", with_data = FALSE)
 ```
 
 ## Arguments
 
-- short_name:
+- project_name:
 
   A character string with no spaces or symbols representing the unique
   short name for the REDCap project.
@@ -57,7 +57,7 @@ load_test_project(short_name = "TEST_CLASSIC", with_data = FALSE)
 - token_name:
 
   An optional character string for setting your token name. Default is
-  `REDCapSync_<short_name>`
+  `REDCapSync_<project_name>`
 
 - sync_frequency:
 
@@ -177,12 +177,12 @@ subsequent API calls. Neither function directly attempts communication
 with REDCap.
 
 `setup_project` is used the first time you initialize/link a REDCap
-project. Mainly, it sets your unique `short_name` and your intended
+project. Mainly, it sets your unique `project_name` and your intended
 directory. Unless you run `hard_reset = TRUE` the default will first try
 load_project. dir_path is technically optional but without it the user
 cannot save/load/update projects.
 
-`load_project` can be used with just the `short_name` parameter after
+`load_project` can be used with just the `project_name` parameter after
 you have already run `setup_project` in the past with an established
 directory. `dir_path` is optional for this function but can be used if
 you relocated the directory.
@@ -201,7 +201,7 @@ Other project object:
 if (FALSE) {
 # Initialize the project object with the REDCap API token and URL
 project <- setup_project(
-  short_name = "TEST",
+  project_name = "TEST",
   dir_path = "path/to/secure/file/storage",
   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 )

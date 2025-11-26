@@ -1,9 +1,9 @@
 # Save or Delete project file from the directory
 
-This will save/delete the "\<short_name\>\_REDCapSync.RData" file in the
-given project directories R_objects folder. These are optional functions
-given that `save_project` is a also handled by a default parameter in
-`sync_project.`
+This will save/delete the "\<project_name\>\_REDCapSync.RData" file in
+the given project directories R_objects folder. These are optional
+functions given that `save_project` is a also handled by a default
+parameter in `sync_project.`
 
 ## Usage
 

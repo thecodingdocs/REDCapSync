@@ -32,7 +32,7 @@ The following functions represent the core functions of the package.
 
 ``` r
 project <- setup_project(
-  short_name = "TEST1",                #must match token pattern REDCapSync_**** 
+  project_name = "TEST1",                #must match token pattern REDCapSync_**** 
   redcap_uri = "https://redcap.miami.edu/api/",  # change to your institutions link
   dir_path = getwd()                     # or change to your intended file path
 )

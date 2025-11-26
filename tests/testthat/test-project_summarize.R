@@ -258,11 +258,27 @@ test_that("get_log works!", {
 # annotate_users ( Internal )
 test_that("annotate_users works!", {
 })
-# summarize_comments_from_log ( Internal )
-test_that("summarize_comments_from_log works!", {
-})
 # get_summary_records ( Internal )
 test_that("get_summary_records works!", {
+  project <- TEST_CLASSIC
+  project <- project %>%
+    add_project_summary(
+      summary_name = "test_branching_yes",
+      filter_field = "var_branching",
+      filter_choices = "Yes") %>%
+    add_project_summary(
+      summary_name = "test_branching_no",
+      filter_field = "var_branching",
+      filter_choices = "No")
+  other <- project$data$other
+  expect_true("test_branching_yes" %in% names(project$summary))
+  expect_true("test_branching_no" %in% names(project$summary))
+  record_ids_yes <- other$record_id[which(other$var_branching == "Yes")] %>% sort()
+  record_ids_no <- other$record_id[which(other$var_branching == "No")] %>% sort()
+  get_sum_records_yes <- project %>% get_summary_records("test_branching_yes") %>% sort()
+  get_sum_records_no <- project %>% get_summary_records("test_branching_no") %>% sort()
+  expect_equal(record_ids_yes,get_sum_records_yes)
+  expect_equal(record_ids_no,get_sum_records_no)
 })
 # summary_records_due ( Internal )
 test_that("summary_records_due works!", {
@@ -345,6 +361,33 @@ test_that("labelled_to_raw_data_listand raw_to_labelled_data_list works!", {
 })
 # get_all_field_names ( Internal )
 test_that("get_all_field_names works!", {
+  project <- TEST_CLASSIC
+  field_names <- get_all_field_names(project)
+  expect_all_true(field_names %in% project$metadata$fields$field_name)
+})
+# get_all_field_names ( Internal )
+test_that("get_identifier_fields works", {
+  # minimal metadata/fields to exercise deidentified / strict / super_strict
+  fields <- data.frame(
+    field_name = c("record_id", "email", "phone", "dob", "other"),
+    identifier = c("y", NA, NA, NA, NA),
+    text_validation_type_or_show_slider_number = c(NA, "email", "phone", "date_mdy", NA),
+    stringsAsFactors = FALSE
+  )
+  data_list <- list(metadata = list(fields = fields))
+  # deidentified: only explicit identifier flagged "y"
+  out_deid <- get_identifier_fields(data_list, get_type = "deidentified")
+  expect_true(length(out_deid) == 1)
+  expect_true("record_id" %in% out_deid)
+  # deidentified_strict: includes fields with validation types in strict list (email, phone)
+  out_strict <- get_identifier_fields(data_list, get_type = "deidentified_strict")
+  expect_true(setequal(out_strict, c("record_id", "email", "phone")))
+  # deidentified_super_strict: includes additional validation types (dates, etc.)
+  out_super <- get_identifier_fields(data_list, get_type = "deidentified_super_strict")
+  expect_true(setequal(out_super, c("record_id", "email", "phone", "dob")))
+  # invert = TRUE should return the complement set
+  out_inv <- get_identifier_fields(data_list, get_type = "deidentified", invert = TRUE)
+  expect_true(setequal(out_inv, setdiff(fields$field_name, "record_id")))
 })
 # field_names_to_form_names ( Internal )
 test_that("field_names_to_form_names works!", {

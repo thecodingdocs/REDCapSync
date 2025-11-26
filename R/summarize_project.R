@@ -1182,15 +1182,6 @@ annotate_users <- function(data_list,
   summary_users
 }
 #' @noRd
-summarize_comments_from_log <- function(data_list, records) {
-  redcap_log <- get_log(data_list, records)
-  # redcap_log$action_type == "Comment"
-  if (nrow(redcap_log) == 0) {
-    return(NULL)
-  }
-  redcap_log
-}
-#' @noRd
 get_summary_records <- function(project, summary_name) {
   id_col <- project$metadata$id_col
   if (missing(summary_name)) {

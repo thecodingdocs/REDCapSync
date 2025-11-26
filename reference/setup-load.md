@@ -29,8 +29,7 @@ setup_project(
   original_file_names = FALSE,
   add_default_fields = FALSE,
   add_default_transformation = FALSE,
-  add_default_summaries = TRUE,
-  use_csv = FALSE
+  add_default_summaries = TRUE
 )
 
 load_project(short_name)
@@ -159,11 +158,6 @@ load_test_project(short_name = "TEST_CLASSIC", with_data = FALSE)
 - add_default_summaries:
 
   Logical (TRUE/FALSE). If TRUE, will add default summaries
-
-- use_csv:
-
-  Logical (TRUE/FALSE). If TRUE, uses CSV files for data storage.
-  Default is `FALSE`.
 
 - with_data:
 

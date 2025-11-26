@@ -34,7 +34,7 @@ add_project_summary(
   annotate_from_log = TRUE,
   with_links = TRUE,
   separate = FALSE,
-  use_csv = NULL,
+  use_csv = FALSE,
   dir_other = NULL,
   file_name = NULL,
   hard_reset = FALSE
@@ -174,11 +174,6 @@ add_project_summary(
 
   Optional logical (TRUE/FALSE) separating each form into separate files
   as opposed to multi-tab Excel. Default is `FALSE`.
-
-- use_csv:
-
-  Logical (TRUE/FALSE). If TRUE, uses CSV files for data storage.
-  Default is `FALSE`.
 
 - dir_other:
 

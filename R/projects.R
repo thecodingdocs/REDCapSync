@@ -49,24 +49,21 @@ get_projects <- function() {
   "has_repeating_forms_or_events",
   "has_multiple_arms",
   "R_object_size",
-  "file_size",
+  # "file_size",
   "n_records",
   "redcap_uri",
-  "redcap_base",
+  # "redcap_base",
   "redcap_home",
-  "redcap_api_playground",
-  "days_of_log",
+  # "redcap_api_playground",
+  # "days_of_log",
   "get_files",
   "get_file_repository",
-  "original_file_names",
+  # "original_file_names",
   "entire_log",
   "metadata_only",
-  "add_default_fields",
-  "add_default_transformation",
-  "add_default_summaries",
-  "get_type",
-  "batch_size_download",
-  "batch_size_upload"
+  "get_type"
+  # "batch_size_download",
+  # "batch_size_upload"
 )
 #' @noRd
 .blank_project_details <- data.frame(
@@ -88,28 +85,20 @@ get_projects <- function() {
   has_repeating_forms_or_events = logical(0),
   has_multiple_arms = logical(0),
   R_object_size = numeric(0),
-  file_size = numeric(0),
   n_records = integer(0),
   redcap_uri = character(0),
-  redcap_base = character(0),
   redcap_home = character(0),
-  redcap_api_playground = character(0),
-  days_of_log = integer(0),
   get_files = logical(0),
   get_file_repository = logical(0),
-  original_file_names = logical(0),
   entire_log = logical(0),
   metadata_only = logical(0),
-  add_default_fields = logical(0),
-  add_default_transformation = logical(0),
-  add_default_summaries = logical(0),
   get_type = character(0),
-  batch_size_download = integer(0),
-  batch_size_upload = integer(0),
   stringsAsFactors = FALSE
 )
 #' @noRd
 save_projects_to_cache <- function(projects, silent = TRUE) {
+  project_col_names <- colnames(projects) %>% vec1_in_vec2(.blank_project_cols)
+  projects <- projects[, project_col_names]
   assert_project_details(projects)
   projects <- projects[order(projects$short_name), ]
   saveRDS(projects, file = cache_path() %>% file.path("projects.rds"))
@@ -154,26 +143,12 @@ extract_project_details <- function(project) {
   project_details$dir_path <- project$dir_path %>% na_if_null()
   # settings -------
   project_details$sync_frequency <- project$internals$sync_frequency
-  project_details$days_of_log <- project$internals$days_of_log %>% as.integer()
   project_details$get_files <- project$internals$get_files
   project_details$get_file_repository <- project$internals$get_file_repository
-  project_details$original_file_names <- project$internals$original_file_names
   project_details$entire_log <- project$internals$entire_log
   project_details$metadata_only <- project$internals$metadata_only
-  project_details$add_default_fields <-
-    project$internals$add_default_fields
-  project_details$add_default_transformation <-
-    project$internals$add_default_transformation
-  project_details$add_default_summaries <-
-    project$internals$add_default_summaries
   project_details$labelled <- project$internals$labelled
   project_details$get_type <- project$internals$get_type
-  project_details$batch_size_download <-
-    project$internals$batch_size_download %>%
-    as.integer()
-  project_details$batch_size_upload <-
-    project$internals$batch_size_upload %>%
-    as.integer()
   # redcap --------
   project_details$version <- project$redcap$version %>% na_if_null()
   project_details$token_name <- project$redcap$token_name %>% na_if_null()
@@ -192,11 +167,7 @@ extract_project_details <- function(project) {
     na_if_null() %>%
     as.integer()
   project_details$redcap_uri <- project$links$redcap_uri %>% na_if_null()
-  project_details$redcap_base <- project$links$redcap_base %>% na_if_null()
   project_details$redcap_home <- project$links$redcap_home %>% na_if_null()
-  project_details$redcap_api_playground <-
-    project$links$redcap_api_playground %>%
-    na_if_null()
   # saving ----
   project_details$timezone <- project$internals$timezone %>% na_if_null()
   project_details$last_sync <- project$internals$last_sync %>%
@@ -213,8 +184,7 @@ extract_project_details <- function(project) {
   project_details$last_data_update <- project$internals$last_data_update %>%
     na_if_null() %>%
     as.POSIXct(tz = Sys.timezone())
-  project_details$R_object_size <- NA
-  project_details$file_size <- NA
+  project_details$R_object_size <- object_size(project)
   project_details
 }
 #' @noRd
@@ -242,83 +212,6 @@ add_project_details_to_cache <- function(project_details) {
   }
   projects <- projects %>% bind_rows(project_details)
   save_projects_to_cache(projects)
-}
-#' @noRd
-add_project_details_to_project <- function(project, project_details) {
-  assert_setup_project(project)
-  assert_project_details(project_details, nrows = 1)
-  # compare_project_details()
-  # top -----
-  if (!identical(project$short_name, project_details$short_name)) {
-    stop("project and project_details short_name must be identical!")
-  }
-  # if(!identical(project$dir_path, project_details$dir_path)){
-  #   stop("project and project_details short_name must be identical!")
-  # }
-  # project$dir_path <- project_details$dir_path
-  # settings -------
-  project$internals$sync_frequency <- project_details$sync_frequency
-  project$internals$days_of_log <- project_details$days_of_log %>% as.integer()
-  project$internals$get_files <- project_details$get_files
-  project$internals$get_file_repository <- project_details$get_file_repository
-  project$internals$original_file_names <- project_details$original_file_names
-  project$internals$entire_log <- project_details$entire_log
-  project$internals$metadata_only <- project_details$metadata_only
-  project$internals$add_default_fields <-
-    project_details$add_default_fields
-  project$internals$add_default_transformation <-
-    project_details$add_default_transformation
-  project$internals$add_default_summaries <-
-    project_details$add_default_summaries
-  project$internals$get_type <- project_details$get_type # should trigger hard_reset
-  project$internals$batch_size_download <-
-    project_details$batch_size_download %>%
-    as.integer()
-  project$internals$batch_size_upload <- project_details$batch_size_upload %>%
-    as.integer()
-  # redcap --------
-  # project$redcap$version <- project_details$version # check identical unless NA
-  # project$redcap$token_name <- project_details$token_name
-  # if (!is.na(project$redcap$project_id)) {
-  #   project$redcap$project_id <- project_details$project_id
-  # }
-  # project$redcap$project_title <- project_details$project_title
-  # project$metadata$id_col <- project_details$id_col # check identical unless NA
-  # project$metadata$is_longitudinal <- project_details$is_longitudinal
-  # project$metadata$has_repeating_forms_or_events <- project_details$has_repeating_forms_or_events
-  # project$metadata$has_multiple_arms <- project_details$has_multiple_arms
-  # project$summary$all_records[[project$metadata$id_col]] <- project_details$n_records %>% as.integer()
-  # project$links$redcap_uri <- project_details$redcap_uri # check identical unless NA
-  # project$links$redcap_home <- project_details$redcap_home
-  # project$links$redcap_api_playground <- project_details$redcap_api_playground
-  # saving ----
-  project$internals$timezone <- project_details$timezone
-  project$internals$last_sync <- project_details$last_sync %>%
-    as.POSIXct(tz = Sys.timezone())
-  project$internals$last_directory_save <- project_details$last_directory_save %>%
-    as.POSIXct(tz = Sys.timezone())
-  project$internals$last_metadata_update <- project_details$last_metadata_update %>%
-    as.POSIXct(tz = Sys.timezone())
-  project$internals$last_data_update <- project_details$last_data_update %>%
-    as.POSIXct(tz = Sys.timezone())
-  # project_details$R_object_size <- NA
-  # project_details$file_size <- NA
-  # bad_row <- which(
-  #   projects$project_id == project_details$project_id &
-  #     basename(projects$redcap_uri) == basename(project_details$redcap_uri)
-  # )
-  # if(length(bad_row)>0) {
-  #   cli::cli_abort(
-  #     paste0(
-  #       "You are trying to save from a project [{project_details$short_name} PID ",
-  #       "{projects$project_id[bad_row]}] that you have already setup ",
-  #       "[{projects$short_name[bad_row]} PID {project_details$project_id}] ",
-  #       "You can load the old project or run ",
-  #       "`delete_project_by_name(\"{projects$short_name[bad_row]}\")`"
-  #     )
-  #   )
-  # }
-  invisible(project)
 }
 #' @noRd
 save_project_details <- function(project, silent = TRUE) {

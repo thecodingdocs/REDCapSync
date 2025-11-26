@@ -241,7 +241,8 @@ sync_project <- function(project,
       project <- save_project(project)
     } else {
       project$internals$last_directory_save <- project$internals$last_sync
-      save_project_details(project)
+      project_details <- extract_project_details(project)
+      add_project_details_to_cache(project_details)
     }
   }
   invisible(project)

@@ -80,7 +80,7 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   project$metadata$forms$repeating <- FALSE
   project$metadata$has_repeating_forms <- FALSE
   project$metadata$has_repeating_events <- FALSE
-  project$metadata$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events
+  project$metadata$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events%>% as.logical()
   # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
   if (is.data.frame(project$metadata$repeating_forms_events)) {
     # TODOPLEASE test if you can do this if you dont have designer privilages or would have to use another package

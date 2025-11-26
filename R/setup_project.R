@@ -183,6 +183,7 @@ setup_project <- function(short_name,
   was_loaded <- FALSE
   original_details <- NULL
   if (!in_proj_cache && !missing_dir_path) {
+    #this will add existing project to cache if not there already
     project_details_path <- get_project_path(short_name = short_name,
                                              dir_path = dir_path,
                                              type = "details")
@@ -191,7 +192,7 @@ setup_project <- function(short_name,
         expr = {
           suppressWarnings({
             project_details <- readRDS(file = project_details_path)
-            project_details <- assert_project_details(project_details)
+            assert_project_details(project_details)
           })
         },
         error = function(e) {
@@ -203,10 +204,10 @@ setup_project <- function(short_name,
       } else {
         cli_alert_warning("currupted project_details so will be overwritten")
       }
-      # add check for if it was loaded from right place
     }
   }
   if (!hard_reset) {
+    # attempt to load exisiting project unless hard_reset
     project <- tryCatch(
       expr = {
         suppressWarnings({
@@ -229,6 +230,20 @@ setup_project <- function(short_name,
     if (was_loaded) {
       # compare current setting to previous settings...
       original_details <- project %>% extract_project_details()
+      projects <- get_projects()
+      cache_details <- projects[which(projects$short_name ==short_name),]
+      if(original_details$redcap_uri != redcap_uri){
+        stop("There is an existing project at your chosen directory with same ",
+             "`short_name` but a different `redcap_uri`. You can use ",
+             "setup_project(..., hard_reset = TRUE) to override."
+        )
+      }
+      if(original_details$project_id != cache_details$project_id){
+        stop("There is an existing project at your chosen directory with same ",
+             "`short_name` but a different `redcap_uri`. You can use ",
+             "setup_project(..., hard_reset = TRUE) to override."
+        )
+      }
       if (!is.null(project$internals$labelled)) {
         if (project$internals$labelled != labelled) {
           load_type <- ifelse(project$internals$labelled, "labelled", "raw")
@@ -308,7 +323,6 @@ setup_project <- function(short_name,
     # message about changes compared to original
   }
   project$internals$last_directory_save <- now_time()
-  save_project_details(project)
   invisible(REDCapSync_project$new(project))
 }
 #' @noRd
@@ -393,10 +407,6 @@ load_project <- function(short_name) {
   }
   project$dir_path <- dir_path
   project_details_path <- get_project_path2(project, type = "details")
-  project <- add_project_details_to_project(project = project,
-                                            project_details = readRDS(file = project_details_path))
-  project$dir_path <- dir_path # why twice?
-  save_project_details(project)
   invisible(REDCapSync_project$new(project))
 }
 #' @rdname setup-load
@@ -435,7 +445,7 @@ save_project <- function(project, silent = FALSE) {
       paste0(
         "Did not save ",
         project$short_name,
-        " because there has never been a REDCap connection! You must use `setup_project()` and `sync_project()`"
+        " because there has never been a REDCap connection! You must use `setup_project()` and `project$sync()`"
       )
     )
     return(invisible(project))

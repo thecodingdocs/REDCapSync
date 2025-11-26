@@ -225,7 +225,42 @@ test_that("merge_non_repeating works!", {
   expect_equal(names(merged$data[[merge_form_name]]),expected_col_names)
 })
 # summarize_project ( Internal )
-test_that("summarize_project works!", {
+test_that("summarize_project works", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
+  project <- TEST_CLASSIC
+  project$dir_path <- set_dir(test_dir)
+  dir.create(
+    path = file.path(project$dir_path, "REDCap", project$short_name),
+    showWarnings = FALSE
+  )
+  expect_true(file.exists(project$dir_path))
+  # ensure default summaries present
+  project <- clear_project_summaries(project)
+  project <- add_default_summaries(
+    project = project,
+    exclude_identifiers = TRUE,
+    exclude_free_text = TRUE,
+    date_handling = "none"
+  )
+  # run summarize_project
+  expect_no_error({
+    project_saved <- project %>% summarize_project(hard_reset = TRUE)
+  })
+  # internals updated
+  expect_true(!is.null(project_saved$internals$last_summary))
+  expect_s3_class(project_saved$internals$last_summary, "POSIXt")
+  # main summary file exists (REDCapSync should be written as a single file)
+  expect_true("REDCapSync" %in% names(project_saved$summary))
+  expect_true(file.exists(project_saved$summary$REDCapSync$file_path))
 })
 # clear_project_summaries ( Exported )
 test_that("clear_project_summaries works!", {

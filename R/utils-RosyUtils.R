@@ -276,7 +276,6 @@ form_to_wb <- function(form,
                        link_col_list = list(),
                        str_trunc_length = 32000,
                        header_df = NULL,
-                       tableStyle = "none",
                        header_style = default_header_style,
                        body_style = default_body_style,
                        freeze_header = TRUE,
@@ -364,7 +363,7 @@ form_to_wb <- function(form,
     x = form,
     startRow = start_row_table,
     startCol = startCol,
-    tableStyle = tableStyle
+    tableStyle = "none"
   )
   # add derived style
   style_cols <- seq_len(ncol(form)) + pad_cols
@@ -413,13 +412,12 @@ form_to_wb <- function(form,
   return(wb)
 }
 #' @noRd
-list_to_wb <- function(list,
+list_to_wb <- function(input_list,
                        key_cols_list = list(),
                        derived_cols_list = list(),
                        link_col_list = list(),
                        str_trunc_length = 32000,
                        header_df_list = NULL,
-                       tableStyle = "none",
                        header_style = default_header_style,
                        body_style = default_body_style,
                        freeze_header = TRUE,
@@ -427,9 +425,12 @@ list_to_wb <- function(list,
                        pad_cols = 0,
                        freeze_keys = TRUE,
                        drop_empty = TRUE) {
+  if(is.null(key_cols_list)) key_cols_list <- list()
+  if(is.null(link_col_list)) link_col_list <- list()
+  if(is.null(derived_cols_list)) derived_cols_list <- list()
   wb <- openxlsx::createWorkbook()
-  list <- process_df_list(list, drop_empty = drop_empty)
-  list_names <- names(list)
+  input_list <- process_df_list(input_list, drop_empty = drop_empty)
+  list_names <- names(input_list)
   list_link_names <- list()
   if (length(link_col_list) > 0) {
     if (is_named_list(link_col_list)) {
@@ -444,14 +445,13 @@ list_to_wb <- function(list,
   for (i in seq_along(list_names)) {
     wb <- form_to_wb(
       wb = wb,
-      form = list[[list_names[i]]],
+      form = input_list[[list_names[i]]],
       form_name = list_names_rename[i],
       key_cols = key_cols_list[[list_names[i]]],
       derived_cols = NULL,
       link_col_list = list_link_names[[list_names[i]]],
       str_trunc_length = str_trunc_length,
       header_df = header_df_list[[list_names[i]]],
-      tableStyle = tableStyle,
       header_style = header_style,
       body_style = body_style,
       freeze_header = freeze_header,
@@ -517,7 +517,7 @@ unique_trimmed_strings <- function(strings, max_length) {
   unique_strings
 }
 #' @noRd
-list_to_excel <- function(list,
+list_to_excel <- function(input_list,
                           dir,
                           file_name = NULL,
                           separate = FALSE,
@@ -527,7 +527,6 @@ list_to_excel <- function(list,
                           link_col_list = list(),
                           str_trunc_length = 32000,
                           header_df_list = NULL,
-                          tableStyle = "none",
                           header_style = default_header_style,
                           body_style = default_body_style,
                           freeze_header = TRUE,
@@ -535,27 +534,35 @@ list_to_excel <- function(list,
                           pad_cols = 0,
                           freeze_keys = TRUE,
                           drop_empty = TRUE) {
-  list <- process_df_list(list, drop_empty = drop_empty)
-  list_names <- names(list)
-  if (length(list) == 0) {
-    return(warning("empty list cannot be saved", immediate. = TRUE))
+  if(is.null(key_cols_list)) key_cols_list <- list()
+  if(is.null(link_col_list)) link_col_list <- list()
+  if(is.null(derived_cols_list)) derived_cols_list <- list()
+  input_list <- process_df_list(input_list, drop_empty = drop_empty)
+  list_names <- names(input_list)
+  if (length(input_list) == 0) {
+    return(warning("empty input_list cannot be saved", immediate. = TRUE))
   }
   if (separate) {
-    for (i in seq_along(list)) {
-      sub_list <- list[i]
+    for (i in seq_along(input_list)) {
+      sub_list <- input_list[i]
       file_name2 <- names(sub_list)
       if (!is.null(file_name)) {
         file_name2 <- paste0(file_name, "_", file_name2)
       }
+      keep_keys <- which(names(key_cols_list) == list_names[i])
+      keep_deriveds <- which(names(derived_cols_list) == list_names[i])
+      keep_links <- which(names(link_col_list) == list_names[i])
+      key_cols_list_i <- key_cols_list[keep_keys]
+      derived_cols_list_i <- derived_cols_list[keep_deriveds]
+      # link_col_list_i <- link_col_list[keep_links]
       save_wb(
         wb = list_to_wb(
-          list = sub_list,
-          key_cols_list = key_cols_list[[list_names[i]]],
-          derived_cols_list = derived_cols_list[[list_names[i]]],
-          link_col_list = link_col_list[[list_names[i]]],
+          input_list = sub_list,
+          key_cols_list = key_cols_list_i,
+          derived_cols_list = derived_cols_list_i,
+          link_col_list = link_col_list,
           str_trunc_length = str_trunc_length,
           header_df_list = header_df_list,
-          tableStyle = tableStyle,
           header_style = header_style,
           body_style = body_style,
           freeze_header = freeze_header,
@@ -572,13 +579,12 @@ list_to_excel <- function(list,
   } else {
     save_wb(
       wb = list_to_wb(
-        list = list,
+        input_list = input_list,
         key_cols_list = key_cols_list,
         derived_cols_list = derived_cols_list,
         link_col_list = link_col_list,
         str_trunc_length = str_trunc_length,
         header_df_list = header_df_list,
-        tableStyle = tableStyle,
         header_style = header_style,
         body_style = body_style,
         freeze_header = freeze_header,
@@ -594,14 +600,14 @@ list_to_excel <- function(list,
   }
 }
 #' @noRd
-list_to_csv <- function(list,
+list_to_csv <- function(input_list,
                         dir,
                         file_name = NULL,
                         overwrite = TRUE,
                         drop_empty = TRUE) {
-  list <- process_df_list(list, drop_empty = drop_empty)
-  for (i in seq_along(list)) {
-    sub_list <- list[i]
+  input_list <- process_df_list(input_list, drop_empty = drop_empty)
+  for (i in seq_along(input_list)) {
+    sub_list <- input_list[i]
     file_name2 <- names(sub_list)
     if (!is.null(file_name)) {
       file_name2 <- paste0(file_name, "_", file_name2)

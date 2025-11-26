@@ -380,7 +380,7 @@ add_project_summary <- function(project,
                                 annotate_from_log = TRUE,
                                 with_links = TRUE,
                                 separate = FALSE,
-                                use_csv = NULL,
+                                use_csv = FALSE,
                                 dir_other = NULL,
                                 file_name = NULL,
                                 hard_reset = FALSE) {
@@ -390,9 +390,6 @@ add_project_summary <- function(project,
   if (summary_name %in% forbiden_summary_names) {
     stop(summary_name,
          " is a forbidden summary name. Used for REDCapSync.")
-  }
-  if (is.null(use_csv)){
-    use_csv <- project$internals$use_csv
   }
   if (is.null(dir_other)){
     dir_other <- file.path(project$dir_path, "output")
@@ -600,7 +597,7 @@ save_summary <- function(project, summary_name) {
     ) # account for links with CSV like new column
   } else {
     list_to_excel(
-      list = data_list,
+      input_list = data_list,
       dir = summary_list$dir_other,
       separate = summary_list$separate,
       link_col_list = link_col_list,
@@ -1064,9 +1061,8 @@ summarize_project <- function(project, hard_reset = FALSE) {
   if (is_something(project$data)) {
     summary_names <- check_summaries(project)
     if (hard_reset) {
-      summary_names <- project$summary %>% names()
+      summary_names <- project$summary %>% names() %>% setdiff("all_records")
     }
-    summary_names <- summary_names[which(summary_names != "all_records")]
     if (is_something(summary_names)) {
       for (summary_name in summary_names) {
         project <- project %>% save_summary(summary_name)
@@ -1251,8 +1247,7 @@ summary_records_due <- function(project, summary_name) {
 #' @noRd
 check_summaries <- function(project, summary_names) {
   if (missing(summary_names)) {
-    summary_names <- project$summary %>% names()
-    summary_names <- summary_names[which(summary_names != "all_records")]
+    summary_names <- project$summary %>% names() %>% setdiff("all_records")
   }
   needs_refresh <- NULL
   if (is.null(summary_names)) {
@@ -1274,7 +1269,8 @@ check_summaries <- function(project, summary_names) {
 add_default_summaries <- function(project,
                                   exclude_identifiers = TRUE,
                                   exclude_free_text = TRUE,
-                                  date_handling = "none") {
+                                  date_handling = "none",
+                                  use_csv = FALSE) {
   with_links <- FALSE
   if (is_something(project$data)) {
     with_links <- nrow(project$summary$all_records) <= 3000
@@ -1301,7 +1297,7 @@ add_default_summaries <- function(project,
     annotate_from_log = FALSE,
     with_links = with_links,
     separate = TRUE,
-    use_csv = project$internals$use_csv,
+    use_csv = use_csv,
     dir_other = file.path(project$dir_path, "REDCap", project$short_name),
     file_name = project$short_name
   )
@@ -1325,7 +1321,7 @@ add_default_summaries <- function(project,
     annotate_from_log = TRUE,
     with_links = with_links,
     separate = FALSE,
-    use_csv = project$internals$use_csv,
+    use_csv = use_csv,
     dir_other = file.path(project$dir_path, "output"),
     file_name = paste0(project$short_name, "_", summary_name)
   )

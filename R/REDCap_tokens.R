@@ -64,10 +64,10 @@ test_project_token <- function(project) {
     project_info <- rcon$projectInformation()
     project_id_changed <- !identical(project$redcap$project_id,
                                      as.character(project_info$project_id))
-  }
-  if(project_id_changed){
-    cli_alert_danger("Your REDCap project ID changed! Did you mix up tokens?")
-    return(invisible(project))
+    if(project_id_changed){
+      cli_alert_danger("Your REDCap project ID changed! Did you mix up tokens?")
+      return(invisible(project))
+    }
   }
   project$internals$ever_connected <- TRUE
   if (version_changed) {

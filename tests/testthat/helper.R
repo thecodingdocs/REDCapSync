@@ -1,8 +1,8 @@
 mock_project <- function() {
-  short_name <- "TEST_PROJECT"
+  project_name <- "TEST_PROJECT"
   redcap_uri <- "https://redcap.fake.edu/api/"
   project <- setup_project(
-    short_name = short_name,
+    project_name = project_name,
     redcap_uri = redcap_uri
   )$.internal() # change to R6 later
   project$internals$ever_connected <- TRUE

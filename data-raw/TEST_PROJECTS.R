@@ -1,43 +1,43 @@
 ## code to prepare `TEST_PROJECTS` dataset goes here
 devtools::load_all()
 project <- setup_project(
-  short_name = "TEST_CANCER",
+  project_name = "TEST_CANCER",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
   dir_path =  Sys.getenv("dir_path_UTTEST")
-) %>% sync_project(hard_reset = TRUE)
+)$sync(hard_reset = TRUE)
 project <- setup_project(
-  short_name = "TEST_CLASSIC",
+  project_name = "TEST_CLASSIC",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
   dir_path =  Sys.getenv("dir_path_UTTEST"),
   entire_log = TRUE
-) %>% sync_project(hard_reset = TRUE)
+)$sync(hard_reset = TRUE)
 project <- setup_project(
-  short_name = "TEST_DATA",
+  project_name = "TEST_DATA",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
   dir_path =  Sys.getenv("dir_path_UTTEST")
-) %>% sync_project(hard_reset = TRUE)
+)$sync(hard_reset = TRUE)
 project <- setup_project(
-  short_name = "TEST_EDGE",
+  project_name = "TEST_EDGE",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
   dir_path =  Sys.getenv("dir_path_UTTEST")
-) %>% sync_project(hard_reset = TRUE)
+)$sync(hard_reset = TRUE)
 project <- setup_project(
-  short_name = "TEST_LONGITUDINAL",
+  project_name = "TEST_LONGITUDINAL",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
   dir_path =  Sys.getenv("dir_path_UTTEST")
-) %>% sync_project(hard_reset = TRUE)
+)$sync(hard_reset = TRUE)
 project <- setup_project(
-  short_name = "TEST_MULTIARM",
+  project_name = "TEST_MULTIARM",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
   dir_path =  Sys.getenv("dir_path_UTTEST")
-) %>% sync_project(hard_reset = TRUE)
+)$sync(hard_reset = TRUE)
 project <- setup_project(
-  short_name = "TEST_REPEATING",
+  project_name = "TEST_REPEATING",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
   dir_path =  Sys.getenv("dir_path_UTTEST")
-) %>% sync_project(hard_reset = TRUE)
+)$sync(hard_reset = TRUE)
 scrub_test_project <- function(project){
-  project$short_name
+  project$project_name
   project$internals$is_test <- TRUE
   project$dir_path <- "fake/path"
   project$redcap$project_info$project_id <-
@@ -52,15 +52,15 @@ scrub_test_project <- function(project){
   project$links$redcap_base <-  project$links$redcap_uri %>% dirname() %>% paste0("/")
   project <- update_project_links(project)
   project$summary$REDCapSync_raw$dir_other <- "fake/path"
-  project$summary$REDCapSync_raw$file_path <- paste0("fake/path/",project$short_name,"_REDCapSync.xslx")
+  project$summary$REDCapSync_raw$file_path <- paste0("fake/path/",project$project_name,"_REDCapSync.xslx")
   project$summary$REDCapSync$dir_other <- "fake/path"
-  project$summary$REDCapSync$file_path <- paste0("fake/path/",project$short_name,".xslx")
+  project$summary$REDCapSync$file_path <- paste0("fake/path/",project$project_name,".xslx")
   invisible(project)
 }
-for(short_name in .test_project_names){
+for(project_name in .test_project_names){
   assign(
-    x = short_name,
-    value = load_project(short_name) %>% scrub_test_project() ,
+    x = project_name,
+    value = load_project(project_name) %>% scrub_test_project() ,
     envir = globalenv()
   )
 }

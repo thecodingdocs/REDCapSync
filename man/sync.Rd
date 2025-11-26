@@ -5,14 +5,14 @@
 \title{Synchronize REDCap Data}
 \usage{
 sync(
-  short_names = NULL,
+  project_names = NULL,
   summarize = TRUE,
   hard_check = FALSE,
   hard_reset = FALSE
 )
 }
 \arguments{
-\item{short_names}{character vector of project short_names previously setup.
+\item{project_names}{character vector of project project_names previously setup.
 If = NULL, will get all from \code{get_projects()}}
 
 \item{summarize}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
@@ -32,8 +32,8 @@ Syncs with REDCap via \code{project} object that user defined with \link{setup_p
 \details{
 Syncs all projects by default but can be used to hands-free sync one or
 defined set projects. This is not intended to return project object. User
-should use \code{load_project("short_name")}. However, by default will invisibily
-return the last project in the set of short_names.
+should use \code{load_project("project_name")}. However, by default will invisibily
+return the last project in the set of project_names.
 }
 \seealso{
 \link{setup_project} for initializing the \code{project} object.

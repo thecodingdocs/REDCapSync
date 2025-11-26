@@ -7,10 +7,10 @@
 \title{Setup or Load REDCapSync Project}
 \usage{
 setup_project(
-  short_name,
+  project_name,
   dir_path,
   redcap_uri,
-  token_name = paste0("REDCapSync_", short_name),
+  token_name = paste0("REDCapSync_", project_name),
   sync_frequency = "daily",
   labelled = TRUE,
   hard_reset = FALSE,
@@ -33,12 +33,12 @@ setup_project(
   add_default_summaries = TRUE
 )
 
-load_project(short_name)
+load_project(project_name)
 
-load_test_project(short_name = "TEST_CLASSIC", with_data = FALSE)
+load_test_project(project_name = "TEST_CLASSIC", with_data = FALSE)
 }
 \arguments{
-\item{short_name}{A character string with no spaces or symbols representing
+\item{project_name}{A character string with no spaces or symbols representing
 the unique short name for the REDCap project.}
 
 \item{dir_path}{Optional character string representing the directory path
@@ -50,7 +50,7 @@ will only be in current R session.}
 server.}
 
 \item{token_name}{An optional character string for setting your token name.
-Default is \verb{REDCapSync_<short_name>}}
+Default is \verb{REDCapSync_<project_name>}}
 
 \item{sync_frequency}{Frequency of sync. Options are "always", "hourly",
 'daily', 'weekly', "monthly",and "never". The check is only triggered by
@@ -136,12 +136,12 @@ It ensures that the token is valid and ready for use in subsequent API calls.
 Neither function directly attempts communication with REDCap.
 
 \code{setup_project} is used the first time you initialize/link a REDCap project.
-Mainly, it sets your unique \code{short_name} and your intended directory.
+Mainly, it sets your unique \code{project_name} and your intended directory.
 Unless you run \code{hard_reset = TRUE} the default will first try load_project.
 dir_path is technically optional but without it the user cannot
 save/load/update projects.
 
-\code{load_project} can be used with just the \code{short_name} parameter after you
+\code{load_project} can be used with just the \code{project_name} parameter after you
 have
 already run \code{setup_project} in the past with an established directory.
 \code{dir_path}
@@ -151,7 +151,7 @@ is optional for this function but can be used if you relocated the directory.
 \dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
 # Initialize the project object with the REDCap API token and URL
 project <- setup_project(
-  short_name = "TEST",
+  project_name = "TEST",
   dir_path = "path/to/secure/file/storage",
   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 )

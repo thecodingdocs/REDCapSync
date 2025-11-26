@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 REDCap API tokens are equivalent to your username and password. They should never be shared with anyone. Ideally, they should never be directly written in an R script, especially if you plan on sharing it in the future. **Never commit a file containing your token on git or GitHub because this will forever be in the history.** If there is ever any doubt in your mind you should quickly regenerate your token on the REDCap website. If you are working on a *real* REDCap project it's good practice to regenerate your token periodically, such as once a week, just to be safe.
 
-Precisely because tokens are sensitive, REDCapSync is designed to only reference the name of your token, such as "REDCapSync_TEST". If REDCapSync ever wants to use the token to make an API call to REDCap, it will check `Sys.getenv("REDCapSync_TEST")`. By default are token names start with "REDCapSync_", followed by the `short_name` you chose in `setup_project()`.Below demonstrates how to set and check your tokens...
+Precisely because tokens are sensitive, REDCapSync is designed to only reference the name of your token, such as "REDCapSync_TEST". If REDCapSync ever wants to use the token to make an API call to REDCap, it will check `Sys.getenv("REDCapSync_TEST")`. By default are token names start with "REDCapSync_", followed by the `project_name` you chose in `setup_project()`.Below demonstrates how to set and check your tokens...
 
 ## Setting Your Token for One Session
 

@@ -307,7 +307,7 @@ get_redcap_files <- function(project,
                              original_file_names = FALSE,
                              overwrite = FALSE) {
   file_rows <- which(project$metadata$fields$field_type == "file")
-  out_dir <- file.path(project$dir_path, "REDCap", project$short_name, "files")
+  out_dir <- file.path(project$dir_path, "REDCap", project$project_name, "files")
   if (length(file_rows) > 0) {
     dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
     for (field_name in project$metadata$fields$field_name[file_rows]) {

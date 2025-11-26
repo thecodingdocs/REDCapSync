@@ -26,12 +26,12 @@ get_projects <- function() {
   if (!does_exist || !is_ok) {
     return(.blank_project_details)
   }
-  # projects$short_name %>% paste0(collapse = "\n") %>% message()
+  # projects$project_name %>% paste0(collapse = "\n") %>% message()
   projects
 }
 #' @noRd
 .blank_project_cols <- c(
-  "short_name",
+  "project_name",
   "dir_path",
   "sync_frequency",
   "last_sync",
@@ -67,7 +67,7 @@ get_projects <- function() {
 )
 #' @noRd
 .blank_project_details <- data.frame(
-  short_name = character(0),
+  project_name = character(0),
   dir_path = character(0),
   sync_frequency = character(0),
   last_sync = character(0) %>% as.POSIXct(tz = Sys.timezone()),
@@ -100,7 +100,7 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
   project_col_names <- colnames(projects) %>% vec1_in_vec2(.blank_project_cols)
   projects <- projects[, project_col_names]
   assert_project_details(projects)
-  projects <- projects[order(projects$short_name), ]
+  projects <- projects[order(projects$project_name), ]
   saveRDS(projects, file = cache_path() %>% file.path("projects.rds"))
   pkg_name <- "REDCapSync"
   if (!silent) {
@@ -110,7 +110,7 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
         " saved ",
         nrow(projects),
         " project locations to the cache...",
-        toString(projects$short_name)
+        toString(projects$project_name)
       ) # "   Token: ",projects$token_name,collapse = "\n"))
     )
     cli_alert_wrap(
@@ -139,7 +139,7 @@ extract_project_details <- function(project) {
     dimnames = list(NULL, .blank_project_cols)
   ) %>% as.data.frame()
   # top -----
-  project_details$short_name <- project$short_name
+  project_details$project_name <- project$project_name
   project_details$dir_path <- project$dir_path %>% na_if_null()
   # settings -------
   project_details$sync_frequency <- project$internals$sync_frequency
@@ -191,7 +191,7 @@ extract_project_details <- function(project) {
 add_project_details_to_cache <- function(project_details) {
   assert_project_details(project_details, nrows = 1)
   projects <- get_projects()
-  projects <- projects[which(projects$short_name != project_details$short_name), ]
+  projects <- projects[which(projects$project_name != project_details$project_name), ]
   bad_row <- NULL
   if(!is.na(project_details$project_id)){
     bad_row <- which(
@@ -202,11 +202,11 @@ add_project_details_to_cache <- function(project_details) {
   if (length(bad_row) > 0) {
     cli::cli_abort(
       paste0(
-        "You are trying to save from a project [{project_details$short_name} ",
+        "You are trying to save from a project [{project_details$project_name} ",
         "PID {projects$project_id[bad_row]}] that you have already setup ",
-        "[{projects$short_name[bad_row]} PID {project_details$project_id}] ",
+        "[{projects$project_name[bad_row]} PID {project_details$project_id}] ",
         "You can load the old project or run ",
-        "`cache_remove_project(\"{projects$short_name[bad_row]}\")`"
+        "`cache_remove_project(\"{projects$project_name[bad_row]}\")`"
       )
     )
   }
@@ -226,7 +226,7 @@ save_project_details <- function(project, silent = TRUE) {
       to <- readRDS(save_project_details_path)
       from <- project_details
       collected <- makeAssertCollection()
-      assert_set_equal(from$short_name, to$short_name, add = collected)
+      assert_set_equal(from$project_name, to$project_name, add = collected)
       if (!is.na(from$project_id) && !is.na(to$project_id)) {
         assert_set_equal(from$project_id, to$project_id, add = collected)
       }
@@ -234,7 +234,7 @@ save_project_details <- function(project, silent = TRUE) {
         assert_set_equal(from$redcap_uri, to$redcap_uri, add = collected)
       }
       if (!collected$isEmpty()) {
-        info <- "Something critical doesn't match. You should run `delete_project_by_name(\"{project$short_name}\")"
+        info <- "Something critical doesn't match. You should run `delete_project_by_name(\"{project$project_name}\")"
         collected %>%
           cli_message_maker(function_name = current_function, info = info) %>%
           cli::cli_abort()

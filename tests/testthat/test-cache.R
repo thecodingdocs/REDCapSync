@@ -72,15 +72,15 @@ test_that("cache_remove_project works", {
   project <- mock_project()
   projects <- get_projects()
   project_details <- extract_project_details(project)
-  expect_message(cache_remove_project(short_name = "TEST_other"),
+  expect_message(cache_remove_project(project_name = "TEST_other"),
                  "Nothing to do")
-  expect_false("TEST_other" %in% projects$short_name)
-  expect_false("TEST_PROJECT" %in% projects$short_name)
+  expect_false("TEST_other" %in% projects$project_name)
+  expect_false("TEST_PROJECT" %in% projects$project_name)
   project_details %>% add_project_details_to_cache()
   projects <- get_projects()
-  expect_true("TEST_PROJECT" %in% projects$short_name)
-  expect_message(cache_remove_project(short_name = "TEST_PROJECT"),
+  expect_true("TEST_PROJECT" %in% projects$project_name)
+  expect_message(cache_remove_project(project_name = "TEST_PROJECT"),
                  "removed from cache")
   projects <- get_projects()
-  expect_false("TEST_PROJECT" %in% projects$short_name)
+  expect_false("TEST_PROJECT" %in% projects$project_name)
 })

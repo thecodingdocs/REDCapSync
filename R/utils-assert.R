@@ -59,7 +59,7 @@ get_project_token <- function(project, silent = TRUE) {
       cli_alert_wrap(
         paste0(
           "Valid token for ",
-          project$short_name,
+          project$project_name,
           " is set in your R session (pending connection)!"
         ),
         bullet_type = "v"
@@ -234,9 +234,9 @@ assert_setup_project <- function(project,
                        warn_only = warn_only,
                        add = collected)
   assert_env_name(
-    env_name = project$short_name,
+    env_name = project$project_name,
     max.chars = 31,
-    arg_name = "short_name",
+    arg_name = "project_name",
     add = collected
   )
   # DIRPATH

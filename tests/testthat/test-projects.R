@@ -61,7 +61,7 @@ test_that("save_projects_to_cache works", {
   projects <- get_projects()
   #connection should save to cache
   checkmate::expect_data_frame(projects, nrows = 1)
-  expect_equal(project_details$short_name, projects$short_name)
+  expect_equal(project_details$project_name, projects$project_name)
   checkmate::expect_data_frame(project_details, nrows = 1)
   cache_clear()
   expect_false(file.exists(file.path(fake_cache_location,"projects.rds")))
@@ -95,10 +95,10 @@ test_that("add_project_details_to_cache works", {
   expect_no_error(add_project_details_to_cache(project_details))
   projects <- get_projects()
   checkmate::expect_data_frame(projects, nrows = 1)
-  expect_true(project_details$short_name %in% projects$short_name)
-  # conflict: same project_id & same base redcap_uri but different short_name -> error
+  expect_true(project_details$project_name %in% projects$project_name)
+  # conflict: same project_id & same base redcap_uri but different project_name -> error
   project_details_conflict <- project_details
-  project_details_conflict$short_name <- "TEST_OTHER"
+  project_details_conflict$project_name <- "TEST_OTHER"
   expect_error(add_project_details_to_cache(project_details_conflict))
 })
 # save_project_details ( Internal )
@@ -120,11 +120,11 @@ test_that("save_project_details works", {
   expect_false(file.exists(details_path))
   # call function
   expect_no_error(save_project_details(project))
-  # details file created and contains expected short_name
+  # details file created and contains expected project_name
   expect_true(file.exists(details_path))
   saved_details <- readRDS(details_path)
-  expect_equal(as.character(saved_details$short_name), project$short_name)
+  expect_equal(as.character(saved_details$project_name), project$project_name)
   # cache updated
   projects <- get_projects()
-  expect_true(project$short_name %in% projects$short_name)
+  expect_true(project$project_name %in% projects$project_name)
 })

@@ -11,18 +11,18 @@
 #' Neither function directly attempts communication with REDCap.
 #'
 #' `setup_project` is used the first time you initialize/link a REDCap project.
-#' Mainly, it sets your unique `short_name` and your intended directory.
+#' Mainly, it sets your unique `project_name` and your intended directory.
 #' Unless you run \code{hard_reset = TRUE} the default will first try load_project.
 #' dir_path is technically optional but without it the user cannot
 #' save/load/update projects.
 #'
-#' `load_project` can be used with just the `short_name` parameter after you
+#' `load_project` can be used with just the `project_name` parameter after you
 #' have
 #' already run `setup_project` in the past with an established directory.
 #' `dir_path`
 #' is optional for this function but can be used if you relocated the directory.
 #'
-#' @param short_name A character string with no spaces or symbols representing
+#' @param project_name A character string with no spaces or symbols representing
 #' the unique short name for the REDCap project.
 #' @param dir_path Optional character string representing the directory path
 #' where you want the REDCap project data to be stored. If missing, project
@@ -31,7 +31,7 @@
 #' @param redcap_uri A character string representing the base URL of the REDCap
 #' server.
 #' @param token_name An optional character string for setting your token name.
-#' Default is `REDCapSync_<short_name>`
+#' Default is `REDCapSync_<project_name>`
 #' @param sync_frequency Frequency of sync. Options are "always", "hourly",
 #' 'daily', 'weekly', "monthly",and "never". The check is only triggered by
 #' calling the function, but can be automated with other packages.
@@ -77,17 +77,17 @@
 #' @examplesIf FALSE
 #' # Initialize the project object with the REDCap API token and URL
 #' project <- setup_project(
-#'   short_name = "TEST",
+#'   project_name = "TEST",
 #'   dir_path = "path/to/secure/file/storage",
 #'   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 #' )
 #' project <- load_project("TEST")
 #' @family project object
 #' @export
-setup_project <- function(short_name,
+setup_project <- function(project_name,
                           dir_path,
                           redcap_uri,
-                          token_name = paste0("REDCapSync_", short_name),
+                          token_name = paste0("REDCapSync_", project_name),
                           sync_frequency = "daily",
                           labelled = TRUE,
                           hard_reset = FALSE,
@@ -111,9 +111,9 @@ setup_project <- function(short_name,
   silent <- FALSE
   collected <- makeAssertCollection()
   assert_env_name(
-    env_name = short_name,
+    env_name = project_name,
     max.chars = 31,
-    arg_name = "short_name",
+    arg_name = "project_name",
     add = collected
   )
   # DIRPATH
@@ -139,7 +139,7 @@ setup_project <- function(short_name,
   assert_logical(add_default_fields, len = 1, add = collected)
   assert_logical(add_default_transformation, len = 1, add = collected)
   assert_logical(add_default_summaries, len = 1, add = collected)
-  assert_env_name(short_name)
+  assert_env_name(project_name)
   # assert_env_name(
   #   merge_form_name,
   #   max.chars = 31,
@@ -173,18 +173,18 @@ setup_project <- function(short_name,
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
-  projects <- get_projects() # add short_name conflict check id-base url differs
-  sweep_dirs_for_cache(project_names = short_name)
-  if (paste0(.token_prefix, short_name) != token_name) {
+  projects <- get_projects() # add project_name conflict check id-base url differs
+  sweep_dirs_for_cache(project_names = project_name)
+  if (paste0(.token_prefix, project_name) != token_name) {
     # maybe a message
   }
-  in_proj_cache <- short_name %in% projects$short_name
+  in_proj_cache <- project_name %in% projects$project_name
   missing_dir_path <- missing(dir_path)
   was_loaded <- FALSE
   original_details <- NULL
   if (!in_proj_cache && !missing_dir_path) {
     #this will add existing project to cache if not there already
-    project_details_path <- get_project_path(short_name = short_name,
+    project_details_path <- get_project_path(project_name = project_name,
                                              dir_path = dir_path,
                                              type = "details")
     if (file.exists(project_details_path)) {
@@ -207,11 +207,11 @@ setup_project <- function(short_name,
     }
   }
   if (!hard_reset) {
-    # attempt to load exisiting project unless hard_reset
+    # attempt to load existing project unless hard_reset
     project <- tryCatch(
       expr = {
         suppressWarnings({
-          load_project(short_name = short_name)
+          load_project(project_name = project_name)
         })
       },
       error = function(e) {
@@ -231,16 +231,16 @@ setup_project <- function(short_name,
       # compare current setting to previous settings...
       original_details <- project %>% extract_project_details()
       projects <- get_projects()
-      cache_details <- projects[which(projects$short_name ==short_name),]
+      cache_details <- projects[which(projects$project_name ==project_name),]
       if(original_details$redcap_uri != redcap_uri){
         stop("There is an existing project at your chosen directory with same ",
-             "`short_name` but a different `redcap_uri`. You can use ",
+             "`project_name` but a different `redcap_uri`. You can use ",
              "setup_project(..., hard_reset = TRUE) to override."
         )
       }
       if(original_details$project_id != cache_details$project_id){
         stop("There is an existing project at your chosen directory with same ",
-             "`short_name` but a different `redcap_uri`. You can use ",
+             "`project_name` but a different `redcap_uri`. You can use ",
              "setup_project(..., hard_reset = TRUE) to override."
         )
       }
@@ -279,11 +279,11 @@ setup_project <- function(short_name,
   if (!missing_dir_path) {
     project$dir_path <- set_dir(dir_path) # will also ask user if provided dir is new or different (will load from original but start using new dir)
     dir.create(
-      path = file.path(project$dir_path, "REDCap", short_name),
+      path = file.path(project$dir_path, "REDCap", project_name),
       showWarnings = FALSE
     )
   }
-  project$short_name <- short_name
+  project$project_name <- project_name
   project$redcap$token_name <- token_name
   project$internals$sync_frequency <- sync_frequency
   project$internals$labelled <- labelled
@@ -331,16 +331,16 @@ setup_project <- function(short_name,
                "deidentified_strict",
                "deidentified_super_strict")
 #' @noRd
-get_project_path <- function(short_name,
+get_project_path <- function(project_name,
                              dir_path,
                              type = "",
                              check_dir = FALSE) {
-  assert_env_name(short_name)
+  assert_env_name(project_name)
   if (check_dir) {
     assert_dir(dir_path)
   }
   assert_choice(type, .project_file_types)
-  file_name <- paste0(short_name, "_REDCapSync")
+  file_name <- paste0(project_name, "_REDCapSync")
   if (type != "")
     file_name <- file_name %>% paste0("_", type)
   file_name <- file_name %>% paste0(".RData")
@@ -352,10 +352,10 @@ get_project_path2 <- function(project,
                               type = "",
                               check_dir = FALSE) {
   assert_setup_project(project)
-  short_name <- project$short_name
+  project_name <- project$project_name
   dir_path <- project$dir_path
   get_project_path(
-    short_name = short_name,
+    project_name = project_name,
     dir_path = dir_path,
     type = type,
     check_dir = check_dir
@@ -367,26 +367,26 @@ get_project_path2 <- function(project,
 .project_path_suffix <- "_REDCapSync.RData"
 #' @rdname setup-load
 #' @export
-load_project <- function(short_name) {
+load_project <- function(project_name) {
   # add load by path option
   projects <- get_projects()
   if (nrow(projects) == 0) {
     stop("No projects in cache")
   }
-  if (!short_name %in% projects$short_name) {
+  if (!project_name %in% projects$project_name) {
     stop(
       "No project named ",
-      short_name,
+      project_name,
       " in cache. Did you use `setup_project()` and `sync_project()`?"
     )
   }
-  dir_path <- projects$dir_path[which(projects$short_name == short_name)] %>%
+  dir_path <- projects$dir_path[which(projects$project_name == project_name)] %>%
     sanitize_path()
   assert_dir(dir_path)
   if (!file.exists(dir_path)) {
     stop("`dir_path` doesn't exist: '", dir_path, "'")
   }
-  project_path <- get_project_path(short_name = short_name, dir_path = dir_path)
+  project_path <- get_project_path(project_name = project_name, dir_path = dir_path)
   assert_project_path(project_path)
   if (!file.exists(project_path)) {
     stop(
@@ -411,10 +411,10 @@ load_project <- function(short_name) {
 }
 #' @rdname setup-load
 #' @export
-load_test_project <- function(short_name = "TEST_CLASSIC",
+load_test_project <- function(project_name = "TEST_CLASSIC",
                               with_data = FALSE) {
-  assert_choice(short_name,.test_project_names)
-  if(short_name == "TEST_CLASSIC"){
+  assert_choice(project_name,.test_project_names)
+  if(project_name == "TEST_CLASSIC"){
     project <- TEST_CLASSIC
   }
   invisible(REDCapSync_project$new(project))
@@ -426,7 +426,7 @@ load_test_project <- function(short_name = "TEST_CLASSIC",
 #' settings. Generated using \link{load_project} or \link{setup_project}
 #' @inheritParams setup_project
 #' @description
-#' This will save/delete the "<short_name>_REDCapSync.RData" file in the given
+#' This will save/delete the "<project_name>_REDCapSync.RData" file in the given
 #' project
 #' directories R_objects folder. These are optional functions given that
 #' `save_project` is a also handled by a default parameter in `sync_project.`
@@ -444,7 +444,7 @@ save_project <- function(project, silent = FALSE) {
     cli::cli_alert_danger(
       paste0(
         "Did not save ",
-        project$short_name,
+        project$project_name,
         " because there has never been a REDCap connection! You must use `setup_project()` and `project$sync()`"
       )
     )
@@ -455,7 +455,7 @@ save_project <- function(project, silent = FALSE) {
   saveRDS(object = project, file = save_project_path) # add error check
   save_project_details(project)
   cli_alert_wrap(
-    paste0("Saved ", project$short_name, "!"),
+    paste0("Saved ", project$project_name, "!"),
     url = save_project_path,
     bullet_type = "v",
     silent = silent
@@ -474,7 +474,7 @@ save_project <- function(project, silent = FALSE) {
 )
 #' @noRd
 .blank_project <- list(
-  short_name = NULL,
+  project_name = NULL,
   dir_path = NULL,
   redcap = list(
     token_name = NULL,

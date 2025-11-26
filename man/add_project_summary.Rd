@@ -124,7 +124,7 @@ separate files as opposed to multi-tab Excel. Default is \code{FALSE}.}
 saved. Default is the \code{output} folder within the database directory.}
 
 \item{file_name}{Character. The base name of the file where the summary will
-be saved. Default is \verb{<project$short_name>_<summary_name>}.}
+be saved. Default is \verb{<project$project_name>_<summary_name>}.}
 
 \item{hard_reset}{Logical. If \code{TRUE}, overwrite existing summary files with the
 same name. Default is \code{FALSE}.}

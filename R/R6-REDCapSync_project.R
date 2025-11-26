@@ -69,7 +69,7 @@
 #' @param dir_other Character. The directory where the summary file will be
 #' saved. Default is the `output` folder within the database directory.
 #' @param file_name Character. The base name of the file where the summary will
-#' be saved. Default is `<project$short_name>_<summary_name>`.
+#' be saved. Default is `<project$project_name>_<summary_name>`.
 #' @param envir environment variable
 #' @param form string of raw form name such as "survey_one"
 #' @param link_type choose one of "base", "home", "record_home",
@@ -100,7 +100,7 @@ REDCapSync_project <- R6Class(
     },
     #' @description Print project metadata
     info = function(){
-      message("short_name: ",private$project$short_name)
+      message("project_name: ",private$project$project_name)
       message("directory: ",private$project$dir_path)
     },
     #' @description  Add a new summary entry

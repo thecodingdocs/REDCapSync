@@ -340,7 +340,7 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' @param dir_other Character. The directory where the summary file will be
 #' saved. Default is the `output` folder within the database directory.
 #' @param file_name Character. The base name of the file where the summary will
-#' be saved. Default is `<project$short_name>_<summary_name>`.
+#' be saved. Default is `<project$project_name>_<summary_name>`.
 #' @return
 #' A modified `project` object that includes the newly created summary.
 #' The summary is also saved as a file in the specified directory.
@@ -395,7 +395,7 @@ add_project_summary <- function(project,
     dir_other <- file.path(project$dir_path, "output")
   }
   if (is.null(file_name)){
-    file_name <- paste0(project$short_name, "_", summary_name)
+    file_name <- paste0(project$project_name, "_", summary_name)
   }
   if (is.null(filter_list)) {
     if (!is.null(filter_choices) && !is.null(filter_field)) {
@@ -567,7 +567,7 @@ save_summary <- function(project, summary_name) {
   # separate = FALSE
   # use_csv
   # dir_other = file.path(project$dir_path, "output")
-  # file_name = paste0(project$short_name, "_", summary_name)
+  # file_name = paste0(project$project_name, "_", summary_name)
   # hard_reset = FALSE
   # save -----
   last_save_time <- now_time()
@@ -1298,8 +1298,8 @@ add_default_summaries <- function(project,
     with_links = with_links,
     separate = TRUE,
     use_csv = use_csv,
-    dir_other = file.path(project$dir_path, "REDCap", project$short_name),
-    file_name = project$short_name
+    dir_other = file.path(project$dir_path, "REDCap", project$project_name),
+    file_name = project$project_name
   )
   summary_name <- "REDCapSync"
   project <- add_project_summary(
@@ -1323,7 +1323,7 @@ add_default_summaries <- function(project,
     separate = FALSE,
     use_csv = use_csv,
     dir_other = file.path(project$dir_path, "output"),
-    file_name = paste0(project$short_name, "_", summary_name)
+    file_name = paste0(project$project_name, "_", summary_name)
   )
   invisible(project)
 }

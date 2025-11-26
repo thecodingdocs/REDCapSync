@@ -21,11 +21,11 @@ sync_project <- function(project,
     cli::cli_abort(message)
   }
   id_col <- project$metadata$id_col
-  do_sync <- due_for_sync(project_name = project$short_name) ||
+  do_sync <- due_for_sync(project_name = project$project_name) ||
     hard_reset || hard_check
   was_updated <- FALSE
   if (!do_sync) {
-    cli::cli_alert_info("{project$short_name} not due for sync ({project$internals$sync_frequency})")
+    cli::cli_alert_info("{project$project_name} not due for sync ({project$internals$sync_frequency})")
   }
   if (do_sync) {
     stale_records <- NULL
@@ -145,7 +145,7 @@ sync_project <- function(project,
           project$internals$last_full_update <-
           project$internals$last_metadata_update <-
           project$internals$last_data_update <- now_time()
-        cli_alert_wrap(paste0("Full ", project$short_name, " update!"),
+        cli_alert_wrap(paste0("Full ", project$project_name, " update!"),
                        bullet_type = "v")
         was_updated <- TRUE
         project$internals$sync_vector_clock <- 1
@@ -254,34 +254,34 @@ sync_project <- function(project,
 #' @details
 #' Syncs all projects by default but can be used to hands-free sync one or
 #' defined set projects. This is not intended to return project object. User
-#' should use `load_project("short_name")`. However, by default will invisibily
-#' return the last project in the set of short_names.
+#' should use `load_project("project_name")`. However, by default will invisibily
+#' return the last project in the set of project_names.
 #'
 #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
 #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
 #' parameter from `setup_project()`)
 #' @param hard_reset Logical that forces a fresh update if TRUE. Default is
 #' `FALSE`.
-#' @param short_names character vector of project short_names previously setup.
+#' @param project_names character vector of project project_names previously setup.
 #' If = NULL, will get all from `get_projects()`
 #' @return invisible return of last project
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.
 #' @export
-sync <- function(short_names = NULL,
+sync <- function(project_names = NULL,
                           summarize = TRUE,
                           hard_check = FALSE,
                           hard_reset = FALSE) {
-  if (is.null(short_names)) {
+  if (is.null(project_names)) {
     projects <- get_projects()
-    short_names <- projects$short_name
-    if(length(short_names)==0){
+    project_names <- projects$project_name
+    if(length(project_names)==0){
       cli_alert_info("No projects in cache. Start with `?setup_project()`")
       invisible()
     }
   }
-  for (short_name in short_names) {
-    project <- load_project(short_name)$sync(
+  for (project_name in project_names) {
+    project <- load_project(project_name)$sync(
       save_to_dir = TRUE,
       summarize = summarize,
       hard_check = hard_check,
@@ -296,41 +296,43 @@ sync <- function(short_names = NULL,
 due_for_sync <- function(project_name) {
   now <- now_time()
   projects <- get_projects()
-  assert_data_frame(projects, min.rows = 1)
-  assert_names(projects$short_name, must.include = project_name)
-  project_row <- which(projects$short_name == project_name)
-  last_sync <- projects$last_sync[project_row]
-  # assert_posixct(last_data_update, len = 1, any.missing = TRUE)
-  if (is.na(last_sync)) {
-    return(TRUE)
-  }
-  then <- last_sync
-  if (is.na(then)) {
-    return(TRUE)
-  }
-  sync_frequency <- projects$sync_frequency[project_row]
-  if (sync_frequency == "always") {
-    return(TRUE)
-  }
-  if (sync_frequency == "never") {
-    return(FALSE)
-  }
-  have_to_check <- sync_frequency %in% c("hourly", "daily", "weekly", "monthly")
-  if (have_to_check) {
-    # turn to function
-    if (sync_frequency == "hourly") {
-      return(now >= (then + lubridate::dhours(1)))
+  if(project_name %in% projects$project_name){
+    assert_names(projects$project_name, must.include = project_name)
+    project_row <- which(projects$project_name == project_name)
+    last_sync <- projects$last_sync[project_row]
+    # assert_posixct(last_data_update, len = 1, any.missing = TRUE)
+    if (is.na(last_sync)) {
+      return(TRUE)
     }
-    if (sync_frequency == "daily") {
-      return(now >= (then + lubridate::ddays(1)))
+    then <- last_sync
+    if (is.na(then)) {
+      return(TRUE)
     }
-    if (sync_frequency == "weekly") {
-      return(now >= (then + lubridate::dweeks(1)))
+    sync_frequency <- projects$sync_frequency[project_row]
+    if (sync_frequency == "always") {
+      return(TRUE)
     }
-    if (sync_frequency == "monthly") {
-      return(now >= (then + lubridate::dmonths(1)))
+    if (sync_frequency == "never") {
+      return(FALSE)
+    }
+    have_to_check <- sync_frequency %in% c("hourly", "daily", "weekly", "monthly")
+    if (have_to_check) {
+      # turn to function
+      if (sync_frequency == "hourly") {
+        return(now >= (then + lubridate::dhours(1)))
+      }
+      if (sync_frequency == "daily") {
+        return(now >= (then + lubridate::ddays(1)))
+      }
+      if (sync_frequency == "weekly") {
+        return(now >= (then + lubridate::dweeks(1)))
+      }
+      if (sync_frequency == "monthly") {
+        return(now >= (then + lubridate::dmonths(1)))
+      }
     }
   }
+
   TRUE
 }
 # for if others are using the same object
@@ -338,7 +340,7 @@ due_for_sync <- function(project_name) {
 sweep_dirs_for_cache <- function(project_names = NULL) {
   projects <- get_projects()
   if (nrow(projects) > 0) {
-    project_list <- projects %>% split(projects$short_name)
+    project_list <- projects %>% split(projects$project_name)
     had_change <- FALSE
     all_project_names <- names(project_list)
     if (is.null(project_names)) {
@@ -348,7 +350,7 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
     for (project_name in project_names) {
       from_cache <- project_list[[project_name]]
       expected_path <- get_project_path(
-        short_name = project_name,
+        project_name = project_name,
         dir_path = from_cache$dir_path,
         type = "details"
       )

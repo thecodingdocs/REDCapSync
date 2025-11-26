@@ -4,10 +4,10 @@
 \alias{cache_remove_project}
 \title{Remove project from cache}
 \usage{
-cache_remove_project(short_name)
+cache_remove_project(project_name)
 }
 \arguments{
-\item{short_name}{A character string with no spaces or symbols representing
+\item{project_name}{A character string with no spaces or symbols representing
 the unique short name for the REDCap project.}
 }
 \value{
@@ -15,7 +15,7 @@ message of outcome
 }
 \description{
 This will remove a project from cache. Remember cache only stores information
-like short_name, token_name, directory location, and more from setup_project.
+like project_name, token_name, directory location, and more from setup_project.
 If you want to truly delete the project files go the folder you setup.
 }
 \seealso{

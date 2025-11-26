@@ -239,7 +239,7 @@ test_that("summarize_project works", {
   project <- TEST_CLASSIC
   project$dir_path <- set_dir(test_dir)
   dir.create(
-    path = file.path(project$dir_path, "REDCap", project$short_name),
+    path = file.path(project$dir_path, "REDCap", project$project_name),
     showWarnings = FALSE
   )
   expect_true(file.exists(project$dir_path))

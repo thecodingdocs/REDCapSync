@@ -7,7 +7,7 @@
 #' This function checks the location of the cache established by
 #' \code{\link[hoardr]{hoard}}.
 #' \emph{No project data is stored here. Tokens are not stored here either.}
-#' Key information stored here is `short_name` (primary key for REDCapSync
+#' Key information stored here is `project_name` (primary key for REDCapSync
 #' projects) and other details about project information.
 #' @return The file path of your REDCapSync cache
 #' @seealso
@@ -75,25 +75,25 @@ get_cache <- function() {
 #' @inheritParams setup_project
 #' @description
 #' This will remove a project from cache. Remember cache only stores information
-#' like short_name, token_name, directory location, and more from setup_project.
+#' like project_name, token_name, directory location, and more from setup_project.
 #' If you want to truly delete the project files go the folder you setup.
 #' @return message of outcome
 #' @family Project Cache Functions
 #' @keywords Project Cache Functions
 #' @export
-cache_remove_project <- function(short_name){
+cache_remove_project <- function(project_name){
   projects <- get_projects()
-  is_in_cache <- short_name %in% projects$short_name
+  is_in_cache <- project_name %in% projects$project_name
   if (!is_in_cache) {
     cli_alert_warning(
-      paste0("'", short_name, "' is not saved in your cache. ",
+      paste0("'", project_name, "' is not saved in your cache. ",
              "Nothing to do. "))
     return(invisible())
   }
-  projects <- projects[which(projects$short_name != short_name), ]
+  projects <- projects[which(projects$project_name != project_name), ]
   save_projects_to_cache(projects, silent = TRUE)
   cli_alert_success(
-    paste0("'", short_name, "' removed from cache but if you wish to delete ",
+    paste0("'", project_name, "' removed from cache but if you wish to delete ",
            "files you must do this manually at the folder you previously chose."
            ))
 }

@@ -243,6 +243,7 @@ REDCapSync_project <- R6Class(
     },
     #' @description  Add a new summary entry
     save = function(){
+      private$project <- save_project(private$project)
       invisible(self)
     },
     #' @description  Returns list of data or the specified form.

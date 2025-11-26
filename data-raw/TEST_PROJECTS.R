@@ -9,8 +9,9 @@ project <- setup_project(
   project_name = "TEST_CLASSIC",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
   dir_path =  Sys.getenv("dir_path_UTTEST"),
-  entire_log = TRUE
-)$sync(hard_reset = TRUE)
+  entire_log = TRUE,
+  hard_reset = TRUE
+)$sync()
 project <- setup_project(
   project_name = "TEST_DATA",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
@@ -34,8 +35,9 @@ project <- setup_project(
 project <- setup_project(
   project_name = "TEST_REPEATING",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
-  dir_path =  Sys.getenv("dir_path_UTTEST")
-)$sync(hard_reset = TRUE)
+  dir_path =  Sys.getenv("dir_path_UTTEST"),
+  hard_reset = TRUE
+)$sync()
 scrub_test_project <- function(project){
   project$project_name
   project$internals$is_test <- TRUE
@@ -57,14 +59,15 @@ scrub_test_project <- function(project){
   project$summary$REDCapSync$file_path <- paste0("fake/path/",project$project_name,".xslx")
   invisible(project)
 }
-for(project_name in .test_project_names){
+.test_project_names %>% paste0(",\n") %>% cat()
+project_names <- c("TEST_CLASSIC","TEST_REPEATING")
+for(project_name in project_names){
   assign(
     x = project_name,
-    value = load_project(project_name) %>% scrub_test_project() ,
+    value = load_project(project_name)$.internal() %>% scrub_test_project() ,
     envir = globalenv()
   )
 }
-.test_project_names %>% paste0(",\n") %>% cat()
 usethis::use_data(
   TEST_CLASSIC,
   TEST_REPEATING,

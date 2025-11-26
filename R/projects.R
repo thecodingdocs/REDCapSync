@@ -220,33 +220,7 @@ save_project_details <- function(project, silent = TRUE) {
   project_details <- extract_project_details(project)
   add_project_details_to_cache(project_details)
   save_project_details_path <- get_project_path2(project, type = "details")
-  current_function <- as.character(current_call())[[1]]
-  if (is_something(save_project_details_path)) {
-    if (file.exists(save_project_details_path)) {
-      to <- readRDS(save_project_details_path)
-      from <- project_details
-      collected <- makeAssertCollection()
-      assert_set_equal(from$project_name, to$project_name, add = collected)
-      if (!is.na(from$project_id) && !is.na(to$project_id)) {
-        assert_set_equal(from$project_id, to$project_id, add = collected)
-      }
-      if (!is.na(from$redcap_uri) && !is.na(to$redcap_uri)) {
-        assert_set_equal(from$redcap_uri, to$redcap_uri, add = collected)
-      }
-      if (!collected$isEmpty()) {
-        info <- "Something critical doesn't match. You should run `delete_project_by_name(\"{project$project_name}\")"
-        collected %>%
-          cli_message_maker(function_name = current_function, info = info) %>%
-          cli::cli_abort()
-      }
-      if (!check_set_equal(from$dir_path, to$dir_path)) {
-        cli::cli_alert_warning(
-          "Cache dir doesn't match save dir. You should only see this if you syncing this project from cloud directories where the paths vary."
-        )
-      }
-    }
-    saveRDS(object = project_details, file = save_project_details_path) # add error check
-  }
+  saveRDS(object = project_details, file = save_project_details_path) # add error check
   return(invisible())
 }
 #' @noRd

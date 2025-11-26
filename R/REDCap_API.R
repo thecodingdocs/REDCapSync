@@ -123,6 +123,7 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
                                              "arm_number",
                                              "event_name") %>% unique()
     project$metadata$arms <- result$arms
+    colnames(project$metadata$arms)[which(colnames(project$metadata$arms) == "arm_num")] <- "arm_number"
     project$metadata$has_arms <- TRUE
     project$metadata$has_multiple_arms <- nrow(project$metadata$arms) > 1
     project$metadata$has_arms_that_matter <- project$metadata$has_multiple_arms

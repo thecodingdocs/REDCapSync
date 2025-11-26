@@ -332,7 +332,6 @@ due_for_sync <- function(project_name) {
       }
     }
   }
-
   TRUE
 }
 # for if others are using the same object

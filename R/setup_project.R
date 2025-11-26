@@ -229,6 +229,7 @@ setup_project <- function(project_name,
     }
     if (was_loaded) {
       # compare current setting to previous settings...
+      project <- project$.internal()
       original_details <- project %>% extract_project_details()
       projects <- get_projects()
       cache_details <- projects[which(projects$project_name ==project_name),]

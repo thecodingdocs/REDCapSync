@@ -40,8 +40,6 @@
 #' Default is `TRUE`.
 #' @param hard_reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the
 #' `project` object already exists. Default is `FALSE`.
-#' @param use_csv Logical (TRUE/FALSE). If TRUE, uses CSV files for data
-#' storage. Default is `FALSE`.
 #' @param days_of_log Integer. Number of days to be checked in the log if a
 #' hard_reset
 #' or new project is setup. Default is `10`.
@@ -109,8 +107,7 @@ setup_project <- function(short_name,
                           original_file_names = FALSE,
                           add_default_fields = FALSE,
                           add_default_transformation = FALSE,
-                          add_default_summaries = TRUE,
-                          use_csv = FALSE) {
+                          add_default_summaries = TRUE) {
   silent <- FALSE
   collected <- makeAssertCollection()
   assert_env_name(
@@ -149,7 +146,6 @@ setup_project <- function(short_name,
   #   arg_name = "merge_form_name",
   #   add = collected
   # )
-  assert_logical(use_csv, len = 1, add = collected)
   assert_choice(
     get_type,
     choices = .get_type,
@@ -276,7 +272,6 @@ setup_project <- function(short_name,
   project$redcap$token_name <- token_name
   project$internals$sync_frequency <- sync_frequency
   project$internals$labelled <- labelled
-  project$internals$use_csv <- use_csv
   project$internals$original_file_names <- original_file_names
   project$internals$entire_log <- entire_log
   project$internals$days_of_log <- days_of_log %>%
@@ -538,8 +533,7 @@ save_project <- function(project, silent = FALSE) {
     is_blank = TRUE,
     is_test = FALSE,
     ever_connected = FALSE,
-    is_clean = FALSE,
-    use_csv = FALSE
+    is_clean = FALSE
   ),
   links = list(
     redcap_uri = NULL,

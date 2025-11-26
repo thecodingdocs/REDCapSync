@@ -283,7 +283,6 @@ assert_setup_project <- function(project,
   assert_logical(project$internals$add_default_summaries,
                  len = 1,
                  add = collected)
-  assert_logical(project$internals$use_csv, len = 1, add = collected)
   assert_integerish(
     project$internals$batch_size_download,
     len = 1,

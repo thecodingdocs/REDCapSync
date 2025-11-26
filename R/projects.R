@@ -64,7 +64,6 @@ get_projects <- function() {
   "add_default_fields",
   "add_default_transformation",
   "add_default_summaries",
-  "use_csv",
   "get_type",
   "batch_size_download",
   "batch_size_upload"
@@ -104,7 +103,6 @@ get_projects <- function() {
   add_default_fields = logical(0),
   add_default_transformation = logical(0),
   add_default_summaries = logical(0),
-  use_csv = logical(0),
   get_type = character(0),
   batch_size_download = integer(0),
   batch_size_upload = integer(0),
@@ -168,7 +166,6 @@ extract_project_details <- function(project) {
     project$internals$add_default_transformation
   project_details$add_default_summaries <-
     project$internals$add_default_summaries
-  project_details$use_csv <- project$internals$use_csv
   project_details$labelled <- project$internals$labelled
   project_details$get_type <- project$internals$get_type
   project_details$batch_size_download <-
@@ -273,7 +270,6 @@ add_project_details_to_project <- function(project, project_details) {
     project_details$add_default_transformation
   project$internals$add_default_summaries <-
     project_details$add_default_summaries
-  project$internals$use_csv <- project_details$use_csv
   project$internals$get_type <- project_details$get_type # should trigger hard_reset
   project$internals$batch_size_download <-
     project_details$batch_size_download %>%

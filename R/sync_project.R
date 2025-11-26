@@ -5,7 +5,7 @@ sync_project <- function(project,
                          hard_check = FALSE,
                          hard_reset = FALSE) {
   collected <- makeAssertCollection()
-  assert_blank_project(project)
+  assert_setup_project(project)
   assert_logical(hard_reset,
                  any.missing = FALSE,
                  len = 1,
@@ -20,7 +20,6 @@ sync_project <- function(project,
       cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
-  id_col <- project$metadata$id_col
   do_sync <- due_for_sync(project_name = project$project_name) ||
     hard_reset || hard_check
   was_updated <- FALSE
@@ -152,6 +151,7 @@ sync_project <- function(project,
       }
     } else {
       if (will_update) {
+        id_col <- project$metadata$id_col
         project$data <- project$data %>% all_character_cols_list()
         if (length(deleted_records) > 0) {
           stale_records <- stale_records[which(!stale_records %in% deleted_records)]

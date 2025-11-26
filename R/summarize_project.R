@@ -829,17 +829,17 @@ generate_project_summary <- function(project,
     if (is_something(data_list$metadata)) {
       data_list$metadata$forms <- annotate_forms(
         data_list = data_list,
-        summarize_data = annotate_from_log,
+        summarize_data = TRUE,
         drop_blanks = drop_blanks
       )
       data_list$metadata$fields <- annotate_fields(
         data_list = data_list,
-        summarize_data = annotate_from_log,
+        summarize_data = TRUE,
         drop_blanks = drop_blanks
       )
       data_list$metadata$choices <- annotate_choices(
         data_list = data_list,
-        summarize_data = annotate_from_log,
+        summarize_data = TRUE,
         drop_blanks = drop_blanks
       )
     }
@@ -848,21 +848,37 @@ generate_project_summary <- function(project,
   data_list$redcap <- project$redcap
   data_list$summary$all_records <- project$summary$all_records
   if (include_log) {
-    data_list$log <- get_log(data_list = data_list, records = records)
+    if(!data_list$redcap$has_log_access){
+      cli_alert_warning("You don't have log access so that can't be included.")
+      include_log <- FALSE
+    } else{
+      data_list$log <- get_log(data_list = data_list, records = records)
+    }
+  }
+  if(annotate_from_log && (include_users || include_records)){
+    if(!data_list$redcap$has_log_access){
+      cli_alert_warning("You don't have log access so that data can't be used.")
+      annotate_from_log <- FALSE
+    }
   }
   if (include_records) {
     if (!is.null(records)) {
-      data_list$records <- annotate_records(data_list = data_list, summarize_data = annotate_from_log)
+      data_list$records <- annotate_records(
+        data_list = data_list, summarize_data = annotate_from_log)
     }
   }
   if (include_users) {
-    #add check to see if setup included users
-    data_list$users <- annotate_users(
-      data_list = data_list,
-      records = records,
-      summarize_data = annotate_from_log,
-      drop_blanks = drop_blanks
-    )
+    if(!data_list$redcap$has_user_access){
+      cli_alert_warning("You don't have user access that can't be included.")
+      include_users <- FALSE
+    } else{
+      data_list$users <- annotate_users(
+        data_list = data_list,
+        records = records,
+        summarize_data = annotate_from_log,
+        drop_blanks = drop_blanks
+      )
+    }
   }
   data_list$redcap <- NULL
   data_list$summary <- NULL

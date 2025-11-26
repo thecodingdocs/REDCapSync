@@ -162,7 +162,7 @@ extract_project_details <- function(project) {
     na_if_null()
   project_details$has_multiple_arms <-
     project$metadata$has_multiple_arms %>% na_if_null()
-  project_details$n_records <- project$summary$all_records
+  project_details$n_records <- project$summary$all_records %>%
     nrow() %>%
     na_if_null() %>%
     as.integer()

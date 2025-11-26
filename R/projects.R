@@ -84,7 +84,7 @@ get_projects <- function() {
   is_longitudinal = logical(0),
   has_repeating_forms_or_events = logical(0),
   has_multiple_arms = logical(0),
-  R_object_size = numeric(0),
+  R_object_size = character(0),
   n_records = integer(0),
   redcap_uri = character(0),
   redcap_home = character(0),

@@ -1,5 +1,15 @@
 # get_projects ( Exported )
 test_that("get_projects is df and has appropriate columns", {
+  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      return(fake_cache)
+    }
+  )
   df <- get_projects()
   expect_s3_class(df, "data.frame")
   expect_true(all(colnames(df) %in% .blank_project_cols))
@@ -41,8 +51,15 @@ test_that("save_projects_to_cache works", {
   projects <- get_projects()
   checkmate::expect_data_frame(projects, nrows = 0)
   project <- mock_project()
+  project$dir_path <- set_dir(test_dir)
+  #no connection should not save to cache
   project_details <- extract_project_details(project)
   projects <- get_projects()
+  checkmate::expect_data_frame(projects, nrows = 0)
+  project$internals$ever_connected <- TRUE
+  save_project(project = project)
+  projects <- get_projects()
+  #connection should save to cache
   checkmate::expect_data_frame(projects, nrows = 1)
   expect_equal(project_details$short_name, projects$short_name)
   checkmate::expect_data_frame(project_details, nrows = 1)
@@ -83,38 +100,6 @@ test_that("add_project_details_to_cache works", {
   project_details_conflict <- project_details
   project_details_conflict$short_name <- "TEST_OTHER"
   expect_error(add_project_details_to_cache(project_details_conflict))
-})
-# add_project_details_to_project ( Internal )
-test_that("add_project_details_to_project works", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      return(fake_cache)
-    }
-  )
-  project <- mock_project()
-  project_details <- extract_project_details(project)
-  # modify some details
-  project_details$sync_frequency <- "weekly"
-  project_details$days_of_log <- 7L
-  project_details$get_files <- !project$internals$get_files
-  project_details$labelled <- !project$internals$labelled
-  # apply details and capture returned project
-  project <- add_project_details_to_project(project, project_details)
-  # check internals updated
-  expect_equal(project$internals$sync_frequency, "weekly")
-  expect_equal(project$internals$days_of_log, as.integer(7))
-  expect_equal(project$internals$get_files, project_details$get_files)
-  # expect_equal(project$internals$labelled, project_details$labelled)
-  #issue with labelled changes
-  # mismatch short_name should error
-  project_details2 <- project_details
-  project_details2$short_name <- "OTHER"
-  expect_error(add_project_details_to_project(project, project_details2))
 })
 # save_project_details ( Internal )
 test_that("save_project_details works", {

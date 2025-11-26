@@ -220,8 +220,15 @@ REDCapSync_project <- R6Class(
     },
     #' @description summarize project and save to Excel
     summarize = function(hard_reset = FALSE){
+      first_stamp <- private$project$internals$last_summary
       private$project <- private$project %>%
         summarize_project(hard_reset = hard_reset)
+      second_stamp <- private$project$internals$last_summary
+      was_updated <- !identical(first_stamp, second_stamp)
+      if(was_updated){
+        #consider separating just saving last in details
+        private$project <- save_project(private$project)
+      }
       invisible(self)
     },
     #' @description save summary to Excel
@@ -236,7 +243,6 @@ REDCapSync_project <- R6Class(
     },
     #' @description  Add a new summary entry
     save = function(){
-      private$project <- save_project(private$project)
       invisible(self)
     },
     #' @description  Returns list of data or the specified form.

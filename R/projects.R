@@ -184,7 +184,7 @@ extract_project_details <- function(project) {
   project_details$last_data_update <- project$internals$last_data_update %>%
     na_if_null() %>%
     as.POSIXct(tz = Sys.timezone())
-  project_details$R_object_size <- object_size(project)
+  project_details$R_object_size <- object_size(project) %>% as.character()
   project_details
 }
 #' @noRd

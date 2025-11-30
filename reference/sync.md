@@ -18,7 +18,7 @@ sync(
 
 - project_names:
 
-  character vector of project project_names previously setup. If = NULL,
+  character vector of project project_names previously setup. If NULL,
   will get all from
   [`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)
 
@@ -44,7 +44,7 @@ invisible return of last project
 Syncs all projects by default but can be used to hands-free sync one or
 defined set projects. This is not intended to return project object.
 User should use `load_project("project_name")`. However, by default will
-invisibily return the last project in the set of project_names.
+invisibly return the last project in the set of project_names.
 
 ## See also
 

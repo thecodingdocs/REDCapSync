@@ -242,8 +242,8 @@ It ensures that the token is valid and ready for use in subsequent API calls.
 Neither function directly attempts communication with REDCap.</p>
 <p><code>setup_project</code> is used the first time you initialize/link a REDCap project.
 Mainly, it sets your unique <code>project_name</code> and your intended directory.
-Unless you run <code>hard_reset = TRUE</code> the default will first try load_project.
-dir_path is technically optional but without it the user cannot
+Unless you run <code>hard_reset = TRUE</code> the default will first try
+load_project. dir_path is technically optional but without it the user cannot
 save/load/update projects.</p>
 <p><code>load_project</code> can be used with just the <code>project_name</code> parameter after you
 have

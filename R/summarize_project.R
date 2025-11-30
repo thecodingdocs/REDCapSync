@@ -1083,8 +1083,6 @@ field_types_to_R <- function(fields) {
                                              "phone",
                                              "vmrn",
                                              "zipcode")
-# there are more
-#' @title Summarize REDCap Database
 #' @noRd
 summarize_project <- function(project, hard_reset = FALSE) {
   assert_setup_project(project)
@@ -1107,16 +1105,19 @@ summarize_project <- function(project, hard_reset = FALSE) {
   invisible(project)
 }
 #' @title clear_project_summaries
-#' @description
-#' `r lifecycle::badge("experimental")`
+#' @description clears project summaries
 #' @inheritParams save_project
 #' @return invisible return of project and a message
 #' @keywords internal
-clear_project_summaries <- function(project) {
-  lifecycle::signal_stage("experimental", "clear_project_summaries()")
+clear_project_summaries <- function(project, summary_names = NULL) {
   assert_setup_project(project)
-  summary_names <- names(project$summary)
-  summary_names <- summary_names[which(summary_names != "all_records")]
+  all_summary_names <- project$summary %>%
+    names() %>%
+    setdiff("all_records")
+  if (is.null(summary_names)) {
+    summary_names <- all_summary_names
+  }
+  # assert(summary_names)
   for (summary_name in summary_names) {
     project$summary[[summary_name]] <- NULL
     project$summary$all_records[[summary_name]] <- NULL

@@ -4,7 +4,7 @@
 \alias{clear_project_summaries}
 \title{clear_project_summaries}
 \usage{
-clear_project_summaries(project)
+clear_project_summaries(project, summary_names = NULL)
 }
 \arguments{
 \item{project}{A validated \code{project} object containing REDCap project data
@@ -15,6 +15,6 @@ settings. Generated using \link{load_project} or \link{setup_project}}
 invisible return of project and a message
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+clears project summaries
 }
 \keyword{internal}

@@ -83,6 +83,27 @@
 #' parameter from `setup_project()`)
 #' @param type string of either "fields","forms", or "choices"
 #' @param annotate logical for annotating in reference to data
+#' @param field_name Character. The name of the field to which the
+#' transformation
+#' will be applied.
+#' @param form_name Character. The name of the form containing the field.
+#' @param field_type Character. The type of the field in REDCap (e.g., "text",
+#' "checkbox", "dropdown").
+#' @param field_type_R Character. The corresponding R data type for the field.
+#' Default is `NA`.
+#' @param field_label Character. The label for the field. Default is `NA`.
+#' @param select_choices_or_calculations Character. A string specifying the
+#' choices (for dropdown, radio, or checkbox fields) or calculations (for
+#' calculated fields). Default is `NA`.
+#' @param field_note Character. An optional note or comment for the field.
+#' Default is `NA`.
+#' @param identifier Character. A string indicating whether the field is an
+#' identifier (e.g., "Y" for yes). Default is an empty string (`""`).
+#' @param units Character. The units of measurement for the field, if
+#' applicable. Default is `NA`.
+#' @param data_func Function or NA. An optional function to transform or
+#' validate the data in the field. Default is `NA`.
+#' @param summary_names One or more summary names. Default is `NULL`.
 #' @return An R6ClassGenerator
 #' @keywords internal
 REDCapSync_project <- R6Class(
@@ -102,6 +123,23 @@ REDCapSync_project <- R6Class(
     info = function(){
       message("project_name: ",private$project$project_name)
       message("directory: ",private$project$dir_path)
+    },
+    #' @description
+    #' Updates the REDCap data for (`project` object) by checking REDCap log.
+    #' @return Messages for confirmation.
+    #' @seealso
+    #' \link{setup_project} for initializing the `project` object.'
+    sync = function(summarize = TRUE,
+                    save_to_dir = TRUE,
+                    hard_check = FALSE,
+                    hard_reset = FALSE){
+      private$project <- sync_project(
+        project = private$project,
+        summarize = summarize,
+        save_to_dir = save_to_dir,
+        hard_check = hard_check,
+        hard_reset = hard_reset)
+      invisible(self)
     },
     #' @description  Add a new summary entry
     add_summary = function(summary_name,
@@ -166,8 +204,11 @@ REDCapSync_project <- R6Class(
       invisible(self)
     },
     #' @description  Clear all project summaries
-    clear_summaries = function (){
-      private$project <- clear_project_summaries(private$project)
+    remove_summaries = function (summary_names = NULL) {
+      private$project <- clear_project_summaries(
+        project = private$project,
+        summary_names = summary_names
+      )
       invisible(self)
     },
     #' @description  Add a new summary entry
@@ -187,35 +228,22 @@ REDCapSync_project <- R6Class(
       invisible(project_summary)
     },
     #' @description  Add a new summary entry
-    add_field = function(){
-      lifecycle::signal_stage("experimental", "add_field()")
-      message("Added field!")
+    add_field = function(field_name,
+                         form_name,
+                         field_type,
+                         field_type_R = NA,
+                         field_label = NA,
+                         select_choices_or_calculations = NA,
+                         field_note = NA,
+                         identifier = "",
+                         units = NA,
+                         data_func = NA){
+      message("Added field! (placeholder)")
       invisible(self)
     },
-    #' @description
-    #' Updates the REDCap database (`project` object) by fetching the latest data
-    #' from the REDCap server.
-    #'
-    #' @details
-    #' This function updates the REDCap database by fetching the latest data from
-    #' the REDCap server. It supports various options such as forcing a fresh
-    #' update, checking logs for a specified number of days, and retrieving files
-    #' from REDCap. The function can also handle metadata-only updates and batch
-    #' processing.
-    #'
-    #' @return Messages for confirmation.
-    #' @seealso
-    #' \link{setup_project} for initializing the `project` object.'
-    sync = function(summarize = TRUE,
-                    save_to_dir = TRUE,
-                    hard_check = FALSE,
-                    hard_reset = FALSE){
-      private$project <- sync_project(
-        project = private$project,
-        summarize = summarize,
-        save_to_dir = save_to_dir,
-        hard_check = hard_check,
-        hard_reset = hard_reset)
+    #' @description  Removes summary entry
+    remove_fields = function(field_names = NULL) {
+      message("Removed field! (placeholder)")
       invisible(self)
     },
     #' @description summarize project and save to Excel

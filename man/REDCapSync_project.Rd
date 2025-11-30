@@ -20,11 +20,12 @@ Users should construct objects using \code{\link[=setup_project]{setup_project()
 \itemize{
 \item \href{#method-REDCapSync_project-new}{\code{REDCapSync_project$new()}}
 \item \href{#method-REDCapSync_project-info}{\code{REDCapSync_project$info()}}
+\item \href{#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
 \item \href{#method-REDCapSync_project-add_summary}{\code{REDCapSync_project$add_summary()}}
-\item \href{#method-REDCapSync_project-clear_summaries}{\code{REDCapSync_project$clear_summaries()}}
+\item \href{#method-REDCapSync_project-remove_summaries}{\code{REDCapSync_project$remove_summaries()}}
 \item \href{#method-REDCapSync_project-generate_summary}{\code{REDCapSync_project$generate_summary()}}
 \item \href{#method-REDCapSync_project-add_field}{\code{REDCapSync_project$add_field()}}
-\item \href{#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
+\item \href{#method-REDCapSync_project-remove_fields}{\code{REDCapSync_project$remove_fields()}}
 \item \href{#method-REDCapSync_project-summarize}{\code{REDCapSync_project$summarize()}}
 \item \href{#method-REDCapSync_project-save_summary}{\code{REDCapSync_project$save_summary()}}
 \item \href{#method-REDCapSync_project-save}{\code{REDCapSync_project$save()}}
@@ -64,6 +65,40 @@ Print project metadata
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$info()}\if{html}{\out{</div>}}
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSync_project-sync"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSync_project-sync}{}}}
+\subsection{Method \code{sync()}}{
+Updates the REDCap data for (\code{project} object) by checking REDCap log.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$sync(
+  summarize = TRUE,
+  save_to_dir = TRUE,
+  hard_check = FALSE,
+  hard_reset = FALSE
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{summarize}}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
+
+\item{\code{save_to_dir}}{Logical (TRUE/FALSE). If TRUE, saves the updated data to
+the directory. Default is \code{TRUE}.}
+
+\item{\code{hard_check}}{Will check REDCap even if not due (see \code{sync_frequency}
+parameter from \code{setup_project()})}
+
+\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files with the
+same name. Default is \code{FALSE}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Messages for confirmation.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSync_project-add_summary"></a>}}
@@ -203,14 +238,21 @@ same name. Default is \code{FALSE}.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSync_project-clear_summaries"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSync_project-clear_summaries}{}}}
-\subsection{Method \code{clear_summaries()}}{
+\if{html}{\out{<a id="method-REDCapSync_project-remove_summaries"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSync_project-remove_summaries}{}}}
+\subsection{Method \code{remove_summaries()}}{
 Clear all project summaries
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$clear_summaries()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$remove_summaries(summary_names = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{summary_names}}{One or more summary names. Default is \code{NULL}.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSync_project-generate_summary"></a>}}
@@ -239,51 +281,72 @@ inherited according to what was set with \code{add_project_summary}.}
 \subsection{Method \code{add_field()}}{
 Add a new summary entry
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$add_field()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSync_project-sync"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSync_project-sync}{}}}
-\subsection{Method \code{sync()}}{
-Updates the REDCap database (\code{project} object) by fetching the latest data
-from the REDCap server.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$sync(
-  summarize = TRUE,
-  save_to_dir = TRUE,
-  hard_check = FALSE,
-  hard_reset = FALSE
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$add_field(
+  field_name,
+  form_name,
+  field_type,
+  field_type_R = NA,
+  field_label = NA,
+  select_choices_or_calculations = NA,
+  field_note = NA,
+  identifier = "",
+  units = NA,
+  data_func = NA
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{summarize}}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
+\item{\code{field_name}}{Character. The name of the field to which the
+transformation
+will be applied.}
 
-\item{\code{save_to_dir}}{Logical (TRUE/FALSE). If TRUE, saves the updated data to
-the directory. Default is \code{TRUE}.}
+\item{\code{form_name}}{Character. The name of the form containing the field.}
 
-\item{\code{hard_check}}{Will check REDCap even if not due (see \code{sync_frequency}
-parameter from \code{setup_project()})}
+\item{\code{field_type}}{Character. The type of the field in REDCap (e.g., "text",
+"checkbox", "dropdown").}
 
-\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files with the
-same name. Default is \code{FALSE}.}
+\item{\code{field_type_R}}{Character. The corresponding R data type for the field.
+Default is \code{NA}.}
+
+\item{\code{field_label}}{Character. The label for the field. Default is \code{NA}.}
+
+\item{\code{select_choices_or_calculations}}{Character. A string specifying the
+choices (for dropdown, radio, or checkbox fields) or calculations (for
+calculated fields). Default is \code{NA}.}
+
+\item{\code{field_note}}{Character. An optional note or comment for the field.
+Default is \code{NA}.}
+
+\item{\code{identifier}}{Character. A string indicating whether the field is an
+identifier (e.g., "Y" for yes). Default is an empty string (\code{""}).}
+
+\item{\code{units}}{Character. The units of measurement for the field, if
+applicable. Default is \code{NA}.}
+
+\item{\code{data_func}}{Function or NA. An optional function to transform or
+validate the data in the field. Default is \code{NA}.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Details}{
-This function updates the REDCap database by fetching the latest data from
-the REDCap server. It supports various options such as forcing a fresh
-update, checking logs for a specified number of days, and retrieving files
-from REDCap. The function can also handle metadata-only updates and batch
-processing.
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSync_project-remove_fields"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSync_project-remove_fields}{}}}
+\subsection{Method \code{remove_fields()}}{
+Removes summary entry
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$remove_fields(field_names = NULL)}\if{html}{\out{</div>}}
 }
 
-\subsection{Returns}{
-Messages for confirmation.
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{field_names}}{Character vector. Names of specific fields to include in
+the summary. Default is \code{NULL}, which includes all fields.}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}

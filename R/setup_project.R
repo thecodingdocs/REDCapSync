@@ -407,6 +407,12 @@ load_project <- function(project_name) {
   }
   project$dir_path <- dir_path
   project %>% extract_project_details() %>% add_project_details_to_cache()
+  the_message <- paste0("Loaded {project$project_name}!")
+  if (due_for_sync(project$project_name)) {
+    the_message <- the_message %>%
+      paste0(" Due for sync. Run `project$sync()` to update.")
+  }
+  cli_alert_success(the_message)
   invisible(REDCapSync_project$new(project))
 }
 #' @rdname setup-load

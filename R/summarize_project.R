@@ -321,7 +321,6 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 }
 #' @title Add a Subset to a REDCap Database
 #' @description
-#' `r lifecycle::badge("experimental")`
 #' Creates a summary of the main REDCap database (`project`) based on specific
 #' filter criteria and saves it to a specified directory. The summary can be
 #' further customized with additional forms, fields, and deidentification
@@ -384,7 +383,6 @@ add_project_summary <- function(project,
                                 dir_other = NULL,
                                 file_name = NULL,
                                 hard_reset = FALSE) {
-  lifecycle::signal_stage("experimental", "add_project_summary()")
   # sync_frequency ... project$internals$sync_frequency
   forbiden_summary_names <- c(project$metadata$id_col, .forbiden_summary_names)
   if (summary_name %in% forbiden_summary_names) {
@@ -627,7 +625,6 @@ save_summary <- function(project, summary_name) {
 }
 #' @title Generate a Summary from a Subset Name
 #' @description
-#' `r lifecycle::badge("experimental")`
 #' Generates a summary from a predefined summary of data within a REDCap project.
 #' The summary can be customized based on various options, such as cleaning the
 #' data, including metadata, and annotating metadata.
@@ -722,7 +719,6 @@ generate_project_summary <- function(project,
                                      annotate_from_log = TRUE,
                                      internal_use = FALSE) {
   assert_env_name(merge_form_name, max.chars = 31)
-  lifecycle::signal_stage("experimental", "generate_project_summary()")
   provided_summary_name <- !missing(summary_name)
   if (provided_summary_name) {
     if (!summary_name %in% names(project$summary)) {

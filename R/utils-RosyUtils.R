@@ -179,7 +179,7 @@ drop_nas <- function(x) {
 }
 #' @noRd
 excel_to_list <- function(path) {
-  sheets <- readxl::excel_sheets(path)
+  sheets <- openxlsx::getSheetNames(path)
   names(sheets) <- seq_along(sheets)
   clean_sheets <- clean_env_names(sheets)
   out <- list()

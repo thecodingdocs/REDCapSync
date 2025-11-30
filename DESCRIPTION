@@ -30,7 +30,6 @@ Imports:
     dplyr,
     hoardr,
     httr,
-    lifecycle,
     lubridate,
     magrittr,
     openxlsx,
@@ -42,7 +41,6 @@ Imports:
     skimr,
     stats,
     stringr,
-    tools,
     utils
 Suggests: 
     knitr,

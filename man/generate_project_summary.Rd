@@ -119,7 +119,6 @@ A list containing the generated summary based on the specified options. The
 list includes filtered and cleaned data, metadata, and other summary details.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Generates a summary from a predefined summary of data within a REDCap project.
 The summary can be customized based on various options, such as cleaning the
 data, including metadata, and annotating metadata.

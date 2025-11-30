@@ -351,7 +351,7 @@ get_redcap_files <- function(project,
             "ID_",
             record_id,
             ".",
-            tools::file_ext(file_name)
+            file_ext_alias(file_name)
           )
         )
         if (!file.exists(file.path(out_dir_folder, file_name)) ||

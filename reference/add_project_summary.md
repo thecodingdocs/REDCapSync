@@ -1,9 +1,9 @@
 # Add a Subset to a REDCap Database
 
-**\[experimental\]** Creates a summary of the main REDCap database
-(`project`) based on specific filter criteria and saves it to a
-specified directory. The summary can be further customized with
-additional forms, fields, and deidentification options.
+Creates a summary of the main REDCap database (`project`) based on
+specific filter criteria and saves it to a specified directory. The
+summary can be further customized with additional forms, fields, and
+deidentification options.
 
 ## Usage
 

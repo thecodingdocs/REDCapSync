@@ -1,9 +1,8 @@
 # Generate a Summary from a Subset Name
 
-**\[experimental\]** Generates a summary from a predefined summary of
-data within a REDCap project. The summary can be customized based on
-various options, such as cleaning the data, including metadata, and
-annotating metadata.
+Generates a summary from a predefined summary of data within a REDCap
+project. The summary can be customized based on various options, such as
+cleaning the data, including metadata, and annotating metadata.
 
 ## Usage
 

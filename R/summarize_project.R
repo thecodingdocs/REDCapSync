@@ -804,6 +804,9 @@ generate_project_summary <- function(project,
       merge_to_rep = FALSE
     )
   }
+  if (transformation_type == "flat") {
+    data_list <- flatten_redcap(data_list = data_list)
+  }
   if (clean) {
     #include warning for if missing codes will prevent uploads
     if(is_something(data_list$metadata$missing_codes)){
@@ -1003,6 +1006,9 @@ merge_non_repeating <- function(data_list,
     data_list$data <- data_list$data[c(merge_form_name, other_forms)]
   }
   data_list
+}
+#' @noRd
+flatten_redcap <- function(data_list){
 }
 #' @noRd
 metadata_add_default_cols <- function(data_list) {

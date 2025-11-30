@@ -88,7 +88,7 @@ deidentify_data_list <- function(data_list,
                                "zero_by_record",
                                "zero_by_project")) {
         number <- 90 # can set in options
-        shift_range <- -number:number
+        shift_range <- -number:number %>% setdiff(0)
         min_dates <- get_min_dates(data_list)
         if (date_handling == "random_shift_by_record") {
           min_dates$shift_amount <- sample(shift_range,

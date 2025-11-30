@@ -12,8 +12,8 @@ sync(
 )
 }
 \arguments{
-\item{project_names}{character vector of project project_names previously setup.
-If = NULL, will get all from \code{get_projects()}}
+\item{project_names}{character vector of project project_names previously
+setup. If NULL, will get all from \code{get_projects()}}
 
 \item{summarize}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
 
@@ -27,12 +27,13 @@ parameter from \code{setup_project()})}
 invisible return of last project
 }
 \description{
-Syncs with REDCap via \code{project} object that user defined with \link{setup_project}
+Syncs with REDCap via \code{project} object that user defined with
+\link{setup_project}
 }
 \details{
 Syncs all projects by default but can be used to hands-free sync one or
 defined set projects. This is not intended to return project object. User
-should use \code{load_project("project_name")}. However, by default will invisibily
+should use \code{load_project("project_name")}. However, by default will invisibly
 return the last project in the set of project_names.
 }
 \seealso{

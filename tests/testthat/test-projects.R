@@ -102,29 +102,29 @@ test_that("add_project_details_to_cache works", {
   expect_error(add_project_details_to_cache(project_details_conflict))
 })
 # save_project_details ( Internal )
-test_that("save_project_details works", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      return(fake_cache)
-    }
-  )
-  project <- mock_project()
-  project$dir_path <- set_dir(test_dir)
-  # ensure details path does not exist initially
-  details_path <- get_project_path2(project, type = "details")
-  expect_false(file.exists(details_path))
-  # call function
-  expect_no_error(save_project_details(project))
-  # details file created and contains expected project_name
-  expect_true(file.exists(details_path))
-  saved_details <- readRDS(details_path)
-  expect_equal(as.character(saved_details$project_name), project$project_name)
-  # cache updated
-  projects <- get_projects()
-  expect_true(project$project_name %in% projects$project_name)
-})
+# test_that("save_project_details works", {
+#   test_dir <- withr::local_tempdir() %>% sanitize_path()
+#   fake_cache_location <- file.path(test_dir, "fake_cache")
+#   local_mocked_bindings(
+#     get_cache = function(...) {
+#       fake_cache <- hoardr::hoard()
+#       fake_cache$cache_path_set(full_path = fake_cache_location)
+#       fake_cache$mkdir()
+#       return(fake_cache)
+#     }
+#   )
+#   project <- mock_project()
+#   project$dir_path <- set_dir(test_dir)
+#   # ensure details path does not exist initially
+#   details_path <- get_project_path2(project, type = "details")
+#   expect_false(file.exists(details_path))
+#   # call function
+#   expect_no_error(save_project_details(project))
+#   # details file created and contains expected project_name
+#   expect_true(file.exists(details_path))
+#   saved_details <- readRDS(details_path)
+#   expect_equal(as.character(saved_details$project_name), project$project_name)
+#   # cache updated
+#   projects <- get_projects()
+#   expect_true(project$project_name %in% projects$project_name)
+# })

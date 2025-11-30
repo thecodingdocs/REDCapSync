@@ -17,11 +17,15 @@ get_projects <- function() {
       file.path("projects.rds") %>%
       readRDS()
     if (!does_exist) {
-      message("You have no projects cached. Try `setup_project()`")
+      cli_alert_warning("You have no projects cached. Try `setup_project(...)`")
     }
-    is_ok <- all(colnames(.blank_project_details %in% colnames(projects)))
-    if (!is_ok)
+    is_ok <- all(colnames(.blank_project_details) %in% colnames(projects))
+    if (!is_ok){
+      cli_alert_warning(
+        paste0("You have projects cached. But due to a version change or other",
+               " issue, it has to be reset. Use `setup_project(...)`"))
       cache_clear()
+    }
   }
   if (!does_exist || !is_ok) {
     return(.blank_project_details)
@@ -166,10 +170,12 @@ extract_project_details <- function(project) {
     nrow() %>%
     na_if_null() %>%
     as.integer()
-  project_details$redcap_uri <- project$links$redcap_uri %>% na_if_null()
-  project_details$redcap_home <- project$links$redcap_home %>% na_if_null()
+  project_details$redcap_uri <- project$links$redcap_uri
+  project_details$redcap_home <- project$links$redcap_home %>% na_if_null() %>%
+    as.character()
   # saving ----
-  project_details$timezone <- project$internals$timezone %>% na_if_null()
+  project_details$timezone <- project$internals$timezone %>% na_if_null() %>%
+    as.character()
   project_details$last_sync <- project$internals$last_sync %>%
     na_if_null() %>%
     as.POSIXct(tz = Sys.timezone())
@@ -212,16 +218,6 @@ add_project_details_to_cache <- function(project_details) {
   }
   projects <- projects %>% bind_rows(project_details)
   save_projects_to_cache(projects)
-}
-#' @noRd
-save_project_details <- function(project, silent = TRUE) {
-  assert_setup_project(project)
-  assert_logical(silent, len = 1)
-  project_details <- extract_project_details(project)
-  add_project_details_to_cache(project_details)
-  save_project_details_path <- get_project_path2(project, type = "details")
-  saveRDS(object = project_details, file = save_project_details_path) # add error check
-  return(invisible())
 }
 #' @noRd
 .arms_colnames <- c(

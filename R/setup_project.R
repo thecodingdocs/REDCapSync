@@ -174,7 +174,6 @@ setup_project <- function(project_name,
     cli::cli_abort(message)
   }
   projects <- get_projects() # add project_name conflict check id-base url differs
-  sweep_dirs_for_cache(project_names = project_name)
   if (paste0(.token_prefix, project_name) != token_name) {
     # maybe a message
   }
@@ -211,7 +210,7 @@ setup_project <- function(project_name,
     project <- tryCatch(
       expr = {
         suppressWarnings({
-          load_project(project_name = project_name)
+          load_project(project_name = project_name)$.internal()
         })
       },
       error = function(e) {
@@ -229,7 +228,6 @@ setup_project <- function(project_name,
     }
     if (was_loaded) {
       # compare current setting to previous settings...
-      project <- project$.internal()
       original_details <- project %>% extract_project_details()
       projects <- get_projects()
       cache_details <- projects[which(projects$project_name ==project_name),]
@@ -378,7 +376,7 @@ load_project <- function(project_name) {
     stop(
       "No project named ",
       project_name,
-      " in cache. Did you use `setup_project()` and `sync_project()`?"
+      " in cache. Did you use `setup_project(...)` and `project$sync()`?"
     )
   }
   dir_path <- projects$dir_path[which(projects$project_name == project_name)] %>%
@@ -393,7 +391,7 @@ load_project <- function(project_name) {
     stop(
       "No file at path '",
       project_path,
-      "'. Did you use `setup_project()` and `sync_project()`?"
+      "'. Did you use `setup_project()` and `project$sync()`?"
     )
   }
   project <- readRDS(file = project_path)
@@ -403,11 +401,12 @@ load_project <- function(project_name) {
   loaded_dir <- project$dir_path %>% sanitize_path()
   if (!identical(dir_path, loaded_dir)) {
     cli_alert_warning(
-      "loaded dir_path did not match your cached dir_path. This should only happen with cloud/shared directories."
+      paste0("loaded dir_path did not match your cached dir_path. This should ",
+        "only happen with cloud/shared directories.")
     )
   }
   project$dir_path <- dir_path
-  project_details_path <- get_project_path2(project, type = "details")
+  project %>% extract_project_details() %>% add_project_details_to_cache()
   invisible(REDCapSync_project$new(project))
 }
 #' @rdname setup-load
@@ -446,7 +445,7 @@ save_project <- function(project, silent = FALSE) {
       paste0(
         "Did not save ",
         project$project_name,
-        " because there has never been a REDCap connection! You must use `setup_project()` and `project$sync()`"
+        " because there has never been a REDCap connection! You must use `setup_project(...)` and `project$sync()`"
       )
     )
     return(invisible(project))
@@ -454,7 +453,12 @@ save_project <- function(project, silent = FALSE) {
   project$internals$last_directory_save <- now_time()
   save_project_path <- get_project_path2(project = project)
   saveRDS(object = project, file = save_project_path) # add error check
-  save_project_details(project)
+  project_details <- extract_project_details(project)
+  add_project_details_to_cache(project_details)
+  saveRDS(
+    object = project_details,
+    file = get_project_path2(project, type = "details")
+    ) # add error check
   cli_alert_wrap(
     paste0("Saved ", project$project_name, "!"),
     url = save_project_path,

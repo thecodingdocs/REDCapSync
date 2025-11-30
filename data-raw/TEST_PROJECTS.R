@@ -46,17 +46,22 @@ scrub_test_project <- function(project){
     project$redcap$project_id <- "12340"
   project$redcap$log$username <- "u1230"
   project$redcap$log$details <- NA
-  project$redcap$log <- project$redcap$log[which(!is.na(project$redcap$log$record)),]
-  project$redcap$log <- project$redcap$log[which(project$redcap$log$action_type != "Users"),]
+  project$redcap$log <- project$redcap$log[
+    which(!is.na(project$redcap$log$record)),]
+  project$redcap$log <- project$redcap$log[
+    which(project$redcap$log$action_type != "Users"),]
   project$redcap$users$username <- "u1230"
   project$redcap$users$email <- "thecodingdocs@gmail.com"
   project$links$redcap_uri <- "https://redcap.fake.edu/api/"
-  project$links$redcap_base <-  project$links$redcap_uri %>% dirname() %>% paste0("/")
+  project$links$redcap_base <-  project$links$redcap_uri %>%
+    dirname() %>% paste0("/")
   project <- update_project_links(project)
   project$summary$REDCapSync_raw$dir_other <- "fake/path"
-  project$summary$REDCapSync_raw$file_path <- paste0("fake/path/",project$project_name,"_REDCapSync.xslx")
+  project$summary$REDCapSync_raw$file_path <-
+    paste0("fake/path/",project$project_name,"_REDCapSync.xslx")
   project$summary$REDCapSync$dir_other <- "fake/path"
-  project$summary$REDCapSync$file_path <- paste0("fake/path/",project$project_name,".xslx")
+  project$summary$REDCapSync$file_path <-
+    paste0("fake/path/",project$project_name,".xslx")
   invisible(project)
 }
 .test_project_names %>% paste0(",\n") %>% cat()
@@ -64,7 +69,7 @@ project_names <- c("TEST_CLASSIC","TEST_REPEATING")
 for(project_name in project_names){
   assign(
     x = project_name,
-    value = load_project(project_name)$.internal() %>% scrub_test_project() ,
+    value = load_project(project_name)$.internal() %>% scrub_test_project(),
     envir = globalenv()
   )
 }

@@ -137,8 +137,8 @@ Neither function directly attempts communication with REDCap.
 
 \code{setup_project} is used the first time you initialize/link a REDCap project.
 Mainly, it sets your unique \code{project_name} and your intended directory.
-Unless you run \code{hard_reset = TRUE} the default will first try load_project.
-dir_path is technically optional but without it the user cannot
+Unless you run \code{hard_reset = TRUE} the default will first try
+load_project. dir_path is technically optional but without it the user cannot
 save/load/update projects.
 
 \code{load_project} can be used with just the \code{project_name} parameter after you

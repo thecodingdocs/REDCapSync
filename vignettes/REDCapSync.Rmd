@@ -36,9 +36,9 @@ Sys.getenv("REDCapSync_TEST1")
 The following functions represent the core functions of the package.
 ```{r , eval=FALSE}
 project <- setup_project(
-  project_name = "TEST1",                #must match token pattern REDCapSync_**** 
+  project_name = "TEST1",             # must match token pattern REDCapSync_**** 
   redcap_uri = "https://redcap.miami.edu/api/",  # change to your institutions link
-  dir_path = getwd()                     # or change to your intended file path
+  dir_path = getwd()                      # or change to your intended file path
 )
 project$sync() # gets all data from REDCap
 ```

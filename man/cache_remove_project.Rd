@@ -14,9 +14,10 @@ the unique short name for the REDCap project.}
 message of outcome
 }
 \description{
-This will remove a project from cache. Remember cache only stores information
-like project_name, token_name, directory location, and more from setup_project.
-If you want to truly delete the project files go the folder you setup.
+This will remove a project from the cache. The cache only stores information
+like project_name, token_name, directory location, and details
+from setup_project. If you want to truly delete the project files go the
+folder you setup.
 }
 \seealso{
 Other Project Cache Functions: 

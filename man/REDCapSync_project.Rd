@@ -42,8 +42,8 @@ Users should construct objects using \code{\link[=setup_project]{setup_project()
 \if{latex}{\out{\hypertarget{method-REDCapSync_project-new}{}}}
 \subsection{Method \code{new()}}{
 The end user will not see \code{project$new()}. This is handled internally.
-Users should construct objects using \code{\link[=setup_project]{setup_project()}}. The remain methods
-will be accessible to any user.
+Users should construct objects using \code{\link[=setup_project]{setup_project()}}. The remain
+methods will be accessible to any user.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$new(project)}\if{html}{\out{</div>}}
 }
@@ -91,8 +91,8 @@ the directory. Default is \code{TRUE}.}
 \item{\code{hard_check}}{Will check REDCap even if not due (see \code{sync_frequency}
 parameter from \code{setup_project()})}
 
-\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files with the
-same name. Default is \code{FALSE}.}
+\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files
+with the same name. Default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -196,8 +196,8 @@ convert to those to NA and would make that variable not upload compatible}
 \item{\code{drop_blanks}}{Logical. If \code{TRUE}, records with blank fields will be
 dropped. Default is \code{TRUE}.}
 
-\item{\code{drop_missing_codes}}{Logical. If \code{TRUE}, will convert missing codes to NA.
-Default is \code{FALSE}.}
+\item{\code{drop_missing_codes}}{Logical. If \code{TRUE}, will convert missing codes
+to NA. Default is \code{FALSE}.}
 
 \item{\code{drop_others}}{Character vector of other values that should be dropped.}
 
@@ -231,8 +231,8 @@ saved. Default is the \code{output} folder within the database directory.}
 \item{\code{file_name}}{Character. The base name of the file where the summary will
 be saved. Default is \verb{<project$project_name>_<summary_name>}.}
 
-\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files with the
-same name. Default is \code{FALSE}.}
+\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files
+with the same name. Default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -361,8 +361,8 @@ summarize project and save to Excel
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files with the
-same name. Default is \code{FALSE}.}
+\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files
+with the same name. Default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }

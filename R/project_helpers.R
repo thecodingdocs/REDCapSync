@@ -190,8 +190,9 @@ filter_data_list <- function(data_list,
       unlist() %>%
       unique()
     is_key <- all(filter_field_names %in% form_key_cols)
+    repeating_rows <- which(data_list$metadata$forms$repeating)
     is_repeating_filter_form <- filter_form %in%
-      data_list$metadata$forms$form_name[which(data_list$metadata$forms$repeating)]
+      data_list$metadata$forms$form_name[repeating_rows]
   }
   # can use this to have repeats capture non-rep events
   for (form_name in form_names) {
@@ -208,7 +209,11 @@ filter_data_list <- function(data_list,
               # need to account for instances
               if (form_name != filter_form) {
                 filter_field_final <- data_list$metadata$id_col
-                filter_choices_final <- data_list$data[[filter_form]][[filter_field_final]][which(data_list$data[[filter_form]][[filter_field_name]] %in% filter_choices_final)] %>% unique()
+                filtered_form <- data_list$data[[filter_form]]
+                the_rows <- which(
+                  filtered_form[[filter_field_name]] %in% filter_choices_final)
+                filter_choices_final <-
+                  filtered_form[[filter_field_final]][the_rows] %>% unique()
               }
             }
           }
@@ -589,7 +594,12 @@ clean_redcap_log <- function(redcap_log) {
   design_rows <- which(design_test)
   not_design_rows <- which(!design_test)
   # notdesign action -----
-  record_rows <- not_design_rows[starts_with(match = .log_action_records, vars = redcap_log$action[not_design_rows])]
+  record_rows <- not_design_rows[
+    starts_with(
+      match = .log_action_records,
+      vars = redcap_log$action[not_design_rows]
+    )
+  ]
   redcap_log$record_id[record_rows] <- gsub(
     "Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation|Lock/Unlock Record | |[:):]|[:(:]",
     "",
@@ -601,19 +611,58 @@ clean_redcap_log <- function(redcap_log) {
       x[[1]]
     }) %>%
     unlist()
-  redcap_log$action_type[not_design_rows[starts_with(match = .log_action_exports, vars = redcap_log$action[not_design_rows])]] <- "Exports"
-  redcap_log$action_type[not_design_rows[starts_with(match = .log_action_users, vars = redcap_log$action[not_design_rows])]] <- "Users"
-  redcap_log$action_type[not_design_rows[starts_with(match = .log_action_no_changes, vars = redcap_log$action[not_design_rows])]] <- "No Changes"
+  redcap_log$action_type[
+    not_design_rows[
+      starts_with(
+        match = .log_action_exports,
+        vars = redcap_log$action[not_design_rows])]] <- "Exports"
+  redcap_log$action_type[
+    not_design_rows[
+      starts_with(
+        match = .log_action_users,
+        vars = redcap_log$action[not_design_rows])]] <- "Users"
+  redcap_log$action_type[not_design_rows[
+    starts_with(
+      match = .log_action_no_changes,
+      vars = redcap_log$action[not_design_rows])]] <- "No Changes"
   # design details  -------------------
-  comment_rows <- design_rows[starts_with(match = .log_details_comments, vars = redcap_log$details[design_rows])]
-  redcap_log$record_id[comment_rows] <- stringr::str_extract(string = redcap_log$details[comment_rows], pattern = "(?<=Record: )[^,]+")
+  comment_rows <- design_rows[
+    starts_with(
+      match = .log_details_comments,
+      vars = redcap_log$details[design_rows])]
+  redcap_log$record_id[comment_rows] <- stringr::str_extract(
+    string = redcap_log$details[comment_rows], pattern = "(?<=Record: )[^,]+")
   redcap_log$action_type[comment_rows] <- "Comment"
-  redcap_log$action_type[design_rows[starts_with(match = .log_details_exports, vars = redcap_log$details[design_rows])]] <- "Exports"
-  redcap_log$action_type[design_rows[starts_with(match = .log_details_metadata_major, vars = redcap_log$details[design_rows])]] <- "Metadata Change Major"
-  redcap_log$action_type[design_rows[starts_with(match = .log_details_metadata_minor, vars = redcap_log$details[design_rows])]] <- "Metadata Change Minor"
-  redcap_log$action_type[design_rows[starts_with(match = .log_details_no_changes, vars = redcap_log$details[design_rows])]] <- "No Changes"
-  redcap_log$action_type[design_rows[starts_with(match = .log_details_tokens, vars = redcap_log$details[design_rows])]] <- "Tokens"
-  redcap_log$action_type[design_rows[starts_with(match = .log_details_repository, vars = redcap_log$details[design_rows])]] <- "Repository"
+  redcap_log$action_type[
+    design_rows[
+      starts_with(
+        match = .log_details_exports,
+        vars = redcap_log$details[design_rows])]] <- "Exports"
+  redcap_log$action_type[
+    design_rows[
+      starts_with(
+        match = .log_details_metadata_major,
+        vars = redcap_log$details[design_rows])]] <- "Metadata Change Major"
+  redcap_log$action_type[
+    design_rows[
+      starts_with(
+        match = .log_details_metadata_minor,
+        vars = redcap_log$details[design_rows])]] <- "Metadata Change Minor"
+  redcap_log$action_type[
+    design_rows[
+      starts_with(
+        match = .log_details_no_changes,
+        vars = redcap_log$details[design_rows])]] <- "No Changes"
+  redcap_log$action_type[
+    design_rows[
+      starts_with(
+        match = .log_details_tokens,
+        vars = redcap_log$details[design_rows])]] <- "Tokens"
+  redcap_log$action_type[
+    design_rows[
+      starts_with(
+        match = .log_details_repository,
+        vars = redcap_log$details[design_rows])]] <- "Repository"
   # end ------------
   row_index <- which(is.na(redcap_log$record) &
                        !is.na(redcap_log$record_id))

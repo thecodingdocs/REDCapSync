@@ -61,7 +61,8 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   project$redcap$project_title <- project$redcap$project_info$project_title
   project$redcap$project_id <- project$redcap$project_info$project_id %>%
     as.character()
-  project$metadata$is_longitudinal <- project$redcap$project_info$is_longitudinal %>% as.logical()
+  project$metadata$is_longitudinal <-
+    project$redcap$project_info$is_longitudinal %>% as.logical()
   missing_data_codes <- NA
   if ("missing_data_codes" %in% colnames(project$redcap$project_info)) {
     missing_data_codes <- project$redcap$project_info$missing_data_codes
@@ -80,12 +81,17 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   project$metadata$forms$repeating <- FALSE
   project$metadata$has_repeating_forms <- FALSE
   project$metadata$has_repeating_events <- FALSE
-  project$metadata$has_repeating_forms_or_events <- project$redcap$project_info$has_repeating_instruments_or_events%>% as.logical()
+  project$metadata$has_repeating_forms_or_events <-
+    project$redcap$project_info$has_repeating_instruments_or_events %>%
+    as.logical()
   # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
   if (is.data.frame(project$metadata$repeating_forms_events)) {
-    # TODOPLEASE test if you can do this if you dont have designer privilages or would have to use another package
+    # TODOPLEASE test if you can do this if you dont have designer privileges
+    # or would have to use another package
     if (nrow(project$metadata$repeating_forms_events) > 0) {
-      project$metadata$forms$repeating <- project$metadata$forms$form_name %in% project$metadata$repeating_forms_events$form_name
+      project$metadata$forms$repeating <-
+        project$metadata$forms$form_name %in%
+        project$metadata$repeating_forms_events$form_name
     }
   }
   if (any(project$metadata$forms$repeating)) {
@@ -93,74 +99,94 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   }
   # metadata ----------
   project$metadata$fields <- result$fields
-  project$metadata$fields$section_header <- project$metadata$fields$section_header %>% remove_html_tags()
-  project$metadata$fields$field_label <- project$metadata$fields$field_label %>% remove_html_tags()
-  project$metadata$id_col <- project$metadata$fields[1, 1] %>% as.character() # RISKY?
+  project$metadata$fields$section_header <-
+    project$metadata$fields$section_header %>% remove_html_tags()
+  project$metadata$fields$field_label <-
+    project$metadata$fields$field_label %>% remove_html_tags()
+  # RISKY? add to setup project and simple test of unique
+  project$metadata$id_col <- project$metadata$fields[1, 1] %>% as.character()
   project$metadata$form_key_cols <- get_key_col_list(data_list = project)
   project$metadata$raw_structure_cols <- project$metadata$form_key_cols %>%
     unlist() %>%
     unique()
   project$metadata$fields <- add_field_elements(project$metadata$fields)
-  # project$metadata$fields <- project %>% annotate_fields(summarize_data = FALSE, drop_blanks = FALSE)
-  project$metadata$choices <- fields_to_choices(fields = project$metadata$fields)
-  # add a check for exisiting conflict possibilities
+  # project$metadata$fields <-
+  # project %>% annotate_fields(summarize_data = FALSE, drop_blanks = FALSE)
+  project$metadata$choices <-
+    fields_to_choices(fields = project$metadata$fields)
+  # add a check for existing conflict possibilities
   project$metadata$has_coding_conflicts <- FALSE
   field_names <- project$metadata$choices$field_name %>% unique()
   if (length(field_names) > 0) {
+    choices <- project$metadata$choices
     row_of_conflicts <- field_names %>%
       lapply(function(field_name) {
-        anyDuplicated(project$metadata$choices$name[which(project$metadata$choices$field_name == field_name)]) > 0
+        anyDuplicated(choices$name[which(choices$field_name == field_name)]) > 0
       }) %>%
       unlist()
     project$metadata$has_coding_conflicts <- any(row_of_conflicts)
     if (project$metadata$has_coding_conflicts) {
-      project$metadata$coding_conflict_field_names <- field_names[which(row_of_conflicts)]
+      project$metadata$coding_conflict_field_names <-
+        field_names[which(row_of_conflicts)]
     }
   }
   # is longitudinal ------
   if (project$metadata$is_longitudinal) {
-    project$metadata$raw_structure_cols <- c(project$metadata$raw_structure_cols,
-                                             "arm_number",
-                                             "event_name") %>% unique()
+    raw_structure_cols_vector <- c(project$metadata$raw_structure_cols,
+                                   "arm_number",
+                                   "event_name")
+    project$metadata$raw_structure_cols <- unique(raw_structure_cols_vector)
     project$metadata$arms <- result$arms
-    colnames(project$metadata$arms)[which(colnames(project$metadata$arms) == "arm_num")] <- "arm_number"
+    colnames(project$metadata$arms)[
+      which(colnames(project$metadata$arms) == "arm_num")] <- "arm_number"
     project$metadata$has_arms <- TRUE
     project$metadata$has_multiple_arms <- nrow(project$metadata$arms) > 1
     project$metadata$has_arms_that_matter <- project$metadata$has_multiple_arms
     project$metadata$event_mapping <- result$mapping
     project$metadata$events <- result$events
-    colnames(project$metadata$events)[which(colnames(project$metadata$events) == "arm_num")] <- "arm_number"
+    colnames(project$metadata$events)[
+      which(colnames(project$metadata$events) == "arm_num")] <- "arm_number"
     project$metadata$events$repeating <- FALSE
     project$metadata$event_mapping$repeating <- FALSE
     if (is.data.frame(project$metadata$repeating_forms_events)) {
-      project$metadata$events$repeating <- project$metadata$events$unique_event_name %in% project$metadata$repeating_forms_events$event_name[which(is.na(project$metadata$repeating_forms_events$form_name))]
-      repeatingFormsEvents_ind <- project$metadata$repeating_forms_events[which(
-        !is.na(project$metadata$repeating_forms_events$event_name) &
-          !is.na(project$metadata$repeating_forms_events$form_name)
-      ), ]
+      project$metadata$events$repeating <-
+        project$metadata$events$unique_event_name %in%
+        project$metadata$repeating_forms_events$event_name[
+          which(is.na(project$metadata$repeating_forms_events$form_name))]
+      repeatingFormsEvents_ind <- project$metadata$repeating_forms_events[
+        which(
+          !is.na(project$metadata$repeating_forms_events$event_name) &
+            !is.na(project$metadata$repeating_forms_events$form_name)
+        ), ]
       if (nrow(repeatingFormsEvents_ind) > 0) {
         rows_event_mapping <- seq_len(nrow(repeatingFormsEvents_ind)) %>%
           lapply(function(i) {
             which(
-              project$metadata$event_mapping$unique_event_name == repeatingFormsEvents_ind$event_name[i] &
-                project$metadata$event_mapping$form == repeatingFormsEvents_ind$form_name[i]
+              project$metadata$event_mapping$unique_event_name ==
+                repeatingFormsEvents_ind$event_name[i] &
+                project$metadata$event_mapping$form ==
+                repeatingFormsEvents_ind$form_name[i]
             )
           }) %>%
           unlist()
         project$metadata$event_mapping$repeating[rows_event_mapping] <- TRUE
       }
     }
-    project$metadata$events$forms <- project$metadata$events$unique_event_name %>%
+    project$metadata$events$forms <-
+      project$metadata$events$unique_event_name %>%
       lapply(function(events) {
-        project$metadata$event_mapping$form[which(project$metadata$event_mapping$unique_event_name == events)] %>%
+        project$metadata$event_mapping$form[
+          which(project$metadata$event_mapping$unique_event_name == events)] %>%
           unique() %>%
           paste0(collapse = " | ")
       }) %>%
       unlist()
     if (project$metadata$has_arms_that_matter) {
-      project$metadata$has_arms_that_matter <- project$metadata$arms$arm_number %>%
+      project$metadata$has_arms_that_matter <-
+        project$metadata$arms$arm_number %>%
         lapply(function(arm) {
-          project$metadata$event_mapping$form[which(project$metadata$event_mapping$arm_number == arm)]
+          project$metadata$event_mapping$form[
+            which(project$metadata$event_mapping$arm_number == arm)]
         }) %>%
         check_match() %>%
         magrittr::not()
@@ -174,8 +200,12 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
     #   )
     # }
     project$metadata$forms$repeating_via_events <- FALSE
-    project$metadata$forms$repeating_via_events[which(unlist(lapply(project$metadata$forms$form_name, function(form_name) {
-      anyDuplicated(project$metadata$event_mapping$arm_num[which(project$metadata$event_mapping$form == form_name)]) > 0
+    project$metadata$forms$repeating_via_events[
+      which(
+        unlist(lapply(project$metadata$forms$form_name, function(form_name) {
+      anyDuplicated(
+        project$metadata$event_mapping$arm_num[
+          which(project$metadata$event_mapping$form == form_name)]) > 0
     })))] <- TRUE
   } else {
     project$metadata$has_arms <- FALSE

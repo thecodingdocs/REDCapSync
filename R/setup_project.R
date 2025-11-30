@@ -12,8 +12,8 @@
 #'
 #' `setup_project` is used the first time you initialize/link a REDCap project.
 #' Mainly, it sets your unique `project_name` and your intended directory.
-#' Unless you run \code{hard_reset = TRUE} the default will first try load_project.
-#' dir_path is technically optional but without it the user cannot
+#' Unless you run \code{hard_reset = TRUE} the default will first try
+#' load_project. dir_path is technically optional but without it the user cannot
 #' save/load/update projects.
 #'
 #' `load_project` can be used with just the `project_name` parameter after you
@@ -146,16 +146,8 @@ setup_project <- function(project_name,
   #   arg_name = "merge_form_name",
   #   add = collected
   # )
-  assert_choice(
-    get_type,
-    choices = .get_type,
-    add = collected
-  )
-  assert_choice(
-    sync_frequency,
-    choices = c("always", "hourly", "daily", "weekly", "monthly","once", "never"),
-    add = collected
-  )
+  assert_choice(get_type, choices = .get_type, add = collected)
+  assert_choice(sync_frequency, choices = .sync_frequency, add = collected)
   assert_integerish(batch_size_download,
                     len = 1,
                     lower = 1,
@@ -324,6 +316,13 @@ setup_project <- function(project_name,
   project$internals$last_directory_save <- now_time()
   invisible(REDCapSync_project$new(project))
 }
+.sync_frequency <- c("always",
+                     "hourly",
+                     "daily",
+                     "weekly",
+                     "monthly",
+                     "once",
+                     "never")
 #' @noRd
 .get_type <- c("identified",
                "deidentified",

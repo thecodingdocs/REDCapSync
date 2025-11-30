@@ -197,7 +197,8 @@ extract_project_details <- function(project) {
 add_project_details_to_cache <- function(project_details) {
   assert_project_details(project_details, nrows = 1)
   projects <- get_projects()
-  projects <- projects[which(projects$project_name != project_details$project_name), ]
+  projects <- projects[
+    which(projects$project_name != project_details$project_name), ]
   bad_row <- NULL
   if(!is.na(project_details$project_id)){
     bad_row <- which(
@@ -208,8 +209,8 @@ add_project_details_to_cache <- function(project_details) {
   if (length(bad_row) > 0) {
     cli::cli_abort(
       paste0(
-        "You are trying to save from a project [{project_details$project_name} ",
-        "PID {projects$project_id[bad_row]}] that you have already setup ",
+        "You are trying to save from a project [{project_details$project_name}",
+        " PID {projects$project_id[bad_row]}] that you have already setup ",
         "[{projects$project_name[bad_row]} PID {project_details$project_id}] ",
         "You can load the old project or run ",
         "`cache_remove_project(\"{projects$project_name[bad_row]}\")`"

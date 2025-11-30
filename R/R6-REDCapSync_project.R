@@ -43,8 +43,8 @@
 #' convert to those to NA and would make that variable not upload compatible
 #' @param drop_blanks Logical. If `TRUE`, records with blank fields will be
 #' dropped. Default is `TRUE`.
-#' @param drop_missing_codes Logical. If `TRUE`, will convert missing codes to NA.
-#' Default is `FALSE`.
+#' @param drop_missing_codes Logical. If `TRUE`, will convert missing codes
+#' to NA. Default is `FALSE`.
 #' @param drop_others Character vector of other values that should be dropped.
 #' @param include_metadata Logical. If `TRUE`, metadata will be included in the
 #' summary. Default is `TRUE`.
@@ -58,8 +58,8 @@
 #' will be annotated using the log. Default is `TRUE`.
 #' @param internal_use A logical flag (`TRUE` or `FALSE`). If `TRUE`, then will
 #' return data_list meant for internal use. Defaults to `FALSE`.
-#' @param hard_reset Logical. If `TRUE`, overwrite existing summary files with the
-#' same name. Default is `FALSE`.
+#' @param hard_reset Logical. If `TRUE`, overwrite existing summary files
+#' with the same name. Default is `FALSE`.
 #' @param with_links Optional logical (TRUE/FALSE) for including links in Excel
 #' sheets. Default is `FALSE`.
 #' @param separate Optional logical (TRUE/FALSE) separating each form into
@@ -111,8 +111,8 @@ REDCapSync_project <- R6Class(
   public = list(
     #' @description
     #' The end user will not see `project$new()`. This is handled internally.
-    #' Users should construct objects using [setup_project()]. The remain methods
-    #' will be accessible to any user.
+    #' Users should construct objects using [setup_project()]. The remain
+    #' methods will be accessible to any user.
     #' @param project a list object meant to be stored internally within R6
     initialize = function(project) {
       assert_setup_project(project)

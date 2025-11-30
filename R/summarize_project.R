@@ -1,7 +1,11 @@
 #' @noRd
 fields_to_choices <- function(fields) {
-  fields <- fields[which(fields$field_type %in% c("radio", "dropdown", "checkbox_choice", "yesno","truefalse")), ]
-  # fields$field_name[which(fields$field_type=="checkbox_choice")] <- fields$field_name[which(fields$field_type=="checkbox_choice")] %>% strsplit("___") %>% lapply(function(X){X[[1]]})
+  fields <- fields[
+    which(fields$field_type %in%
+            c("radio", "dropdown", "checkbox_choice", "yesno","truefalse")), ]
+  # fields$field_name[which(fields$field_type=="checkbox_choice")] <-
+  # fields$field_name[which(fields$field_type=="checkbox_choice")] %>%
+  # strsplit("___") %>% lapply(function(X){X[[1]]})
   fields <- fields[which(!is.na(fields$select_choices_or_calculations)), ]
   choices <- NULL
   for (i in seq_len(nrow(fields))) {
@@ -49,7 +53,8 @@ annotate_fields <- function(data_list,
                             drop_blanks = FALSE) {
   fields <- data_list$metadata$fields # [,colnames(data_list$metadata$fields)]
   if (drop_blanks) {
-    fields <- fields[which(fields$field_name %in% get_all_field_names(data_list)), ]
+    fields <- fields[
+      which(fields$field_name %in% get_all_field_names(data_list)), ]
     #fix transform dropping missing fields
   }
   if (nrow(fields) > 0 && is_something(data_list$data)) {
@@ -91,10 +96,8 @@ annotate_forms <- function(data_list,
         paste0(form_name, "_complete")
       })
       if ("original_form_name" %in% colnames(forms)) {
-        #what happens when user choses names in REDCap that conflicta with form_complete?
-        var_list <- forms$original_form_name %>% strsplit(" [:|:] ") %>% lapply(function(form_name) {
-          paste0(form_name, "_complete")
-        })
+        var_list <- forms$original_form_name %>% strsplit(" [:|:] ") %>%
+          lapply(function(form_name) {paste0(form_name, "_complete")})
       }
       names(var_list) <- forms$form_name
       for (status in c("Incomplete", "Unverified", "Complete")) {
@@ -123,7 +126,8 @@ annotate_choices <- function(data_list,
   # fields <- data_list$metadata$fields
   choices <- data_list$metadata$choices
   if (drop_blanks) {
-    choices <- choices[which(choices$field_name %in% get_all_field_names(data_list)), ]
+    choices <- choices[
+      which(choices$field_name %in% get_all_field_names(data_list)), ]
   }
   # choices$field_name_raw <- choices$field_name
   # choices$field_name_raw[which(choices$field_type=="checkbox_choice")] <- choices$field_name[which(choices$field_type=="checkbox_choice")] %>%
@@ -183,7 +187,8 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
   the_rows <- which(data_list$summary$all_records[[id_col]] %in% records)
   all_records <- data_list$summary$all_records[the_rows, ]
   redcap_log <- get_log(data_list = data_list, records = records)
-  # redcap_log$date <- redcap_log$timestamp %>% strsplit(" ") %>% lapply(first) %>% unlist()
+  # redcap_log$date <- redcap_log$timestamp %>% strsplit(" ") %>%
+  #lapply(first) %>% unlist()
   if (!is_something(all_records) || !is_something(redcap_log)) {
     return(all_records)
   }
@@ -330,8 +335,8 @@ clean_column_for_table <- function(field, class, label, units, levels) {
 #' @inheritParams setup_project
 #' @inheritParams generate_project_summary
 #' @param summary_name Character. The name of the summary to create.
-#' @param hard_reset Logical. If `TRUE`, overwrite existing summary files with the
-#' same name. Default is `FALSE`.
+#' @param hard_reset Logical. If `TRUE`, overwrite existing summary files with
+#' the same name. Default is `FALSE`.
 #' @param with_links Optional logical (TRUE/FALSE) for including links in Excel
 #' sheets. Default is `FALSE`.
 #' @param separate Optional logical (TRUE/FALSE) separating each form into

@@ -195,7 +195,7 @@ test_that("deidentify_data_list works", {
   merged_random_shift_by_record <- deidentify_data_list(
     data_list = data_list,
     date_handling = "random_shift_by_record")$merged
-  expect_all_false(
+  expect_all_true(
     c(
       "var_birth_date",
       "var_text_date_dmy",

@@ -150,6 +150,79 @@ test_that("deidentify_data_list works", {
     exclude_free_text = FALSE
   ),"You have no identifiers marked")
 })
+test_that("deidentify_data_list works", {
+  project <- TEST_CLASSIC
+  data_list <- merge_non_repeating(TEST_CLASSIC,"merged")
+  data_list <- data_list %>% metadata_add_default_cols()
+  fields <- data_list$metadata$fields
+  merged <- data_list$data$merged
+  # merged %>% colnames()
+  expect_all_true(
+    c(
+      "var_birth_date",
+      "var_text_date_dmy",
+      "var_text_date_mdy",
+      "var_text_date_ymd"
+    ) %in% colnames(merged)
+  )
+  expect_error(deidentify_data_list(data_list = data_list,date_handling = "1"))
+  # 'none'
+  merged_none <- deidentify_data_list(
+    data_list = data_list,
+    # exclude_identifiers = FALSE,
+    date_handling = "none"
+  )$merged
+  expect_all_true(
+    c(
+      "var_birth_date",
+      "var_text_date_dmy",
+      "var_text_date_mdy",
+      "var_text_date_ymd"
+    ) %in% colnames(merged_none)
+  )
+  # 'exclude_dates'
+  merged_exclude_dates <- deidentify_data_list(
+    data_list = data_list,date_handling = "exclude_dates")$merged
+  expect_all_false(
+    c(
+      "var_birth_date",
+      "var_text_date_dmy",
+      "var_text_date_mdy",
+      "var_text_date_ymd"
+    ) %in% colnames(merged_exclude_dates)
+  )
+  # 'random_shift_by_record'
+  merged_random_shift_by_record <- deidentify_data_list(
+    data_list = data_list,
+    date_handling = "random_shift_by_record")$merged
+  expect_all_false(
+    c(
+      "var_birth_date",
+      "var_text_date_dmy",
+      "var_text_date_mdy",
+      "var_text_date_ymd"
+    ) %in% colnames(merged_random_shift_by_record)
+  )
+  expect_all_false(
+    merged_random_shift_by_record$var_text_date_dmy == merged$var_text_date_dmy
+  )
+  time_check1 <- as.Date(merged$var_text_date_dmy) -
+    as.Date(merged$var_birth_date)
+  time_check2 <- as.Date(merged_random_shift_by_record$var_text_date_dmy) -
+    as.Date(merged_random_shift_by_record$var_birth_date)
+  expect_all_true(time_check1 == time_check2) #math is same
+  as.Date(merged$var_birth_date) -
+    as.Date(merged_random_shift_by_record$var_birth_date)
+  # 'random_shift_by_project'
+  # merged_random_shift_by_project <- deidentify_data_list(
+  #   data_list = data_list,date_handling = "random_shift_by_project")
+  # # 'zero_by_record'
+  # merged_zero_by_record <- deidentify_data_list(
+  #   data_list = data_list,date_handling = "zero_by_record")
+  # # 'zero_by_project'
+  # merged_zero_by_project <- deidentify_data_list(
+  #   data_list = data_list,date_handling = "zero_by_project")
+})
 test_that("get_min_dates works", {
   # construct minimal data_list with date fields across forms
   data_list <- list(

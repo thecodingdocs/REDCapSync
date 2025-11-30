@@ -24,7 +24,8 @@ valid by making a request to the REDCap server.
 }
 \seealso{
 \href{../articles/Tokens.html}{pkgdown article on tokens}
-\href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{pkgdown article on tokens}
+\href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{
+pkgdown article on tokens}
 
 Other Token Functions: 
 \code{\link{view_project_token}()}

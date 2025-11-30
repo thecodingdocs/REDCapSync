@@ -71,7 +71,7 @@ test_that("view_project_token works when token is set", {
   })
 })
 # test_project_token ( Exported )
-test_that("test_project_token succeeds when exportVersion returns a version (no API calls)", {
+test_that("test_project_token works when exportVersion returns version", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
@@ -83,10 +83,13 @@ test_that("test_project_token succeeds when exportVersion returns a version (no 
     }
   )
   project <- mock_project()
-  # Stub rcon to avoid creating a real connection and stub exportVersion to simulate success
-  mockery::stub(test_project_token, "redcapConnection", list(
-    projectInformation = function(){list(project_id = project$redcap$project_id)}
-  ))
+  # Stub rcon to avoid creating a real connection and stub
+  # exportVersion to simulate success
+  mockery::stub(
+    test_project_token, "redcapConnection",
+    list(projectInformation = function(){
+      list(project_id = project$redcap$project_id)}
+    ))
   mockery::stub(test_project_token, "exportVersion", "12.1.1")
   expect_message(test_project_token(project),"Connected to REDCap")
   out <- test_project_token(project)
@@ -98,7 +101,7 @@ test_that("test_project_token succeeds when exportVersion returns a version (no 
   mockery::stub(test_project_token, "exportVersion", "12.1.1")
   expect_message(test_project_token(project),"Your REDCap project ID changed")
 })
-test_that("test_project_token marks failure when exportVersion returns NULL (no API calls)", {
+test_that("test_project_token marks failure when exportVersion returns NULL", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(

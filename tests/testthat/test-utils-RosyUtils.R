@@ -228,7 +228,8 @@ test_that("remove_html_tags works!", {
     c("one", "two")
   )
   # tags with attributes and surrounding text
-  expect_equal(remove_html_tags("<a href='x'>link</a> and text"), "link and text")
+  expect_equal(remove_html_tags("<a href='x'>link</a> and text"),
+               "link and text")
   # nested tags
   expect_equal(remove_html_tags("<div><span>nested</span></div>"), "nested")
   # empty string preserved, NA preserved
@@ -335,7 +336,8 @@ test_that("is_env_name works!", {
   expect_false(is_env_name("bad-char!")) # invalid character
   # expect_false(is_env_name("_start"))    # starts with underscore
   # messaging behavior
-  expect_message(is_env_name("1start", silent = FALSE), "Short name cannot start with a number")
+  expect_message(is_env_name("1start", silent = FALSE),
+                 "Short name cannot start with a number")
   expect_silent(is_env_name("1start", silent = TRUE))
 })
 # is_nested_list ( Internal )

@@ -91,8 +91,8 @@ convert to those to NA and would make that variable not upload compatible}
 \item{drop_blanks}{Logical. If \code{TRUE}, records with blank fields will be
 dropped. Default is \code{TRUE}.}
 
-\item{drop_missing_codes}{Logical. If \code{TRUE}, will convert missing codes to NA.
-Default is \code{FALSE}.}
+\item{drop_missing_codes}{Logical. If \code{TRUE}, will convert missing codes to
+NA. Default is \code{FALSE}.}
 
 \item{drop_others}{Character vector of other values that should be dropped.}
 
@@ -119,14 +119,14 @@ A list containing the generated summary based on the specified options. The
 list includes filtered and cleaned data, metadata, and other summary details.
 }
 \description{
-Generates a summary from a predefined summary of data within a REDCap project.
+Generates a summary from a REDCap project.
 The summary can be customized based on various options, such as cleaning the
 data, including metadata, and annotating metadata.
 }
 \details{
-This function allows you to generate a summary of data from a specific summary
-of records within the REDCap project. The function provides flexible options
-for cleaning, annotating, and including metadata, as well as controlling
-whether to include record summaries, user information, and logs.
+This function allows you to generate a summary of data from a specific
+summary of records within the REDCap project. The function provides flexible
+options for cleaning, annotating, and including metadata, as well as
+controlling whether to include record summaries, user information, and logs.
 }
 \keyword{internal}

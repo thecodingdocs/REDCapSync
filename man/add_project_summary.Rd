@@ -94,8 +94,8 @@ convert to those to NA and would make that variable not upload compatible}
 \item{drop_blanks}{Logical. If \code{TRUE}, records with blank fields will be
 dropped. Default is \code{TRUE}.}
 
-\item{drop_missing_codes}{Logical. If \code{TRUE}, will convert missing codes to NA.
-Default is \code{FALSE}.}
+\item{drop_missing_codes}{Logical. If \code{TRUE}, will convert missing codes to
+NA. Default is \code{FALSE}.}
 
 \item{drop_others}{Character vector of other values that should be dropped.}
 
@@ -126,8 +126,8 @@ saved. Default is the \code{output} folder within the database directory.}
 \item{file_name}{Character. The base name of the file where the summary will
 be saved. Default is \verb{<project$project_name>_<summary_name>}.}
 
-\item{hard_reset}{Logical. If \code{TRUE}, overwrite existing summary files with the
-same name. Default is \code{FALSE}.}
+\item{hard_reset}{Logical. If \code{TRUE}, overwrite existing summary files with
+the same name. Default is \code{FALSE}.}
 }
 \value{
 A modified \code{project} object that includes the newly created summary.

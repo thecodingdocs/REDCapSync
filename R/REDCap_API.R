@@ -194,8 +194,11 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
     # if(is.data.frame(project$unique_events)){
     #   project$metadata$events <- data.frame(
     #     event_name = unique(project$unique_events$event_name),
-    #     arms = unique(project$unique_events$event_name) %>% lapply(function(event_name){
-    #       project$unique_events$arm_number[which(project$unique_events$event_name==event_name)] %>% unique() %>% paste0(collapse = " | ")
+    #     arms = unique(project$unique_events$event_name) %>%
+    # lapply(function(event_name){
+    #       project$unique_events$arm_number[
+    #which(project$unique_events$event_name==event_name)] %>% unique() %>%
+    #paste0(collapse = " | ")
     #     })
     #   )
     # }
@@ -246,7 +249,8 @@ add_field_elements <- function(fields) {
         unlist() %>%
         stringr::str_to_title() %>%
         paste(collapse = " "),
-      select_choices_or_calculations = "0, Incomplete | 1, Unverified | 2, Complete",
+      select_choices_or_calculations =
+        "0, Incomplete | 1, Unverified | 2, Complete",
       stringsAsFactors = FALSE
     )
     last_row <- nrow(fields)
@@ -265,8 +269,10 @@ add_field_elements <- function(fields) {
       bind_rows(bottom)
   }
   if (any(fields$field_type == "checkbox")) {
-    for (field_name in fields$field_name[which(fields$field_type == "checkbox")]) {
-      x <- fields$select_choices_or_calculations[which(fields$field_name == field_name)] %>% split_choices()
+    for (field_name in fields$field_name[
+      which(fields$field_type == "checkbox")]) {
+      x <- fields$select_choices_or_calculations[
+        which(fields$field_name == field_name)] %>% split_choices()
       new_rows <- data.frame(
         field_name = paste0(field_name, "___", x$code),
         form_name = fields$form_name[which(fields$field_name == field_name)],
@@ -338,7 +344,8 @@ get_redcap_files <- function(project,
                              original_file_names = FALSE,
                              overwrite = FALSE) {
   file_rows <- which(project$metadata$fields$field_type == "file")
-  out_dir <- file.path(project$dir_path, "REDCap", project$project_name, "files")
+  out_dir <- file.path(
+    project$dir_path, "REDCap", project$project_name, "files")
   if (length(file_rows) > 0) {
     dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
     for (field_name in project$metadata$fields$field_name[file_rows]) {
@@ -346,8 +353,10 @@ get_redcap_files <- function(project,
       dir.create(out_dir_folder,
                  showWarnings = FALSE,
                  recursive = TRUE)
-      form_name <- project$metadata$fields$form_name[which(project$metadata$fields$field_name == field_name)]
-      is_repeating <- project$metadata$forms$repeating[which(project$metadata$forms$form_name == form_name)]
+      form_name <- project$metadata$fields$form_name[
+        which(project$metadata$fields$field_name == field_name)]
+      is_repeating <- project$metadata$forms$repeating[
+        which(project$metadata$forms$form_name == form_name)]
       form <- project$data[[form_name]]
       rows_to_save <- which(!is.na(form[[field_name]]))
       for (i in rows_to_save) {

@@ -310,7 +310,8 @@ assert_setup_project <- function(project,
       ))
       return(invisible(project))
     }
-    message <- cli_message_maker(collected = collected, function_name = current_function)
+    message <- cli_message_maker(
+      collected = collected, function_name = current_function)
     if (warn_only) {
       cli::cli_warn(message)
       return(invisible(project))

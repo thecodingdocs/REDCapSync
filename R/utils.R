@@ -2,7 +2,8 @@
 add_redcap_links_to_form <- function(form, project) {
   # add instance links
   if (project$metadata$id_col %in% colnames(form)) {
-    form_structure_cols <- project$metadata$raw_structure_cols[which(project$metadata$raw_structure_cols %in% colnames(form))]
+    form_structure_cols <- project$metadata$raw_structure_cols[
+      which(project$metadata$raw_structure_cols %in% colnames(form))]
     form_structure_cols <- project$metadata$raw_structure_cols[which(
       project$metadata$raw_structure_cols %in% colnames(form) &
         project$metadata$raw_structure_cols != project$metadata$id_col
@@ -38,8 +39,9 @@ remove_from_form_list <- function(form_list, id_col, records = NULL) {
   if (is.null(records)) {
     return(form_list)
   }
-  form_names <- names(form_list)[which(unlist(lapply(names(form_list), function(form_name) {
-    nrow(form_list[[form_name]]) > 0L
+  form_names <- names(form_list)[
+    which(unlist(lapply(names(form_list), function(form_name) {
+      nrow(form_list[[form_name]]) > 0L
   })))]
   for (form_name in form_names) {
     chosen_rows <- which(!form_list[[form_name]][[id_col]] %in% records)

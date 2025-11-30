@@ -33,7 +33,21 @@ test_that("fields_to_choices works", {
         "0, Female | 1, Male", # 2
         "0, No | 1, Yes", # 2
         "0,No | 1,Yes",# 2
-        "0, American Indian/Alaska Native | 1, Asian | 2, Native Hawaiian or Other Pacific Islander | 3, Black or African American | 4, White | 5, More Than One Race | 6, Unknown / Not Reported",# 7
+        paste0(
+          "0, American Indian/Alaska Native",
+          " | ",
+          "1, Asian",
+          " | ",
+          "2, Native Hawaiian or Other Pacific Islander",
+          " | ",
+          "3, Black or African American",
+          " | ",
+          "4, White",
+          " | ",
+          "5, More Than One Race",
+          " | ",
+          "6, Unknown / Not Reported"
+        ), # 7
         "1, Lung | 2, Liver | 3, Bone | 4, Lymph node | 5, Other | 6, Brain" #6
       )
     )
@@ -308,10 +322,16 @@ test_that("get_summary_records works!", {
   other <- project$data$other
   expect_true("test_branching_yes" %in% names(project$summary))
   expect_true("test_branching_no" %in% names(project$summary))
-  record_ids_yes <- other$record_id[which(other$var_branching == "Yes")] %>% sort()
-  record_ids_no <- other$record_id[which(other$var_branching == "No")] %>% sort()
-  get_sum_records_yes <- project %>% get_summary_records("test_branching_yes") %>% sort()
-  get_sum_records_no <- project %>% get_summary_records("test_branching_no") %>% sort()
+  record_ids_yes <- other$record_id[which(other$var_branching == "Yes")] %>%
+    sort()
+  record_ids_no <- other$record_id[which(other$var_branching == "No")] %>%
+    sort()
+  get_sum_records_yes <- project %>%
+    get_summary_records("test_branching_yes") %>%
+    sort()
+  get_sum_records_no <- project %>%
+    get_summary_records("test_branching_no") %>%
+    sort()
   expect_equal(record_ids_yes,get_sum_records_yes)
   expect_equal(record_ids_no,get_sum_records_no)
 })
@@ -406,7 +426,8 @@ test_that("get_identifier_fields works", {
   fields <- data.frame(
     field_name = c("record_id", "email", "phone", "dob", "other"),
     identifier = c("y", NA, NA, NA, NA),
-    text_validation_type_or_show_slider_number = c(NA, "email", "phone", "date_mdy", NA),
+    text_validation_type_or_show_slider_number =
+      c(NA, "email", "phone", "date_mdy", NA),
     stringsAsFactors = FALSE
   )
   data_list <- list(metadata = list(fields = fields))
@@ -414,14 +435,18 @@ test_that("get_identifier_fields works", {
   out_deid <- get_identifier_fields(data_list, get_type = "deidentified")
   expect_true(length(out_deid) == 1)
   expect_true("record_id" %in% out_deid)
-  # deidentified_strict: includes fields with validation types in strict list (email, phone)
-  out_strict <- get_identifier_fields(data_list, get_type = "deidentified_strict")
+  # deidentified_strict: includes fields with validation types
+  # in strict list (email, phone)
+  out_strict <-
+    get_identifier_fields(data_list, get_type = "deidentified_strict")
   expect_true(setequal(out_strict, c("record_id", "email", "phone")))
-  # deidentified_super_strict: includes additional validation types (dates, etc.)
-  out_super <- get_identifier_fields(data_list, get_type = "deidentified_super_strict")
+  # deidentified_super_strict: includes additional validation  (dates, etc.)
+  out_super <-
+    get_identifier_fields(data_list, get_type = "deidentified_super_strict")
   expect_true(setequal(out_super, c("record_id", "email", "phone", "dob")))
   # invert = TRUE should return the complement set
-  out_inv <- get_identifier_fields(data_list, get_type = "deidentified", invert = TRUE)
+  out_inv <-
+    get_identifier_fields(data_list, get_type = "deidentified", invert = TRUE)
   expect_true(setequal(out_inv, setdiff(fields$field_name, "record_id")))
 })
 # field_names_to_form_names ( Internal )

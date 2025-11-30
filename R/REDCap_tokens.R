@@ -33,7 +33,8 @@ view_project_token <- function(project) {
 #' @return Logical. Returns `TRUE` if the API token is valid, otherwise `FALSE`.
 #' @seealso
 #' \href{../articles/Tokens.html}{pkgdown article on tokens}
-#' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{pkgdown article on tokens}
+#' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{
+#' pkgdown article on tokens}
 #' @family Token Functions
 #' @keywords internal
 test_project_token <- function(project) {

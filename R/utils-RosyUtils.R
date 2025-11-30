@@ -259,8 +259,10 @@ wb_to_list <- function(wb) {
     x <- openxlsx::getTables(wb, sheet = i)
     if (length(x) > 0) {
       # test for xlsx without letters for cols
-      col_row <- gsub("[A-Za-z]", "", unlist(x %>% attr("refs") %>% strsplit(":"))[[1]]) %>%
-        as.integer()
+      col_row <- gsub(
+        pattern = "[A-Za-z]",
+        replacement = "",
+        x = unlist(x %>% attr("refs") %>% strsplit(":"))[[1]]) %>% as.integer()
     }
     out[[i]] <- openxlsx::read.xlsx(wb, sheet = i, startRow = col_row)
   }
@@ -411,8 +413,9 @@ form_to_wb <- function(form,
           firstActiveCol <- firstActiveCol +
             freeze_key_cols[length(freeze_key_cols)]
         } else {
-          warning("key_cols must be consecutive and start from left most column.",
-                  immediate. = TRUE)
+          warning(
+            "key_cols must be consecutive and start from left most column.",
+            immediate. = TRUE)
         }
       }
       openxlsx::freezePane(wb,
@@ -482,15 +485,14 @@ rename_list_names_excel <- function(list_names) {
                                           ellipsis = "")
   bad_names <- which_duplicated(list_names_rename)
   if (length(bad_names) > 0) {
-    cli_alert_danger("Duplicated names when trimmed from right 31 max in Excel: ",
-                     toString(list_names[bad_names]))
-    cli_alert_info(
-      paste0(
-        "Use CSV or shorten the names and make sure they are unique if they",
-        " are trimmed to 31 char. For now will make unique by adding number."
-      )
-    )
-    list_names_rename <- unique_trimmed_strings(list_names_rename, max_length = 31)
+    cli_alert_danger(paste0(
+      "Duplicated names when trimmed from right 31 max in Excel: ",
+      toString(list_names[bad_names])))
+    cli_alert_info(paste0(
+      "Use CSV or shorten the names and make sure they are unique if they",
+      " are trimmed to 31 char. For now will make unique by adding number."))
+    list_names_rename <-
+      unique_trimmed_strings(list_names_rename, max_length = 31)
   }
   list_names_rename
 }

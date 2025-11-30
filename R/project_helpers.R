@@ -515,7 +515,7 @@ normalize_redcap <- function(denormalized, project, labelled) {
           ". Unable to obtain."
         ))
       }
-      # consider message for what variables you are missing with vec1_not_in_vec2
+      # consider message for what vars are missing with vec1_not_in_vec2
       row_index <- NULL
       if (length(form_field_names) > 0) {
         add_ons_x <- add_ons
@@ -529,12 +529,14 @@ normalize_redcap <- function(denormalized, project, labelled) {
             row_index <- which(
               denormalized$redcap_repeat_instrument == form_name |
                 denormalized$redcap_event_name %in%
-                event_mapping$unique_event_name[which(!event_mapping$repeating &
-                                                        event_mapping$form == form_name)]
+                event_mapping$unique_event_name[
+                  which(!event_mapping$repeating &
+                          event_mapping$form == form_name)]
             )
           }
           if (!is_longitudinal) {
-            row_index <- which(denormalized$redcap_repeat_instrument == form_name)
+            row_index <-
+              which(denormalized$redcap_repeat_instrument == form_name)
           }
         }
         if (!is_repeating_form) {
@@ -547,13 +549,17 @@ normalize_redcap <- function(denormalized, project, labelled) {
             is_longitudinal && has_repeating_forms) {
           row_index <- which(
             is.na(denormalized$redcap_repeat_instrument) &
-              denormalized$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)])
+              denormalized$redcap_event_name %in%
+              unique(event_mapping$unique_event_name[
+                which(event_mapping$form == form_name)])
           )
         }
         if (!is_repeating_form &&
             is_longitudinal && !has_repeating_forms) {
           row_index <- which(
-            denormalized$redcap_event_name %in% unique(event_mapping$unique_event_name[which(event_mapping$form == form_name)])
+            denormalized$redcap_event_name %in%
+              unique(event_mapping$unique_event_name[
+                which(event_mapping$form == form_name)])
           )
         }
         if (!is_repeating_form &&
@@ -565,7 +571,8 @@ normalize_redcap <- function(denormalized, project, labelled) {
         col_names <- unique(c(add_ons_x, form_field_names))
         raw_subset <- denormalized[row_index, col_names]
         if (labelled) {
-          raw_subset <- raw_to_labelled_form(form = raw_subset, project = project)
+          raw_subset <- raw_to_labelled_form(
+            form = raw_subset, project = project)
         }
         form_list[[form_name]] <- raw_subset
       }
@@ -601,7 +608,27 @@ clean_redcap_log <- function(redcap_log) {
     )
   ]
   redcap_log$record_id[record_rows] <- gsub(
-    "Update record|Delete record|Create record|[:(:]API[:):]|Auto|calculation|Lock/Unlock Record | |[:):]|[:(:]",
+    paste0(
+      "Update record",
+      "|",
+      "Delete record",
+      "|",
+      "Create record",
+      "|",
+      "[:(:]API[:):]",
+      "|",
+      "Auto",
+      "|",
+      "calculation",
+      "|",
+      "Lock/Unlock Record ",
+      "|",
+      " ",
+      "|",
+      "[:):]",
+      "|",
+      "[:(:]"
+    ),
     "",
     redcap_log$action[record_rows]
   )

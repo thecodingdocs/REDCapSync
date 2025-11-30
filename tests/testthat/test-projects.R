@@ -96,7 +96,8 @@ test_that("add_project_details_to_cache works", {
   projects <- get_projects()
   checkmate::expect_data_frame(projects, nrows = 1)
   expect_true(project_details$project_name %in% projects$project_name)
-  # conflict: same project_id & same base redcap_uri but different project_name -> error
+  # conflict: same project_id & same base redcap_uri
+  #but different project_name -> error
   project_details_conflict <- project_details
   project_details_conflict$project_name <- "TEST_OTHER"
   expect_error(add_project_details_to_cache(project_details_conflict))

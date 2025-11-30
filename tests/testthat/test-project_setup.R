@@ -55,7 +55,8 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_equal(project$project_name, project_name)
   test_dir_files <- list.files(test_dir)
   expect_true(all(.dir_folders %in% test_dir_files))
-  project$dir_path <- file.path(test_dir, "another_fake_folder") %>% sanitize_path()
+  project$dir_path <- file.path(test_dir, "another_fake_folder") %>%
+    sanitize_path()
   expect_error(assert_dir(project$dir_path))
 })
 # load_project ( Exported )
@@ -65,7 +66,7 @@ test_that("load_project works", {
   expect_error(assert_dir(test_dir))
 })
 # save_project ( Exported )
-test_that("save_project doesn't save if it's blank but will save and cache if valid, also loads", {
+test_that("save_project doesn't save if blank but will save if valid", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
@@ -84,7 +85,11 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
     redcap_uri = redcap_uri
   )$.internal() # change to R6 later
   save_project(project)
-  expect_false(file.exists(file.path(project$dir_path, "R_objects", paste0(project_name, "_REDCapSync.RData"))))
+  expect_false(file.exists(file.path(
+    project$dir_path,
+    "R_objects",
+    paste0(project_name, "_REDCapSync.RData")
+  )))
   project$internals$ever_connected <- TRUE
   fake_time <- now_time()
   project$internals$last_sync <- fake_time
@@ -93,7 +98,9 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   project$internals$last_metadata_update <- fake_time
   project$internals$timezone <- Sys.timezone()
   project <- save_project(project)
-  expected_save_location <- file.path(project$dir_path, "R_objects", paste0(project_name, "_REDCapSync.RData"))
+  expected_save_location <- file.path(project$dir_path,
+                                      "R_objects",
+                                      paste0(project_name, "_REDCapSync.RData"))
   expect_true(file.exists(expected_save_location))
   # check cached proj
   projects <- get_projects()
@@ -104,14 +111,15 @@ test_that("save_project doesn't save if it's blank but will save and cache if va
   # loading tests wont load unknown project
   expect_error(load_project("a_project"))
   # loads what we saved
-  project2 <- load_project(project_name = project_name)$.internal() # change to R6 later
+  # change to R6 later
+  project2 <- load_project(project_name = project_name)$.internal()
   # project$internals$last_directory_save %>% attr("tzone")
   # project2$internals$last_directory_save %>% attr("tzone")
   expect_identical(project, project2)
   # # delete_project works...
   # expect_no_warning(delete_project(project))
   # expect_warning(delete_project(project)) # warning for deleting twice
-  # expect_error(load_project(project_name = project_name)) # wont load deleted project
+  # expect_error(load_project(project_name = project_name)) # wont load deleted
 })
 # set_dir ( Internal )
 test_that("set_dir creates a new directory if it does not exist", {
@@ -148,7 +156,7 @@ test_that("set_dir stops if user chooses not to create directory", {
   dir_path <- file.path(test_dir, "no_create_dir")
   # Mock user input to not create the directory
   mockery::stub(set_dir, "utils::menu", 2)
-  expect_error(set_dir(dir_path), "Path not found. Use absolute path or choose one within R project working directory.")
+  expect_error(set_dir(dir_path), "Path not found. Use absolute path")
   expect_false(file.exists(dir_path))
 })
 test_that("set_dir validates the directory structure", {

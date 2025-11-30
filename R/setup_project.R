@@ -165,7 +165,7 @@ setup_project <- function(project_name,
     message <- collected %>% cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
-  projects <- get_projects() # add project_name conflict check id-base url differs
+  projects <- get_projects()
   if (paste0(.token_prefix, project_name) != token_name) {
     # maybe a message
   }
@@ -213,7 +213,7 @@ setup_project <- function(project_name,
     if (!was_loaded) {
       project <- .blank_project
       cli_alert_wrap(
-        "Setup blank project object because nothing found in cache or directory.",
+        "Setup blank project because nothing found in cache or directory.",
         bullet_type = "!",
         silent = silent
       )
@@ -255,20 +255,20 @@ setup_project <- function(project_name,
   if (hard_reset) {
     # load blank if hard_reset = TRUE
     project <- .blank_project
-    cli_alert_wrap(paste0("Setup blank project object because `hard_reset = TRUE`"),
+    cli_alert_wrap(paste0("Setup blank project because `hard_reset = TRUE`"),
                    silent = silent)
   }
   if (missing_dir_path) {
-    # if missing the directory path from setup or load then let user know nothing will be stored
     if (!is_something(project$dir_path)) {
-      # only show message if load_project wasn't used internally (that has a directory)
-      cli::cli_alert_warning(
-        "If you don't supply a directory, REDCapSync will only run in R session. Package is best with a directory."
-      )
+      cli::cli_alert_warning(paste0(
+        "If you don't supply a directory, REDCapSync will only run ",
+        "in R session. Package is meant to be used with a directory."))
     }
   }
   if (!missing_dir_path) {
-    project$dir_path <- set_dir(dir_path) # will also ask user if provided dir is new or different (will load from original but start using new dir)
+    # will also ask user if provided dir is new or different
+    # (will load from original but start using new dir)
+    project$dir_path <- set_dir(dir_path)
     dir.create(
       path = file.path(project$dir_path, "REDCap", project_name),
       showWarnings = FALSE
@@ -300,7 +300,7 @@ setup_project <- function(project_name,
     as.integer()
   project$internals$get_file_repository <- get_file_repository
   #test theese
-  project$links$redcap_uri <- redcap_uri # add test function, should end in / or add it
+  project$links$redcap_uri <- redcap_uri # add test, should end in / or add it
   project$links$redcap_base <- redcap_uri %>% dirname() %>% paste0("/")
   project$internals$is_blank <- FALSE
   project$data <- project$data %>% all_character_cols_list()
@@ -378,13 +378,14 @@ load_project <- function(project_name) {
       " in cache. Did you use `setup_project(...)` and `project$sync()`?"
     )
   }
-  dir_path <- projects$dir_path[which(projects$project_name == project_name)] %>%
-    sanitize_path()
+  dir_path <- projects$dir_path[
+    which(projects$project_name == project_name)] %>% sanitize_path()
   assert_dir(dir_path)
   if (!file.exists(dir_path)) {
     stop("`dir_path` doesn't exist: '", dir_path, "'")
   }
-  project_path <- get_project_path(project_name = project_name, dir_path = dir_path)
+  project_path <-
+    get_project_path(project_name = project_name, dir_path = dir_path)
   assert_project_path(project_path)
   if (!file.exists(project_path)) {
     stop(
@@ -450,7 +451,8 @@ save_project <- function(project, silent = FALSE) {
       paste0(
         "Did not save ",
         project$project_name,
-        " because there has never been a REDCap connection! You must use `setup_project(...)` and `project$sync()`"
+        " because there has never been a REDCap connection! You must use ",
+        "`setup_project(...)` and `project$sync()`"
       )
     )
     return(invisible(project))
@@ -592,7 +594,7 @@ set_dir <- function(dir_path) {
       dir.create(file.path(dir_path))
     }
     if (!file.exists(dir_path)) {
-      stop("Path not found. Use absolute path or choose one within R project working directory.")
+      stop("Path not found. Use absolute path or choose working directory.")
     }
   }
   for (folder in .dir_folders) {

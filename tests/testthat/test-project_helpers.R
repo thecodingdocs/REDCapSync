@@ -141,7 +141,8 @@ test_that("deidentify_data_list works", {
     exclude_free_text = TRUE
   )
   expect_all_false(initial_identifiers %in% colnames(no_free_text$data$merged))
-  keep_rows <- which(!data_list$metadata$fields$field_name %in% initial_identifiers)
+  keep_rows <-
+    which(!data_list$metadata$fields$field_name %in% initial_identifiers)
   data_list$metadata$fields <- data_list$metadata$fields[keep_rows,]
   keep_cols <- which(!colnames(data_list$data$merged) %in% initial_identifiers)
   data_list$data$merged <- data_list$data$merged[,keep_cols]

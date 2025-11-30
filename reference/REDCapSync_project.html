@@ -80,11 +80,12 @@ Users should construct objects using <code><a href="setup-load.html">setup_proje
 
 <ul><li><p><a href="#method-REDCapSync_project-new"><code>REDCapSync_project$new()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-info"><code>REDCapSync_project$info()</code></a></p></li>
+<li><p><a href="#method-REDCapSync_project-sync"><code>REDCapSync_project$sync()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-add_summary"><code>REDCapSync_project$add_summary()</code></a></p></li>
-<li><p><a href="#method-REDCapSync_project-clear_summaries"><code>REDCapSync_project$clear_summaries()</code></a></p></li>
+<li><p><a href="#method-REDCapSync_project-remove_summaries"><code>REDCapSync_project$remove_summaries()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-generate_summary"><code>REDCapSync_project$generate_summary()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-add_field"><code>REDCapSync_project$add_field()</code></a></p></li>
-<li><p><a href="#method-REDCapSync_project-sync"><code>REDCapSync_project$sync()</code></a></p></li>
+<li><p><a href="#method-REDCapSync_project-remove_fields"><code>REDCapSync_project$remove_fields()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-summarize"><code>REDCapSync_project$summarize()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-save_summary"><code>REDCapSync_project$save_summary()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-save"><code>REDCapSync_project$save()</code></a></p></li>
@@ -120,10 +121,50 @@ will be accessible to any user.</p><div class="section">
 </div>
 
 
+</div><p></p><hr><a id="method-REDCapSync_project-sync"></a><div class="section">
+<h3 id="method-sync-">Method <code><a href="sync.html">sync()</a></code><a class="anchor" aria-label="anchor" href="#method-sync-"></a></h3>
+<p>Updates the REDCap data for (<code>project</code> object) by checking REDCap log.</p><div class="section">
+<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span></span>
+<span>  summarize <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  save_to_dir <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  hard_check <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  hard_reset <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>summarize</code></dt>
+<dd><p>Logical (TRUE/FALSE). If TRUE, summarizes data to directory.</p></dd>
+
+
+<dt><code>save_to_dir</code></dt>
+<dd><p>Logical (TRUE/FALSE). If TRUE, saves the updated data to
+the directory. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>hard_check</code></dt>
+<dd><p>Will check REDCap even if not due (see <code>sync_frequency</code>
+parameter from <code><a href="setup-load.html">setup_project()</a></code>)</p></dd>
+
+
+<dt><code>hard_reset</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, overwrite existing summary files with the
+same name. Default is <code>FALSE</code>.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
+<p>Messages for confirmation.</p>
+</div>
+
 </div><p></p><hr><a id="method-REDCapSync_project-add_summary"></a><div class="section">
 <h3 id="method-add-summary-">Method <code>add_summary()</code><a class="anchor" aria-label="anchor" href="#method-add-summary-"></a></h3>
 <p>Add a new summary entry</p><div class="section">
-<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
+<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">add_summary</span><span class="op">(</span></span>
 <span>  <span class="va">summary_name</span>,</span>
 <span>  transformation_type <span class="op">=</span> <span class="st">"default"</span>,</span>
@@ -157,7 +198,7 @@ will be accessible to any user.</p><div class="section">
 </div>
 
 <div class="section">
-<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>summary_name</code></dt>
 <dd><p>Character. The name of the summary from which to generate
 the summary. *If you provide <code>summary_name</code> all other parameters are
@@ -310,23 +351,31 @@ same name. Default is <code>FALSE</code>.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-REDCapSync_project-clear_summaries"></a><div class="section">
-<h3 id="method-clear-summaries-">Method <code>clear_summaries()</code><a class="anchor" aria-label="anchor" href="#method-clear-summaries-"></a></h3>
+</div><p></p><hr><a id="method-REDCapSync_project-remove_summaries"></a><div class="section">
+<h3 id="method-remove-summaries-">Method <code>remove_summaries()</code><a class="anchor" aria-label="anchor" href="#method-remove-summaries-"></a></h3>
 <p>Clear all project summaries</p><div class="section">
-<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">clear_summaries</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">remove_summaries</span><span class="op">(</span>summary_names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+<div class="section">
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>summary_names</code></dt>
+<dd><p>One or more summary names. Default is <code>NULL</code>.</p></dd>
+
+
+</dl><p></p></div>
+</div>
 
 </div><p></p><hr><a id="method-REDCapSync_project-generate_summary"></a><div class="section">
 <h3 id="method-generate-summary-">Method <code>generate_summary()</code><a class="anchor" aria-label="anchor" href="#method-generate-summary-"></a></h3>
 <p>Add a new summary entry</p><div class="section">
-<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">generate_summary</span><span class="op">(</span><span class="va">summary_name</span>, envir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>summary_name</code></dt>
 <dd><p>Character. The name of the summary from which to generate
 the summary. *If you provide <code>summary_name</code> all other parameters are
@@ -343,70 +392,102 @@ inherited according to what was set with <code>add_project_summary</code>.</p></
 </div><p></p><hr><a id="method-REDCapSync_project-add_field"></a><div class="section">
 <h3 id="method-add-field-">Method <code>add_field()</code><a class="anchor" aria-label="anchor" href="#method-add-field-"></a></h3>
 <p>Add a new summary entry</p><div class="section">
-<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">add_field</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-
-</div><p></p><hr><a id="method-REDCapSync_project-sync"></a><div class="section">
-<h3 id="method-sync-">Method <code><a href="sync.html">sync()</a></code><a class="anchor" aria-label="anchor" href="#method-sync-"></a></h3>
-<p>Updates the REDCap database (<code>project</code> object) by fetching the latest data
-from the REDCap server.</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span></span>
-<span>  summarize <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  save_to_dir <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  hard_check <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  hard_reset <span class="op">=</span> <span class="cn">FALSE</span></span>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">add_field</span><span class="op">(</span></span>
+<span>  <span class="va">field_name</span>,</span>
+<span>  <span class="va">form_name</span>,</span>
+<span>  <span class="va">field_type</span>,</span>
+<span>  field_type_R <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  field_label <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  select_choices_or_calculations <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  field_note <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  identifier <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  units <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  data_func <span class="op">=</span> <span class="cn">NA</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>summarize</code></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, summarizes data to directory.</p></dd>
+<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>field_name</code></dt>
+<dd><p>Character. The name of the field to which the
+transformation
+will be applied.</p></dd>
 
 
-<dt><code>save_to_dir</code></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, saves the updated data to
-the directory. Default is <code>TRUE</code>.</p></dd>
+<dt><code>form_name</code></dt>
+<dd><p>Character. The name of the form containing the field.</p></dd>
 
 
-<dt><code>hard_check</code></dt>
-<dd><p>Will check REDCap even if not due (see <code>sync_frequency</code>
-parameter from <code><a href="setup-load.html">setup_project()</a></code>)</p></dd>
+<dt><code>field_type</code></dt>
+<dd><p>Character. The type of the field in REDCap (e.g., "text",
+"checkbox", "dropdown").</p></dd>
 
 
-<dt><code>hard_reset</code></dt>
-<dd><p>Logical. If <code>TRUE</code>, overwrite existing summary files with the
-same name. Default is <code>FALSE</code>.</p></dd>
+<dt><code>field_type_R</code></dt>
+<dd><p>Character. The corresponding R data type for the field.
+Default is <code>NA</code>.</p></dd>
+
+
+<dt><code>field_label</code></dt>
+<dd><p>Character. The label for the field. Default is <code>NA</code>.</p></dd>
+
+
+<dt><code>select_choices_or_calculations</code></dt>
+<dd><p>Character. A string specifying the
+choices (for dropdown, radio, or checkbox fields) or calculations (for
+calculated fields). Default is <code>NA</code>.</p></dd>
+
+
+<dt><code>field_note</code></dt>
+<dd><p>Character. An optional note or comment for the field.
+Default is <code>NA</code>.</p></dd>
+
+
+<dt><code>identifier</code></dt>
+<dd><p>Character. A string indicating whether the field is an
+identifier (e.g., "Y" for yes). Default is an empty string (<code>""</code>).</p></dd>
+
+
+<dt><code>units</code></dt>
+<dd><p>Character. The units of measurement for the field, if
+applicable. Default is <code>NA</code>.</p></dd>
+
+
+<dt><code>data_func</code></dt>
+<dd><p>Function or NA. An optional function to transform or
+validate the data in the field. Default is <code>NA</code>.</p></dd>
 
 
 </dl><p></p></div>
 </div>
-<div class="section">
-<h4 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h4>
-<p>This function updates the REDCap database by fetching the latest data from
-the REDCap server. It supports various options such as forcing a fresh
-update, checking logs for a specified number of days, and retrieving files
-from REDCap. The function can also handle metadata-only updates and batch
-processing.</p>
+
+</div><p></p><hr><a id="method-REDCapSync_project-remove_fields"></a><div class="section">
+<h3 id="method-remove-fields-">Method <code>remove_fields()</code><a class="anchor" aria-label="anchor" href="#method-remove-fields-"></a></h3>
+<p>Removes summary entry</p><div class="section">
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">remove_fields</span><span class="op">(</span>field_names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
-<p>Messages for confirmation.</p>
+<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>field_names</code></dt>
+<dd><p>Character vector. Names of specific fields to include in
+the summary. Default is <code>NULL</code>, which includes all fields.</p></dd>
+
+
+</dl><p></p></div>
 </div>
 
 </div><p></p><hr><a id="method-REDCapSync_project-summarize"></a><div class="section">
 <h3 id="method-summarize-">Method <code>summarize()</code><a class="anchor" aria-label="anchor" href="#method-summarize-"></a></h3>
 <p>summarize project and save to Excel</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">summarize</span><span class="op">(</span>hard_reset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>hard_reset</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, overwrite existing summary files with the
 same name. Default is <code>FALSE</code>.</p></dd>
@@ -418,12 +499,12 @@ same name. Default is <code>FALSE</code>.</p></dd>
 </div><p></p><hr><a id="method-REDCapSync_project-save_summary"></a><div class="section">
 <h3 id="method-save-summary-">Method <code>save_summary()</code><a class="anchor" aria-label="anchor" href="#method-save-summary-"></a></h3>
 <p>save summary to Excel</p><div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">save_summary</span><span class="op">(</span><span class="va">summary_name</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>summary_name</code></dt>
 <dd><p>Character. The name of the summary from which to generate
 the summary. *If you provide <code>summary_name</code> all other parameters are
@@ -436,7 +517,7 @@ inherited according to what was set with <code>add_project_summary</code>.</p></
 </div><p></p><hr><a id="method-REDCapSync_project-save"></a><div class="section">
 <h3 id="method-save-">Method <code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code><a class="anchor" aria-label="anchor" href="#method-save-"></a></h3>
 <p>Add a new summary entry</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -444,12 +525,12 @@ inherited according to what was set with <code>add_project_summary</code>.</p></
 </div><p></p><hr><a id="method-REDCapSync_project-show_metadata"></a><div class="section">
 <h3 id="method-show-metadata-">Method <code>show_metadata()</code><a class="anchor" aria-label="anchor" href="#method-show-metadata-"></a></h3>
 <p>Returns list of data or the specified form.</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">show_metadata</span><span class="op">(</span>type <span class="op">=</span> <span class="cn">NULL</span>, annotate <span class="op">=</span> <span class="cn">FALSE</span>, envir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>type</code></dt>
 <dd><p>string of either "fields","forms", or "choices"</p></dd>
 
@@ -468,12 +549,12 @@ inherited according to what was set with <code>add_project_summary</code>.</p></
 </div><p></p><hr><a id="method-REDCapSync_project-show_data"></a><div class="section">
 <h3 id="method-show-data-">Method <code>show_data()</code><a class="anchor" aria-label="anchor" href="#method-show-data-"></a></h3>
 <p>Returns list of data or the specified form.</p><div class="section">
-<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
+<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">show_data</span><span class="op">(</span>form <span class="op">=</span> <span class="cn">NULL</span>, envir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
+<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>form</code></dt>
 <dd><p>string of raw form name such as "survey_one"</p></dd>
 
@@ -488,7 +569,7 @@ inherited according to what was set with <code>add_project_summary</code>.</p></
 </div><p></p><hr><a id="method-REDCapSync_project-show_token"></a><div class="section">
 <h3 id="method-show-token-">Method <code>show_token()</code><a class="anchor" aria-label="anchor" href="#method-show-token-"></a></h3>
 <p>Displays project token in console for verification</p><div class="section">
-<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">show_token</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -496,7 +577,7 @@ inherited according to what was set with <code>add_project_summary</code>.</p></
 </div><p></p><hr><a id="method-REDCapSync_project-test_token"></a><div class="section">
 <h3 id="method-test-token-">Method <code>test_token()</code><a class="anchor" aria-label="anchor" href="#method-test-token-"></a></h3>
 <p>test connection via communication with API</p><div class="section">
-<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
+<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">test_token</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -504,12 +585,12 @@ inherited according to what was set with <code>add_project_summary</code>.</p></
 </div><p></p><hr><a id="method-REDCapSync_project-url_launch"></a><div class="section">
 <h3 id="method-url-launch-">Method <code>url_launch()</code><a class="anchor" aria-label="anchor" href="#method-url-launch-"></a></h3>
 <p>opens links in browser</p><div class="section">
-<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
+<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">url_launch</span><span class="op">(</span>link_type <span class="op">=</span> <span class="st">"home"</span>, open_browser <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
+<h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>link_type</code></dt>
 <dd><p>choose one of "base", "home", "record_home",
 "records_dashboard", "api", "api_playground", "codebook", "user_rights",
@@ -526,7 +607,7 @@ inherited according to what was set with <code>add_project_summary</code>.</p></
 </div><p></p><hr><a id="method-REDCapSync_project-.internal"></a><div class="section">
 <h3 id="method-internal-">Method <code>.internal()</code><a class="anchor" aria-label="anchor" href="#method-internal-"></a></h3>
 <p>returns internal list</p><div class="section">
-<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
+<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">.internal</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 

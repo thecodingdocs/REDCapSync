@@ -1,11 +1,11 @@
 # clear_project_summaries
 
-**\[experimental\]**
+clears project summaries
 
 ## Usage
 
 ``` r
-clear_project_summaries(project)
+clear_project_summaries(project, summary_names = NULL)
 ```
 
 ## Arguments

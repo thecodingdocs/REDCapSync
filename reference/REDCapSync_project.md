@@ -23,15 +23,17 @@ for initializing the `project` object.'
 
 - [`REDCapSync_project$info()`](#method-REDCapSync_project-info)
 
+- [`REDCapSync_project$sync()`](#method-REDCapSync_project-sync)
+
 - [`REDCapSync_project$add_summary()`](#method-REDCapSync_project-add_summary)
 
-- [`REDCapSync_project$clear_summaries()`](#method-REDCapSync_project-clear_summaries)
+- [`REDCapSync_project$remove_summaries()`](#method-REDCapSync_project-remove_summaries)
 
 - [`REDCapSync_project$generate_summary()`](#method-REDCapSync_project-generate_summary)
 
 - [`REDCapSync_project$add_field()`](#method-REDCapSync_project-add_field)
 
-- [`REDCapSync_project$sync()`](#method-REDCapSync_project-sync)
+- [`REDCapSync_project$remove_fields()`](#method-REDCapSync_project-remove_fields)
 
 - [`REDCapSync_project$summarize()`](#method-REDCapSync_project-summarize)
 
@@ -79,6 +81,46 @@ Print project metadata
 #### Usage
 
     REDCapSync_project$info()
+
+------------------------------------------------------------------------
+
+### Method [`sync()`](https://thecodingdocs.github.io/REDCapSync/reference/sync.md)
+
+Updates the REDCap data for (`project` object) by checking REDCap log.
+
+#### Usage
+
+    REDCapSync_project$sync(
+      summarize = TRUE,
+      save_to_dir = TRUE,
+      hard_check = FALSE,
+      hard_reset = FALSE
+    )
+
+#### Arguments
+
+- `summarize`:
+
+  Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
+
+- `save_to_dir`:
+
+  Logical (TRUE/FALSE). If TRUE, saves the updated data to the
+  directory. Default is `TRUE`.
+
+- `hard_check`:
+
+  Will check REDCap even if not due (see `sync_frequency` parameter from
+  [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md))
+
+- `hard_reset`:
+
+  Logical. If `TRUE`, overwrite existing summary files with the same
+  name. Default is `FALSE`.
+
+#### Returns
+
+Messages for confirmation.
 
 ------------------------------------------------------------------------
 
@@ -269,13 +311,19 @@ Add a new summary entry
 
 ------------------------------------------------------------------------
 
-### Method `clear_summaries()`
+### Method `remove_summaries()`
 
 Clear all project summaries
 
 #### Usage
 
-    REDCapSync_project$clear_summaries()
+    REDCapSync_project$remove_summaries(summary_names = NULL)
+
+#### Arguments
+
+- `summary_names`:
+
+  One or more summary names. Default is `NULL`.
 
 ------------------------------------------------------------------------
 
@@ -307,56 +355,85 @@ Add a new summary entry
 
 #### Usage
 
-    REDCapSync_project$add_field()
-
-------------------------------------------------------------------------
-
-### Method [`sync()`](https://thecodingdocs.github.io/REDCapSync/reference/sync.md)
-
-Updates the REDCap database (`project` object) by fetching the latest
-data from the REDCap server.
-
-#### Usage
-
-    REDCapSync_project$sync(
-      summarize = TRUE,
-      save_to_dir = TRUE,
-      hard_check = FALSE,
-      hard_reset = FALSE
+    REDCapSync_project$add_field(
+      field_name,
+      form_name,
+      field_type,
+      field_type_R = NA,
+      field_label = NA,
+      select_choices_or_calculations = NA,
+      field_note = NA,
+      identifier = "",
+      units = NA,
+      data_func = NA
     )
 
 #### Arguments
 
-- `summarize`:
+- `field_name`:
 
-  Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
+  Character. The name of the field to which the transformation will be
+  applied.
 
-- `save_to_dir`:
+- `form_name`:
 
-  Logical (TRUE/FALSE). If TRUE, saves the updated data to the
-  directory. Default is `TRUE`.
+  Character. The name of the form containing the field.
 
-- `hard_check`:
+- `field_type`:
 
-  Will check REDCap even if not due (see `sync_frequency` parameter from
-  [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md))
+  Character. The type of the field in REDCap (e.g., "text", "checkbox",
+  "dropdown").
 
-- `hard_reset`:
+- `field_type_R`:
 
-  Logical. If `TRUE`, overwrite existing summary files with the same
-  name. Default is `FALSE`.
+  Character. The corresponding R data type for the field. Default is
+  `NA`.
 
-#### Details
+- `field_label`:
 
-This function updates the REDCap database by fetching the latest data
-from the REDCap server. It supports various options such as forcing a
-fresh update, checking logs for a specified number of days, and
-retrieving files from REDCap. The function can also handle metadata-only
-updates and batch processing.
+  Character. The label for the field. Default is `NA`.
 
-#### Returns
+- `select_choices_or_calculations`:
 
-Messages for confirmation.
+  Character. A string specifying the choices (for dropdown, radio, or
+  checkbox fields) or calculations (for calculated fields). Default is
+  `NA`.
+
+- `field_note`:
+
+  Character. An optional note or comment for the field. Default is `NA`.
+
+- `identifier`:
+
+  Character. A string indicating whether the field is an identifier
+  (e.g., "Y" for yes). Default is an empty string (`""`).
+
+- `units`:
+
+  Character. The units of measurement for the field, if applicable.
+  Default is `NA`.
+
+- `data_func`:
+
+  Function or NA. An optional function to transform or validate the data
+  in the field. Default is `NA`.
+
+------------------------------------------------------------------------
+
+### Method `remove_fields()`
+
+Removes summary entry
+
+#### Usage
+
+    REDCapSync_project$remove_fields(field_names = NULL)
+
+#### Arguments
+
+- `field_names`:
+
+  Character vector. Names of specific fields to include in the summary.
+  Default is `NULL`, which includes all fields.
 
 ------------------------------------------------------------------------
 

@@ -38,12 +38,12 @@ project <- setup_project(
   dir_path =  Sys.getenv("dir_path_UTTEST"),
   hard_reset = TRUE
 )$sync()
-scrub_test_project <- function(project){
+scrub_test_project <- function(project, pid) {
   project$project_name
   project$internals$is_test <- TRUE
   project$dir_path <- "fake/path"
   project$redcap$project_info$project_id <-
-    project$redcap$project_id <- "12340"
+    project$redcap$project_id <- pid
   project$redcap$log$username <- "u1230"
   project$redcap$log$details <- NA
   project$redcap$log <- project$redcap$log[
@@ -66,10 +66,13 @@ scrub_test_project <- function(project){
 }
 .test_project_names %>% paste0(",\n") %>% cat()
 project_names <- c("TEST_CLASSIC","TEST_REPEATING")
+names(project_names) <- paste0("1234", seq_len(length(project_names)))
 for(project_name in project_names){
+  pid <- names(project_names)[which(project_names == project_name)]
   assign(
     x = project_name,
-    value = load_project(project_name)$.internal() %>% scrub_test_project(),
+    value = load_project(project_name)$.internal() %>%
+      scrub_test_project(pid = pid),
     envir = globalenv()
   )
 }

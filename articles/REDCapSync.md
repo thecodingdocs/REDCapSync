@@ -32,9 +32,9 @@ The following functions represent the core functions of the package.
 
 ``` r
 project <- setup_project(
-  project_name = "TEST1",             # must match token pattern REDCapSync_**** 
-  redcap_uri = "https://redcap.miami.edu/api/",  # change to your institutions link
-  dir_path = getwd()                      # or change to your intended file path
+  project_name = "TEST1",          # must match token pattern REDCapSync_*******
+  redcap_uri = "https://redcap.fakei.edu/api/",         # your institutions link
+  dir_path = getwd()                                   # your intended file path
 )
 project$sync() # gets all data from REDCap
 ```

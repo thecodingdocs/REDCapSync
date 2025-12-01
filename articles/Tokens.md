@@ -27,7 +27,8 @@ You can set manually with base R. Unless you specifically set the token
 
 ``` r
 # Set your token manually
-Sys.setenv(REDCapSync_TEST="a_FaKe_TOkEn") # again having this in a script is not advised but possible
+# again having this in a script is not advised but possible
+Sys.setenv(REDCapSync_TEST="a_FaKe_TOkEn") 
 
 # Get your token
 Sys.getenv("REDCapSync_TEST")

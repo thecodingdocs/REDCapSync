@@ -35,7 +35,7 @@ read_xlsx_for_upload <- function(project,
       stop("`summary_name` is not one of `project$summary`")
     }
     file_path <- project$summary[[summary_name]]$file_path
-  }else{
+  }else {
     # add data_updates check
     if (!endsWith(file_path, ".xlsx")) {
       stop("File type must be '.xlsx' --> ", file_path)

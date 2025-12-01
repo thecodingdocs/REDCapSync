@@ -5,50 +5,78 @@ rcon_result <- function(project) {
   list(
     project_info = tryCatch(
       expr = rcon$projectInformation(),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     arms = tryCatch(
       expr = rcon$arms(),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     events = tryCatch(
       expr = rcon$events(),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     mapping = tryCatch(
       expr = rcon$mapping(),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     forms = tryCatch(
       expr = rcon$instruments(),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     repeating = tryCatch(
       expr = rcon$repeatInstrumentEvent(),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     fields = tryCatch(
       expr = rcon$metadata(),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     # logging needed
     logging = tryCatch(
       expr = exportLogging(rcon = rcon, beginTime = Sys.time() - 100000),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     # user access needed
     users = tryCatch(
       expr = rcon$users(),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     user_roles = tryCatch(
       expr = rcon$user_roles(),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     user_role_assignment = tryCatch(
       expr = rcon$user_role_assignment(),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     #DAG access needed
     dags = tryCatch(
       expr = rcon$dags(),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     dag_assignment = tryCatch(
       expr = rcon$dag_assignment(),
-      error = function(e) {NULL}),
+      error = function(e) {
+        NULL
+      }),
     # file repo needed
     file_repository = tryCatch(
       expr = rcon$fileRepository(),
-      error = function(e) {NULL})
+      error = function(e) {
+        NULL
+      })
   )
 }
 #' @noRd

@@ -20,7 +20,7 @@ get_projects <- function() {
       cli_alert_warning("You have no projects cached. Try `setup_project(...)`")
     }
     is_ok <- all(colnames(.blank_project_details) %in% colnames(projects))
-    if (!is_ok){
+    if (!is_ok) {
       cli_alert_warning(
         paste0("You have projects cached. But due to a version change or other",
                " issue, it has to be reset. Use `setup_project(...)`"))
@@ -171,10 +171,12 @@ extract_project_details <- function(project) {
     na_if_null() %>%
     as.integer()
   project_details$redcap_uri <- project$links$redcap_uri
-  project_details$redcap_home <- project$links$redcap_home %>% na_if_null() %>%
+  project_details$redcap_home <- project$links$redcap_home %>%
+    na_if_null() %>%
     as.character()
   # saving ----
-  project_details$timezone <- project$internals$timezone %>% na_if_null() %>%
+  project_details$timezone <- project$internals$timezone %>%
+    na_if_null() %>%
     as.character()
   project_details$last_sync <- project$internals$last_sync %>%
     na_if_null() %>%
@@ -200,7 +202,7 @@ add_project_details_to_cache <- function(project_details) {
   projects <- projects[
     which(projects$project_name != project_details$project_name), ]
   bad_row <- NULL
-  if(!is.na(project_details$project_id)){
+  if (!is.na(project_details$project_id)) {
     bad_row <- which(
       projects$project_id == project_details$project_id &
         dirname(projects$redcap_uri) == dirname(project_details$redcap_uri)

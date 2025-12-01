@@ -13,7 +13,7 @@ test_that("add_redcap_links_to_form works!", {
   # Links should contain record_id and project id
   expect_all_true(grepl("id=1|id=2", out$redcap_link))
   project_id <- project$redcap$project_id
-  compare <- paste0("_home\\.php\\?pid=",project_id,"&id=", form$record_id)
+  compare <- paste0("_home\\.php\\?pid=", project_id, "&id=", form$record_id)
   expect_true(grepl(compare[1], out$redcap_link[1]))
   expect_true(grepl(compare[2], out$redcap_link[2]))
   # Should not modify other columns
@@ -86,10 +86,10 @@ test_that("split_choices works!", {
   checkmate::expect_data_frame(choices, nrows = 2, ncols = 2)
   expect_false(anyNA(choices$code))
   expect_false(anyNA(choices$name))
-  expect_true(choices$code[[1]]=="1")
-  expect_true(choices$code[[2]]=="2")
-  expect_true(choices$name[[1]]=="one")
-  expect_true(choices$name[[2]]=="two")
+  expect_true(choices$code[[1]] == "1")
+  expect_true(choices$code[[2]] == "2")
+  expect_true(choices$name[[1]] == "one")
+  expect_true(choices$name[[2]] == "two")
   expect_error(split_choices("1. one | 2, two"))
   choices <- split_choices("1, one even with , second comma | 2, two")
   checkmate::expect_data_frame(choices, nrows = 2, ncols = 2)

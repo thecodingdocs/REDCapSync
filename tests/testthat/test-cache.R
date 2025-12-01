@@ -11,7 +11,7 @@ test_that("fake_cache sets and clears", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   expect_false(file.exists(fake_cache_location))
@@ -36,7 +36,7 @@ test_that("cache_projects_exists, cache_clear works", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   expect_false(file.exists(fake_cache_location))
@@ -51,7 +51,8 @@ test_that("cache_projects_exists, cache_clear works", {
   expect_no_error(cache_clear())
   expect_false(cache_projects_exists())
   local_mocked_bindings(
-    cache_exists = function(...) FALSE
+    cache_exists = function(...)
+      FALSE
   )
   expect_false(cache_projects_exists())
 })
@@ -66,7 +67,7 @@ test_that("cache_remove_project works", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   project <- mock_project()

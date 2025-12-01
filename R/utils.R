@@ -95,11 +95,11 @@ split_choices <- function(x) {
 #' @noRd
 .field_types_not_in_data <- c("descriptive", "checkbox")
 #' @noRd
-get_match<-function(df,return_field,match_field,match_text){
+get_match <- function(df, return_field, match_field, match_text) {
   df[[return_field]][which(df[[match_field]] %in% match_text)]
 }
 #' @noRd
-file_ext_alias <- function (x) {
+file_ext_alias <- function(x) {
   pos <- regexpr("\\.([[:alnum:]]+)$", x)
   ifelse(pos > -1L, substring(x, pos + 1L), "")
 }

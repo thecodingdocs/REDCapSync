@@ -17,7 +17,7 @@
 view_project_token <- function(project) {
   project <- assert_blank_project(project)
   token <- get_project_token(project, silent = FALSE)
-  if(is_something(token)){
+  if(is_something(token)) {
     cli_alert_warning(paste0("Never share your token: ", token))
   }
   invisible()
@@ -43,7 +43,9 @@ test_project_token <- function(project) {
                                       token = get_project_token(project))
   redcap_version <- tryCatch(
     expr = exportVersion(rcon = rcon),
-    error = function(e) {NULL}
+    error = function(e) {
+      NULL
+    }
   )
   # add timezone
   project$internals$last_test_connection_attempt <- now_time()
@@ -65,7 +67,7 @@ test_project_token <- function(project) {
     project_info <- rcon$projectInformation()
     project_id_changed <- !identical(project$redcap$project_id,
                                      as.character(project_info$project_id))
-    if(project_id_changed){
+    if(project_id_changed) {
       cli_alert_danger("Your REDCap project ID changed! Did you mix up tokens?")
       return(invisible(project))
     }

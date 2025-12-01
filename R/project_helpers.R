@@ -96,7 +96,8 @@ deidentify_data_list <- function(data_list,
                                            replace = TRUE)
         }
         if (date_handling == "random_shift_by_project") {
-          min_dates$shift_amount <- sample(shift_range,size = 1,replace = TRUE)
+          min_dates$shift_amount <-
+            sample(shift_range, size = 1, replace = TRUE)
         }
         if (date_handling == "zero_by_record") {
           # should you edit fields to now be field_type_R integer?
@@ -351,8 +352,8 @@ get_project_url <- function(project,
     link_type,
     .link_types
   )
-  the_link <- project$links[[paste0("redcap_",link_type)]]
-  if(open_browser){
+  the_link <- project$links[[paste0("redcap_", link_type)]]
+  if (open_browser) {
     utils::browseURL(the_link)
     return(invisible())
   }

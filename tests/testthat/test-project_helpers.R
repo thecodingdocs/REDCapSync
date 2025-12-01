@@ -6,39 +6,39 @@ test_that("update_project_links works", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   project <- mock_project()
   expect_false(is.null(project$links$redcap_uri))
   expect_false(is.null(project$links$redcap_base))
-  link_vector <- paste0("redcap_",.link_types)
-  link_vector <- setdiff(link_vector,"redcap_base")
+  link_vector <- paste0("redcap_", .link_types)
+  link_vector <- setdiff(link_vector, "redcap_base")
   #check null
-  for(the_link in link_vector){
+  for (the_link in link_vector) {
     expect_null(project$links[[the_link]])
   }
   #do it!
   project <- update_project_links(project)
-  pid_pattern <-paste0("pid=",project$redcap$project_id)
-  version_pattern <-paste0("redcap_v",project$redcap$version)
-  for(the_link in link_vector){
+  pid_pattern <- paste0("pid=", project$redcap$project_id)
+  version_pattern <- paste0("redcap_v", project$redcap$version)
+  for (the_link in link_vector) {
     expect_false(is.null(project$links[[the_link]]))
-    expect_true(grepl(pid_pattern,project$links[[the_link]]))
-    expect_true(grepl(version_pattern,project$links[[the_link]]))
+    expect_true(grepl(pid_pattern, project$links[[the_link]]))
+    expect_true(grepl(version_pattern, project$links[[the_link]]))
   }
   # version changed!
   version_old <- project$redcap$version
   version_new <- "14.2.3"
   project$redcap$version <- version_new
   project <- update_project_links(project)
-  expect_equal(project$redcap$version,version_new)
-  pid_pattern <-paste0("pid=",project$redcap$project_id)
-  version_pattern <-paste0("redcap_v",project$redcap$version)
-  for(the_link in link_vector){
+  expect_equal(project$redcap$version, version_new)
+  pid_pattern <- paste0("pid=", project$redcap$project_id)
+  version_pattern <- paste0("redcap_v", project$redcap$version)
+  for (the_link in link_vector) {
     expect_false(is.null(project$links[[the_link]]))
-    expect_true(grepl(pid_pattern,project$links[[the_link]]))
-    expect_true(grepl(version_pattern,project$links[[the_link]]))
+    expect_true(grepl(pid_pattern, project$links[[the_link]]))
+    expect_true(grepl(version_pattern, project$links[[the_link]]))
   }
 })
 # get_project_url ( Exported )
@@ -50,7 +50,7 @@ test_that("get_project_url works", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   project <- mock_project()
@@ -58,16 +58,15 @@ test_that("get_project_url works", {
   e <- new.env(parent = emptyenv())
   # get_project_url
   e$called_url <- NULL
-  mockery::stub(
-    get_project_url, "utils::browseURL",
-    function(url) e$called_url <- url
-  )
-  for(link_type in .link_types){
+  mockery::stub(get_project_url, "utils::browseURL", function(url){
+    e$called_url <- url
+  })
+  for (link_type in .link_types) {
     e$called_url <- NULL
     get_project_url(project, link_type = link_type, open_browser = TRUE)
-    expect_equal(e$called_url, project$links[[paste0("redcap_",link_type)]])
+    expect_equal(e$called_url, project$links[[paste0("redcap_", link_type)]])
     out <- get_project_url(project, link_type = link_type, open_browser = FALSE)
-    expect_equal(out, project$links[[paste0("redcap_",link_type)]])
+    expect_equal(out, project$links[[paste0("redcap_", link_type)]])
   }
 })
 # get_record_url ( Exported )
@@ -79,7 +78,7 @@ test_that("get_record_url works", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   project <- mock_project()
@@ -94,10 +93,9 @@ test_that("get_record_url works", {
   e <- new.env(parent = emptyenv())
   # get_project_url
   e$called_url <- NULL
-  mockery::stub(
-    get_record_url, "utils::browseURL",
-    function(url) e$called_url <- url
-  )
+  mockery::stub(get_record_url, "utils::browseURL", function(url){
+    e$called_url <- url
+  })
   expect_equal(get_record_url(project, open_browser = FALSE), expected_link)
   expect_null(e$called_url) # does not call url
   e$called_url <- NULL
@@ -108,7 +106,7 @@ test_that("get_record_url works", {
 })
 test_that("deidentify_data_list works", {
   project <- TEST_CLASSIC
-  data_list <- merge_non_repeating(TEST_CLASSIC,"merged")
+  data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
   data_list$metadata$fields$field_type_R <- NA
   data_list$metadata$fields$in_original_redcap <- NA
   id_cols <- data_list$metadata$form_key_cols %>%
@@ -130,30 +128,30 @@ test_that("deidentify_data_list works", {
   )
   free_text_fields <- fields$field_name[free_text_rows]
   expect_all_true(initial_identifiers %in% colnames(data_list$data$merged))
-  no_ids <- data_list %>% deidentify_data_list(
-    exclude_identifiers = TRUE,
-    exclude_free_text = FALSE
-  )
+  no_ids <- data_list %>% deidentify_data_list(exclude_identifiers = TRUE,
+                                               exclude_free_text = FALSE)
   expect_all_false(initial_identifiers %in% colnames(no_ids$data$merged))
   expect_all_true(free_text_fields %in% colnames(data_list$data$merged))
-  no_free_text <- data_list %>% deidentify_data_list(
-    exclude_identifiers = FALSE,
-    exclude_free_text = TRUE
-  )
+  no_free_text <- data_list %>%
+    deidentify_data_list(exclude_identifiers = FALSE,
+                         exclude_free_text = TRUE)
   expect_all_false(initial_identifiers %in% colnames(no_free_text$data$merged))
   keep_rows <-
     which(!data_list$metadata$fields$field_name %in% initial_identifiers)
-  data_list$metadata$fields <- data_list$metadata$fields[keep_rows,]
+  data_list$metadata$fields <- data_list$metadata$fields[keep_rows, ]
   keep_cols <- which(!colnames(data_list$data$merged) %in% initial_identifiers)
-  data_list$data$merged <- data_list$data$merged[,keep_cols]
-  expect_warning(data_list %>% deidentify_data_list(
-    exclude_identifiers = TRUE,
-    exclude_free_text = FALSE
-  ),"You have no identifiers marked")
+  data_list$data$merged <- data_list$data$merged[, keep_cols]
+  expect_warning(
+    data_list %>% deidentify_data_list(
+      exclude_identifiers = TRUE,
+      exclude_free_text = FALSE
+    ),
+    "You have no identifiers marked"
+  )
 })
 test_that("deidentify_data_list works", {
   project <- TEST_CLASSIC
-  data_list <- merge_non_repeating(TEST_CLASSIC,"merged")
+  data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
   data_list <- data_list %>% metadata_add_default_cols()
   fields <- data_list$metadata$fields
   merged <- data_list$data$merged
@@ -166,7 +164,7 @@ test_that("deidentify_data_list works", {
       "var_text_date_ymd"
     ) %in% colnames(merged)
   )
-  expect_error(deidentify_data_list(data_list = data_list,date_handling = "1"))
+  expect_error(deidentify_data_list(data_list = data_list, date_handling = "1"))
   # 'none'
   merged_none <- deidentify_data_list(
     data_list = data_list,
@@ -182,8 +180,9 @@ test_that("deidentify_data_list works", {
     ) %in% colnames(merged_none)
   )
   # 'exclude_dates'
-  merged_exclude_dates <- deidentify_data_list(
-    data_list = data_list,date_handling = "exclude_dates")$merged
+  merged_exclude_dates <-
+    deidentify_data_list(
+      data_list = data_list, date_handling = "exclude_dates")$merged
   expect_all_false(
     c(
       "var_birth_date",
@@ -193,9 +192,9 @@ test_that("deidentify_data_list works", {
     ) %in% colnames(merged_exclude_dates)
   )
   # 'random_shift_by_record'
-  merged_random_shift_by_record <- deidentify_data_list(
-    data_list = data_list,
-    date_handling = "random_shift_by_record")$merged
+  merged_random_shift_by_record <-
+    deidentify_data_list(
+      data_list = data_list, date_handling = "random_shift_by_record")$merged
   expect_all_true(
     c(
       "var_birth_date",
@@ -205,8 +204,7 @@ test_that("deidentify_data_list works", {
     ) %in% colnames(merged_random_shift_by_record)
   )
   expect_all_false(
-    merged_random_shift_by_record$var_text_date_dmy == merged$var_text_date_dmy
-  )
+    merged_random_shift_by_record$var_text_date_dmy == merged$var_text_date_dmy)
   time_check1 <- as.Date(merged$var_text_date_dmy) -
     as.Date(merged$var_birth_date)
   time_check2 <- as.Date(merged_random_shift_by_record$var_text_date_dmy) -

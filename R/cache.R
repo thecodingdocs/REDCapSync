@@ -82,7 +82,7 @@ get_cache <- function() {
 #' @family Project Cache Functions
 #' @keywords Project Cache Functions
 #' @export
-cache_remove_project <- function(project_name){
+cache_remove_project <- function(project_name) {
   projects <- get_projects()
   is_in_cache <- project_name %in% projects$project_name
   if (!is_in_cache) {

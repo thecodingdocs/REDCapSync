@@ -6,8 +6,8 @@ test_that("cli_alert_wrap works!", {
 })
 # now_time ( Internal )
 test_that("now_time works!", {
-  checkmate::expect_class(now_time(),"POSIXct")
-  checkmate::expect_class(now_time(),"POSIXt")
+  checkmate::expect_class(now_time(), "POSIXct")
+  checkmate::expect_class(now_time(), "POSIXt")
 })
 # process_df_list ( Internal )
 test_that("process_df_list works!", {
@@ -31,7 +31,7 @@ test_that("sanitize_path works!", {
 test_that("all_character_cols works!", {
   form <- mtcars
   form$name <- form %>% rownames()
-  form$cyl_more_then_4 <- form$cyl >4
+  form$cyl_more_then_4 <- form$cyl > 4
   col_types <- form %>% lapply(class) %>% unlist() %>% unique()
   expect_vector(col_types, size = 3)
   expect_equal(col_types, c("numeric", "character", "logical"))
@@ -44,39 +44,36 @@ test_that("all_character_cols works!", {
 test_that("all_character_cols_list works!", {
   form <- mtcars
   form$name <- form %>% rownames()
-  form$cyl_more_then_4 <- form$cyl >4
-  form_list <- list(
-    one = form,
-    two = airquality
-  )
+  form$cyl_more_then_4 <- form$cyl > 4
+  form_list <- list(one = form, two = airquality)
   col_types1 <- form_list$one %>% lapply(class) %>% unlist() %>% unique()
   col_types2 <- form_list$two %>% lapply(class) %>% unlist() %>% unique()
-  expect_contains(col_types1,"numeric")
-  expect_contains(col_types2,"numeric")
+  expect_contains(col_types1, "numeric")
+  expect_contains(col_types2, "numeric")
   form_list <- all_character_cols_list(form_list)
   col_types1 <- form_list$one %>% lapply(class) %>% unlist() %>% unique()
   col_types2 <- form_list$two %>% lapply(class) %>% unlist() %>% unique()
-  expect_equal(col_types1,"character")
-  expect_equal(col_types2,"character")
+  expect_equal(col_types1, "character")
+  expect_equal(col_types2, "character")
 })
 # vec1_in_vec2 ( Internal )
 # vec1_not_in_vec2 ( Internal )
 test_that("vec1_in_vec2 and vec1_not_in_vec2 works!", {
-  vec1 <- c("a","b","c")
-  vec2 <- c("b","d","c")
+  vec1 <- c("a", "b", "c")
+  vec2 <- c("b", "d", "c")
   out <- vec1 %>% vec1_in_vec2(vec2)
-  expect_contains(out,"b")
-  expect_contains(out,"c")
-  expect_false("a"%in%out)
+  expect_contains(out, "b")
+  expect_contains(out, "c")
+  expect_false("a" %in% out)
   out <- vec1 %>% vec1_not_in_vec2(vec2)
-  expect_contains(out,"a")
-  expect_false("b"%in%out)
-  expect_false("c"%in%out)
+  expect_contains(out, "a")
+  expect_false("b" %in% out)
+  expect_false("c" %in% out)
 })
 # length_unique ( Internal )
 test_that("length_unique works!", {
-  expect_equal(length_unique(c("a","a","b","b","c","c","c")),3)
-  expect_equal(length_unique(c("a","a","b","b","c","d")),4)
+  expect_equal(length_unique(c("a", "a", "b", "b", "c", "c", "c")), 3)
+  expect_equal(length_unique(c("a", "a", "b", "b", "c", "d")), 4)
 })
 # length_which ( Internal )
 test_that("length_which works!", {
@@ -91,13 +88,13 @@ test_that("excel_to_list works!", {
   test_file <- file.path(test_dir, "cars.xlsx")
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
-  list_to_excel(df_list,dir = test_dir,file_name = "cars")
+  list_to_excel(df_list, dir = test_dir, file_name = "cars")
   expect_true(file.exists(test_file))
   df_list_saved <- excel_to_list(test_file)
-  checkmate::expect_list(df_list,len = 2)
-  expect_equal(names(df_list),names(df_list_saved))
-  expect_equal(nrow(df_list$one),nrow(df_list_saved$one))
-  expect_equal(nrow(df_list$two),nrow(df_list_saved$two))
+  checkmate::expect_list(df_list, len = 2)
+  expect_equal(names(df_list), names(df_list_saved))
+  expect_equal(nrow(df_list$one), nrow(df_list_saved$one))
+  expect_equal(nrow(df_list$two), nrow(df_list_saved$two))
   expect_error(list_to_excel(file.path(test_dir, "fake_cars.xlsx")))
 })
 # is_named_df_list ( Internal )
@@ -120,19 +117,18 @@ test_that("rename_list_names_excel works!", {
 })
 # trim_string ( Internal )
 test_that("trim_string works!", {
-  expect_equal(trim_string("one",5),"one")
-  expect_equal(trim_string("one123",5),"one12")
-  expect_equal(trim_string("one123",3),"one")
+  expect_equal(trim_string("one", 5), "one")
+  expect_equal(trim_string("one123", 5), "one12")
+  expect_equal(trim_string("one123", 3), "one")
 })
 # unique_trimmed_strings ( Internal )
 test_that("unique_trimmed_strings works!", {
   expect_error(unique_trimmed_strings())
-  expect_equal(unique_trimmed_strings("one",5),"one")
+  expect_equal(unique_trimmed_strings("one", 5), "one")
   test_vector <- c("one_version_1", "one_version_2", "one_version_3")
   expect_equal(unique_trimmed_strings(test_vector, 6),
                c("one_ve", "one_v1", "one_v2"))
-  expect_equal(unique_trimmed_strings(test_vector, 20),
-               test_vector)
+  expect_equal(unique_trimmed_strings(test_vector, 20), test_vector)
 })
 # list_to_excel ( Internal )
 test_that("list_to_excel works!", {
@@ -143,17 +139,20 @@ test_that("list_to_excel works!", {
   test_file_two <- file.path(test_dir, "cars_two.xlsx")
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
-  list_to_excel(df_list,dir = test_dir,file_name = "cars")
+  list_to_excel(df_list, dir = test_dir, file_name = "cars")
   expect_true(file.exists(test_file))
-  list_to_excel(df_list,dir = test_dir,file_name = "cars",separate = TRUE)
+  list_to_excel(df_list,
+                dir = test_dir,
+                file_name = "cars",
+                separate = TRUE)
   expect_true(file.exists(test_file_one))
   expect_true(file.exists(test_file_two))
   one <- readxl::read_excel(test_file_one)
   two <- readxl::read_excel(test_file_two)
   checkmate::expect_data_frame(one, nrows = nrow(mtcars), ncols = ncol(mtcars))
-  expect_equal(colnames(one),colnames(mtcars))
+  expect_equal(colnames(one), colnames(mtcars))
   checkmate::expect_data_frame(two, nrows = nrow(cars), ncols = ncol(cars))
-  expect_equal(colnames(two),colnames(cars))
+  expect_equal(colnames(two), colnames(cars))
 })
 # list_to_csv ( Internal )
 test_that("list_to_csv works!", {
@@ -164,15 +163,15 @@ test_that("list_to_csv works!", {
   test_file_two <- file.path(test_dir, "cars_two.csv")
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
-  list_to_csv(df_list,dir = test_dir,file_name = "cars")
+  list_to_csv(df_list, dir = test_dir, file_name = "cars")
   expect_true(file.exists(test_file_one))
   expect_true(file.exists(test_file_two))
   one <- read.csv(test_file_one)
   two <- read.csv(test_file_two)
   checkmate::expect_data_frame(one, nrows = nrow(mtcars), ncols = ncol(mtcars))
-  expect_equal(colnames(one),colnames(mtcars))
+  expect_equal(colnames(one), colnames(mtcars))
   checkmate::expect_data_frame(two, nrows = nrow(cars), ncols = ncol(cars))
-  expect_equal(colnames(two),colnames(cars))
+  expect_equal(colnames(two), colnames(cars))
 })
 # save_wb ( Internal )
 test_that("save_wb works!", {
@@ -194,12 +193,15 @@ test_that("save_csv works!", {
   checkmate::expect_data_frame(test_saved_csv,
                                nrows = nrow(mtcars),
                                ncols = ncol(mtcars))
-  expect_message(save_csv(
-    form = cars,
-    dir = test_dir,
-    file_name = "cars",
-    overwrite = FALSE
-  ),"Already a file")
+  expect_message(
+    save_csv(
+      form = cars,
+      dir = test_dir,
+      file_name = "cars",
+      overwrite = FALSE
+    ),
+    "Already a file"
+  )
   test_saved_csv <- read.csv(test_file)
   checkmate::expect_data_frame(test_saved_csv,
                                nrows = nrow(mtcars),
@@ -252,7 +254,7 @@ test_that("drop_if works!", {
   expect_equal(drop_if(c("a", "b"), character(0)), c("a", "b"))
   expect_equal(drop_if(c("a", "b"), c("a", "b")), character(0))
   expect_equal(drop_if(character(0), c("a")), character(0))
-  expect_equal(drop_if(factor(abc), "b"), factor(c("a", "c"),levels = abc))
+  expect_equal(drop_if(factor(abc), "b"), factor(c("a", "c"), levels = abc))
 })
 # clean_env_names ( Internal )
 test_that("clean_env_names works!", {

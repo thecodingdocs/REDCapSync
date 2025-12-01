@@ -17,7 +17,7 @@ test_that("get_project_token checks_env", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   project <- mock_project()
@@ -44,7 +44,7 @@ test_that("view_project_token works when no token set", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   project <- mock_project()
@@ -59,7 +59,7 @@ test_that("view_project_token works when token is set", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   project <- mock_project()
@@ -79,27 +79,33 @@ test_that("test_project_token works when exportVersion returns version", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   project <- mock_project()
   # Stub rcon to avoid creating a real connection and stub
   # exportVersion to simulate success
-  mockery::stub(
-    test_project_token, "redcapConnection",
-    list(projectInformation = function(){
-      list(project_id = project$redcap$project_id)}
-    ))
+  mockery::stub(test_project_token,
+                "redcapConnection",
+                list(
+                  projectInformation = function() {
+                    list(project_id = project$redcap$project_id)
+                  }
+                ))
   mockery::stub(test_project_token, "exportVersion", "12.1.1")
-  expect_message(test_project_token(project),"Connected to REDCap")
+  expect_message(test_project_token(project), "Connected to REDCap")
   out <- test_project_token(project)
   expect_true(out$internals$last_test_connection_outcome)
   expect_true(!is.null(out$internals$last_test_connection_attempt))
-  mockery::stub(test_project_token, "redcapConnection", list(
-    projectInformation = function(){list(project_id = "5678")}
-  ))
+  mockery::stub(test_project_token,
+                "redcapConnection",
+                list(
+                  projectInformation = function() {
+                    list(project_id = "5678")
+                  }
+                ))
   mockery::stub(test_project_token, "exportVersion", "12.1.1")
-  expect_message(test_project_token(project),"Your REDCap project ID changed")
+  expect_message(test_project_token(project), "Your REDCap project ID changed")
 })
 test_that("test_project_token marks failure when exportVersion returns NULL", {
   test_dir <- withr::local_tempdir() %>% sanitize_path()
@@ -109,26 +115,28 @@ test_that("test_project_token marks failure when exportVersion returns NULL", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   project <- mock_project()
   # Stub rcon and simulate exportVersion failure
-  mockery::stub(test_project_token, "rcon", function(project) list())
+  mockery::stub(test_project_token, "rcon", function(project) {
+    list()
+  })
   mockery::stub(test_project_token, "redcapAPI::exportVersion", NULL)
   out <- test_project_token(project)
   expect_false(out$internals$last_test_connection_outcome)
   expect_true(!is.null(out$internals$last_test_connection_attempt))
 })
 # is_hexadecimal ( Internal )
-test_that("is_hexadecimal works!",{
-  x<-generate_hex(length = 32)
+test_that("is_hexadecimal works!", {
+  x <- generate_hex(length = 32)
   expect_true(is_hexadecimal(x))
-  expect_true(is_hexadecimal(x,length = 32))
-  expect_false(is_hexadecimal(x,length = 31))
-  x<-generate_hex(length = 30)
-  expect_true(is_hexadecimal(x,length = 30))
-  expect_false(is_hexadecimal(x,length = 31))
+  expect_true(is_hexadecimal(x, length = 32))
+  expect_false(is_hexadecimal(x, length = 31))
+  x <- generate_hex(length = 30)
+  expect_true(is_hexadecimal(x, length = 30))
+  expect_false(is_hexadecimal(x, length = 31))
   expect_true(is_hexadecimal("C234"))
   expect_true(is_hexadecimal("C"))
   expect_false(is_hexadecimal("C*"))

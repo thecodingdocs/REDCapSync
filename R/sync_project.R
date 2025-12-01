@@ -41,11 +41,11 @@ sync_project <- function(project,
     }
     # project$internals$last_metadata_update <-  now_time()-lubridate::days(1)
     # project$internals$last_data_update <-  now_time()-lubridate::days(1)
-    if (is_something(project$transformation$data_updates)) {
-      cli_alert_wrap(paste0(
-        "There is data in 'project$transformation$data_updates' that has not ",
-        "been uploaded to REDCap yet..."))
-    }
+    # if (is_something(project$transformation$data_updates)) {
+    #   cli_alert_wrap(paste0(
+    #   "There is data in 'project$transformation$data_updates' that has not ",
+    #     "been uploaded to REDCap yet..."))
+    # }
     if (!hard_reset) {
       # check log interim
       if (!is_something(project$internals$last_metadata_update) ||
@@ -53,7 +53,7 @@ sync_project <- function(project,
           !is_something(project$internals$last_full_update)) {
         hard_reset <- TRUE
       } else {
-        if(!project$redcap$has_log_access){
+        if (!project$redcap$has_log_access) {
           cli_alert_danger(
             paste0( # fix for when access is changed
               "You do not have logging access to this REDCap project. If you ",
@@ -146,7 +146,7 @@ sync_project <- function(project,
         )
         # if error records comma
         redcap_log <- project$redcap$log # in case there is a log already
-        if(project$redcap$has_log_access){
+        if (project$redcap$has_log_access) {
           if (project$internals$entire_log) {
             log_begin_date <-
               as.POSIXct(project$redcap$project_info$creation_time) %>%
@@ -303,19 +303,21 @@ sync <- function(project_names = NULL,
   if (is.null(project_names)) {
     projects <- get_projects()
     project_names <- projects$project_name
-    if(length(project_names)==0){
+    if (length(project_names) == 0) {
       cli_alert_info("No projects in cache. Start with `?setup_project()`")
       return(invisible())
     }
   }
   for (project_name in project_names) {
     project <- tryCatch(
-      expr = {load_project(project_name)},
-      error = function(e) {NULL})
+      expr = load_project(project_name),
+      error = function(e) {
+        NULL
+      })
     if (is.null(project)) {
       cli_alert_danger("Unable to load {project_name}")
       #add to bad list
-    } else{
+    } else {
       project$sync(
         save_to_dir = TRUE,
         summarize = summarize,
@@ -332,7 +334,7 @@ sync <- function(project_names = NULL,
 due_for_sync <- function(project_name) {
   now <- now_time()
   projects <- get_projects()
-  if(project_name %in% projects$project_name){
+  if (project_name %in% projects$project_name) {
     assert_names(projects$project_name, must.include = project_name)
     project_row <- which(projects$project_name == project_name)
     last_sync <- projects$last_sync[project_row]
@@ -392,20 +394,26 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
         type = "details"
       )
       from_cache <- tryCatch(
-        expr = {assert_project_details(from_cache, nrows = 1)},
-        error = function(e) {NULL})
+        expr = assert_project_details(from_cache, nrows = 1),
+          error = function(e) {
+          NULL
+        })
       to_cache <- NULL
       if (file.exists(expected_path)) {
         to_cache <- tryCatch(
           expr = {
-            x <- suppressWarnings({readRDS(expected_path)})
+            x <- suppressWarnings({
+              readRDS(expected_path)
+            })
             assert_project_details(x, nrows = 1)
             x
           },
-          error = function(e) {NULL}
+          error = function(e) {
+            NULL
+          }
         )
       }
-      if(is.null(from_cache) || is.null(to_cache)){
+      if (is.null(from_cache) || is.null(to_cache)) {
         loaded_cache <- tryCatch(
           expr = {
             load_project(project_name = project_name)$.internal() %>%
@@ -415,19 +423,19 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
             NULL
           }
         )
-        if(is.null(loaded_cache)){
+        if (is.null(loaded_cache)) {
           cli_alert_danger(
             paste0("Unable to load ", project_name, ". Removed! Retry ",
                    "`setup_project(...)`"))
           project_list[[project_name]] <- NULL
           had_change <- TRUE
-        } else{
+        } else {
           project_list[[project_name]] <- loaded_cache
         }
       }
-      if(!is.null(to_cache)){
-        if(!identical(from_cache, to_cache)){
-          if(!is.null(from_cache)){
+      if (!is.null(to_cache)) {
+        if (!identical(from_cache, to_cache)) {
+          if (!is.null(from_cache)) {
             to_cache$dir_path <- from_cache$dir_path
           } # could cause issue?
           project_list[[project_name]] <- to_cache

@@ -7,7 +7,7 @@ test_that("get_projects is df and has appropriate columns", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   df <- get_projects()
@@ -26,7 +26,7 @@ test_that("extract_project_details works", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   project <- mock_project()
@@ -34,7 +34,8 @@ test_that("extract_project_details works", {
   checkmate::expect_data_frame(project_details,
                                ncols = ncol(.blank_project_details),
                                nrows = 1)
-  expect_equal(colnames(project_details), colnames(.blank_project_details))
+  expect_equal(colnames(project_details),
+               colnames(.blank_project_details))
 })
 # save_projects_to_cache ( Internal )
 test_that("save_projects_to_cache works", {
@@ -45,7 +46,7 @@ test_that("save_projects_to_cache works", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   projects <- get_projects()
@@ -64,13 +65,13 @@ test_that("save_projects_to_cache works", {
   expect_equal(project_details$project_name, projects$project_name)
   checkmate::expect_data_frame(project_details, nrows = 1)
   cache_clear()
-  expect_false(file.exists(file.path(fake_cache_location,"projects.rds")))
+  expect_false(file.exists(file.path(fake_cache_location, "projects.rds")))
   projects <- get_projects()
   checkmate::expect_data_frame(projects, nrows = 0)
-  expect_message(save_projects_to_cache(project_details , silent = FALSE),
+  expect_message(save_projects_to_cache(project_details, silent = FALSE),
                  "saved")
-  expect_true(file.exists(file.path(fake_cache_location,"projects.rds")))
-  expect_no_message(save_projects_to_cache(project_details , silent = TRUE))
+  expect_true(file.exists(file.path(fake_cache_location, "projects.rds")))
+  expect_no_message(save_projects_to_cache(project_details, silent = TRUE))
 })
 # blank_tibble ( Internal )
 # na_if_null ( Internal )
@@ -83,7 +84,7 @@ test_that("add_project_details_to_cache works", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   # start empty
@@ -111,7 +112,7 @@ test_that("add_project_details_to_cache works", {
 #       fake_cache <- hoardr::hoard()
 #       fake_cache$cache_path_set(full_path = fake_cache_location)
 #       fake_cache$mkdir()
-#       return(fake_cache)
+#       fake_cache
 #     }
 #   )
 #   project <- mock_project()

@@ -183,7 +183,7 @@ excel_to_list <- function(path) {
   names(sheets) <- seq_along(sheets)
   clean_sheets <- clean_env_names(sheets)
   out <- list()
-  if("summary_details" %in% sheets){
+  if ("summary_details" %in% sheets) {
     summary_details <- readxl::read_xlsx(
       path,
       col_types = "text",
@@ -196,8 +196,8 @@ excel_to_list <- function(path) {
         unlist()
       the_row <- which(summary_details$paramater == "cols_start")
       cols_start <- summary_details$value[the_row] %>% as.integer()
-      if(cols_start > 1){
-        for(i in as.integer(names(sheets)[match(form_names,sheets)])){
+      if (cols_start > 1) {
+        for(i in as.integer(names(sheets)[match(form_names, sheets)])){
           suppressMessages({
             out[[i]] <- readxl::read_xlsx(path,
                                           col_types = "text",
@@ -205,9 +205,9 @@ excel_to_list <- function(path) {
                                           col_names = FALSE)
           })
           final_nrow <- nrow(out[[i]])
-          if(cols_start < final_nrow){
-            true_colnames <- out[[i]][cols_start,] %>% unlist() %>% unname()
-            out[[i]] <- out[[i]][(cols_start+1):final_nrow,]
+          if (cols_start < final_nrow) {
+            true_colnames <- out[[i]][cols_start, ] %>% unlist() %>% unname()
+            out[[i]] <- out[[i]][(cols_start+1):final_nrow, ]
             colnames(out[[i]])<- true_colnames
             sheets <- sheets[which(sheets != sheets[i])]
           }
@@ -284,7 +284,7 @@ form_to_wb <- function(form,
                        pad_rows = 0,
                        pad_cols = 0,
                        freeze_keys = TRUE) {
-  if (nchar(form_name) > 31){
+  if (nchar(form_name) > 31) {
     stop(form_name, " is longer than 31 char")
   }
   form[] <- lapply(form, function(col) {
@@ -296,9 +296,9 @@ form_to_wb <- function(form,
   })
   hyperlink_col <- NULL
   if (is_something(header_df)) {
-    names(header_df)[match(names(form),names(header_df))]
+    names(header_df)[match(names(form), names(header_df))]
     missing_headers <- names(form) %>%  vec1_not_in_vec2(names(header_df))
-    if(length(missing_headers)>0){
+    if (length(missing_headers) > 0) {
       for (missing_header in missing_headers){
         header_df[[missing_header]] <- ""
         #fix later
@@ -307,7 +307,7 @@ form_to_wb <- function(form,
   }
   if (freeze_keys) {
     all_cols <- colnames(form)
-    if (!all(key_cols %in% all_cols)){
+    if (!all(key_cols %in% all_cols)) {
       stop("all key_cols must be in the forms")
     }
     freeze_key_cols <- which(all_cols %in% key_cols)
@@ -657,7 +657,7 @@ save_csv <- function(form, dir, file_name, overwrite = TRUE) {
     }
   }
   if (write_it) {
-    utils::write.csv(x = form, file = path,row.names = FALSE)
+    utils::write.csv(x = form, file = path, row.names = FALSE)
     cli_alert_wrap(paste0("Saved '", basename(path), "'!"), file = path)
   }
 }
@@ -725,12 +725,12 @@ clean_env_names <- function(env_names,
       cleaned_name <- name
     }
     if (!is_valid) {
-      if (!silent){
+      if (!silent) {
         message("Invalid environment name: '", name)
       }
       cleaned_name <- gsub("__", "_", gsub(" ", "_", gsub("-", "", name)))
     }
-    if (lowercase){
+    if (lowercase) {
       cleaned_name <- tolower(cleaned_name)
     }
     if (cleaned_name %in% cleaned_names) {

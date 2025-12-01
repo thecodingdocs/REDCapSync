@@ -74,16 +74,14 @@ test_that("save_project doesn't save if blank but will save if valid", {
       fake_cache <- hoardr::hoard()
       fake_cache$cache_path_set(full_path = fake_cache_location)
       fake_cache$mkdir()
-      return(fake_cache)
+      fake_cache
     }
   )
   project_name <- "TEST_PROJECT"
   redcap_uri <- "https://redcap.miami.edu/api/"
-  project <- setup_project(
-    project_name = project_name,
-    dir_path = test_dir,
-    redcap_uri = redcap_uri
-  )$.internal() # change to R6 later
+  project <- setup_project(project_name = project_name,
+                           dir_path = test_dir,
+                           redcap_uri = redcap_uri)$.internal() # change to R6
   save_project(project)
   expect_false(file.exists(file.path(
     project$dir_path,

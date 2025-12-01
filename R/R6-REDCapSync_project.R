@@ -120,9 +120,9 @@ REDCapSync_project <- R6Class(
       invisible()
     },
     #' @description Print project metadata
-    info = function(){
-      message("project_name: ",private$project$project_name)
-      message("directory: ",private$project$dir_path)
+    info = function() {
+      message("project_name: ", private$project$project_name)
+      message("directory: ", private$project$dir_path)
     },
     #' @description
     #' Updates the REDCap data for (`project` object) by checking REDCap log.
@@ -132,7 +132,7 @@ REDCapSync_project <- R6Class(
     sync = function(summarize = TRUE,
                     save_to_dir = TRUE,
                     hard_check = FALSE,
-                    hard_reset = FALSE){
+                    hard_reset = FALSE) {
       private$project <- sync_project(
         project = private$project,
         summarize = summarize,
@@ -169,7 +169,7 @@ REDCapSync_project <- R6Class(
                            use_csv = FALSE,
                            dir_other = NULL,
                            file_name = NULL,
-                           hard_reset = FALSE){
+                           hard_reset = FALSE) {
       private$project <- private$project %>%
         add_project_summary(
           summary_name,
@@ -204,7 +204,7 @@ REDCapSync_project <- R6Class(
       invisible(self)
     },
     #' @description  Clear all project summaries
-    remove_summaries = function (summary_names = NULL) {
+    remove_summaries = function(summary_names = NULL) {
       private$project <- clear_project_summaries(
         project = private$project,
         summary_names = summary_names
@@ -237,7 +237,7 @@ REDCapSync_project <- R6Class(
                          field_note = NA,
                          identifier = "",
                          units = NA,
-                         data_func = NA){
+                         data_func = NA) {
       message("Added field! (placeholder)")
       invisible(self)
     },
@@ -247,20 +247,20 @@ REDCapSync_project <- R6Class(
       invisible(self)
     },
     #' @description summarize project and save to Excel
-    summarize = function(hard_reset = FALSE){
+    summarize = function(hard_reset = FALSE) {
       first_stamp <- private$project$internals$last_summary
       private$project <- private$project %>%
         summarize_project(hard_reset = hard_reset)
       second_stamp <- private$project$internals$last_summary
       was_updated <- !identical(first_stamp, second_stamp)
-      if(was_updated){
+      if(was_updated) {
         #consider separating just saving last in details
         private$project <- save_project(private$project)
       }
       invisible(self)
     },
     #' @description save summary to Excel
-    save_summary = function(summary_name){
+    save_summary = function(summary_name) {
       summary_names <- private$project$summary %>%
         names() %>%
         setdiff("all_records")
@@ -270,16 +270,16 @@ REDCapSync_project <- R6Class(
       invisible(self)
     },
     #' @description  Add a new summary entry
-    save = function(){
+    save = function() {
       private$project <- save_project(private$project)
       invisible(self)
     },
     #' @description  Returns list of data or the specified form.
-    show_metadata = function(type = NULL,annotate = FALSE, envir = NULL){
+    show_metadata = function(type = NULL, annotate = FALSE, envir = NULL) {
       assert_environment(envir, null.ok = TRUE)
       assert_choice(type, c("fields", "forms", "choices"), null.ok = TRUE)
       return_this <- private$project$metadata
-      if(!is.null(type)){
+      if(!is.null(type)) {
         #add warning or message?
         return_this <- private$project$metadata[[type]]
       }
@@ -292,7 +292,7 @@ REDCapSync_project <- R6Class(
     show_data = function(form = NULL, envir = NULL) {
       assert_environment(envir, null.ok = TRUE)
       return_this <- private$project$data
-      if(!is.null(form)){
+      if (!is.null(form)) {
         #add warning or message?
         return_this <- private$project$data[[form]]
       }
@@ -302,9 +302,11 @@ REDCapSync_project <- R6Class(
       invisible(return_this)
     },
     #' @description Displays project token in console for verification
-    show_token = function() {view_project_token(private$project)},
+    show_token = function() {
+      view_project_token(private$project)
+    },
     #' @description test connection via communication with API
-    test_token = function(){
+    test_token = function() {
       private$project <- test_project_token(private$project)
       invisible(self)
     },
@@ -316,7 +318,7 @@ REDCapSync_project <- R6Class(
                       open_browser = open_browser)
     },
     #' @description  returns internal list
-    .internal = function(){
+    .internal = function() {
       invisible(private$project)
     }
   ),

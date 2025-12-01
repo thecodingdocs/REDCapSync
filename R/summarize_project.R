@@ -95,7 +95,9 @@ annotate_forms <- function(data_list,
       })
       if ("original_form_name" %in% colnames(forms)) {
         var_list <- forms$original_form_name %>% strsplit(" [:|:] ") %>%
-          lapply(function(form_name) {paste0(form_name, "_complete")})
+          lapply(function(form_name) {
+            paste0(form_name, "_complete")
+          })
       }
       names(var_list) <- forms$form_name
       for (status in c("Incomplete", "Unverified", "Complete")) {
@@ -194,17 +196,17 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
     return(all_records)
   }
   if (summarize_data) {
-    if(is_something(redcap_log)){
-      redcap_log <- redcap_log[,c("timestamp","username","record")]
+    if (is_something(redcap_log)) {
+      redcap_log <- redcap_log[, c("timestamp", "username", "record")]
       has_users <- is_something(data_list$redcap$users)
-      if(has_users){
+      if (has_users) {
         users <- data_list$redcap$users
-        users <- users[,c("username","firstname","lastname","email")]
-        redcap_log <- merge(redcap_log, users,by="username",all.x = TRUE)
+        users <- users[, c("username", "firstname", "lastname", "email")]
+        redcap_log <- merge(redcap_log, users,by="username", all.x = TRUE)
       }
       cool_list <- split(redcap_log, redcap_log$record)
-      if(length(cool_list)>1){
-        cool_df <- seq_len(length(cool_list)) %>% lapply(function(i){
+      if (length(cool_list) > 1) {
+        cool_df <- seq_len(length(cool_list)) %>% lapply(function(i) {
           df <- cool_list[[i]]
           the_last <- first(df)
           the_first <- last(df)
@@ -214,7 +216,7 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
             last_timestamp = the_last$timestamp,
             unique_users = length_unique(df$username)
           )
-          if(has_users){
+          if (has_users) {
             out_df$last_username <- the_last$username
             out_df$last_user <- the_last$firstname %>% paste(the_last$lastname)
           }
@@ -395,10 +397,10 @@ add_project_summary <- function(project,
     stop(summary_name,
          " is a forbidden summary name. Used for REDCapSync.")
   }
-  if (is.null(dir_other)){
+  if (is.null(dir_other)) {
     dir_other <- file.path(project$dir_path, "output")
   }
-  if (is.null(file_name)){
+  if (is.null(file_name)) {
     file_name <- paste0(project$project_name, "_", summary_name)
   }
   if (is.null(filter_list)) {
@@ -564,8 +566,8 @@ save_summary <- function(project, summary_name) {
           lapply(function(form) {
             add_redcap_links_to_form(form, project)
           })
-        if(summary_list$include_records){
-          if("records" %in% names (data_list)){
+        if (summary_list$include_records) {
+          if ("records" %in% names(data_list)) {
             data_list$records <- data_list$records %>%
               add_redcap_links_to_form(project)
           }
@@ -815,11 +817,11 @@ generate_project_summary <- function(project,
   }
   if (clean) {
     #include warning for if missing codes will prevent uploads
-    if(is_something(data_list$metadata$missing_codes)){
-      if(drop_missing_codes){
-        if(labelled){
+    if (is_something(data_list$metadata$missing_codes)) {
+      if (drop_missing_codes) {
+        if (labelled) {
           exclude_these <- data_list$metadata$missing_codes$name
-        }else{
+        }else {
           exclude_these <- data_list$metadata$missing_codes$code
         }
         drop_others <- drop_others %>%
@@ -857,15 +859,15 @@ generate_project_summary <- function(project,
   data_list$redcap <- project$redcap
   data_list$summary$all_records <- project$summary$all_records
   if (include_log) {
-    if(!data_list$redcap$has_log_access){
+    if (!data_list$redcap$has_log_access) {
       cli_alert_warning("You don't have log access so that can't be included.")
       include_log <- FALSE
-    } else{
+    } else {
       data_list$log <- get_log(data_list = data_list, records = records)
     }
   }
-  if(annotate_from_log && (include_users || include_records)){
-    if(!data_list$redcap$has_log_access){
+  if (annotate_from_log && (include_users || include_records)) {
+    if (!data_list$redcap$has_log_access) {
       cli_alert_warning("You don't have log access so that data can't be used.")
       annotate_from_log <- FALSE
     }
@@ -877,10 +879,10 @@ generate_project_summary <- function(project,
     }
   }
   if (include_users) {
-    if(!data_list$redcap$has_user_access){
+    if (!data_list$redcap$has_user_access) {
       cli_alert_warning("You don't have user access that can't be included.")
       include_users <- FALSE
-    } else{
+    } else {
       data_list$users <- annotate_users(
         data_list = data_list,
         records = records,
@@ -1026,7 +1028,7 @@ merge_non_repeating <- function(data_list,
   data_list
 }
 #' @noRd
-flatten_redcap <- function(data_list){
+flatten_redcap <- function(data_list) {
 }
 #' @noRd
 metadata_add_default_cols <- function(data_list) {
@@ -1118,7 +1120,7 @@ summarize_project <- function(project, hard_reset = FALSE) {
     if (is_something(summary_names)) {
       for (summary_name in summary_names) {
         project <- tryCatch(
-          expr = {project %>% save_summary(summary_name)},
+          expr = project %>% save_summary(summary_name),
           error = function(e) {
             cli_alert_warning("Failed to save summary `{summary_name}`.")
             invisible(project)
@@ -1571,7 +1573,7 @@ raw_to_labelled_data_list <- function(project) {
   if (project$internals$labelled) {
     stop("project is already labelled (not raw/coded values)")
   }
-  if(project$metadata$has_coding_conflicts){
+  if (project$metadata$has_coding_conflicts) {
     stop("project has codebook conflict(s), so will not convert to labelled!")
   }
   for (form_name in names(project$data)) {
@@ -1595,17 +1597,17 @@ get_identifier_fields <- function(data_list,
   assert_choice(get_type, choices = setdiff(.get_type, "identified"))
   fields <- data_list$metadata$fields
   all_fields <- fields$field_name
-  if(get_type == "deidentified"){
+  if (get_type == "deidentified") {
     id_fields <- fields$field_name[which(fields$identifier=="y")]
   }
-  if(get_type == "deidentified_strict"){
+  if (get_type == "deidentified_strict") {
     id_fields <- fields$field_name[which(
       fields$identifier=="y" |
         fields$text_validation_type_or_show_slider_number %in%
         .redcap_possible_id_fields_strict
       )]
   }
-  if(get_type == "deidentified_super_strict"){
+  if (get_type == "deidentified_super_strict") {
     id_fields <- fields$field_name[which(
       fields$identifier=="y" |
         fields$text_validation_type_or_show_slider_number %in%
@@ -1613,8 +1615,8 @@ get_identifier_fields <- function(data_list,
     )]
   }
   final_output <- id_fields
-  if(invert){
-    final_output <- setdiff(all_fields,id_fields)
+  if (invert) {
+    final_output <- setdiff(all_fields, id_fields)
   }
   final_output
 }
@@ -1732,6 +1734,6 @@ filter_fields_from_form <- function(form, project) {
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
   fields$has_choices[
-    which(fields$field_type %in% c("calc","text","slider"))] <- FALSE
+    which(fields$field_type %in% c("calc", "text", "slider"))] <- FALSE
   fields
 }

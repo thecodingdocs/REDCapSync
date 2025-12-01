@@ -707,38 +707,45 @@ clean_redcap_log <- function(redcap_log) {
 #' @noRd
 .log_action_exports <- c("Data export", "Download uploaded ")
 #' @noRd
-.log_details_exports <- c("Export ", "Download ")
+.log_details_exports <- c("Download ", "Export ")
 #' @noRd
 .log_action_users <- c(
-  "User assigned to role ",
   "Add user ",
-  "Edit user ",
+  "Create user role",
   "Delete user ",
+  "Edit user ",
   "Rename user role",
-  "User removed from user role",
-  "Create user role"
+  "User assigned to role ",
+  "User removed from user role"
 )
 #' @noRd
-.log_details_comments <- c("Add field comment ",
-                           "Edit field comment ",
-                           "Delete field comment ")
+.log_details_comments <- c(
+  "Add field comment ",
+  "Edit field comment ",
+  "Delete field comment "
+)
 #' @noRd
-.log_action_records <- c("Update record ",
-                         "Delete record ",
-                         "Lock/Unlock Record ",
-                         "Create record ")
+.log_action_records <- c(
+  "Create record ",
+  "Delete record ",
+  "Lock/Unlock Record ",
+  "Update record "
+)
 #' @noRd
 .log_action_no_changes <- c(
   "Enable external module ",
   "Disable external module ",
-  "Modify configuration for external module "
+  "Modify configuration for external module ",
+  "Update Response"
 )
 #' @noRd
 .log_details_no_changes <- c(
   "Add settings for automated survey invitations",
+  "Add/edit stop actions for survey",
   "Approve production project modifications",
   "Automatically schedule survey invitation",
   "Cancel draft mode",
+  "CDIS settings updated",
   "Checked off item in project checklist",
   "Click project bookmark",
   "Copy report",
@@ -753,15 +760,26 @@ clean_redcap_log <- function(redcap_log) {
   "Delete project dashboard",
   "Delete report",
   "Disable auto variable",
+  "Disable Google reCAPTCHA",
+  "Disabled survey notification for user",
   "Edit project bookmark",
   "Edit project dashboard",
   "Edit report",
   "Edit settings for automated survey invitation",
   "Edit settings for Form Render Skip Logic",
   "Edit settings for survey queue",
+  "Email survey link",
   "Enable auto variable",
+  "Enable Clinical Data Pull (CDP) module",
+  "Enable Google reCAPTCHA on public survey",
+  "Enabled survey notification",
   "Enter draft mode",
+  "Entered Draft Preview",
   "Execute data quality rule",
+  "Exited Draft Preview mode",
+  "Mapping configuration created",
+  "Mapping configuration deleted",
+  "Mapping configuration updated",
   "Message added to the queue",
   "Modify custom record dashboard",
   "Multi-Language Management",
@@ -770,23 +788,34 @@ clean_redcap_log <- function(redcap_log) {
   "Reorder report",
   "Request approval for",
   "Send email ",
+  "Send file ",
   "Send request to copy project",
-  "Switch DAG "
+  "Send request to move project",
+  "Send survey invitation",
+  "Switch DAG ",
+  "Unchecked item in project checklist",
+  "updated non-adjudicated item_count",
+  "User opted in to access"
 )
 #' @noRd
-.log_details_tokens <- c("Create API token", "User regenerate own API token")
+.log_details_tokens <- c(
+  "Create API token",
+  "Request API token",
+  "User delete own API token",
+  "User regenerate own API token")
 #' @noRd
 .log_details_repository <- c(
-  "Upload file to File Repository",
+  "Create folder in File Repository",
   "Delete file from File Repository",
   "Delete folder from File Repository",
-  "Create folder in File Repository",
-  "Upload document to file repository"
+  "Upload document to file repository",
+  "Upload file to File Repository"
 )
 #' @noRd
 .log_details_metadata_minor <- c(
   "Add/edit branching logic",
   "Delete section header",
+  "Modify survey title",
   "Move project field",
   "Reorder data collection instruments",
   "Reorder events",
@@ -796,21 +825,24 @@ clean_redcap_log <- function(redcap_log) {
 #' @noRd
 .log_details_metadata_major <- c(
   "Copy data collection instrument",
-  "Copy project as",
-  "Copy project field",
+  "Copy project ",
   "Create arm",
   "Create data collection instrument",
   "Create event",
-  "Create project ",
+  "Create matrix of fields",
+  "Create project",
   "Create project field",
   "Delete arm",
   "Delete data collection instrument",
   "Delete event",
+  "Delete matrix of fields",
   "Delete project field",
+  "Delete survey",
   "Download instrument from Shared Library",
   "Edit arm",
-  "Edit project field",
   "Edit event",
+  "Edit project field",
+  "Erase all data",
   "Make project customizations",
   "Modify project settings",
   "Modify survey info",
@@ -819,7 +851,8 @@ clean_redcap_log <- function(redcap_log) {
   "Rename data collection instrument",
   "Set up repeating instruments",
   "Set up survey",
-  "Upload data dictionary"
+  "Upload data dictionary",
+  "Upload document for image"
 )
 #' @noRd
 .all_missing_codes <- data.frame(

@@ -185,8 +185,10 @@ sync_project <- function(project,
         message_string <- "No new records to update!"
         if (length(stale_records) > 0) {
           form_list <- project %>%
-            get_redcap_data(labelled = project$internals$labelled,
-                            records = stale_records)
+            get_redcap_data(
+              labelled = project$internals$labelled,
+              records = stale_records) %>%
+            all_character_cols_list()
           missing_from_summary <- stale_records[
             which(!stale_records %in% project$summary$all_records[[id_col]])]
           if (length(missing_from_summary) > 0) {

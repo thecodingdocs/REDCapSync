@@ -104,7 +104,11 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   project$redcap$has_user_access <- !is.null(result$users)
   project$redcap$has_file_repository_access <- !is.null(result$file_repository)
   # instruments --------
-  project$metadata$forms <- rename_forms_redcap_to_default(result$forms)
+  project$metadata$forms <- result$forms %>%
+    rename(
+      "form_name"  = "instrument_name",
+      "form_label" = "instrument_label"
+    )
   project$metadata$repeating_forms_events <- result$repeating
   project$metadata$forms$repeating <- FALSE
   project$metadata$has_repeating_forms <- FALSE
@@ -528,12 +532,4 @@ get_redcap_data <- function(project,
   form_list <- denormalized %>%
     normalize_redcap(project = project, labelled = labelled)
   return(form_list)
-}
-#' @noRd
-rename_forms_redcap_to_default <- function(forms) {
-  the_names <- colnames(forms)
-  the_names[which(the_names == "instrument_name")] <- "form_name"
-  the_names[which(the_names == "instrument_label")] <- "form_label"
-  colnames(forms) <- the_names
-  forms
 }

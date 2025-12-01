@@ -37,6 +37,7 @@
 #' @importFrom dplyr as_tibble
 #' @importFrom dplyr pull
 #' @importFrom dplyr filter
+#' @importFrom dplyr rename
 #' @importFrom redcapAPI REDCAP_METADATA_FIELDTYPE
 #' @importFrom redcapAPI REDCAP_METADATA_VALIDATION_TYPE
 #' @importFrom redcapAPI REDCAP_PROJECT_PURPOSE

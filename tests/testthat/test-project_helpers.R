@@ -255,11 +255,214 @@ test_that("get_min_dates works", {
   expect_equal(as.character(out$date[match("2", out$record_id)]), "2020-01-05")
   expect_equal(as.character(out$date[match("3", out$record_id)]), "2020-01-15")
 })
+# normalize_redcap ( Internal )
+test_that("normalize_redcap works with classic project", {
+  project <- TEST_CLASSIC
+  denormalized <- readRDS(test_path("fixtures", "TEST_CLASSIC_denormalized.rds"))
+  result <- normalize_redcap(denormalized, project, labelled = TRUE)
+  expect_true(is.list(result))
+  form_names <- names(result)
+  expected_forms <- project$metadata$forms$form_name
+  expect_all_true(expected_forms %in% form_names)
+  expect_all_true(unlist(lapply(result, is.data.frame)))
+  id_col <- project$metadata$id_col
+  fields <- project$metadata$fields
+  expect_true(id_col %in% colnames(result$text))
+  expect_all_true(
+    fields$field_name[which(fields$form_name == "text")] %in%
+      colnames(result$text))
+  expect_all_true(
+    fields$field_name[
+      which(fields$form_name == "other" &
+              (!fields$field_type %in% c("checkbox","descriptive")))] %in%
+      colnames(result$other)
+  )
+  fields <- fields[which(fields$field_name != id_col), ]
+  expect_all_false(
+    fields$field_name[which(fields$form_name == "text")] %in%
+      colnames(result$other))
+  expect_all_false(
+    fields$field_name[
+      which(fields$form_name == "other" &
+              (!fields$field_type %in% c("checkbox","descriptive")))] %in%
+      colnames(result$text)
+  )
+})
 # clean_data_list ( Internal )
 # get_key_col_list ( Internal )
 # normalize_redcap ( Internal )
 # sort_redcap_log ( Internal )
 # clean_redcap_log ( Internal )
-test_that("clean_redcap_log works", {
+# clean_redcap_log ( Internal )
+# clean_redcap_log ( Internal )
+# clean_redcap_log ( Internal )
+test_that("clean_redcap_log removes duplicates", {
+  redcap_log <- data.frame(
+    timestamp = c("2024-01-15 10:30:00", "2024-01-15 10:30:00", "2024-01-15 10:35:00"),
+    username = c("user1", "user1", "user2"),
+    action = c("Update record 123", "Update record 123", "Create record 456"),
+    details = c("Field updated", "Field updated", "New record"),
+    record = c("123", "123", "456"),
+    stringsAsFactors = FALSE
+  )
+  result <- clean_redcap_log(redcap_log)
+  expect_equal(nrow(result), 2)
+})
+test_that("clean_redcap_log trims whitespace", {
+  redcap_log <- data.frame(
+    timestamp = c("2024-01-15 10:30:00"),
+    username = c("  user1  "),
+    action = c("  Update record 123  "),
+    details = c("  Field updated  "),
+    record = c("123"),
+    stringsAsFactors = FALSE
+  )
+  result <- clean_redcap_log(redcap_log)
+  expect_false(grepl("^\\s|\\s$", result$username[1]))
+  expect_false(grepl("^\\s|\\s$", result$action[1]))
+  expect_false(grepl("^\\s|\\s$", result$details[1]))
+})
+test_that("clean_redcap_log identifies record actions", {
+  redcap_log <- data.frame(
+    timestamp = c(
+      "2024-01-15 10:30:00",
+      "2024-01-15 10:35:00",
+      "2024-01-15 10:40:00",
+      "2024-01-15 10:45:00"
+    ),
+    username = c("user1", "user2", "user3", "user4"),
+    action = c(
+      "Update record 123",
+      "Delete record 456",
+      "Create record 789",
+      "Lock/Unlock Record 321"
+    ),
+    details = c("Updated", "Deleted", "Created", "Locked"),
+    record = c("123", "456", "789", "321"),
+    stringsAsFactors = FALSE
+  )
+  result <- clean_redcap_log(redcap_log)
+  # Check that record_id was extracted and action_type was set
+  expect_true(all(!is.na(result$action_type[1:4])))
+  expect_true(all(result$action_type[1:4] %in% c("Update", "Delete", "Create", "Lock/Unlock")))
+})
+test_that("clean_redcap_log handles Manage/Design actions", {
+  redcap_log <- data.frame(
+    timestamp = c(
+      "2024-01-15 10:30:00",
+      "2024-01-15 10:35:00"
+    ),
+    username = c("user1", "user2"),
+    action = c("Manage/Design", "Manage/Design"),
+    details = c(
+      "Edit project field: field_name",
+      "Create project field: new_field"
+    ),
+    record = c(NA, NA),
+    stringsAsFactors = FALSE
+  )
+  result <- clean_redcap_log(redcap_log)
+  expect_true(any(result$action_type == "Metadata Change Major", na.rm = TRUE))
+})
+test_that("clean_redcap_log converts [survey respondent] to NA", {
+  redcap_log <- data.frame(
+    timestamp = c("2024-01-15 10:35:00", "2024-01-15 10:30:00"),
+    username = c("[survey respondent]", "user1"),
+    action = c("Update record 123", "Create record 456"),
+    details = c("Survey submitted", "Created"),
+    record = c("123", "456"),
+    stringsAsFactors = FALSE
+  )
+  result <- clean_redcap_log(redcap_log)
+  expect_s3_class(result, "data.frame")
+  expect_true(is.na(result$username[1]))
+  expect_equal(result$username[2], "user1")
+})
+test_that("clean_redcap_log sets action_type column", {
+  redcap_log <- data.frame(
+    timestamp = c("2024-01-15 10:30:00"),
+    username = c("user1"),
+    action = c("Update record 123"),
+    details = c("Updated"),
+    record = c("123"),
+    stringsAsFactors = FALSE
+  )
+  result <- clean_redcap_log(redcap_log)
+  expect_true("action_type" %in% colnames(result))
+  expect_false(all(is.na(result$action_type)))
+})
+test_that("clean_redcap_log handles export actions", {
+  redcap_log <- data.frame(
+    timestamp = c(
+      "2024-01-15 10:30:00",
+      "2024-01-15 10:35:00"
+    ),
+    username = c("user1", "user2"),
+    action = c("Data export", "Download uploaded file"),
+    details = c("Exported data", "Downloaded file"),
+    record = c(NA, NA),
+    stringsAsFactors = FALSE
+  )
+  result <- clean_redcap_log(redcap_log)
+  expect_true(all(result$action_type %in% c("Exports", NA)))
+})
+test_that("clean_redcap_log handles user actions", {
+  redcap_log <- data.frame(
+    timestamp = c(
+      "2024-01-15 10:30:00",
+      "2024-01-15 10:35:00"
+    ),
+    username = c("user1", "user2"),
+    action = c("Add user test", "Edit user admin"),
+    details = c("User added", "User edited"),
+    record = c(NA, NA),
+    stringsAsFactors = FALSE
+  )
+  result <- clean_redcap_log(redcap_log)
+  expect_true(all(result$action_type %in% c("Users", NA)))
+})
+test_that("clean_redcap_log handles no-changes actions", {
+  redcap_log <- data.frame(
+    timestamp = c("2024-01-15 10:30:00"),
+    username = c("user1"),
+    action = c("Enable external module test"),
+    details = c("Module enabled"),
+    record = c(NA),
+    stringsAsFactors = FALSE
+  )
+  result <- clean_redcap_log(redcap_log)
+  expect_equal(result$action_type[1], "No Changes")
+})
+test_that("clean_redcap_log sorts by timestamp descending", {
+  redcap_log <- data.frame(
+    timestamp = c(
+      "2024-01-15 10:30:00",
+      "2024-01-15 10:45:00",
+      "2024-01-15 10:35:00"
+    ),
+    username = c("user1", "user2", "user3"),
+    action = c("Update record 1", "Update record 2", "Update record 3"),
+    details = c("Updated", "Updated", "Updated"),
+    record = c("1", "2", "3"),
+    stringsAsFactors = FALSE
+  )
+  result <- clean_redcap_log(redcap_log)
+  # Should be sorted by timestamp descending
+  expect_equal(result$timestamp[1], "2024-01-15 10:45:00")
+  expect_equal(result$timestamp[2], "2024-01-15 10:35:00")
+  expect_equal(result$timestamp[3], "2024-01-15 10:30:00")
+})
+test_that("clean_redcap_log removes record_id column", {
+  redcap_log <- data.frame(
+    timestamp = c("2024-01-15 10:30:00"),
+    username = c("user1"),
+    action = c("Update record 123"),
+    details = c("Updated"),
+    record = c("123"),
+    record_id = c(NA),
+    stringsAsFactors = FALSE
+  )
+  result <- clean_redcap_log(redcap_log)
+  expect_false("record_id" %in% colnames(result))
 })
 # check_missing_codes ( Internal )

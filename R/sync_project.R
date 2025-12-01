@@ -254,7 +254,7 @@ sync_project <- function(project,
         )
       }
     }
-    if(project$internals$get_file_repository) {
+    if (project$internals$get_file_repository) {
       # get_redcap_file_repository()
     }
     if (summarize) {

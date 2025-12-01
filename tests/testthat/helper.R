@@ -90,5 +90,5 @@ mock_project <- function() {
       )
     )
   # form_example
-  return(project)
+  project
 }

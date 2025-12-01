@@ -197,7 +197,7 @@ excel_to_list <- function(path) {
       the_row <- which(summary_details$paramater == "cols_start")
       cols_start <- summary_details$value[the_row] %>% as.integer()
       if (cols_start > 1) {
-        for(i in as.integer(names(sheets)[match(form_names, sheets)])){
+        for (i in as.integer(names(sheets)[match(form_names, sheets)])) {
           suppressMessages({
             out[[i]] <- readxl::read_xlsx(path,
                                           col_types = "text",
@@ -207,8 +207,8 @@ excel_to_list <- function(path) {
           final_nrow <- nrow(out[[i]])
           if (cols_start < final_nrow) {
             true_colnames <- out[[i]][cols_start, ] %>% unlist() %>% unname()
-            out[[i]] <- out[[i]][(cols_start+1):final_nrow, ]
-            colnames(out[[i]])<- true_colnames
+            out[[i]] <- out[[i]][(cols_start + 1):final_nrow, ]
+            colnames(out[[i]]) <- true_colnames
             sheets <- sheets[which(sheets != sheets[i])]
           }
         }
@@ -262,7 +262,8 @@ wb_to_list <- function(wb) {
       col_row <- gsub(
         pattern = "[A-Za-z]",
         replacement = "",
-        x = unlist(x %>% attr("refs") %>% strsplit(":"))[[1]]) %>% as.integer()
+        x = unlist(x %>% attr("refs") %>% strsplit(":"))[[1]]) %>%
+        as.integer()
     }
     out[[i]] <- openxlsx::read.xlsx(wb, sheet = i, startRow = col_row)
   }
@@ -334,14 +335,14 @@ form_to_wb <- function(form,
   openxlsx::addWorksheet(wb, form_name)
   start_row_header <- pad_rows + 1
   start_row_table <- start_row_header
-  startCol <- pad_cols + 1
+  start_col <- pad_cols + 1
   if (is_something(header_df)) {
     openxlsx::writeData(
       wb,
       sheet = form_name,
       x = header_df,
       startRow = start_row_header,
-      startCol = startCol,
+      startCol = start_col,
       colNames = FALSE
     )
     start_row_table <- start_row_header + nrow(header_df)
@@ -376,7 +377,7 @@ form_to_wb <- function(form,
     sheet = form_name,
     x = form,
     startRow = start_row_table,
-    startCol = startCol,
+    startCol = start_col,
     tableStyle = "none"
   )
   # add derived style
@@ -400,17 +401,17 @@ form_to_wb <- function(form,
     stack = TRUE
   )
   if (freeze_header || freeze_keys) {
-    firstActiveRow <- NULL
+    first_active_row <- NULL
     if (freeze_header) {
-      firstActiveRow <- start_row_table + 1
+      first_active_row <- start_row_table + 1
     }
-    firstActiveCol <- NULL
+    first_active_col <- NULL
     if (freeze_keys) {
-      firstActiveCol <- startCol
+      first_active_col <- start_col
       freeze_key_cols <- which(colnames(form) %in% key_cols)
       if (length(freeze_key_cols) > 0) {
         if (is_consecutive_srt_1(freeze_key_cols)) {
-          firstActiveCol <- firstActiveCol +
+          first_active_col <- first_active_col +
             freeze_key_cols[length(freeze_key_cols)]
         } else {
           warning(
@@ -420,8 +421,8 @@ form_to_wb <- function(form,
       }
       openxlsx::freezePane(wb,
                            form_name,
-                           firstActiveRow = firstActiveRow,
-                           firstActiveCol = firstActiveCol)
+                           firstActiveRow = first_active_row,
+                           firstActiveCol = first_active_col)
     }
   }
   return(wb)
@@ -440,9 +441,15 @@ list_to_wb <- function(input_list,
                        pad_cols = 0,
                        freeze_keys = TRUE,
                        drop_empty = TRUE) {
-  if(is.null(key_cols_list)) key_cols_list <- list()
-  if(is.null(link_col_list)) link_col_list <- list()
-  if(is.null(derived_cols_list)) derived_cols_list <- list()
+  if (is.null(key_cols_list)) {
+    key_cols_list <- list()
+  }
+  if (is.null(link_col_list)) {
+    link_col_list <- list()
+  }
+  if (is.null(derived_cols_list)) {
+    derived_cols_list <- list()
+  }
   wb <- openxlsx::createWorkbook()
   input_list <- process_df_list(input_list, drop_empty = drop_empty)
   list_names <- names(input_list)
@@ -548,9 +555,15 @@ list_to_excel <- function(input_list,
                           pad_cols = 0,
                           freeze_keys = TRUE,
                           drop_empty = TRUE) {
-  if(is.null(key_cols_list)) key_cols_list <- list()
-  if(is.null(link_col_list)) link_col_list <- list()
-  if(is.null(derived_cols_list)) derived_cols_list <- list()
+  if (is.null(key_cols_list)) {
+    key_cols_list <- list()
+  }
+  if (is.null(link_col_list)) {
+    link_col_list <- list()
+  }
+  if (is.null(derived_cols_list)) {
+    derived_cols_list <- list()
+  }
   input_list <- process_df_list(input_list, drop_empty = drop_empty)
   list_names <- names(input_list)
   if (length(input_list) == 0) {
@@ -565,7 +578,7 @@ list_to_excel <- function(input_list,
       }
       keep_keys <- which(names(key_cols_list) == list_names[i])
       keep_deriveds <- which(names(derived_cols_list) == list_names[i])
-      keep_links <- which(names(link_col_list) == list_names[i])
+      # keep_links <- which(names(link_col_list) == list_names[i])
       key_cols_list_i <- key_cols_list[keep_keys]
       derived_cols_list_i <- derived_cols_list[keep_deriveds]
       # link_col_list_i <- link_col_list[keep_links]

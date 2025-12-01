@@ -222,7 +222,7 @@ REDCapSync_project <- R6Class(
         generate_project_summary(
           summary_name = summary_name
         )
-      if(!is.null(envir)) {
+      if (!is.null(envir)) {
         list2env(project_summary, envir = envir)
       }
       invisible(project_summary)

@@ -222,7 +222,7 @@ setup_project <- function(project_name,
       # compare current setting to previous settings...
       original_details <- project %>% extract_project_details()
       projects <- get_projects()
-      cache_details <- projects[which(projects$project_name ==project_name), ]
+      cache_details <- projects[which(projects$project_name == project_name), ]
       if (original_details$redcap_uri != redcap_uri) {
         stop("There is an existing project at your chosen directory with same ",
              "`project_name` but a different `redcap_uri`. You can use ",

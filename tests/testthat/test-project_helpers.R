@@ -58,7 +58,7 @@ test_that("get_project_url works", {
   e <- new.env(parent = emptyenv())
   # get_project_url
   e$called_url <- NULL
-  mockery::stub(get_project_url, "utils::browseURL", function(url){
+  mockery::stub(get_project_url, "utils::browseURL", function(url) {
     e$called_url <- url
   })
   for (link_type in .link_types) {
@@ -93,7 +93,7 @@ test_that("get_record_url works", {
   e <- new.env(parent = emptyenv())
   # get_project_url
   e$called_url <- NULL
-  mockery::stub(get_record_url, "utils::browseURL", function(url){
+  mockery::stub(get_record_url, "utils::browseURL", function(url) {
     e$called_url <- url
   })
   expect_equal(get_record_url(project, open_browser = FALSE), expected_link)

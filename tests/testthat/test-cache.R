@@ -51,8 +51,7 @@ test_that("cache_projects_exists, cache_clear works", {
   expect_no_error(cache_clear())
   expect_false(cache_projects_exists())
   local_mocked_bindings(
-    cache_exists = function(...)
-      FALSE
+    cache_exists = function(...) FALSE
   )
   expect_false(cache_projects_exists())
 })

@@ -202,7 +202,7 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
       if (has_users) {
         users <- data_list$redcap$users
         users <- users[, c("username", "firstname", "lastname", "email")]
-        redcap_log <- merge(redcap_log, users,by="username", all.x = TRUE)
+        redcap_log <- merge(redcap_log, users, by = "username", all.x = TRUE)
       }
       cool_list <- split(redcap_log, redcap_log$record)
       if (length(cool_list) > 1) {
@@ -221,7 +221,8 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
             out_df$last_user <- the_last$firstname %>% paste(the_last$lastname)
           }
           out_df
-        }) %>% bind_rows()
+        }) %>%
+          bind_rows()
         colnames(cool_df)[1] <- id_col
         all_records <- merge(all_records, cool_df, by = id_col, all.x = TRUE)
       }
@@ -985,10 +986,13 @@ merge_non_repeating <- function(data_list,
   if (is_something(data_list$data)) {
     merge_form <- NULL
     non_rep_form_names <-
-      non_rep_form_names[non_rep_form_names %>%
-                           lapply(function(non_rep_form_name) {
-                             is_something(data_list$data[[non_rep_form_name]])
-                           }) %>% unlist() %>% which()]
+      non_rep_form_names[
+        non_rep_form_names %>%
+          lapply(function(non_rep_form_name) {
+            is_something(data_list$data[[non_rep_form_name]])
+          }) %>%
+          unlist() %>%
+          which()]
     # non_rep_form_name <- non_rep_form_names[[2]]
     i <- 0
     for (non_rep_form_name in non_rep_form_names) {
@@ -1598,18 +1602,18 @@ get_identifier_fields <- function(data_list,
   fields <- data_list$metadata$fields
   all_fields <- fields$field_name
   if (get_type == "deidentified") {
-    id_fields <- fields$field_name[which(fields$identifier=="y")]
+    id_fields <- fields$field_name[which(fields$identifier == "y")]
   }
   if (get_type == "deidentified_strict") {
     id_fields <- fields$field_name[which(
-      fields$identifier=="y" |
+      fields$identifier == "y" |
         fields$text_validation_type_or_show_slider_number %in%
         .redcap_possible_id_fields_strict
       )]
   }
   if (get_type == "deidentified_super_strict") {
     id_fields <- fields$field_name[which(
-      fields$identifier=="y" |
+      fields$identifier == "y" |
         fields$text_validation_type_or_show_slider_number %in%
         .redcap_possible_id_fields_super_strict
     )]
@@ -1687,7 +1691,8 @@ construct_header_list <- function(data_list,
       any(row != "")
     })), ]
     x
-  }) %>% process_df_list(silent = TRUE)
+  }) %>%
+    process_df_list(silent = TRUE)
   header_df_list
 }
 #' @noRd

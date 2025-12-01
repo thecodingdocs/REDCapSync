@@ -155,7 +155,6 @@ test_that("deidentify_data_list works", {
   data_list <- data_list %>% metadata_add_default_cols()
   fields <- data_list$metadata$fields
   merged <- data_list$data$merged
-  # merged %>% colnames()
   expect_all_true(
     c(
       "var_birth_date",
@@ -258,7 +257,8 @@ test_that("get_min_dates works", {
 # normalize_redcap ( Internal )
 test_that("normalize_redcap works with classic project", {
   project <- TEST_CLASSIC
-  denormalized <- readRDS(test_path("fixtures", "TEST_CLASSIC_denormalized.rds"))
+  denormalized <- readRDS(
+    test_path("fixtures", "TEST_CLASSIC_denormalized.rds"))
   result <- normalize_redcap(denormalized, project, labelled = TRUE)
   expect_true(is.list(result))
   form_names <- names(result)

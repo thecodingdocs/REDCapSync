@@ -120,9 +120,9 @@ page for the basics!
   [TheCodingDocs.com](https://www.thecodingdocs.com/ "TheCodingDocs.com")
 - For correspondence/feedback/issues, please email
   <TheCodingDocs@gmail.com>!
-- Follow us on Twitter
-  [twitter.com/TheCodingDocs](https://twitter.com/TheCodingDocs "TheCodingDocs Twitter")
-- Follow me on Twitter
-  [twitter.com/BRoseMDMPH](https://twitter.com/BRoseMDMPH "BRoseMDMPH Twitter")
+- Follow us on Twitter/X
+  [x.com/TheCodingDocs](https://x.com/TheCodingDocs "TheCodingDocs Twitter")
+- Follow me on Twitter/X
+  [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH "BRoseMDMPH Twitter")
 
 [![TheCodingDocs.com](reference/figures/TCD.png)](https://www.thecodingdocs.com)

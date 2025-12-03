@@ -89,7 +89,7 @@ Getting started is as simple as 1.) setting your tokens, 2.) setting up a projec
 -   Donate if I helped you out and want more development (anything helps)! [account.venmo.com/u/brandonerose](https://account.venmo.com/u/brandonerose "Venmo Donation")
 -   For more R coding visit [TheCodingDocs.com](https://www.thecodingdocs.com/ "TheCodingDocs.com")
 -   For correspondence/feedback/issues, please email [TheCodingDocs\@gmail.com](mailto:TheCodingDocs@gmail.com)!
--   Follow us on Twitter [twitter.com/TheCodingDocs](https://twitter.com/TheCodingDocs "TheCodingDocs Twitter")
--   Follow me on Twitter [twitter.com/BRoseMDMPH](https://twitter.com/BRoseMDMPH "BRoseMDMPH Twitter")
+-   Follow us on Twitter/X [x.com/TheCodingDocs](https://x.com/TheCodingDocs "TheCodingDocs Twitter")
+-   Follow me on Twitter/X [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH "BRoseMDMPH Twitter")
 
 [![TheCodingDocs.com](man/figures/TCD.png)](https://www.thecodingdocs.com)

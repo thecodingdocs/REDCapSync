@@ -18,7 +18,7 @@ Description: Uses the REDCap API to build a standardized R list object
     derived fields, and transformations, which are stored in the list
     object and passed down to output objects to be used downstream for
     data pipelines and the R shiny app RosyREDCap.
-License: MIT + file LICENSE
+License: GPL (>= 3)
 URL: https://github.com/thecodingdocs/REDCapSync,
     https://thecodingdocs.github.io/REDCapSync/
 BugReports: https://github.com/thecodingdocs/REDCapSync/issues

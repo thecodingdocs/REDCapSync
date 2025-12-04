@@ -198,7 +198,7 @@ REDCapSync_project <- R6Class(
           separate = separate,
           use_csv = use_csv,
           dir_other = dir_other,
-          file_name = hard_reset,
+          file_name = file_name,
           hard_reset = hard_reset
       )
       invisible(self)

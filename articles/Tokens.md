@@ -40,13 +40,13 @@ would be blank again.
 
 ### Setting Your Token for Any Session
 
-You may find you want to reuse a token, and you may have several
-projects, so a convenient way to store the tokens is in a separate
-location. One way to do this is in your personal .Renviron file. Again,
-you should check always confirm the location of this file and make sure
-it’s not a part of any cloud storage or git or GitHub. You can use
+You may find want to reuse a token, and you may have several projects,
+so a convenient way to store the tokens in a separate location. One way
+to do this is your personal .Renviron file. Again, you should check
+always confirm the location of this file and make sure it’s not a part
+of any cloud storage or git or GitHub. You can use
 `usethis::edit_r_environ()` to semi-permanently save your token. Each
-time you launch an R session, this file will run and your token will be
+time you launch an R session this file will run and your token will be
 visible to you if specifically called with
 `Sys.getenv("REDCapSync_TEST")`.
 

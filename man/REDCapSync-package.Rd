@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Uses the REDCap API to build a standardized R list object that can be stored in a user-defined local or cloud directory. Checks the REDCap log and only gets necessary data updates. Full updates are only triggered by major metadata changes. User can define subsets, derived fields, and transformations, which are stored in the list object and passed down to output objects to be used downstream for data pipelines and the R shiny app RosyREDCap.
+Provides tools to download, organize, and synchronize data from REDCap projects through the REDCap application programming interface (API). The package constructs a reproducible project object that stores data, metadata, logs, and configuration details in a user-defined directory. It supports incremental updates by checking the REDCap log and retrieving only modified data. Full updates are only triggered by major metadata changes. User can define subsets, derived fields, and transformations, which are stored in the list object and passed down to output objects to be used for data pipelines and downstream applications, such as the R shiny app RosyREDCap.
 }
 \seealso{
 Useful links:

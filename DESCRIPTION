@@ -21,7 +21,7 @@ Description: Provides tools to download, organize, and synchronize data
     derived fields, and transformations, which are stored in the list
     object and passed down to output objects to be used for data pipelines
     and downstream applications, such as the R shiny app RosyREDCap.
-License: GPL (>= 3)
+License: GPL (>= 3) + file LICENSE
 URL: https://github.com/thecodingdocs/REDCapSync,
     https://thecodingdocs.github.io/REDCapSync/
 BugReports: https://github.com/thecodingdocs/REDCapSync/issues

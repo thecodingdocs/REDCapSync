@@ -298,7 +298,9 @@ test_that("normalize_redcap works with classic project", {
 # clean_redcap_log ( Internal )
 test_that("clean_redcap_log removes duplicates", {
   redcap_log <- data.frame(
-    timestamp = c("2024-01-15 10:30:00", "2024-01-15 10:30:00", "2024-01-15 10:35:00"),
+    timestamp = c("2024-01-15 10:30:00",
+                  "2024-01-15 10:30:00",
+                  "2024-01-15 10:35:00"),
     username = c("user1", "user1", "user2"),
     action = c("Update record 123", "Update record 123", "Create record 456"),
     details = c("Field updated", "Field updated", "New record"),
@@ -344,7 +346,9 @@ test_that("clean_redcap_log identifies record actions", {
   result <- clean_redcap_log(redcap_log)
   # Check that record_id was extracted and action_type was set
   expect_true(all(!is.na(result$action_type[1:4])))
-  expect_true(all(result$action_type[1:4] %in% c("Update", "Delete", "Create", "Lock/Unlock")))
+  expect_true(all(
+    result$action_type[1:4] %in% c("Update", "Delete", "Create", "Lock/Unlock")
+  ))
 })
 test_that("clean_redcap_log handles Manage/Design actions", {
   redcap_log <- data.frame(

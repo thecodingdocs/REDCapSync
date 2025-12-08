@@ -40,7 +40,9 @@ test_that("rcon_result returns expected structure without real API calls", {
     arms = function() data.frame(arm = character(0)),
     events = function() data.frame(event = character(0)),
     mapping = function() data.frame(),
-    instruments = function() data.frame(instrument = "form1", stringsAsFactors = FALSE),
+    instruments = function() {
+      data.frame(instrument = "form1", stringsAsFactors = FALSE)
+    },
     repeatInstrumentEvent = function() data.frame(),
     metadata = function() data.frame(field_name = character(0)),
     users = function() data.frame(username = character(0)),
@@ -50,9 +52,10 @@ test_that("rcon_result returns expected structure without real API calls", {
     dag_assignment = function() data.frame(),
     fileRepository = function() data.frame()
   )
-  # Stub redcapConnection and exportLogging inside rcon_result to avoid API calls
+  # Stub redcapConnection and exportLogging inside rcon_result to avoid API call
   mockery::stub(rcon_result, "redcapConnection", function(url, token) fake_rcon)
-  mockery::stub(rcon_result, "exportLogging", function(rcon, beginTime) data.frame())
+  mockery::stub(rcon_result, "exportLogging", function(rcon, beginTime) {
+    data.frame()})
   out <- rcon_result(project)
   # replace with real data from fixtures
   expect_type(out, "list")

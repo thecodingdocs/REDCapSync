@@ -12,7 +12,7 @@ listviewer::jsonedit(REDCapSync:::TEST_CLASSIC)
 The R6 object contains those things behind-the-scenes but then uses
 several to build an environment. This allows `TEST$sync()` to update
 `TEST` without having to do
-`TEST <- TEST %>% sync_something() %>% another_function()`
+`TEST <- TEST |> sync_something() |> another_function()`
 
 ``` r
 library(REDCapSync)

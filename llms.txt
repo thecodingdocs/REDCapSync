@@ -165,9 +165,6 @@ last update and other details). Tokens and data are NOT stored here.
 
 ### Other Helpers
 
-- [`reexports`](https://thecodingdocs.github.io/REDCapSync/reference/reexports.md)
-  [`%>%`](https://thecodingdocs.github.io/REDCapSync/reference/reexports.md)
-  : Objects exported from other packages
 - [`raw_to_labelled_form()`](https://thecodingdocs.github.io/REDCapSync/reference/raw_to_labelled_form.md)
   : Raw to Labelled REDCap forms
 - [`labelled_to_raw_form()`](https://thecodingdocs.github.io/REDCapSync/reference/labelled_to_raw_form.md)

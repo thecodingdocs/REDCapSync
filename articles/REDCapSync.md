@@ -59,6 +59,7 @@ data to add key information to metadata, users, and records.
 project$generate_summary(
   summary_name = "REDCapSync",
   envir = globalenv()
+  )
 ```
 
 This can be customized with `add_summary` for refreshing datasets or

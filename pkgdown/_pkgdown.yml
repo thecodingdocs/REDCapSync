@@ -44,7 +44,6 @@ reference:
 
   - subtitle: Other Helpers
     contents:
-      - "%>%"
       - raw_to_labelled_form
       - labelled_to_raw_form
 

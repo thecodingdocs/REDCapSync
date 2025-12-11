@@ -55,8 +55,8 @@ cache_exists <- function() {
 #' @noRd
 cache_projects_exists <- function() {
   if (cache_exists()) {
-    outcome <- cache_path() %>%
-      file.path("projects.rds") %>%
+    outcome <- cache_path() |>
+      file.path("projects.rds") |>
       file.exists()
   } else {
     cli_alert_warning("Cache doesn't exist")

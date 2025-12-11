@@ -10,7 +10,7 @@ test_that("is_valid_redcap_token respects the rules of 32L hexidecimal", {
   expect_false(is_valid_redcap_token(paste0("_", generate_hex(31))))
 })
 test_that("get_project_token checks_env", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -37,7 +37,7 @@ test_that("get_project_token checks_env", {
 })
 # view_project_token ( Exported )
 test_that("view_project_token works when no token set", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -52,7 +52,7 @@ test_that("view_project_token works when no token set", {
   expect_message(view_project_token(project), "is not a valid 32-character")
 })
 test_that("view_project_token works when token is set", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -72,7 +72,7 @@ test_that("view_project_token works when token is set", {
 })
 # test_project_token ( Exported )
 test_that("test_project_token works when exportVersion returns version", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -108,7 +108,7 @@ test_that("test_project_token works when exportVersion returns version", {
   expect_message(test_project_token(project), "Your REDCap project ID changed")
 })
 test_that("test_project_token marks failure when exportVersion returns NULL", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {

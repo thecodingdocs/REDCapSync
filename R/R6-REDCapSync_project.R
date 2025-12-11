@@ -170,7 +170,7 @@ REDCapSync_project <- R6Class(
                            dir_other = NULL,
                            file_name = NULL,
                            hard_reset = FALSE) {
-      private$project <- private$project %>%
+      private$project <- private$project |>
         add_project_summary(
           summary_name,
           transformation_type = transformation_type,
@@ -214,11 +214,11 @@ REDCapSync_project <- R6Class(
     #' @description  Add a new summary entry
     generate_summary = function(summary_name, envir = NULL) {
       assert_environment(envir, null.ok = TRUE)
-      summary_names <- private$project$summary %>%
-        names() %>%
+      summary_names <- private$project$summary |>
+        names() |>
         setdiff("all_records")
       assert_choice(summary_name, summary_names, null.ok = FALSE)
-      project_summary <- private$project %>%
+      project_summary <- private$project |>
         generate_project_summary(
           summary_name = summary_name
         )
@@ -249,7 +249,7 @@ REDCapSync_project <- R6Class(
     #' @description summarize project and save to Excel
     summarize = function(hard_reset = FALSE) {
       first_stamp <- private$project$internals$last_summary
-      private$project <- private$project %>%
+      private$project <- private$project |>
         summarize_project(hard_reset = hard_reset)
       second_stamp <- private$project$internals$last_summary
       was_updated <- !identical(first_stamp, second_stamp)
@@ -261,11 +261,11 @@ REDCapSync_project <- R6Class(
     },
     #' @description save summary to Excel
     save_summary = function(summary_name) {
-      summary_names <- private$project$summary %>%
-        names() %>%
+      summary_names <- private$project$summary |>
+        names() |>
         setdiff("all_records")
       assert_choice(summary_name, summary_names, null.ok = FALSE)
-      private$project <- private$project %>%
+      private$project <- private$project |>
         save_summary(summary_name)
       invisible(self)
     },

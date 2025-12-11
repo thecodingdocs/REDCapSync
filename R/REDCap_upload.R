@@ -13,7 +13,7 @@
 #' @keywords internal
 upload_form_to_REDCap <- function(to_be_uploaded, project, batch_size = 500) {
   REDCapR::redcap_write(
-    ds_to_write = to_be_uploaded %>% all_character_cols(),
+    ds_to_write = to_be_uploaded |> all_character_cols(),
     batch_size = batch_size,
     interbatch_delay = 0.2,
     continue_on_error = FALSE,
@@ -31,7 +31,7 @@ read_xlsx_for_upload <- function(project,
       cli_alert_warning("`file_path` only needed if summary_name not provided.")
       cli_alert_info("Using `file_path` from `summary_name`...")
     }
-    if (!summary_name %in% names(project$summary) %>% setdiff("all_records")) {
+    if (!summary_name %in% names(project$summary) |> setdiff("all_records")) {
       stop("`summary_name` is not one of `project$summary`")
     }
     file_path <- project$summary[[summary_name]]$file_path
@@ -46,10 +46,10 @@ read_xlsx_for_upload <- function(project,
   }
   data_list <- excel_to_list(file_path)
   the_row <- which(data_list$summary_details$paramater == "raw_form_names")
-  form_names <- data_list$summary_details$value[the_row] %>%
-    strsplit(" [:|:] ") %>%
+  form_names <- data_list$summary_details$value[the_row] |>
+    strsplit(" [:|:] ") |>
     unlist()
-  drop_names <- names(data_list) %>% setdiff(form_names)
+  drop_names <- names(data_list) |> setdiff(form_names)
   # use summary_details to drop non-uploadcompatibles and warn
   for (drop_sheet in drop_names) {
     data_list[[drop_sheet]] <- NULL

@@ -2,8 +2,8 @@
 fields_to_choices <- function(fields) {
   fields <- fields[which(fields$field_type %in% .redcap_factor_fields), ]
   # fields$field_name[which(fields$field_type=="checkbox_choice")] <-
-  # fields$field_name[which(fields$field_type=="checkbox_choice")] %>%
-  # strsplit("___") %>% lapply(function(X){X[[1]]})
+  # fields$field_name[which(fields$field_type=="checkbox_choice")] |>
+  # strsplit("___") |> lapply(function(X){X[[1]]})
   fields <- fields[which(!is.na(fields$select_choices_or_calculations)), ]
   choices <- NULL
   for (i in seq_len(nrow(fields))) {
@@ -11,8 +11,8 @@ fields_to_choices <- function(fields) {
     form_name <- fields$form_name[i]
     field_label <- fields$field_label[i]
     field_type <- fields$field_type[i]
-    selections <- fields$select_choices_or_calculations[i] %>% split_choices()
-    choices <- choices %>% bind_rows(
+    selections <- fields$select_choices_or_calculations[i] |> split_choices()
+    choices <- choices |> bind_rows(
       data.frame(
         form_name = form_name,
         field_name = field_name,
@@ -34,11 +34,11 @@ fields_to_choices <- function(fields) {
 #' @noRd
 add_labels_to_checkbox <- function(fields) {
   row_index <- which(fields$field_type == "checkbox_choice")
-  x <- fields$field_name[row_index] %>%
-    strsplit("___") %>%
+  x <- fields$field_name[row_index] |>
+    strsplit("___") |>
     lapply(function(x) {
       x[[1]]
-    }) %>%
+    }) |>
     unlist()
   y <- fields$field_label[row_index]
   z <- paste0(fields$field_label[match(x, fields$field_name)], " - ", y)
@@ -62,17 +62,17 @@ annotate_fields <- function(data_list,
         col_names <- fields$field_name[which(fields$form_name == form_name)]
         form <- data_list$data[[form_name]]
         col_names <- col_names[which(col_names %in% colnames(form))]
-        skimmed <- skimmed %>% bind_rows(form[, col_names] %>% skimr::skim())
+        skimmed <- skimmed |> bind_rows(form[, col_names] |> skimr::skim())
       }
       field_names <- fields$field_name
-      fields <- fields %>% merge(skimmed,
+      fields <- fields |> merge(skimmed,
                                  by.x = "field_name",
                                  by.y = "skim_variable",
                                  all = TRUE)
-      fields <- field_names %>%
+      fields <- field_names |>
         lapply(function(x) {
           fields[which(fields$field_name == x), ]
-        }) %>%
+        }) |>
         bind_rows()
     }
     # cli_alert_wrap("Annotated `data_list$metadata$fields`",bullet_type = "v")
@@ -90,28 +90,28 @@ annotate_forms <- function(data_list,
   if (nrow(forms) > 0) {
     # add metadata info like n fields
     if (summarize_data) {
-      var_list <- forms$form_name %>% lapply(function(form_name) {
+      var_list <- forms$form_name |> lapply(function(form_name) {
         paste0(form_name, "_complete")
       })
       if ("original_form_name" %in% colnames(forms)) {
-        var_list <- forms$original_form_name %>% strsplit(" [:|:] ") %>%
+        var_list <- forms$original_form_name |> strsplit(" [:|:] ") |>
           lapply(function(form_name) {
             paste0(form_name, "_complete")
           })
       }
       names(var_list) <- forms$form_name
       for (status in c("Incomplete", "Unverified", "Complete")) {
-        forms[[tolower(status)]] <- forms$form_name %>%
+        forms[[tolower(status)]] <- forms$form_name |>
           lapply(function(form_name) {
-            var_list[[form_name]] %>%
+            var_list[[form_name]] |>
               lapply(function(var_name) {
-                (data_list$data[[form_name]][[var_name]] == status) %>%
-                  which() %>%
+                (data_list$data[[form_name]][[var_name]] == status) |>
+                  which() |>
                   length()
-              }) %>%
-              unlist() %>%
+              }) |>
+              unlist() |>
               paste0(collapse = " | ")
-          }) %>%
+          }) |>
           unlist()
       }
     }
@@ -131,18 +131,18 @@ annotate_choices <- function(data_list,
   }
   # choices$field_name_raw <- choices$field_name
   # choices$field_name_raw[which(choices$field_type=="checkbox_choice")] <-
-  #choices$field_name[which(choices$field_type=="checkbox_choice")] %>%
-  #   strsplit("___") %>%
+  #choices$field_name[which(choices$field_type=="checkbox_choice")] |>
+  #   strsplit("___") |>
   #   lapply(function(X){X[[1]]})
   # choices$field_label_raw <- choices$field_label
   # choices$field_label_raw[which(choices$field_type=="checkbox_choice")] <-
-  #choices$field_name_raw[which(choices$field_type=="checkbox_choice")] %>%
+  #choices$field_name_raw[which(choices$field_type=="checkbox_choice")] |>
   #   lapply(function(X){
-  #     data_list$metadata$fields$field_label[which(fields$field_name==X)] %>%
+  #     data_list$metadata$fields$field_label[which(fields$field_name==X)] |>
   # unique()
   #   })
   if (summarize_data) {
-    choices$n <- seq_len(nrow(choices)) %>%
+    choices$n <- seq_len(nrow(choices)) |>
       lapply(function(i) {
         form <- data_list$data[[choices$form_name[i]]]
         if (is.null(form)) {
@@ -156,9 +156,9 @@ annotate_choices <- function(data_list,
           return(0)
         }
         sum(form[, the_col] == choices$name[i], na.rm = TRUE)
-      }) %>%
+      }) |>
       unlist()
-    choices$n_total <- seq_len(nrow(choices)) %>%
+    choices$n_total <- seq_len(nrow(choices)) |>
       lapply(function(i) {
         form <- data_list$data[[choices$form_name[i]]]
         if (is.null(form)) {
@@ -172,12 +172,11 @@ annotate_choices <- function(data_list,
           return(0)
         }
         sum(!is.na(form[, the_col]), na.rm = TRUE)
-      }) %>%
+      }) |>
       unlist()
-    choices$perc <- (choices$n / choices$n_total) %>% round(4)
-    choices$perc_text <- choices$perc %>%
-      magrittr::multiply_by(100) %>%
-      round(1) %>%
+    choices$perc <- (choices$n / choices$n_total) |> round(4)
+    choices$perc_text <- (choices$perc * 100) |>
+      round(1) |>
       paste0("%")
     # cli_alert_wrap("Annotated `data_list$summary$choices`",bullet_type = "v")
   }
@@ -190,8 +189,8 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
   the_rows <- which(data_list$summary$all_records[[id_col]] %in% records)
   all_records <- data_list$summary$all_records[the_rows, ]
   redcap_log <- get_log(data_list = data_list, records = records)
-  # redcap_log$date <- redcap_log$timestamp %>% strsplit(" ") %>%
-  #lapply(first) %>% unlist()
+  # redcap_log$date <- redcap_log$timestamp |> strsplit(" ") |>
+  #lapply(first) |> unlist()
   if (!is_something(all_records) || !is_something(redcap_log)) {
     return(all_records)
   }
@@ -206,7 +205,7 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
       }
       cool_list <- split(redcap_log, redcap_log$record)
       if (length(cool_list) > 1) {
-        cool_df <- seq_len(length(cool_list)) %>% lapply(function(i) {
+        cool_df <- seq_len(length(cool_list)) |> lapply(function(i) {
           df <- cool_list[[i]]
           the_last <- first(df)
           the_first <- last(df)
@@ -218,10 +217,10 @@ annotate_records <- function(data_list, summarize_data = TRUE) {
           )
           if (has_users) {
             out_df$last_username <- the_last$username
-            out_df$last_user <- the_last$firstname %>% paste(the_last$lastname)
+            out_df$last_user <- the_last$firstname |> paste(the_last$lastname)
           }
           out_df
-        }) %>%
+        }) |>
           bind_rows()
         colnames(cool_df)[1] <- id_col
         all_records <- merge(all_records, cool_df, by = id_col, all.x = TRUE)
@@ -253,21 +252,21 @@ clean_form <- function(form,
           if (!is.na(select_choices)) {
             levels <- split_choices(select_choices)[[2]]
           } else {
-            levels <- unique(form[[field_name]]) %>% drop_nas()
+            levels <- unique(form[[field_name]]) |> drop_nas()
           }
           if (anyDuplicated(levels) > 0) {
-            duplicate_levels <- levels %>%
-              duplicated() %>%
+            duplicate_levels <- levels |>
+              duplicated() |>
               which()
             warning(
               "You have a variable (",
               field_name,
               ") with dupplicate names (",
-              levels[duplicate_levels] %>% toString(),
+              levels[duplicate_levels] |> toString(),
               "). This is not great but for this proccess they will be merged",
               "and treated as identical responses."
             )
-            levels <- levels %>% unique()
+            levels <- levels |> unique()
           }
           if (drop_blanks) {
             levels <- levels[which(levels %in% unique(form[[field_name]]))]
@@ -285,7 +284,7 @@ clean_form <- function(form,
         }
         form
       }
-      form[[field_name]] <- form[[field_name]] %>% clean_column_for_table(
+      form[[field_name]] <- form[[field_name]] |> clean_column_for_table(
         class = class,
         label = label,
         units = units,
@@ -301,13 +300,13 @@ clean_column_for_table <- function(field, class, label, units, levels) {
     if (!is.null(class)) {
       if (!is.na(class)) {
         if (class == "integer") {
-          field <- field %>% as.integer()
+          field <- field |> as.integer()
         }
         if (class == "factor") {
-          field <- field %>% factor(levels = levels, ordered = TRUE)
+          field <- field |> factor(levels = levels, ordered = TRUE)
         }
         if (class == "numeric") {
-          field <- field %>% as.numeric()
+          field <- field |> as.numeric()
         }
       }
     }
@@ -446,7 +445,7 @@ add_project_summary <- function(project,
   )
   summary_list_old <- project$summary[[summary_name]]
   if (!is.null(summary_list_old) && !hard_reset) {
-    important_vars <- names(summary_list_new) %>%
+    important_vars <- names(summary_list_new) |>
       vec1_not_in_vec2(.not_important_summary_names)
     are_identical <-
       identical(
@@ -479,8 +478,8 @@ data_list_to_save <- function(data_list,
   }
   if (include_metadata) {
     metadata_form_names <- c("forms", "fields", "choices", "missing_codes")
-    metadata_names <- data_list$metadata[metadata_form_names] %>%
-      process_df_list(silent = TRUE) %>%
+    metadata_names <- data_list$metadata[metadata_form_names] |>
+      process_df_list(silent = TRUE) |>
       names()
     metadata_names_alt <- metadata_names
     if (any(metadata_names %in% names(data_list$data))) {
@@ -531,7 +530,7 @@ data_list_to_save <- function(data_list,
 save_summary <- function(project, summary_name) {
   id_col <- project$metadata$id_col
   summary_list <- project$summary[[summary_name]]
-  data_list <- project %>%
+  data_list <- project |>
     generate_project_summary(summary_name = summary_name, internal_use = TRUE)
   # add headers-------
   form_names <- names(data_list$data)
@@ -542,12 +541,12 @@ save_summary <- function(project, summary_name) {
     cols_start <- 1
     header_df_list <- NULL
   }
-  records <- data_list$data[form_names] %>%
+  records <- data_list$data[form_names] |>
     lapply(function(form) {
       form[[id_col]]
-    }) %>%
-    unlist() %>%
-    sort() %>%
+    }) |>
+    unlist() |>
+    sort() |>
     unique()
   n_records <- length(records)
   # track form names
@@ -563,13 +562,13 @@ save_summary <- function(project, summary_name) {
     if (project$internals$project_type == "redcap") {
       add_links <- which(names(data_list) %in% form_names)
       if (length(add_links) > 0) {
-        data_list[add_links] <- data_list[add_links] %>%
+        data_list[add_links] <- data_list[add_links] |>
           lapply(function(form) {
             add_redcap_links_to_form(form, project)
           })
         if (summary_list$include_records) {
           if ("records" %in% names(data_list)) {
-            data_list$records <- data_list$records %>%
+            data_list$records <- data_list$records |>
               add_redcap_links_to_form(project)
           }
         }
@@ -602,14 +601,14 @@ save_summary <- function(project, summary_name) {
   summary_details$cols_start <- cols_start
   data_list$summary_details <- data.frame(
     paramater = names(summary_details),
-    value = summary_details %>% lapply(function(row) {
-      row %>% paste0(collapse = " | ")
-    }) %>%
-      unlist() %>%
+    value = summary_details |> lapply(function(row) {
+      row |> paste0(collapse = " | ")
+    }) |>
+      unlist() |>
       unname()
   )
   if (summary_list$use_csv) {
-    data_list %>% list_to_csv(
+    data_list |> list_to_csv(
       dir = summary_list$dir_other,
       file_name = summary_list$file_name,
       overwrite = TRUE
@@ -825,9 +824,9 @@ generate_project_summary <- function(project,
         }else {
           exclude_these <- data_list$metadata$missing_codes$code
         }
-        drop_others <- drop_others %>%
-          append(exclude_these) %>%
-          unique() %>%
+        drop_others <- drop_others |>
+          append(exclude_these) |>
+          unique() |>
           drop_nas()
       }
     }
@@ -950,18 +949,18 @@ merge_non_repeating <- function(data_list,
   )
   cols_to_keep <- cols_to_keep[
     which(cols_to_keep %in% colnames(forms_transformation))]
-  forms_transformation <- forms_transformation[, cols_to_keep] %>% unique()
+  forms_transformation <- forms_transformation[, cols_to_keep] |> unique()
   colnames(forms_transformation)[
     which(colnames(forms_transformation) == "form_name_remap")] <- "form_name"
   colnames(forms_transformation)[
     which(colnames(forms_transformation) == "form_label_remap")] <- "form_label"
-  forms_transformation$original_form_name <- forms_transformation$form_name %>%
+  forms_transformation$original_form_name <- forms_transformation$form_name |>
     lapply(function(form_name) {
       forms_transformation_original$form_name[
-        which(forms_transformation_original$form_name_remap == form_name)] %>%
+        which(forms_transformation_original$form_name_remap == form_name)] |>
         paste0(collapse = " | ")
-    }) %>%
-    unlist() %>%
+    }) |>
+    unlist() |>
     as.character()
   data_list$metadata$forms <- forms_transformation
   # data_list$metadata$fields
@@ -987,11 +986,11 @@ merge_non_repeating <- function(data_list,
     merge_form <- NULL
     non_rep_form_names <-
       non_rep_form_names[
-        non_rep_form_names %>%
+        non_rep_form_names |>
           lapply(function(non_rep_form_name) {
             is_something(data_list$data[[non_rep_form_name]])
-          }) %>%
-          unlist() %>%
+          }) |>
+          unlist() |>
           which()]
     # non_rep_form_name <- non_rep_form_names[[2]]
     i <- 0
@@ -1042,10 +1041,10 @@ metadata_add_default_cols <- function(data_list) {
   fields <- fields[which(fields$field_type != "checkbox"), ]
   fields$field_label[which(is.na(fields$field_label))] <-
     fields$field_name[which(is.na(fields$field_label))]
-  fields <- unique(fields$form_name) %>%
+  fields <- unique(fields$form_name) |>
     lapply(function(x) {
       fields[which(fields$form_name == x), ]
-    }) %>%
+    }) |>
     bind_rows()
   fields$field_type_R <- field_types_to_R(fields)
   # for (x in names(.redcap_field_conversion2)){
@@ -1119,12 +1118,12 @@ summarize_project <- function(project, hard_reset = FALSE) {
   if (is_something(project$data)) {
     summary_names <- check_summaries(project)
     if (hard_reset) {
-      summary_names <- project$summary %>% names() %>% setdiff("all_records")
+      summary_names <- project$summary |> names() |> setdiff("all_records")
     }
     if (is_something(summary_names)) {
       for (summary_name in summary_names) {
         project <- tryCatch(
-          expr = project %>% save_summary(summary_name),
+          expr = project |> save_summary(summary_name),
           error = function(e) {
             cli_alert_warning("Failed to save summary `{summary_name}`.")
             invisible(project)
@@ -1141,8 +1140,8 @@ summarize_project <- function(project, hard_reset = FALSE) {
 #' @keywords internal
 clear_project_summaries <- function(project, summary_names = NULL) {
   assert_setup_project(project)
-  all_summary_names <- project$summary %>%
-    names() %>%
+  all_summary_names <- project$summary |>
+    names() |>
     setdiff("all_records")
   if (is.null(summary_names)) {
     summary_names <- all_summary_names
@@ -1157,19 +1156,19 @@ clear_project_summaries <- function(project, summary_names = NULL) {
 }
 #' @noRd
 extract_values_from_form_list <- function(form_list, col_name) {
-  names(form_list) %>%
+  names(form_list) |>
     lapply(function(form_name) {
       form_list[[form_name]][[col_name]]
-    }) %>%
-    unlist() %>%
-    drop_nas() %>%
+    }) |>
+    unlist() |>
+    drop_nas() |>
     unique()
 }
 #' @noRd
 extract_project_records <- function(data_list) {
   all_records <- NULL
   id_col <- data_list$metadata$id_col
-  if (data_list$data %>% is_something()) {
+  if (data_list$data |> is_something()) {
     record_id_col <- extract_values_from_form_list(
       form_list = data_list$data,
       col_name = id_col
@@ -1209,9 +1208,9 @@ annotate_users <- function(data_list,
                            drop_blanks = FALSE) {
   redcap_log <- get_log(data_list, records)
   # role_label not inculded now
-  summary_users <- data_list$redcap$users %>%
+  summary_users <- data_list$redcap$users |>
     select(c("username", "email", "firstname", "lastname"))
-  user_groups <- redcap_log %>% split(redcap_log$username)
+  user_groups <- redcap_log |> split(redcap_log$username)
   names_in_log <- names(user_groups)
   if (!is_something(user_groups) || length(names_in_log) == 0) {
     return(summary_users)
@@ -1224,9 +1223,9 @@ annotate_users <- function(data_list,
       drop_nas(match(summary_users$username, names_in_log))]
   }
   if (summarize_data) {
-    only_in_log <- names_in_log %>% vec1_not_in_vec2(summary_users$username)
+    only_in_log <- names_in_log |> vec1_not_in_vec2(summary_users$username)
     if (length(only_in_log) > 0) {
-      summary_users <- summary_users %>%
+      summary_users <- summary_users |>
         bind_rows(data.frame(username = only_in_log))
     }
     summary_users$first_timestamp <- NA
@@ -1237,7 +1236,7 @@ annotate_users <- function(data_list,
       the_row <- match(user_group_name, summary_users$username)
       group <- user_groups[[user_group_name]]
       # record_rows <- which(!is.na(group$record))
-      summary_users$first_timestamp[the_row] <- group$timestamp %>% last()
+      summary_users$first_timestamp[the_row] <- group$timestamp |> last()
       summary_users$last_timestamp[the_row] <- group$timestamp[[1]]
       # if(length(record_rows)>0){
       #   summary_users$last_record_timestamp[the_row] <-
@@ -1248,7 +1247,7 @@ annotate_users <- function(data_list,
   }
   # summary_users$timestamp_diff_days<-
   #(as.Date(summary_users$last_timestamp) -
-  #as.Date(summary_users$first_timestamp)+1) %>% as.integer()
+  #as.Date(summary_users$first_timestamp)+1) |> as.integer()
   # summary_users$records_per_day <-
   #as.integer(summary_users$unique_records_n/summary_users$timestamp_diff_days)
   summary_users
@@ -1277,16 +1276,16 @@ get_summary_records <- function(project, summary_name) {
     annotate_from_log = FALSE,
     internal_use = TRUE
   )
-  records <- data_list$data %>%
+  records <- data_list$data |>
     lapply(function(form) {
       form[[id_col]]
-    }) %>%
-    unlist() %>%
-    sort() %>%
+    }) |>
+    unlist() |>
+    sort() |>
     unique()
   record_rows <- which(project$summary$all_records[[id_col]] %in% records)
-  summary_records <- project$summary$all_records[[id_col]][record_rows] %>%
-    sort() %>%
+  summary_records <- project$summary$all_records[[id_col]][record_rows] |>
+    sort() |>
     unique()
   summary_records
 }
@@ -1303,9 +1302,9 @@ summary_records_due <- function(project, summary_name) {
     return(TRUE)
   }
   old_rec_rows <- which(project$summary$all_records[[summary_name]])
-  old_records <- project$summary$all_records[[id_col]][old_rec_rows] %>% sort()
+  old_records <- project$summary$all_records[[id_col]][old_rec_rows] |> sort()
   records <- get_summary_records(project = project,
-                                 summary_name = summary_name) %>% sort()
+                                 summary_name = summary_name) |> sort()
   if (!identical(records, old_records)) {
     return(TRUE)
   }
@@ -1323,7 +1322,7 @@ summary_records_due <- function(project, summary_name) {
 #' @noRd
 check_summaries <- function(project, summary_names) {
   if (missing(summary_names)) {
-    summary_names <- project$summary %>% names() %>% setdiff("all_records")
+    summary_names <- project$summary |> names() |> setdiff("all_records")
   }
   needs_refresh <- NULL
   if (is.null(summary_names)) {
@@ -1335,7 +1334,7 @@ check_summaries <- function(project, summary_names) {
     test_summary <-
       summary_records_due(project = project, summary_name = summary_name)
     if (test_summary) {
-      needs_refresh <- needs_refresh %>% append(summary_name)
+      needs_refresh <- needs_refresh |> append(summary_name)
     }
   }
   if (is.null(needs_refresh)) {
@@ -1417,12 +1416,12 @@ labelled_to_raw_form <- function(form, project) {
   use_missing_codes <- is.data.frame(project$metadata$missing_codes)
   fields <- filter_fields_from_form(form = form, project = project)
   for (i in seq_len(nrow(fields))) {
-    # i <-  seq_len(nrow(fields) %>% sample(1)
+    # i <-  seq_len(nrow(fields) |> sample(1)
     field_name <- fields$field_name[i]
     has_choices <- fields$has_choices[i]
     if (has_choices) {
-      z <- fields$select_choices_or_calculations[i] %>% split_choices()
-      form[[field_name]] <- form[[field_name]] %>%
+      z <- fields$select_choices_or_calculations[i] |> split_choices()
+      form[[field_name]] <- form[[field_name]] |>
         lapply(function(x) {
           form <- NA
           if (!is.na(x)) {
@@ -1454,12 +1453,12 @@ labelled_to_raw_form <- function(form, project) {
             }
           }
           form
-        }) %>%
-        unlist() %>%
+        }) |>
+        unlist() |>
         as.character()
     } else {
       if (use_missing_codes) {
-        form[[field_name]] <- form[[field_name]] %>%
+        form[[field_name]] <- form[[field_name]] |>
           lapply(function(x) {
             field <- x
             if (!is.na(x)) {
@@ -1469,8 +1468,8 @@ labelled_to_raw_form <- function(form, project) {
               }
             }
             field
-          }) %>%
-          unlist() %>%
+          }) |>
+          unlist() |>
           as.character()
       }
     }
@@ -1488,19 +1487,19 @@ raw_to_labelled_form <- function(form, project) {
       "You cannot use labelled = 'TRUE' because you have a coding conflict ",
       "in your data dictionary... Try `setup_project` with labelled = 'FALSE'.",
       "The conflicts are from: ",
-      project$metadata$coding_conflict_field_names %>% paste0(collapse = ", ")
+      project$metadata$coding_conflict_field_names |> paste0(collapse = ", ")
     )
   }
   if (nrow(form) > 0) {
     use_missing_codes <- is.data.frame(project$metadata$missing_codes)
     fields <- filter_fields_from_form(form = form, project = project)
     for (i in seq_len(nrow(fields))) {
-      # i <-  seq_len(nrow(fields)) %>% sample(1)
+      # i <-  seq_len(nrow(fields)) |> sample(1)
       field_name <- fields$field_name[i]
       has_choices <- fields$has_choices[i]
       if (has_choices) {
-        z <- fields$select_choices_or_calculations[i] %>% split_choices()
-        form[[field_name]] <- form[[field_name]] %>%
+        z <- fields$select_choices_or_calculations[i] |> split_choices()
+        form[[field_name]] <- form[[field_name]] |>
           lapply(function(x) {
             form <- NA
             if (!is.na(x)) {
@@ -1533,13 +1532,13 @@ raw_to_labelled_form <- function(form, project) {
               }
             }
             form
-          }) %>%
-          unlist() %>%
+          }) |>
+          unlist() |>
           as.character()
       } else {
         if (use_missing_codes) {
           z <- project$metadata$missing_codes
-          form[[field_name]] <- form[[field_name]] %>%
+          form[[field_name]] <- form[[field_name]] |>
             lapply(function(x) {
               field <- x
               if (!is.na(x)) {
@@ -1549,8 +1548,8 @@ raw_to_labelled_form <- function(form, project) {
                 }
               }
               field
-            }) %>%
-            unlist() %>%
+            }) |>
+            unlist() |>
             as.character()
         }
       }
@@ -1565,7 +1564,7 @@ labelled_to_raw_data_list <- function(project) {
     stop("project is already raw/coded (not labelled values)")
   }
   for (form_name in names(project$data)) {
-    project$data[[form_name]] <- project$data[[form_name]] %>%
+    project$data[[form_name]] <- project$data[[form_name]] |>
       labelled_to_raw_form(project = project)
   }
   project$internals$labelled <- FALSE
@@ -1581,7 +1580,7 @@ raw_to_labelled_data_list <- function(project) {
     stop("project has codebook conflict(s), so will not convert to labelled!")
   }
   for (form_name in names(project$data)) {
-    project$data[[form_name]] <- project$data[[form_name]] %>%
+    project$data[[form_name]] <- project$data[[form_name]] |>
       raw_to_labelled_form(project = project)
   }
   project$internals$labelled <- TRUE
@@ -1589,9 +1588,9 @@ raw_to_labelled_data_list <- function(project) {
 }
 #' @noRd
 get_all_field_names <- function(data_list) {
-  data_list$data %>%
-    lapply(colnames) %>%
-    unlist() %>%
+  data_list$data |>
+    lapply(colnames) |>
+    unlist() |>
     unique()
 }
 #' @noRd
@@ -1634,35 +1633,35 @@ field_names_to_form_names <- function(project,
     metadata <- project$transformation$metadata
   }
   fields <- metadata$fields
-  form_key_cols <- metadata$form_key_cols %>%
-    unlist() %>%
+  form_key_cols <- metadata$form_key_cols |>
+    unlist() |>
     unique()
   field_names_keys <- field_names[which(field_names %in% form_key_cols)]
-  form_names_keys <- field_names_keys %>%
+  form_names_keys <- field_names_keys |>
     lapply(function(field_name) {
-      metadata$form_key_cols %>%
-        names() %>%
+      metadata$form_key_cols |>
+        names() |>
         lapply(function(form_name) {
           if (!field_name %in% metadata$form_key_cols[[form_name]]) {
             return(NULL)
           }
           form_name
-        }) %>%
+        }) |>
         unlist()
-    }) %>%
-    unlist() %>%
-    as.character() %>%
+    }) |>
+    unlist() |>
+    as.character() |>
     unique()
   field_names_not_keys <-
-    field_names[which(!field_names %in% form_key_cols)] %>% unique()
+    field_names[which(!field_names %in% form_key_cols)] |> unique()
   form_names_not_keys <-
-    fields$form_name[match(field_names_not_keys, fields$field_name)] %>%
-    drop_nas() %>%
+    fields$form_name[match(field_names_not_keys, fields$field_name)] |>
+    drop_nas() |>
     unique()
   form_names <- form_names_not_keys
   if (!strict) {
-    form_names <- form_names %>%
-      append(form_names_keys) %>%
+    form_names <- form_names |>
+      append(form_names_keys) |>
       unique()
   }
   form_names
@@ -1675,23 +1674,23 @@ construct_header_list <- function(data_list,
   fields <- data_list$metadata$fields
   if (anyDuplicated(fields$field_name) > 0)
     stop("dup names not allowed in fields")
-  data_field_list <- data_list$data %>% lapply(colnames)
-  header_df_list <- data_field_list %>% lapply(function(field_names) {
-    x <- field_names %>%
+  data_field_list <- data_list$data |> lapply(colnames)
+  header_df_list <- data_field_list |> lapply(function(field_names) {
+    x <- field_names |>
       lapply(function(field_name) {
         row <- which(fields$field_name == field_name)
         if (length(row) > 0) {
           return(as.character(fields[md_elements][row, ]))
         }
         rep("", length(md_elements))
-      }) %>%
+      }) |>
       as.data.frame()
     colnames(x) <- field_names
     x <- x[which(apply(x, 1, function(row) {
       any(row != "")
     })), ]
     x
-  }) %>%
+  }) |>
     process_df_list(silent = TRUE)
   header_df_list
 }
@@ -1727,7 +1726,7 @@ field_names_metadata <- function(project, field_names, col_names) {
 }
 #' @noRd
 filter_fields_from_form <- function(form, project) {
-  forms <- project %>% field_names_to_form_names(field_names = colnames(form))
+  forms <- project |> field_names_to_form_names(field_names = colnames(form))
   if (any(forms %in% project$metadata$forms$repeating)) {
     stop(
       "All column names in your form must match only one form in your",
@@ -1735,7 +1734,7 @@ filter_fields_from_form <- function(form, project) {
       " all non-repeating"
     )
   }
-  fields <- project %>% field_names_metadata(field_names = colnames(form))
+  fields <- project |> field_names_metadata(field_names = colnames(form))
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
   fields$has_choices[

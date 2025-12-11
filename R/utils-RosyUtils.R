@@ -15,7 +15,7 @@ cli_alert_wrap <- function(text = "",
   url_if <- ""
   file_if <- ""
   if (length(url) > 0) {
-    # url %>% lapply(function(x){assert_web_link(x)})
+    # url |> lapply(function(x){assert_web_link(x)})
     # doesnt work for /subheaders/
     # url_if <- " {.url {url}}"
     url_names <- names(url)
@@ -32,9 +32,9 @@ cli_alert_wrap <- function(text = "",
       url_if <- paste0(url_if, collapse = " and ")
     url_if <- paste0(
       " {cli::col_blue(cli::style_hyperlink('",
-      url_names %>% clean_for_cli(),
+      url_names |> clean_for_cli(),
       "', '",
-      url %>% clean_for_cli(),
+      url |> clean_for_cli(),
       "'))}"
     )
   }
@@ -52,9 +52,9 @@ cli_alert_wrap <- function(text = "",
       file_if <- paste0(file_if, collapse = " and ")
     file_if <- paste0(
       " {cli::col_blue(cli::style_hyperlink('",
-      sanitize_path(file_names) %>% clean_for_cli(),
+      sanitize_path(file_names) |> clean_for_cli(),
       "', '",
-      sanitize_path(paste0("file://", file)) %>% clean_for_cli(),
+      sanitize_path(paste0("file://", file)) |> clean_for_cli(),
       "'))}"
     )
   }
@@ -77,7 +77,7 @@ process_df_list <- function(list,
     if (!is_df_list(list))
       stop("list must be ...... a list :)")
     if (drop_empty) {
-      is_a_df_with_rows <- list %>%
+      is_a_df_with_rows <- list |>
         lapply(function(x) {
           is_df <- is.data.frame(x)
           out <- FALSE
@@ -85,7 +85,7 @@ process_df_list <- function(list,
             out <- nrow(x) > 0
           }
           out
-        }) %>%
+        }) |>
         unlist()
       keeps <- which(is_a_df_with_rows)
       drops <- which(!is_a_df_with_rows)
@@ -191,11 +191,11 @@ excel_to_list <- function(path) {
     )
     if (all(c("paramater", "value") %in% colnames(summary_details))) {
       the_row <- which(summary_details$paramater == "raw_form_names")
-      form_names <- summary_details$value[the_row] %>%
-        strsplit(" [:|:] ") %>%
+      form_names <- summary_details$value[the_row] |>
+        strsplit(" [:|:] ") |>
         unlist()
       the_row <- which(summary_details$paramater == "cols_start")
-      cols_start <- summary_details$value[the_row] %>% as.integer()
+      cols_start <- summary_details$value[the_row] |> as.integer()
       if (cols_start > 1) {
         for (i in as.integer(names(sheets)[match(form_names, sheets)])) {
           suppressMessages({
@@ -206,7 +206,7 @@ excel_to_list <- function(path) {
           })
           final_nrow <- nrow(out[[i]])
           if (cols_start < final_nrow) {
-            true_colnames <- out[[i]][cols_start, ] %>% unlist() %>% unname()
+            true_colnames <- out[[i]][cols_start, ] |> unlist() |> unname()
             out[[i]] <- out[[i]][(cols_start + 1):final_nrow, ]
             colnames(out[[i]]) <- true_colnames
             sheets <- sheets[which(sheets != sheets[i])]
@@ -262,7 +262,7 @@ wb_to_list <- function(wb) {
       col_row <- gsub(
         pattern = "[A-Za-z]",
         replacement = "",
-        x = unlist(x %>% attr("refs") %>% strsplit(":"))[[1]]) %>%
+        x = unlist(x |> attr("refs") |> strsplit(":"))[[1]]) |>
         as.integer()
     }
     out[[i]] <- openxlsx::read.xlsx(wb, sheet = i, startRow = col_row)
@@ -298,7 +298,7 @@ form_to_wb <- function(form,
   hyperlink_col <- NULL
   if (is_something(header_df)) {
     names(header_df)[match(names(form), names(header_df))]
-    missing_headers <- names(form) %>%  vec1_not_in_vec2(names(header_df))
+    missing_headers <- names(form) |>  vec1_not_in_vec2(names(header_df))
     if (length(missing_headers) > 0) {
       for (missing_header in missing_headers){
         header_df[[missing_header]] <- ""
@@ -509,7 +509,7 @@ trim_string <- function(string, max_length) {
 }
 #' @noRd
 unique_trimmed_strings <- function(strings, max_length) {
-  trimmed_strings <- lapply(strings, trim_string, max_length = max_length) %>%
+  trimmed_strings <- lapply(strings, trim_string, max_length = max_length) |>
     unlist()
   # Initialize a vector to store unique strings
   unique_strings <- character(length(trimmed_strings))
@@ -651,7 +651,7 @@ list_to_csv <- function(input_list,
 save_wb <- function(wb, dir, file_name, overwrite = TRUE) {
   if (!dir.exists(dir))
     stop("dir doesn't exist")
-  path <- file.path(dir, paste0(file_name, ".xlsx")) %>% sanitize_path()
+  path <- file.path(dir, paste0(file_name, ".xlsx")) |> sanitize_path()
   openxlsx::saveWorkbook(wb = wb,
                          file = path,
                          overwrite = overwrite)
@@ -661,7 +661,7 @@ save_wb <- function(wb, dir, file_name, overwrite = TRUE) {
 save_csv <- function(form, dir, file_name, overwrite = TRUE) {
   if (!dir.exists(dir))
     stop("dir doesn't exist")
-  path <- file.path(dir, paste0(file_name, ".csv")) %>% sanitize_path()
+  path <- file.path(dir, paste0(file_name, ".csv")) |> sanitize_path()
   write_it <- TRUE
   if (!overwrite) {
     if (file.exists(path)) {
@@ -752,7 +752,7 @@ clean_env_names <- function(env_names,
                 name,
                 "', added numbers...")
       }
-      cleaned_name <- cleaned_name %>%
+      cleaned_name <- cleaned_name |>
         paste0("_", max(length_which(cleaned_name %in% cleaned_names)) + 1L)
     }
     cleaned_names[i] <- cleaned_name
@@ -823,8 +823,8 @@ is_nested_list <- function(x) {
 }
 #' @noRd
 generate_hex <- function(length = 32) {
-  c(0:9, letters[1:6]) %>%
-    sample(length, replace = TRUE) %>%
-    paste0(collapse = "") %>%
+  c(0:9, letters[1:6]) |>
+    sample(length, replace = TRUE) |>
+    paste0(collapse = "") |>
     toupper()
 }

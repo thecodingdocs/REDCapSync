@@ -13,8 +13,8 @@ get_projects <- function() {
   does_exist <- cache_projects_exists()
   is_ok <- FALSE
   if (does_exist) {
-    projects <- cache_path() %>%
-      file.path("projects.rds") %>%
+    projects <- cache_path() |>
+      file.path("projects.rds") |>
       readRDS()
     if (!does_exist) {
       cli_alert_warning("You have no projects cached. Try `setup_project(...)`")
@@ -30,7 +30,7 @@ get_projects <- function() {
   if (!does_exist || !is_ok) {
     return(.blank_project_details)
   }
-  # projects$project_name %>% paste0(collapse = "\n") %>% message()
+  # projects$project_name |> paste0(collapse = "\n") |> message()
   projects
 }
 #' @noRd
@@ -74,11 +74,11 @@ get_projects <- function() {
   project_name = character(0),
   dir_path = character(0),
   sync_frequency = character(0),
-  last_sync = character(0) %>% as.POSIXct(tz = Sys.timezone()),
+  last_sync = character(0) |> as.POSIXct(tz = Sys.timezone()),
   timezone = character(0),
-  last_directory_save = character(0) %>% as.POSIXct(tz = Sys.timezone()),
-  last_metadata_update = character(0) %>% as.POSIXct(tz = Sys.timezone()),
-  last_data_update = character(0) %>% as.POSIXct(tz = Sys.timezone()),
+  last_directory_save = character(0) |> as.POSIXct(tz = Sys.timezone()),
+  last_metadata_update = character(0) |> as.POSIXct(tz = Sys.timezone()),
+  last_data_update = character(0) |> as.POSIXct(tz = Sys.timezone()),
   version = character(0),
   token_name = character(0),
   project_id = character(0),
@@ -101,11 +101,11 @@ get_projects <- function() {
 )
 #' @noRd
 save_projects_to_cache <- function(projects, silent = TRUE) {
-  project_col_names <- colnames(projects) %>% vec1_in_vec2(.blank_project_cols)
+  project_col_names <- colnames(projects) |> vec1_in_vec2(.blank_project_cols)
   projects <- projects[, project_col_names]
   assert_project_details(projects)
   projects <- projects[order(projects$project_name), ]
-  saveRDS(projects, file = cache_path() %>% file.path("projects.rds"))
+  saveRDS(projects, file = cache_path() |> file.path("projects.rds"))
   pkg_name <- "REDCapSync"
   if (!silent) {
     cli_alert_success(
@@ -141,10 +141,10 @@ extract_project_details <- function(project) {
     ncol = length(.blank_project_cols),
     nrow = 1,
     dimnames = list(NULL, .blank_project_cols)
-  ) %>% as.data.frame()
+  ) |> as.data.frame()
   # top -----
   project_details$project_name <- project$project_name
-  project_details$dir_path <- project$dir_path %>% na_if_null()
+  project_details$dir_path <- project$dir_path |> na_if_null()
   # settings -------
   project_details$sync_frequency <- project$internals$sync_frequency
   project_details$get_files <- project$internals$get_files
@@ -154,45 +154,45 @@ extract_project_details <- function(project) {
   project_details$labelled <- project$internals$labelled
   project_details$get_type <- project$internals$get_type
   # redcap --------
-  project_details$version <- project$redcap$version %>% na_if_null()
-  project_details$token_name <- project$redcap$token_name %>% na_if_null()
-  project_details$project_id <- project$redcap$project_id %>% na_if_null()
-  project_details$project_title <- project$redcap$project_title %>% na_if_null()
-  project_details$id_col <- project$metadata$id_col %>% na_if_null()
-  project_details$is_longitudinal <- project$metadata$is_longitudinal %>%
+  project_details$version <- project$redcap$version |> na_if_null()
+  project_details$token_name <- project$redcap$token_name |> na_if_null()
+  project_details$project_id <- project$redcap$project_id |> na_if_null()
+  project_details$project_title <- project$redcap$project_title |> na_if_null()
+  project_details$id_col <- project$metadata$id_col |> na_if_null()
+  project_details$is_longitudinal <- project$metadata$is_longitudinal |>
     na_if_null()
   project_details$has_repeating_forms_or_events <-
-    project$metadata$has_repeating_forms_or_events %>%
+    project$metadata$has_repeating_forms_or_events |>
     na_if_null()
   project_details$has_multiple_arms <-
-    project$metadata$has_multiple_arms %>% na_if_null()
-  project_details$n_records <- project$summary$all_records %>%
-    nrow() %>%
-    na_if_null() %>%
+    project$metadata$has_multiple_arms |> na_if_null()
+  project_details$n_records <- project$summary$all_records |>
+    nrow() |>
+    na_if_null() |>
     as.integer()
   project_details$redcap_uri <- project$links$redcap_uri
-  project_details$redcap_home <- project$links$redcap_home %>%
-    na_if_null() %>%
+  project_details$redcap_home <- project$links$redcap_home |>
+    na_if_null() |>
     as.character()
   # saving ----
-  project_details$timezone <- project$internals$timezone %>%
-    na_if_null() %>%
+  project_details$timezone <- project$internals$timezone |>
+    na_if_null() |>
     as.character()
-  project_details$last_sync <- project$internals$last_sync %>%
-    na_if_null() %>%
+  project_details$last_sync <- project$internals$last_sync |>
+    na_if_null() |>
     as.POSIXct(tz = Sys.timezone())
   project_details$last_directory_save <-
-    project$internals$last_directory_save %>%
-    na_if_null() %>%
+    project$internals$last_directory_save |>
+    na_if_null() |>
     as.POSIXct(tz = Sys.timezone())
   project_details$last_metadata_update <-
-    project$internals$last_metadata_update %>%
-    na_if_null() %>%
+    project$internals$last_metadata_update |>
+    na_if_null() |>
     as.POSIXct(tz = Sys.timezone())
-  project_details$last_data_update <- project$internals$last_data_update %>%
-    na_if_null() %>%
+  project_details$last_data_update <- project$internals$last_data_update |>
+    na_if_null() |>
     as.POSIXct(tz = Sys.timezone())
-  project_details$R_object_size <- object_size(project) %>% as.character()
+  project_details$R_object_size <- object_size(project) |> as.character()
   project_details
 }
 #' @noRd
@@ -219,7 +219,7 @@ add_project_details_to_cache <- function(project_details) {
       )
     )
   }
-  projects <- projects %>% bind_rows(project_details)
+  projects <- projects |> bind_rows(project_details)
   save_projects_to_cache(projects)
 }
 #' @noRd

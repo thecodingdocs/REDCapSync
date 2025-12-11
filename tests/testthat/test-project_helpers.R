@@ -1,5 +1,5 @@
 test_that("update_project_links works", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -43,7 +43,7 @@ test_that("update_project_links works", {
 })
 # get_project_url ( Exported )
 test_that("get_project_url works", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -71,7 +71,7 @@ test_that("get_project_url works", {
 })
 # get_record_url ( Exported )
 test_that("get_record_url works", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -109,8 +109,8 @@ test_that("deidentify_data_list works", {
   data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
   data_list$metadata$fields$field_type_R <- NA
   data_list$metadata$fields$in_original_redcap <- NA
-  id_cols <- data_list$metadata$form_key_cols %>%
-    unlist() %>%
+  id_cols <- data_list$metadata$form_key_cols |>
+    unlist() |>
     unique()
   fields <- data_list$metadata$fields
   initial_identifiers <- fields$field_name[which(
@@ -128,11 +128,11 @@ test_that("deidentify_data_list works", {
   )
   free_text_fields <- fields$field_name[free_text_rows]
   expect_all_true(initial_identifiers %in% colnames(data_list$data$merged))
-  no_ids <- data_list %>% deidentify_data_list(exclude_identifiers = TRUE,
+  no_ids <- data_list |> deidentify_data_list(exclude_identifiers = TRUE,
                                                exclude_free_text = FALSE)
   expect_all_false(initial_identifiers %in% colnames(no_ids$data$merged))
   expect_all_true(free_text_fields %in% colnames(data_list$data$merged))
-  no_free_text <- data_list %>%
+  no_free_text <- data_list |>
     deidentify_data_list(exclude_identifiers = FALSE,
                          exclude_free_text = TRUE)
   expect_all_false(initial_identifiers %in% colnames(no_free_text$data$merged))
@@ -142,7 +142,7 @@ test_that("deidentify_data_list works", {
   keep_cols <- which(!colnames(data_list$data$merged) %in% initial_identifiers)
   data_list$data$merged <- data_list$data$merged[, keep_cols]
   expect_warning(
-    data_list %>% deidentify_data_list(
+    data_list |> deidentify_data_list(
       exclude_identifiers = TRUE,
       exclude_free_text = FALSE
     ),
@@ -152,7 +152,7 @@ test_that("deidentify_data_list works", {
 test_that("deidentify_data_list works", {
   project <- TEST_CLASSIC
   data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
-  data_list <- data_list %>% metadata_add_default_cols()
+  data_list <- data_list |> metadata_add_default_cols()
   fields <- data_list$metadata$fields
   merged <- data_list$data$merged
   expect_all_true(

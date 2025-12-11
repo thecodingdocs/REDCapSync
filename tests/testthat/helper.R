@@ -42,7 +42,7 @@ mock_project <- function() {
     matrix_ranking = character(0),
     field_annotation = character(0)
   )
-  project$data$form_example <- project$data$form_example %>%
+  project$data$form_example <- project$data$form_example |>
     dplyr::bind_rows(
       data.frame(
         field_name = "var_yesno",
@@ -78,7 +78,7 @@ mock_project <- function() {
     var_text_int = character(0),
     var_yesno = character(0)
   )
-  project$data$form_example <- project$data$form_example %>%
+  project$data$form_example <- project$data$form_example |>
     dplyr::bind_rows(
       data.frame(
         record_id = "1",

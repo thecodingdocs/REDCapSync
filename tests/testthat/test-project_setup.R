@@ -1,5 +1,5 @@
 test_that("test_dir works", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   expect_true(file.exists(test_dir))
   test_file <- file.path(test_dir, "projects.rds")
   expect_false(file.exists(test_file))
@@ -8,7 +8,7 @@ test_that("test_dir works", {
 })
 # setup_project ( Exported )
 test_that("setup_project creates a valid project object and valid directory", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   expect_error(assert_dir(dir_path = test_dir))
   project_name <- "TEST_PROJECT"
   redcap_uri <- "https://redcap.miami.edu/api/"
@@ -55,19 +55,19 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_equal(project$project_name, project_name)
   test_dir_files <- list.files(test_dir)
   expect_true(all(.dir_folders %in% test_dir_files))
-  project$dir_path <- file.path(test_dir, "another_fake_folder") %>%
+  project$dir_path <- file.path(test_dir, "another_fake_folder") |>
     sanitize_path()
   expect_error(assert_dir(project$dir_path))
 })
 # load_project ( Exported )
 # load_test_project ( Exported )
 test_that("load_project works", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   expect_error(assert_dir(test_dir))
 })
 # save_project ( Exported )
 test_that("save_project doesn't save if blank but will save if valid", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -111,8 +111,8 @@ test_that("save_project doesn't save if blank but will save if valid", {
   # loads what we saved
   # change to R6 later
   project2 <- load_project(project_name = project_name)$.internal()
-  # project$internals$last_directory_save %>% attr("tzone")
-  # project2$internals$last_directory_save %>% attr("tzone")
+  # project$internals$last_directory_save |> attr("tzone")
+  # project2$internals$last_directory_save |> attr("tzone")
   expect_identical(project, project2)
   # # delete_project works...
   # expect_no_warning(delete_project(project))
@@ -121,7 +121,7 @@ test_that("save_project doesn't save if blank but will save if valid", {
 })
 # set_dir ( Internal )
 test_that("set_dir creates a new directory if it does not exist", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   dir_path <- file.path(test_dir, "new_dir")
   # Mock user input to create the directory
   mockery::stub(set_dir, "utils::menu", 1)
@@ -130,7 +130,7 @@ test_that("set_dir creates a new directory if it does not exist", {
   expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
 test_that("set_dir handles existing directory correctly", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   dir_path <- file.path(test_dir, "existing_dir")
   dir.create(dir_path)
   expect_message(set_dir(dir_path), "Directory is Valid!")
@@ -141,7 +141,7 @@ test_that("set_dir throws an error for invalid directory path", {
   expect_error(set_dir(123), "dir must be a character string")
 })
 test_that("set_dir creates missing internal directories", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   dir_path <- file.path(test_dir, "partial_dir")
   dir.create(dir_path)
   dir.create(file.path(dir_path, "R_objects"))
@@ -150,7 +150,7 @@ test_that("set_dir creates missing internal directories", {
   expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
 test_that("set_dir stops if user chooses not to create directory", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   dir_path <- file.path(test_dir, "no_create_dir")
   # Mock user input to not create the directory
   mockery::stub(set_dir, "utils::menu", 2)
@@ -158,7 +158,7 @@ test_that("set_dir stops if user chooses not to create directory", {
   expect_false(file.exists(dir_path))
 })
 test_that("set_dir validates the directory structure", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   dir_path <- file.path(test_dir, "valid_dir")
   dir.create(dir_path)
   for (folder in .dir_folders) {

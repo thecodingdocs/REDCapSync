@@ -1,6 +1,6 @@
 # get_projects ( Exported )
 test_that("get_projects is df and has appropriate columns", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -19,7 +19,7 @@ test_that("get_projects is df and has appropriate columns", {
 })
 # extract_project_details ( Internal )
 test_that("extract_project_details works", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -39,7 +39,7 @@ test_that("extract_project_details works", {
 })
 # save_projects_to_cache ( Internal )
 test_that("save_projects_to_cache works", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -77,7 +77,7 @@ test_that("save_projects_to_cache works", {
 # na_if_null ( Internal )
 # add_project_details_to_cache ( Internal )
 test_that("add_project_details_to_cache works", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -105,7 +105,7 @@ test_that("add_project_details_to_cache works", {
 })
 # save_project_details ( Internal )
 # test_that("save_project_details works", {
-#   test_dir <- withr::local_tempdir() %>% sanitize_path()
+#   test_dir <- withr::local_tempdir() |> sanitize_path()
 #   fake_cache_location <- file.path(test_dir, "fake_cache")
 #   local_mocked_bindings(
 #     get_cache = function(...) {

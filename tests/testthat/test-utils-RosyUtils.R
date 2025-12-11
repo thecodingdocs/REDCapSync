@@ -30,29 +30,29 @@ test_that("sanitize_path works!", {
 # all_character_cols ( Internal )
 test_that("all_character_cols works!", {
   form <- mtcars
-  form$name <- form %>% rownames()
+  form$name <- form |> rownames()
   form$cyl_more_then_4 <- form$cyl > 4
-  col_types <- form %>% lapply(class) %>% unlist() %>% unique()
+  col_types <- form |> lapply(class) |> unlist() |> unique()
   expect_vector(col_types, size = 3)
   expect_equal(col_types, c("numeric", "character", "logical"))
   form <- all_character_cols(form)
-  col_types <- form %>% lapply(class) %>% unlist() %>% unique()
+  col_types <- form |> lapply(class) |> unlist() |> unique()
   expect_vector(col_types, size = 1)
   expect_equal(col_types, "character")
 })
 # all_character_cols_list ( Internal )
 test_that("all_character_cols_list works!", {
   form <- mtcars
-  form$name <- form %>% rownames()
+  form$name <- form |> rownames()
   form$cyl_more_then_4 <- form$cyl > 4
   form_list <- list(one = form, two = airquality)
-  col_types1 <- form_list$one %>% lapply(class) %>% unlist() %>% unique()
-  col_types2 <- form_list$two %>% lapply(class) %>% unlist() %>% unique()
+  col_types1 <- form_list$one |> lapply(class) |> unlist() |> unique()
+  col_types2 <- form_list$two |> lapply(class) |> unlist() |> unique()
   expect_contains(col_types1, "numeric")
   expect_contains(col_types2, "numeric")
   form_list <- all_character_cols_list(form_list)
-  col_types1 <- form_list$one %>% lapply(class) %>% unlist() %>% unique()
-  col_types2 <- form_list$two %>% lapply(class) %>% unlist() %>% unique()
+  col_types1 <- form_list$one |> lapply(class) |> unlist() |> unique()
+  col_types2 <- form_list$two |> lapply(class) |> unlist() |> unique()
   expect_equal(col_types1, "character")
   expect_equal(col_types2, "character")
 })
@@ -61,11 +61,11 @@ test_that("all_character_cols_list works!", {
 test_that("vec1_in_vec2 and vec1_not_in_vec2 works!", {
   vec1 <- c("a", "b", "c")
   vec2 <- c("b", "d", "c")
-  out <- vec1 %>% vec1_in_vec2(vec2)
+  out <- vec1 |> vec1_in_vec2(vec2)
   expect_contains(out, "b")
   expect_contains(out, "c")
   expect_false("a" %in% out)
-  out <- vec1 %>% vec1_not_in_vec2(vec2)
+  out <- vec1 |> vec1_not_in_vec2(vec2)
   expect_contains(out, "a")
   expect_false("b" %in% out)
   expect_false("c" %in% out)
@@ -83,7 +83,7 @@ test_that("drop_nas works!", {
 })
 # excel_to_list ( Internal )
 test_that("excel_to_list works!", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   expect_true(file.exists(test_dir))
   test_file <- file.path(test_dir, "cars.xlsx")
   expect_false(file.exists(test_file))
@@ -132,7 +132,7 @@ test_that("unique_trimmed_strings works!", {
 })
 # list_to_excel ( Internal )
 test_that("list_to_excel works!", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   expect_true(file.exists(test_dir))
   test_file <- file.path(test_dir, "cars.xlsx")
   test_file_one <- file.path(test_dir, "cars_one.xlsx")
@@ -156,7 +156,7 @@ test_that("list_to_excel works!", {
 })
 # list_to_csv ( Internal )
 test_that("list_to_csv works!", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   expect_true(file.exists(test_dir))
   test_file <- file.path(test_dir, "cars.csv")
   test_file_one <- file.path(test_dir, "cars_one.csv")
@@ -178,7 +178,7 @@ test_that("save_wb works!", {
 })
 # save_csv ( Internal )
 test_that("save_csv works!", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   expect_true(file.exists(test_dir))
   test_file <- file.path(test_dir, "cars.csv")
   expect_false(file.exists(test_file))

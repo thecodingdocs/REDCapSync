@@ -28,8 +28,8 @@ deidentify_data_list <- function(data_list,
         immediate. = TRUE
       )
     }
-    exclusions <- exclusions %>%
-      append(initial_identifiers) %>%
+    exclusions <- exclusions |>
+      append(initial_identifiers) |>
       unique()
   }
   bad_identifiers <- exclusions[which(!exclusions %in% fields$field_name)]
@@ -37,8 +37,8 @@ deidentify_data_list <- function(data_list,
     stop("There is a bad identifier. see `fields$field_name`: ",
          toString(bad_identifiers))
   }
-  id_cols <- metadata$form_key_cols %>%
-    unlist() %>%
+  id_cols <- metadata$form_key_cols |>
+    unlist() |>
     unique()
   if (is_something(id_cols)) {
     if (any(id_cols %in% exclusions)) {
@@ -61,15 +61,15 @@ deidentify_data_list <- function(data_list,
         fields$in_original_redcap
     )
     free_text_fields <- fields$field_name[free_text_rows]
-    exclusions <- exclusions %>%
-      append(free_text_fields) %>%
+    exclusions <- exclusions |>
+      append(free_text_fields) |>
       unique()
   }
   if (is_something(data)) {
     date_vector <- fields$field_name[which(fields$field_type_R == "date")]
     # records <- lapply(data,function(form){
     #   form[[id_cols[1]]]
-    # }) %>% unlist() %>% unique()
+    # }) |> unlist() |> unique()
     date_list <- Map(
       f = function(x, col_names) {
         date_vector[which(date_vector %in% col_names)]
@@ -79,8 +79,8 @@ deidentify_data_list <- function(data_list,
     )
     if (date_handling != "none") {
       if (date_handling == "exclude_dates") {
-        exclusions <- exclusions %>%
-          append(date_vector) %>%
+        exclusions <- exclusions |>
+          append(date_vector) |>
           unique()
       }
       if (date_handling %in% c("random_shift_by_record",
@@ -88,7 +88,7 @@ deidentify_data_list <- function(data_list,
                                "zero_by_record",
                                "zero_by_project")) {
         number <- 90 # can set in options
-        shift_range <- -number:number %>% setdiff(0)
+        shift_range <- -number:number |> setdiff(0)
         min_dates <- get_min_dates(data_list)
         if (date_handling == "random_shift_by_record") {
           min_dates$shift_amount <- sample(shift_range,
@@ -105,7 +105,7 @@ deidentify_data_list <- function(data_list,
         }
         if (date_handling == "zero_by_project") {
           # should you edit fields to now be field_type_R integer?
-          min_dates$shift_amount <- min_dates$date %>% min()
+          min_dates$shift_amount <- min_dates$date |> min()
         }
         for (form_name in names(date_list)) {
           field_record <- data[[form_name]][[id_cols[1]]]
@@ -142,15 +142,15 @@ filter_data_list <- function(data_list,
                              filter_list = NULL,
                              filter_strict = TRUE) {
   if (is.null(field_names))
-    field_names <- data_list %>% get_all_field_names()
+    field_names <- data_list |> get_all_field_names()
   if (is.null(form_names))
     form_names <- data_list$metadata$forms$form_name
   the_rows <- which(!field_names %in% data_list$metadata$raw_structure_cols)
   field_names_minus <- field_names[the_rows]
   if (length(field_names_minus) > 0) {
-    form_names_minus <- data_list %>%
+    form_names_minus <- data_list |>
       field_names_to_form_names(field_names = field_names_minus, strict = TRUE)
-    form_names <- form_names %>% vec1_in_vec2(form_names_minus)
+    form_names <- form_names |> vec1_in_vec2(form_names_minus)
   }
   missing_filter <- is.null(filter_list) &&
     is.null(filter_choices) &&
@@ -169,13 +169,13 @@ filter_data_list <- function(data_list,
   }
   filter_field_names <- NULL
   if (!is.null(filter_list)) {
-    filter_field_names <- filter_list %>%
-      names() %>%
+    filter_field_names <- filter_list |>
+      names() |>
       drop_if("")
     # should be unique
-    # filter_field_names %>%
+    # filter_field_names |>
     # vec1_not_in_vec2(data_list$metadata$fields$field_name) # should be empty
-    filter_form <- data_list %>%
+    filter_form <- data_list |>
       field_names_to_form_names(field_names = filter_field_names)
     if (length(filter_field_names) == 1L) {
       if (filter_field_names == data_list$metadata$id_col) {
@@ -187,8 +187,8 @@ filter_data_list <- function(data_list,
     if (length(filter_form) > 1) {
       stop("You can only filter_list by multiple columns part of one form")
     }
-    form_key_cols <- data_list$metadata$form_key_cols %>%
-      unlist() %>%
+    form_key_cols <- data_list$metadata$form_key_cols |>
+      unlist() |>
       unique()
     is_key <- all(filter_field_names %in% form_key_cols)
     repeating_rows <- which(data_list$metadata$forms$repeating)
@@ -214,7 +214,7 @@ filter_data_list <- function(data_list,
                 the_rows <- which(
                   filtered_form[[filter_field_name]] %in% filter_choices_final)
                 filter_choices_final <-
-                  filtered_form[[filter_field_final]][the_rows] %>% unique()
+                  filtered_form[[filter_field_final]][the_rows] |> unique()
               }
             }
           }
@@ -278,8 +278,8 @@ get_min_dates <- function(data_list) {
   data <- data_list$data
   metadata <- data_list$metadata
   fields <- metadata$fields
-  id_cols <- metadata$form_key_cols %>%
-    unlist() %>%
+  id_cols <- metadata$form_key_cols |>
+    unlist() |>
     unique()
   empty <- data.frame(
     record_id = character(),
@@ -292,7 +292,7 @@ get_min_dates <- function(data_list) {
   date_vector <- fields$field_name[which(fields$field_type_R == "date")]
   # records <- lapply(data,function(form){
   #   form[[id_cols[1]]]
-  # }) %>% unlist() %>% unique()
+  # }) |> unlist() |> unique()
   all_dates <- list()
   # Loop through each form in the list
   for (form in data) {
@@ -391,7 +391,7 @@ get_record_url <- function(project,
                      "&arm=",
                      project$summary$all_records$arm_number[arm_row])
     }
-    link <- link %>% paste0("&id=", record)
+    link <- link |> paste0("&id=", record)
   }
   if (!missing(page)) {
     link <- gsub("record_home", "index", link)
@@ -402,17 +402,17 @@ get_record_url <- function(project,
         toString(project$metadata$forms$form_name)
       )
     }
-    link <- link %>% paste0("&page=", page)
+    link <- link |> paste0("&page=", page)
     if (!missing(instance)) {
       repeating_form_names <- project$metadata$forms$form_name[
         which(project$metadata$forms$repeating)]
       if (!page %in% repeating_form_names) {
         stop(
           "If you provide an instance, it has to be a repeating instrument: ",
-          repeating_form_names %>% toString()
+          repeating_form_names |> toString()
         )
       }
-      link <- link %>% paste0("&instance=", instance)
+      link <- link |> paste0("&instance=", instance)
     }
   }
   if (open_browser) {
@@ -424,9 +424,9 @@ get_record_url <- function(project,
 #' @noRd
 # construct_key_col_list <- function(project) {
 #   form_list <- project$data
-#   data_field_list <- form_list %>% lapply(colnames)
+#   data_field_list <- form_list |> lapply(colnames)
 #   form_names <- names(form_list)
-#   key_cols_list <- form_names %>% lapply(function(form_name) {
+#   key_cols_list <- form_names |> lapply(function(form_name) {
 #     key_cols <- which(
 #       data_field_list[[form_name]] %in% project$metadata$raw_structure_cols
 #     )
@@ -441,7 +441,7 @@ get_key_col_list <- function(data_list) {
   if (!is_something(forms)) {
     stop("Empty --> `project$metadata$forms`")
   }
-  out_list <- seq_len(nrow(forms)) %>% lapply(function(i) {
+  out_list <- seq_len(nrow(forms)) |> lapply(function(i) {
     out <- data_list$metadata$id_col
     if (data_list$metadata$is_longitudinal)
       out <- append(out, "redcap_event_name")
@@ -463,7 +463,7 @@ normalize_redcap <- function(denormalized, project, labelled) {
   form_list <- list()
   if (nrow(denormalized) > 0) {
     is_longitudinal <- project$metadata$is_longitudinal
-    denormalized <- denormalized %>% all_character_cols()
+    denormalized <- denormalized |> all_character_cols()
     add_ons <- c(
       project$metadata$id_col,
       "arm_number",
@@ -483,12 +483,12 @@ normalize_redcap <- function(denormalized, project, labelled) {
         all.x = TRUE
       )
       add_ons <- add_ons[which(add_ons %in% colnames(denormalized))]
-      col_names <- c(add_ons, colnames(denormalized)) %>% unique()
-      denormalized <- denormalized[order(denormalized$id_temp), col_names %>%
+      col_names <- c(add_ons, colnames(denormalized)) |> unique()
+      denormalized <- denormalized[order(denormalized$id_temp), col_names |>
                                      lapply(function(c) {
                                        which(colnames(denormalized) == c)
-                                     }) %>%
-                                     unlist() %>%
+                                     }) |>
+                                     unlist() |>
                                      as.integer()]
       denormalized$id_temp <- NULL
     }
@@ -593,10 +593,10 @@ clean_redcap_log <- function(redcap_log) {
   redcap_log <- unique(redcap_log)
   redcap_log$record_id <- NA
   redcap_log$action_type <- NA
-  redcap_log <- redcap_log %>%
+  redcap_log <- redcap_log |>
     lapply(function(x) {
-      x %>% trimws(whitespace = "[\\h\\v]")
-    }) %>%
+      x |> trimws(whitespace = "[\\h\\v]")
+    }) |>
     as.data.frame()
   design_test <- redcap_log$action == "Manage/Design"
   design_rows <- which(design_test)
@@ -633,11 +633,11 @@ clean_redcap_log <- function(redcap_log) {
     "",
     redcap_log$action[record_rows]
   )
-  redcap_log$action_type[record_rows] <- redcap_log$action[record_rows] %>%
-    strsplit(" ") %>%
+  redcap_log$action_type[record_rows] <- redcap_log$action[record_rows] |>
+    strsplit(" ") |>
     lapply(function(x) {
       x[[1]]
-    }) %>%
+    }) |>
     unlist()
   redcap_log$action_type[
     not_design_rows[

@@ -26,7 +26,7 @@ get_project_token <- function(project, silent = TRUE) {
   assert_setup_project(project)
   token_name <- project$redcap$token_name
   token <- Sys.getenv(token_name)
-  valid <- token %>% is_valid_redcap_token(silent = silent)
+  valid <- token |> is_valid_redcap_token(silent = silent)
   fake_token <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
   if (!silent) {
     cli_alert_wrap(
@@ -113,7 +113,7 @@ assert_env_name <- function(env_name,
   }
   current_function <- as.character(current_call())[[1]]
   if (!collected$isEmpty()) {
-    message <- collected %>% cli_message_maker(function_name = current_function)
+    message <- collected |> cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
   collected <- makeAssertCollection()
@@ -133,8 +133,8 @@ assert_env_name <- function(env_name,
   )
   if (!collected$isEmpty()) {
     if (standalone) {
-      collected %>%
-        cli_message_maker(function_name = as.character(current_call())[[1]]) %>%
+      collected |>
+        cli_message_maker(function_name = as.character(current_call())[[1]]) |>
         cli::cli_abort(message)
     } else {
       add$push(cli::format_message(
@@ -170,7 +170,7 @@ assert_blank_project <- function(project,
                  add = collected)
   current_function <- as.character(current_call())[[1]]
   if (!collected$isEmpty()) {
-    message <- collected %>% cli_message_maker(function_name = current_function)
+    message <- collected |> cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
   collected <- makeAssertCollection()
@@ -223,7 +223,7 @@ assert_setup_project <- function(project,
                  any.missing = FALSE,
                  len = 1,
                  add = collected)
-  current_function <- as.character(current_call()) %>% first()
+  current_function <- as.character(current_call()) |> first()
   if (!collected$isEmpty()) {
     message <- cli_message_maker(collected, function_name = current_function)
     cli::cli_abort(message)

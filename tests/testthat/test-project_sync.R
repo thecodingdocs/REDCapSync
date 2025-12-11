@@ -6,7 +6,7 @@ test_that("sync works!", {
 })
 # sweep_dirs_for_cache ( Internal )
 test_that("sweep_dirs_for_cache updates cache when project files exist", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -41,7 +41,7 @@ test_that("sweep_dirs_for_cache updates cache when project files exist", {
   expect_true(project$project_name %in% projects$project_name)
 })
 test_that("sweep_dirs_for_cache handles empty cache", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -59,7 +59,7 @@ test_that("sweep_dirs_for_cache handles empty cache", {
   expect_equal(nrow(projects_after), 0)
 })
 test_that("sweep_dirs_for_cache handles non-existent project_names", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
@@ -83,7 +83,7 @@ test_that("sweep_dirs_for_cache handles non-existent project_names", {
   expect_true(project$project_name %in% projects$project_name)
 })
 test_that("sweep_dirs_for_cache compares cached and disk project details", {
-  test_dir <- withr::local_tempdir() %>% sanitize_path()
+  test_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(test_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {

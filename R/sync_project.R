@@ -16,7 +16,7 @@ sync_project <- function(project,
                  add = collected)
   current_function <- as.character(current_call())[[1]]
   if (!collected$isEmpty()) {
-    message <- collected %>%
+    message <- collected |>
       cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
@@ -65,15 +65,15 @@ sync_project <- function(project,
         }
         interim_log <- get_redcap_log(project, log_begin_date = as.Date(
           strptime(project$redcap$log$timestamp[1], format = "%Y-%m-%d")
-        )) %>% unique()
+        )) |> unique()
         if (nrow(interim_log) <= nrow(project$redcap$log)) {
-          head_of_log <- project$redcap$log %>%
+          head_of_log <- project$redcap$log |>
             utils::head(n = nrow(interim_log))
         } else {
           head_of_log <- project$redcap$log
         }
-        unique_log <- interim_log %>%
-          rbind(head_of_log) %>%
+        unique_log <- interim_log |>
+          rbind(head_of_log) |>
           unique()
         # dup <- unique_log[
         #which(duplicated(
@@ -84,8 +84,8 @@ sync_project <- function(project,
             rbind(unique_log, head_of_log), fromLast = TRUE)[
               seq_len(nrow(unique_log))]), ]
         if (nrow(interim_log) > 0) {
-          project$redcap$log <- interim_log %>%
-            bind_rows(project$redcap$log) %>%
+          project$redcap$log <- interim_log |>
+            bind_rows(project$redcap$log) |>
             unique()
           interim_log$timestamp <- NULL
           interim_log_metadata <- interim_log[
@@ -99,7 +99,7 @@ sync_project <- function(project,
           # interim_log_metadata <-
           #interim_log_metadata[
           # grep(ignore_redcap_log(),
-          #interim_log_metadata$details,ignore.case = TRUE,invert = TRUE) %>%
+          #interim_log_metadata$details,ignore.case = TRUE,invert = TRUE) |>
           #unique(),]
           if (nrow(interim_log_metadata) > 0 ||
               interim_log_metadata_minor) {
@@ -118,11 +118,11 @@ sync_project <- function(project,
               warning(
                 "There were recent records deleted from redcap",
                 "Consider running with 'hard_reset = TRUE'. Records: ",
-                deleted_records %>% toString(),
+                deleted_records |> toString(),
                 immediate. = TRUE
               )
             }
-            stale_records <- interim_log_data$record %>% unique()
+            stale_records <- interim_log_data$record |> unique()
             if (length(stale_records) == 0) {
               stale_records <- NULL
               will_update <- FALSE
@@ -134,13 +134,13 @@ sync_project <- function(project,
       }
     }
     if (hard_reset) {
-      project <- project %>%
+      project <- project |>
         get_redcap_metadata(include_users = !project$internals$metadata_only)
       if (!project$internals$metadata_only) {
         project$data <- list()
         project$data_updates <- list()
         project$summary <- list()
-        project$data <- project %>% get_redcap_data(
+        project$data <- project |> get_redcap_data(
           labelled = project$internals$labelled,
           batch_size = project$internals$batch_size_download
         )
@@ -149,15 +149,15 @@ sync_project <- function(project,
         if (project$redcap$has_log_access) {
           if (project$internals$entire_log) {
             log_begin_date <-
-              as.POSIXct(project$redcap$project_info$creation_time) %>%
+              as.POSIXct(project$redcap$project_info$creation_time) |>
               as.Date()
           } else {
             log_begin_date <- Sys.Date() - project$internals$days_of_log
           }
-          project$redcap$log <- redcap_log %>%
+          project$redcap$log <- redcap_log |>
             bind_rows(
-              project %>%
-                get_redcap_log(log_begin_date = log_begin_date)) %>%
+              project |>
+                get_redcap_log(log_begin_date = log_begin_date)) |>
             sort_redcap_log()
         }
         project$summary$all_records <- extract_project_records(project)
@@ -172,7 +172,7 @@ sync_project <- function(project,
     } else {
       if (will_update) {
         id_col <- project$metadata$id_col
-        project$data <- project$data %>% all_character_cols_list()
+        project$data <- project$data |> all_character_cols_list()
         if (length(deleted_records) > 0) {
           stale_records <-
             stale_records[which(!stale_records %in% deleted_records)]
@@ -184,10 +184,10 @@ sync_project <- function(project,
         }
         message_string <- "No new records to update!"
         if (length(stale_records) > 0) {
-          form_list <- project %>%
+          form_list <- project |>
             get_redcap_data(
               labelled = project$internals$labelled,
-              records = stale_records) %>%
+              records = stale_records) |>
             all_character_cols_list()
           missing_from_summary <- stale_records[
             which(!stale_records %in% project$summary$all_records[[id_col]])]
@@ -199,7 +199,7 @@ sync_project <- function(project,
               stringsAsFactors = FALSE
             )
             colnames(x)[1] <- id_col
-            project$summary$all_records <- project$summary$all_records %>%
+            project$summary$all_records <- project$summary$all_records |>
               bind_rows(x)
             x <- order(project$summary$all_records[[id_col]], decreasing = TRUE)
             project$summary$all_records <- project$summary$all_records[x, ]
@@ -213,8 +213,8 @@ sync_project <- function(project,
             )
           }
           for (form_name in names(form_list)) {
-            project$data[[form_name]] <- project$data[[form_name]] %>%
-              all_character_cols() %>%
+            project$data[[form_name]] <- project$data[[form_name]] |>
+              all_character_cols() |>
               bind_rows(form_list[[form_name]])
           }
           row_match <-
@@ -226,7 +226,7 @@ sync_project <- function(project,
           message_string <- toString(stale_records)
           stale_record_length <- length(stale_records)
           if (stale_record_length > 20) {
-            message_string <- stale_record_length %>% paste("records")
+            message_string <- stale_record_length |> paste("records")
           }
         }
         message("Updated: ", message_string)
@@ -270,7 +270,7 @@ sync_project <- function(project,
       project <- save_project(project)
     } else {
       project$internals$last_directory_save <- project$internals$last_sync
-      project %>% extract_project_details() %>% add_project_details_to_cache()
+      project |> extract_project_details() |> add_project_details_to_cache()
     }
   }
   invisible(project)
@@ -380,7 +380,7 @@ due_for_sync <- function(project_name) {
 sweep_dirs_for_cache <- function(project_names = NULL) {
   projects <- get_projects()
   if (nrow(projects) > 0) {
-    project_list <- projects %>% split(projects$project_name)
+    project_list <- projects |> split(projects$project_name)
     had_change <- FALSE
     all_project_names <- names(project_list)
     if (is.null(project_names)) {
@@ -418,7 +418,7 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
       if (is.null(from_cache) || is.null(to_cache)) {
         loaded_cache <- tryCatch(
           expr = {
-            load_project(project_name = project_name)$.internal() %>%
+            load_project(project_name = project_name)$.internal() |>
               extract_project_details()
           },
           error = function(e) {
@@ -441,13 +441,13 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
             to_cache$dir_path <- from_cache$dir_path
           } # could cause issue?
           project_list[[project_name]] <- to_cache
-          updated_projects <- updated_projects %>% append(project_name)
+          updated_projects <- updated_projects |> append(project_name)
           had_change <- TRUE
         }
       }
     }
     if (had_change) {
-      projects <- project_list %>% bind_rows()
+      projects <- project_list |> bind_rows()
       cli_alert_info(
         paste0("Updated cache! This can happen when using multiple",
                " computers or with version changes..."))

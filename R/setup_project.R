@@ -162,7 +162,7 @@ setup_project <- function(project_name,
   }
   current_function <- as.character(current_call())[[1]]
   if (!collected$isEmpty()) {
-    message <- collected %>% cli_message_maker(function_name = current_function)
+    message <- collected |> cli_message_maker(function_name = current_function)
     cli::cli_abort(message)
   }
   projects <- get_projects()
@@ -220,7 +220,7 @@ setup_project <- function(project_name,
     }
     if (was_loaded) {
       # compare current setting to previous settings...
-      original_details <- project %>% extract_project_details()
+      original_details <- project |> extract_project_details()
       projects <- get_projects()
       cache_details <- projects[which(projects$project_name == project_name), ]
       if (original_details$redcap_uri != redcap_uri) {
@@ -280,8 +280,8 @@ setup_project <- function(project_name,
   project$internals$labelled <- labelled
   project$internals$original_file_names <- original_file_names
   project$internals$entire_log <- entire_log
-  project$internals$days_of_log <- days_of_log %>%
-    assert_integerish() %>%
+  project$internals$days_of_log <- days_of_log |>
+    assert_integerish() |>
     as.integer()
   project$internals$get_files <- get_files
   project$internals$get_type <- get_type
@@ -292,25 +292,25 @@ setup_project <- function(project_name,
     add_default_transformation
   project$internals$add_default_summaries <-
     add_default_summaries
-  project$internals$batch_size_download <- batch_size_download %>%
-    assert_integerish() %>%
+  project$internals$batch_size_download <- batch_size_download |>
+    assert_integerish() |>
     as.integer()
-  project$internals$batch_size_upload <- batch_size_upload %>%
-    assert_integerish() %>%
+  project$internals$batch_size_upload <- batch_size_upload |>
+    assert_integerish() |>
     as.integer()
   project$internals$get_file_repository <- get_file_repository
   #test theese
   project$links$redcap_uri <- redcap_uri # add test, should end in / or add it
-  project$links$redcap_base <- redcap_uri %>% dirname() %>% paste0("/")
+  project$links$redcap_base <- redcap_uri |> dirname() |> paste0("/")
   project$internals$is_blank <- FALSE
-  project$data <- project$data %>% all_character_cols_list()
+  project$data <- project$data |> all_character_cols_list()
   if (!is_valid_redcap_token(get_project_token(project))) {
     cli::cli_alert_warning(
       paste0("No valid token in session: Sys.getenv('", token_name, "')"))
   }
   project <- assert_setup_project(project, silent = silent)
   if (!is.null(original_details)) {
-    # final_details <- project %>% extract_project_details()
+    # final_details <- project |> extract_project_details()
     # message about changes compared to original
   }
   project$internals$last_directory_save <- now_time()
@@ -340,8 +340,8 @@ get_project_path <- function(project_name,
   assert_choice(type, .project_file_types)
   file_name <- paste0(project_name, "_REDCapSync")
   if (type != "")
-    file_name <- file_name %>% paste0("_", type)
-  file_name <- file_name %>% paste0(".RData")
+    file_name <- file_name |> paste0("_", type)
+  file_name <- file_name |> paste0(".RData")
   file_path <- file.path(dir_path, "R_objects", file_name)
   sanitize_path(file_path)
 }
@@ -379,7 +379,7 @@ load_project <- function(project_name) {
     )
   }
   dir_path <- projects$dir_path[
-    which(projects$project_name == project_name)] %>% sanitize_path()
+    which(projects$project_name == project_name)] |> sanitize_path()
   assert_dir(dir_path)
   if (!file.exists(dir_path)) {
     stop("`dir_path` doesn't exist: '", dir_path, "'")
@@ -395,10 +395,10 @@ load_project <- function(project_name) {
     )
   }
   project <- readRDS(file = project_path)
-  project <- project %>% assert_setup_project(silent = FALSE)
+  project <- project |> assert_setup_project(silent = FALSE)
   #   check if in cache already and relation!
   # SAVE
-  loaded_dir <- project$dir_path %>% sanitize_path()
+  loaded_dir <- project$dir_path |> sanitize_path()
   if (!identical(dir_path, loaded_dir)) {
     cli_alert_warning(
       paste0("loaded dir_path did not match your cached dir_path. This should ",
@@ -406,10 +406,10 @@ load_project <- function(project_name) {
     )
   }
   project$dir_path <- dir_path
-  project %>% extract_project_details() %>% add_project_details_to_cache()
+  project |> extract_project_details() |> add_project_details_to_cache()
   the_message <- paste0("Loaded {project$project_name}!")
   if (due_for_sync(project$project_name)) {
-    the_message <- the_message %>%
+    the_message <- the_message |>
       paste0(" Due for sync. Run `project$sync()` to update.")
   }
   cli_alert_success(the_message)
@@ -610,8 +610,8 @@ set_dir <- function(dir_path) {
 clean_dir_path <- function(dir_path) {
   if (!is.character(dir_path))
     stop("dir must be a character string")
-  dir_path <- dir_path %>%
-    trimws(whitespace = "[\\h\\v]") %>%
+  dir_path <- dir_path |>
+    trimws(whitespace = "[\\h\\v]") |>
     sanitize_path()
   dir_path
 }

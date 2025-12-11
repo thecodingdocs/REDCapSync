@@ -87,15 +87,15 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   project$redcap$project_info <- result$project_info
   # info ----------
   project$redcap$project_title <- project$redcap$project_info$project_title
-  project$redcap$project_id <- project$redcap$project_info$project_id %>%
+  project$redcap$project_id <- project$redcap$project_info$project_id |>
     as.character()
   project$metadata$is_longitudinal <-
-    project$redcap$project_info$is_longitudinal %>% as.logical()
+    project$redcap$project_info$is_longitudinal |> as.logical()
   missing_data_codes <- NA
   if ("missing_data_codes" %in% colnames(project$redcap$project_info)) {
     missing_data_codes <- project$redcap$project_info$missing_data_codes
     if (!is.na(missing_data_codes)) {
-      missing_data_codes <- missing_data_codes %>% split_choices()
+      missing_data_codes <- missing_data_codes |> split_choices()
     }
   }
   project$metadata$missing_codes <- missing_data_codes
@@ -104,7 +104,7 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   project$redcap$has_user_access <- !is.null(result$users)
   project$redcap$has_file_repository_access <- !is.null(result$file_repository)
   # instruments --------
-  project$metadata$forms <- result$forms %>%
+  project$metadata$forms <- result$forms |>
     rename(
       "form_name"  = "instrument_name",
       "form_label" = "instrument_label"
@@ -114,7 +114,7 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   project$metadata$has_repeating_forms <- FALSE
   project$metadata$has_repeating_events <- FALSE
   project$metadata$has_repeating_forms_or_events <-
-    project$redcap$project_info$has_repeating_instruments_or_events %>%
+    project$redcap$project_info$has_repeating_instruments_or_events |>
     as.logical()
   # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
   if (is.data.frame(project$metadata$repeating_forms_events)) {
@@ -132,29 +132,29 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   # metadata ----------
   project$metadata$fields <- result$fields
   project$metadata$fields$section_header <-
-    project$metadata$fields$section_header %>% remove_html_tags()
+    project$metadata$fields$section_header |> remove_html_tags()
   project$metadata$fields$field_label <-
-    project$metadata$fields$field_label %>% remove_html_tags()
+    project$metadata$fields$field_label |> remove_html_tags()
   # RISKY? add to setup project and simple test of unique
-  project$metadata$id_col <- project$metadata$fields[1, 1] %>% as.character()
+  project$metadata$id_col <- project$metadata$fields[1, 1] |> as.character()
   project$metadata$form_key_cols <- get_key_col_list(data_list = project)
-  project$metadata$raw_structure_cols <- project$metadata$form_key_cols %>%
-    unlist() %>%
+  project$metadata$raw_structure_cols <- project$metadata$form_key_cols |>
+    unlist() |>
     unique()
   project$metadata$fields <- add_field_elements(project$metadata$fields)
   # project$metadata$fields <-
-  # project %>% annotate_fields(summarize_data = FALSE, drop_blanks = FALSE)
+  # project |> annotate_fields(summarize_data = FALSE, drop_blanks = FALSE)
   project$metadata$choices <-
     fields_to_choices(fields = project$metadata$fields)
   # add a check for existing conflict possibilities
   project$metadata$has_coding_conflicts <- FALSE
-  field_names <- project$metadata$choices$field_name %>% unique()
+  field_names <- project$metadata$choices$field_name |> unique()
   if (length(field_names) > 0) {
     choices <- project$metadata$choices
-    row_of_conflicts <- field_names %>%
+    row_of_conflicts <- field_names |>
       lapply(function(field_name) {
         anyDuplicated(choices$name[which(choices$field_name == field_name)]) > 0
-      }) %>%
+      }) |>
       unlist()
     project$metadata$has_coding_conflicts <- any(row_of_conflicts)
     if (project$metadata$has_coding_conflicts) {
@@ -191,7 +191,7 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
             !is.na(project$metadata$repeating_forms_events$form_name)
         ), ]
       if (nrow(repeatingFormsEvents_ind) > 0) {
-        rows_event_mapping <- seq_len(nrow(repeatingFormsEvents_ind)) %>%
+        rows_event_mapping <- seq_len(nrow(repeatingFormsEvents_ind)) |>
           lapply(function(i) {
             which(
               project$metadata$event_mapping$unique_event_name ==
@@ -199,37 +199,36 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
                 project$metadata$event_mapping$form ==
                 repeatingFormsEvents_ind$form_name[i]
             )
-          }) %>%
+          }) |>
           unlist()
         project$metadata$event_mapping$repeating[rows_event_mapping] <- TRUE
       }
     }
     project$metadata$events$forms <-
-      project$metadata$events$unique_event_name %>%
+      project$metadata$events$unique_event_name |>
       lapply(function(events) {
         project$metadata$event_mapping$form[
-          which(project$metadata$event_mapping$unique_event_name == events)] %>%
-          unique() %>%
+          which(project$metadata$event_mapping$unique_event_name == events)] |>
+          unique() |>
           paste0(collapse = " | ")
-      }) %>%
+      }) |>
       unlist()
     if (project$metadata$has_arms_that_matter) {
       project$metadata$has_arms_that_matter <-
-        project$metadata$arms$arm_number %>%
+        !(project$metadata$arms$arm_number |>
         lapply(function(arm) {
           project$metadata$event_mapping$form[
             which(project$metadata$event_mapping$arm_number == arm)]
-        }) %>%
-        check_match() %>%
-        magrittr::not()
+        }) |>
+        check_match())
     }
     # if(is.data.frame(project$unique_events)){
     #   project$metadata$events <- data.frame(
     #     event_name = unique(project$unique_events$event_name),
-    #     arms = unique(project$unique_events$event_name) %>%
+    #     arms = unique(project$unique_events$event_name) |>
     # lapply(function(event_name){
     #       project$unique_events$arm_number[
-    #which(project$unique_events$event_name==event_name)] %>% unique() %>%
+    #which(project$unique_events$event_name==event_name)] |> unique() |>
     #paste0(collapse = " | ")
     #     })
     #   )
@@ -253,8 +252,8 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   project$redcap$users <- NA
   if (include_users && project$redcap$has_user_access) {
     keep_cols <- c("unique_role_name", "role_label")
-    project$redcap$users <- result$user_roles[, keep_cols] %>%
-      merge(result$user_role_assignment, by = "unique_role_name") %>%
+    project$redcap$users <- result$user_roles[, keep_cols] |>
+      merge(result$user_role_assignment, by = "unique_role_name") |>
       merge(result$users, by = "username", all.y = TRUE)
   }
   project$redcap$file_repository <- NA
@@ -276,10 +275,10 @@ add_field_elements <- function(fields) {
       field_name = field_name, # check if conflicts,
       form_name = form_name,
       field_type = "radio",
-      field_label = field_name %>%
-        strsplit("_") %>%
-        unlist() %>%
-        stringr::str_to_title() %>%
+      field_label = field_name |>
+        strsplit("_") |>
+        unlist() |>
+        stringr::str_to_title() |>
         paste(collapse = " "),
       select_choices_or_calculations =
         "0, Incomplete | 1, Unverified | 2, Complete",
@@ -296,15 +295,15 @@ add_field_elements <- function(fields) {
     if (last_row > row) {
       bottom <- fields[(row + 1):last_row, ]
     }
-    fields <- top %>%
-      bind_rows(new_row) %>%
+    fields <- top |>
+      bind_rows(new_row) |>
       bind_rows(bottom)
   }
   if (any(fields$field_type == "checkbox")) {
     for (field_name in fields$field_name[
       which(fields$field_type == "checkbox")]) {
       x <- fields$select_choices_or_calculations[
-        which(fields$field_name == field_name)] %>% split_choices()
+        which(fields$field_name == field_name)] |> split_choices()
       new_rows <- data.frame(
         field_name = paste0(field_name, "___", x$code),
         form_name = fields$form_name[which(fields$field_name == field_name)],
@@ -320,8 +319,8 @@ add_field_elements <- function(fields) {
       if (last_row > row) {
         bottom <- fields[(row + 1):last_row, ]
       }
-      fields <- top %>%
-        bind_rows(new_rows) %>%
+      fields <- top |>
+        bind_rows(new_rows) |>
         bind_rows(bottom)
     }
   }
@@ -341,20 +340,20 @@ update_project_links <- function(project) {
   version <- project$redcap$version
   head <- paste0(redcap_base, "redcap_v", version)
   tail <- paste0("?pid=", project$redcap$project_id)
-  home <- "/index.php" %>% paste0(tail)
-  record_home <- "/DataEntry/record_home.php" %>% paste0(tail)
-  # record_subpage <- "/DataEntry/index.php" %>% paste0(tail)
-  records_dashboard <- "/DataEntry/record_status_dashboard.php" %>% paste0(tail)
-  api <- "/API/project_api.php" %>% paste0(tail)
-  api_playground <- "/API/playground.php" %>% paste0(tail)
-  setup <- "/ProjectSetup/index.php" %>% paste0(tail)
-  user_rights <- "/UserRights/index.php" %>% paste0(tail)
-  logging <- "/Logging/index.php" %>% paste0(tail)
-  designer <- "/Design/online_designer.php" %>% paste0(tail)
-  codebook <- "/Design/data_dictionary_codebook.php" %>% paste0(tail)
-  dictionary <- "/Design/data_dictionary_upload.php" %>% paste0(tail)
-  data_quality <- "/DataQuality/index.php" %>% paste0(tail)
-  identifiers <- home %>% paste0("&route=IdentifierCheckController:index")
+  home <- "/index.php" |> paste0(tail)
+  record_home <- "/DataEntry/record_home.php" |> paste0(tail)
+  # record_subpage <- "/DataEntry/index.php" |> paste0(tail)
+  records_dashboard <- "/DataEntry/record_status_dashboard.php" |> paste0(tail)
+  api <- "/API/project_api.php" |> paste0(tail)
+  api_playground <- "/API/playground.php" |> paste0(tail)
+  setup <- "/ProjectSetup/index.php" |> paste0(tail)
+  user_rights <- "/UserRights/index.php" |> paste0(tail)
+  logging <- "/Logging/index.php" |> paste0(tail)
+  designer <- "/Design/online_designer.php" |> paste0(tail)
+  codebook <- "/Design/data_dictionary_codebook.php" |> paste0(tail)
+  dictionary <- "/Design/data_dictionary_upload.php" |> paste0(tail)
+  data_quality <- "/DataQuality/index.php" |> paste0(tail)
+  identifiers <- home |> paste0("&route=IdentifierCheckController:index")
   project$links$redcap_home <- paste0(head, home)
   project$links$redcap_record_home <- paste0(head, record_home)
   # project$links$redcap_record_subpage <- paste0(head, record_subpage)
@@ -464,7 +463,7 @@ get_redcap_log <- function(project,
       logtype = "",
       user = user,
       record = record,
-      beginTime = as.character(log_begin_date) %>% paste("00:00:00"),
+      beginTime = as.character(log_begin_date) |> paste("00:00:00"),
       endTime = "",
       format = "json",
       returnFormat = "json"
@@ -475,12 +474,12 @@ get_redcap_log <- function(project,
     message(httr::content(response)$error)
     return(NULL)
   }
-  redcap_log <- httr::content(response) %>% bind_rows()
+  redcap_log <- httr::content(response) |> bind_rows()
   if (is.data.frame(redcap_log)) {
     if (nrow(redcap_log) > 0) {
       redcap_log[redcap_log == ""] <- NA
       if (clean) {
-        redcap_log <- redcap_log %>% clean_redcap_log()
+        redcap_log <- redcap_log |> clean_redcap_log()
       }
     }
   }
@@ -498,7 +497,7 @@ get_redcap_denormalized <- function(project,
     interbatch_delay = 0.1,
     records = records,
     raw_or_label = ifelse(labelled, "label", "raw")
-  )$data %>% all_character_cols()
+  )$data |> all_character_cols()
   return(denormalized)
 }
 #' @title Get REDCap Report
@@ -529,7 +528,7 @@ get_redcap_data <- function(project,
     records = records,
     batch_size = batch_size
   ) # add check for dag and api
-  form_list <- denormalized %>%
+  form_list <- denormalized |>
     normalize_redcap(project = project, labelled = labelled)
   return(form_list)
 }

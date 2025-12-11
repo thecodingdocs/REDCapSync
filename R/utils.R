@@ -12,17 +12,17 @@ add_redcap_links_to_form <- function(form, project) {
     link_tail <- paste0("&id=", form[[project$metadata$id_col]])
     if ("redcap_repeat_instrument" %in% form_structure_cols) {
       link_head <- project$links$redcap_record_subpage
-      link_tail <- link_tail %>%
+      link_tail <- link_tail |>
         paste0("&page=", form[["redcap_repeat_instrument"]])
     }
     if ("redcap_repeat_instance" %in% form_structure_cols) {
       link_head <- project$links$redcap_record_subpage
-      link_tail <- link_tail %>%
+      link_tail <- link_tail |>
         paste0("&instance=", form[["redcap_repeat_instance"]])
     }
     form$redcap_link <- paste0(link_head, link_tail)
     if ("arm_number" %in% colnames(form)) {
-      form$redcap_link <- form$redcap_link %>%
+      form$redcap_link <- form$redcap_link |>
         paste0("&arm=", form[["arm_number"]])
     }
   }
@@ -73,14 +73,15 @@ split_choices <- function(x) {
   oops <- x
   # added this to account for redcap metadata output if not a number
   x <- gsub("\n", " | ", x)
-  x <- x %>%
-    strsplit(" [:|:] ") %>%
+  x <- x |>
+    strsplit("[:|:]") |>
+    trimws() |>
     unlist()
   check_length <- length(x)
   result <- stringr::str_match(string = x, pattern = "([^,]+),(.*)")
   x <- data.frame(
-    code = result[, 2L] %>% trimws(),
-    name = result[, 3L] %>% trimws(),
+    code = result[, 2L] |> trimws(),
+    name = result[, 3L] |> trimws(),
     stringsAsFactors = FALSE
   )
   rownames(x) <- NULL

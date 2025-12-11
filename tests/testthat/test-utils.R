@@ -102,3 +102,9 @@ test_that("split_choices works if space missing!", {
   expect_false(anyNA(choices$code))
   expect_false(anyNA(choices$name))
 })
+test_that("split_choices works if split space missing!", {
+  choices <- split_choices("1, one|2, two")
+  checkmate::expect_data_frame(choices, nrows = 2, ncols = 2)
+  expect_false(anyNA(choices$code))
+  expect_false(anyNA(choices$name))
+})

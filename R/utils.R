@@ -75,7 +75,6 @@ split_choices <- function(x) {
   x <- gsub("\n", " | ", x)
   x <- x |>
     strsplit("[:|:]") |>
-    trimws() |>
     unlist()
   check_length <- length(x)
   result <- stringr::str_match(string = x, pattern = "([^,]+),(.*)")

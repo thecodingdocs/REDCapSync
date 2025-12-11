@@ -59,6 +59,7 @@ The following default merges all non-repeating forms and adds them to the right 
 project$generate_summary(
   summary_name = "REDCapSync",
   envir = globalenv()
+  )
 ```
 
 This can be customized with `add_summary` for refreshing datasets or `generate_summary` for R-only use. This can give you filtered data (and corresponding annotations to metadata, etc), de-identified data, and more!

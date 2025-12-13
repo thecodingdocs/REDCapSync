@@ -68,7 +68,9 @@ test_project_token <- function(project) {
     project_id_changed <- !identical(project$redcap$project_id,
                                      as.character(project_info$project_id))
     if (project_id_changed) {
-      cli_alert_danger("Your REDCap project ID changed! Did you mix up tokens?")
+      cli_alert_warning(
+        "The REDCap project ID for {project$project_name} has changed since the last setup."
+      )
       return(invisible(project))
     }
   }
@@ -82,7 +84,7 @@ test_project_token <- function(project) {
 is_valid_redcap_token <- function(token, silent = TRUE) {
   start_text <- "The token "
   token_text <- NULL
-  end_text <- "is not a valid 32-character hexademical value."
+  end_text <- "is not a valid 32-character hexadecimal value."
   trimmed_token <- token |> trimws(whitespace = "[\\h\\v]")
   if (is.null(token)) {
     token_text <- "is `NULL`,"

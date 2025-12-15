@@ -1,5 +1,5 @@
 # is_valid_redcap_token ( Internal )
-test_that("is_valid_redcap_token respects the rules of 32L hexidecimal", {
+test_that("is_valid_redcap_token respects the rules of 32L hexadecimal", {
   expect_true(is_valid_redcap_token(generate_hex(32)))
   expect_false(is_valid_redcap_token(NA))
   expect_false(is_valid_redcap_token(NULL))
@@ -105,7 +105,7 @@ test_that("test_project_token works when exportVersion returns version", {
                   }
                 ))
   mockery::stub(test_project_token, "exportVersion", "12.1.1")
-  expect_message(test_project_token(project), "Your REDCap project ID changed")
+  expect_message(test_project_token(project), "The REDCap project ID for TEST_PROJECT has changed since the last setup.")
 })
 test_that("test_project_token marks failure when exportVersion returns NULL", {
   test_dir <- withr::local_tempdir() |> sanitize_path()

@@ -47,7 +47,7 @@ read_xlsx_for_upload <- function(project,
   data_list <- excel_to_list(file_path)
   the_row <- which(data_list$summary_details$paramater == "raw_form_names")
   form_names <- data_list$summary_details$value[the_row] |>
-    strsplit(" [:|:] ") |>
+    strsplit(" [|] ") |>
     unlist()
   drop_names <- names(data_list) |> setdiff(form_names)
   # use summary_details to drop non-uploadcompatibles and warn

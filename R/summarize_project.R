@@ -94,7 +94,7 @@ annotate_forms <- function(data_list,
         paste0(form_name, "_complete")
       })
       if ("original_form_name" %in% colnames(forms)) {
-        var_list <- forms$original_form_name |> strsplit(" [:|:] ") |>
+        var_list <- forms$original_form_name |> strsplit(" [|] ") |>
           lapply(function(form_name) {
             paste0(form_name, "_complete")
           })

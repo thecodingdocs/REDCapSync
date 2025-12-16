@@ -192,7 +192,7 @@ excel_to_list <- function(path) {
     if (all(c("paramater", "value") %in% colnames(summary_details))) {
       the_row <- which(summary_details$paramater == "raw_form_names")
       form_names <- summary_details$value[the_row] |>
-        strsplit(" [:|:] ") |>
+        strsplit(" [|] ") |>
         unlist()
       the_row <- which(summary_details$paramater == "cols_start")
       cols_start <- summary_details$value[the_row] |> as.integer()

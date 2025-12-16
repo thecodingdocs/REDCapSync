@@ -70,27 +70,33 @@ remove_records_from_project <- function(project, records) {
 }
 #' @noRd
 split_choices <- function(x) {
-  oops <- x
+  result <- x
   # added this to account for redcap metadata output if not a number
-  x <- gsub("\n", " | ", x)
-  x <- x |>
-    strsplit("[:|:]") |>
-    unlist()
-  check_length <- length(x)
-  result <- stringr::str_match(string = x, pattern = "([^,]+),(.*)")
-  x <- data.frame(
-    code = result[, 2L] |> trimws(),
-    name = result[, 3L] |> trimws(),
+  result <- gsub("\n", " | ", result)
+  result <- result |>
+    strsplit("[|]") |>
+    unlist() |>
+    stringr::str_split_fixed(",", 2)
+  check_length <- length(result[, 1L])
+  df <- data.frame(
+    code = result[, 1L] |> trimws(),
+    name = result[, 2L] |> trimws(),
     stringsAsFactors = FALSE
   )
-  rownames(x) <- NULL
-  if (any(is.na(x$code)))
-    stop("split choice error: ", oops)
-  if (any(is.na(x$name)))
-    stop("split choice error: ", oops)
-  if (nrow(x) != check_length)
-    stop("split choice error: ", oops)
-  x
+  rownames(df) <- NULL
+  if (any(is.na(df$code))) {
+    stop("split choice error: ", x)
+  }
+  if (any(is.na(df$name))) {
+    stop("split choice error: ", x)
+  }
+  if (nrow(df) != check_length) {
+    stop("split choice error: ", x)
+  }
+  if (any(df$name == "")) {
+    stop("split choice error: ", x)
+  }
+  df
 }
 #' @noRd
 .field_types_not_in_data <- c("descriptive", "checkbox")

@@ -1,8 +1,8 @@
-# REDCapSync: Synchronize Data Pipelines from the REDCap API
+# REDCapSync: Encapsulated REDCap projects for data pipelines in R
 
 Provides tools to download, organize, and synchronize data from REDCap
 projects through the REDCap application programming interface (API). The
-package constructs a reproducible project object that stores data,
+package constructs a standardized project object that stores data,
 metadata, logs, and configuration details in a user-defined directory.
 It supports incremental updates by checking the REDCap log and
 retrieving only modified data. Full updates are only triggered by major

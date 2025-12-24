@@ -22,12 +22,12 @@
 Source:
 [`DESCRIPTION`](https://github.com/thecodingdocs/REDCapSync/blob/main/DESCRIPTION)
 
-Rose B (2025). *REDCapSync: Encapsulated REDCap objects for exports,
-functions, and applications in R*. R package version 0.1.0,
+Rose B (2025). *REDCapSync: Encapsulated REDCap projects for data
+pipelines in R*. R package version 0.1.0,
 <https://github.com/thecodingdocs/REDCapSync>.
 
     @Manual{,
-      title = {REDCapSync: Encapsulated REDCap objects for exports, functions, and applications in R},
+      title = {REDCapSync: Encapsulated REDCap projects for data pipelines in R},
       author = {Brandon Rose},
       year = {2025},
       note = {R package version 0.1.0},

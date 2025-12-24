@@ -333,7 +333,7 @@ Add a new summary entry
 
 #### Usage
 
-    REDCapSync_project$generate_summary(summary_name, envir = NULL)
+    REDCapSync_project$generate_summary(summary_name = "REDCapSync", envir = NULL)
 
 #### Arguments
 
@@ -488,17 +488,13 @@ Returns list of data or the specified form.
 
 #### Usage
 
-    REDCapSync_project$show_metadata(type = NULL, annotate = FALSE, envir = NULL)
+    REDCapSync_project$show_metadata(type = NULL, envir = NULL)
 
 #### Arguments
 
 - `type`:
 
   string of either "fields","forms", or "choices"
-
-- `annotate`:
-
-  logical for annotating in reference to data
 
 - `envir`:
 

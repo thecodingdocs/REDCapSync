@@ -280,10 +280,13 @@ REDCapSync_project <- R6Class(
       return_this <- private$project$metadata
       if(!is.null(type)) {
         #add warning or message?
-        return_this <- private$project$metadata[[type]]
+        return_this <- private$project$metadata[type]
       }
       if(!is.null(envir)) {
-        list2env(return_this, envir = envir)
+        # add check for conflicts?
+        return_this |>
+          process_df_list(silent = TRUE) |>
+          list2env(envir = envir)
       }
       invisible(return_this)
     },

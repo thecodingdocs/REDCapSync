@@ -1,5 +1,5 @@
 Package: REDCapSync
-Title: Encapsulated REDCap objects for exports, functions, and applications in R
+Title: Encapsulated REDCap projects for data pipelines in R
 Version: 0.1.0
 Authors@R: c(
     person("Brandon", "Rose", , "thecodingdocs@gmail.com", role = c("cre", "aut"),

@@ -82,7 +82,6 @@
 #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
 #' parameter from `setup_project()`)
 #' @param type string of either "fields","forms", or "choices"
-#' @param annotate logical for annotating in reference to data
 #' @param field_name Character. The name of the field to which the
 #' transformation
 #' will be applied.
@@ -212,7 +211,7 @@ REDCapSync_project <- R6Class(
       invisible(self)
     },
     #' @description  Add a new summary entry
-    generate_summary = function(summary_name, envir = NULL) {
+    generate_summary = function(summary_name = "REDCapSync", envir = NULL) {
       assert_environment(envir, null.ok = TRUE)
       summary_names <- private$project$summary |>
         names() |>
@@ -275,7 +274,7 @@ REDCapSync_project <- R6Class(
       invisible(self)
     },
     #' @description  Returns list of data or the specified form.
-    show_metadata = function(type = NULL, annotate = FALSE, envir = NULL) {
+    show_metadata = function(type = NULL, envir = NULL) {
       assert_environment(envir, null.ok = TRUE)
       assert_choice(type, c("fields", "forms", "choices"), null.ok = TRUE)
       return_this <- private$project$metadata

@@ -4,11 +4,11 @@
 \name{REDCapSync-package}
 \alias{REDCapSync}
 \alias{REDCapSync-package}
-\title{REDCapSync: Synchronize Data Pipelines from the REDCap API}
+\title{REDCapSync: Encapsulated REDCap projects for data pipelines in R}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Provides tools to download, organize, and synchronize data from REDCap projects through the REDCap application programming interface (API). The package constructs a reproducible project object that stores data, metadata, logs, and configuration details in a user-defined directory. It supports incremental updates by checking the REDCap log and retrieving only modified data. Full updates are only triggered by major metadata changes. User can define subsets, derived fields, and transformations, which are stored in the list object and passed down to output objects to be used for data pipelines and downstream applications, such as the R shiny app RosyREDCap.
+Provides tools to download, organize, and synchronize data from REDCap projects through the REDCap application programming interface (API). The package constructs a standardized project object that stores data, metadata, logs, and configuration details in a user-defined directory. It supports incremental updates by checking the REDCap log and retrieving only modified data. Full updates are only triggered by major metadata changes. User can define subsets, derived fields, and transformations, which are stored in the list object and passed down to output objects to be used for data pipelines and downstream applications, such as the R shiny app RosyREDCap.
 }
 \seealso{
 Useful links:

@@ -260,7 +260,7 @@ Clear all project summaries
 \subsection{Method \code{generate_summary()}}{
 Add a new summary entry
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$generate_summary(summary_name, envir = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$generate_summary(summary_name = "REDCapSync", envir = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -402,15 +402,13 @@ Add a new summary entry
 \subsection{Method \code{show_metadata()}}{
 Returns list of data or the specified form.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_metadata(type = NULL, annotate = FALSE, envir = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_metadata(type = NULL, envir = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{type}}{string of either "fields","forms", or "choices"}
-
-\item{\code{annotate}}{logical for annotating in reference to data}
 
 \item{\code{envir}}{environment variable}
 }

@@ -1,5 +1,5 @@
 Package: REDCapSync
-Title: Synchronize Data Pipelines from the REDCap API
+Title: Encapsulated REDCap objects for exports, functions, and applications in R
 Version: 0.1.0
 Authors@R: c(
     person("Brandon", "Rose", , "thecodingdocs@gmail.com", role = c("cre", "aut"),
@@ -13,7 +13,7 @@ Authors@R: c(
   )
 Description: Provides tools to download, organize, and synchronize data
     from REDCap projects through the REDCap application programming
-    interface (API). The package constructs a reproducible project object
+    interface (API). The package constructs a standardized project object
     that stores data, metadata, logs, and configuration details in a
     user-defined directory. It supports incremental updates by checking
     the REDCap log and retrieving only modified data. Full updates are

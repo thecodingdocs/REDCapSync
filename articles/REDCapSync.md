@@ -42,11 +42,8 @@ project$sync() # gets all data from REDCap
 ## Explore Outputs!
 
 ``` r
-project$show_metadata(envir = globalenv())
-project$generate_summary(
-  summary_name = "REDCapSync_raw",
-  envir = globalenv()
-  ) 
+project$show_metadata(envir = globalenv()) # adds metadata in global environment
+project$show_data(envir = globalenv())   # adds data forms in global environment
 ```
 
 ## Go Further by Generating Summaries!

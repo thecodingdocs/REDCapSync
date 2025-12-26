@@ -118,8 +118,8 @@ package.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">setup_project</a></span><span class="op">(</span></span>
 <span>  project_name <span class="op">=</span> <span class="st">"TEST1"</span>,          <span class="co"># must match token pattern REDCapSync_*******</span></span>
-<span>  redcap_uri <span class="op">=</span> <span class="st">"https://redcap.fakei.edu/api/"</span>,         <span class="co"># your institutions link</span></span>
-<span>  dir_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>                                   <span class="co"># your intended file path</span></span>
+<span>  redcap_uri <span class="op">=</span> <span class="st">"https://redcap.fakei.edu/api/"</span>,        <span class="co"># your institution's link</span></span>
+<span>  dir_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>                                   <span class="co"># your project file path</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span> <span class="co"># gets all data from REDCap</span></span></code></pre></div>
 </div>
@@ -146,8 +146,8 @@ datasets or <code>generate_summary</code> for R-only use. This can give
 you filtered data (and corresponding annotations to metadata, etc),
 de-identified data, and more!</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>project<span class="sc">$</span><span class="fu">generate_summary</span>(</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>    <span class="at">filter_field =</span> <span class="st">"has_something"</span> <span class="co"># Raw REDCap variable name</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="at">filter_choices =</span> <span class="st">"Yes"</span>       <span class="co"># REDCap Labelled choice,</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>    <span class="at">filter_field =</span> <span class="st">"has_something"</span>  <span class="co"># Raw REDCap variable name</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="at">filter_choices =</span> <span class="st">"Yes"</span>          <span class="co"># REDCap labelled choice</span></span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="at">exclude_identifiers =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="at">exclude_free_text =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="at">include_metadata =</span> <span class="cn">TRUE</span>,</span>

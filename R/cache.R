@@ -76,8 +76,8 @@ get_cache <- function() {
 #' @description
 #' This will remove a project from the cache. The cache only stores information
 #' like project_name, token_name, directory location, and details
-#' from setup_project. If you want to truly delete the project files go the
-#' folder you setup.
+#' from setup_project. If you want to truly delete the project files, you must
+#' do so at the project directory you set up.
 #' @return message of outcome
 #' @family Project Cache Functions
 #' @keywords Project Cache Functions
@@ -94,7 +94,8 @@ cache_remove_project <- function(project_name) {
   projects <- projects[which(projects$project_name != project_name), ]
   save_projects_to_cache(projects, silent = TRUE)
   cli_alert_success(
-    paste0("'", project_name, "' removed from cache but if you wish to delete ",
-           "files you must do this manually at the folder you previously chose."
+    paste0("'", project_name, "' removed from cache, but its associated files",
+    " are located at the directory you assigned to '", project_name, "' and",
+    " must be deleted manually."
            ))
 }

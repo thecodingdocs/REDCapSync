@@ -2,16 +2,15 @@
 
 Several R packages exist for using the REDCap Application Program
 Interface (API) such as,
-[REDCapR](https://ouhscbbmc.github.io/REDCapR/ "REDCapR R package"),
-[redcapAPI](https://github.com/vubiostat/redcapAPI/ "redcapAPI R package"),
-and
-[tidyREDCap](https://raymondbalise.github.io/tidyREDCap/ "redcapAPI R package").
+[redcapAPI](https://github.com/vubiostat/redcapAPI),
+[REDCapR](https://ouhscbbmc.github.io/REDCapR/), and
+[tidyREDCap](https://raymondbalise.github.io/tidyREDCap/index.html).
 However, [REDCapSync](https://github.com/thecodingdocs/REDCapSync) is
 the first “get-everything” REDCap R package that converts REDCap
 projects into a standardized, API-efficient, and project-agnostic
-[R6](https://r6.r-lib.org/index.html "R6 R package") object.
+[R6](https://r6.r-lib.org) object.
 
-## What is `{REDCapSync}`?
+## What is REDCapSync?
 
 [REDCapSync](https://github.com/thecodingdocs/REDCapSync) unleashes the
 full power of the REDCap API even for the basic R user. When a sync is

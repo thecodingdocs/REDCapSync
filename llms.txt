@@ -1,4 +1,4 @@
-# [REDCapSync](https://github.com/thecodingdocs/REDCapSync)
+## REDCapSync [![](reference/figures/logo.png)](https://github.com/thecodingdocs/REDCapSync/)
 
 Several R packages exist for using the REDCap Application Program
 Interface (API) such as,
@@ -48,7 +48,8 @@ install.packages("REDCapSync")
 ### Devopment Version
 
 You can install the development version of REDCapSync from GitHub by
-using the `pak` or `remotes` package.
+using the [pak](https://pak.r-lib.org/) or
+[remotes](https://remotes.r-lib.org) package.
 
 ``` r
 # install.packages("pak")

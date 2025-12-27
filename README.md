@@ -1,5 +1,5 @@
 
-## REDCapSync <a href="https://github.com/thecodingdocs/REDCapSync/"><img src="man/figures/logo.png" align="right" height="160" width="140"/></a>
+# [REDCapSync](%22https://github.com/thecodingdocs/REDCapSync%22) <img src="man/figures/logo.png" align="right" height="160" width="140"/>
 
 <!-- badges: start -->
 

@@ -20,7 +20,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Brandon Rose \email{thecodingdocs@gmail.com} (\href{https://orcid.org/0009-0009-7813-1960}{ORCID})
+\strong{Maintainer}: Brandon Rose \email{thecodingdocs@gmail.com} (\href{https://orcid.org/0009-0009-7813-1960}{ORCID}) [copyright holder]
 
 Other contributors:
 \itemize{

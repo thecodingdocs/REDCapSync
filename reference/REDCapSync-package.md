@@ -24,7 +24,7 @@ Useful links:
 ## Author
 
 **Maintainer**: Brandon Rose <thecodingdocs@gmail.com>
-([ORCID](https://orcid.org/0009-0009-7813-1960))
+([ORCID](https://orcid.org/0009-0009-7813-1960)) \[copyright holder\]
 
 Other contributors:
 

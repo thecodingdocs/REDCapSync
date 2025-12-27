@@ -105,7 +105,8 @@ test_that("test_project_token works when exportVersion returns version", {
                   }
                 ))
   mockery::stub(test_project_token, "exportVersion", "12.1.1")
-  expect_message(test_project_token(project), "The REDCap project ID for TEST_PROJECT has changed since the last setup.")
+  expect_message(test_project_token(project),
+                 "The REDCap project ID for TEST_PROJECT has changed")
 })
 test_that("test_project_token marks failure when exportVersion returns NULL", {
   test_dir <- withr::local_tempdir() |> sanitize_path()

@@ -1,5 +1,5 @@
 # REDCapSync 0.1.0
-* Initial CRAN submission! (Expected Jan 2026)
+* Initial CRAN submission!
 
 # REDCapSync 0.0.9
 * separated from RosyREDCap shiny app

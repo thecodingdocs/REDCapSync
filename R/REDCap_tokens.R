@@ -69,7 +69,10 @@ test_project_token <- function(project) {
                                      as.character(project_info$project_id))
     if (project_id_changed) {
       cli_alert_warning(
-        "The REDCap project ID for {project$project_name} has changed since the last setup."
+        paste0(
+          "The REDCap project ID for {project$project_name} has changed",
+          "since the last setup."
+        )
       )
       return(invisible(project))
     }

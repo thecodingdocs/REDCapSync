@@ -1,8 +1,8 @@
 Package: REDCapSync
-Title: Encapsulated REDCap projects for data pipelines in R
+Title: Encapsulated REDCap Project Objects for Data Pipelines in R
 Version: 0.1.0
 Authors@R: c(
-    person("Brandon", "Rose", , "thecodingdocs@gmail.com", role = c("cre", "aut"),
+    person("Brandon", "Rose", , "thecodingdocs@gmail.com", role = c("cre", "aut","cph"),
            comment = c(ORCID = "0009-0009-7813-1960")),
     person("Natalie", "Goulett", role = "ctb"),
     person("Chris", "Hilsinger-Pate", role = "ctb"),
@@ -20,7 +20,7 @@ Description: Provides tools to download, organize, and synchronize data
     only triggered by major metadata changes. User can define subsets,
     derived fields, and transformations, which are stored in the list
     object and passed down to output objects to be used for data pipelines
-    and downstream applications, such as the R shiny app RosyREDCap.
+    and downstream applications, such as the R shiny app 'RosyREDCap'.
 License: GPL (>= 3) + file LICENSE
 URL: https://github.com/thecodingdocs/REDCapSync,
     https://thecodingdocs.github.io/REDCapSync/

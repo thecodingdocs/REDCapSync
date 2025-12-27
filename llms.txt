@@ -47,17 +47,16 @@ applications!
 
 ## Installation
 
-The stable release can be found on CRAN (PENDING SUBMISSION) and
-installed with:
+The stable release can be found on CRAN and installed with:
 
 ``` r
-#install.packages("REDCapSync") #PLACEHOLDER NOT SUBMITTED TO CRAN YET
+install.packages("REDCapSync")
 ```
 
 ### Devopment Version
 
 You can install the development version of REDCapSync from GitHub by
-using the `pak` package.
+using the `pak` or \`remotes\`\` package.
 
 ``` r
 # install.packages("pak")
@@ -74,8 +73,8 @@ version of R at RStudio and update all packages in RStudio. See
 
 ### Getting Started!
 
-Getting started is as simple as 1.) setting your tokens, 2.) setting up
-a project, and 3.) running project\$sync(). See [Getting
+Getting started is as simple as 1.) setting your token, 2.) setting up a
+project, and 3.) running project\$sync(). See [Getting
 Started](https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html "Getting Started")
 page for the basics!
 

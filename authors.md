@@ -3,7 +3,7 @@
 ## Authors
 
 - **[Brandon Rose](https://github.com/brandonerose)**. Maintainer,
-  author. [](https://orcid.org/0009-0009-7813-1960)
+  author, copyright holder. [](https://orcid.org/0009-0009-7813-1960)
 
 - **[Natalie Goulett](https://github.com/Goulett)**. Contributor.
 
@@ -22,12 +22,12 @@
 Source:
 [`DESCRIPTION`](https://github.com/thecodingdocs/REDCapSync/blob/main/DESCRIPTION)
 
-Rose B (2025). *REDCapSync: Encapsulated REDCap projects for data
-pipelines in R*. R package version 0.1.0,
+Rose B (2025). *REDCapSync: Encapsulated REDCap Project Objects for Data
+Pipelines in R*. R package version 0.1.0,
 <https://github.com/thecodingdocs/REDCapSync>.
 
     @Manual{,
-      title = {REDCapSync: Encapsulated REDCap projects for data pipelines in R},
+      title = {REDCapSync: Encapsulated REDCap Project Objects for Data Pipelines in R},
       author = {Brandon Rose},
       year = {2025},
       note = {R package version 0.1.0},

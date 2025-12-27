@@ -1,4 +1,4 @@
-# REDCapSync: Encapsulated REDCap projects for data pipelines in R
+# REDCapSync: Encapsulated REDCap Project Objects for Data Pipelines in R
 
 Provides tools to download, organize, and synchronize data from REDCap
 projects through the REDCap application programming interface (API). The
@@ -9,7 +9,7 @@ retrieving only modified data. Full updates are only triggered by major
 metadata changes. User can define subsets, derived fields, and
 transformations, which are stored in the list object and passed down to
 output objects to be used for data pipelines and downstream
-applications, such as the R shiny app RosyREDCap.
+applications, such as the R shiny app 'RosyREDCap'.
 
 ## See also
 

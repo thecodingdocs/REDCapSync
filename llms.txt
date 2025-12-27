@@ -6,35 +6,27 @@ Interface (API) such as,
 [redcapAPI](https://github.com/vubiostat/redcapAPI/ "redcapAPI R package"),
 and
 [tidyREDCap](https://raymondbalise.github.io/tidyREDCap/ "redcapAPI R package").
-However, there is no “get-everything-from-REDCap” R package that can
-produce a standardized
-[R6](https://r6.r-lib.org/index.html "R6 R package") object for any
-REDCap project.
-[REDCapSync](https://github.com/thecodingdocs/REDCapSync) streamlines
-comprehensive extraction. When a sync is performed
-[REDCapSync](https://github.com/thecodingdocs/REDCapSync) uses the
-REDCap log to only update data that has changed since the last API call.
-The final project-agnostic object facilitates further pipelining for
-deidenification, deriving additional variables, linked excel sheets, and
-exploratory data analysis with
-[RosyREDCap](https://thecodingdocs.github.io/RosyREDCap/ "RosyREDCap").
+However, [REDCapSync](https://github.com/thecodingdocs/REDCapSync) is
+the first “get-everything” REDCap R package that converts REDCap
+projects into a standardized, API-efficient, and project-agnostic
+[R6](https://r6.r-lib.org/index.html "R6 R package") object.
 
 ## What is `{REDCapSync}`?
 
-Using a cache of previous saves, a file directory, and the REDCap log,
-{REDCapSync} updates only the data that has been changed since the last
-API call. Each project becomes a standardized
-[R6](https://r6.r-lib.org/index.html "R6 R package") object that can be
-used for the best that R has to offer via statistics, visualization,
-shiny apps, and more! REDCapSync unleashes the full power of the REDCap
-API even for the basic R user.
+[REDCapSync](https://github.com/thecodingdocs/REDCapSync) unleashes the
+full power of the REDCap API even for the basic R user. When a sync is
+performed, [REDCapSync](https://github.com/thecodingdocs/REDCapSync)
+uses a cache of previous saves, a user-defined directory, and the REDCap
+log to only update data that changed since the last API call. Project
+objects can be used for the best that R has to offer via statistics,
+visualization, functions, shiny apps, and more!
 
 The aims of [REDCapSync](https://github.com/thecodingdocs/REDCapSync)
 are to…
 
 1.  Encapsulate the REDCap API into one R6 object to streamline use.
 2.  Automate common tasks such as cleaning, deidentification and merges.
-3.  Automate distrubution of user-defined Excel datasets to local/cloud
+3.  Automate distribution of user-defined Excel datasets to local/cloud
     storage for one or many REDCap projects.
 4.  Convert ***uncoded*** REDCap data from R or Excel for upload using
     REDCap API.
@@ -56,7 +48,7 @@ install.packages("REDCapSync")
 ### Devopment Version
 
 You can install the development version of REDCapSync from GitHub by
-using the `pak` or \`remotes\`\` package.
+using the `pak` or `remotes` package.
 
 ``` r
 # install.packages("pak")

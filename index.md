@@ -1,4 +1,4 @@
-## REDCapSync [![](reference/figures/logo.png)](https://github.com/thecodingdocs/REDCapSync/)
+# [REDCapSync](NA)
 
 Several R packages exist for using the REDCap Application Program
 Interface (API) such as,

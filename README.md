@@ -1,5 +1,5 @@
 
-# [REDCapSync](https://github.com/thecodingdocs/REDCapSync) <img src="man/figures/logo.png" align="right" height="160" width="140"/>
+## REDCapSync <a href="https://github.com/thecodingdocs/REDCapSync/"><img src="man/figures/logo.png" align="right" height="160" width="140"/></a>
 
 <!-- badges: start -->
 
@@ -57,7 +57,7 @@ install.packages("REDCapSync")
 ### Devopment Version
 
 You can install the development version of REDCapSync from GitHub by
-using the `pak` or `remotes` package.
+using the `{pak}` or `{remotes}` package.
 
 ``` r
 # install.packages("pak")

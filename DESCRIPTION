@@ -11,17 +11,18 @@ Authors@R: c(
     person("Sydney", "Stern", role = "ctb",
            comment = c(ORCID = "0000-0002-1479-605X"))
   )
-Description: Wraps dozens of REDCap API endpoints into a standardized R6 object.
-    Research Electronic Data Capture (REDCap) is a survey and database web 
-    application software maintained by Vanderbilt University. It has a robust 
-    application programming Interface (API) utilized by several R packages.
-    'REDCapSync' uses 'redcapAPI' and 'REDCapR' behind-the-scenes to retrieve 
-    all metadata, data, and log details for a project. To minimize unneccesary 
-    server calls, the interim REDCap log is used to retrieve only recently 
-    updated records. The user can define subsets, derived fields, and 
-    transformations that save to a user-defined directory. Having a standarized, 
-    API-effecient, project-agnostic R object streamlines downstream use in 
-    scripts, functions, and shiny applications.
+Description: Wraps dozens of REDCap API endpoints into a standardized R6
+    object.  Research Electronic Data Capture (REDCap) is a survey and
+    database web application software maintained by Vanderbilt University.
+    It has a robust application programming Interface (API) utilized by
+    several R packages.  'REDCapSync' uses 'redcapAPI' and 'REDCapR'
+    behind-the-scenes to retrieve all metadata, data, and log details for
+    a project. To minimize unneccesary server calls, the interim REDCap
+    log is used to retrieve only recently updated records. The user can
+    define subsets, derived fields, and transformations that save to a
+    user-defined directory. Having a standarized, API-effecient,
+    project-agnostic R object streamlines downstream use in scripts,
+    functions, and shiny applications.
 License: GPL (>= 3) + file LICENSE
 URL: https://github.com/thecodingdocs/REDCapSync,
     https://thecodingdocs.github.io/REDCapSync/

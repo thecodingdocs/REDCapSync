@@ -94,6 +94,7 @@ Users should construct objects using <code><a href="setup-load.html">setup_proje
 <li><p><a href="#method-REDCapSync_project-show_token"><code>REDCapSync_project$show_token()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-test_token"><code>REDCapSync_project$test_token()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-url_launch"><code>REDCapSync_project$url_launch()</code></a></p></li>
+<li><p><a href="#method-REDCapSync_project-upload"><code>REDCapSync_project$upload()</code></a></p></li>
 <li><p><a href="#method-REDCapSync_project-.internal"><code>REDCapSync_project$.internal()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-REDCapSync_project-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
@@ -600,10 +601,33 @@ inherited according to what was set with <code>add_project_summary</code>.</p></
 </dl><p></p></div>
 </div>
 
+</div><p></p><hr><a id="method-REDCapSync_project-upload"></a><div class="section">
+<h3 id="method-upload-">Method <code>upload()</code><a class="anchor" aria-label="anchor" href="#method-upload-"></a></h3>
+<p>This will only overwrite and new data. It will not directly delete any
+data. Because this is a function that can mess up your data, use it
+very carefilly. Remember all changes are saved in the REDCap log if
+there's an issue. Missing rows and columns are allowed!</p><div class="section">
+<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">upload</span><span class="op">(</span><span class="va">to_be_uploaded</span>, batch_size <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>to_be_uploaded</code></dt>
+<dd><p>data.frame in raw coded form.</p></dd>
+
+
+<dt><code>batch_size</code></dt>
+<dd><p>numeric of how big the REDCap batch upload is. Default 500.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
 </div><p></p><hr><a id="method-REDCapSync_project-.internal"></a><div class="section">
 <h3 id="method-internal-">Method <code>.internal()</code><a class="anchor" aria-label="anchor" href="#method-internal-"></a></h3>
 <p>returns internal list</p><div class="section">
-<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
+<h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">.internal</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 

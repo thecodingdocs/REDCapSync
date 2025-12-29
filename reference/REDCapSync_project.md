@@ -51,6 +51,8 @@ for initializing the `project` object.'
 
 - [`REDCapSync_project$url_launch()`](#method-REDCapSync_project-url_launch)
 
+- [`REDCapSync_project$upload()`](#method-REDCapSync_project-upload)
+
 - [`REDCapSync_project$.internal()`](#method-REDCapSync_project-.internal)
 
 ------------------------------------------------------------------------
@@ -561,6 +563,29 @@ opens links in browser
 - `open_browser`:
 
   logical for launching the link in internet browser
+
+------------------------------------------------------------------------
+
+### Method `upload()`
+
+This will only overwrite and new data. It will not directly delete any
+data. Because this is a function that can mess up your data, use it very
+carefilly. Remember all changes are saved in the REDCap log if there's
+an issue. Missing rows and columns are allowed!
+
+#### Usage
+
+    REDCapSync_project$upload(to_be_uploaded, batch_size = 500)
+
+#### Arguments
+
+- `to_be_uploaded`:
+
+  data.frame in raw coded form.
+
+- `batch_size`:
+
+  numeric of how big the REDCap batch upload is. Default 500.
 
 ------------------------------------------------------------------------
 

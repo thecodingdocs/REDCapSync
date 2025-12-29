@@ -1,15 +1,17 @@
-# REDCapSync: Encapsulated REDCap Project Objects for Data Pipelines in R
+# REDCapSync: Encapsulated REDCap Project Objects for Syncronized Data Pipelines
 
-Provides tools to download, organize, and synchronize data from REDCap
-projects through the REDCap application programming interface (API). The
-package constructs a standardized project object that stores data,
-metadata, logs, and configuration details in a user-defined directory.
-It supports incremental updates by checking the REDCap log and
-retrieving only modified data. Full updates are only triggered by major
-metadata changes. User can define subsets, derived fields, and
-transformations, which are stored in the list object and passed down to
-output objects to be used for data pipelines and downstream
-applications, such as the R shiny app 'RosyREDCap'.
+Wraps dozens of REDCap API endpoints into a standardized R6 object.
+Research Electronic Data Capture (REDCap) is a survey and database web
+application software maintained by Vanderbilt University. It has a
+robust application programming Interface (API) utilized by several R
+packages. 'REDCapSync' uses 'redcapAPI' and 'REDCapR' behind-the-scenes
+to retrieve all metadata, data, and log details for a project. To
+minimize unneccesary server calls, the interim REDCap log is used to
+retrieve only recently updated records. The user can define subsets,
+derived fields, and transformations that save to a user-defined
+directory. Having a standarized, API-effecient, project-agnostic R
+object streamlines downstream use in scripts, functions, and shiny
+applications.
 
 ## See also
 

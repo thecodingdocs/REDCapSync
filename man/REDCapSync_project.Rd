@@ -34,6 +34,7 @@ Users should construct objects using \code{\link[=setup_project]{setup_project()
 \item \href{#method-REDCapSync_project-show_token}{\code{REDCapSync_project$show_token()}}
 \item \href{#method-REDCapSync_project-test_token}{\code{REDCapSync_project$test_token()}}
 \item \href{#method-REDCapSync_project-url_launch}{\code{REDCapSync_project$url_launch()}}
+\item \href{#method-REDCapSync_project-upload}{\code{REDCapSync_project$upload()}}
 \item \href{#method-REDCapSync_project-.internal}{\code{REDCapSync_project$.internal()}}
 }
 }
@@ -471,6 +472,28 @@ opens links in browser
 "setup", "logging", "designer", "dictionary", "data_quality", "identifiers"}
 
 \item{\code{open_browser}}{logical for launching the link in internet browser}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSync_project-upload"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSync_project-upload}{}}}
+\subsection{Method \code{upload()}}{
+This will only overwrite and new data. It will not directly delete any
+data. Because this is a function that can mess up your data, use it
+very carefilly. Remember all changes are saved in the REDCap log if
+there's an issue. Missing rows and columns are allowed!
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$upload(to_be_uploaded, batch_size = 500)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{to_be_uploaded}}{data.frame in raw coded form.}
+
+\item{\code{batch_size}}{numeric of how big the REDCap batch upload is. Default 500.}
 }
 \if{html}{\out{</div>}}
 }

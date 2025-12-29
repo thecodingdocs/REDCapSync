@@ -103,6 +103,8 @@
 #' @param data_func Function or NA. An optional function to transform or
 #' validate the data in the field. Default is `NA`.
 #' @param summary_names One or more summary names. Default is `NULL`.
+#' @param to_be_uploaded data.frame in raw coded form.
+#' @param batch_size numeric of how big the REDCap batch upload is. Default 500.
 #' @return An R6ClassGenerator
 #' @keywords internal
 REDCapSync_project <- R6Class(
@@ -318,6 +320,47 @@ REDCapSync_project <- R6Class(
       get_project_url(private$project,
                       link_type = link_type,
                       open_browser = open_browser)
+    },
+    #' @description
+    #' This will only overwrite and new data. It will not directly delete any
+    #' data. Because this is a function that can mess up your data, use it
+    #' very carefilly. Remember all changes are saved in the REDCap log if
+    #' there's an issue. Missing rows and columns are allowed!
+    upload = function(to_be_uploaded, batch_size = 500) {
+      # add detect labelled vs raw?
+      if (!is_named_df_list(to_be_uploaded, strict = TRUE)) {
+        if (!is.data.frame(to_be_uploaded)) {
+          stop("`to_be_uploaded` must be a date.frame or named list of ",
+               "data.frames!")
+        }
+        if (!is_something(to_be_uploaded)) {
+          cli_alert_warning("Nothing to upload...")
+          return(invisible(FALSE))
+        }
+        to_be_uploaded <- list(upload = to_be_uploaded)
+      }
+      is_labelled <- private$project$internals$labelled
+      for (upload_name in names(to_be_uploaded)) {
+        upload_this <- to_be_uploaded[[upload_name]]
+        # add comparison check but need to test...
+        if (is_labelled) {
+          upload_this <- upload_this |>
+            labelled_to_raw_form(private$project)
+        }
+        upload_this |> upload_form_to_REDCap(
+          project = private$project,
+          batch_size = batch_size
+        )
+      }
+      # add check for uploaded something
+      private$project <- sync_project(
+        project = private$project,
+        # summarize = summarize,
+        # save_to_dir = save_to_dir,
+        hard_check = TRUE
+        # hard_reset = hard_reset
+      )
+      invisible(TRUE) #maybe give TRUE FALSE here instead of self
     },
     #' @description  returns internal list
     .internal = function() {

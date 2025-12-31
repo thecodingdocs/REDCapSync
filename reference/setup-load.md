@@ -192,9 +192,6 @@ you relocated the directory.
 [`get_projects`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)
 for retrieving a list of projects from the directory cache.
 
-Other project object:
-[`save_project()`](https://thecodingdocs.github.io/REDCapSync/reference/save-deleteproject.md)
-
 ## Examples
 
 ``` r

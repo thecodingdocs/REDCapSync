@@ -1,10 +1,14 @@
-# Setup or Load REDCapSync Project
+# REDCapSync Encapsulated Project Object
 
 [R6](https://r6.r-lib.org/reference/R6Class.html) project object for
 [REDCapSync](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync-package.md)
 Main class for managing REDCap data, metadata, and sync operations.
 Users should construct objects using
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
+For exisiting projects, use
+[`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
+For offline examples use
+[`load_test_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 
 ## Value
 
@@ -304,7 +308,7 @@ Add a new summary entry
 - `file_name`:
 
   Character. The base name of the file where the summary will be saved.
-  Default is `<project$project_name>_<summary_name>`.
+  Default is `<project_name>_<summary_name>`.
 
 - `hard_reset`:
 
@@ -529,18 +533,12 @@ Returns list of data or the specified form.
 Displays the REDCap API token currently stored in the session as an
 environment variable. It's essentially a wrapper for
 Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
-formatted like a REDCap token and provides messgaes if not valid.
+formatted like a REDCap token and provides messgaes if not valid. The
+token is not returned as an R object to maintain security.
 
 #### Usage
 
     REDCapSync_project$show_token()
-
-#### Details
-
-This function retrieves the REDCap API token associated with the
-specified `project` object and displays it as a message. The token is
-not returned as an R object to maintain security. Use this function to
-confirm the token currently in use without exposing it unnecessarily.
 
 ------------------------------------------------------------------------
 

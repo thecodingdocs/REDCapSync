@@ -11,7 +11,7 @@ already saved. Save the outputs to a directory.
   [`load_test_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   : Setup or Load REDCapSync Project
 - [`REDCapSync_project`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync_project.md)
-  : Setup or Load REDCapSync Project
+  : REDCapSync Encapsulated Project Object
 
 ## Other (Intermediate/Advanced)
 
@@ -33,10 +33,3 @@ last update and other details). Tokens and data are NOT stored here.
   : Remove project from cache
 - [`sync()`](https://thecodingdocs.github.io/REDCapSync/reference/sync.md)
   : Synchronize REDCap Data
-
-### Other Helpers
-
-- [`raw_to_labelled_form()`](https://thecodingdocs.github.io/REDCapSync/reference/raw_to_labelled_form.md)
-  : Raw to Labelled REDCap forms
-- [`labelled_to_raw_form()`](https://thecodingdocs.github.io/REDCapSync/reference/labelled_to_raw_form.md)
-  : Clean to Raw REDCap forms

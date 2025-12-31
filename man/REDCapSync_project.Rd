@@ -439,9 +439,20 @@ Returns list of data or the specified form.
 \if{html}{\out{<a id="method-REDCapSync_project-show_token"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSync_project-show_token}{}}}
 \subsection{Method \code{show_token()}}{
-Displays project token in console for verification
+Displays the REDCap API token currently stored in the session as an
+environment variable. It's essentially a wrapper for
+Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
+formatted like a REDCap token and provides messgaes if not valid.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_token()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+This function retrieves the REDCap API token associated with the specified
+\code{project} object and displays it as a message.
+The token is not returned as an R object to maintain security.
+Use this function to confirm the token currently in use without exposing it
+unnecessarily.
 }
 
 }

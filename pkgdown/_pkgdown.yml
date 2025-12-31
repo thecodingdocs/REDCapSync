@@ -42,11 +42,6 @@ reference:
       - cache_remove_project
       - sync
 
-  - subtitle: Other Helpers
-    contents:
-      - raw_to_labelled_form
-      - labelled_to_raw_form
-
 articles:
   - title: Feautures by R User Level
     navbar: ~

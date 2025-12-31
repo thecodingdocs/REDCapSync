@@ -500,12 +500,7 @@ get_redcap_denormalized <- function(project,
   )$data |> all_character_cols()
   return(denormalized)
 }
-#' @title Get REDCap Report
-#' @inheritParams save_project
-#' @param report_id character or integer of REDCap report ID. This can be found
-#' at the end of the URL of the report.
-#' @return data.frame of REDCap report
-#' @keywords internal
+#' @noRd
 get_redcap_report <- function(project, report_id, silent = TRUE) {
   report_id <- as.integer(report_id)
   report <- REDCapR::redcap_report(

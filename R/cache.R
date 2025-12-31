@@ -76,7 +76,7 @@ get_cache <- function() {
 #' @description
 #' This will remove a project from the cache. The cache only stores information
 #' like project_name, token_name, directory location, and details
-#' from setup_project. If you want to truly delete the project files, you must
+#' from setup_project. If yo?u want to truly delete the project files, you must
 #' do so at the project directory you set up.
 #' @return message of outcome
 #' @family Project Cache Functions

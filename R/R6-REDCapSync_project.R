@@ -1,8 +1,10 @@
-#' @title Setup or Load REDCapSync Project
+#' @title REDCapSync Encapsulated Project Object
 #' @description
 #' [R6][R6::R6Class] project object for [REDCapSync]
 #' Main class for managing REDCap data, metadata, and sync operations.
-#' Users should construct objects using [setup_project()].
+#' Users should construct objects using [setup_project()]. For exisiting
+#' projects, use [load_project()]. For offline examples use
+#' [load_test_project()].
 #' @param summary_name Character. The name of the summary from which to generate
 #' the summary. *If you provide `summary_name` all other parameters are
 #' inherited according to what was set with `add_project_summary`.
@@ -69,7 +71,7 @@
 #' @param dir_other Character. The directory where the summary file will be
 #' saved. Default is the `output` folder within the database directory.
 #' @param file_name Character. The base name of the file where the summary will
-#' be saved. Default is `<project$project_name>_<summary_name>`.
+#' be saved. Default is `<project_name>_<summary_name>`.
 #' @param envir environment variable
 #' @param form string of raw form name such as "survey_one"
 #' @param link_type choose one of "base", "home", "record_home",
@@ -310,12 +312,7 @@ REDCapSync_project <- R6Class(
     #' environment variable. It's essentially a wrapper for
     #' Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
     #' formatted like a REDCap token and provides messgaes if not valid.
-    #' @details
-    #' This function retrieves the REDCap API token associated with the specified
-    #' `project` object and displays it as a message.
     #' The token is not returned as an R object to maintain security.
-    #' Use this function to confirm the token currently in use without exposing it
-    #' unnecessarily.
     show_token = function() {
       view_project_token(private$project)
     },

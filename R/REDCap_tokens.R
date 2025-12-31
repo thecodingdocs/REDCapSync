@@ -1,19 +1,4 @@
-#' @title View the REDCap API Token Stored in the Session
-#' @description
-#' Displays the REDCap API token currently stored in the session as an
-#' environment variable. It's essentially a wrapper for
-#' Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
-#' formatted like a REDCap token and provides messgaes if not valid.
-#' @details
-#' This function retrieves the REDCap API token associated with the specified
-#' `project` object and displays it as a message.
-#' The token is not returned as an R object to maintain security.
-#' Use this function to confirm the token currently in use without exposing it
-#' unnecessarily.
-#' @inheritParams save_project
-#' @return Invisible. Prints a message displaying the stored token.
-#' @family Token Functions
-#' @keywords internal
+#' @noRd
 view_project_token <- function(project) {
   project <- assert_blank_project(project)
   token <- get_project_token(project, silent = FALSE)
@@ -22,21 +7,7 @@ view_project_token <- function(project) {
   }
   invisible()
 }
-#' @title Test REDCap API Token linked to a project Object
-#' @description
-#' Validates the REDCap API token stored in the `project` object by attempting a
-#' connection to the REDCap server.
-#' @details
-#' This function tests whether the API token stored in the `project` object is
-#' valid by making a request to the REDCap server.
-#' @inheritParams save_project
-#' @return Logical. Returns `TRUE` if the API token is valid, otherwise `FALSE`.
-#' @seealso
-#' \href{../articles/Tokens.html}{pkgdown article on tokens}
-#' \href{https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html}{
-#' pkgdown article on tokens}
-#' @family Token Functions
-#' @keywords internal
+#' @noRd
 test_project_token <- function(project) {
   assert_setup_project(project)
   rcon <- redcapConnection(url = project$links$redcap_uri,

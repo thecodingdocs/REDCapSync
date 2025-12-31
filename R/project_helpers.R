@@ -322,29 +322,7 @@ get_min_dates <- function(data_list) {
   min_dates <- stats::aggregate(date ~ record_id, data = combined, FUN = min)
   min_dates
 }
-#' @rdname Links
-#' @title Open Links to REDCap Pages
-#' @description
-#' Opens browser page for a given project object.
-#' @details
-#' Uses [utils::browseURL()] to open the specified REDCap page.
-#' In order for the function to work you must have ran
-#' \code{project <- sync_project(project)} successfully at least once.
-#' If the link brings you to a page that doesn't work check the URL. It's
-#' possible your institution may have changed redcap versions, which is part of
-#' the URL. In that case run \code{project <- sync_project(project)} again.
-#' You may have to be signed into REDCap for it to work properly.
-#' When in doubt, just seek out the page by navigating on your own in REDCap.
-#' Report issues if you can.
-#' @param project A validated `project` object containing REDCap project data
-#' and settings. Generated using \code{project <- \link{load_project}("PROJ")}
-#' or \link{setup_project}()
-#' @param link_type choose one of "base", "home", "record_home",
-#' "records_dashboard", "api", "api_playground", "codebook", "user_rights",
-#' "setup", "logging", "designer", "dictionary", "data_quality", "identifiers"
-#' @param open_browser logical for launching the link in internet browser
-#' @return internet link
-#' @keywords internal
+#' @noRd
 get_project_url <- function(project,
                             link_type = "home",
                             open_browser = TRUE) {
@@ -359,14 +337,7 @@ get_project_url <- function(project,
   }
   the_link
 }
-#' @param record REDCap record id or study id etc, any column names that match
-#' `project$metadata$id_col`
-#' @param page REDCap page for the record. Must be one of
-#' `project$metadata$forms$form_name`
-#' @param instance REDCap instance if it's a repeating instrument
-#' @param open_browser logical for launching the link in internet browser
-#' @rdname Links
-#' @keywords internal
+#' @noRd
 get_record_url <- function(project,
                            record,
                            page,

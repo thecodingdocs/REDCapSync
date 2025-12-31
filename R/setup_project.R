@@ -425,24 +425,7 @@ load_test_project <- function(project_name = "TEST_CLASSIC",
   }
   invisible(REDCapSync_project$new(project))
 }
-#' @rdname save-deleteproject
-#' @title Save or Delete project file from the directory
-#' @param project A validated `project` object containing REDCap project data
-#' and
-#' settings. Generated using \link{load_project} or \link{setup_project}
-#' @inheritParams setup_project
-#' @description
-#' This will save/delete the "<project_name>_REDCapSync.RData" file in the given
-#' project
-#' directories R_objects folder. These are optional functions given that
-#' `save_project` is a also handled by a default parameter in `sync_project.`
-#'
-#' @details delete_project will not delete any other files from that directory.
-#' The
-#' user must delete any other files manually.
-#' @return Message
-#' @family project object
-#' @keywords internal
+#' @noRd
 save_project <- function(project, silent = FALSE) {
   assert_setup_project(project)
   # assert_setup_project(project)

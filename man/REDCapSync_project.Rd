@@ -2,14 +2,16 @@
 % Please edit documentation in R/R6-REDCapSync_project.R
 \name{REDCapSync_project}
 \alias{REDCapSync_project}
-\title{Setup or Load REDCapSync Project}
+\title{REDCapSync Encapsulated Project Object}
 \value{
 An R6ClassGenerator
 }
 \description{
 \link[R6:R6Class]{R6} project object for \link{REDCapSync}
 Main class for managing REDCap data, metadata, and sync operations.
-Users should construct objects using \code{\link[=setup_project]{setup_project()}}.
+Users should construct objects using \code{\link[=setup_project]{setup_project()}}. For exisiting
+projects, use \code{\link[=load_project]{load_project()}}. For offline examples use
+\code{\link[=load_test_project]{load_test_project()}}.
 }
 \seealso{
 \link{setup_project} for initializing the \code{project} object.'
@@ -230,7 +232,7 @@ storage. Default is \code{FALSE}}
 saved. Default is the \code{output} folder within the database directory.}
 
 \item{\code{file_name}}{Character. The base name of the file where the summary will
-be saved. Default is \verb{<project$project_name>_<summary_name>}.}
+be saved. Default is \verb{<project_name>_<summary_name>}.}
 
 \item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files
 with the same name. Default is \code{FALSE}.}
@@ -443,16 +445,9 @@ Displays the REDCap API token currently stored in the session as an
 environment variable. It's essentially a wrapper for
 Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
 formatted like a REDCap token and provides messgaes if not valid.
+The token is not returned as an R object to maintain security.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_token()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-This function retrieves the REDCap API token associated with the specified
-\code{project} object and displays it as a message.
-The token is not returned as an R object to maintain security.
-Use this function to confirm the token currently in use without exposing it
-unnecessarily.
 }
 
 }

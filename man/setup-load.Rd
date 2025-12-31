@@ -161,8 +161,5 @@ project <- load_project("TEST")
 \seealso{
 \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from
 the directory cache.
-
-Other project object: 
-\code{\link{save_project}()}
 }
 \concept{project object}

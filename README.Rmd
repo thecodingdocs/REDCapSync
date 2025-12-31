@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 Several R packages exist for using the REDCap Application Program Interface (API) such as, `{redcapAPI}`, `{REDCapR}`, and `{tidyREDCap}`.
 However, `{REDCapSync}` is the first "get-everything" REDCap R package that 
 converts REDCap projects into a standardized, API-efficient, and 
-project-agnostic `{R6}` object. 
+project-agnostic [R6] object. 
 
 ## What is REDCapSync?
 

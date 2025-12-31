@@ -88,19 +88,19 @@
 <!-- badges: start -->
 
 <!-- badges: end -->
-<p>Several R packages exist for using the REDCap Application Program Interface (API) such as, <a href="https://github.com/vubiostat/redcapAPI" class="external-link">redcapAPI</a>, <a href="https://ouhscbbmc.github.io/REDCapR/" class="external-link">REDCapR</a>, and <a href="https://raymondbalise.github.io/tidyREDCap/index.html" class="external-link">tidyREDCap</a>. However, <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> is the first “get-everything” REDCap R package that converts REDCap projects into a standardized, API-efficient, and project-agnostic [R6] object.</p>
+<p>Several R packages exist for using the <a href="https://projectredcap.org/" class="external-link">REDCap</a> Application Program Interface (API) such as, <a href="https://github.com/vubiostat/redcapAPI" class="external-link"><code>redcapAPI</code></a>, <a href="https://ouhscbbmc.github.io/REDCapR" class="external-link"><code>REDCapR</code></a>, and <a href="https://raymondbalise.github.io/tidyREDCap/" class="external-link"><code>tidyREDCap</code></a>. However, <a href="https://thecodingdocs.github.io/REDCapSync"><code>REDCapSync</code></a> is the first “get-everything” REDCap R package that converts REDCap projects into a standardized, API-efficient, and project-agnostic [R6] object.</p>
 </div>
 <div class="section level2">
 <h2 id="what-is-redcapsync">What is REDCapSync?<a class="anchor" aria-label="anchor" href="#what-is-redcapsync"></a>
 </h2>
-<p><a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> unleashes the full power of the REDCap API even for the basic R user. When a sync is performed, <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> uses a cache of previous saves, a user-defined directory, and the REDCap log to only update data that changed since the last API call. Project objects can be used for the best that R has to offer via statistics, visualization, functions, shiny apps, and more!</p>
-<p>The aims of <a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a> are to…</p>
+<p><a href="https://thecodingdocs.github.io/REDCapSync"><code>REDCapSync</code></a> unleashes the full power of the REDCap API even for the basic R user. When a sync is performed, <a href="https://thecodingdocs.github.io/REDCapSync"><code>REDCapSync</code></a> uses a cache of previous saves, a user-defined directory, and the REDCap log to only update data that changed since the last API call. Project objects can be used for the best that R has to offer via statistics, visualization, functions, shiny apps, and more!</p>
+<p>The aims of <a href="https://thecodingdocs.github.io/REDCapSync"><code>REDCapSync</code></a> are to…</p>
 <ol style="list-style-type: decimal">
 <li>Encapsulate the REDCap API into one R6 object to streamline use.</li>
 <li>Automate common tasks such as cleaning, deidentification and merges.</li>
 <li>Automate distribution of user-defined Excel datasets to local/cloud storage for one or many REDCap projects.</li>
 <li>Convert <strong><em>uncoded</em></strong> REDCap data from R or Excel for upload using REDCap API.</li>
-<li>Power the companion shiny app <a href="https://thecodingdocs.github.io/RosyREDCap/" title="RosyREDCap R package" class="external-link">RosyREDCap</a>
+<li>Power the companion shiny app <a href="https://thecodingdocs.github.io/RosyREDCap/" title="RosyREDCap R package" class="external-link"><code>RosyREDCap</code></a>
 </li>
 </ol>
 <p>By leveraging the combined strengths of R and REDCap, users can maintain strong data pipelines that include statistics, visuals, and even shiny applications!</p>
@@ -108,26 +108,28 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>The stable release can be found on CRAN and installed with:</p>
+<p>The stable <em>release</em> version can be installed from <a href="https://cran.r-project.org/package=REDCapSync" class="external-link">CRAN</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"REDCapSync"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="devopment-version">Devopment Version<a class="anchor" aria-label="anchor" href="#devopment-version"></a>
 </h3>
-<p>You can install the development version of REDCapSync from GitHub by using the <a href="https://pak.r-lib.org/" class="external-link">pak</a> or <a href="https://remotes.r-lib.org" class="external-link">remotes</a> package.</p>
+<p>You can install the development version from GitHub with the <a href="https://pak.r-lib.org" class="external-link"><code>pak</code></a></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"thecodingdocs/REDCapSync"</span><span class="op">)</span></span>
-<span><span class="co"># or try remotes install.packages("remotes")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"thecodingdocs/REDCapSync"</span><span class="op">)</span></span></code></pre></div>
+<p>Alterntatively, you can install the development version from GitHub with the <a href="https://remotes.r-lib.org" class="external-link"><code>remotes</code></a> package.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"thecodingdocs/REDCapSync"</span><span class="op">)</span></span></code></pre></div>
 <p>Windows users may need to install <a href="https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html" title="R Getting Started" class="external-link">RTools version 4.5</a> to use pak. If you have any issues, try downloading the most recent version of R at RStudio and update all packages in RStudio. See <a href="https://www.thecodingdocs.com/r/getting-started" title="R Getting Started" class="external-link">thecodingdocs.com/r/getting-started</a>.</p>
 </div>
-<div class="section level3">
-<h3 id="getting-started">Getting Started!<a class="anchor" aria-label="anchor" href="#getting-started"></a>
-</h3>
+</div>
+<div class="section level2">
+<h2 id="getting-started">Getting Started!<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h2>
 <p>Getting started is as simple as 1.) setting your token, 2.) setting up a project, and 3.) running project$sync(). See <a href="https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html" title="Getting Started">Getting Started</a> page for the basics!</p>
 <p><img src="reference/figures/cover.jpg"></p>
-</div>
 </div>
 <div class="section level2">
 <h2 id="minimum-requirements">Minimum Requirements<a class="anchor" aria-label="anchor" href="#minimum-requirements"></a>

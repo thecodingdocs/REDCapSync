@@ -7,8 +7,8 @@ Interface (API) such as,
 [tidyREDCap](https://raymondbalise.github.io/tidyREDCap/index.html).
 However, [REDCapSync](https://github.com/thecodingdocs/REDCapSync) is
 the first “get-everything” REDCap R package that converts REDCap
-projects into a standardized, API-efficient, and project-agnostic
-[R6](https://r6.r-lib.org) object.
+projects into a standardized, API-efficient, and project-agnostic \[R6\]
+object.
 
 ## What is REDCapSync?
 

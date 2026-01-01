@@ -18,7 +18,8 @@ such as, [`redcapAPI`](https://github.com/vubiostat/redcapAPI),
 [`tidyREDCap`](https://raymondbalise.github.io/tidyREDCap/). However,
 [`REDCapSync`](https://thecodingdocs.github.io/REDCapSync) is the first
 “get-everything” REDCap R package that converts REDCap projects into a
-standardized, API-efficient, and project-agnostic \[R6\] object.
+standardized, API-efficient, and project-agnostic \[R6\]\[R6::R6Class\]
+object \[R6::R6Class\] \[`R6::R6Class`\] `R6::R6Class`.
 
 ## What is REDCapSync?
 

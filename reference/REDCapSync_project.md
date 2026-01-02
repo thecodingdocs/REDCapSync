@@ -583,7 +583,7 @@ an issue. Missing rows and columns are allowed!
 
 #### Usage
 
-    REDCapSync_project$upload(to_be_uploaded, batch_size = 500)
+    REDCapSync_project$upload(to_be_uploaded, batch_size = 500L)
 
 #### Arguments
 

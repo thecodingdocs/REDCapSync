@@ -59,7 +59,7 @@ is_valid_redcap_token <- function(token, silent = TRUE) {
   start_text <- "The token "
   token_text <- NULL
   end_text <- "is not a valid 32-character hexadecimal value."
-  trimmed_token <- token |> trimws(whitespace = "[\\h\\v]")
+  trimmed_token <- trimws(token, whitespace = "[\\h\\v]")
   if (is.null(token)) {
     token_text <- "is `NULL`,"
     cli_alert_danger(paste0(start_text, token_text, end_text))
@@ -80,11 +80,11 @@ is_valid_redcap_token <- function(token, silent = TRUE) {
     cli_alert_danger(paste0(start_text, token_text, end_text))
     return(FALSE)
   }
-    if (!is_hexadecimal(token, length = 32)) {
+    if (!is_hexadecimal(token, length = 32L)) {
       cli_alert_danger(paste0(start_text, token_text, end_text))
       return(FALSE)
     }
-  return(TRUE)
+  TRUE
 }
 #' @noRd
 is_hexadecimal <- function(string, length = NULL) {
@@ -96,7 +96,7 @@ is_hexadecimal <- function(string, length = NULL) {
   } else {
     paste0("^[0-9A-Fa-f]{", length, "}$") # Exact length
   }
-  return(grepl(pattern, string))
+  grepl(pattern, string)
 }
 #' @noRd
 .token_prefix <- "REDCapSync_"

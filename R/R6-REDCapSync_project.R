@@ -173,36 +173,36 @@ REDCapSync_project <- R6Class(
                            dir_other = NULL,
                            file_name = NULL,
                            hard_reset = FALSE) {
-      private$project <- private$project |>
-        add_project_summary(
-          summary_name,
-          transformation_type = transformation_type,
-          merge_form_name = merge_form_name,
-          filter_field = filter_field,
-          filter_choices = filter_choices,
-          filter_list = filter_list,
-          filter_strict = filter_strict,
-          field_names = field_names,
-          form_names = form_names,
-          exclude_identifiers = exclude_identifiers,
-          exclude_free_text = exclude_free_text,
-          date_handling = date_handling,
-          labelled = labelled,
-          clean = clean,
-          drop_blanks = drop_blanks,
-          drop_missing_codes = drop_missing_codes,
-          drop_others = drop_others,
-          include_metadata = include_metadata,
-          include_records = include_records,
-          include_users = include_users,
-          include_log = include_log,
-          annotate_from_log = annotate_from_log,
-          with_links = with_links,
-          separate = separate,
-          use_csv = use_csv,
-          dir_other = dir_other,
-          file_name = file_name,
-          hard_reset = hard_reset
+      private$project <- add_project_summary(
+        project = private$project,
+        summary_name = summary_name,
+        transformation_type = transformation_type,
+        merge_form_name = merge_form_name,
+        filter_field = filter_field,
+        filter_choices = filter_choices,
+        filter_list = filter_list,
+        filter_strict = filter_strict,
+        field_names = field_names,
+        form_names = form_names,
+        exclude_identifiers = exclude_identifiers,
+        exclude_free_text = exclude_free_text,
+        date_handling = date_handling,
+        labelled = labelled,
+        clean = clean,
+        drop_blanks = drop_blanks,
+        drop_missing_codes = drop_missing_codes,
+        drop_others = drop_others,
+        include_metadata = include_metadata,
+        include_records = include_records,
+        include_users = include_users,
+        include_log = include_log,
+        annotate_from_log = annotate_from_log,
+        with_links = with_links,
+        separate = separate,
+        use_csv = use_csv,
+        dir_other = dir_other,
+        file_name = file_name,
+        hard_reset = hard_reset
       )
       invisible(self)
     },
@@ -221,8 +221,9 @@ REDCapSync_project <- R6Class(
         names() |>
         setdiff("all_records")
       assert_choice(summary_name, summary_names, null.ok = FALSE)
-      project_summary <- private$project |>
+      project_summary <-
         generate_project_summary(
+          project = private$project,
           summary_name = summary_name
         )
       if (!is.null(envir)) {
@@ -252,11 +253,11 @@ REDCapSync_project <- R6Class(
     #' @description summarize project and save to Excel
     summarize = function(hard_reset = FALSE) {
       first_stamp <- private$project$internals$last_summary
-      private$project <- private$project |>
-        summarize_project(hard_reset = hard_reset)
+      private$project <-
+        summarize_project(project = private$project, hard_reset = hard_reset)
       second_stamp <- private$project$internals$last_summary
       was_updated <- !identical(first_stamp, second_stamp)
-      if(was_updated) {
+      if (was_updated) {
         #consider separating just saving last in details
         private$project <- save_project(private$project)
       }
@@ -268,8 +269,7 @@ REDCapSync_project <- R6Class(
         names() |>
         setdiff("all_records")
       assert_choice(summary_name, summary_names, null.ok = FALSE)
-      private$project <- private$project |>
-        save_summary(summary_name)
+      private$project <- save_summary(project = private$project, summary_name)
       invisible(self)
     },
     #' @description  Add a new summary entry
@@ -282,11 +282,11 @@ REDCapSync_project <- R6Class(
       assert_environment(envir, null.ok = TRUE)
       assert_choice(type, c("fields", "forms", "choices"), null.ok = TRUE)
       return_this <- private$project$metadata
-      if(!is.null(type)) {
+      if (!is.null(type)) {
         #add warning or message?
         return_this <- private$project$metadata[type]
       }
-      if(!is.null(envir)) {
+      if (!is.null(envir)) {
         # add check for conflicts?
         return_this |>
           process_df_list(silent = TRUE) |>
@@ -302,7 +302,7 @@ REDCapSync_project <- R6Class(
         #add warning or message?
         return_this <- private$project$data[[form]]
       }
-      if(!is.null(envir)) {
+      if (!is.null(envir)) {
         list2env(return_this, envir = envir)
       }
       invisible(return_this)
@@ -333,7 +333,7 @@ REDCapSync_project <- R6Class(
     #' data. Because this is a function that can mess up your data, use it
     #' very carefilly. Remember all changes are saved in the REDCap log if
     #' there's an issue. Missing rows and columns are allowed!
-    upload = function(to_be_uploaded, batch_size = 500) {
+    upload = function(to_be_uploaded, batch_size = 500L) {
       # add detect labelled vs raw?
       if (!is_named_df_list(to_be_uploaded, strict = TRUE)) {
         if (!is.data.frame(to_be_uploaded)) {
@@ -351,10 +351,12 @@ REDCapSync_project <- R6Class(
         upload_this <- to_be_uploaded[[upload_name]]
         # add comparison check but need to test...
         if (is_labelled) {
-          upload_this <- upload_this |>
-            labelled_to_raw_form(private$project)
+          upload_this <- labelled_to_raw_form(
+            form = upload_this,
+            project = private$project)
         }
-        upload_this |> upload_form_to_REDCap(
+        upload_form_to_redcap(
+          to_be_uploaded = upload_this,
           project = private$project,
           batch_size = batch_size
         )

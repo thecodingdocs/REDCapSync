@@ -37,15 +37,19 @@ test_that("rcon_result returns expected structure without real API calls", {
            project_title = "Fake Project",
            has_repeating_instruments_or_events = "0")
     },
-    arms = function() data.frame(arm = character(0)),
-    events = function() data.frame(event = character(0)),
+    arms = function() data.frame(arm = character(0L),
+                                 stringsAsFactors = FALSE),
+    events = function() data.frame(event = character(0L),
+                                   stringsAsFactors = FALSE),
     mapping = function() data.frame(),
     instruments = function() {
       data.frame(instrument = "form1", stringsAsFactors = FALSE)
     },
     repeatInstrumentEvent = function() data.frame(),
-    metadata = function() data.frame(field_name = character(0)),
-    users = function() data.frame(username = character(0)),
+    metadata = function() data.frame(field_name = character(0L),
+                                     stringsAsFactors = FALSE),
+    users = function() data.frame(username = character(0L),
+                                  stringsAsFactors = FALSE),
     user_roles = function() data.frame(),
     user_role_assignment = function() data.frame(),
     dags = function() data.frame(),
@@ -75,6 +79,6 @@ test_that("rcon_result returns expected structure without real API calls", {
   expect_true("dag_assignment" %in% names(out))
   expect_true("file_repository" %in% names(out))
   # check a few returned values come from our fake rcon
-  expect_equal(out$project_info$project_id, "9999")
+  expect_identical(out$project_info$project_id, "9999")
   expect_s3_class(out$forms, "data.frame")
 })

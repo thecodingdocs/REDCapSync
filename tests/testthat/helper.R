@@ -23,24 +23,25 @@ mock_project <- function() {
   project$redcap$has_multiple_arms <- FALSE
   # metadata -------
   project$metadata$fields <- data.frame(
-    field_name = character(0),
-    form_name = character(0),
-    section_header = character(0),
-    field_type = character(0),
-    field_label = character(0),
-    select_choices_or_calculations = character(0),
-    field_note = character(0),
-    text_validation_type_or_show_slider_number = character(0),
-    text_validation_min = character(0),
-    text_validation_max = character(0),
-    identifier = character(0),
-    branching_logic = character(0),
-    required_field = character(0),
-    custom_alignment = character(0),
-    question_number = character(0),
-    matrix_group_name = character(0),
-    matrix_ranking = character(0),
-    field_annotation = character(0)
+    field_name = character(0L),
+    form_name = character(0L),
+    section_header = character(0L),
+    field_type = character(0L),
+    field_label = character(0L),
+    select_choices_or_calculations = character(0L),
+    field_note = character(0L),
+    text_validation_type_or_show_slider_number = character(0L),
+    text_validation_min = character(0L),
+    text_validation_max = character(0L),
+    identifier = character(0L),
+    branching_logic = character(0L),
+    required_field = character(0L),
+    custom_alignment = character(0L),
+    question_number = character(0L),
+    matrix_group_name = character(0L),
+    matrix_ranking = character(0L),
+    field_annotation = character(0L),
+    stringsAsFactors = FALSE
   )
   project$data$form_example <- project$data$form_example |>
     dplyr::bind_rows(
@@ -61,22 +62,25 @@ mock_project <- function() {
         question_number = NA,
         matrix_group_name = NA,
         matrix_ranking = NA,
-        field_annotation = NA
+        field_annotation = NA,
+        stringsAsFactors = FALSE
       )
     )
   project$metadata$forms <- data.frame(
-    form_name = character(0),
-    form_label = character(0),
-    repeating = character(0)
+    form_name = character(0L),
+    form_label = character(0L),
+    repeating = character(0L),
+    stringsAsFactors = FALSE
   )
   #data -------
   project$data$form_example <- data.frame(
-    record_id = character(0),
-    var_id = character(0),
-    var_free_text = character(0),
-    var_text_date = character(0),
-    var_text_int = character(0),
-    var_yesno = character(0)
+    record_id = character(0L),
+    var_id = character(0L),
+    var_free_text = character(0L),
+    var_text_date = character(0L),
+    var_text_int = character(0L),
+    var_yesno = character(0L),
+    stringsAsFactors = FALSE
   )
   project$data$form_example <- project$data$form_example |>
     dplyr::bind_rows(
@@ -86,7 +90,8 @@ mock_project <- function() {
         var_free_text = "free falling",
         var_text_date = "2012-12-12",
         var_text_int = "2",
-        var_yesno = "Yes"
+        var_yesno = "Yes",
+        stringsAsFactors = FALSE
       )
     )
   # form_example

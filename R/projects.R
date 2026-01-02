@@ -71,32 +71,32 @@ get_projects <- function() {
 )
 #' @noRd
 .blank_project_details <- data.frame(
-  project_name = character(0),
-  dir_path = character(0),
-  sync_frequency = character(0),
-  last_sync = character(0) |> as.POSIXct(tz = Sys.timezone()),
-  timezone = character(0),
-  last_directory_save = character(0) |> as.POSIXct(tz = Sys.timezone()),
-  last_metadata_update = character(0) |> as.POSIXct(tz = Sys.timezone()),
-  last_data_update = character(0) |> as.POSIXct(tz = Sys.timezone()),
-  version = character(0),
-  token_name = character(0),
-  project_id = character(0),
-  project_title = character(0),
-  labelled = logical(0),
-  id_col = character(0),
-  is_longitudinal = logical(0),
-  has_repeating_forms_or_events = logical(0),
-  has_multiple_arms = logical(0),
-  R_object_size = character(0),
-  n_records = integer(0),
-  redcap_uri = character(0),
-  redcap_home = character(0),
-  get_files = logical(0),
-  get_file_repository = logical(0),
-  entire_log = logical(0),
-  metadata_only = logical(0),
-  get_type = character(0),
+  project_name = character(0L),
+  dir_path = character(0L),
+  sync_frequency = character(0L),
+  last_sync = character(0L) |> as.POSIXct(tz = Sys.timezone()),
+  timezone = character(0L),
+  last_directory_save = character(0L) |> as.POSIXct(tz = Sys.timezone()),
+  last_metadata_update = character(0L) |> as.POSIXct(tz = Sys.timezone()),
+  last_data_update = character(0L) |> as.POSIXct(tz = Sys.timezone()),
+  version = character(0L),
+  token_name = character(0L),
+  project_id = character(0L),
+  project_title = character(0L),
+  labelled = logical(0L),
+  id_col = character(0L),
+  is_longitudinal = logical(0L),
+  has_repeating_forms_or_events = logical(0L),
+  has_multiple_arms = logical(0L),
+  R_object_size = character(0L),
+  n_records = integer(0L),
+  redcap_uri = character(0L),
+  redcap_home = character(0L),
+  get_files = logical(0L),
+  get_file_repository = logical(0L),
+  entire_log = logical(0L),
+  metadata_only = logical(0L),
+  get_type = character(0L),
   stringsAsFactors = FALSE
 )
 #' @noRd
@@ -139,12 +139,12 @@ extract_project_details <- function(project) {
   project_details <- matrix(
     data = NA,
     ncol = length(.blank_project_cols),
-    nrow = 1,
+    nrow = 1L,
     dimnames = list(NULL, .blank_project_cols)
   ) |> as.data.frame()
   # top -----
   project_details$project_name <- project$project_name
-  project_details$dir_path <- project$dir_path |> na_if_null()
+  project_details$dir_path <- na_if_null(project$dir_path)
   # settings -------
   project_details$sync_frequency <- project$internals$sync_frequency
   project_details$get_files <- project$internals$get_files
@@ -154,18 +154,17 @@ extract_project_details <- function(project) {
   project_details$labelled <- project$internals$labelled
   project_details$get_type <- project$internals$get_type
   # redcap --------
-  project_details$version <- project$redcap$version |> na_if_null()
-  project_details$token_name <- project$redcap$token_name |> na_if_null()
-  project_details$project_id <- project$redcap$project_id |> na_if_null()
-  project_details$project_title <- project$redcap$project_title |> na_if_null()
-  project_details$id_col <- project$metadata$id_col |> na_if_null()
-  project_details$is_longitudinal <- project$metadata$is_longitudinal |>
-    na_if_null()
+  project_details$version <- na_if_null(project$redcap$version)
+  project_details$token_name <- na_if_null(project$redcap$token_name)
+  project_details$project_id <- na_if_null(project$redcap$project_id)
+  project_details$project_title <- na_if_null(project$redcap$project_title)
+  project_details$id_col <- na_if_null(project$metadata$id_col)
+  project_details$is_longitudinal <-
+    na_if_null(project$metadata$is_longitudinal)
   project_details$has_repeating_forms_or_events <-
-    project$metadata$has_repeating_forms_or_events |>
-    na_if_null()
+    na_if_null(project$metadata$has_repeating_forms_or_events)
   project_details$has_multiple_arms <-
-    project$metadata$has_multiple_arms |> na_if_null()
+    na_if_null(project$metadata$has_multiple_arms)
   project_details$n_records <- project$summary$all_records |>
     nrow() |>
     na_if_null() |>
@@ -197,7 +196,7 @@ extract_project_details <- function(project) {
 }
 #' @noRd
 add_project_details_to_cache <- function(project_details) {
-  assert_project_details(project_details, nrows = 1)
+  assert_project_details(project_details, nrows = 1L)
   projects <- get_projects()
   projects <- projects[
     which(projects$project_name != project_details$project_name), ]
@@ -208,7 +207,7 @@ add_project_details_to_cache <- function(project_details) {
         dirname(projects$redcap_uri) == dirname(project_details$redcap_uri)
     )
   }
-  if (length(bad_row) > 0) {
+  if (length(bad_row) > 0L) {
     cli::cli_abort(
       paste0(
         "You are trying to save from a project [{project_details$project_name}",
@@ -219,7 +218,7 @@ add_project_details_to_cache <- function(project_details) {
       )
     )
   }
-  projects <- projects |> bind_rows(project_details)
+  projects <- bind_rows(projects, project_details)
   save_projects_to_cache(projects)
 }
 #' @noRd

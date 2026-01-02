@@ -98,10 +98,10 @@ setup_project <- function(project_name,
                           filter_logic = NULL,
                           get_type = "identified",
                           metadata_only = FALSE,
-                          batch_size_download = 2000,
-                          batch_size_upload = 500,
+                          batch_size_download = 2000L,
+                          batch_size_upload = 500L,
                           entire_log = FALSE,
-                          days_of_log = 10,
+                          days_of_log = 10L,
                           get_files = FALSE,
                           get_file_repository = FALSE,
                           original_file_names = FALSE,
@@ -112,7 +112,7 @@ setup_project <- function(project_name,
   collected <- makeAssertCollection()
   assert_env_name(
     env_name = project_name,
-    max.chars = 31,
+    max.chars = 31L,
     arg_name = "project_name",
     add = collected
   )
@@ -120,25 +120,25 @@ setup_project <- function(project_name,
   # need checks on setup project if project id is same
   assert_env_name(
     env_name = token_name,
-    max.chars = 50,
+    max.chars = 50L,
     arg_name = "token_name",
     underscore_allowed_first = TRUE,
     add = collected
   )
-  assert_logical(hard_reset, len = 1, add = collected)
-  assert_logical(labelled, len = 1, add = collected)
+  assert_logical(hard_reset, len = 1L, add = collected)
+  assert_logical(labelled, len = 1L, add = collected)
   assert_integerish(days_of_log,
-                    len = 1,
-                    lower = 1,
+                    len = 1L,
+                    lower = 1L,
                     add = collected)
-  assert_logical(get_files, len = 1, add = collected)
-  assert_logical(get_file_repository, len = 1, add = collected)
-  assert_logical(original_file_names, len = 1, add = collected)
-  assert_logical(entire_log, len = 1, add = collected)
-  assert_logical(metadata_only, len = 1, add = collected)
-  assert_logical(add_default_fields, len = 1, add = collected)
-  assert_logical(add_default_transformation, len = 1, add = collected)
-  assert_logical(add_default_summaries, len = 1, add = collected)
+  assert_logical(get_files, len = 1L, add = collected)
+  assert_logical(get_file_repository, len = 1L, add = collected)
+  assert_logical(original_file_names, len = 1L, add = collected)
+  assert_logical(entire_log, len = 1L, add = collected)
+  assert_logical(metadata_only, len = 1L, add = collected)
+  assert_logical(add_default_fields, len = 1L, add = collected)
+  assert_logical(add_default_transformation, len = 1L, add = collected)
+  assert_logical(add_default_summaries, len = 1L, add = collected)
   assert_env_name(project_name)
   # assert_env_name(
   #   merge_form_name,
@@ -149,21 +149,22 @@ setup_project <- function(project_name,
   assert_choice(get_type, choices = .get_type, add = collected)
   assert_choice(sync_frequency, choices = .sync_frequency, add = collected)
   assert_integerish(batch_size_download,
-                    len = 1,
-                    lower = 1,
+                    len = 1L,
+                    lower = 1L,
                     add = collected)
   assert_integerish(batch_size_upload,
-                    len = 1,
-                    lower = 1,
+                    len = 1L,
+                    lower = 1L,
                     add = collected)
-  assert_logical(silent, len = 1, add = collected)
+  assert_logical(silent, len = 1L, add = collected)
   if (missing(redcap_uri)) {
     #use options or Renviron?
   }
-  current_function <- as.character(current_call())[[1]]
+  current_function <- as.character(current_call())[[1L]]
   if (!collected$isEmpty()) {
-    message <- collected |> cli_message_maker(function_name = current_function)
-    cli::cli_abort(message)
+    message_text <- cli_message_maker(
+      collected = collected, function_name = current_function)
+    cli::cli_abort(message_text)
   }
   projects <- get_projects()
   if (paste0(.token_prefix, project_name) != token_name) {
@@ -220,7 +221,7 @@ setup_project <- function(project_name,
     }
     if (was_loaded) {
       # compare current setting to previous settings...
-      original_details <- project |> extract_project_details()
+      original_details <- extract_project_details(project)
       projects <- get_projects()
       cache_details <- projects[which(projects$project_name == project_name), ]
       if (original_details$redcap_uri != redcap_uri) {
@@ -303,7 +304,7 @@ setup_project <- function(project_name,
   project$links$redcap_uri <- redcap_uri # add test, should end in / or add it
   project$links$redcap_base <- redcap_uri |> dirname() |> paste0("/")
   project$internals$is_blank <- FALSE
-  project$data <- project$data |> all_character_cols_list()
+  project$data <- all_character_cols_list(project$data)
   if (!is_valid_redcap_token(get_project_token(project))) {
     cli::cli_alert_warning(
       paste0("No valid token in session: Sys.getenv('", token_name, "')"))
@@ -340,8 +341,8 @@ get_project_path <- function(project_name,
   assert_choice(type, .project_file_types)
   file_name <- paste0(project_name, "_REDCapSync")
   if (type != "")
-    file_name <- file_name |> paste0("_", type)
-  file_name <- file_name |> paste0(".RData")
+    file_name <- paste0(file_name, "_", type)
+  file_name <- paste0(file_name, ".RData")
   file_path <- file.path(dir_path, "R_objects", file_name)
   sanitize_path(file_path)
 }
@@ -368,7 +369,7 @@ get_project_path2 <- function(project,
 load_project <- function(project_name) {
   # add load by path option
   projects <- get_projects()
-  if (nrow(projects) == 0) {
+  if (nrow(projects) == 0L) {
     stop("No projects in cache")
   }
   if (!project_name %in% projects$project_name) {
@@ -395,22 +396,22 @@ load_project <- function(project_name) {
     )
   }
   project <- readRDS(file = project_path)
-  project <- project |> assert_setup_project(silent = FALSE)
+  project <- assert_setup_project(project, silent = FALSE)
   #   check if in cache already and relation!
   # SAVE
-  loaded_dir <- project$dir_path |> sanitize_path()
+  loaded_dir <- sanitize_path(project$dir_path)
   if (!identical(dir_path, loaded_dir)) {
     cli_alert_warning(
       paste0("loaded dir_path did not match your cached dir_path. This should ",
-        "only happen with cloud/shared directories.")
+        "only happen with cloud or shared directories.")
     )
   }
   project$dir_path <- dir_path
   project |> extract_project_details() |> add_project_details_to_cache()
   the_message <- paste0("Loaded {project$project_name}!")
   if (due_for_sync(project$project_name)) {
-    the_message <- the_message |>
-      paste0(" Due for sync. Run `project$sync()` to update.")
+    the_message <- paste0(
+      the_message, " Due for sync. Run `project$sync()` to update.")
   }
   cli_alert_success(the_message)
   invisible(REDCapSync_project$new(project))
@@ -525,7 +526,7 @@ save_project <- function(project, silent = FALSE) {
     last_clean = NULL,
     last_directory_save = NULL,
     last_sync = NULL,
-    sync_vector_clock = 0,
+    sync_vector_clock = 0L,
     labelled = NULL,
     timezone = NULL,
     get_files = NULL,
@@ -573,7 +574,7 @@ set_dir <- function(dir_path) {
         dir_path,
         ")"
       )
-    ) == 1) {
+    ) == 1L) {
       dir.create(file.path(dir_path))
     }
     if (!file.exists(dir_path)) {

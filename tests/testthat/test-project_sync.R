@@ -52,11 +52,11 @@ test_that("sweep_dirs_for_cache handles empty cache", {
     }
   )
   projects_before <- get_projects()
-  expect_equal(nrow(projects_before), 0)
+  expect_identical(nrow(projects_before), 0L)
   # Sweep should handle empty cache gracefully
   expect_no_error(sweep_dirs_for_cache())
   projects_after <- get_projects()
-  expect_equal(nrow(projects_after), 0)
+  expect_identical(nrow(projects_after), 0L)
 })
 test_that("sweep_dirs_for_cache handles non-existent project_names", {
   test_dir <- withr::local_tempdir() |> sanitize_path()
@@ -76,7 +76,7 @@ test_that("sweep_dirs_for_cache handles non-existent project_names", {
   add_project_details_to_cache(project_details)
   # Try to sweep with non-existent project names
   expect_no_error(sweep_dirs_for_cache(
-    project_names = c("NONEXISTENT_PROJECT")
+    project_names = "NONEXISTENT_PROJECT"
   ))
   # Original project should still be in cache
   projects <- get_projects()
@@ -122,5 +122,5 @@ test_that("sweep_dirs_for_cache compares cached and disk project details", {
   cached_project <- projects[
     which(projects$project_name == project$project_name),
   ]
-  expect_equal(cached_project$version, "13.0.0")
+  expect_identical(cached_project$version, "13.0.0")
 })

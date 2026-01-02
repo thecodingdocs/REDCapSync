@@ -14,7 +14,7 @@ cli_alert_wrap <- function(text = "",
   }
   url_if <- ""
   file_if <- ""
-  if (length(url) > 0) {
+  if (length(url) > 0L) {
     # url |> lapply(function(x){assert_web_link(x)})
     # doesnt work for /subheaders/
     # url_if <- " {.url {url}}"
@@ -32,13 +32,13 @@ cli_alert_wrap <- function(text = "",
       url_if <- paste0(url_if, collapse = " and ")
     url_if <- paste0(
       " {cli::col_blue(cli::style_hyperlink('",
-      url_names |> clean_for_cli(),
+      clean_for_cli(url_names),
       "', '",
-      url |> clean_for_cli(),
+      clean_for_cli(url),
       "'))}"
     )
   }
-  if (length(file) > 0) {
+  if (length(file) > 0L) {
     file_names <- names(file)
     if (is.list(file)) {
       file_names <- unlist(file)
@@ -82,14 +82,14 @@ process_df_list <- function(list,
           is_df <- is.data.frame(x)
           out <- FALSE
           if (is_df) {
-            out <- nrow(x) > 0
+            out <- nrow(x) > 0L
           }
           out
         }) |>
         unlist()
       keeps <- which(is_a_df_with_rows)
       drops <- which(!is_a_df_with_rows)
-      if (length(drops) > 0) {
+      if (length(drops) > 0L) {
         if (!silent) {
           cli_alert_wrap("Dropping non-data.frames and empties... ",
                          toString(names(drops)))
@@ -97,7 +97,7 @@ process_df_list <- function(list,
       }
       list <- list[keeps]
     }
-    if (length(list) > 0) {
+    if (length(list) > 0L) {
       if (!is_named_df_list(list)) {
         names(list) <- paste0(seq_along(list))
       }
@@ -106,22 +106,22 @@ process_df_list <- function(list,
   list
 }
 #' @noRd
-is_something <- function(thing, row = 0) {
+is_something <- function(thing, row_length = 0L) {
   out <- FALSE
   if (is.function(thing)) {
     return(TRUE)
   }
   if (!is.null(thing)) {
     if (is.data.frame(thing)) {
-      if (nrow(thing) > row) {
+      if (nrow(thing) > row_length) {
         out <- TRUE
       }
     } else {
-      if (length(thing) > 0) {
+      if (length(thing) > 0L) {
         if (is.list(thing)) {
           out <- TRUE
         } else {
-          if (length(thing) == 1) {
+          if (length(thing) == 1L) {
             if (!is.na(thing)) {
               if (is.character(thing)) {
                 if (thing != "") {
@@ -172,7 +172,7 @@ length_which <- function(x) {
 }
 #' @noRd
 drop_nas <- function(x) {
-  if (length(x) == 0) {
+  if (length(x) == 0L) {
     return(x)
   }
   x[!unlist(lapply(x, is.na))]
@@ -195,8 +195,8 @@ excel_to_list <- function(path) {
         strsplit(" [|] ") |>
         unlist()
       the_row <- which(summary_details$paramater == "cols_start")
-      cols_start <- summary_details$value[the_row] |> as.integer()
-      if (cols_start > 1) {
+      cols_start <- as.integer(summary_details$value[the_row])
+      if (cols_start > 1L) {
         for (i in as.integer(names(sheets)[match(form_names, sheets)])) {
           suppressMessages({
             out[[i]] <- readxl::read_xlsx(path,
@@ -207,7 +207,7 @@ excel_to_list <- function(path) {
           final_nrow <- nrow(out[[i]])
           if (cols_start < final_nrow) {
             true_colnames <- out[[i]][cols_start, ] |> unlist() |> unname()
-            out[[i]] <- out[[i]][(cols_start + 1):final_nrow, ]
+            out[[i]] <- out[[i]][(cols_start + 1L):final_nrow, ]
             colnames(out[[i]]) <- true_colnames
             sheets <- sheets[which(sheets != sheets[i])]
           }
@@ -255,14 +255,14 @@ wb_to_list <- function(wb) {
   clean_sheets <- clean_env_names(sheets)
   out <- list()
   for (i in seq_along(sheets)) {
-    col_row <- 1
+    col_row <- 1L
     x <- openxlsx::getTables(wb, sheet = i)
-    if (length(x) > 0) {
+    if (length(x) > 0L) {
       # test for xlsx without letters for cols
-      col_row <- gsub(
-        pattern = "[A-Za-z]",
-        replacement = "",
-        x = unlist(x |> attr("refs") |> strsplit(":"))[[1]]) |>
+      x <- unlist(x |> attr("refs") |> strsplit(":"))[[1L]]
+      col_row <- gsub(pattern = "[A-Za-z]",
+                      replacement = "",
+                      x = x) |>
         as.integer()
     }
     out[[i]] <- openxlsx::read.xlsx(wb, sheet = i, startRow = col_row)
@@ -277,15 +277,15 @@ form_to_wb <- function(form,
                        key_cols = NULL,
                        derived_cols = NULL,
                        link_col_list = list(),
-                       str_trunc_length = 32000,
+                       str_trunc_length = 32000L,
                        header_df = NULL,
                        header_style = default_header_style,
                        body_style = default_body_style,
                        freeze_header = TRUE,
-                       pad_rows = 0,
-                       pad_cols = 0,
+                       pad_rows = 0L,
+                       pad_cols = 0L,
                        freeze_keys = TRUE) {
-  if (nchar(form_name) > 31) {
+  if (nchar(form_name) > 31L) {
     stop(form_name, " is longer than 31 char")
   }
   form[] <- lapply(form, function(col) {
@@ -299,7 +299,7 @@ form_to_wb <- function(form,
   if (is_something(header_df)) {
     names(header_df)[match(names(form), names(header_df))]
     missing_headers <- names(form) |>  vec1_not_in_vec2(names(header_df))
-    if (length(missing_headers) > 0) {
+    if (length(missing_headers) > 0L) {
       for (missing_header in missing_headers){
         header_df[[missing_header]] <- ""
         #fix later
@@ -312,7 +312,7 @@ form_to_wb <- function(form,
       stop("all key_cols must be in the forms")
     }
     freeze_key_cols <- which(all_cols %in% key_cols)
-    if (length(freeze_key_cols) > 0) {
+    if (length(freeze_key_cols) > 0L) {
       if (!is_consecutive_srt_1(freeze_key_cols)) {
         # warning(
         #   "please keep your key cols on the left consecutively. Fixing ",
@@ -333,9 +333,9 @@ form_to_wb <- function(form,
     }
   }
   openxlsx::addWorksheet(wb, form_name)
-  start_row_header <- pad_rows + 1
+  start_row_header <- pad_rows + 1L
   start_row_table <- start_row_header
-  start_col <- pad_cols + 1
+  start_col <- pad_cols + 1L
   if (is_something(header_df)) {
     openxlsx::writeData(
       wb,
@@ -347,7 +347,7 @@ form_to_wb <- function(form,
     )
     start_row_table <- start_row_header + nrow(header_df)
   }
-  if (length(link_col_list) > 0) {
+  if (length(link_col_list) > 0L) {
     has_names <- !is.null(names(link_col_list))
     for (i in seq_along(link_col_list)) {
       if (link_col_list[[i]] %in% colnames(form)) {
@@ -362,7 +362,7 @@ form_to_wb <- function(form,
             wb,
             sheet = form_name,
             x = form[[link_col_list[[i]]]],
-            startRow = start_row_table + 1,
+            startRow = start_row_table + 1L,
             startCol = hyperlink_col + pad_cols
           )
           form[[link_col_list[[i]]]] <- NULL
@@ -403,13 +403,13 @@ form_to_wb <- function(form,
   if (freeze_header || freeze_keys) {
     first_active_row <- NULL
     if (freeze_header) {
-      first_active_row <- start_row_table + 1
+      first_active_row <- start_row_table + 1L
     }
     first_active_col <- NULL
     if (freeze_keys) {
       first_active_col <- start_col
       freeze_key_cols <- which(colnames(form) %in% key_cols)
-      if (length(freeze_key_cols) > 0) {
+      if (length(freeze_key_cols) > 0L) {
         if (is_consecutive_srt_1(freeze_key_cols)) {
           first_active_col <- first_active_col +
             freeze_key_cols[length(freeze_key_cols)]
@@ -425,20 +425,20 @@ form_to_wb <- function(form,
                            firstActiveCol = first_active_col)
     }
   }
-  return(wb)
+  wb
 }
 #' @noRd
 list_to_wb <- function(input_list,
                        key_cols_list = list(),
                        derived_cols_list = list(),
                        link_col_list = list(),
-                       str_trunc_length = 32000,
+                       str_trunc_length = 32000L,
                        header_df_list = NULL,
                        header_style = default_header_style,
                        body_style = default_body_style,
                        freeze_header = TRUE,
-                       pad_rows = 0,
-                       pad_cols = 0,
+                       pad_rows = 0L,
+                       pad_cols = 0L,
                        freeze_keys = TRUE,
                        drop_empty = TRUE) {
   if (is.null(key_cols_list)) {
@@ -454,7 +454,7 @@ list_to_wb <- function(input_list,
   input_list <- process_df_list(input_list, drop_empty = drop_empty)
   list_names <- names(input_list)
   list_link_names <- list()
-  if (length(link_col_list) > 0) {
+  if (length(link_col_list) > 0L) {
     if (is_named_list(link_col_list)) {
       if (!all(names(link_col_list) %in% list_names)) {
         for (list_name in list_names) {
@@ -487,11 +487,11 @@ list_to_wb <- function(input_list,
 #' @noRd
 rename_list_names_excel <- function(list_names) {
   list_names_rename <- stringr::str_trunc(list_names,
-                                          width = 31,
+                                          width = 31L,
                                           side = "right",
                                           ellipsis = "")
   bad_names <- which_duplicated(list_names_rename)
-  if (length(bad_names) > 0) {
+  if (length(bad_names) > 0L) {
     cli_alert_danger(paste0(
       "Duplicated names when trimmed from right 31 max in Excel: ",
       toString(list_names[bad_names])))
@@ -499,13 +499,13 @@ rename_list_names_excel <- function(list_names) {
       "Use CSV or shorten the names and make sure they are unique if they",
       " are trimmed to 31 char. For now will make unique by adding number."))
     list_names_rename <-
-      unique_trimmed_strings(list_names_rename, max_length = 31)
+      unique_trimmed_strings(list_names_rename, max_length = 31L)
   }
   list_names_rename
 }
 #' @noRd
 trim_string <- function(string, max_length) {
-  substr(string, 1, max_length)
+  substr(string, 1L, max_length)
 }
 #' @noRd
 unique_trimmed_strings <- function(strings, max_length) {
@@ -518,7 +518,7 @@ unique_trimmed_strings <- function(strings, max_length) {
   for (i in seq_along(trimmed_strings)) {
     base_string <- trimmed_strings[i]
     new_string <- base_string
-    counter <- 1
+    counter <- 1L
     # Keep adjusting the string until it's unique
     while (new_string %in% unique_strings) {
       new_string <- paste0(
@@ -530,7 +530,7 @@ unique_trimmed_strings <- function(strings, max_length) {
         ),
         counter
       )
-      counter <- counter + 1
+      counter <- counter + 1L
     }
     unique_strings[i] <- new_string
     counts[i] <- counter
@@ -546,13 +546,13 @@ list_to_excel <- function(input_list,
                           key_cols_list = list(),
                           derived_cols_list = list(),
                           link_col_list = list(),
-                          str_trunc_length = 32000,
+                          str_trunc_length = 32000L,
                           header_df_list = NULL,
                           header_style = default_header_style,
                           body_style = default_body_style,
                           freeze_header = TRUE,
-                          pad_rows = 0,
-                          pad_cols = 0,
+                          pad_rows = 0L,
+                          pad_cols = 0L,
                           freeze_keys = TRUE,
                           drop_empty = TRUE) {
   if (is.null(key_cols_list)) {
@@ -566,7 +566,7 @@ list_to_excel <- function(input_list,
   }
   input_list <- process_df_list(input_list, drop_empty = drop_empty)
   list_names <- names(input_list)
-  if (length(input_list) == 0) {
+  if (length(input_list) == 0L) {
     return(warning("empty input_list cannot be saved", immediate. = TRUE))
   }
   if (separate) {
@@ -640,7 +640,7 @@ list_to_csv <- function(input_list,
       file_name2 <- paste0(file_name, "_", file_name2)
     }
     save_csv(
-      form = sub_list[[1]],
+      form = sub_list[[1L]],
       dir = dir,
       file_name = file_name2,
       overwrite = overwrite
@@ -681,7 +681,7 @@ default_header_style <-
     halign = "center",
     valign = "center",
     textDecoration = "Bold",
-    fontSize = 14,
+    fontSize = 14L,
     fontColour = "black",
     border = "TopBottomLeftRight"
   )
@@ -689,19 +689,19 @@ default_header_style <-
 default_body_style <-
   openxlsx::createStyle(halign = "left",
                         valign = "center",
-                        fontSize = 12)
+                        fontSize = 12L)
 #' @noRd
 which_duplicated <- function(x) {
   which(duplicated(x))
 }
 #' @noRd
 is_consecutive_srt_1 <- function(vec) {
-  if (vec[1] != 1L) {
+  if (vec[1L] != 1L) {
     return(FALSE)
   }
-  if (length(vec) > 1) {
-    for (i in 2:length(vec)) {
-      if (vec[i] != vec[i - 1] + 1) {
+  if (length(vec) > 1L) {
+    for (i in 2L:length(vec)) {
+      if (vec[i] != vec[i - 1L] + 1L) {
         return(FALSE)
       }
     }
@@ -774,13 +774,13 @@ is_df_list <- function(x, strict = FALSE) {
   if (strict) {
     return(all(out))
   }
-  return(any(out))
+  any(out)
 }
 #' @noRd
 check_match <- function(vec_list) {
   sorted_vecs <- lapply(vec_list, sort)
-  all(unlist(lapply(sorted_vecs[-1], function(x) {
-    identical(sorted_vecs[[1]], x)
+  all(unlist(lapply(sorted_vecs[-1L], function(x) {
+    identical(sorted_vecs[[1L]], x)
   })))
 }
 #' @noRd
@@ -822,9 +822,9 @@ is_nested_list <- function(x) {
   outcome
 }
 #' @noRd
-generate_hex <- function(length = 32) {
-  c(0:9, letters[1:6]) |>
+generate_hex <- function(length = 32L) {
+  c(0L:9L, letters[1L:6L]) |>
     sample(length, replace = TRUE) |>
-    paste0(collapse = "") |>
+    paste(collapse = "") |>
     toupper()
 }

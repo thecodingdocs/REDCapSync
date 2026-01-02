@@ -1,7 +1,7 @@
 #' @noRd
-upload_form_to_REDCap <- function(to_be_uploaded, project, batch_size = 500) {
+upload_form_to_redcap <- function(to_be_uploaded, project, batch_size = 500L) {
   REDCapR::redcap_write(
-    ds_to_write = to_be_uploaded |> all_character_cols(),
+    ds_to_write = all_character_cols(to_be_uploaded),
     batch_size = batch_size,
     interbatch_delay = 0.2,
     continue_on_error = FALSE,
@@ -42,7 +42,7 @@ read_xlsx_for_upload <- function(project,
   for (drop_sheet in drop_names) {
     data_list[[drop_sheet]] <- NULL
   }
-  if (length(data_list) == 0) {
+  if (length(data_list) == 0L) {
     message("nothing to return")
     return(invisible(project))
   }

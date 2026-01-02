@@ -12,18 +12,18 @@ add_redcap_links_to_form <- function(form, project) {
     link_tail <- paste0("&id=", form[[project$metadata$id_col]])
     if ("redcap_repeat_instrument" %in% form_structure_cols) {
       link_head <- project$links$redcap_record_subpage
-      link_tail <- link_tail |>
-        paste0("&page=", form[["redcap_repeat_instrument"]])
+      link_tail <-
+        paste0(link_tail, "&page=", form[["redcap_repeat_instrument"]])
     }
     if ("redcap_repeat_instance" %in% form_structure_cols) {
       link_head <- project$links$redcap_record_subpage
-      link_tail <- link_tail |>
-        paste0("&instance=", form[["redcap_repeat_instance"]])
+      link_tail <-
+        paste0(link_tail, "&instance=", form[["redcap_repeat_instance"]])
     }
     form$redcap_link <- paste0(link_head, link_tail)
     if ("arm_number" %in% colnames(form)) {
-      form$redcap_link <- form$redcap_link |>
-        paste0("&arm=", form[["arm_number"]])
+      form$redcap_link <-
+        paste0(form$redcap_link, "&arm=", form[["arm_number"]])
     }
   }
   form
@@ -76,33 +76,33 @@ split_choices <- function(x) {
   result <- result |>
     strsplit("[|]") |>
     unlist() |>
-    stringr::str_split_fixed(",", 2)
+    stringr::str_split_fixed(",", 2L)
   check_length <- length(result[, 1L])
-  df <- data.frame(
-    code = result[, 1L] |> trimws(),
-    name = result[, 2L] |> trimws(),
+  choices_data <- data.frame(
+    code = trimws(result[, 1L]),
+    name = trimws(result[, 2L]),
     stringsAsFactors = FALSE
   )
-  rownames(df) <- NULL
-  if (any(is.na(df$code))) {
+  rownames(choices_data) <- NULL
+  if (anyNA(choices_data$code)) {
     stop("split choice error: ", x)
   }
-  if (any(is.na(df$name))) {
+  if (anyNA(choices_data$name)) {
     stop("split choice error: ", x)
   }
-  if (nrow(df) != check_length) {
+  if (nrow(choices_data) != check_length) {
     stop("split choice error: ", x)
   }
-  if (any(df$name == "")) {
+  if (any(choices_data$name == "")) {
     stop("split choice error: ", x)
   }
-  df
+  choices_data
 }
 #' @noRd
 .field_types_not_in_data <- c("descriptive", "checkbox")
 #' @noRd
-get_match <- function(df, return_field, match_field, match_text) {
-  df[[return_field]][which(df[[match_field]] %in% match_text)]
+get_match <- function(x, return_field, match_field, match_text) {
+  x[[return_field]][which(x[[match_field]] %in% match_text)]
 }
 #' @noRd
 file_ext_alias <- function(x) {

@@ -491,7 +491,7 @@ data. Because this is a function that can mess up your data, use it
 very carefilly. Remember all changes are saved in the REDCap log if
 there's an issue. Missing rows and columns are allowed!
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$upload(to_be_uploaded, batch_size = 500)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$upload(to_be_uploaded, batch_size = 500L)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

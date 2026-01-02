@@ -32,7 +32,7 @@ test_that("update_project_links works", {
   version_new <- "14.2.3"
   project$redcap$version <- version_new
   project <- update_project_links(project)
-  expect_equal(project$redcap$version, version_new)
+  expect_identical(project$redcap$version, version_new)
   pid_pattern <- paste0("pid=", project$redcap$project_id)
   version_pattern <- paste0("redcap_v", project$redcap$version)
   for (the_link in link_vector) {
@@ -64,9 +64,10 @@ test_that("get_project_url works", {
   for (link_type in .link_types) {
     e$called_url <- NULL
     get_project_url(project, link_type = link_type, open_browser = TRUE)
-    expect_equal(e$called_url, project$links[[paste0("redcap_", link_type)]])
+    expect_identical(
+      e$called_url, project$links[[paste0("redcap_", link_type)]])
     out <- get_project_url(project, link_type = link_type, open_browser = FALSE)
-    expect_equal(out, project$links[[paste0("redcap_", link_type)]])
+    expect_identical(out, project$links[[paste0("redcap_", link_type)]])
   }
 })
 # get_record_url ( Exported )
@@ -96,11 +97,11 @@ test_that("get_record_url works", {
   mockery::stub(get_record_url, "utils::browseURL", function(url) {
     e$called_url <- url
   })
-  expect_equal(get_record_url(project, open_browser = FALSE), expected_link)
+  expect_identical(get_record_url(project, open_browser = FALSE), expected_link)
   expect_null(e$called_url) # does not call url
   e$called_url <- NULL
   get_record_url(project, open_browser = TRUE)
-  expect_equal(e$called_url, expected_link)
+  expect_identical(e$called_url, expected_link)
   e$called_url <- NULL
   # get_record_url(project,page = "2", text_only = TRUE)
 })
@@ -116,7 +117,7 @@ test_that("deidentify_data_list works", {
   initial_identifiers <- fields$field_name[which(
     fields$identifier == "y" |
       fields$text_validation_type_or_show_slider_number %in%
-      .redcap_possible_id_fields_strict
+      .redcap_maybe_ids_strict
   )]
   free_text_rows <- which(
     fields$field_type == "notes" |
@@ -128,13 +129,16 @@ test_that("deidentify_data_list works", {
   )
   free_text_fields <- fields$field_name[free_text_rows]
   expect_all_true(initial_identifiers %in% colnames(data_list$data$merged))
-  no_ids <- data_list |> deidentify_data_list(exclude_identifiers = TRUE,
-                                               exclude_free_text = FALSE)
+  no_ids <- deidentify_data_list(
+    data_list = data_list,
+    exclude_identifiers = TRUE,
+    exclude_free_text = FALSE)
   expect_all_false(initial_identifiers %in% colnames(no_ids$data$merged))
   expect_all_true(free_text_fields %in% colnames(data_list$data$merged))
-  no_free_text <- data_list |>
-    deidentify_data_list(exclude_identifiers = FALSE,
-                         exclude_free_text = TRUE)
+  no_free_text <- deidentify_data_list(
+    data_list = data_list,
+    exclude_identifiers = FALSE,
+    exclude_free_text = TRUE)
   expect_all_false(initial_identifiers %in% colnames(no_free_text$data$merged))
   keep_rows <-
     which(!data_list$metadata$fields$field_name %in% initial_identifiers)
@@ -142,7 +146,8 @@ test_that("deidentify_data_list works", {
   keep_cols <- which(!colnames(data_list$data$merged) %in% initial_identifiers)
   data_list$data$merged <- data_list$data$merged[, keep_cols]
   expect_warning(
-    data_list |> deidentify_data_list(
+    deidentify_data_list(
+      data_list = data_list,
       exclude_identifiers = TRUE,
       exclude_free_text = FALSE
     ),
@@ -152,7 +157,7 @@ test_that("deidentify_data_list works", {
 test_that("deidentify_data_list works", {
   project <- TEST_CLASSIC
   data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
-  data_list <- data_list |> metadata_add_default_cols()
+  data_list <- metadata_add_default_cols(data_list)
   fields <- data_list$metadata$fields
   merged <- data_list$data$merged
   expect_all_true(
@@ -247,12 +252,15 @@ test_that("get_min_dates works", {
   )
   out <- get_min_dates(data_list)
   # basic structure checks
-  checkmate::expect_data_frame(out, nrows = 3, ncols = 2)
+  checkmate::expect_data_frame(out, nrows = 3L, ncols = 2L)
   expect_true(all(c("record_id", "date") %in% colnames(out)))
   # values: min date per record across forms
-  expect_equal(as.character(out$date[match("1", out$record_id)]), "2020-01-01")
-  expect_equal(as.character(out$date[match("2", out$record_id)]), "2020-01-05")
-  expect_equal(as.character(out$date[match("3", out$record_id)]), "2020-01-15")
+  expect_identical(
+    as.character(out$date[match("1", out$record_id)]), "2020-01-01")
+  expect_identical(
+    as.character(out$date[match("2", out$record_id)]), "2020-01-05")
+  expect_identical(
+    as.character(out$date[match("3", out$record_id)]), "2020-01-15")
 })
 # normalize_redcap ( Internal )
 test_that("normalize_redcap works with classic project", {
@@ -260,7 +268,7 @@ test_that("normalize_redcap works with classic project", {
   denormalized <- readRDS(
     test_path("fixtures", "TEST_CLASSIC_denormalized.rds"))
   result <- normalize_redcap(denormalized, project, labelled = TRUE)
-  expect_true(is.list(result))
+  expect_type(result, type = "list")
   form_names <- names(result)
   expected_forms <- project$metadata$forms$form_name
   expect_all_true(expected_forms %in% form_names)
@@ -274,7 +282,7 @@ test_that("normalize_redcap works with classic project", {
   expect_all_true(
     fields$field_name[
       which(fields$form_name == "other" &
-              (!fields$field_type %in% c("checkbox","descriptive")))] %in%
+              (!fields$field_type %in% c("checkbox", "descriptive")))] %in%
       colnames(result$other)
   )
   fields <- fields[which(fields$field_name != id_col), ]
@@ -284,7 +292,7 @@ test_that("normalize_redcap works with classic project", {
   expect_all_false(
     fields$field_name[
       which(fields$form_name == "other" &
-              (!fields$field_type %in% c("checkbox","descriptive")))] %in%
+              (!fields$field_type %in% c("checkbox", "descriptive")))] %in%
       colnames(result$text)
   )
 })
@@ -308,21 +316,21 @@ test_that("clean_redcap_log removes duplicates", {
     stringsAsFactors = FALSE
   )
   result <- clean_redcap_log(redcap_log)
-  expect_equal(nrow(result), 2)
+  expect_identical(nrow(result), 2L)
 })
 test_that("clean_redcap_log trims whitespace", {
   redcap_log <- data.frame(
-    timestamp = c("2024-01-15 10:30:00"),
-    username = c("  user1  "),
-    action = c("  Update record 123  "),
-    details = c("  Field updated  "),
-    record = c("123"),
+    timestamp = "2024-01-15 10:30:00",
+    username = "  user1  ",
+    action = "  Update record 123  ",
+    details = "  Field updated  ",
+    record = "123",
     stringsAsFactors = FALSE
   )
   result <- clean_redcap_log(redcap_log)
-  expect_false(grepl("^\\s|\\s$", result$username[1]))
-  expect_false(grepl("^\\s|\\s$", result$action[1]))
-  expect_false(grepl("^\\s|\\s$", result$details[1]))
+  expect_false(grepl("^\\s|\\s$", result$username[1L]))
+  expect_false(grepl("^\\s|\\s$", result$action[1L]))
+  expect_false(grepl("^\\s|\\s$", result$details[1L]))
 })
 test_that("clean_redcap_log identifies record actions", {
   redcap_log <- data.frame(
@@ -345,10 +353,11 @@ test_that("clean_redcap_log identifies record actions", {
   )
   result <- clean_redcap_log(redcap_log)
   # Check that record_id was extracted and action_type was set
-  expect_true(all(!is.na(result$action_type[1:4])))
-  expect_true(all(
-    result$action_type[1:4] %in% c("Update", "Delete", "Create", "Lock/Unlock")
-  ))
+  expect_all_true(!is.na(result$action_type[1L:4L]))
+  expect_all_true(
+    result$action_type[1L:4L] %in%
+      c("Update", "Delete", "Create", "Lock/Unlock")
+  )
 })
 test_that("clean_redcap_log handles Manage/Design actions", {
   redcap_log <- data.frame(
@@ -379,16 +388,16 @@ test_that("clean_redcap_log converts [survey respondent] to NA", {
   )
   result <- clean_redcap_log(redcap_log)
   expect_s3_class(result, "data.frame")
-  expect_true(is.na(result$username[1]))
-  expect_equal(result$username[2], "user1")
+  expect_true(is.na(result$username[1L]))
+  expect_identical(result$username[2L], "user1")
 })
 test_that("clean_redcap_log sets action_type column", {
   redcap_log <- data.frame(
-    timestamp = c("2024-01-15 10:30:00"),
-    username = c("user1"),
-    action = c("Update record 123"),
-    details = c("Updated"),
-    record = c("123"),
+    timestamp = "2024-01-15 10:30:00",
+    username = "user1",
+    action = "Update record 123",
+    details = "Updated",
+    record = "123",
     stringsAsFactors = FALSE
   )
   result <- clean_redcap_log(redcap_log)
@@ -427,15 +436,15 @@ test_that("clean_redcap_log handles user actions", {
 })
 test_that("clean_redcap_log handles no-changes actions", {
   redcap_log <- data.frame(
-    timestamp = c("2024-01-15 10:30:00"),
-    username = c("user1"),
-    action = c("Enable external module test"),
-    details = c("Module enabled"),
-    record = c(NA),
+    timestamp = "2024-01-15 10:30:00",
+    username = "user1",
+    action = "Enable external module test",
+    details = "Module enabled",
+    record = NA,
     stringsAsFactors = FALSE
   )
   result <- clean_redcap_log(redcap_log)
-  expect_equal(result$action_type[1], "No Changes")
+  expect_identical(result$action_type[1L], "No Changes")
 })
 test_that("clean_redcap_log sorts by timestamp descending", {
   redcap_log <- data.frame(
@@ -452,18 +461,18 @@ test_that("clean_redcap_log sorts by timestamp descending", {
   )
   result <- clean_redcap_log(redcap_log)
   # Should be sorted by timestamp descending
-  expect_equal(result$timestamp[1], "2024-01-15 10:45:00")
-  expect_equal(result$timestamp[2], "2024-01-15 10:35:00")
-  expect_equal(result$timestamp[3], "2024-01-15 10:30:00")
+  expect_identical(result$timestamp[1L], "2024-01-15 10:45:00")
+  expect_identical(result$timestamp[2L], "2024-01-15 10:35:00")
+  expect_identical(result$timestamp[3L], "2024-01-15 10:30:00")
 })
 test_that("clean_redcap_log removes record_id column", {
   redcap_log <- data.frame(
-    timestamp = c("2024-01-15 10:30:00"),
-    username = c("user1"),
-    action = c("Update record 123"),
-    details = c("Updated"),
-    record = c("123"),
-    record_id = c(NA),
+    timestamp = "2024-01-15 10:30:00",
+    username = "user1",
+    action = "Update record 123",
+    details = "Updated",
+    record = "123",
+    record_id = NA,
     stringsAsFactors = FALSE
   )
   result <- clean_redcap_log(redcap_log)

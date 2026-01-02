@@ -16,7 +16,7 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_error(assert_env_name("A project"))
   expect_error(assert_env_name("project$]"))
   expect_error(assert_env_name("1"))
-  expect_error(assert_env_name(1))
+  expect_error(assert_env_name(1L))
   expect_error(assert_env_name(another_name))
   expect_no_error(assert_env_name("expected_name"))
   expect_no_error(assert_env_name("expected_name2"))
@@ -29,8 +29,8 @@ test_that("setup_project creates a valid project object and valid directory", {
   # test db
   expect_no_error(assert_blank_project(.blank_project))
   expect_error(assert_setup_project(.blank_project))
-  expect_error(assert_blank_project(.blank_project[[-1]]))
-  expect_error(assert_blank_project(1))
+  expect_error(assert_blank_project(.blank_project[[-1L]]))
+  expect_error(assert_blank_project(1L))
   expect_error(assert_blank_project(data.frame()))
   expect_error(assert_dir(project$dir_path))
   # Run setup_project
@@ -45,14 +45,14 @@ test_that("setup_project creates a valid project object and valid directory", {
   # expect_no_error(get_dir(project))
   check_dir <- assert_dir(project$dir_path)
   expect_identical(test_dir, check_dir)
-  expect_true(is.list(project))
+  expect_type(project,type = "list")
   expect_named(project)
   expect_true("project_name" %in% names(project))
   expect_true("dir_path" %in% names(project))
   expect_false(project$internals$is_blank)
   expect_false(project$internals$is_test)
   expect_true(file.exists(project$dir_path))
-  expect_equal(project$project_name, project_name)
+  expect_identical(project$project_name, project_name)
   test_dir_files <- list.files(test_dir)
   expect_true(all(.dir_folders %in% test_dir_files))
   project$dir_path <- file.path(test_dir, "another_fake_folder") |>
@@ -102,10 +102,10 @@ test_that("save_project doesn't save if blank but will save if valid", {
   expect_true(file.exists(expected_save_location))
   # check cached proj
   projects <- get_projects()
-  expect_equal(nrow(get_projects()), 1)
-  expect_equal(projects$project_name, project_name)
-  expect_equal(projects$redcap_uri, redcap_uri)
-  expect_equal(projects$dir_path, test_dir)
+  expect_identical(nrow(get_projects()), 1L)
+  expect_identical(projects$project_name, project_name)
+  expect_identical(projects$redcap_uri, redcap_uri)
+  expect_identical(projects$dir_path, test_dir)
   # loading tests wont load unknown project
   expect_error(load_project("a_project"))
   # loads what we saved
@@ -124,7 +124,7 @@ test_that("set_dir creates a new directory if it does not exist", {
   test_dir <- withr::local_tempdir() |> sanitize_path()
   dir_path <- file.path(test_dir, "new_dir")
   # Mock user input to create the directory
-  mockery::stub(set_dir, "utils::menu", 1)
+  mockery::stub(set_dir, "utils::menu", 1L)
   expect_message(set_dir(dir_path), "Directory is Valid!")
   expect_true(file.exists(dir_path))
   expect_true(all(.dir_folders %in% list.files(dir_path)))
@@ -138,7 +138,7 @@ test_that("set_dir handles existing directory correctly", {
   expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
 test_that("set_dir throws an error for invalid directory path", {
-  expect_error(set_dir(123), "dir must be a character string")
+  expect_error(set_dir(123L), "dir must be a character string")
 })
 test_that("set_dir creates missing internal directories", {
   test_dir <- withr::local_tempdir() |> sanitize_path()
@@ -153,7 +153,7 @@ test_that("set_dir stops if user chooses not to create directory", {
   test_dir <- withr::local_tempdir() |> sanitize_path()
   dir_path <- file.path(test_dir, "no_create_dir")
   # Mock user input to not create the directory
-  mockery::stub(set_dir, "utils::menu", 2)
+  mockery::stub(set_dir, "utils::menu", 2L)
   expect_error(set_dir(dir_path), "Path not found. Use absolute path")
   expect_false(file.exists(dir_path))
 })

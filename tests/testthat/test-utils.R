@@ -9,15 +9,15 @@ test_that("add_redcap_links_to_form works!", {
   # Should add redcap_link column
   out <- add_redcap_links_to_form(form, project)
   expect_true("redcap_link" %in% colnames(out))
-  expect_equal(length(out$redcap_link), 2)
+  expect_length(out$redcap_link, 2L)
   # Links should contain record_id and project id
   expect_all_true(grepl("id=1|id=2", out$redcap_link))
   project_id <- project$redcap$project_id
   compare <- paste0("_home\\.php\\?pid=", project_id, "&id=", form$record_id)
-  expect_true(grepl(compare[1], out$redcap_link[1]))
-  expect_true(grepl(compare[2], out$redcap_link[2]))
+  expect_true(grepl(compare[1L], out$redcap_link[1L]))
+  expect_true(grepl(compare[2L], out$redcap_link[2L]))
   # Should not modify other columns
-  expect_equal(out$var_text, form$var_text)
+  expect_identical(out$var_text, form$var_text)
 })
 # remove_from_form_list ( Internal )
 test_that("remove_from_form_list works!", {
@@ -36,20 +36,20 @@ test_that("remove_from_form_list works!", {
   # Remove records "2" and "3"
   out <- remove_from_form_list(
     form_list, id_col = "record_id", records = c("2", "3"))
-  expect_equal(out$form1$record_id, "1")
-  expect_equal(out$form2$record_id, "4")
+  expect_identical(out$form1$record_id, "1")
+  expect_identical(out$form2$record_id, "4")
   # Remove no records (NULL)
   out2 <- remove_from_form_list(form_list, id_col = "record_id", records = NULL)
-  expect_equal(out2$form1$record_id, c("1", "2", "3"))
-  expect_equal(out2$form2$record_id, c("2", "3", "4"))
+  expect_identical(out2$form1$record_id, c("1", "2", "3"))
+  expect_identical(out2$form2$record_id, c("2", "3", "4"))
   # Remove all records
   out3 <- remove_from_form_list(
     form_list, id_col = "record_id", records = c("1", "2", "3", "4"))
-  expect_equal(nrow(out3$form1), 0)
-  expect_equal(nrow(out3$form2), 0)
+  expect_identical(nrow(out3$form1), 0L)
+  expect_identical(nrow(out3$form2), 0L)
   # Empty form_list returns itself
-  expect_equal(
-    remove_from_form_list(list(), id_col = "record_id", records = c("1")),
+  expect_identical(
+    remove_from_form_list(list(), id_col = "record_id", records = "1"),
     list())
 })
 # remove_records_from_project ( Internal )
@@ -71,40 +71,40 @@ test_that("remove_records_from_project works!", {
   )
   # Remove records "2" and "3"
   project2 <- remove_records_from_project(project, records = c("2", "3"))
-  expect_equal(project2$data$form_example$record_id, "1")
-  expect_equal(project2$transformation$data$form_example$record_id, "1")
+  expect_identical(project2$data$form_example$record_id, "1")
+  expect_identical(project2$transformation$data$form_example$record_id, "1")
   # Remove no records (empty vector) should error
-  expect_error(remove_records_from_project(project, records = character(0)))
+  expect_error(remove_records_from_project(project, records = character(0L)))
   # Remove all records
   project3 <- remove_records_from_project(project, records = c("1", "2", "3"))
-  expect_equal(nrow(project3$data$form_example), 0)
-  expect_equal(nrow(project3$transformation$data$form_example), 0)
+  expect_identical(nrow(project3$data$form_example), 0L)
+  expect_identical(nrow(project3$transformation$data$form_example), 0L)
 })
 # split_choices ( Internal )
 test_that("split_choices works!", {
   choices <- split_choices("1, one | 2, two")
-  checkmate::expect_data_frame(choices, nrows = 2, ncols = 2)
+  checkmate::expect_data_frame(choices, nrows = 2L, ncols = 2L)
   expect_false(anyNA(choices$code))
   expect_false(anyNA(choices$name))
-  expect_true(choices$code[[1]] == "1")
-  expect_true(choices$code[[2]] == "2")
-  expect_true(choices$name[[1]] == "one")
-  expect_true(choices$name[[2]] == "two")
+  expect_identical(choices$code[[1L]], "1")
+  expect_identical(choices$code[[2L]], "2")
+  expect_identical(choices$name[[1L]], "one")
+  expect_identical(choices$name[[2L]], "two")
   expect_error(split_choices("1. one | 2, two"))
   choices <- split_choices("1, one even with , second comma | 2, two")
-  checkmate::expect_data_frame(choices, nrows = 2, ncols = 2)
+  checkmate::expect_data_frame(choices, nrows = 2L, ncols = 2L)
   expect_false(anyNA(choices$code))
   expect_false(anyNA(choices$name))
 })
 test_that("split_choices works if space missing!", {
   choices <- split_choices("1,one | 2,two")
-  checkmate::expect_data_frame(choices, nrows = 2, ncols = 2)
+  checkmate::expect_data_frame(choices, nrows = 2L, ncols = 2L)
   expect_false(anyNA(choices$code))
   expect_false(anyNA(choices$name))
 })
 test_that("split_choices works if split space missing!", {
   choices <- split_choices("1, one|2, two")
-  checkmate::expect_data_frame(choices, nrows = 2, ncols = 2)
+  checkmate::expect_data_frame(choices, nrows = 2L, ncols = 2L)
   expect_false(anyNA(choices$code))
   expect_false(anyNA(choices$name))
 })

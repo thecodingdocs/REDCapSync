@@ -49,7 +49,7 @@ test_project_token <- function(project) {
     }
   }
   project$internals$ever_connected <- TRUE
-  if (version_changed) {
+  if (version_changed || is.null(project$links$redcap_home)) {
     project <- update_project_links(project)
   }
   invisible(project)

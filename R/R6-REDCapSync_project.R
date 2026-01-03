@@ -111,6 +111,42 @@
 #' @keywords internal
 REDCapSync_project <- R6Class(
   "REDCapSync_project",
+  #' @description
+  #' Active binding are read-only
+  active = list(
+    #' @field project_name Read-only character string of project_name as
+    #' assigned from [setup_project].
+    project_name = function(value) {
+      if (!missing(value)) {
+        message(
+          "`project_name` is read-only. To change `setup_project()`"
+        )
+      }
+      private$project$project_name
+    },
+    #' @field data Read-only named list where each name is an instrument name.
+    #' It is populated from redcap when you run [REDCapSync_project$sync].
+    #' See \link[REDCapSync_project]{$sync}
+    #' Or See \href{../../REDCapSync/html/REDCapSync_project.html#method-sync}{\code{REDCapSync_project$sync()}}
+    #' Or See \href{../../REDCapSync/html/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
+    #' This function is a wrapper for [REDCapSync_project$sync()] or [REDCapSync_project#method-sync]
+    #' or [REDCapSync_project#method-sync()], but neither of these links work....
+    #' or [REDCapSync_project#method-REDCapSync_project-sync()], but neither of these links work....
+    #' or [REDCapSync_project$method-REDCapSync_project-sync()], but neither of these links work....
+    #' or [REDCapSync_project$method-sync()], but neither of these links work....
+    data = function(value) {
+      if (!missing(value)) {
+        print(value)
+        message(
+          "`data` is read-only. To change REDCap data either use project$upload() or work with an output by assigning the data with `form_to_edit <-project$data$<form_name>`"
+        )
+      }
+      private$project$data
+    },
+    .internal_project  = function(value) {
+      private$project
+    }
+  ),
   public = list(
     #' @description
     #' The end user will not see `project$new()`. This is handled internally.
@@ -124,8 +160,9 @@ REDCapSync_project <- R6Class(
     },
     #' @description Print project metadata
     info = function() {
-      message("project_name: ", private$project$project_name)
-      message("directory: ", private$project$dir_path)
+      message("Project Name: ", private$project$project_name)
+      message("Directory: ", private$project$dir_path)
+      message("Last Data Update: ", private$project$internals$last_data_update)
     },
     #' @description
     #' Updates the REDCap data for (`project` object) by checking REDCap log.
@@ -288,6 +325,7 @@ REDCapSync_project <- R6Class(
       }
       if (!is.null(envir)) {
         # add check for conflicts?
+        .GlobalEnv |> ls()
         return_this |>
           process_df_list(silent = TRUE) |>
           list2env(envir = envir)

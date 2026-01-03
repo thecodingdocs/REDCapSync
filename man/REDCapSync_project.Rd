@@ -17,6 +17,25 @@ projects, use \code{\link[=load_project]{load_project()}}. For offline examples 
 \link{setup_project} for initializing the \code{project} object.'
 }
 \keyword{internal}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{project_name}}{Read-only character string of project_name as
+assigned from \link{setup_project}.}
+
+\item{\code{data}}{Read-only named list where each name is an instrument name.
+It is populated from redcap when you run \link{REDCapSync_project$sync}.
+See \link[REDCapSync_project]{$sync}
+Or See \href{../../REDCapSync/html/REDCapSync_project.html#method-sync}{\code{REDCapSync_project$sync()}}
+Or See \href{../../REDCapSync/html/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
+This function is a wrapper for \code{\link[=REDCapSync_project$sync]{REDCapSync_project$sync()}} or \link{REDCapSync_project#method-sync}
+or \code{\link[=REDCapSync_project#method-sync]{REDCapSync_project#method-sync()}}, but neither of these links work....
+or \code{\link[=REDCapSync_project#method-REDCapSync_project-sync]{REDCapSync_project#method-REDCapSync_project-sync()}}, but neither of these links work....
+or \code{\link[=REDCapSync_project$method-REDCapSync_project-sync]{REDCapSync_project$method-REDCapSync_project-sync()}}, but neither of these links work....
+or \code{\link[=REDCapSync_project$method-sync]{REDCapSync_project$method-sync()}}, but neither of these links work....}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -44,6 +63,9 @@ projects, use \code{\link[=load_project]{load_project()}}. For offline examples 
 \if{html}{\out{<a id="method-REDCapSync_project-new"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSync_project-new}{}}}
 \subsection{Method \code{new()}}{
+Active binding are read-only
+
+
 The end user will not see \code{project$new()}. This is handled internally.
 Users should construct objects using \code{\link[=setup_project]{setup_project()}}. The remain
 methods will be accessible to any user.

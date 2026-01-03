@@ -28,20 +28,17 @@ for initializing the `project` object.'
 
 - `data`:
 
-  Read-only named list where each name is an instrument name. It is
-  populated from redcap when you run REDCapSync_project\$sync. See
-  \$sync Or See
+  Read-only named list where each name is an instrument name. Or See
   [`REDCapSync_project$sync()`](https://thecodingdocs.github.io/REDCapSync/html/REDCapSync_project.html#method-sync)
   Or See
-  [`REDCapSync_project$sync()`](https://thecodingdocs.github.io/REDCapSync/html/REDCapSync_project.html#method-REDCapSync_project-sync)
-  This function is a wrapper for `REDCapSync_project$sync()` or
-  REDCapSync_project#method-sync or `REDCapSync_project#method-sync()`,
-  but neither of these links work.... or
-  `REDCapSync_project#method-REDCapSync_project-sync()`, but neither of
-  these links work.... or
-  `REDCapSync_project$method-REDCapSync_project-sync()`, but neither of
-  these links work.... or `REDCapSync_project$method-sync()`, but
-  neither of these links work....
+  [`REDCapSync_project$sync()`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync)
+  Or See
+  [`REDCapSync_project$sync()`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync_project.html#method-sync-)
+
+- `.internal_project`:
+
+  (`character(1)`)  
+  Entire internal project object for more advanced/custom workflows
 
 ## Methods
 

@@ -56,13 +56,7 @@ invisible return of last project
 Syncs all projects by default but can be used to hands-free sync one or
 defined set projects. This is not intended to return project object.
 User should use `load_project("project_name")`. However, by default will
-invisibly return the last project in the set of project_names. \#' See
-REDCapSync_project or see
-[`REDCapSync_project$sync()`](https://thecodingdocs.github.io/REDCapSync/html/REDCapSync_project.html#method-sync)
-or see
-[`REDCapSync_project$sync()`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync)
-or see
-[`REDCapSync_project$sync()`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync_project.html#method-sync-)
+invisibly return the last project in the set of project_names.
 
 ## See also
 

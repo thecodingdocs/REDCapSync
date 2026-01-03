@@ -33,7 +33,7 @@ for initializing the `project` object.'
   [`REDCapSync_project$sync()`](https://thecodingdocs.github.io/REDCapSync/html/REDCapSync_project.html#method-sync)
   or see
   [`REDCapSync_project$sync()`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync)
-  Try this REDCapSync_project-method-sync
+  Try this REDCapSync_project#method-REDCapSync_project-sync
 
 - `.internal_project`:
 

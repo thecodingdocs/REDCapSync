@@ -125,15 +125,9 @@ REDCapSync_project <- R6Class(
       private$project$project_name
     },
     #' @field data Read-only named list where each name is an instrument name.
-    #' It is populated from redcap when you run [REDCapSync_project$sync].
-    #' See \link[REDCapSync_project]{$sync}
     #' Or See \href{../../REDCapSync/html/REDCapSync_project.html#method-sync}{\code{REDCapSync_project$sync()}}
-    #' Or See \href{../../REDCapSync/html/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
-    #' This function is a wrapper for [REDCapSync_project$sync()] or [REDCapSync_project#method-sync]
-    #' or [REDCapSync_project#method-sync()], but neither of these links work....
-    #' or [REDCapSync_project#method-REDCapSync_project-sync()], but neither of these links work....
-    #' or [REDCapSync_project$method-REDCapSync_project-sync()], but neither of these links work....
-    #' or [REDCapSync_project$method-sync()], but neither of these links work....
+    #' Or See \href{../../REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
+    #' Or See \href{../../REDCapSync/reference/REDCapSync_project.html#method-sync-}{\code{REDCapSync_project$sync()}}
     data = function(value) {
       if (!missing(value)) {
         print(value)
@@ -143,6 +137,8 @@ REDCapSync_project <- R6Class(
       }
       private$project$data
     },
+    #' @field .internal_project (`character(1)`)\cr
+    #' Entire internal project object for more advanced/custom workflows
     .internal_project  = function(value) {
       private$project
     }

@@ -24,15 +24,12 @@ projects, use \code{\link[=load_project]{load_project()}}. For offline examples 
 assigned from \link{setup_project}.}
 
 \item{\code{data}}{Read-only named list where each name is an instrument name.
-It is populated from redcap when you run \link{REDCapSync_project$sync}.
-See \link[REDCapSync_project]{$sync}
 Or See \href{../../REDCapSync/html/REDCapSync_project.html#method-sync}{\code{REDCapSync_project$sync()}}
-Or See \href{../../REDCapSync/html/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
-This function is a wrapper for \code{\link[=REDCapSync_project$sync]{REDCapSync_project$sync()}} or \link{REDCapSync_project#method-sync}
-or \code{\link[=REDCapSync_project#method-sync]{REDCapSync_project#method-sync()}}, but neither of these links work....
-or \code{\link[=REDCapSync_project#method-REDCapSync_project-sync]{REDCapSync_project#method-REDCapSync_project-sync()}}, but neither of these links work....
-or \code{\link[=REDCapSync_project$method-REDCapSync_project-sync]{REDCapSync_project$method-REDCapSync_project-sync()}}, but neither of these links work....
-or \code{\link[=REDCapSync_project$method-sync]{REDCapSync_project$method-sync()}}, but neither of these links work....}
+Or See \href{../../REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
+Or See \href{../../REDCapSync/reference/REDCapSync_project.html#method-sync-}{\code{REDCapSync_project$sync()}}}
+
+\item{\code{.internal_project}}{(\code{character(1)})\cr
+Entire internal project object for more advanced/custom workflows}
 }
 \if{html}{\out{</div>}}
 }

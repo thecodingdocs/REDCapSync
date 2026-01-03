@@ -125,10 +125,9 @@ REDCapSync_project <- R6Class(
       private$project$project_name
     },
     #' @field data Read-only named list where each name is an instrument name.
-    #' See [REDCapSync_project]
+    #' See [REDCapSync::REDCapSync_project] or [REDCapSync::REDCapSync_project$sync()]
     #' or see \href{../../REDCapSync/html/REDCapSync_project.html#method-sync}{\code{REDCapSync_project$sync()}}
     #' or see \href{../../REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
-    #' or see \href{../../REDCapSync/reference/REDCapSync_project.html#method-sync-}{\code{REDCapSync_project$sync()}}
     data = function(value) {
       if (!missing(value)) {
         print(value)
@@ -161,6 +160,7 @@ REDCapSync_project <- R6Class(
       message("Directory: ", private$project$dir_path)
       message("Last Data Update: ", private$project$internals$last_data_update)
     },
+    #' @rdname sync
     #' @description
     #' Updates the REDCap data for (`project` object) by checking REDCap log.
     #' @return Messages for confirmation.

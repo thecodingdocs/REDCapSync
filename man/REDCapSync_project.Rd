@@ -27,7 +27,7 @@ assigned from \link{setup_project}.}
 See \link{REDCapSync_project}
 or see \href{../../REDCapSync/html/REDCapSync_project.html#method-sync}{\code{REDCapSync_project$sync()}}
 or see \href{../../REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
-Try this \link[REDCapSync]{REDCapSync_project-method-sync}}
+Try this \link[REDCapSync]{REDCapSync_project#method-REDCapSync_project-sync}}
 
 \item{\code{.internal_project}}{(\code{character(1)})\cr
 Entire internal project object for more advanced/custom workflows}

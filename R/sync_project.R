@@ -286,7 +286,10 @@ sync_project <- function(project,
 #' defined set projects. This is not intended to return project object. User
 #' should use `load_project("project_name")`. However, by default will invisibly
 #' return the last project in the set of project_names.
-#'
+#' #' See [REDCapSync_project]
+#' or see \href{../../REDCapSync/html/REDCapSync_project.html#method-sync}{\code{REDCapSync_project$sync()}}
+#' or see \href{../../REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
+#' or see \href{../../REDCapSync/reference/REDCapSync_project.html#method-sync-}{\code{REDCapSync_project$sync()}}
 #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
 #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
 #' parameter from `setup_project()`)

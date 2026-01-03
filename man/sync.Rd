@@ -35,6 +35,10 @@ Syncs all projects by default but can be used to hands-free sync one or
 defined set projects. This is not intended to return project object. User
 should use \code{load_project("project_name")}. However, by default will invisibly
 return the last project in the set of project_names.
+#' See \link{REDCapSync_project}
+or see \href{../../REDCapSync/html/REDCapSync_project.html#method-sync}{\code{REDCapSync_project$sync()}}
+or see \href{../../REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
+or see \href{../../REDCapSync/reference/REDCapSync_project.html#method-sync-}{\code{REDCapSync_project$sync()}}
 }
 \seealso{
 \link{setup_project} for initializing the \code{project} object.

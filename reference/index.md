@@ -10,7 +10,7 @@ already saved. Save the outputs to a directory.
   [`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   [`load_test_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   : Setup or Load REDCapSync Project
-- [`sync()`](https://thecodingdocs.github.io/REDCapSync/reference/sync.md)
+- [`REDCapSync_project`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync_project.md)
   : REDCapSync Encapsulated Project Object
 
 ## Other (Intermediate/Advanced)
@@ -32,4 +32,4 @@ last update and other details). Tokens and data are NOT stored here.
 - [`cache_remove_project()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_remove_project.md)
   : Remove project from cache
 - [`sync()`](https://thecodingdocs.github.io/REDCapSync/reference/sync.md)
-  : REDCapSync Encapsulated Project Object
+  : Synchronize REDCap Data

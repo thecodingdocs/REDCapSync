@@ -125,10 +125,8 @@ REDCapSync_project <- R6Class(
       private$project$project_name
     },
     #' @field data Read-only named list where each name is an instrument name.
-    #' See [REDCapSync::REDCapSync_project]
-    #' or see \href{../../REDCapSync/html/REDCapSync_project.html#method-sync}{\code{REDCapSync_project$sync()}}
+    #' See \link[REDCapSync:REDCapSync_project#method-sync]{REDCapSync_project$sync()}
     #' or see \href{../../REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
-    #' Try this \link[REDCapSync]{REDCapSync_project#method-REDCapSync_project-sync}
     data = function(value) {
       if (!missing(value)) {
         print(value)

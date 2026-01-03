@@ -24,10 +24,8 @@ projects, use \code{\link[=load_project]{load_project()}}. For offline examples 
 assigned from \link{setup_project}.}
 
 \item{\code{data}}{Read-only named list where each name is an instrument name.
-See \link{REDCapSync_project}
-or see \href{../../REDCapSync/html/REDCapSync_project.html#method-sync}{\code{REDCapSync_project$sync()}}
-or see \href{../../REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
-Try this \link[REDCapSync]{REDCapSync_project#method-REDCapSync_project-sync}}
+See \link[REDCapSync:REDCapSync_project#method-sync]{REDCapSync_project$sync()}
+or see \href{../../REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}}
 
 \item{\code{.internal_project}}{(\code{character(1)})\cr
 Entire internal project object for more advanced/custom workflows}

@@ -79,6 +79,28 @@ projects, use <code><a href="setup-load.html">load_project()</a></code>. For off
     <div class="dont-index"><p><a href="setup-load.html">setup_project</a> for initializing the <code>project</code> object.'</p></div>
     </div>
     <div class="section level2">
+    <h2 id="active-bindings">Active bindings<a class="anchor" aria-label="anchor" href="#active-bindings"></a></h2>
+    <p></p><div class="r6-active-bindings"><dl><dt><code>project_name</code></dt>
+<dd><p>Read-only character string of project_name as
+assigned from <a href="setup-load.html">setup_project</a>.</p></dd>
+
+
+<dt><code>data</code></dt>
+<dd><p>Read-only named list where each name is an instrument name.
+It is populated from redcap when you run REDCapSync_project$sync.
+See $sync
+Or See <a href="../../REDCapSync/html/REDCapSync_project.html#method-sync"><code>REDCapSync_project$sync()</code></a>
+Or See <a href="../../REDCapSync/html/REDCapSync_project.html#method-REDCapSync_project-sync"><code>REDCapSync_project$sync()</code></a>
+This function is a wrapper for <code>REDCapSync_project$sync()</code> or REDCapSync_project#method-sync
+or <code>REDCapSync_project#method-sync()</code>, but neither of these links work....
+or <code>REDCapSync_project#method-REDCapSync_project-sync()</code>, but neither of these links work....
+or <code>REDCapSync_project$method-REDCapSync_project-sync()</code>, but neither of these links work....
+or <code>REDCapSync_project$method-sync()</code>, but neither of these links work....</p></dd>
+
+
+</dl><p></p></div>
+    </div>
+    <div class="section level2">
     <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a></h2>
 
 <div class="section">
@@ -104,6 +126,8 @@ projects, use <code><a href="setup-load.html">load_project()</a></code>. For off
 <li><p><a href="#method-REDCapSync_project-.internal"><code>REDCapSync_project$.internal()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-REDCapSync_project-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
+<p>Active binding are read-only</p>
+
 <p>The end user will not see <code>project$new()</code>. This is handled internally.
 Users should construct objects using <code><a href="setup-load.html">setup_project()</a></code>. The remain
 methods will be accessible to any user.</p><div class="section">

@@ -19,6 +19,30 @@ An R6ClassGenerator
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
 for initializing the `project` object.'
 
+## Active bindings
+
+- `project_name`:
+
+  Read-only character string of project_name as assigned from
+  [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
+
+- `data`:
+
+  Read-only named list where each name is an instrument name. It is
+  populated from redcap when you run REDCapSync_project\$sync. See
+  \$sync Or See
+  [`REDCapSync_project$sync()`](https://thecodingdocs.github.io/REDCapSync/html/REDCapSync_project.html#method-sync)
+  Or See
+  [`REDCapSync_project$sync()`](https://thecodingdocs.github.io/REDCapSync/html/REDCapSync_project.html#method-REDCapSync_project-sync)
+  This function is a wrapper for `REDCapSync_project$sync()` or
+  REDCapSync_project#method-sync or `REDCapSync_project#method-sync()`,
+  but neither of these links work.... or
+  `REDCapSync_project#method-REDCapSync_project-sync()`, but neither of
+  these links work.... or
+  `REDCapSync_project$method-REDCapSync_project-sync()`, but neither of
+  these links work.... or `REDCapSync_project$method-sync()`, but
+  neither of these links work....
+
 ## Methods
 
 ### Public methods
@@ -62,6 +86,8 @@ for initializing the `project` object.'
 ------------------------------------------------------------------------
 
 ### Method `new()`
+
+Active binding are read-only
 
 The end user will not see `project$new()`. This is handled internally.
 Users should construct objects using

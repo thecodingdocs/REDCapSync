@@ -160,7 +160,6 @@ REDCapSync_project <- R6Class(
       message("Directory: ", private$project$dir_path)
       message("Last Data Update: ", private$project$internals$last_data_update)
     },
-    #' @rdname sync
     #' @description
     #' Updates the REDCap data for (`project` object) by checking REDCap log.
     #' @return Messages for confirmation.

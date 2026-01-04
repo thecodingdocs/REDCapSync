@@ -28,8 +28,8 @@ get_project_token <- function(project, silent = TRUE) {
   token <- Sys.getenv(token_name)
   valid <- is_valid_redcap_token(token = token, silent = silent)
   fake_token <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
+  user_renviron_path <- user_renviron()
   if (!silent) {
-    user_renviron_path <- user_renviron()
     cli_alert_wrap(
       paste0(
         "You can set REDCap tokens each session with `Sys.setenv(",

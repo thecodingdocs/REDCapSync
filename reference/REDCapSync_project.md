@@ -26,6 +26,11 @@ for initializing the `project` object.'
   Read-only character string of project_name as assigned from
   [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 
+- `dir_path`:
+
+  Read-only directory path assigned from
+  [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
+
 - `data`:
 
   Read-only named list where each name is an instrument name. See public

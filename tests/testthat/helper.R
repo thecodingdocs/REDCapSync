@@ -4,7 +4,7 @@ mock_project <- function() {
   project <- setup_project(
     project_name = project_name,
     redcap_uri = redcap_uri
-    )$.internal() # change to R6 later
+    )$.internal # change to R6 later
   project$internals$ever_connected <- TRUE
   fake_time <- now_time()
   project$internals$last_directory_save <- fake_time

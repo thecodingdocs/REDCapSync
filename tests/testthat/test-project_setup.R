@@ -39,7 +39,7 @@ test_that("setup_project creates a valid project object and valid directory", {
     dir_path = test_dir,
     redcap_uri = redcap_uri,
     hard_reset = TRUE
-  )$.internal() # change to R6 later
+  )$.internal # change to R6 later
   expect_no_error(assert_dir(dir_path = test_dir))
   expect_no_error(assert_blank_project(project = project))
   # expect_no_error(get_dir(project))
@@ -81,7 +81,7 @@ test_that("save_project doesn't save if blank but will save if valid", {
   redcap_uri <- "https://redcap.miami.edu/api/"
   project <- setup_project(project_name = project_name,
                            dir_path = test_dir,
-                           redcap_uri = redcap_uri)$.internal() # change to R6
+                           redcap_uri = redcap_uri)$.internal # change to R6
   save_project(project)
   expect_false(file.exists(file.path(
     project$dir_path,
@@ -110,7 +110,7 @@ test_that("save_project doesn't save if blank but will save if valid", {
   expect_error(load_project("a_project"))
   # loads what we saved
   # change to R6 later
-  project2 <- load_project(project_name = project_name)$.internal()
+  project2 <- load_project(project_name = project_name)$.internal
   # project$internals$last_directory_save |> attr("tzone")
   # project2$internals$last_directory_save |> attr("tzone")
   expect_identical(project, project2)

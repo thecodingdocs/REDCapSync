@@ -63,7 +63,7 @@ cli_alert_wrap <- function(text = "",
   for (i in seq_along(file_if))
     text[i] <- paste0(text[i], file_if[i])
   names(text)[seq_along(text)] <- bullet_type
-  cli::cli_bullets(text)
+  cli_bullets(text)
 }
 #' @noRd
 now_time <- function() {

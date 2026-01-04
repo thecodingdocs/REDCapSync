@@ -172,7 +172,7 @@ REDCapSync_project <- R6Class(
           url = private$project$links$redcap_designer
         )
       }
-      private$project$metadata
+      private$project$redcap
     },
     #' @field .internal Read-only internal project object for custom workflows
     .internal  = function(value) {
@@ -197,15 +197,18 @@ REDCapSync_project <- R6Class(
     },
     #' @description Print project metadata
     info = function() {
-      cli_alert_wrap(paste0("Project Name: ", private$project$project_name))
-      cli_alert_wrap(paste0("PID: ", private$project$redcap$project_id))
-      cli_alert_wrap(paste0("Token Name: ", private$project$redcap$token_name))
-      cli_alert_wrap(paste0("REDCap Link: "),url = private$project$links$redcap_home)
-      cli_alert_wrap(paste0("Directory: "),url = private$project$dir_path)
-      cli_alert_wrap(paste0(
-        "Last Data Update: ",
-        private$project$internals$last_data_update
-      ))
+      project_name <- private$project$project_name
+      project_id <- private$project$redcap$project_id
+      token_name <- private$project$redcap$token_name
+      redcap_home <- private$project$links$redcap_home
+      dir_path <- private$project$dir_path
+      last_data_update <- private$project$internals$last_data_update
+      cli_alert_info("Project Name: {project_name}")
+      cli_alert_info("PID: {project_id}")
+      cli_alert_info("Token Name: {token_name}")
+      cli_alert_info("Last Update: {last_data_update}")
+      cli_alert_info("REDCap Link:{.url {redcap_home}}")
+      cli_alert_info("Directory: {.file {dir_path}}")
     },
     #' @description
     #' Updates the REDCap data for (`project` object) by checking REDCap log.

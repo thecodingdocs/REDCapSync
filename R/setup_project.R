@@ -164,7 +164,7 @@ setup_project <- function(project_name,
   if (!collected$isEmpty()) {
     message_text <- cli_message_maker(
       collected = collected, function_name = current_function)
-    cli::cli_abort(message_text)
+    cli_abort(message_text)
   }
   projects <- get_projects()
   if (paste0(.token_prefix, project_name) != token_name) {
@@ -261,7 +261,7 @@ setup_project <- function(project_name,
   }
   if (missing_dir_path) {
     if (!is_something(project$dir_path)) {
-      cli::cli_alert_warning(paste0(
+      cli_alert_warning(paste0(
         "If you don't supply a directory, REDCapSync will only run ",
         "in R session. Package is meant to be used with a directory."))
     }
@@ -306,7 +306,7 @@ setup_project <- function(project_name,
   project$internals$is_blank <- FALSE
   project$data <- all_character_cols_list(project$data)
   if (!is_valid_redcap_token(get_project_token(project))) {
-    cli::cli_alert_warning(
+    cli_alert_warning(
       paste0("No valid token in session: Sys.getenv('", token_name, "')"))
   }
   project <- assert_setup_project(project, silent = silent)
@@ -431,7 +431,7 @@ save_project <- function(project, silent = FALSE) {
   assert_setup_project(project)
   # assert_setup_project(project)
   if (!project$internals$ever_connected) {
-    cli::cli_alert_danger(
+    cli_alert_danger(
       paste0(
         "Did not save ",
         project$project_name,

@@ -18,13 +18,13 @@ sync_project <- function(project,
   if (!collected$isEmpty()) {
     message_text <-
       cli_message_maker(collected = collected, function_name = current_function)
-    cli::cli_abort(message_text)
+    cli_abort(message_text)
   }
   do_sync <- due_for_sync(project_name = project$project_name) ||
     hard_reset || hard_check
   was_updated <- FALSE
   if (!do_sync) {
-    cli::cli_alert_info(
+    cli_alert_info(
       paste0("{project$project_name} not due for sync ",
              "({project$internals$sync_frequency})"))
   }

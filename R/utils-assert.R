@@ -28,8 +28,8 @@ get_project_token <- function(project, silent = TRUE) {
   token <- Sys.getenv(token_name)
   valid <- is_valid_redcap_token(token = token, silent = silent)
   fake_token <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
-  user_renviron_path <- user_renviron()
   if (!silent) {
+    user_renviron_path <- user_renviron()
     cli_alert_wrap(
       paste0(
         "You can set REDCap tokens each session with `Sys.setenv(",
@@ -40,13 +40,16 @@ get_project_token <- function(project, silent = TRUE) {
         token_name,
         " = '",
         fake_token,
-        "'` to your user .Renviron file {.file {user_renviron_path}}",
+        "'` to your user .Renviron file ",
         "...(then restart R under session tab after saving ",
         "file)... The way to tell it worked is to run the code, `Sys.getenv('",
         token_name,
         "')`"
       )
     )
+    cli_alert_info("User R environ file --> {.file {user_renviron_path}}")
+    cli_alert_info("Try `edit_r_environ()` from `usethis` package.")
+    cli_alert_info("See the {.vignette REDCapSync::Tokens} vignette.")
     if (is_something(project$links$redcap_api)) {
       cli_alert_wrap(
         paste0(
@@ -116,7 +119,7 @@ assert_env_name <- function(env_name,
   if (!collected$isEmpty()) {
     message_text <-
       cli_message_maker(collected = collected, function_name = current_function)
-    cli::cli_abort(message_text)
+    cli_abort(message_text)
   }
   collected <- makeAssertCollection()
   assert_string(
@@ -137,9 +140,9 @@ assert_env_name <- function(env_name,
     if (standalone) {
       collected |>
         cli_message_maker(function_name = as.character(current_call())[[1L]]) |>
-        cli::cli_abort(message_text)
+        cli_abort(message_text)
     } else {
-      add$push(cli::format_message(
+      add$push(format_message(
         paste0(
           "`{arg_name}` = \"{env_name}\" is not allowed. `{arg_name}`can ",
           "only contain letters, numbers, or underscores without spaces or ",
@@ -174,7 +177,7 @@ assert_blank_project <- function(project,
   if (!collected$isEmpty()) {
     message_text <-
       cli_message_maker(collected = collected, function_name = current_function)
-    cli::cli_abort(message_text)
+    cli_abort(message_text)
   }
   collected <- makeAssertCollection()
   assert_list(
@@ -191,7 +194,7 @@ assert_blank_project <- function(project,
   )
   if (!collected$isEmpty()) {
     if (!standalone) {
-      add$push(cli::format_message(
+      add$push(format_message(
         paste0(
           "Did you use {.fun REDCapSync::setup_project}? ",
           "Consider using `hard_reset = TRUE`."
@@ -202,10 +205,10 @@ assert_blank_project <- function(project,
     message_text <-
       cli_message_maker(collected, function_name = current_function)
     if (warn_only) {
-      cli::cli_warn(message_text)
+      cli_warn(message_text)
       return(invisible(project))
     }
-    cli::cli_abort(message_text)
+    cli_abort(message_text)
   }
   invisible(project)
 }
@@ -231,7 +234,7 @@ assert_setup_project <- function(project,
   if (!collected$isEmpty()) {
     message_text <-
       cli_message_maker(collected, function_name = current_function)
-    cli::cli_abort(message_text)
+    cli_abort(message_text)
   }
   collected <- makeAssertCollection()
   assert_blank_project(project,
@@ -307,7 +310,7 @@ assert_setup_project <- function(project,
   # assert_web_link(project$links$redcap_base) # argName #collected
   if (!collected$isEmpty()) {
     if (!standalone) {
-      add$push(cli::format_message(
+      add$push(format_message(
         paste0(
           "Did you use {.fun REDCapSync::setup_project}? ",
           "Consider using `hard_reset = TRUE`."
@@ -318,10 +321,10 @@ assert_setup_project <- function(project,
     message_text <- cli_message_maker(
       collected = collected, function_name = current_function)
     if (warn_only) {
-      cli::cli_warn(message_text)
+      cli_warn(message_text)
       return(invisible(project))
     }
-    cli::cli_abort(message_text)
+    cli_abort(message_text)
   }
   invisible(project)
 }

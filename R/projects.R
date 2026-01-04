@@ -208,7 +208,7 @@ add_project_details_to_cache <- function(project_details) {
     )
   }
   if (length(bad_row) > 0L) {
-    cli::cli_abort(
+    cli_abort(
       paste0(
         "You are trying to save from a project [{project_details$project_name}",
         " PID {projects$project_id[bad_row]}] that you have already setup ",

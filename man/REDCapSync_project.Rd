@@ -23,6 +23,8 @@ projects, use \code{\link[=load_project]{load_project()}}. For offline examples 
 \item{\code{project_name}}{Read-only character string of project_name as
 assigned from \link{setup_project}.}
 
+\item{\code{dir_path}}{Read-only directory path assigned from \link{setup_project}.}
+
 \item{\code{data}}{Read-only named list where each name is an instrument name.
 See public methods for \link{REDCapSync_project}.}
 

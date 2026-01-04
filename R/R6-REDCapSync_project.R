@@ -124,6 +124,15 @@ REDCapSync_project <- R6Class(
       }
       private$project$project_name
     },
+    #' @field dir_path Read-only directory path assigned from [setup_project].
+    dir_path = function(value) {
+      if (!missing(value)) {
+        message(
+          "`dir_path` is read-only. To change `setup_project()`"
+        )
+      }
+      private$project$dir_path
+    },
     #' @field data Read-only named list where each name is an instrument name.
     #' See public methods for [REDCapSync_project].
         data = function(value) {
@@ -207,7 +216,7 @@ REDCapSync_project <- R6Class(
       cli_alert_info("PID: {project_id}")
       cli_alert_info("Token Name: {token_name}")
       cli_alert_info("Last Update: {last_data_update}")
-      cli_alert_info("REDCap Link:{.url {redcap_home}}")
+      cli_alert_info("REDCap Link: {.url {redcap_home}}")
       cli_alert_info("Directory: {.file {dir_path}}")
     },
     #' @description

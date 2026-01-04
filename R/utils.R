@@ -109,3 +109,11 @@ file_ext_alias <- function(x) {
   pos <- regexpr("\\.([[:alnum:]]+)$", x)
   ifelse(pos > -1L, substring(x, pos + 1L), "")
 }
+#' @noRd
+user_renviron <- function() {
+  path <- Sys.getenv("R_ENVIRON_USER", unset = NA_character_)
+  if (is.na(path) || !nzchar(path)) {
+    path <- file.path(Sys.getenv("HOME"), ".Renviron")
+  }
+  normalizePath(path, winslash = "/", mustWork = FALSE)
+}

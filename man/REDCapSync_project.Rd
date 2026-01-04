@@ -24,11 +24,15 @@ projects, use \code{\link[=load_project]{load_project()}}. For offline examples 
 assigned from \link{setup_project}.}
 
 \item{\code{data}}{Read-only named list where each name is an instrument name.
-See \link[REDCapSync:REDCapSync_project#method-sync]{REDCapSync_project$sync()}
-or see \href{../../REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}}
+See public methods for \link{REDCapSync_project}.}
 
-\item{\code{.internal_project}}{(\code{character(1)})\cr
-Entire internal project object for more advanced/custom workflows}
+\item{\code{metadata}}{Read-only named list with REDCap metadata. See
+public methods for \link{REDCapSync_project}.}
+
+\item{\code{redcap}}{Read-only named list with REDCap information including
+users and log.}
+
+\item{\code{.internal}}{Read-only internal project object for custom workflows}
 }
 \if{html}{\out{</div>}}
 }
@@ -46,13 +50,10 @@ Entire internal project object for more advanced/custom workflows}
 \item \href{#method-REDCapSync_project-summarize}{\code{REDCapSync_project$summarize()}}
 \item \href{#method-REDCapSync_project-save_summary}{\code{REDCapSync_project$save_summary()}}
 \item \href{#method-REDCapSync_project-save}{\code{REDCapSync_project$save()}}
-\item \href{#method-REDCapSync_project-show_metadata}{\code{REDCapSync_project$show_metadata()}}
-\item \href{#method-REDCapSync_project-show_data}{\code{REDCapSync_project$show_data()}}
 \item \href{#method-REDCapSync_project-show_token}{\code{REDCapSync_project$show_token()}}
 \item \href{#method-REDCapSync_project-test_token}{\code{REDCapSync_project$test_token()}}
 \item \href{#method-REDCapSync_project-url_launch}{\code{REDCapSync_project$url_launch()}}
 \item \href{#method-REDCapSync_project-upload}{\code{REDCapSync_project$upload()}}
-\item \href{#method-REDCapSync_project-.internal}{\code{REDCapSync_project$.internal()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -418,44 +419,6 @@ Add a new summary entry
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSync_project-show_metadata"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSync_project-show_metadata}{}}}
-\subsection{Method \code{show_metadata()}}{
-Returns list of data or the specified form.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_metadata(type = NULL, envir = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{type}}{string of either "fields","forms", or "choices"}
-
-\item{\code{envir}}{environment variable}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSync_project-show_data"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSync_project-show_data}{}}}
-\subsection{Method \code{show_data()}}{
-Returns list of data or the specified form.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_data(form = NULL, envir = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{form}}{string of raw form name such as "survey_one"}
-
-\item{\code{envir}}{environment variable}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSync_project-show_token"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSync_project-show_token}{}}}
 \subsection{Method \code{show_token()}}{
@@ -521,15 +484,5 @@ there's an issue. Missing rows and columns are allowed!
 }
 \if{html}{\out{</div>}}
 }
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSync_project-.internal"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSync_project-.internal}{}}}
-\subsection{Method \code{.internal()}}{
-returns internal list
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$.internal()}\if{html}{\out{</div>}}
-}
-
 }
 }

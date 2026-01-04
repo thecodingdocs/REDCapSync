@@ -125,20 +125,62 @@ REDCapSync_project <- R6Class(
       private$project$project_name
     },
     #' @field data Read-only named list where each name is an instrument name.
-    #' See \link[REDCapSync:REDCapSync_project#method-sync]{REDCapSync_project$sync()}
-    #' or see \href{../../REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync}{\code{REDCapSync_project$sync()}}
-    data = function(value) {
+    #' See public methods for [REDCapSync_project].
+        data = function(value) {
       if (!missing(value)) {
-        print(value)
-        message(
-          "`data` is read-only. To change REDCap data either use project$upload() or work with an output by assigning the data with `form_to_edit <-project$data$<form_name>`"
+        cli_alert_danger(
+          paste0(
+            "`data` is read-only. To change REDCap data either use",
+            "`project$upload()` or work with an output by assigning the data",
+            "with `form_to_edit <-project$data$<form_name>`. Alternatively",
+            "use the output from `project$generate_summary()`"
+          )
         )
       }
       private$project$data
     },
-    #' @field .internal_project (`character(1)`)\cr
-    #' Entire internal project object for more advanced/custom workflows
-    .internal_project  = function(value) {
+    #' @field metadata Read-only named list with REDCap metadata. See
+    #' public methods for [REDCapSync_project].
+    metadata = function(value) {
+      if (!missing(value)) {
+        cli_alert_wrap(
+          paste(
+            "`metadata` is read-only. To change, do so on the ",
+            "REDCap website, or use the REDCap API. If you just want to work",
+            "with the object more in R, reassign the object like,",
+            "`fields <- project$metadata$fields`. Alternatively use the output",
+            "from `project$generate_summary()`"
+          ),
+          bullet_type = "x",
+          url = private$project$links$redcap_designer
+        )
+      }
+      private$project$metadata
+    },
+    #' @field redcap Read-only named list with REDCap information including
+    #' users and log.
+    redcap = function(value) {
+      if (!missing(value)) {
+        cli_alert_wrap(
+          paste(
+            "`redcap` is read-only. It is generated from communication with",
+            "REDCap. If you just want to work with the object more in R,",
+            "reassign the object like, `redcap_log <- project$redcap$log`.",
+            "Alternatively use the output from `project$generate_summary()`"
+          ),
+          bullet_type = "x",
+          url = private$project$links$redcap_designer
+        )
+      }
+      private$project$metadata
+    },
+    #' @field .internal Read-only internal project object for custom workflows
+    .internal  = function(value) {
+      if (!missing(value)) {
+        cli_alert_danger(
+          "`.internal` is read only. Use public `REDCapSync_project` methods"
+        )
+      }
       private$project
     }
   ),
@@ -155,9 +197,15 @@ REDCapSync_project <- R6Class(
     },
     #' @description Print project metadata
     info = function() {
-      message("Project Name: ", private$project$project_name)
-      message("Directory: ", private$project$dir_path)
-      message("Last Data Update: ", private$project$internals$last_data_update)
+      cli_alert_wrap(paste0("Project Name: ", private$project$project_name))
+      cli_alert_wrap(paste0("PID: ", private$project$redcap$project_id))
+      cli_alert_wrap(paste0("Token Name: ", private$project$redcap$token_name))
+      cli_alert_wrap(paste0("REDCap Link: "),url = private$project$links$redcap_home)
+      cli_alert_wrap(paste0("Directory: "),url = private$project$dir_path)
+      cli_alert_wrap(paste0(
+        "Last Data Update: ",
+        private$project$internals$last_data_update
+      ))
     },
     #' @description
     #' Updates the REDCap data for (`project` object) by checking REDCap log.
@@ -309,37 +357,6 @@ REDCapSync_project <- R6Class(
       private$project <- save_project(private$project)
       invisible(self)
     },
-    #' @description  Returns list of data or the specified form.
-    show_metadata = function(type = NULL, envir = NULL) {
-      assert_environment(envir, null.ok = TRUE)
-      assert_choice(type, c("fields", "forms", "choices"), null.ok = TRUE)
-      return_this <- private$project$metadata
-      if (!is.null(type)) {
-        #add warning or message?
-        return_this <- private$project$metadata[type]
-      }
-      if (!is.null(envir)) {
-        # add check for conflicts?
-        .GlobalEnv |> ls()
-        return_this |>
-          process_df_list(silent = TRUE) |>
-          list2env(envir = envir)
-      }
-      invisible(return_this)
-    },
-    #' @description  Returns list of data or the specified form.
-    show_data = function(form = NULL, envir = NULL) {
-      assert_environment(envir, null.ok = TRUE)
-      return_this <- private$project$data
-      if (!is.null(form)) {
-        #add warning or message?
-        return_this <- private$project$data[[form]]
-      }
-      if (!is.null(envir)) {
-        list2env(return_this, envir = envir)
-      }
-      invisible(return_this)
-    },
     #' @description
     #' Displays the REDCap API token currently stored in the session as an
     #' environment variable. It's essentially a wrapper for
@@ -403,10 +420,6 @@ REDCapSync_project <- R6Class(
         # hard_reset = hard_reset
       )
       invisible(TRUE) #maybe give TRUE FALSE here instead of self
-    },
-    #' @description  returns internal list
-    .internal = function() {
-      invisible(private$project)
     }
   ),
   private = list(

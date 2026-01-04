@@ -6,7 +6,9 @@ the object. Behind-the-scenes is an R list where all of the metadata and
 data is stored.
 
 ``` r
-listviewer::jsonedit(REDCapSync:::TEST_CLASSIC)
+TEST_CLASSIC <- load_test_project(
+  project_name = "TEST_CLASSIC", with_data = TRUE)
+listviewer::jsonedit(TEST_CLASSIC$.internal)
 ```
 
 The R6 object contains those things behind-the-scenes but then uses

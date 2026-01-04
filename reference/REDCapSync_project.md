@@ -28,14 +28,21 @@ for initializing the `project` object.'
 
 - `data`:
 
-  Read-only named list where each name is an instrument name. See
-  REDCapSync_project\$sync() or see
-  [`REDCapSync_project$sync()`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync_project.html#method-REDCapSync_project-sync)
+  Read-only named list where each name is an instrument name. See public
+  methods for REDCapSync_project.
 
-- `.internal_project`:
+- `metadata`:
 
-  (`character(1)`)  
-  Entire internal project object for more advanced/custom workflows
+  Read-only named list with REDCap metadata. See public methods for
+  REDCapSync_project.
+
+- `redcap`:
+
+  Read-only named list with REDCap information including users and log.
+
+- `.internal`:
+
+  Read-only internal project object for custom workflows
 
 ## Methods
 
@@ -63,10 +70,6 @@ for initializing the `project` object.'
 
 - [`REDCapSync_project$save()`](#method-REDCapSync_project-save)
 
-- [`REDCapSync_project$show_metadata()`](#method-REDCapSync_project-show_metadata)
-
-- [`REDCapSync_project$show_data()`](#method-REDCapSync_project-show_data)
-
 - [`REDCapSync_project$show_token()`](#method-REDCapSync_project-show_token)
 
 - [`REDCapSync_project$test_token()`](#method-REDCapSync_project-test_token)
@@ -74,8 +77,6 @@ for initializing the `project` object.'
 - [`REDCapSync_project$url_launch()`](#method-REDCapSync_project-url_launch)
 
 - [`REDCapSync_project$upload()`](#method-REDCapSync_project-upload)
-
-- [`REDCapSync_project$.internal()`](#method-REDCapSync_project-.internal)
 
 ------------------------------------------------------------------------
 
@@ -508,46 +509,6 @@ Add a new summary entry
 
 ------------------------------------------------------------------------
 
-### Method `show_metadata()`
-
-Returns list of data or the specified form.
-
-#### Usage
-
-    REDCapSync_project$show_metadata(type = NULL, envir = NULL)
-
-#### Arguments
-
-- `type`:
-
-  string of either "fields","forms", or "choices"
-
-- `envir`:
-
-  environment variable
-
-------------------------------------------------------------------------
-
-### Method `show_data()`
-
-Returns list of data or the specified form.
-
-#### Usage
-
-    REDCapSync_project$show_data(form = NULL, envir = NULL)
-
-#### Arguments
-
-- `form`:
-
-  string of raw form name such as "survey_one"
-
-- `envir`:
-
-  environment variable
-
-------------------------------------------------------------------------
-
 ### Method `show_token()`
 
 Displays the REDCap API token currently stored in the session as an
@@ -614,13 +575,3 @@ an issue. Missing rows and columns are allowed!
 - `batch_size`:
 
   numeric of how big the REDCap batch upload is. Default 500.
-
-------------------------------------------------------------------------
-
-### Method `.internal()`
-
-returns internal list
-
-#### Usage
-
-    REDCapSync_project$.internal()

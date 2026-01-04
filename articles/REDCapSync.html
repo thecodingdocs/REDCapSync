@@ -100,15 +100,16 @@
 <span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">projects</span><span class="op">)</span>                             <span class="co"># show your previously saved projects</span></span></code></pre></div>
 <p>You can set your REDCap token in two ways! If you need more help
 setting your tokens see this article –&gt; placeholder</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#1. set each time in your session (not recommended in saved/shared scripts!)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>REDCapSync_TEST1 <span class="op">=</span> <span class="st">"YoUrNevErShaReToken"</span><span class="op">)</span></span>
-<span><span class="co">#2. set to your private R sessions!</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_r_environ</span><span class="op">(</span><span class="op">)</span>                                       <span class="co">#finds your file</span></span>
-<span><span class="co"># Then you add --&gt; REDCapSync_TEST = 'YoUrNevErShaReToken'</span></span>
-<span><span class="co"># then save file and restart R</span></span>
-<span><span class="co"># If it worked you will see your token when you run...</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCapSync_TEST1"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co">#1. set each time in your session (not recommended in saved/shared scripts!)</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCapSync_TEST1 =</span> <span class="st">"YoUrNevErShaReToken"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#2. set to your private R sessions!</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">edit_r_environ</span>()                                       <span class="co">#finds your file</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># or</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>rstudioapi<span class="sc">::</span><span class="fu">navigateToFile</span>(<span class="fu">file.path</span>(<span class="fu">Sys.getenv</span>(<span class="st">"HOME"</span>)), <span class="st">".Renviron"</span>)<span class="er">)</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co"># Then you add --&gt; REDCapSync_TEST1 = 'YoUrNevErShaReToken'</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co"># then save file and restart R</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co"># If it worked you will see your token when you run...</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCapSync_TEST1"</span>)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="run-core-functions">Run Core Functions<a class="anchor" aria-label="anchor" href="#run-core-functions"></a>
@@ -119,7 +120,7 @@ package.</p>
 <code class="sourceCode R"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">setup_project</a></span><span class="op">(</span></span>
 <span>  project_name <span class="op">=</span> <span class="st">"TEST1"</span>,          <span class="co"># must match token pattern REDCapSync_*******</span></span>
 <span>  redcap_uri <span class="op">=</span> <span class="st">"https://redcap.fakei.edu/api/"</span>,        <span class="co"># your institution's link</span></span>
-<span>  dir_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>                                   <span class="co"># your project file path</span></span>
+<span>  dir_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>     <span class="co"># your project file path, real data will be stored here</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span> <span class="co"># gets all data from REDCap</span></span></code></pre></div>
 </div>
@@ -127,12 +128,22 @@ package.</p>
 <h2 id="explore-outputs">Explore Outputs!<a class="anchor" aria-label="anchor" href="#explore-outputs"></a>
 </h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">project</span><span class="op">$</span><span class="fu">show_metadata</span><span class="op">(</span>envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="co"># adds metadata in global environment</span></span>
-<span><span class="va">project</span><span class="op">$</span><span class="fu">show_data</span><span class="op">(</span>envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>   <span class="co"># adds data forms in global environment</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="va">metadata</span><span class="op">$</span><span class="va">fields</span>            <span class="co"># adds fields in global environment</span></span>
+<span><span class="va">choices</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="va">metadata</span><span class="op">$</span><span class="va">choices</span>         <span class="co"># adds choices in global environment</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="va">data</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list2env.html" class="external-link">list2env</a></span><span class="op">(</span>envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>          <span class="co"># adds data forms in global environment</span></span></code></pre></div>
+<p>Take note you are assigning variables above. So if you have a redcap
+form called “project”, “fields”, “choices”, etc. you will have to adjust
+what you choose to call them in your script to avoid any conflicts.</p>
 </div>
 <div class="section level2">
 <h2 id="go-further-by-generating-summaries">Go Further by Generating Summaries!<a class="anchor" aria-label="anchor" href="#go-further-by-generating-summaries"></a>
 </h2>
+<p>This is the intended way to extract data from the project object. It
+has parameters that control what is exported. It is unique from simply
+exporting the raw data because it can summarize data from the log,
+change the columns to R variable types, add variables, etc. It can also
+be used for visualization functions from <a href="">RosyREDCap</a>.</p>
 <p>The following default merges all non-repeating forms and adds them to
 the right of any repeating forms. It also uses the REDCap log and REDCap
 data to add key information to metadata, users, and records.</p>

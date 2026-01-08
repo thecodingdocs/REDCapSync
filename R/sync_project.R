@@ -380,78 +380,79 @@ due_for_sync <- function(project_name) {
 #' @noRd
 sweep_dirs_for_cache <- function(project_names = NULL) {
   projects <- get_projects()
-  if (nrow(projects) > 0L) {
-    project_list <- split(projects, projects$project_name)
-    had_change <- FALSE
-    all_project_names <- names(project_list)
-    if (is.null(project_names)) {
-      project_names <- all_project_names
-    }
-    project_names <- project_names[which(project_names %in% all_project_names)]
-    updated_projects <- NULL
-    for (project_name in project_names) {
-      from_cache <- project_list[[project_name]]
-      expected_path <- get_project_path(
-        project_name = project_name,
-        dir_path = from_cache$dir_path,
-        type = "details"
-      )
-      from_cache <- tryCatch(
-        expr = assert_project_details(from_cache, nrows = 1L),
-          error = function(e) {
+  if (nrow(projects) == 0L) {
+    return(invisible())
+  }
+  project_list <- split(projects, projects$project_name)
+  had_change <- FALSE
+  all_project_names <- names(project_list)
+  if (is.null(project_names)) {
+    project_names <- all_project_names
+  }
+  project_names <- project_names[which(project_names %in% all_project_names)]
+  updated_projects <- NULL
+  for (project_name in project_names) {
+    from_cache <- project_list[[project_name]]
+    expected_path <- get_project_path(
+      project_name = project_name,
+      dir_path = from_cache$dir_path,
+      type = "details"
+    )
+    from_cache <- tryCatch(
+      expr = assert_project_details(from_cache, nrows = 1L),
+      error = function(e) {
+        NULL
+      })
+    to_cache <- NULL
+    if (file.exists(expected_path)) {
+      to_cache <- tryCatch(
+        expr = {
+          x <- suppressWarnings({
+            readRDS(expected_path)
+          })
+          assert_project_details(x, nrows = 1L)
+          x
+        },
+        error = function(e) {
           NULL
-        })
-      to_cache <- NULL
-      if (file.exists(expected_path)) {
-        to_cache <- tryCatch(
-          expr = {
-            x <- suppressWarnings({
-              readRDS(expected_path)
-            })
-            assert_project_details(x, nrows = 1L)
-            x
-          },
-          error = function(e) {
-            NULL
-          }
-        )
-      }
-      if (is.null(from_cache) || is.null(to_cache)) {
-        loaded_cache <- tryCatch(
-          expr = {
-            load_project(project_name = project_name)$.internal() |>
-              extract_project_details()
-          },
-          error = function(e) {
-            NULL
-          }
-        )
-        if (is.null(loaded_cache)) {
-          cli_alert_danger(
-            paste0("Unable to load ", project_name, ". Removed! Retry ",
-                   "`setup_project(...)`"))
-          project_list[[project_name]] <- NULL
-          had_change <- TRUE
-        } else {
-          project_list[[project_name]] <- loaded_cache
         }
-      }
-      if (!is.null(to_cache)) {
-        if (!identical(from_cache, to_cache)) {
-          if (!is.null(from_cache)) {
-            to_cache$dir_path <- from_cache$dir_path
-          } # could cause issue?
-          project_list[[project_name]] <- to_cache
-          updated_projects <-  append(updated_projects, project_name)
-          had_change <- TRUE
+      )
+    }
+    if (is.null(from_cache) || is.null(to_cache)) {
+      loaded_cache <- tryCatch(
+        expr = {
+          load_project(project_name = project_name)$.internal() |>
+            extract_project_details()
+        },
+        error = function(e) {
+          NULL
         }
+      )
+      if (is.null(loaded_cache)) {
+        cli_alert_danger(
+          paste0("Unable to load ", project_name, ". Removed! Retry ",
+                 "`setup_project(...)`"))
+        project_list[[project_name]] <- NULL
+        had_change <- TRUE
+      } else {
+        project_list[[project_name]] <- loaded_cache
       }
     }
-    if (had_change) {
-      cli_alert_info(
-        paste0("Updated cache! This can happen when using multiple",
-               " computers or with version changes..."))
-      save_projects_to_cache(bind_rows(project_list), silent = FALSE)
+    if (!is.null(to_cache)) {
+      if (!identical(from_cache, to_cache)) {
+        if (!is.null(from_cache)) {
+          to_cache$dir_path <- from_cache$dir_path
+        } # could cause issue?
+        project_list[[project_name]] <- to_cache
+        updated_projects <-  append(updated_projects, project_name)
+        had_change <- TRUE
+      }
     }
+  }
+  if (had_change) {
+    cli_alert_info(
+      paste0("Updated cache! This can happen when using multiple",
+             " computers or with version changes..."))
+    save_projects_to_cache(bind_rows(project_list), silent = FALSE)
   }
 }

@@ -1,5 +1,18 @@
 # sync_project ( Exported )
 test_that("sync_project works!", {
+  test_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      fake_cache
+    },
+    due_for_sync = function(...) {FALSE}
+  )
+  project <- mock_project()
+  expect_message({sync_project(project)},"not due for sync")
 })
 # sync_all ( Exported )
 test_that("sync works!", {

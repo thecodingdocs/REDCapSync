@@ -119,7 +119,7 @@ REDCapSync_project <- R6Class(
     project_name = function(value) {
       if (!missing(value)) {
         message(
-          "`project_name` is read-only. To change `setup_project()`"
+          "`project_name` is read only. To change `setup_project()`"
         )
       }
       private$project$project_name
@@ -128,7 +128,7 @@ REDCapSync_project <- R6Class(
     dir_path = function(value) {
       if (!missing(value)) {
         message(
-          "`dir_path` is read-only. To change `setup_project()`"
+          "`dir_path` is read only. To change `setup_project()`"
         )
       }
       private$project$dir_path
@@ -139,7 +139,7 @@ REDCapSync_project <- R6Class(
       if (!missing(value)) {
         cli_alert_danger(
           paste0(
-            "`data` is read-only. To change REDCap data either use",
+            "`data` is read only. To change REDCap data either use",
             "`project$upload()` or work with an output by assigning the data",
             "with `form_to_edit <-project$data$<form_name>`. Alternatively",
             "use the output from `project$generate_summary()`"
@@ -154,7 +154,7 @@ REDCapSync_project <- R6Class(
       if (!missing(value)) {
         cli_alert_wrap(
           paste(
-            "`metadata` is read-only. To change, do so on the ",
+            "`metadata` is read only. To change, do so on the ",
             "REDCap website, or use the REDCap API. If you just want to work",
             "with the object more in R, reassign the object like,",
             "`fields <- project$metadata$fields`. Alternatively use the output",
@@ -172,7 +172,7 @@ REDCapSync_project <- R6Class(
       if (!missing(value)) {
         cli_alert_wrap(
           paste(
-            "`redcap` is read-only. It is generated from communication with",
+            "`redcap` is read only. It is generated from communication with",
             "REDCap. If you just want to work with the object more in R,",
             "reassign the object like, `redcap_log <- project$redcap$log`.",
             "Alternatively use the output from `project$generate_summary()`"

@@ -564,7 +564,7 @@ opens links in browser
 
 This will only overwrite and new data. It will not directly delete any
 data. Because this is a function that can mess up your data, use it very
-carefilly. Remember all changes are saved in the REDCap log if there's
+carefully. Remember all changes are saved in the REDCap log if there's
 an issue. Missing rows and columns are allowed!
 
 #### Usage

@@ -4,22 +4,13 @@ sync_project <- function(project,
                          save_to_dir = TRUE,
                          hard_check = FALSE,
                          hard_reset = FALSE) {
-  collected <- makeAssertCollection()
   assert_setup_project(project)
   assert_logical(hard_reset,
                  any.missing = FALSE,
-                 len = 1L,
-                 add = collected)
+                 len = 1L)
   assert_logical(save_to_dir,
                  any.missing = FALSE,
-                 len = 1L,
-                 add = collected)
-  current_function <- as.character(current_call())[[1L]]
-  if (!collected$isEmpty()) {
-    message_text <-
-      cli_message_maker(collected = collected, function_name = current_function)
-    cli_abort(message_text)
-  }
+                 len = 1L)
   do_sync <- due_for_sync(project_name = project$project_name) ||
     hard_reset || hard_check
   was_updated <- FALSE

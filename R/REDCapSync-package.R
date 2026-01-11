@@ -1,7 +1,6 @@
 #' @keywords internal
 "_PACKAGE"
 ## usethis namespace: start
-#' @importFrom checkmate makeAssertCollection
 #' @importFrom checkmate assert_choice
 #' @importFrom checkmate assert_date
 #' @importFrom checkmate assert_environment
@@ -50,7 +49,6 @@
 #' @importFrom redcapAPI exportVersion
 #' @importFrom redcapAPI exportLogging
 #' @importFrom REDCapR sanitize_token
-#' @importFrom rlang current_call
 #' @importFrom R6 R6Class
 ## usethis namespace: end
 NULL

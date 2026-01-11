@@ -96,32 +96,17 @@ assert_web_link <- function(link) {
 assert_env_name <- function(env_name,
                             arg_name = "env_name",
                             max.chars = 26L,
-                            underscore_allowed_first = FALSE,
-                            add = NULL) {
-  collected <- makeAssertCollection()
+                            underscore_allowed_first = FALSE) {
   assert_character(arg_name,
                    len = 1L,
-                   min.chars = 1L,
-                   add = collected)
+                   min.chars = 1L)
   assert_integerish(
     max.chars,
     len = 1L,
     lower = 1L,
-    upper = 255L,
-    add = collected
+    upper = 255L
   )
-  assert_logical(underscore_allowed_first, len = 1L, add = collected)
-  standalone <- is.null(add)
-  if (!standalone) {
-    assert_collection(add)
-  }
-  current_function <- as.character(current_call())[[1L]]
-  if (!collected$isEmpty()) {
-    message_text <-
-      cli_message_maker(collected = collected, function_name = current_function)
-    cli_abort(message_text)
-  }
-  collected <- makeAssertCollection()
+  assert_logical(underscore_allowed_first, len = 1L)
   assert_string(
     x = env_name,
     n.chars = NULL,
@@ -133,209 +118,79 @@ assert_env_name <- function(env_name,
     ),
     fixed = NULL,
     ignore.case = TRUE,
-    .var.name = arg_name,
-    add = collected
+    .var.name = arg_name
   )
-  if (!collected$isEmpty()) {
-    if (standalone) {
-      collected |>
-        cli_message_maker(function_name = as.character(current_call())[[1L]]) |>
-        cli_abort(message_text)
-    } else {
-      add$push(format_message(
-        paste0(
-          "`{arg_name}` = \"{env_name}\" is not allowed. `{arg_name}`can ",
-          "only contain letters, numbers, or underscores without spaces or ",
-          "symbols. ",
-          ifelse(underscore_allowed_first, "", "It must start "),
-          "with a letter. Maximum string length is {max.chars}."
-        )
-      ))
-    }
-  }
   invisible(env_name)
 }
 #' @noRd
-assert_blank_project <- function(project,
-                                 silent = TRUE,
-                                 warn_only = FALSE,
-                                 add = NULL) {
-  standalone <- is.null(add)
-  if (!standalone) {
-    assert_collection(add)
-  }
-  collected <- makeAssertCollection()
-  assert_logical(silent,
-                 any.missing = FALSE,
-                 len = 1L,
-                 add = collected)
-  assert_logical(warn_only,
-                 any.missing = FALSE,
-                 len = 1L,
-                 add = collected)
-  current_function <- as.character(current_call())[[1L]]
-  if (!collected$isEmpty()) {
-    message_text <-
-      cli_message_maker(collected = collected, function_name = current_function)
-    cli_abort(message_text)
-  }
-  collected <- makeAssertCollection()
+assert_blank_project <- function(project) {
   assert_list(
     project,
     names = "unique",
-    len = length(.blank_project),
-    add = collected
+    len = length(.blank_project)
   )
   assert_names(
     names(project),
     type = "unique",
-    identical.to = names(.blank_project),
-    add = collected
+    identical.to = names(.blank_project)
   )
-  if (!collected$isEmpty()) {
-    if (!standalone) {
-      add$push(format_message(
-        paste0(
-          "Did you use {.fun REDCapSync::setup_project}? ",
-          "Consider using `hard_reset = TRUE`."
-        )
-      ))
-      return(invisible(project))
-    }
-    message_text <-
-      cli_message_maker(collected, function_name = current_function)
-    if (warn_only) {
-      cli_warn(message_text)
-      return(invisible(project))
-    }
-    cli_abort(message_text)
-  }
   invisible(project)
 }
 #' @noRd
-assert_setup_project <- function(project,
-                                 silent = TRUE,
-                                 warn_only = FALSE,
-                                 add = NULL) {
-  standalone <- is.null(add)
-  if (!standalone) {
-    assert_collection(add)
-  }
-  collected <- makeAssertCollection()
-  assert_logical(silent,
-                 any.missing = FALSE,
-                 len = 1L,
-                 add = collected)
-  assert_logical(warn_only,
-                 any.missing = FALSE,
-                 len = 1L,
-                 add = collected)
-  current_function <- as.character(current_call()) |> first()
-  if (!collected$isEmpty()) {
-    message_text <-
-      cli_message_maker(collected, function_name = current_function)
-    cli_abort(message_text)
-  }
-  collected <- makeAssertCollection()
-  assert_blank_project(project,
-                       silent = silent,
-                       warn_only = warn_only,
-                       add = collected)
+assert_setup_project <- function(project) {
+  assert_blank_project(project)
   assert_env_name(
     env_name = project$project_name,
     max.chars = 31L,
-    arg_name = "project_name",
-    add = collected
+    arg_name = "project_name"
   )
   # DIRPATH
   assert_env_name(
     env_name = project$redcap$token_name,
     max.chars = 50L,
     arg_name = "token_name",
-    underscore_allowed_first = TRUE,
-    add = collected
+    underscore_allowed_first = TRUE
   )
   # dirpath
   assert_choice(
     project$internals$sync_frequency,
-    choices = c("always", "hourly", "daily", "weekly", "monthly", "never"),
-    add = collected
+    choices = c("always", "hourly", "daily", "weekly", "monthly", "never")
   )
-  assert_integerish(
-    project$internals$days_of_log,
-    len = 1L,
-    lower = 1L,
-    add = collected
-  )
+  assert_integerish(project$internals$days_of_log,
+                    len = 1L,
+                    lower = 1L)
   assert_logical(project$internals$get_files,
-                 len = 1L,
-                 add = collected)
+                 len = 1L)
   assert_logical(project$internals$get_file_repository,
-                 len = 1L,
-                 add = collected)
+                 len = 1L)
   assert_logical(project$internals$original_file_names,
-                 len = 1L,
-                 add = collected)
+                 len = 1L)
   assert_logical(project$internals$entire_log,
-                 len = 1L,
-                 add = collected)
+                 len = 1L)
   assert_logical(project$internals$metadata_only,
-                 len = 1L,
-                 add = collected)
+                 len = 1L)
   assert_logical(project$internals$add_default_fields,
-                 len = 1L,
-                 add = collected)
+                 len = 1L)
   assert_logical(project$internals$add_default_transformation,
-                 len = 1L,
-                 add = collected)
+                 len = 1L)
   assert_logical(project$internals$add_default_summaries,
-                 len = 1L,
-                 add = collected)
+                 len = 1L)
   assert_integerish(
     project$internals$batch_size_download,
     len = 1L,
-    lower = 1L,
-    add = collected
+    lower = 1L
   )
   assert_integerish(
     project$internals$batch_size_upload,
     len = 1L,
-    lower = 1L,
-    add = collected
+    lower = 1L
   )
   assert_choice(
     project$internals$get_type,
     choices = .get_type
   )
-  # assert_web_link(project$links$redcap_base) # argName #collected
-  if (!collected$isEmpty()) {
-    if (!standalone) {
-      add$push(format_message(
-        paste0(
-          "Did you use {.fun REDCapSync::setup_project}? ",
-          "Consider using `hard_reset = TRUE`."
-        )
-      ))
-      return(invisible(project))
-    }
-    message_text <- cli_message_maker(
-      collected = collected, function_name = current_function)
-    if (warn_only) {
-      cli_warn(message_text)
-      return(invisible(project))
-    }
-    cli_abort(message_text)
-  }
+  # assert_web_link(project$links$redcap_base) # argName
   invisible(project)
-}
-#' @noRd
-assert_collection <- function(collection) {
-  assert_list(collection,
-              any.missing = FALSE,
-              len = 3L,
-              names = "unique")
-  assert_names(names(collection), identical.to = names(makeAssertCollection()))
-  invisible(collection)
 }
 #' @noRd
 assert_project_details <- function(projects, nrows = NULL) {

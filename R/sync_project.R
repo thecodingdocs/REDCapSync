@@ -128,6 +128,7 @@ sync_project <- function(project,
       project <- get_redcap_metadata(
         project = project,
         include_users = !project$internals$metadata_only)
+      project <- update_project_links(project)
       if (!project$internals$metadata_only) {
         project$data <- list()
         project$data_updates <- list()

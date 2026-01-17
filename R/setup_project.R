@@ -109,12 +109,10 @@ setup_project <- function(project_name,
                           add_default_transformation = FALSE,
                           add_default_summaries = TRUE) {
   silent <- FALSE
-  collected <- makeAssertCollection()
   assert_env_name(
     env_name = project_name,
     max.chars = 31L,
-    arg_name = "project_name",
-    add = collected
+    arg_name = "project_name"
   )
   # DIRPATH
   # need checks on setup project if project id is same
@@ -122,49 +120,38 @@ setup_project <- function(project_name,
     env_name = token_name,
     max.chars = 50L,
     arg_name = "token_name",
-    underscore_allowed_first = TRUE,
-    add = collected
+    underscore_allowed_first = TRUE
   )
-  assert_logical(hard_reset, len = 1L, add = collected)
-  assert_logical(labelled, len = 1L, add = collected)
+  assert_logical(hard_reset, len = 1L)
+  assert_logical(labelled, len = 1L)
   assert_integerish(days_of_log,
                     len = 1L,
-                    lower = 1L,
-                    add = collected)
-  assert_logical(get_files, len = 1L, add = collected)
-  assert_logical(get_file_repository, len = 1L, add = collected)
-  assert_logical(original_file_names, len = 1L, add = collected)
-  assert_logical(entire_log, len = 1L, add = collected)
-  assert_logical(metadata_only, len = 1L, add = collected)
-  assert_logical(add_default_fields, len = 1L, add = collected)
-  assert_logical(add_default_transformation, len = 1L, add = collected)
-  assert_logical(add_default_summaries, len = 1L, add = collected)
+                    lower = 1L)
+  assert_logical(get_files, len = 1L)
+  assert_logical(get_file_repository, len = 1L)
+  assert_logical(original_file_names, len = 1L)
+  assert_logical(entire_log, len = 1L)
+  assert_logical(metadata_only, len = 1L)
+  assert_logical(add_default_fields, len = 1L)
+  assert_logical(add_default_transformation, len = 1L)
+  assert_logical(add_default_summaries, len = 1L)
   assert_env_name(project_name)
   # assert_env_name(
   #   merge_form_name,
   #   max.chars = 31,
-  #   arg_name = "merge_form_name",
-  #   add = collected
+  #   arg_name = "merge_form_name"
   # )
-  assert_choice(get_type, choices = .get_type, add = collected)
-  assert_choice(sync_frequency, choices = .sync_frequency, add = collected)
+  assert_choice(get_type, choices = .get_type)
+  assert_choice(sync_frequency, choices = .sync_frequency)
   assert_integerish(batch_size_download,
                     len = 1L,
-                    lower = 1L,
-                    add = collected)
+                    lower = 1L)
   assert_integerish(batch_size_upload,
                     len = 1L,
-                    lower = 1L,
-                    add = collected)
-  assert_logical(silent, len = 1L, add = collected)
+                    lower = 1L)
+  assert_logical(silent, len = 1L)
   if (missing(redcap_uri)) {
     #use options or Renviron?
-  }
-  current_function <- as.character(current_call())[[1L]]
-  if (!collected$isEmpty()) {
-    message_text <- cli_message_maker(
-      collected = collected, function_name = current_function)
-    cli_abort(message_text)
   }
   projects <- get_projects()
   if (paste0(.token_prefix, project_name) != token_name) {
@@ -309,7 +296,7 @@ setup_project <- function(project_name,
     cli_alert_warning(
       paste0("No valid token in session: Sys.getenv('", token_name, "')"))
   }
-  project <- assert_setup_project(project, silent = silent)
+  project <- assert_setup_project(project)
   if (!is.null(original_details)) {
     # final_details <- project |> extract_project_details()
     # message about changes compared to original
@@ -396,7 +383,7 @@ load_project <- function(project_name) {
     )
   }
   project <- readRDS(file = project_path)
-  project <- assert_setup_project(project, silent = FALSE)
+  project <- assert_setup_project(project)
   #   check if in cache already and relation!
   # SAVE
   loaded_dir <- sanitize_path(project$dir_path)

@@ -43,6 +43,8 @@ mock_project <- function() {
     field_annotation = character(0L),
     stringsAsFactors = FALSE
   )
+  project$metadata$id_col <- "record_id"
+  # data -------
   project$data$form_example <- project$data$form_example |>
     dplyr::bind_rows(
       data.frame(
@@ -94,6 +96,13 @@ mock_project <- function() {
         stringsAsFactors = FALSE
       )
     )
+  project$summary$all_records <- extract_project_records(project)
   # form_example
   project
+}
+generate_hex <- function(length = 32L) {
+  c(0L:9L, letters[1L:6L]) |>
+    sample(length, replace = TRUE) |>
+    paste(collapse = "") |>
+    toupper()
 }

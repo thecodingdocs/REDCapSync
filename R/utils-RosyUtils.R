@@ -821,10 +821,3 @@ is_nested_list <- function(x) {
   }
   outcome
 }
-#' @noRd
-generate_hex <- function(length = 32L) {
-  c(0L:9L, letters[1L:6L]) |>
-    sample(length, replace = TRUE) |>
-    paste(collapse = "") |>
-    toupper()
-}

@@ -359,7 +359,3 @@ test_that("is_nested_list works!", {
   # expect_true(is_nested_list(list(a = list(b = 1))))
   expect_true(is_nested_list(list(a = list(), b = 1L)))
 })
-# generate_hex ( Internal )
-test_that("generate_hex works!", {
- expect_true(is_hexadecimal(generate_hex(10L)))
-})

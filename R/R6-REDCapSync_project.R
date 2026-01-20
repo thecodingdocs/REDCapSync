@@ -1,50 +1,54 @@
 #' @title REDCapSync Encapsulated Project Object
 #' @description
 #' [R6][R6::R6Class] project object for [REDCapSync]
-#' Main class for managing REDCap data, metadata, and sync operations.
-#' Users should construct objects using [setup_project()]. For exisiting
-#' projects, use [load_project()]. For offline examples use
+#' This is the main class for managing REDCap data, metadata, and sync operations.
+#' Users should construct objects using [setup_project()]. To reopen an existing
+#' project, use [load_project()] or explore offline examples using
 #' [load_test_project()].
-#' @param summary_name Character. The name of the summary from which to generate
-#' the summary. *If you provide `summary_name` all other parameters are
+#' @param summary_name Character. The name of the configured summary from which
+#' to generate the summary. *If you provide `summary_name` all other parameters are
 #' inherited according to what was set with `add_project_summary`.
-#' @param transformation_type Character vector.
+#' @param transformation_type Character scalar. How to transform data for the
+#' summary.
 #' Default is "default".
-#' Also have "none", "flat", "merge_non_repeating"
-#' "default" first merges non-repeating and if there are repeating forms it
-#' merges non-repeating variables to the right of repeating instruments
-#' "flat" is one-record, one-row, even if there are repeating forms
-#' "none" does not transform anything
+#' Other options are "none", "flat", "merge_non_repeating".
+#' "default" first merges non-repeating and if there are repeating forms, it
+#' merges non-repeating variables to the right of repeating instruments.
+#' "flat" is one-record, one-row, even if there are repeating forms.
+#' "none" does not transform anything.
 #' "merge_non_repeating" still merges all non-repeating instruments but
-#' does not merge them to repeating instruments
+#' does not merge them to repeating instruments.
 #' @param merge_form_name A character string representing the name of the merged
 #' form. Default is "merged".
 #' @param filter_field Character. The name of the field in the database to
-#' filter on.
+#' filter on. Used with `filter_choices`.
 #' @param filter_choices Vector. The values of `filter_field` used to define the
-#' summary.
+#' summary. An alternative to providing a full `filter_list`.
 #' @param filter_list Vector. The values of `filter_field` used to define the
-#' summary.
+#' summary. Names are field names; values are the allowed value set(s). Use
+#' either `filter_list` or `filter_field` with `filter_choices`.
 #' @param filter_strict Logical. If `TRUE`, all forms will be filtered by
-#' criteria. If `FALSE`, will convert original filter to id column and filter
+#' criteria. If `FALSE`, will convert original filter to ID column and filter
 #' all other forms by that record. Default is `TRUE`.
 #' @param form_names Character vector. Names of forms to include in the summary.
 #' Default is `NULL`, which includes all forms.
 #' @param field_names Character vector. Names of specific fields to include in
 #' the summary. Default is `NULL`, which includes all fields.
-#' @param exclude_identifiers Logical. Whether to exlude identifiers in the data
+#' @param exclude_identifiers Logical. Whether to exclude identifiers in the data
 #' in the summary. Default is `TRUE`.
-#' @param exclude_free_text Logical for excluding free text. Default is `FALSE`.
+#' @param exclude_free_text Logical. If `TRUE`, exclude free text fields
+#' intended for de-identification workflows. Default is `FALSE`.
 #' @param date_handling character string. One of `none`,`exclude_dates`,
 #' `random_shift_by_record`, `random_shift_by_project`, `zero_by_record`, or
-#' `zero_by_project` random shift is +/- 90 unless changed with options
+#' `zero_by_project`. Random shift is +/- 90 unless changed with options.
 #' @param labelled Logical. If `TRUE`, the data will be converted to labelled.
-#' Default is `TRUE`.
-#' @param clean Logical. If `TRUE`, the data will be cleaned before summarizing.
-#' Default is `TRUE`. If missing codes present AND number or date type, R will
-#' convert to those to NA and would make that variable not upload compatible
+#' If `FALSE`, returns raw coded values. Default is `TRUE`.
+#' @param clean Logical. If `TRUE`, the data will be cleaned (e.g.,
+#' standardizing missing/blank values) before summarizing. Default is `TRUE`. If
+#'  missing codes are present in a number or date variable, R will convert
+#'  missing codes to NA and will make that variable not upload compatible.
 #' @param drop_blanks Logical. If `TRUE`, records with blank fields will be
-#' dropped. Default is `TRUE`.
+#' dropped during cleaning. Default is `TRUE`.
 #' @param drop_missing_codes Logical. If `TRUE`, will convert missing codes
 #' to NA. Default is `FALSE`.
 #' @param drop_others Character vector of other values that should be dropped.
@@ -79,8 +83,9 @@
 #' "setup", "logging", "designer", "dictionary", "data_quality", "identifiers"
 #' @param open_browser logical for launching the link in internet browser
 #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
-#' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data to
-#' the directory. Default is `TRUE`.
+#' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data in
+#' the project object to the directory at `dir_path`. Ignored when `dir_path` is
+#'  `NULL`. Default is `TRUE`.
 #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
 #' parameter from `setup_project()`)
 #' @param type string of either "fields","forms", or "choices"
@@ -220,7 +225,10 @@ REDCapSync_project <- R6Class(
       cli_alert_info("Directory: {.file {dir_path}}")
     },
     #' @description
-    #' Updates the REDCap data for (`project` object) by checking REDCap log.
+    #' Updates the REDCap data for (`project` object) by checking REDCap log for
+    #'  changes. Sync is performed according to the `sync_frequency` set in
+    #'  [setup_project()] by default. Use `hard_check` to force a check, or `hard_reset` to
+    #'  force a complete refresh.
     #' @return Messages for confirmation.
     #' @seealso
     #' \link{setup_project} for initializing the `project` object.'
@@ -373,7 +381,7 @@ REDCapSync_project <- R6Class(
     #' Displays the REDCap API token currently stored in the session as an
     #' environment variable. It's essentially a wrapper for
     #' Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
-    #' formatted like a REDCap token and provides messgaes if not valid.
+    #' formatted like a REDCap token and provides messages if not valid.
     #' The token is not returned as an R object to maintain security.
     show_token = function() {
       view_project_token(private$project)

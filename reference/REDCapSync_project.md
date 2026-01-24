@@ -2,12 +2,12 @@
 
 [R6](https://r6.r-lib.org/reference/R6Class.html) project object for
 [REDCapSync](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync-package.md)
-Main class for managing REDCap data, metadata, and sync operations.
-Users should construct objects using
+This is the main class for managing REDCap data, metadata, and sync
+operations. Users should construct objects using
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
-For exisiting projects, use
-[`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
-For offline examples use
+To reopen an existing project, use
+[`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+or explore offline examples using
 [`load_test_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 
 ## Value
@@ -118,7 +118,11 @@ Print project metadata
 
 ### Method [`sync()`](https://thecodingdocs.github.io/REDCapSync/reference/sync.md)
 
-Updates the REDCap data for (`project` object) by checking REDCap log.
+Updates the REDCap data for (`project` object) by checking REDCap log
+for changes. Sync is performed according to the `sync_frequency` set in
+[`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+by default. Use `hard_check` to force a check, or `hard_reset` to force
+a complete refresh.
 
 #### Usage
 
@@ -137,8 +141,9 @@ Updates the REDCap data for (`project` object) by checking REDCap log.
 
 - `save_to_dir`:
 
-  Logical (TRUE/FALSE). If TRUE, saves the updated data to the
-  directory. Default is `TRUE`.
+  Logical (TRUE/FALSE). If TRUE, saves the updated data in the project
+  object to the directory at `dir_path`. Ignored when `dir_path` is
+  `NULL`. Default is `TRUE`.
 
 - `hard_check`:
 
@@ -197,19 +202,20 @@ Add a new summary entry
 
 - `summary_name`:
 
-  Character. The name of the summary from which to generate the summary.
-  \*If you provide `summary_name` all other parameters are inherited
-  according to what was set with `add_project_summary`.
+  Character. The name of the configured summary from which to generate
+  the summary. \*If you provide `summary_name` all other parameters are
+  inherited according to what was set with `add_project_summary`.
 
 - `transformation_type`:
 
-  Character vector. Default is "default". Also have "none", "flat",
-  "merge_non_repeating" "default" first merges non-repeating and if
-  there are repeating forms it merges non-repeating variables to the
-  right of repeating instruments "flat" is one-record, one-row, even if
-  there are repeating forms "none" does not transform anything
+  Character scalar. How to transform data for the summary. Default is
+  "default". Other options are "none", "flat", "merge_non_repeating".
+  "default" first merges non-repeating and if there are repeating forms,
+  it merges non-repeating variables to the right of repeating
+  instruments. "flat" is one-record, one-row, even if there are
+  repeating forms. "none" does not transform anything.
   "merge_non_repeating" still merges all non-repeating instruments but
-  does not merge them to repeating instruments
+  does not merge them to repeating instruments.
 
 - `merge_form_name`:
 
@@ -218,20 +224,24 @@ Add a new summary entry
 
 - `filter_field`:
 
-  Character. The name of the field in the database to filter on.
+  Character. The name of the field in the database to filter on. Used
+  with `filter_choices`.
 
 - `filter_choices`:
 
-  Vector. The values of `filter_field` used to define the summary.
+  Vector. The values of `filter_field` used to define the summary. An
+  alternative to providing a full `filter_list`.
 
 - `filter_list`:
 
-  Vector. The values of `filter_field` used to define the summary.
+  Vector. The values of `filter_field` used to define the summary. Names
+  are field names; values are the allowed value set(s). Use either
+  `filter_list` or `filter_field` with `filter_choices`.
 
 - `filter_strict`:
 
   Logical. If `TRUE`, all forms will be filtered by criteria. If
-  `FALSE`, will convert original filter to id column and filter all
+  `FALSE`, will convert original filter to ID column and filter all
   other forms by that record. Default is `TRUE`.
 
 - `field_names`:
@@ -246,36 +256,37 @@ Add a new summary entry
 
 - `exclude_identifiers`:
 
-  Logical. Whether to exlude identifiers in the data in the summary.
+  Logical. Whether to exclude identifiers in the data in the summary.
   Default is `TRUE`.
 
 - `exclude_free_text`:
 
-  Logical for excluding free text. Default is `FALSE`.
+  Logical. If `TRUE`, exclude free text fields intended for
+  de-identification workflows. Default is `FALSE`.
 
 - `date_handling`:
 
   character string. One of `none`,`exclude_dates`,
   `random_shift_by_record`, `random_shift_by_project`, `zero_by_record`,
-  or `zero_by_project` random shift is +/- 90 unless changed with
-  options
+  or `zero_by_project`. Random shift is +/- 90 unless changed with
+  options.
 
 - `labelled`:
 
-  Logical. If `TRUE`, the data will be converted to labelled. Default is
-  `TRUE`.
+  Logical. If `TRUE`, the data will be converted to labelled. If
+  `FALSE`, returns raw coded values. Default is `TRUE`.
 
 - `clean`:
 
-  Logical. If `TRUE`, the data will be cleaned before summarizing.
-  Default is `TRUE`. If missing codes present AND number or date type, R
-  will convert to those to NA and would make that variable not upload
-  compatible
+  Logical. If `TRUE`, the data will be cleaned (e.g., standardizing
+  missing/blank values) before summarizing. Default is `TRUE`. If
+  missing codes are present in a number or date variable, R will convert
+  missing codes to NA and will make that variable not upload compatible.
 
 - `drop_blanks`:
 
-  Logical. If `TRUE`, records with blank fields will be dropped. Default
-  is `TRUE`.
+  Logical. If `TRUE`, records with blank fields will be dropped during
+  cleaning. Default is `TRUE`.
 
 - `drop_missing_codes`:
 
@@ -371,9 +382,9 @@ Add a new summary entry
 
 - `summary_name`:
 
-  Character. The name of the summary from which to generate the summary.
-  \*If you provide `summary_name` all other parameters are inherited
-  according to what was set with `add_project_summary`.
+  Character. The name of the configured summary from which to generate
+  the summary. \*If you provide `summary_name` all other parameters are
+  inherited according to what was set with `add_project_summary`.
 
 - `envir`:
 
@@ -498,9 +509,9 @@ save summary to Excel
 
 - `summary_name`:
 
-  Character. The name of the summary from which to generate the summary.
-  \*If you provide `summary_name` all other parameters are inherited
-  according to what was set with `add_project_summary`.
+  Character. The name of the configured summary from which to generate
+  the summary. \*If you provide `summary_name` all other parameters are
+  inherited according to what was set with `add_project_summary`.
 
 ------------------------------------------------------------------------
 
@@ -519,7 +530,7 @@ Add a new summary entry
 Displays the REDCap API token currently stored in the session as an
 environment variable. It's essentially a wrapper for
 Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
-formatted like a REDCap token and provides messgaes if not valid. The
+formatted like a REDCap token and provides messages if not valid. The
 token is not returned as an R object to maintain security.
 
 #### Usage

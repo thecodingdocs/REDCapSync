@@ -6,13 +6,13 @@
     }
   };
 </script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="REDCapSync Encapsulated Project Object — REDCapSync_project"><meta name="description" content="R6 project object for REDCapSync
-Main class for managing REDCap data, metadata, and sync operations.
-Users should construct objects using setup_project(). For exisiting
-projects, use load_project(). For offline examples use
+This is the main class for managing REDCap data, metadata, and sync operations.
+Users should construct objects using setup_project(). To reopen an existing
+project, use load_project() or explore offline examples using
 load_test_project()."><meta property="og:description" content="R6 project object for REDCapSync
-Main class for managing REDCap data, metadata, and sync operations.
-Users should construct objects using setup_project(). For exisiting
-projects, use load_project(). For offline examples use
+This is the main class for managing REDCap data, metadata, and sync operations.
+Users should construct objects using setup_project(). To reopen an existing
+project, use load_project() or explore offline examples using
 load_test_project()."><meta property="og:image" content="https://thecodingdocs.github.io/REDCapSync/reference/figures/logo.png"><meta property="og:image:alt" content="Brandon Rose"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@brosemdmph"><meta name="twitter:site" content="@thecodingdocs"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
@@ -63,9 +63,9 @@ load_test_project()."><meta property="og:image" content="https://thecodingdocs.g
 
     <div class="ref-description section level2">
     <p><a href="https://r6.r-lib.org/reference/R6Class.html" class="external-link">R6</a> project object for <a href="REDCapSync-package.html">REDCapSync</a>
-Main class for managing REDCap data, metadata, and sync operations.
-Users should construct objects using <code><a href="setup-load.html">setup_project()</a></code>. For exisiting
-projects, use <code><a href="setup-load.html">load_project()</a></code>. For offline examples use
+This is the main class for managing REDCap data, metadata, and sync operations.
+Users should construct objects using <code><a href="setup-load.html">setup_project()</a></code>. To reopen an existing
+project, use <code><a href="setup-load.html">load_project()</a></code> or explore offline examples using
 <code><a href="setup-load.html">load_test_project()</a></code>.</p>
     </div>
 
@@ -161,7 +161,10 @@ methods will be accessible to any user.</p><div class="section">
 
 </div><p></p><hr><a id="method-REDCapSync_project-sync"></a><div class="section">
 <h3 id="method-sync-">Method <code><a href="sync.html">sync()</a></code><a class="anchor" aria-label="anchor" href="#method-sync-"></a></h3>
-<p>Updates the REDCap data for (<code>project</code> object) by checking REDCap log.</p><div class="section">
+<p>Updates the REDCap data for (<code>project</code> object) by checking REDCap log for
+changes. Sync is performed according to the <code>sync_frequency</code> set in
+<code><a href="setup-load.html">setup_project()</a></code> by default. Use <code>hard_check</code> to force a check, or <code>hard_reset</code> to
+force a complete refresh.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span></span>
 <span>  summarize <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -178,8 +181,9 @@ methods will be accessible to any user.</p><div class="section">
 
 
 <dt><code>save_to_dir</code></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, saves the updated data to
-the directory. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical (TRUE/FALSE). If TRUE, saves the updated data in
+the project object to the directory at <code>dir_path</code>. Ignored when <code>dir_path</code> is
+<code>NULL</code>. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>hard_check</code></dt>
@@ -238,21 +242,22 @@ with the same name. Default is <code>FALSE</code>.</p></dd>
 <div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>summary_name</code></dt>
-<dd><p>Character. The name of the summary from which to generate
-the summary. *If you provide <code>summary_name</code> all other parameters are
+<dd><p>Character. The name of the configured summary from which
+to generate the summary. *If you provide <code>summary_name</code> all other parameters are
 inherited according to what was set with <code>add_project_summary</code>.</p></dd>
 
 
 <dt><code>transformation_type</code></dt>
-<dd><p>Character vector.
+<dd><p>Character scalar. How to transform data for the
+summary.
 Default is "default".
-Also have "none", "flat", "merge_non_repeating"
-"default" first merges non-repeating and if there are repeating forms it
-merges non-repeating variables to the right of repeating instruments
-"flat" is one-record, one-row, even if there are repeating forms
-"none" does not transform anything
+Other options are "none", "flat", "merge_non_repeating".
+"default" first merges non-repeating and if there are repeating forms, it
+merges non-repeating variables to the right of repeating instruments.
+"flat" is one-record, one-row, even if there are repeating forms.
+"none" does not transform anything.
 "merge_non_repeating" still merges all non-repeating instruments but
-does not merge them to repeating instruments</p></dd>
+does not merge them to repeating instruments.</p></dd>
 
 
 <dt><code>merge_form_name</code></dt>
@@ -262,22 +267,23 @@ form. Default is "merged".</p></dd>
 
 <dt><code>filter_field</code></dt>
 <dd><p>Character. The name of the field in the database to
-filter on.</p></dd>
+filter on. Used with <code>filter_choices</code>.</p></dd>
 
 
 <dt><code>filter_choices</code></dt>
 <dd><p>Vector. The values of <code>filter_field</code> used to define the
-summary.</p></dd>
+summary. An alternative to providing a full <code>filter_list</code>.</p></dd>
 
 
 <dt><code>filter_list</code></dt>
 <dd><p>Vector. The values of <code>filter_field</code> used to define the
-summary.</p></dd>
+summary. Names are field names; values are the allowed value set(s). Use
+either <code>filter_list</code> or <code>filter_field</code> with <code>filter_choices</code>.</p></dd>
 
 
 <dt><code>filter_strict</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, all forms will be filtered by
-criteria. If <code>FALSE</code>, will convert original filter to id column and filter
+criteria. If <code>FALSE</code>, will convert original filter to ID column and filter
 all other forms by that record. Default is <code>TRUE</code>.</p></dd>
 
 
@@ -292,34 +298,36 @@ Default is <code>NULL</code>, which includes all forms.</p></dd>
 
 
 <dt><code>exclude_identifiers</code></dt>
-<dd><p>Logical. Whether to exlude identifiers in the data
+<dd><p>Logical. Whether to exclude identifiers in the data
 in the summary. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>exclude_free_text</code></dt>
-<dd><p>Logical for excluding free text. Default is <code>FALSE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, exclude free text fields
+intended for de-identification workflows. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt><code>date_handling</code></dt>
 <dd><p>character string. One of <code>none</code>,<code>exclude_dates</code>,
 <code>random_shift_by_record</code>, <code>random_shift_by_project</code>, <code>zero_by_record</code>, or
-<code>zero_by_project</code> random shift is +/- 90 unless changed with options</p></dd>
+<code>zero_by_project</code>. Random shift is +/- 90 unless changed with options.</p></dd>
 
 
 <dt><code>labelled</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, the data will be converted to labelled.
-Default is <code>TRUE</code>.</p></dd>
+If <code>FALSE</code>, returns raw coded values. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>clean</code></dt>
-<dd><p>Logical. If <code>TRUE</code>, the data will be cleaned before summarizing.
-Default is <code>TRUE</code>. If missing codes present AND number or date type, R will
-convert to those to NA and would make that variable not upload compatible</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, the data will be cleaned (e.g.,
+standardizing missing/blank values) before summarizing. Default is <code>TRUE</code>. If
+missing codes are present in a number or date variable, R will convert
+missing codes to NA and will make that variable not upload compatible.</p></dd>
 
 
 <dt><code>drop_blanks</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, records with blank fields will be
-dropped. Default is <code>TRUE</code>.</p></dd>
+dropped during cleaning. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>drop_missing_codes</code></dt>
@@ -415,8 +423,8 @@ with the same name. Default is <code>FALSE</code>.</p></dd>
 <div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>summary_name</code></dt>
-<dd><p>Character. The name of the summary from which to generate
-the summary. *If you provide <code>summary_name</code> all other parameters are
+<dd><p>Character. The name of the configured summary from which
+to generate the summary. *If you provide <code>summary_name</code> all other parameters are
 inherited according to what was set with <code>add_project_summary</code>.</p></dd>
 
 
@@ -544,8 +552,8 @@ with the same name. Default is <code>FALSE</code>.</p></dd>
 <div class="section">
 <h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>summary_name</code></dt>
-<dd><p>Character. The name of the summary from which to generate
-the summary. *If you provide <code>summary_name</code> all other parameters are
+<dd><p>Character. The name of the configured summary from which
+to generate the summary. *If you provide <code>summary_name</code> all other parameters are
 inherited according to what was set with <code>add_project_summary</code>.</p></dd>
 
 
@@ -565,7 +573,7 @@ inherited according to what was set with <code>add_project_summary</code>.</p></
 <p>Displays the REDCap API token currently stored in the session as an
 environment variable. It's essentially a wrapper for
 Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
-formatted like a REDCap token and provides messgaes if not valid.
+formatted like a REDCap token and provides messages if not valid.
 The token is not returned as an R object to maintain security.</p><div class="section">
 <h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">show_token</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>

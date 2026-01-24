@@ -413,7 +413,7 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
     if (is.null(from_cache) || is.null(to_cache)) {
       loaded_cache <- tryCatch(
         expr = {
-          load_project(project_name = project_name)$.internal() |>
+          load_project(project_name = project_name)$.internal |>
             extract_project_details()
         },
         error = function(e) {

@@ -264,7 +264,12 @@ sync_project <- function(project,
       project <- save_project(project)
     } else {
       project$internals$last_directory_save <- project$internals$last_sync
-      project |> extract_project_details() |> add_project_details_to_cache()
+      project_details <- project |> extract_project_details()
+      saveRDS(
+        object = project_details,
+        file = get_project_path2(project, type = "details")
+      ) # add error check
+      project_details |> add_project_details_to_cache()
     }
   }
   invisible(project)

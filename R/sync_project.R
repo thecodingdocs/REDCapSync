@@ -245,7 +245,8 @@ sync_project <- function(project,
         get_redcap_files(
           # would want track internally?
           project,
-          original_file_names = project$internals$original_file_names
+          original_file_names = project$internals$original_file_names,
+          overwrite = TRUE
         )
       }
     }

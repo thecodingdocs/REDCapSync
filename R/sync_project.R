@@ -43,13 +43,16 @@ sync_project <- function(project,
           !is_something(project$internals$last_data_update) ||
           !is_something(project$internals$last_full_update)) {
         hard_reset <- TRUE
+        cli_alert_info(
+          "Project has not yet completed a full sync. Performing a hard reset."
+        )
       } else {
         if (!project$redcap$has_log_access) {
           cli_alert_danger(
             paste0( # fix for when access is changed
               "You do not have logging access to this REDCap project. If you ",
               "want to refresh the data use `project$sync(hard_reset = TRUE)`.",
-              " Request logging access for more effecient use of API exports."
+              " Request logging access for more efficient use of API exports."
             )
           )
           return(project)

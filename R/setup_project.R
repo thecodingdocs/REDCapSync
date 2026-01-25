@@ -190,7 +190,7 @@ setup_project <- function(project_name,
     project <- tryCatch(
       expr = {
         suppressWarnings({
-          load_project(project_name = project_name)$.internal()
+          load_project(project_name = project_name)$.internal
         })
       },
       error = function(e) {

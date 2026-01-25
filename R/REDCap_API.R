@@ -413,7 +413,11 @@ get_redcap_files <- function(project,
         file_name <- form[[field_name]][i]
         record_id <- form[[project$metadata$id_col]][i]
         repeat_instance <- form[["redcap_repeat_instance"]][i]
+        repeat_instance <- ifelse(
+          is.null(repeat_instance), "", repeat_instance)
         redcap_event_name <- form[["redcap_event_name"]][i]
+        redcap_event_name <- ifelse(
+          is.null(redcap_event_name), "", repeat_instance)
         if (!original_file_names) {
           if (anyDuplicated(file_name) > 0L) {
             warning(
@@ -467,39 +471,28 @@ get_redcap_files <- function(project,
 }
 #' @noRd
 get_redcap_log <- function(project,
-                            log_begin_date = Sys.Date() - 10L,
-                            clean = TRUE,
-                            record = NULL,
-                            user = NULL) {
+                            log_begin_date = Sys.Date() - 10L) {
   assert_setup_project(project)
-  assert_logical(clean)
   assert_date(log_begin_date)
-  response <- httr::POST(
-    url = project$links$redcap_uri,
-    body = list(
-      token = get_project_token(project),
-      content = "log",
-      logtype = "",
-      user = user,
-      record = record,
-      beginTime = as.character(log_begin_date) |> paste("00:00:00"),
-      endTime = "",
-      format = "json",
-      returnFormat = "json"
-    ),
-    encode = "form"
+  redcap_log <- exportLogging(
+    rcon = redcapConnection(url = project$links$redcap_uri,
+                            token = get_project_token(project)),
+    logtype = character(0),
+    user = character(0),
+    record = character(0),
+    beginTime = as.character(log_begin_date) |> paste("00:00:00") |>
+      as.POSIXct(),
+    endTime = as.POSIXct(character(0))
   )
-  if (httr::http_error(response)) {
-    message(httr::content(response)$error)
+  #addtrycatch NULL
+  if (is.null(redcap_log)) {
+    # message(httr::content(response)$error)
     return(NULL)
   }
-  redcap_log <- httr::content(response) |> bind_rows()
   if (is.data.frame(redcap_log)) {
     if (nrow(redcap_log) > 0L) {
-      redcap_log[redcap_log == ""] <- NA
-      if (clean) {
-        redcap_log <- clean_redcap_log(redcap_log)
-      }
+      # redcap_log[redcap_log == ""] <- NA
+      redcap_log <- clean_redcap_log(redcap_log)
     }
   }
   redcap_log # deal with if NA if user does not have log privileges.

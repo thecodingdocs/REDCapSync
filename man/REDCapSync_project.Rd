@@ -8,9 +8,9 @@ An R6ClassGenerator
 }
 \description{
 \link[R6:R6Class]{R6} project object for \link{REDCapSync}
-Main class for managing REDCap data, metadata, and sync operations.
-Users should construct objects using \code{\link[=setup_project]{setup_project()}}. For exisiting
-projects, use \code{\link[=load_project]{load_project()}}. For offline examples use
+This is the main class for managing REDCap data, metadata, and sync operations.
+Users should construct objects using \code{\link[=setup_project]{setup_project()}}. To reopen an existing
+project, use \code{\link[=load_project]{load_project()}} or explore offline examples using
 \code{\link[=load_test_project]{load_test_project()}}.
 }
 \seealso{
@@ -94,7 +94,10 @@ Print project metadata
 \if{html}{\out{<a id="method-REDCapSync_project-sync"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSync_project-sync}{}}}
 \subsection{Method \code{sync()}}{
-Updates the REDCap data for (\code{project} object) by checking REDCap log.
+Updates the REDCap data for (\code{project} object) by checking REDCap log for
+changes. Sync is performed according to the \code{sync_frequency} set in
+\code{\link[=setup_project]{setup_project()}} by default. Use \code{hard_check} to force a check, or \code{hard_reset} to
+force a complete refresh.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$sync(
   summarize = TRUE,
@@ -109,8 +112,9 @@ Updates the REDCap data for (\code{project} object) by checking REDCap log.
 \describe{
 \item{\code{summarize}}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
 
-\item{\code{save_to_dir}}{Logical (TRUE/FALSE). If TRUE, saves the updated data to
-the directory. Default is \code{TRUE}.}
+\item{\code{save_to_dir}}{Logical (TRUE/FALSE). If TRUE, saves the updated data in
+the project object to the directory at \code{dir_path}. Ignored when \code{dir_path} is
+\code{NULL}. Default is \code{TRUE}.}
 
 \item{\code{hard_check}}{Will check REDCap even if not due (see \code{sync_frequency}
 parameter from \code{setup_project()})}
@@ -165,34 +169,36 @@ Add a new summary entry
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{summary_name}}{Character. The name of the summary from which to generate
-the summary. *If you provide \code{summary_name} all other parameters are
+\item{\code{summary_name}}{Character. The name of the configured summary from which
+to generate the summary. *If you provide \code{summary_name} all other parameters are
 inherited according to what was set with \code{add_project_summary}.}
 
-\item{\code{transformation_type}}{Character vector.
+\item{\code{transformation_type}}{Character scalar. How to transform data for the
+summary.
 Default is "default".
-Also have "none", "flat", "merge_non_repeating"
-"default" first merges non-repeating and if there are repeating forms it
-merges non-repeating variables to the right of repeating instruments
-"flat" is one-record, one-row, even if there are repeating forms
-"none" does not transform anything
+Other options are "none", "flat", "merge_non_repeating".
+"default" first merges non-repeating and if there are repeating forms, it
+merges non-repeating variables to the right of repeating instruments.
+"flat" is one-record, one-row, even if there are repeating forms.
+"none" does not transform anything.
 "merge_non_repeating" still merges all non-repeating instruments but
-does not merge them to repeating instruments}
+does not merge them to repeating instruments.}
 
 \item{\code{merge_form_name}}{A character string representing the name of the merged
 form. Default is "merged".}
 
 \item{\code{filter_field}}{Character. The name of the field in the database to
-filter on.}
+filter on. Used with \code{filter_choices}.}
 
 \item{\code{filter_choices}}{Vector. The values of \code{filter_field} used to define the
-summary.}
+summary. An alternative to providing a full \code{filter_list}.}
 
 \item{\code{filter_list}}{Vector. The values of \code{filter_field} used to define the
-summary.}
+summary. Names are field names; values are the allowed value set(s). Use
+either \code{filter_list} or \code{filter_field} with \code{filter_choices}.}
 
 \item{\code{filter_strict}}{Logical. If \code{TRUE}, all forms will be filtered by
-criteria. If \code{FALSE}, will convert original filter to id column and filter
+criteria. If \code{FALSE}, will convert original filter to ID column and filter
 all other forms by that record. Default is \code{TRUE}.}
 
 \item{\code{field_names}}{Character vector. Names of specific fields to include in
@@ -201,24 +207,26 @@ the summary. Default is \code{NULL}, which includes all fields.}
 \item{\code{form_names}}{Character vector. Names of forms to include in the summary.
 Default is \code{NULL}, which includes all forms.}
 
-\item{\code{exclude_identifiers}}{Logical. Whether to exlude identifiers in the data
+\item{\code{exclude_identifiers}}{Logical. Whether to exclude identifiers in the data
 in the summary. Default is \code{TRUE}.}
 
-\item{\code{exclude_free_text}}{Logical for excluding free text. Default is \code{FALSE}.}
+\item{\code{exclude_free_text}}{Logical. If \code{TRUE}, exclude free text fields
+intended for de-identification workflows. Default is \code{FALSE}.}
 
 \item{\code{date_handling}}{character string. One of \code{none},\code{exclude_dates},
 \code{random_shift_by_record}, \code{random_shift_by_project}, \code{zero_by_record}, or
-\code{zero_by_project} random shift is +/- 90 unless changed with options}
+\code{zero_by_project}. Random shift is +/- 90 unless changed with options.}
 
 \item{\code{labelled}}{Logical. If \code{TRUE}, the data will be converted to labelled.
-Default is \code{TRUE}.}
+If \code{FALSE}, returns raw coded values. Default is \code{TRUE}.}
 
-\item{\code{clean}}{Logical. If \code{TRUE}, the data will be cleaned before summarizing.
-Default is \code{TRUE}. If missing codes present AND number or date type, R will
-convert to those to NA and would make that variable not upload compatible}
+\item{\code{clean}}{Logical. If \code{TRUE}, the data will be cleaned (e.g.,
+standardizing missing/blank values) before summarizing. Default is \code{TRUE}. If
+missing codes are present in a number or date variable, R will convert
+missing codes to NA and will make that variable not upload compatible.}
 
 \item{\code{drop_blanks}}{Logical. If \code{TRUE}, records with blank fields will be
-dropped. Default is \code{TRUE}.}
+dropped during cleaning. Default is \code{TRUE}.}
 
 \item{\code{drop_missing_codes}}{Logical. If \code{TRUE}, will convert missing codes
 to NA. Default is \code{FALSE}.}
@@ -290,8 +298,8 @@ Add a new summary entry
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{summary_name}}{Character. The name of the summary from which to generate
-the summary. *If you provide \code{summary_name} all other parameters are
+\item{\code{summary_name}}{Character. The name of the configured summary from which
+to generate the summary. *If you provide \code{summary_name} all other parameters are
 inherited according to what was set with \code{add_project_summary}.}
 
 \item{\code{envir}}{environment variable}
@@ -403,8 +411,8 @@ save summary to Excel
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{summary_name}}{Character. The name of the summary from which to generate
-the summary. *If you provide \code{summary_name} all other parameters are
+\item{\code{summary_name}}{Character. The name of the configured summary from which
+to generate the summary. *If you provide \code{summary_name} all other parameters are
 inherited according to what was set with \code{add_project_summary}.}
 }
 \if{html}{\out{</div>}}
@@ -427,7 +435,7 @@ Add a new summary entry
 Displays the REDCap API token currently stored in the session as an
 environment variable. It's essentially a wrapper for
 Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
-formatted like a REDCap token and provides messgaes if not valid.
+formatted like a REDCap token and provides messages if not valid.
 The token is not returned as an R object to maintain security.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_token()}\if{html}{\out{</div>}}

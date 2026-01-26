@@ -249,28 +249,6 @@ is_named_list <- function(x,
   named_all
 }
 #' @noRd
-wb_to_list <- function(wb) {
-  # consider test for if user does not have excel
-  sheets <- openxlsx::sheets(wb)
-  clean_sheets <- clean_env_names(sheets)
-  out <- list()
-  for (i in seq_along(sheets)) {
-    col_row <- 1L
-    x <- openxlsx::getTables(wb, sheet = i)
-    if (length(x) > 0L) {
-      # test for xlsx without letters for cols
-      x <- unlist(x |> attr("refs") |> strsplit(":"))[[1L]]
-      col_row <- gsub(pattern = "[A-Za-z]",
-                      replacement = "",
-                      x = x) |>
-        as.integer()
-    }
-    out[[i]] <- openxlsx::read.xlsx(wb, sheet = i, startRow = col_row)
-  }
-  names(out) <- clean_sheets
-  out
-}
-#' @noRd
 form_to_wb <- function(form,
                        form_name,
                        wb = openxlsx::createWorkbook(),

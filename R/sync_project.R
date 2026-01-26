@@ -125,43 +125,10 @@ sync_project <- function(project,
       }
     }
     if (hard_reset) {
-      project <- get_redcap_metadata(
-        project = project,
-        include_users = !project$internals$metadata_only)
-      project <- update_project_links(project)
-      if (!project$internals$metadata_only) {
-        project$data <- list()
-        project$data_updates <- list()
-        project$summary <- list()
-        project$data <- get_redcap_data(
-          project = project,
-          labelled = project$internals$labelled,
-          batch_size = project$internals$batch_size_download
-        )
-        # if error records comma
-        redcap_log <- project$redcap$log # in case there is a log already
-        if (project$redcap$has_log_access) {
-          if (project$internals$entire_log) {
-            log_begin_date <-
-              as.POSIXct(project$redcap$project_info$creation_time) |>
-              as.Date()
-          } else {
-            log_begin_date <- Sys.Date() - project$internals$days_of_log
-          }
-          new_log <- get_redcap_log(project, log_begin_date = log_begin_date)
-          project$redcap$log <- redcap_log |>
-            bind_rows(new_log) |>
-            sort_redcap_log()
-        }
-        project$summary$all_records <- extract_project_records(project)
-        project$summary$all_records$last_api_call <-
-          project$internals$last_full_update <-
-          project$internals$last_metadata_update <-
-          project$internals$last_data_update <- now_time()
-        cli_alert_wrap(paste0("Full ", project$project_name, " update!"),
-                       bullet_type = "v")
-        was_updated <- TRUE
-      }
+      project <- sync_project_hard_reset(project)
+      cli_alert_wrap(paste0("Full ", project$project_name, " update!"),
+                     bullet_type = "v")
+      was_updated <- TRUE
     } else {
       if (will_update) {
         id_col <- project$metadata$id_col
@@ -273,6 +240,44 @@ sync_project <- function(project,
     }
   }
   invisible(project)
+}
+#' @noRd
+sync_project_hard_reset <- function(project) {
+  assert_setup_project(project)
+  project <- get_redcap_metadata(
+    project = project,
+    include_users = !project$internals$metadata_only)
+  project <- update_project_links(project)
+  if (!project$internals$metadata_only) {
+    project$data <- list()
+    project$data_updates <- list()
+    project$summary <- list()
+    project$data <- get_redcap_data(
+      project = project,
+      labelled = project$internals$labelled,
+      batch_size = project$internals$batch_size_download
+    )
+    # if error records comma
+    redcap_log <- project$redcap$log # in case there is a log already
+    if (project$redcap$has_log_access) {
+      if (project$internals$entire_log) {
+        log_begin_date <-
+          as.POSIXct(project$redcap$project_info$creation_time) |>
+          as.Date()
+      } else {
+        log_begin_date <- Sys.Date() - project$internals$days_of_log
+      }
+      new_log <- get_redcap_log(project, log_begin_date = log_begin_date)
+      project$redcap$log <- redcap_log |>
+        bind_rows(new_log) |>
+        sort_redcap_log()
+    }
+    project$summary$all_records <- extract_project_records(project)
+    project$summary$all_records$last_api_call <-
+      project$internals$last_full_update <-
+      project$internals$last_metadata_update <-
+      project$internals$last_data_update <- now_time()
+  }
 }
 #' @title Synchronize REDCap Data
 #' @description

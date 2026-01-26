@@ -31,11 +31,11 @@ test_that("extract_project_details works", {
   )
   project <- mock_project()
   project_details <- extract_project_details(project)
-  checkmate::expect_data_frame(project_details,
-                               ncols = ncol(.blank_project_details),
-                               nrows = 1L)
+  expect_data_frame(project_details,
+                    ncols = ncol(.blank_project_details),
+                    nrows = 1L)
   expect_identical(colnames(project_details),
-               colnames(.blank_project_details))
+                   colnames(.blank_project_details))
 })
 # save_projects_to_cache ( Internal )
 test_that("save_projects_to_cache works", {
@@ -50,24 +50,24 @@ test_that("save_projects_to_cache works", {
     }
   )
   projects <- get_projects()
-  checkmate::expect_data_frame(projects, nrows = 0L)
+  expect_data_frame(projects, nrows = 0L)
   project <- mock_project()
   project$dir_path <- set_dir(test_dir)
   #no connection should not save to cache
   project_details <- extract_project_details(project)
   projects <- get_projects()
-  checkmate::expect_data_frame(projects, nrows = 0L)
+  expect_data_frame(projects, nrows = 0L)
   project$internals$ever_connected <- TRUE
   save_project(project = project)
   projects <- get_projects()
   #connection should save to cache
-  checkmate::expect_data_frame(projects, nrows = 1L)
+  expect_data_frame(projects, nrows = 1L)
   expect_identical(project_details$project_name, projects$project_name)
-  checkmate::expect_data_frame(project_details, nrows = 1L)
+  expect_data_frame(project_details, nrows = 1L)
   cache_clear()
   expect_false(file.exists(file.path(fake_cache_location, "projects.rds")))
   projects <- get_projects()
-  checkmate::expect_data_frame(projects, nrows = 0L)
+  expect_data_frame(projects, nrows = 0L)
   expect_message(save_projects_to_cache(project_details, silent = FALSE),
                  "saved")
   expect_true(file.exists(file.path(fake_cache_location, "projects.rds")))
@@ -89,13 +89,13 @@ test_that("add_project_details_to_cache works", {
   )
   # start empty
   projects <- get_projects()
-  checkmate::expect_data_frame(projects, nrows = 0L)
+  expect_data_frame(projects, nrows = 0L)
   # add project details to cache
   project <- mock_project()
   project_details <- extract_project_details(project)
   expect_no_error(add_project_details_to_cache(project_details))
   projects <- get_projects()
-  checkmate::expect_data_frame(projects, nrows = 1L)
+  expect_data_frame(projects, nrows = 1L)
   expect_true(project_details$project_name %in% projects$project_name)
   # conflict: same project_id & same base redcap_uri
   #but different project_name -> error

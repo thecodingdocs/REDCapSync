@@ -94,11 +94,13 @@ assert_web_link <- function(link) {
 }
 #' @noRd
 assert_env_name <- function(x, max.chars = 26L) {
-  assert_character(x, len = 1L, min.chars = 1L)
+  assert_character(x, len = 1L, min.chars = 1L, any.missing = FALSE)
+  # can change to min.length for projects
   assert_integerish(max.chars,
                     len = 1L,
                     lower = 1L,
-                    upper = 255L)
+                    upper = 255L,
+                    any.missing = FALSE)
   assert_string(
     x,
     n.chars = NULL,
@@ -136,24 +138,106 @@ assert_blank_project <- function(project) {
 assert_setup_project <- function(project) {
   assert_blank_project(project)
   assert_env_name(project$project_name, max.chars = 31L)
-  # DIRPATH
+  # dir_path
+  # redcap_uri
   assert_env_name(project$redcap$token_name, max.chars = 50L)
-  # dirpath
   assert_choice(project$internals$sync_frequency, choices = .sync_frequency)
-  assert_integerish(project$internals$days_of_log, len = 1L, lower = 1L)
-  assert_choice(project$internals$timezone, choices = OlsonNames())
-  assert_logical(project$internals$get_files, len = 1L)
-  assert_logical(project$internals$get_file_repository, len = 1L)
-  assert_logical(project$internals$original_file_names, len = 1L)
-  assert_logical(project$internals$entire_log, len = 1L)
-  assert_logical(project$internals$metadata_only, len = 1L)
-  assert_logical(project$internals$add_default_fields, len = 1L)
-  assert_logical(project$internals$add_default_transformation, len = 1L)
-  assert_logical(project$internals$add_default_summaries, len = 1L)
-  assert_integerish(project$internals$batch_size_download, len = 1L, lower = 1L)
-  assert_integerish(project$internals$batch_size_upload, len = 1L, lower = 1L)
+  assert_logical(project$internals$labelled, len = 1L, any.missing = FALSE)
+  assert_logical(project$internals$hard_reset, len = 1L, any.missing = FALSE)
   assert_choice(project$internals$get_type, choices = .get_type)
-  # assert_web_link(project$links$redcap_base) # argName
+  assert(
+    test_scalar_na(project$internals$records) ||
+      test_character(
+        project$internals$records, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert(
+    test_scalar_na(project$internals$fields) ||
+      test_character(
+        project$internals$fields, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert(
+    test_scalar_na(project$internals$forms) ||
+      test_character(
+        project$internals$forms, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert(
+    test_scalar_na(project$internals$events) ||
+      test_character(
+        project$internals$events, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert(
+    test_scalar_na(project$internals$filter_logic) ||
+      test_character(
+        project$internals$filter_logic, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert_logical(project$internals$metadata_only, len = 1L, any.missing = FALSE)
+  assert_integerish(
+    project$internals$batch_size_download,
+    len = 1L,
+    lower = 1L,
+    any.missing = FALSE
+  )
+  assert_integerish(
+    project$internals$batch_size_upload,
+    len = 1L,
+    lower = 1L,
+    any.missing = FALSE
+  )
+  assert_logical(project$internals$entire_log,
+                 len = 1L,
+                 any.missing = FALSE)
+  assert_integerish(
+    project$internals$days_of_log,
+    len = 1L,
+    lower = 1L,
+    any.missing = FALSE
+  )
+  assert_choice(project$internals$timezone, OlsonNames())
+  assert_logical(project$internals$get_files,
+                 len = 1L,
+                 any.missing = FALSE)
+  assert_logical(project$internals$get_file_repository,
+                 len = 1L,
+                 any.missing = FALSE)
+  assert_logical(project$internals$original_file_names,
+                 len = 1L,
+                 any.missing = FALSE)
+  assert_logical(project$internals$add_default_fields,
+                 len = 1L,
+                 any.missing = FALSE)
+  assert_logical(
+    project$internals$add_default_transformation,
+    len = 1L,
+    any.missing = FALSE
+  )
+  assert_logical(project$internals$add_default_summaries,
+                 len = 1L,
+                 any.missing = FALSE)
   invisible(project)
 }
 #' @noRd

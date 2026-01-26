@@ -267,7 +267,7 @@ test_that("get_min_dates works", {
   )
   out <- get_min_dates(data_list)
   # basic structure checks
-  checkmate::expect_data_frame(out, nrows = 3L, ncols = 2L)
+  expect_data_frame(out, nrows = 3L, ncols = 2L)
   expect_true(all(c("record_id", "date") %in% colnames(out)))
   # values: min date per record across forms
   expect_identical(

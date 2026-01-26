@@ -6,8 +6,8 @@ test_that("cli_alert_wrap works!", {
 })
 # now_time ( Internal )
 test_that("now_time works!", {
-  checkmate::expect_class(now_time(), "POSIXct")
-  checkmate::expect_class(now_time(), "POSIXt")
+  expect_class(now_time(), "POSIXct")
+  expect_class(now_time(), "POSIXt")
 })
 # process_df_list ( Internal )
 test_that("process_df_list works!", {
@@ -91,7 +91,7 @@ test_that("excel_to_list works!", {
   list_to_excel(df_list, dir = test_dir, file_name = "cars")
   expect_true(file.exists(test_file))
   df_list_saved <- excel_to_list(test_file)
-  checkmate::expect_list(df_list, len = 2L)
+  expect_list(df_list, len = 2L)
   expect_named(df_list, names(df_list_saved))
   expect_identical(nrow(df_list$one), nrow(df_list_saved$one))
   expect_identical(nrow(df_list$two), nrow(df_list_saved$two))
@@ -127,7 +127,7 @@ test_that("unique_trimmed_strings works!", {
   expect_identical(unique_trimmed_strings("one", 5L), "one")
   test_vector <- c("one_version_1", "one_version_2", "one_version_3")
   expect_identical(unique_trimmed_strings(test_vector, 6L),
-               c("one_ve", "one_v1", "one_v2"))
+                   c("one_ve", "one_v1", "one_v2"))
   expect_identical(unique_trimmed_strings(test_vector, 20L), test_vector)
 })
 # list_to_excel ( Internal )
@@ -149,9 +149,9 @@ test_that("list_to_excel works!", {
   expect_true(file.exists(test_file_two))
   one <- readxl::read_excel(test_file_one)
   two <- readxl::read_excel(test_file_two)
-  checkmate::expect_data_frame(one, nrows = nrow(mtcars), ncols = ncol(mtcars))
+  expect_data_frame(one, nrows = nrow(mtcars), ncols = ncol(mtcars))
   expect_identical(colnames(one), colnames(mtcars))
-  checkmate::expect_data_frame(two, nrows = nrow(cars), ncols = ncol(cars))
+  expect_data_frame(two, nrows = nrow(cars), ncols = ncol(cars))
   expect_identical(colnames(two), colnames(cars))
 })
 # list_to_csv ( Internal )
@@ -168,9 +168,9 @@ test_that("list_to_csv works!", {
   expect_true(file.exists(test_file_two))
   one <- read.csv(test_file_one)
   two <- read.csv(test_file_two)
-  checkmate::expect_data_frame(one, nrows = nrow(mtcars), ncols = ncol(mtcars))
+  expect_data_frame(one, nrows = nrow(mtcars), ncols = ncol(mtcars))
   expect_identical(colnames(one), colnames(mtcars))
-  checkmate::expect_data_frame(two, nrows = nrow(cars), ncols = ncol(cars))
+  expect_data_frame(two, nrows = nrow(cars), ncols = ncol(cars))
   expect_identical(colnames(two), colnames(cars))
 })
 # save_wb ( Internal )
@@ -190,9 +190,9 @@ test_that("save_csv works!", {
   )
   expect_true(file.exists(test_file))
   test_saved_csv <- read.csv(test_file)
-  checkmate::expect_data_frame(test_saved_csv,
-                               nrows = nrow(mtcars),
-                               ncols = ncol(mtcars))
+  expect_data_frame(test_saved_csv,
+                    nrows = nrow(mtcars),
+                    ncols = ncol(mtcars))
   expect_message(
     save_csv(
       form = cars,
@@ -203,9 +203,9 @@ test_that("save_csv works!", {
     "Already a file"
   )
   test_saved_csv <- read.csv(test_file)
-  checkmate::expect_data_frame(test_saved_csv,
-                               nrows = nrow(mtcars),
-                               ncols = ncol(mtcars))
+  expect_data_frame(test_saved_csv,
+                    nrows = nrow(mtcars),
+                    ncols = ncol(mtcars))
 })
 # which_duplicated ( Internal )
 test_that("which_duplicated works!", {
@@ -231,7 +231,7 @@ test_that("remove_html_tags works!", {
   )
   # tags with attributes and surrounding text
   expect_identical(remove_html_tags("<a href='x'>link</a> and text"),
-               "link and text")
+                   "link and text")
   # nested tags
   expect_identical(remove_html_tags("<div><span>nested</span></div>"), "nested")
   # empty string preserved, NA preserved

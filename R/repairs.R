@@ -86,23 +86,18 @@ repair_setup_project <- function(project) {
       ifelse(project$internals$sync_frequency, "daily")
     project$internals$labelled <-
       project$internals$labelled |>
-      test_logical(len = 1L) |>
+      test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$labelled, TRUE)
     project$internals$hard_reset <-
       project$internals$hard_reset |>
-      test_logical(len = 1L) |>
+      test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$hard_reset, FALSE)
     project$internals$get_type <-
       project$internals$get_type |>
       test_choice(choices = .get_type) |>
       ifelse(project$internals$get_type, "identified")
     project$internals$records <-
-      (
-        test_vector(
-          project$internals$records,
-          len = 1L,
-          all.missing = TRUE
-        ) ||
+      (test_scalar_na(project$internals$records) ||
           test_character(
             project$internals$records,
             # add exist warning
@@ -114,12 +109,7 @@ repair_setup_project <- function(project) {
       ) |>
       ifelse(project$internals$records, NA)
     project$internals$fields <-
-      (
-        test_vector(
-          project$internals$fields,
-          len = 1L,
-          all.missing = TRUE
-        ) ||
+      (test_scalar_na(project$internals$fields) ||
           test_character(
             project$internals$fields,
             # add exist warning
@@ -131,12 +121,7 @@ repair_setup_project <- function(project) {
       ) |>
       ifelse(project$internals$fields, NA)
     project$internals$forms <-
-      (
-        test_vector(
-          project$internals$forms,
-          len = 1L,
-          all.missing = TRUE
-        ) ||
+      (test_scalar_na(project$internals$forms) ||
           test_character(
             project$internals$forms,
             # add exist warning
@@ -148,12 +133,7 @@ repair_setup_project <- function(project) {
       ) |>
       ifelse(project$internals$forms, NA)
     project$internals$events <-
-      (
-        test_vector(
-          project$internals$events,
-          len = 1L,
-          all.missing = TRUE
-        ) ||
+      (test_scalar_na(project$internals$events) ||
           test_character(
             project$internals$events,
             # add exist warning
@@ -165,12 +145,7 @@ repair_setup_project <- function(project) {
       ) |>
       ifelse(project$internals$events, NA)
     project$internals$filter_logic <-
-      (
-        test_vector(
-          project$internals$filter_logic,
-          len = 1L,
-          all.missing = TRUE
-        ) ||
+      (test_scalar_na(project$internals$filter_logic) ||
           test_character(
             project$internals$filter_logic,
             # add exist warning
@@ -183,23 +158,23 @@ repair_setup_project <- function(project) {
       ifelse(project$internals$filter_logic, NA)
     project$internals$metadata_only <-
       project$internals$metadata_only |>
-      test_logical(len = 1L) |>
+      test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$metadata_only, FALSE)
     project$internals$batch_size_download <-
       project$internals$batch_size_download |>
-      test_integerish(len = 1L, lower = 1L) |>
+      test_integerish(len = 1L, lower = 1L, any.missing = FALSE) |>
       ifelse(project$internals$batch_size_download, 2000L)
     project$internals$batch_size_upload <-
       project$internals$batch_size_upload |>
-      test_integerish(len = 1L, lower = 1L) |>
+      test_integerish(len = 1L, lower = 1L, any.missing = FALSE) |>
       ifelse(project$internals$batch_size_upload, 500L)
     project$internals$entire_log <-
       project$internals$entire_log |>
-      test_logical(len = 1L) |>
+      test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$entire_log, FALSE)
     project$internals$days_of_log <-
       project$internals$days_of_log |>
-      test_integerish(len = 1L, lower = 1L) |>
+      test_integerish(len = 1L, lower = 1L, any.missing = FALSE) |>
       ifelse(project$internals$days_of_log, 10L)
     project$internals$timezone <-
       project$internals$timezone |>
@@ -207,27 +182,27 @@ repair_setup_project <- function(project) {
       ifelse(project$internals$timezone, Sys.timezone())
     project$internals$get_files <-
       project$internals$get_files |>
-      test_logical(len = 1L) |>
+      test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$get_files, FALSE)
     project$internals$get_file_repository <-
       project$internals$get_file_repository |>
-      test_logical(len = 1L) |>
+      test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$get_file_repository, FALSE)
     project$internals$original_file_names <-
       project$internals$original_file_names |>
-      test_logical(len = 1L) |>
+      test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$original_file_names, FALSE)
     project$internals$add_default_fields <-
       project$internals$add_default_fields |>
-      test_logical(len = 1L) |>
+      test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$add_default_fields, FALSE)
     project$internals$add_default_transformation <-
       project$internals$add_default_transformation |>
-      test_logical(len = 1L) |>
+      test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$add_default_transformation, FALSE)
     project$internals$add_default_summaries <-
       project$internals$add_default_summaries |>
-      test_logical(len = 1L) |>
+      test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$add_default_summaries, TRUE)
   }
   project

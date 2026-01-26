@@ -48,7 +48,7 @@ test_that("fields_to_choices works", {
   fields <- add_field_elements(fields)
   sum_of_choices <- 2L + 2L + 2L + 7L + 6L * (2L) + 3L
   choices <- fields_to_choices(fields)
-  checkmate::expect_data_frame(choices, nrows = sum_of_choices)
+  expect_data_frame(choices, nrows = sum_of_choices)
   expect_false(anyNA(choices$code))
   expect_false(anyNA(choices$name))
   expect_false(anyNA(choices$field_name))

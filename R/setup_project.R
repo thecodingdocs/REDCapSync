@@ -116,11 +116,11 @@ setup_project <- function(project_name,
   # redcap_uri
   assert_env_name(token_name, max.chars = 50L)
   assert_choice(sync_frequency, choices = .sync_frequency)
-  assert_logical(labelled, len = 1L)
-  assert_logical(hard_reset, len = 1L)
+  assert_logical(labelled, len = 1L, any.missing = FALSE)
+  assert_logical(hard_reset, len = 1L, any.missing = FALSE)
   assert_choice(get_type, choices = .get_type)
   assert(
-    test_vector(records, len = 1L, all.missing = TRUE) ||
+    test_scalar_na(records) ||
       test_character(
         records, # add exist warning
         min.chars = 1L,
@@ -130,7 +130,7 @@ setup_project <- function(project_name,
       )
   )
   assert(
-    test_vector(fields, len = 1L, all.missing = TRUE) ||
+    test_scalar_na(fields) ||
       test_character(
         fields, # add exist warning
         min.chars = 1L,
@@ -140,7 +140,7 @@ setup_project <- function(project_name,
       )
   )
   assert(
-    test_vector(forms, len = 1L, all.missing = TRUE) ||
+    test_scalar_na(forms) ||
       test_character(
         forms, # add exist warning
         min.chars = 1L,
@@ -150,7 +150,7 @@ setup_project <- function(project_name,
       )
   )
   assert(
-    test_vector(events, len = 1L, all.missing = TRUE) ||
+    test_scalar_na(events) ||
       test_character(
         events, # add exist warning
         min.chars = 1L,
@@ -160,7 +160,7 @@ setup_project <- function(project_name,
       )
   )
   assert(
-    test_vector(filter_logic, len = 1L, all.missing = TRUE) ||
+    test_scalar_na(filter_logic) ||
       test_character(
         filter_logic, # add exist warning
         min.chars = 1L,
@@ -169,18 +169,28 @@ setup_project <- function(project_name,
         any.missing = FALSE
       )
   )
-  assert_logical(metadata_only, len = 1L)
-  assert_integerish(batch_size_download, len = 1L, lower = 1L)
-  assert_integerish(batch_size_upload, len = 1L, lower = 1L)
-  assert_logical(entire_log, len = 1L)
-  assert_integerish(days_of_log, len = 1L, lower = 1L)
+  assert_logical(metadata_only, len = 1L, any.missing = FALSE)
+  assert_integerish(
+    batch_size_download,
+    len = 1L,
+    lower = 1L,
+    any.missing = FALSE
+  )
+  assert_integerish(
+    batch_size_upload,
+    len = 1L,
+    lower = 1L,
+    any.missing = FALSE
+  )
+  assert_logical(entire_log, len = 1L, any.missing = FALSE)
+  assert_integerish(days_of_log, len = 1L, lower = 1L, any.missing = FALSE)
   assert_choice(timezone, OlsonNames())
-  assert_logical(get_files, len = 1L)
-  assert_logical(get_file_repository, len = 1L)
-  assert_logical(original_file_names, len = 1L)
-  assert_logical(add_default_fields, len = 1L)
-  assert_logical(add_default_transformation, len = 1L)
-  assert_logical(add_default_summaries, len = 1L)
+  assert_logical(get_files, len = 1L, any.missing = FALSE)
+  assert_logical(get_file_repository, len = 1L, any.missing = FALSE)
+  assert_logical(original_file_names, len = 1L, any.missing = FALSE)
+  assert_logical(add_default_fields, len = 1L, any.missing = FALSE)
+  assert_logical(add_default_transformation, len = 1L, any.missing = FALSE)
+  assert_logical(add_default_summaries, len = 1L, any.missing = FALSE)
   if (missing(redcap_uri)) {
     #use options or Renviron?
   }

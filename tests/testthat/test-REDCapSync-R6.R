@@ -4,7 +4,7 @@ test_that("R6 object works!", {
   REDCapSync_project$public_methods |> names()
   REDCapSync_project$active |> names()
   REDCapSync_project$private_fields |> names()
-  checkmate::expect_r6(
+  expect_r6(
     project_r6,
     classes = "REDCapSync_project",
     private = names(REDCapSync_project$private_fields),

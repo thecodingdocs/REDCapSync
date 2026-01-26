@@ -98,7 +98,7 @@ mock_project <- function() {
     )
   project$summary$all_records <- extract_project_records(project)
   # form_example
-  project
+  invisible(project)
 }
 generate_hex <- function(length = 32L) {
   c(0L:9L, letters[1L:6L]) |>

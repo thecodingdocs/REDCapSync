@@ -598,7 +598,7 @@ set_dir <- function(dir_path) {
       dir.create(file.path(dir_path, folder), showWarnings = FALSE)
     }
   }
-  assert_dir(dir_path, silent = FALSE)
+  assert_dir(dir_path)
 }
 #' @noRd
 .dir_folders <- c("R_objects", "output", "scripts", "input", "REDCap")

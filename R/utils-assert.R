@@ -1,12 +1,9 @@
 #' @noRd
-assert_dir <- function(dir_path, silent = TRUE) {
+assert_dir <- function(dir_path) {
   # param check
   dir_path <- clean_dir_path(dir_path)
   if (!file.exists(dir_path)) {
     stop("dir_path does not exist")
-  }
-  if (!is.logical(silent)) {
-    stop("silent parameter must be TRUE or FALSE")
   }
   stop_mes <- "Did you use `setup_project()`?"
   for (folder in .dir_folders) {
@@ -14,11 +11,9 @@ assert_dir <- function(dir_path, silent = TRUE) {
       stop("'", dir_path, "/", folder, "' missing! ", stop_mes)
     }
   }
-  if (!silent) {
-    cli_alert_wrap("Directory is Valid!",
-                   url = dir_path,
-                   bullet_type = "v")
-  }
+  cli_alert_wrap("Directory is Valid!",
+                 url = dir_path,
+                 bullet_type = "v")
   dir_path
 }
 #' @noRd

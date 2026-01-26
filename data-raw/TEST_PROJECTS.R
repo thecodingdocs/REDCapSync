@@ -1,43 +1,5 @@
 ## code to prepare `TEST_PROJECTS` dataset goes here
 devtools::load_all()
-project <- setup_project(
-  project_name = "TEST_CANCER",
-  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
-  dir_path =  Sys.getenv("dir_path_UTTEST")
-)$sync(hard_reset = TRUE)
-project <- setup_project(
-  project_name = "TEST_CLASSIC",
-  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
-  dir_path =  Sys.getenv("dir_path_UTTEST"),
-  entire_log = TRUE,
-  hard_reset = TRUE
-)$sync()
-project <- setup_project(
-  project_name = "TEST_DATA",
-  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
-  dir_path =  Sys.getenv("dir_path_UTTEST")
-)$sync(hard_reset = TRUE)
-project <- setup_project(
-  project_name = "TEST_EDGE",
-  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
-  dir_path =  Sys.getenv("dir_path_UTTEST")
-)$sync(hard_reset = TRUE)
-project <- setup_project(
-  project_name = "TEST_LONGITUDINAL",
-  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
-  dir_path =  Sys.getenv("dir_path_UTTEST")
-)$sync(hard_reset = TRUE)
-project <- setup_project(
-  project_name = "TEST_MULTIARM",
-  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
-  dir_path =  Sys.getenv("dir_path_UTTEST")
-)$sync(hard_reset = TRUE)
-project <- setup_project(
-  project_name = "TEST_REPEATING",
-  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
-  dir_path =  Sys.getenv("dir_path_UTTEST"),
-  hard_reset = TRUE
-)$sync()
 scrub_test_project <- function(project, pid) {
   project$project_name
   project$internals$is_test <- TRUE
@@ -64,6 +26,48 @@ scrub_test_project <- function(project, pid) {
     paste0("fake/path/",project$project_name,".xslx")
   invisible(project)
 }
+#now -----
+project <- setup_project(
+  project_name = "TEST_CLASSIC",
+  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
+  dir_path =  Sys.getenv("dir_path_UTTEST"),
+  entire_log = TRUE,
+  hard_reset = TRUE
+)$sync()
+project <- setup_project(
+  project_name = "TEST_REPEATING",
+  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
+  dir_path =  Sys.getenv("dir_path_UTTEST"),
+  hard_reset = TRUE
+)$sync()
+# later-----
+project <- setup_project(
+  project_name = "TEST_CANCER",
+  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
+  dir_path =  Sys.getenv("dir_path_UTTEST")
+)$sync(hard_reset = TRUE)
+
+project <- setup_project(
+  project_name = "TEST_DATA",
+  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
+  dir_path =  Sys.getenv("dir_path_UTTEST")
+)$sync(hard_reset = TRUE)
+project <- setup_project(
+  project_name = "TEST_EDGE",
+  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
+  dir_path =  Sys.getenv("dir_path_UTTEST")
+)$sync(hard_reset = TRUE)
+project <- setup_project(
+  project_name = "TEST_LONGITUDINAL",
+  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
+  dir_path =  Sys.getenv("dir_path_UTTEST")
+)$sync(hard_reset = TRUE)
+project <- setup_project(
+  project_name = "TEST_MULTIARM",
+  redcap_uri = Sys.getenv("UT_REDCAP_URI"),
+  dir_path =  Sys.getenv("dir_path_UTTEST")
+)$sync(hard_reset = TRUE)
+# save ------
 .test_project_names %>% paste0(",\n") %>% cat()
 project_names <- c("TEST_CLASSIC","TEST_REPEATING")
 names(project_names) <- paste0("1234", seq_len(length(project_names)))
@@ -71,7 +75,7 @@ for(project_name in project_names){
   pid <- names(project_names)[which(project_names == project_name)]
   assign(
     x = project_name,
-    value = load_project(project_name)$.internal() %>%
+    value = load_project(project_name)$.internal %>%
       scrub_test_project(pid = pid),
     envir = globalenv()
   )
@@ -87,3 +91,4 @@ usethis::use_data(
   overwrite = TRUE,
   internal = TRUE
 )
+# end -------

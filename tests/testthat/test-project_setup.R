@@ -45,7 +45,7 @@ test_that("setup_project creates a valid project object and valid directory", {
   # expect_no_error(get_dir(project))
   check_dir <- assert_dir(project$dir_path)
   expect_identical(test_dir, check_dir)
-  expect_type(project,type = "list")
+  expect_type(project, type = "list")
   expect_named(project)
   expect_true("project_name" %in% names(project))
   expect_true("dir_path" %in% names(project))

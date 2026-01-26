@@ -176,7 +176,7 @@ annotate_choices <- function(data_list,
         sum(!is.na(form[, the_col]), na.rm = TRUE)
       }) |>
       unlist()
-    choices$perc <- round((choices$n / choices$n_total),4L)
+    choices$perc <- round((choices$n / choices$n_total), 4L)
     choices$perc_text <- (choices$perc * 100L) |>
       round(1L) |>
       paste0("%")
@@ -573,7 +573,9 @@ save_summary <- function(project, summary_name) {
   summary_details$raw_form_names <- form_names
   summary_details$cols_start <- cols_start
   value <- summary_details |>
-    lapply(function(x_row) {paste0(x_row, collapse = " | ")}) |>
+    lapply(function(x_row) {
+      paste0(x_row, collapse = " | ")
+    }) |>
     unlist() |>
     unname()
   data_list$summary_details <- data.frame(
@@ -1374,7 +1376,7 @@ raw_to_labelled_form <- function(form, project) {
       "You cannot use labelled = 'TRUE' because you have a coding conflict ",
       "in your data dictionary... Try `setup_project` with labelled = 'FALSE'.",
       "The conflicts are from: ",
-      paste0(project$metadata$coding_conflict_field_names, collapse = ", ")
+      toString(project$metadata$coding_conflict_field_names)
     )
   }
   if (nrow(form) > 0L) {
@@ -1575,7 +1577,9 @@ construct_header_list <- function(data_list,
       }) |>
       as.data.frame()
     colnames(x) <- field_names
-    x <- x[which(apply(x, 1L, function(x_row) {any(x_row != "")})), ]
+    x <- x[which(apply(x, 1L, function(x_row) {
+      any(x_row != "")
+    })), ]
     x
   }) |>
     process_df_list(silent = TRUE)

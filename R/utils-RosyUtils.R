@@ -663,11 +663,9 @@ save_csv <- function(form, dir, file_name, overwrite = TRUE) {
     stop("dir doesn't exist")
   path <- file.path(dir, paste0(file_name, ".csv")) |> sanitize_path()
   write_it <- TRUE
-  if (!overwrite) {
-    if (file.exists(path)) {
-      write_it <- FALSE
-      cli_alert_wrap(paste0("Already a file!"), file = path)
-    }
+  if (!overwrite && file.exists(path)) {
+    write_it <- FALSE
+    cli_alert_wrap(paste0("Already a file!"), file = path)
   }
   if (write_it) {
     utils::write.csv(x = form, file = path, row.names = FALSE)

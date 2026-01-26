@@ -93,114 +93,113 @@ assert_web_link <- function(link) {
   link
 }
 #' @noRd
-assert_env_name <- function(env_name,
-                            arg_name = "env_name",
-                            max.chars = 26L,
-                            underscore_allowed_first = FALSE) {
-  assert_character(arg_name,
-                   len = 1L,
-                   min.chars = 1L)
-  assert_integerish(
-    max.chars,
-    len = 1L,
-    lower = 1L,
-    upper = 255L
-  )
-  assert_logical(underscore_allowed_first, len = 1L)
+assert_env_name <- function(x, max.chars = 26L) {
+  assert_character(x, len = 1L, min.chars = 1L)
+  assert_integerish(max.chars,
+                    len = 1L,
+                    lower = 1L,
+                    upper = 255L)
   assert_string(
-    x = env_name,
+    x,
     n.chars = NULL,
     min.chars = 1L,
     max.chars = max.chars,
-    pattern = paste0(
-      ifelse(underscore_allowed_first, "", "^[A-Za-z]"),
-      "[A-Za-z0-9_]*$"
-    ),
+    pattern = "^[A-Za-z][A-Za-z0-9_]*$",
     fixed = NULL,
-    ignore.case = TRUE,
-    .var.name = arg_name
+    ignore.case = TRUE
   )
-  invisible(env_name)
+  invisible(x)
+}
+#' @noRd
+test_env_name <- function(x, max.chars = 26L) {
+  x <- tryCatch(
+    expr = {
+      suppressWarnings({
+        assert_env_name(x = x, max.chars = max.chars)
+      })
+    },
+    error = function(e) {
+      NULL
+    }
+  )
+  !is.null(x)
 }
 #' @noRd
 assert_blank_project <- function(project) {
-  assert_list(
-    project,
-    names = "unique",
-    len = length(.blank_project)
-  )
-  assert_names(
-    names(project),
-    type = "unique",
-    identical.to = names(.blank_project)
-  )
+  assert_list(project, names = "unique", len = length(.blank_project))
+  assert_names(names(project),
+               type = "unique",
+               identical.to = names(.blank_project))
   invisible(project)
 }
 #' @noRd
 assert_setup_project <- function(project) {
   assert_blank_project(project)
-  assert_env_name(
-    env_name = project$project_name,
-    max.chars = 31L,
-    arg_name = "project_name"
-  )
+  assert_env_name(project$project_name, max.chars = 31L)
   # DIRPATH
-  assert_env_name(
-    env_name = project$redcap$token_name,
-    max.chars = 50L,
-    arg_name = "token_name",
-    underscore_allowed_first = TRUE
-  )
+  assert_env_name(project$redcap$token_name, max.chars = 50L)
   # dirpath
-  assert_choice(
-    project$internals$sync_frequency,
-    choices = c("always", "hourly", "daily", "weekly", "monthly", "never")
-  )
-  assert_integerish(project$internals$days_of_log,
-                    len = 1L,
-                    lower = 1L)
-  assert_logical(project$internals$get_files,
-                 len = 1L)
-  assert_logical(project$internals$get_file_repository,
-                 len = 1L)
-  assert_logical(project$internals$original_file_names,
-                 len = 1L)
-  assert_logical(project$internals$entire_log,
-                 len = 1L)
-  assert_logical(project$internals$metadata_only,
-                 len = 1L)
-  assert_logical(project$internals$add_default_fields,
-                 len = 1L)
-  assert_logical(project$internals$add_default_transformation,
-                 len = 1L)
-  assert_logical(project$internals$add_default_summaries,
-                 len = 1L)
-  assert_integerish(
-    project$internals$batch_size_download,
-    len = 1L,
-    lower = 1L
-  )
-  assert_integerish(
-    project$internals$batch_size_upload,
-    len = 1L,
-    lower = 1L
-  )
-  assert_choice(
-    project$internals$get_type,
-    choices = .get_type
-  )
+  assert_choice(project$internals$sync_frequency, choices = .sync_frequency)
+  assert_integerish(project$internals$days_of_log, len = 1L, lower = 1L)
+  assert_choice(project$internals$timezone, choices = OlsonNames())
+  assert_logical(project$internals$get_files, len = 1L)
+  assert_logical(project$internals$get_file_repository, len = 1L)
+  assert_logical(project$internals$original_file_names, len = 1L)
+  assert_logical(project$internals$entire_log, len = 1L)
+  assert_logical(project$internals$metadata_only, len = 1L)
+  assert_logical(project$internals$add_default_fields, len = 1L)
+  assert_logical(project$internals$add_default_transformation, len = 1L)
+  assert_logical(project$internals$add_default_summaries, len = 1L)
+  assert_integerish(project$internals$batch_size_download, len = 1L, lower = 1L)
+  assert_integerish(project$internals$batch_size_upload, len = 1L, lower = 1L)
+  assert_choice(project$internals$get_type, choices = .get_type)
   # assert_web_link(project$links$redcap_base) # argName
   invisible(project)
 }
 #' @noRd
-assert_project_details <- function(projects, nrows = NULL) {
-  the_output <- assert_data_frame(
-    x = projects,
+test_setup_project <- function(project) {
+  project <- tryCatch(
+    expr = {
+      suppressWarnings({
+        assert_setup_project(project = project)
+      })
+    },
+    error = function(e) {
+      NULL
+    }
+  )
+  !is.null(project)
+}
+#' @noRd
+assert_project_details <- function(project_details, nrows = NULL) {
+  assert_data_frame(
+    x = project_details,
     nrows = nrows,
     ncols = length(.blank_project_cols)
   )
-  assert_names(colnames(projects), permutation.of = .blank_project_cols)
-  the_output
+  assert_names(colnames(project_details), must.include = .blank_project_cols)
+  if (nrow(project_details) > 0L) {
+    project_details$project_name |>
+      lapply(function(project_name) {
+        assert_env_name(project_name, max.chars = 31L)
+    })
+    assert_names(project_details$project_name, type = "unique")
+  }
+  project_details
+}
+#' @noRd
+test_project_details <- function(project_details, nrows = NULL) {
+  project_details <- tryCatch(
+    expr = {
+      suppressWarnings({
+        assert_project_details(project_details = project_details, nrows = nrows)
+      })
+    },
+    error = function(e) {
+      NULL
+    }
+  )
+  !is.null(project_details)
 }
 #' @noRd
 assert_project_path <- function(project_path) {

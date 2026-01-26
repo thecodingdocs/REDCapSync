@@ -21,8 +21,6 @@ test_that("assert_env_name works!", {
   expect_error(assert_env_name("_form"))
   expect_no_error(assert_env_name("ABCD", max.chars = 4L))
   expect_error(assert_env_name("ABCDE", max.chars = 4L))
-  expect_error(assert_env_name("_ABCD", underscore_allowed_first = FALSE))
-  expect_no_error(assert_env_name("_ABCD", underscore_allowed_first = TRUE))
 })
 # assert_blank_project ( Internal )
 test_that("assert_blank_project works!", {

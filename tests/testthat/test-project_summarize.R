@@ -114,7 +114,7 @@ test_that("add_project_summary works!", {
   expect_true(s$include_users)
   expect_false(s$with_links)
   expect_false(s$separate)
-  expect_type(s$file_name,type = "character")
+  expect_type(s$file_name, type = "character")
 })
 # save_summary ( Internal )
 test_that("save_summary works", {
@@ -188,7 +188,7 @@ test_that("generate_project_summary works!", {
   expect_false("forms" %in% names(project_summary))
   expect_false("fields" %in% names(project_summary))
   expect_false("choices" %in% names(project_summary))
-  project_summary <-generate_project_summary(
+  project_summary <- generate_project_summary(
     project = project,
     summary_name = "REDCapSync",
     exclude_identifiers = FALSE)

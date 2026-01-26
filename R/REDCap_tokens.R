@@ -59,7 +59,7 @@ is_valid_redcap_token <- function(token, silent = TRUE) {
   start_text <- "The token "
   token_text <- NULL
   end_text <- "is not a valid 32-character hexadecimal value."
-  trimmed_token <- trimws(token, whitespace = "[\\h\\v]")
+  trimmed_token <- trimws(token, whitespace = .whitespace)
   if (is.null(token)) {
     token_text <- "is `NULL`,"
     cli_alert_danger(paste0(start_text, token_text, end_text))

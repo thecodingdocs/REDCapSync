@@ -37,19 +37,23 @@ test_that("rcon_result returns expected structure without real API calls", {
            project_title = "Fake Project",
            has_repeating_instruments_or_events = "0")
     },
-    arms = function() data.frame(arm = character(0L),
-                                 stringsAsFactors = FALSE),
-    events = function() data.frame(event = character(0L),
-                                   stringsAsFactors = FALSE),
+    arms = function() {
+      data.frame(arm = character(0L), stringsAsFactors = FALSE)
+    },
+    events = function() {
+      data.frame(event = character(0L), stringsAsFactors = FALSE)
+    },
     mapping = function() data.frame(),
     instruments = function() {
       data.frame(instrument = "form1", stringsAsFactors = FALSE)
     },
     repeatInstrumentEvent = function() data.frame(),
-    metadata = function() data.frame(field_name = character(0L),
-                                     stringsAsFactors = FALSE),
-    users = function() data.frame(username = character(0L),
-                                  stringsAsFactors = FALSE),
+    metadata = function() {
+      data.frame(field_name = character(0L), stringsAsFactors = FALSE)
+    },
+    users = function() {
+      data.frame(username = character(0L), stringsAsFactors = FALSE)
+    },
     user_roles = function() data.frame(),
     user_role_assignment = function() data.frame(),
     dags = function() data.frame(),

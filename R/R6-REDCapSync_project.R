@@ -1,13 +1,13 @@
 #' @title REDCapSync Encapsulated Project Object
 #' @description
 #' [R6][R6::R6Class] project object for [REDCapSync]
-#' This is the main class for managing REDCap data, metadata, and sync operations.
-#' Users should construct objects using [setup_project()]. To reopen an existing
-#' project, use [load_project()] or explore offline examples using
+#' This is the main class for managing REDCap data, metadata, and sync
+#' operations. Users should construct objects using [setup_project()]. To reopen
+#' an existing project, use [load_project()] or explore offline examples using
 #' [load_test_project()].
 #' @param summary_name Character. The name of the configured summary from which
-#' to generate the summary. *If you provide `summary_name` all other parameters are
-#' inherited according to what was set with `add_project_summary`.
+#' to generate the summary. *If you provide `summary_name` all other parameters
+#' are inherited according to what was set with `add_project_summary`.
 #' @param transformation_type Character scalar. How to transform data for the
 #' summary.
 #' Default is "default".
@@ -34,8 +34,8 @@
 #' Default is `NULL`, which includes all forms.
 #' @param field_names Character vector. Names of specific fields to include in
 #' the summary. Default is `NULL`, which includes all fields.
-#' @param exclude_identifiers Logical. Whether to exclude identifiers in the data
-#' in the summary. Default is `TRUE`.
+#' @param exclude_identifiers Logical. Whether to exclude identifiers in the
+#' data in the summary. Default is `TRUE`.
 #' @param exclude_free_text Logical. If `TRUE`, exclude free text fields
 #' intended for de-identification workflows. Default is `FALSE`.
 #' @param date_handling character string. One of `none`,`exclude_dates`,
@@ -227,8 +227,8 @@ REDCapSync_project <- R6Class(
     #' @description
     #' Updates the REDCap data for (`project` object) by checking REDCap log for
     #'  changes. Sync is performed according to the `sync_frequency` set in
-    #'  [setup_project()] by default. Use `hard_check` to force a check, or `hard_reset` to
-    #'  force a complete refresh.
+    #'  [setup_project()] by default. Use `hard_check` to force a check, or `
+    #'  hard_reset` to force a complete refresh.
     #' @return Messages for confirmation.
     #' @seealso
     #' \link{setup_project} for initializing the `project` object.'

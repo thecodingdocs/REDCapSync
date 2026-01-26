@@ -1,6 +1,7 @@
 #' @keywords internal
 "_PACKAGE"
 ## usethis namespace: start
+#' @importFrom checkmate assert
 #' @importFrom checkmate assert_choice
 #' @importFrom checkmate assert_date
 #' @importFrom checkmate assert_environment
@@ -22,6 +23,11 @@
 #' @importFrom checkmate assert_set_equal
 #' @importFrom checkmate check_set_equal
 #' @importFrom checkmate check_true
+#' @importFrom checkmate test_vector
+#' @importFrom checkmate test_character
+#' @importFrom checkmate test_logical
+#' @importFrom checkmate test_integerish
+#' @importFrom checkmate test_choice
 #' @importFrom cli cli_abort
 #' @importFrom cli cli_warn
 #' @importFrom cli cli_text

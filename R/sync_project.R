@@ -13,6 +13,7 @@ sync_project <- function(project,
                  len = 1L)
   do_sync <- due_for_sync(project_name = project$project_name) ||
     hard_reset || hard_check
+  was_updated <- FALSE
   if (!do_sync) {
     cli_alert_info(
       paste0("{project$project_name} not due for sync ",
@@ -42,16 +43,13 @@ sync_project <- function(project,
           !is_something(project$internals$last_data_update) ||
           !is_something(project$internals$last_full_update)) {
         hard_reset <- TRUE
-        cli_alert_info(
-          "Project has not yet completed a full sync. Performing a hard reset."
-        )
       } else {
         if (!project$redcap$has_log_access) {
           cli_alert_danger(
             paste0( # fix for when access is changed
               "You do not have logging access to this REDCap project. If you ",
               "want to refresh the data use `project$sync(hard_reset = TRUE)`.",
-              " Request logging access for more efficient use of API exports."
+              " Request logging access for more effecient use of API exports."
             )
           )
           return(project)
@@ -162,6 +160,7 @@ sync_project <- function(project,
           project$internals$last_data_update <- now_time()
         cli_alert_wrap(paste0("Full ", project$project_name, " update!"),
                        bullet_type = "v")
+        was_updated <- TRUE
       }
     } else {
       if (will_update) {
@@ -224,6 +223,7 @@ sync_project <- function(project,
           }
         }
         message("Updated: ", message_string)
+        was_updated <- TRUE
       } else {
         message("Up to date already!")
       }
@@ -245,19 +245,32 @@ sync_project <- function(project,
         get_redcap_files(
           # would want track internally?
           project,
-          original_file_names = project$internals$original_file_names
-        )
-        #overwrite for new files?
+          original_file_names = project$internals$original_file_names,
+          overwrite = TRUE
+        ) # account for needed overwrites from new records
       }
     }
     if (project$internals$get_file_repository) {
       # get_redcap_file_repository()
     }
     if (summarize) {
+      first_stamp <- project$internals$last_summary
       project <- summarize_project(project = project, hard_reset = hard_reset)
+      second_stamp <- project$internals$last_summary
+      was_updated <- was_updated ||
+        !identical(first_stamp, second_stamp)
     }
-    project <- save_project(project)
-    #can make more effecient by splitting save data from save everything else
+    if (was_updated) {
+      project <- save_project(project)
+    } else {
+      project$internals$last_directory_save <- project$internals$last_sync
+      project_details <- extract_project_details(project)
+      saveRDS(
+        object = project_details,
+        file = get_project_path2(project, type = "details")
+      ) # add error check
+      add_project_details_to_cache(project_details)
+    }
   }
   invisible(project)
 }

@@ -1,6 +1,6 @@
 test_that("R6 object works!", {
   project_r6 <- REDCapSync_project$new(mock_project())
-  expect_r6_class(project_r6,"REDCapSync_project")
+  expect_r6_class(project_r6, "REDCapSync_project")
   REDCapSync_project$public_methods |> names()
   REDCapSync_project$active |> names()
   REDCapSync_project$private_fields |> names()
@@ -17,8 +17,10 @@ test_that("active_bindings R6 read-only", {
   names(REDCapSync_project$active)
   for (active_name in names(REDCapSync_project$active)){
     original <- project_r6[[active_name]]
-    expect_in(active_name,names(REDCapSync_project$active))
-    expect_message({project_r6[[active_name]] <- "fake data"},"is read only")
-    expect_identical(original,project_r6[[active_name]])
+    expect_in(active_name, names(REDCapSync_project$active))
+    expect_message({
+      project_r6[[active_name]] <- "fake data"
+    }, "is read only")
+    expect_identical(original, project_r6[[active_name]])
   }
 })

@@ -1,12 +1,12 @@
 # upload_form_to_REDCap ( Exported )
 test_that("upload() uploads a single data.frame and then hard-check syncs", {
   # Load test project list and create R6 wrapper
-  proj_list <- REDCapSync:::TEST_CLASSIC
+  proj_list <- TEST_CLASSIC
   proj_list$internals$labelled <- FALSE
   project <- REDCapSync_project$new(proj_list)
   upload_calls <- 0L
   sync_calls <- 0L
-  df <- data.frame(record_id = c("1", "2"), age = c(50, 60))
+  df <- data.frame(record_id = c("1", "2"), age = c(50L, 60L))
   testthat::local_mocked_bindings(
     upload_form_to_redcap = function(to_be_uploaded, project, batch_size) {
       upload_calls <<- upload_calls + 1L
@@ -27,8 +27,8 @@ test_that("upload() uploads a single data.frame and then hard-check syncs", {
   expect_identical(upload_calls, 1L)
   expect_identical(sync_calls, 1L)
 })
-test_that("upload() converts labelled data before uploading when internals$labelled is TRUE", {
-  proj_list <- REDCapSync:::TEST_CLASSIC
+test_that("upload() converts labelled data before uploading", {
+  proj_list <- TEST_CLASSIC
   proj_list$internals$labelled <- TRUE
   project <- REDCapSync_project$new(proj_list)
   labelled_calls <- 0L
@@ -59,7 +59,7 @@ test_that("upload() converts labelled data before uploading when internals$label
   expect_identical(upload_calls, 1L)
 })
 test_that("upload() returns FALSE and does not call API if nothing to upload", {
-  proj_list <- REDCapSync:::TEST_CLASSIC
+  proj_list <- TEST_CLASSIC
   proj_list$internals$labelled <- FALSE
   project <- REDCapSync_project$new(proj_list)
   upload_calls <- 0L

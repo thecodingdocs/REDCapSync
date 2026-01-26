@@ -8,9 +8,9 @@ An R6ClassGenerator
 }
 \description{
 \link[R6:R6Class]{R6} project object for \link{REDCapSync}
-This is the main class for managing REDCap data, metadata, and sync operations.
-Users should construct objects using \code{\link[=setup_project]{setup_project()}}. To reopen an existing
-project, use \code{\link[=load_project]{load_project()}} or explore offline examples using
+This is the main class for managing REDCap data, metadata, and sync
+operations. Users should construct objects using \code{\link[=setup_project]{setup_project()}}. To reopen
+an existing project, use \code{\link[=load_project]{load_project()}} or explore offline examples using
 \code{\link[=load_test_project]{load_test_project()}}.
 }
 \seealso{
@@ -96,8 +96,7 @@ Print project metadata
 \subsection{Method \code{sync()}}{
 Updates the REDCap data for (\code{project} object) by checking REDCap log for
 changes. Sync is performed according to the \code{sync_frequency} set in
-\code{\link[=setup_project]{setup_project()}} by default. Use \code{hard_check} to force a check, or \code{hard_reset} to
-force a complete refresh.
+\code{\link[=setup_project]{setup_project()}} by default. Use \code{hard_check} to force a check, or \code{ hard_reset} to force a complete refresh.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$sync(
   summarize = TRUE,
@@ -170,8 +169,8 @@ Add a new summary entry
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{summary_name}}{Character. The name of the configured summary from which
-to generate the summary. *If you provide \code{summary_name} all other parameters are
-inherited according to what was set with \code{add_project_summary}.}
+to generate the summary. *If you provide \code{summary_name} all other parameters
+are inherited according to what was set with \code{add_project_summary}.}
 
 \item{\code{transformation_type}}{Character scalar. How to transform data for the
 summary.
@@ -207,8 +206,8 @@ the summary. Default is \code{NULL}, which includes all fields.}
 \item{\code{form_names}}{Character vector. Names of forms to include in the summary.
 Default is \code{NULL}, which includes all forms.}
 
-\item{\code{exclude_identifiers}}{Logical. Whether to exclude identifiers in the data
-in the summary. Default is \code{TRUE}.}
+\item{\code{exclude_identifiers}}{Logical. Whether to exclude identifiers in the
+data in the summary. Default is \code{TRUE}.}
 
 \item{\code{exclude_free_text}}{Logical. If \code{TRUE}, exclude free text fields
 intended for de-identification workflows. Default is \code{FALSE}.}
@@ -299,8 +298,8 @@ Add a new summary entry
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{summary_name}}{Character. The name of the configured summary from which
-to generate the summary. *If you provide \code{summary_name} all other parameters are
-inherited according to what was set with \code{add_project_summary}.}
+to generate the summary. *If you provide \code{summary_name} all other parameters
+are inherited according to what was set with \code{add_project_summary}.}
 
 \item{\code{envir}}{environment variable}
 }
@@ -412,8 +411,8 @@ save summary to Excel
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{summary_name}}{Character. The name of the configured summary from which
-to generate the summary. *If you provide \code{summary_name} all other parameters are
-inherited according to what was set with \code{add_project_summary}.}
+to generate the summary. *If you provide \code{summary_name} all other parameters
+are inherited according to what was set with \code{add_project_summary}.}
 }
 \if{html}{\out{</div>}}
 }

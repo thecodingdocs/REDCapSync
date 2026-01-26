@@ -340,23 +340,6 @@ add_field_elements <- function(fields) {
 update_project_links <- function(project) {
   redcap_base <- project$links$redcap_base
   redcap_version <- project$redcap$version
-
-  # Warn if link components are missing and exit to avoid overwriting links
-  if (!is_something(redcap_base) ||
-      !is_something(redcap_version) ||
-      !is_something(project$redcap$project_id)) {
-
-    cli_alert_warning(
-      paste0(
-        "Unable to update REDCap links because required information is ",
-        "missing. Need `project$links$redcap_base`, `project$redcap$version`, ",
-        "and successful `project$redcap$project_id`. This is needed for ",
-        "the first metadata sync. Run `project$sync(hard_reset = TRUE)`."
-      )
-    )
-    return(invisible(project))
-  }
-
   link_head <- paste0(redcap_base, "redcap_v", redcap_version)
   link_tail <- paste0("?pid=", project$redcap$project_id)
   home <- paste0("/index.php", link_tail)
@@ -474,15 +457,17 @@ get_redcap_log <- function(project,
                             log_begin_date = Sys.Date() - 10L) {
   assert_setup_project(project)
   assert_date(log_begin_date)
+  beginTime <- as.character(log_begin_date) |>
+    paste("00:00:00") |>
+    as.POSIXct()
   redcap_log <- exportLogging(
     rcon = redcapConnection(url = project$links$redcap_uri,
                             token = get_project_token(project)),
-    logtype = character(0),
-    user = character(0),
-    record = character(0),
-    beginTime = as.character(log_begin_date) |> paste("00:00:00") |>
-      as.POSIXct(),
-    endTime = as.POSIXct(character(0))
+    logtype = character(0L),
+    user = character(0L),
+    record = character(0L),
+    beginTime = beginTime,
+    endTime = as.POSIXct(character(0L))
   )
   #addtrycatch NULL
   if (is.null(redcap_log)) {

@@ -14,17 +14,18 @@ setup_project(
   sync_frequency = "daily",
   labelled = TRUE,
   hard_reset = FALSE,
-  records = NULL,
-  fields = NULL,
-  forms = NULL,
-  events = NULL,
-  filter_logic = NULL,
   get_type = "identified",
+  records = NA,
+  fields = NA,
+  forms = NA,
+  events = NA,
+  filter_logic = NA,
   metadata_only = FALSE,
   batch_size_download = 2000L,
   batch_size_upload = 500L,
   entire_log = FALSE,
   days_of_log = 10L,
+  timezone = Sys.timezone(),
   get_files = FALSE,
   get_file_repository = FALSE,
   original_file_names = FALSE,
@@ -63,6 +64,9 @@ Default is \code{TRUE}.}
 \item{hard_reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the
 \code{project} object already exists. Default is \code{FALSE}.}
 
+\item{get_type}{optional character of REDCap API call type.
+data as if user ran \code{sync_project}. Default is \code{FALSE}.}
+
 \item{records}{An array, where each element corresponds to the ID of a
 desired record.  Optional.}
 
@@ -80,9 +84,6 @@ filtering the data to be returned by this API method, in which the API
 will only return the records (or record-events, if a longitudinal project)
 where the logic evaluates as TRUE.   An blank/empty string returns all records.}
 
-\item{get_type}{optional character of REDCap API call type.
-data as if user ran \code{sync_project}. Default is \code{FALSE}.}
-
 \item{metadata_only}{Logical (TRUE/FALSE). If TRUE, updates only the
 metadata. Default is \code{FALSE}.}
 
@@ -98,6 +99,9 @@ Default is \code{FALSE}.}
 \item{days_of_log}{Integer. Number of days to be checked in the log if a
 hard_reset
 or new project is setup. Default is \code{10}.}
+
+\item{timezone}{optional timezone set of the REDCap server. Otherwise, will
+assume Sys.timezone. Options from \code{OlsonNames()}.}
 
 \item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
 Default is \code{FALSE}.}

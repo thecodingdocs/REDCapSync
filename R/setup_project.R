@@ -43,6 +43,8 @@
 #' @param days_of_log Integer. Number of days to be checked in the log if a
 #' hard_reset
 #' or new project is setup. Default is `10`.
+#' @param timezone optional timezone set of the REDCap server. Otherwise, will
+#' assume Sys.timezone. Options from `OlsonNames()`.
 #' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
 #' Default is `FALSE`.
 #' @param get_file_repository Logical (TRUE/FALSE). If TRUE, retrieves file
@@ -91,65 +93,94 @@ setup_project <- function(project_name,
                           sync_frequency = "daily",
                           labelled = TRUE,
                           hard_reset = FALSE,
-                          records = NULL,
-                          fields = NULL,
-                          forms = NULL,
-                          events = NULL,
-                          filter_logic = NULL,
                           get_type = "identified",
+                          records = NA,
+                          fields = NA,
+                          forms = NA,
+                          events = NA,
+                          filter_logic = NA,
                           metadata_only = FALSE,
                           batch_size_download = 2000L,
                           batch_size_upload = 500L,
                           entire_log = FALSE,
                           days_of_log = 10L,
+                          timezone = Sys.timezone(),
                           get_files = FALSE,
                           get_file_repository = FALSE,
                           original_file_names = FALSE,
                           add_default_fields = FALSE,
                           add_default_transformation = FALSE,
                           add_default_summaries = TRUE) {
-  silent <- FALSE
-  assert_env_name(
-    env_name = project_name,
-    max.chars = 31L,
-    arg_name = "project_name"
-  )
-  # DIRPATH
-  # need checks on setup project if project id is same
-  assert_env_name(
-    env_name = token_name,
-    max.chars = 50L,
-    arg_name = "token_name",
-    underscore_allowed_first = TRUE
-  )
-  assert_logical(hard_reset, len = 1L)
+  assert_env_name(project_name, max.chars = 31L)
+  # dir_path
+  # redcap_uri
+  assert_env_name(token_name, max.chars = 50L)
+  assert_choice(sync_frequency, choices = .sync_frequency)
   assert_logical(labelled, len = 1L)
-  assert_integerish(days_of_log,
-                    len = 1L,
-                    lower = 1L)
+  assert_logical(hard_reset, len = 1L)
+  assert_choice(get_type, choices = .get_type)
+  assert(
+    test_vector(records, len = 1L, all.missing = TRUE) ||
+      test_character(
+        records, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert(
+    test_vector(fields, len = 1L, all.missing = TRUE) ||
+      test_character(
+        fields, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert(
+    test_vector(forms, len = 1L, all.missing = TRUE) ||
+      test_character(
+        forms, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert(
+    test_vector(events, len = 1L, all.missing = TRUE) ||
+      test_character(
+        events, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert(
+    test_vector(filter_logic, len = 1L, all.missing = TRUE) ||
+      test_character(
+        filter_logic, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert_logical(metadata_only, len = 1L)
+  assert_integerish(batch_size_download, len = 1L, lower = 1L)
+  assert_integerish(batch_size_upload, len = 1L, lower = 1L)
+  assert_logical(entire_log, len = 1L)
+  assert_integerish(days_of_log, len = 1L, lower = 1L)
+  assert_choice(timezone, OlsonNames())
   assert_logical(get_files, len = 1L)
   assert_logical(get_file_repository, len = 1L)
   assert_logical(original_file_names, len = 1L)
-  assert_logical(entire_log, len = 1L)
-  assert_logical(metadata_only, len = 1L)
   assert_logical(add_default_fields, len = 1L)
   assert_logical(add_default_transformation, len = 1L)
   assert_logical(add_default_summaries, len = 1L)
-  assert_env_name(project_name)
-  # assert_env_name(
-  #   merge_form_name,
-  #   max.chars = 31,
-  #   arg_name = "merge_form_name"
-  # )
-  assert_choice(get_type, choices = .get_type)
-  assert_choice(sync_frequency, choices = .sync_frequency)
-  assert_integerish(batch_size_download,
-                    len = 1L,
-                    lower = 1L)
-  assert_integerish(batch_size_upload,
-                    len = 1L,
-                    lower = 1L)
-  assert_logical(silent, len = 1L)
   if (missing(redcap_uri)) {
     #use options or Renviron?
   }
@@ -163,27 +194,6 @@ setup_project <- function(project_name,
   original_details <- NULL
   if (!in_proj_cache && !missing_dir_path) {
     #this will add existing project to cache if not there already
-    project_details_path <- get_project_path(project_name = project_name,
-                                             dir_path = dir_path,
-                                             type = "details")
-    if (file.exists(project_details_path)) {
-      project_details <- tryCatch(
-        expr = {
-          suppressWarnings({
-            project_details <- readRDS(file = project_details_path)
-            assert_project_details(project_details)
-          })
-        },
-        error = function(e) {
-          NULL
-        }
-      )
-      if (!is.null(project_details)) {
-        add_project_details_to_cache(project_details)
-      } else {
-        cli_alert_warning("currupted project_details so will be overwritten")
-      }
-    }
   }
   if (!hard_reset) {
     # attempt to load existing project unless hard_reset
@@ -200,11 +210,7 @@ setup_project <- function(project_name,
     was_loaded <- !is.null(project)
     if (!was_loaded) {
       project <- .blank_project
-      cli_alert_wrap(
-        "Setup blank project because nothing found in cache or directory.",
-        bullet_type = "!",
-        silent = silent
-      )
+      cli_alert_warning("Setup blank project. Nothing in cache or directory.")
     }
     if (was_loaded) {
       # compare current setting to previous settings...
@@ -243,8 +249,7 @@ setup_project <- function(project_name,
   if (hard_reset) {
     # load blank if hard_reset = TRUE
     project <- .blank_project
-    cli_alert_wrap(paste0("Setup blank project because `hard_reset = TRUE`"),
-                   silent = silent)
+    cli_alert_wrap("Setup blank project because `hard_reset = TRUE`")
   }
   if (missing_dir_path) {
     if (!is_something(project$dir_path)) {
@@ -253,6 +258,7 @@ setup_project <- function(project_name,
         "in R session. Package is meant to be used with a directory."))
     }
   }
+  project$project_name <- project_name
   if (!missing_dir_path) {
     # will also ask user if provided dir is new or different
     # (will load from original but start using new dir)
@@ -262,33 +268,30 @@ setup_project <- function(project_name,
       showWarnings = FALSE
     )
   }
-  project$project_name <- project_name
+  project$links$redcap_uri <- redcap_uri # add test, should end in / or add it
   project$redcap$token_name <- token_name
   project$internals$sync_frequency <- sync_frequency
   project$internals$labelled <- labelled
-  project$internals$original_file_names <- original_file_names
-  project$internals$entire_log <- entire_log
-  project$internals$days_of_log <- days_of_log |>
-    assert_integerish() |>
-    as.integer()
-  project$internals$get_files <- get_files
+  project$internals$hard_reset <- hard_reset
   project$internals$get_type <- get_type
+  project$internals$records <- records
+  project$internals$fields <- fields
+  project$internals$forms <- forms
+  project$internals$events <- events
+  project$internals$filter_logic <- filter_logic
   project$internals$metadata_only <- metadata_only
-  project$internals$add_default_fields <-
-    add_default_fields
-  project$internals$add_default_transformation <-
-    add_default_transformation
-  project$internals$add_default_summaries <-
-    add_default_summaries
-  project$internals$batch_size_download <- batch_size_download |>
-    assert_integerish() |>
-    as.integer()
-  project$internals$batch_size_upload <- batch_size_upload |>
-    assert_integerish() |>
-    as.integer()
+  project$internals$batch_size_download <- batch_size_download
+  project$internals$batch_size_upload <- batch_size_upload
+  project$internals$entire_log <- entire_log
+  project$internals$days_of_log <- days_of_log
+  project$internals$timezone <- timezone
+  project$internals$get_files <- get_files
   project$internals$get_file_repository <- get_file_repository
+  project$internals$original_file_names <- original_file_names
+  project$internals$add_default_fields <- add_default_fields
+  project$internals$add_default_transformation <- add_default_transformation
+  project$internals$add_default_summaries <- add_default_summaries
   #test theese
-  project$links$redcap_uri <- redcap_uri # add test, should end in / or add it
   project$links$redcap_base <- redcap_uri |> dirname() |> paste0("/")
   project$internals$is_blank <- FALSE
   project$data <- all_character_cols_list(project$data)
@@ -301,7 +304,6 @@ setup_project <- function(project_name,
     # final_details <- project |> extract_project_details()
     # message about changes compared to original
   }
-  project$internals$last_directory_save <- now_time()
   invisible(REDCapSync_project$new(project))
 }
 .sync_frequency <- c("always",
@@ -321,14 +323,15 @@ get_project_path <- function(project_name,
                              dir_path,
                              type = "",
                              check_dir = FALSE) {
-  assert_env_name(project_name)
+  assert_env_name(project_name, max.chars = 31L)
   if (check_dir) {
     assert_dir(dir_path)
   }
   assert_choice(type, .project_file_types)
   file_name <- paste0(project_name, "_REDCapSync")
-  if (type != "")
+  if (type != "") {
     file_name <- paste0(file_name, "_", type)
+  }
   file_name <- paste0(file_name, ".RData")
   file_path <- file.path(dir_path, "R_objects", file_name)
   sanitize_path(file_path)
@@ -361,9 +364,10 @@ load_project <- function(project_name) {
   }
   if (!project_name %in% projects$project_name) {
     stop(
-      "No project named ",
+      "No project called ",
       project_name,
-      " in cache. Did you use `setup_project(...)` and `project$sync()`?"
+      ". Did you use `setup_project(...)` and `project$sync()`? Options: ",
+      toString(projects$project_name)
     )
   }
   dir_path <- projects$dir_path[
@@ -383,6 +387,7 @@ load_project <- function(project_name) {
     )
   }
   project <- readRDS(file = project_path)
+  project <- repair_setup_project(project)
   project <- assert_setup_project(project)
   #   check if in cache already and relation!
   # SAVE
@@ -394,6 +399,17 @@ load_project <- function(project_name) {
     )
   }
   project$dir_path <- dir_path
+  project_details_path <- get_project_path(project_name = project_name,
+                                           dir_path = dir_path,
+                                           type = "details")
+  if (file.exists(project_details_path)) {
+    saved_project_details <- readRDS(project_details_path)
+    if (saved_project_details$project_name == project$project_name) {
+      project$internals$last_sync <- saved_project_details$last_sync
+      project$internals$last_directory_save <-
+        saved_project_details$last_directory_save
+    }
+  }
   project |> extract_project_details() |> add_project_details_to_cache()
   the_message <- paste0("Loaded {project$project_name}!")
   if (due_for_sync(project$project_name)) {
@@ -513,7 +529,6 @@ save_project <- function(project, silent = FALSE) {
     last_clean = NULL,
     last_directory_save = NULL,
     last_sync = NULL,
-    sync_vector_clock = 0L,
     labelled = NULL,
     timezone = NULL,
     get_files = NULL,
@@ -521,12 +536,12 @@ save_project <- function(project, silent = FALSE) {
     original_file_names = NULL,
     days_of_log = NULL,
     entire_log = NULL,
-    data_extract_merged = NULL,
     project_type = "redcap",
     is_blank = TRUE,
     is_test = FALSE,
     ever_connected = FALSE,
-    is_clean = FALSE
+    is_clean = FALSE,
+    hard_reset = FALSE
   ),
   links = list(
     redcap_uri = NULL,
@@ -582,7 +597,8 @@ clean_dir_path <- function(dir_path) {
   if (!is.character(dir_path))
     stop("dir must be a character string")
   dir_path <- dir_path |>
-    trimws(whitespace = "[\\h\\v]") |>
+    trimws(whitespace = .whitespace) |>
     sanitize_path()
   dir_path
 }
+.whitespace <- "[\\h\\v]"

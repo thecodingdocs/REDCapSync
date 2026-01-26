@@ -18,16 +18,19 @@ get_projects <- function() {
       readRDS()
     if (!does_exist) {
       cli_alert_warning("You have no projects cached. Try `setup_project(...)`")
+      return(.blank_project_details)
     }
-    is_ok <- all(colnames(.blank_project_details) %in% colnames(projects))
+    is_ok <- all(.blank_project_cols %in% colnames(projects))
     if (!is_ok) {
-      cli_alert_warning(
-        paste0("You have projects cached. But due to a version change or other",
-               " issue, it has to be reset. Use `setup_project(...)`"))
-      cache_clear()
+      projects <- repair_projects(projects)
+      is_ok <- !is.null(projects)
     }
   }
-  if (!does_exist || !is_ok) {
+  if (!is_ok) {
+    cli_alert_warning(
+      paste0("You have projects cached. But due to a version change or other",
+             " issue, it has to be reset. Use `setup_project(...)`"))
+    cache_clear()
     return(.blank_project_details)
   }
   # projects$project_name |> paste0(collapse = "\n") |> message()
@@ -101,8 +104,6 @@ get_projects <- function() {
 )
 #' @noRd
 save_projects_to_cache <- function(projects, silent = TRUE) {
-  project_col_names <- colnames(projects) |> vec1_in_vec2(.blank_project_cols)
-  projects <- projects[, project_col_names]
   assert_project_details(projects)
   projects <- projects[order(projects$project_name), ]
   saveRDS(projects, file = cache_path() |> file.path("projects.rds"))
@@ -153,6 +154,9 @@ extract_project_details <- function(project) {
   project_details$metadata_only <- project$internals$metadata_only
   project_details$labelled <- project$internals$labelled
   project_details$get_type <- project$internals$get_type
+  project_details$timezone <- project$internals$timezone |>
+    na_if_null() |>
+    as.character()
   # redcap --------
   project_details$version <- na_if_null(project$redcap$version)
   project_details$token_name <- na_if_null(project$redcap$token_name)
@@ -174,9 +178,6 @@ extract_project_details <- function(project) {
     na_if_null() |>
     as.character()
   # saving ----
-  project_details$timezone <- project$internals$timezone |>
-    na_if_null() |>
-    as.character()
   project_details$last_sync <- project$internals$last_sync |>
     na_if_null() |>
     as.POSIXct(tz = Sys.timezone())

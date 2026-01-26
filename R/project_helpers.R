@@ -42,12 +42,10 @@ deidentify_data_list <- function(data_list,
   id_cols <- metadata$form_key_cols |>
     unlist() |>
     unique()
-  if (is_something(id_cols)) {
-    if (any(id_cols %in% exclusions)) {
-      stop("ID cols not allowed... ",
-           toString(id_cols),
-           " <-- use hashing (in dev)")
-    }
+  if (is_something(id_cols) && any(id_cols %in% exclusions)) {
+    stop("ID cols not allowed... ",
+         toString(id_cols),
+         " <-- use hashing (in dev)")
   }
   if (exclude_free_text) {
     # placeholder
@@ -155,20 +153,18 @@ filter_data_list <- function(data_list,
       field_names = field_names_minus, strict = TRUE)
     form_names <- vec1_in_vec2(form_names, form_names_minus)
   }
-  missing_filter <- is.null(filter_list) &&
-    is.null(filter_choices) &&
-    is.null(filter_field)
+  # missing_filter <- is.null(filter_list) &&
+  #   is.null(filter_choices) &&
+  #   is.null(filter_field)
   out_list <- list()
   if (is.null(filter_list)) {
     if (!is.null(filter_field) && !is.null(filter_choices)) {
       filter_list <- list(filter_choices)
       names(filter_list) <- filter_field
     }
-  } else {
-    if (!is.null(filter_field) || !is.null(filter_choices)) {
-      cli_alert_warning(
-        "use `filter_list` or `filter_field` & `filter_choices`")
-    }
+  } else if (!is.null(filter_field) || !is.null(filter_choices)) {
+    cli_alert_warning(
+      "use `filter_list` or `filter_field` & `filter_choices`")
   }
   filter_field_names <- NULL
   if (!is.null(filter_list)) {
@@ -195,9 +191,9 @@ filter_data_list <- function(data_list,
       unlist() |>
       unique()
     is_key <- all(filter_field_names %in% form_key_cols)
-    repeating_rows <- which(data_list$metadata$forms$repeating)
-    is_repeating_filter_form <- filter_form %in%
-      data_list$metadata$forms$form_name[repeating_rows]
+    # repeating_rows <- which(data_list$metadata$forms$repeating)
+    # is_repeating_filter_form <- filter_form %in%
+    #   data_list$metadata$forms$form_name[repeating_rows]
   }
   # can use this to have repeats capture non-rep events
   for (form_name in form_names) {
@@ -570,7 +566,9 @@ clean_redcap_log <- function(redcap_log) {
   redcap_log$record_id <- NA
   redcap_log$action_type <- NA
   redcap_log <- redcap_log |>
-    lapply(function(x) {trimws(x, whitespace = "[\\h\\v]")}) |>
+    lapply(function(x) {
+      trimws(x, whitespace = .whitespace)
+    }) |>
     as.data.frame()
   design_test <- redcap_log$action == "Manage/Design"
   design_rows <- which(design_test)

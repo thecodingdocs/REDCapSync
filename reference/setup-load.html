@@ -67,17 +67,18 @@
 <span>  sync_frequency <span class="op">=</span> <span class="st">"daily"</span>,</span>
 <span>  labelled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  hard_reset <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  records <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  fields <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  forms <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  events <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  filter_logic <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  get_type <span class="op">=</span> <span class="st">"identified"</span>,</span>
+<span>  records <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  fields <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  forms <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  events <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  filter_logic <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  metadata_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  batch_size_download <span class="op">=</span> <span class="fl">2000L</span>,</span>
 <span>  batch_size_upload <span class="op">=</span> <span class="fl">500L</span>,</span>
 <span>  entire_log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  days_of_log <span class="op">=</span> <span class="fl">10L</span>,</span>
+<span>  timezone <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/timezones.html" class="external-link">Sys.timezone</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  get_files <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  get_file_repository <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  original_file_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -134,6 +135,11 @@ Default is <code>TRUE</code>.</p></dd>
 <code>project</code> object already exists. Default is <code>FALSE</code>.</p></dd>
 
 
+<dt id="arg-get-type">get_type<a class="anchor" aria-label="anchor" href="#arg-get-type"></a></dt>
+<dd><p>optional character of REDCap API call type.
+data as if user ran <code>sync_project</code>. Default is <code>FALSE</code>.</p></dd>
+
+
 <dt id="arg-records">records<a class="anchor" aria-label="anchor" href="#arg-records"></a></dt>
 <dd><p>An array, where each element corresponds to the ID of a
 desired record.  Optional.</p></dd>
@@ -161,11 +167,6 @@ will only return the records (or record-events, if a longitudinal project)
 where the logic evaluates as TRUE.   An blank/empty string returns all records.</p></dd>
 
 
-<dt id="arg-get-type">get_type<a class="anchor" aria-label="anchor" href="#arg-get-type"></a></dt>
-<dd><p>optional character of REDCap API call type.
-data as if user ran <code>sync_project</code>. Default is <code>FALSE</code>.</p></dd>
-
-
 <dt id="arg-metadata-only">metadata_only<a class="anchor" aria-label="anchor" href="#arg-metadata-only"></a></dt>
 <dd><p>Logical (TRUE/FALSE). If TRUE, updates only the
 metadata. Default is <code>FALSE</code>.</p></dd>
@@ -190,6 +191,11 @@ Default is <code>FALSE</code>.</p></dd>
 <dd><p>Integer. Number of days to be checked in the log if a
 hard_reset
 or new project is setup. Default is <code>10</code>.</p></dd>
+
+
+<dt id="arg-timezone">timezone<a class="anchor" aria-label="anchor" href="#arg-timezone"></a></dt>
+<dd><p>optional timezone set of the REDCap server. Otherwise, will
+assume Sys.timezone. Options from <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">OlsonNames()</a></code>.</p></dd>
 
 
 <dt id="arg-get-files">get_files<a class="anchor" aria-label="anchor" href="#arg-get-files"></a></dt>

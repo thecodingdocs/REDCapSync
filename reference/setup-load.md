@@ -13,17 +13,18 @@ setup_project(
   sync_frequency = "daily",
   labelled = TRUE,
   hard_reset = FALSE,
-  records = NULL,
-  fields = NULL,
-  forms = NULL,
-  events = NULL,
-  filter_logic = NULL,
   get_type = "identified",
+  records = NA,
+  fields = NA,
+  forms = NA,
+  events = NA,
+  filter_logic = NA,
   metadata_only = FALSE,
   batch_size_download = 2000L,
   batch_size_upload = 500L,
   entire_log = FALSE,
   days_of_log = 10L,
+  timezone = Sys.timezone(),
   get_files = FALSE,
   get_file_repository = FALSE,
   original_file_names = FALSE,
@@ -75,6 +76,11 @@ load_test_project(project_name = "TEST_CLASSIC", with_data = FALSE)
   Logical (TRUE/FALSE). If TRUE, forces the setup even if the `project`
   object already exists. Default is `FALSE`.
 
+- get_type:
+
+  optional character of REDCap API call type. data as if user ran
+  `sync_project`. Default is `FALSE`.
+
 - records:
 
   An array, where each element corresponds to the ID of a desired
@@ -103,11 +109,6 @@ load_test_project(project_name = "TEST_CLASSIC", with_data = FALSE)
   the logic evaluates as TRUE. An blank/empty string returns all
   records.
 
-- get_type:
-
-  optional character of REDCap API call type. data as if user ran
-  `sync_project`. Default is `FALSE`.
-
 - metadata_only:
 
   Logical (TRUE/FALSE). If TRUE, updates only the metadata. Default is
@@ -131,6 +132,12 @@ load_test_project(project_name = "TEST_CLASSIC", with_data = FALSE)
 
   Integer. Number of days to be checked in the log if a hard_reset or
   new project is setup. Default is `10`.
+
+- timezone:
+
+  optional timezone set of the REDCap server. Otherwise, will assume
+  Sys.timezone. Options from
+  [`OlsonNames()`](https://rdrr.io/r/base/timezones.html).
 
 - get_files:
 

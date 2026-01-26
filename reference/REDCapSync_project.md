@@ -121,7 +121,7 @@ Print project metadata
 Updates the REDCap data for (`project` object) by checking REDCap log
 for changes. Sync is performed according to the `sync_frequency` set in
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-by default. Use `hard_check` to force a check, or `hard_reset` to force
+by default. Use `hard_check` to force a check, or ` hard_reset` to force
 a complete refresh.
 
 #### Usage

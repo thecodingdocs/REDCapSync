@@ -58,32 +58,52 @@ test_project_token <- function(project) {
 is_valid_redcap_token <- function(token, silent = TRUE) {
   start_text <- "The token "
   token_text <- NULL
-  end_text <- "is not a valid 32-character hexadecimal value."
+  end_text <- " is not a valid 32-character hexadecimal value."
   trimmed_token <- trimws(token, whitespace = .whitespace)
   if (is.null(token)) {
     token_text <- "is `NULL`,"
-    cli_alert_danger(paste0(start_text, token_text, end_text))
+    cli_alert_wrap(
+      paste0(start_text, token_text, end_text),
+      bullet_type = "!",
+      silent = silent
+    )
     return(FALSE)
   }
   if (is.na(token)) {
     token_text <- "is `NA`,"
-    cli_alert_danger(paste0(start_text, token_text, end_text))
+    cli_alert_wrap(
+      paste0(start_text, token_text, end_text),
+      bullet_type = "!",
+      silent = silent
+    )
     return(FALSE)
   }
   if (nchar(token) == 0L) {
     token_text <- "`` (empty),"
-    cli_alert_danger(paste0(start_text, token_text, end_text))
+    cli_alert_wrap(
+      paste0(start_text, token_text, end_text),
+      bullet_type = "!",
+      silent = silent
+    )
     return(FALSE)
   }
   if (token != trimmed_token) {
     token_text <- "contains whitespace (extra lines) and is therefore"
-    cli_alert_danger(paste0(start_text, token_text, end_text))
+    cli_alert_wrap(
+      paste0(start_text, token_text, end_text),
+      bullet_type = "!",
+      silent = silent
+    )
     return(FALSE)
   }
-    if (!is_hexadecimal(token, length = 32L)) {
-      cli_alert_danger(paste0(start_text, token_text, end_text))
-      return(FALSE)
-    }
+  if (!is_hexadecimal(token, length = 32L)) {
+    cli_alert_wrap(
+      paste0(start_text, token_text, end_text),
+      bullet_type = "!",
+      silent = silent
+    )
+    return(FALSE)
+  }
   TRUE
 }
 #' @noRd

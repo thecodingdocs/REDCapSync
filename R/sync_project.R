@@ -20,182 +20,9 @@ sync_project <- function(project,
              "({project$internals$sync_frequency})"))
   }
   if (do_sync) {
-    stale_records <- NULL
-    will_update <- TRUE
-    # project$internals$last_directory_save
-    # project$internals$last_test_connection_attempt
-    project <- test_project_token(project)
-    connected <- project$internals$last_test_connection_outcome
-    if (!connected) {
-      cli_alert_danger("Could not connect to REDCap")
-      return(invisible(project))
-    }
-    # project$internals$last_metadata_update <-  now_time()-lubridate::days(1)
-    # project$internals$last_data_update <-  now_time()-lubridate::days(1)
-    # if (is_something(project$transformation$data_updates)) {
-    #   cli_alert_wrap(paste0(
-    #   "There is data in 'project$transformation$data_updates' that has not ",
-    #     "been uploaded to REDCap yet..."))
-    # }
-    if (!hard_reset) {
-      # check log interim
-      if (!is_something(project$internals$last_metadata_update) ||
-          !is_something(project$internals$last_data_update) ||
-          !is_something(project$internals$last_full_update)) {
-        hard_reset <- TRUE
-      } else {
-        if (!project$redcap$has_log_access) {
-          cli_alert_danger(
-            paste0( # fix for when access is changed
-              "You do not have logging access to this REDCap project. If you ",
-              "want to refresh the data use `project$sync(hard_reset = TRUE)`.",
-              " Request logging access for more effecient use of API exports."
-            )
-          )
-          return(project)
-        }
-        interim_log <- get_redcap_log(project, log_begin_date = as.Date(
-          strptime(project$redcap$log$timestamp[1L], format = "%Y-%m-%d")
-        )) |> unique()
-        if (nrow(interim_log) <= nrow(project$redcap$log)) {
-          head_of_log <- project$redcap$log |>
-            utils::head(n = nrow(interim_log))
-        } else {
-          head_of_log <- project$redcap$log
-        }
-        unique_log <- interim_log |>
-          rbind(head_of_log) |>
-          unique()
-        # dup <- unique_log[
-        #which(duplicated(
-        #rbind(unique_log, head_of_log),fromLast = TRUE)[
-        #seq_len(nrow(unique_log)]), ]
-        interim_log <- unique_log[
-          which(!duplicated(
-            rbind(unique_log, head_of_log), fromLast = TRUE)[
-              seq_len(nrow(unique_log))]), ]
-        if (nrow(interim_log) > 0L) {
-          project$redcap$log <- interim_log |>
-            bind_rows(project$redcap$log) |>
-            unique()
-          interim_log$timestamp <- NULL
-          interim_log_metadata <- interim_log[
-            which(is.na(interim_log$record)), ]
-          # inclusion
-          interim_log_metadata <- interim_log_metadata[
-            which(
-              interim_log_metadata$action_type == "Metadata Change Major"), ]
-          interim_log_metadata_minor <-
-            any(interim_log_metadata$action_type == "Metadata Change Minor")
-          # interim_log_metadata <-
-          #interim_log_metadata[
-          # grep(ignore_redcap_log(),
-          #interim_log_metadata$details,ignore.case = TRUE,invert = TRUE) |>
-          #unique(),]
-          if (nrow(interim_log_metadata) > 0L ||
-              interim_log_metadata_minor) {
-            # account for minor changes later
-            hard_reset <- TRUE
-            message("Update because: Metadata was changed!")
-          } else {
-            interim_log_data <-
-              interim_log[which(!is.na(interim_log$record)), ]
-            interim_log_data <-
-              interim_log_data[which(interim_log_data$action_type != "Users"), ]
-            deleted_records <-
-              interim_log_data$record[
-                which(interim_log_data$action_type == "Delete")]
-            if (length(deleted_records) > 0L) {
-              warning(
-                "There were recent records deleted from redcap",
-                "Consider running with 'hard_reset = TRUE'. Records: ",
-                toString(deleted_records),
-                immediate. = TRUE
-              )
-            }
-            stale_records <- unique(interim_log_data$record)
-            if (length(stale_records) == 0L) {
-              stale_records <- NULL
-              will_update <- FALSE
-            }
-          }
-        } else {
-          will_update <- FALSE
-        }
-      }
-    }
-    if (hard_reset) {
-      project <- sync_project_hard_reset(project)
-      cli_alert_wrap(paste0("Full ", project$project_name, " update!"),
-                     bullet_type = "v")
-      was_updated <- TRUE
-    } else {
-      if (will_update) {
-        id_col <- project$metadata$id_col
-        project$data <- all_character_cols_list(project$data)
-        if (length(deleted_records) > 0L) {
-          stale_records <-
-            stale_records[which(!stale_records %in% deleted_records)]
-          project <-
-            remove_records_from_project(
-              project = project, records = deleted_records)
-          x <- !project$summary$all_records[[id_col]] %in% deleted_records
-          project$summary$all_records <- project$summary$all_records[which(x), ]
-        }
-        message_string <- "No new records to update!"
-        if (length(stale_records) > 0L) {
-          form_list <- project |>
-            get_redcap_data(
-              labelled = project$internals$labelled,
-              records = stale_records) |>
-            all_character_cols_list()
-          missing_from_summary <- stale_records[
-            which(!stale_records %in% project$summary$all_records[[id_col]])]
-          if (length(missing_from_summary) > 0L) {
-            x <- data.frame(
-              record = missing_from_summary,
-              last_api_call = NA,
-              was_saved = FALSE,
-              stringsAsFactors = FALSE
-            )
-            colnames(x)[1L] <- id_col
-            project$summary$all_records <-
-              bind_rows(project$summary$all_records, x)
-            x <- order(project$summary$all_records[[id_col]], decreasing = TRUE)
-            project$summary$all_records <- project$summary$all_records[x, ]
-          }
-          project <- remove_records_from_project(
-            project = project, records = stale_records)
-          if (!all(names(form_list) %in% project$metadata$forms$form_name)) {
-            stop(
-              "Imported data names doesn't match project$data names. If this",
-              "happens run `project$sync(hard_reset = TRUE)`"
-            )
-          }
-          for (form_name in names(form_list)) {
-            project$data[[form_name]] <- project$data[[form_name]] |>
-              all_character_cols() |>
-              bind_rows(form_list[[form_name]])
-          }
-          row_match <-
-            which(project$summary$all_records[[id_col]] %in% stale_records)
-          project$summary$all_records$last_api_call[row_match] <-
-            project$internals$last_data_update <-
-            now_time()
-          project$summary$all_records$was_saved[row_match] <- FALSE
-          message_string <- toString(stale_records)
-          stale_record_length <- length(stale_records)
-          if (stale_record_length > 20L) {
-            message_string <- paste(stale_record_length, "records")
-          }
-        }
-        message("Updated: ", message_string)
-        was_updated <- TRUE
-      } else {
-        message("Up to date already!")
-      }
-    }
-    project$internals$last_sync <- now_time()
+    project <- sync_project_check(project = project, hard_reset = hard_reset)
+    was_updated <- project$was_updated
+    project <- project$project
   }
   if (project$internals$add_default_summaries) {
     if (!is_something(project$summary$REDCapSync) ||
@@ -278,6 +105,184 @@ sync_project_hard_reset <- function(project) {
       project$internals$last_metadata_update <-
       project$internals$last_data_update <- now_time()
   }
+}
+#' @noRd
+sync_project_check <- function(project, hard_reset) {
+  stale_records <- NULL
+  will_update <- TRUE
+  # project$internals$last_directory_save
+  # project$internals$last_test_connection_attempt
+  project <- test_project_token(project)
+  connected <- project$internals$last_test_connection_outcome
+  if (!connected) {
+    cli_alert_danger("Could not connect to REDCap")
+    return(invisible(project))
+  }
+  # project$internals$last_metadata_update <-  now_time()-lubridate::days(1)
+  # project$internals$last_data_update <-  now_time()-lubridate::days(1)
+  # if (is_something(project$transformation$data_updates)) {
+  #   cli_alert_wrap(paste0(
+  #   "There is data in 'project$transformation$data_updates' that has not ",
+  #     "been uploaded to REDCap yet..."))
+  # }
+  if (!hard_reset) {
+    # check log interim
+    if (!is_something(project$internals$last_metadata_update) ||
+        !is_something(project$internals$last_data_update) ||
+        !is_something(project$internals$last_full_update)) {
+      hard_reset <- TRUE
+    } else {
+      if (!project$redcap$has_log_access) {
+        cli_alert_danger(
+          paste0( # fix for when access is changed
+            "You do not have logging access to this REDCap project. If you ",
+            "want to refresh the data use `project$sync(hard_reset = TRUE)`.",
+            " Request logging access for more effecient use of API exports."
+          )
+        )
+        return(project)
+      }
+      interim_log <- get_redcap_log(project, log_begin_date = as.Date(
+        strptime(project$redcap$log$timestamp[1L], format = "%Y-%m-%d")
+      )) |> unique()
+      if (nrow(interim_log) <= nrow(project$redcap$log)) {
+        head_of_log <- project$redcap$log |>
+          utils::head(n = nrow(interim_log))
+      } else {
+        head_of_log <- project$redcap$log
+      }
+      unique_log <- interim_log |>
+        rbind(head_of_log) |>
+        unique()
+      # dup <- unique_log[
+      #which(duplicated(
+      #rbind(unique_log, head_of_log),fromLast = TRUE)[
+      #seq_len(nrow(unique_log)]), ]
+      interim_log <- unique_log[
+        which(!duplicated(
+          rbind(unique_log, head_of_log), fromLast = TRUE)[
+            seq_len(nrow(unique_log))]), ]
+      if (nrow(interim_log) > 0L) {
+        project$redcap$log <- interim_log |>
+          bind_rows(project$redcap$log) |>
+          unique()
+        interim_log$timestamp <- NULL
+        interim_log_metadata <- interim_log[
+          which(is.na(interim_log$record)), ]
+        # inclusion
+        interim_log_metadata <- interim_log_metadata[
+          which(
+            interim_log_metadata$action_type == "Metadata Change Major"), ]
+        interim_log_metadata_minor <-
+          any(interim_log_metadata$action_type == "Metadata Change Minor")
+        if (nrow(interim_log_metadata) > 0L ||
+            interim_log_metadata_minor) {
+          # account for minor changes later
+          hard_reset <- TRUE
+          message("Update because: Metadata was changed!")
+        } else {
+          interim_log_data <-
+            interim_log[which(!is.na(interim_log$record)), ]
+          interim_log_data <-
+            interim_log_data[which(interim_log_data$action_type != "Users"), ]
+          deleted_records <-
+            interim_log_data$record[
+              which(interim_log_data$action_type == "Delete")]
+          if (length(deleted_records) > 0L) {
+            warning(
+              "There were recent records deleted from redcap",
+              "Consider running with 'hard_reset = TRUE'. Records: ",
+              toString(deleted_records),
+              immediate. = TRUE
+            )
+          }
+          stale_records <- unique(interim_log_data$record)
+          if (length(stale_records) == 0L) {
+            stale_records <- NULL
+            will_update <- FALSE
+          }
+        }
+      } else {
+        will_update <- FALSE
+      }
+    }
+  }
+  if (hard_reset) {
+    project <- sync_project_hard_reset(project)
+    cli_alert_wrap(paste0("Full ", project$project_name, " update!"),
+                   bullet_type = "v")
+    was_updated <- TRUE
+  } else {
+    if (will_update) {
+      id_col <- project$metadata$id_col
+      project$data <- all_character_cols_list(project$data)
+      if (length(deleted_records) > 0L) {
+        stale_records <-
+          stale_records[which(!stale_records %in% deleted_records)]
+        project <-
+          remove_records_from_project(
+            project = project, records = deleted_records)
+        x <- !project$summary$all_records[[id_col]] %in% deleted_records
+        project$summary$all_records <- project$summary$all_records[which(x), ]
+      }
+      message_string <- "No new records to update!"
+      if (length(stale_records) > 0L) {
+        form_list <- project |>
+          get_redcap_data(
+            labelled = project$internals$labelled,
+            records = stale_records) |>
+          all_character_cols_list()
+        missing_from_summary <- stale_records[
+          which(!stale_records %in% project$summary$all_records[[id_col]])]
+        if (length(missing_from_summary) > 0L) {
+          x <- data.frame(
+            record = missing_from_summary,
+            last_api_call = NA,
+            was_saved = FALSE,
+            stringsAsFactors = FALSE
+          )
+          colnames(x)[1L] <- id_col
+          project$summary$all_records <-
+            bind_rows(project$summary$all_records, x)
+          x <- order(project$summary$all_records[[id_col]], decreasing = TRUE)
+          project$summary$all_records <- project$summary$all_records[x, ]
+        }
+        project <- remove_records_from_project(
+          project = project, records = stale_records)
+        if (!all(names(form_list) %in% project$metadata$forms$form_name)) {
+          stop(
+            "Imported data names doesn't match project$data names. If this",
+            "happens run `project$sync(hard_reset = TRUE)`"
+          )
+        }
+        for (form_name in names(form_list)) {
+          project$data[[form_name]] <- project$data[[form_name]] |>
+            all_character_cols() |>
+            bind_rows(form_list[[form_name]])
+        }
+        row_match <-
+          which(project$summary$all_records[[id_col]] %in% stale_records)
+        project$summary$all_records$last_api_call[row_match] <-
+          project$internals$last_data_update <-
+          now_time()
+        project$summary$all_records$was_saved[row_match] <- FALSE
+        message_string <- toString(stale_records)
+        stale_record_length <- length(stale_records)
+        if (stale_record_length > 20L) {
+          message_string <- paste(stale_record_length, "records")
+        }
+      }
+      message("Updated: ", message_string)
+      was_updated <- TRUE
+    } else {
+      message("Up to date already!")
+    }
+  }
+  project$internals$last_sync <- now_time()
+  list(
+    project = project,
+    was_updated = was_updated
+  )
 }
 #' @title Synchronize REDCap Data
 #' @description

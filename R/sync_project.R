@@ -110,6 +110,7 @@ sync_project_hard_reset <- function(project) {
 sync_project_check <- function(project, hard_reset) {
   stale_records <- NULL
   will_update <- TRUE
+  was_updated <- FALSE
   # project$internals$last_directory_save
   # project$internals$last_test_connection_attempt
   project <- test_project_token(project)

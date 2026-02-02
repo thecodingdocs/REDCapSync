@@ -63,8 +63,6 @@
 #' will add default transformation
 #' @param add_default_summaries Logical (TRUE/FALSE). If TRUE,
 #' will add default summaries
-#' @param with_data Logical (TRUE/FALSE). If TRUE, loads the test project
-#' object with data included.
 #' @param get_type optional character of REDCap API call type.
 #' data as if user ran `sync_project`. Default is `FALSE`.
 #' @param batch_size_download Integer. Number of records to process in each
@@ -431,13 +429,29 @@ load_project <- function(project_name) {
 }
 #' @rdname setup-load
 #' @export
-load_test_project <- function(project_name = "TEST_CLASSIC",
-                              with_data = FALSE) {
-  assert_choice(project_name, .test_project_names)
-  if (project_name == "TEST_CLASSIC") {
-    project <- TEST_CLASSIC
+load_test_project <- function(project_name) {
+  if(missing(project_name)){
+    cli_alert_info(paste(
+      "TEST project choices:",
+      toString(.test_project_names)
+    ))
+    project_name <- "TEST_CLASSIC"
+    cli_alert_info("Defaulting to {project_name}")
   }
-  invisible(REDCapSync_project$new(project))
+  assert_choice(project_name, .test_project_names)
+  .test_projects <- list(
+    TEST_CLASSIC = TEST_CLASSIC,
+    TEST_REPEATING = TEST_REPEATING,
+    TEST_LONGITUDINAL = TEST_LONGITUDINAL,
+    TEST_MULTIARM = TEST_MULTIARM,
+    TEST_EDGE = TEST_EDGE,
+    TEST_DATA = TEST_DATA,
+    TEST_CANCER = TEST_CANCER
+  )
+  project <- REDCapSync_project$new(.test_projects[[project_name]])
+  cli_alert_success("Loaded TEST project {project$project_name}!")
+  cli_alert_warning("Does not actually communicate with any REDCap")
+  invisible(project)
 }
 #' @noRd
 save_project <- function(project, silent = FALSE) {

@@ -18,8 +18,7 @@ library(REDCapSync)
 The goal of REDCapSync is to encapsulate a REDCap project into a standardized object. R6 gives a way of keeping some elements internal to the object. Behind-the-scenes is an R list where all of the metadata and data is stored.
 
 ```{r, eval=TRUE}
-TEST_CLASSIC <- load_test_project(
-  project_name = "TEST_CLASSIC", with_data = TRUE)
+TEST_CLASSIC <- load_test_project(project_name = "TEST_CLASSIC")
 listviewer::jsonedit(TEST_CLASSIC$.internal)
 ```
 
@@ -27,7 +26,7 @@ The R6 object contains those things behind-the-scenes but then uses several to b
 
 ```{r setup, eval=FALSE}
 library(REDCapSync)
-TEST <- load_test_project(with_data = TRUE)
+TEST <- load_test_project()
 # Update From REDCap 
 
 # Explore Whats Inside

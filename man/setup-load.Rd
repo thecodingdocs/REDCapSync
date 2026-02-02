@@ -36,7 +36,7 @@ setup_project(
 
 load_project(project_name)
 
-load_test_project(project_name = "TEST_CLASSIC", with_data = FALSE)
+load_test_project(project_name)
 }
 \arguments{
 \item{project_name}{A character string with no spaces or symbols representing
@@ -122,9 +122,6 @@ will add default transformation}
 
 \item{add_default_summaries}{Logical (TRUE/FALSE). If TRUE,
 will add default summaries}
-
-\item{with_data}{Logical (TRUE/FALSE). If TRUE, loads the test project
-object with data included.}
 }
 \value{
 REDCapSync \code{project} list object.

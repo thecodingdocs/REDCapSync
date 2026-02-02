@@ -2,10 +2,10 @@
 "_PACKAGE"
 ## usethis namespace: start
 #' @importFrom checkmate assert
+#' @importFrom checkmate assert_character
 #' @importFrom checkmate assert_choice
 #' @importFrom checkmate assert_date
 #' @importFrom checkmate assert_environment
-#' @importFrom checkmate assert_character
 #' @importFrom checkmate assert_logical
 #' @importFrom checkmate assert_list
 #' @importFrom checkmate assert_string

@@ -105,6 +105,7 @@ sync_project_hard_reset <- function(project) {
       project$internals$last_metadata_update <-
       project$internals$last_data_update <- now_time()
   }
+  project
 }
 #' @noRd
 sync_project_check <- function(project, hard_reset) {

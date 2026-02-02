@@ -6,8 +6,9 @@ the object. Behind-the-scenes is an R list where all of the metadata and
 data is stored.
 
 ``` r
-TEST_CLASSIC <- load_test_project(
-  project_name = "TEST_CLASSIC", with_data = TRUE)
+TEST_CLASSIC <- load_test_project(project_name = "TEST_CLASSIC")
+#> ✔ Loaded TEST project TEST_CLASSIC!
+#> ! Does not actually communicate with any REDCap API
 listviewer::jsonedit(TEST_CLASSIC$.internal)
 ```
 
@@ -18,7 +19,7 @@ several to build an environment. This allows `TEST$sync()` to update
 
 ``` r
 library(REDCapSync)
-TEST <- load_test_project(with_data = TRUE)
+TEST <- load_test_project()
 # Update From REDCap 
 
 # Explore Whats Inside

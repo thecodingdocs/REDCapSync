@@ -35,7 +35,7 @@ setup_project(
 
 load_project(project_name)
 
-load_test_project(project_name = "TEST_CLASSIC", with_data = FALSE)
+load_test_project(project_name)
 ```
 
 ## Arguments
@@ -165,11 +165,6 @@ load_test_project(project_name = "TEST_CLASSIC", with_data = FALSE)
 - add_default_summaries:
 
   Logical (TRUE/FALSE). If TRUE, will add default summaries
-
-- with_data:
-
-  Logical (TRUE/FALSE). If TRUE, loads the test project object with data
-  included.
 
 ## Value
 

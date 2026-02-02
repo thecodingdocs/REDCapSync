@@ -273,10 +273,10 @@ sync_project_check <- function(project, hard_reset) {
           message_string <- paste(stale_record_length, "records")
         }
       }
-      message("Updated: ", message_string)
+      cli_alert_success(paste("Updated:", message_string))
       was_updated <- TRUE
     } else {
-      message("Up to date already!")
+      cli_alert_success("Up to date already!")
     }
   }
   project$internals$last_sync <- now_time()

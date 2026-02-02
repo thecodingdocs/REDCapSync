@@ -272,7 +272,7 @@ setup_project <- function(project_name,
   if (!missing_dir_path) {
     # will also ask user if provided dir is new or different
     # (will load from original but start using new dir)
-    project$dir_path <- set_dir(dir_path)
+    project$dir_path <- set_dir(dir_path, silent = TRUE)
     dir.create(
       path = file.path(project$dir_path, "REDCap", project_name),
       showWarnings = FALSE
@@ -576,29 +576,17 @@ save_project <- function(project, silent = FALSE) {
   )
 )
 #' @noRd
-set_dir <- function(dir_path) {
+set_dir <- function(dir_path, silent = FALSE) {
   dir_path <- clean_dir_path(dir_path)
   if (!file.exists(dir_path)) {
-    if (utils::menu(
-      choices = c("Yes", "No"),
-      title = paste0(
-        "No file path found for chosen directory, create? (",
-        dir_path,
-        ")"
-      )
-    ) == 1L) {
-      dir.create(file.path(dir_path))
-    }
-    if (!file.exists(dir_path)) {
-      stop("Path not found. Use absolute path or choose working directory.")
-    }
+    stop("Path not found. Use absolute path or choose an existing directory.")
   }
   for (folder in .dir_folders) {
     if (!file.exists(file.path(dir_path, folder))) {
       dir.create(file.path(dir_path, folder), showWarnings = FALSE)
     }
   }
-  assert_dir(dir_path)
+  assert_dir(dir_path, silent = silent)
 }
 #' @noRd
 .dir_folders <- c("R_objects", "output", "scripts", "input", "REDCap")

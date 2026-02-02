@@ -120,15 +120,6 @@ test_that("save_project doesn't save if blank but will save if valid", {
   # expect_error(load_project(project_name = project_name)) # wont load deleted
 })
 # set_dir ( Internal )
-test_that("set_dir creates a new directory if it does not exist", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  dir_path <- file.path(test_dir, "new_dir")
-  # Mock user input to create the directory
-  mockery::stub(set_dir, "utils::menu", 1L)
-  expect_message(set_dir(dir_path), "Directory is Valid!")
-  expect_true(file.exists(dir_path))
-  expect_true(all(.dir_folders %in% list.files(dir_path)))
-})
 test_that("set_dir handles existing directory correctly", {
   test_dir <- withr::local_tempdir() |> sanitize_path()
   dir_path <- file.path(test_dir, "existing_dir")
@@ -153,7 +144,6 @@ test_that("set_dir stops if user chooses not to create directory", {
   test_dir <- withr::local_tempdir() |> sanitize_path()
   dir_path <- file.path(test_dir, "no_create_dir")
   # Mock user input to not create the directory
-  mockery::stub(set_dir, "utils::menu", 2L)
   expect_error(set_dir(dir_path), "Path not found. Use absolute path")
   expect_false(file.exists(dir_path))
 })

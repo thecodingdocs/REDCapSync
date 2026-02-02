@@ -1,5 +1,5 @@
 #' @noRd
-assert_dir <- function(dir_path) {
+assert_dir <- function(dir_path, silent = FALSE) {
   # param check
   dir_path <- clean_dir_path(dir_path)
   if (!file.exists(dir_path)) {
@@ -13,7 +13,8 @@ assert_dir <- function(dir_path) {
   }
   cli_alert_wrap("Directory is Valid!",
                  url = dir_path,
-                 bullet_type = "v")
+                 bullet_type = "v",
+                 silent = silent)
   dir_path
 }
 #' @noRd

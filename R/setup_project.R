@@ -446,11 +446,16 @@ load_test_project <- function(project_name) {
     TEST_MULTIARM = TEST_MULTIARM,
     TEST_EDGE = TEST_EDGE,
     TEST_DATA = TEST_DATA,
-    TEST_CANCER = TEST_CANCER
+    TEST_CANCER = TEST_CANCER,
+    TEST_REDCAPR_SIMPLE = TEST_REDCAPR_SIMPLE,
+    TEST_REDCAPR_LONGITUDINAL = TEST_REDCAPR_LONGITUDINAL,
+    TEST_REDCAPR_CLIN_TRIAL = TEST_REDCAPR_CLIN_TRIAL
   )
-  project <- REDCapSync_project$new(.test_projects[[project_name]])
+  project <- .test_projects[[project_name]]
+  project$internals$is_test <- TRUE
+  project <- REDCapSync_project$new(project)
   cli_alert_success("Loaded TEST project {project$project_name}!")
-  cli_alert_warning("Does not actually communicate with any REDCap")
+  cli_alert_warning("Does not actually communicate with any REDCap API")
   invisible(project)
 }
 #' @noRd
@@ -493,7 +498,10 @@ save_project <- function(project, silent = FALSE) {
   "TEST_MULTIARM",
   "TEST_EDGE",
   "TEST_DATA",
-  "TEST_CANCER"
+  "TEST_CANCER",
+  "TEST_REDCAPR_SIMPLE",
+  "TEST_REDCAPR_LONGITUDINAL",
+  "TEST_REDCAPR_CLIN_TRIAL"
 )
 #' @noRd
 .blank_project <- list(

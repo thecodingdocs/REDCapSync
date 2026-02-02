@@ -541,7 +541,7 @@ upload_form_to_redcap <- function(to_be_uploaded, project, batch_size = 500L) {
 delete_records_redcap <- function(records, project) {
   # add message for are you sure? vs options
   # add assert check
-  REDCapR:::redcap_delete(
+  REDCapR::redcap_delete(
     redcap_uri = project$links$redcap_uri,
     token = get_project_token(project),
     records_to_delete = records

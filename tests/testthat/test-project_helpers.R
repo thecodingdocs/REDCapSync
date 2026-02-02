@@ -281,7 +281,7 @@ test_that("get_min_dates works", {
 test_that("normalize_redcap works with classic project", {
   project <- TEST_CLASSIC
   denormalized <- readRDS(
-    test_path("fixtures", "TEST_CLASSIC_denormalized.rds"))
+    test_path("fixtures", "TEST_CLASSIC_call_list.rds"))$data
   result <- normalize_redcap(denormalized, project, labelled = TRUE)
   expect_type(result, type = "list")
   form_names <- names(result)

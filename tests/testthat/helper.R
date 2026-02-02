@@ -106,3 +106,9 @@ generate_hex <- function(length = 32L) {
     paste(collapse = "") |>
     toupper()
 }
+REDCapR_project <- function(){
+  setup_project(
+    project_name = "TEST_REDCAPR",
+    redcap_uri = "https://redcap-dev-2.ouhsc.edu/redcap/api/"
+  )
+}

@@ -1,5 +1,39 @@
 # get_redcap_metadata ( Internal )
-test_that("get_redcap_metadata works!", {
+test_that("get_redcap_metadata works on real server, simple!", {
+  skip_on_cran()
+  project <- REDCapR_project()$.internal
+  # expect_false(project$internals$ever_connected)
+  expect_data_frame(as.data.frame(project$metadata$forms) , nrows = 0)
+  expect_data_frame(as.data.frame(project$metadata$fields) , nrows = 0)
+  expect_data_frame(as.data.frame(project$metadata$choices) , nrows = 0)
+  expect_data_frame(as.data.frame(project$redcap$users) , nrows = 0)
+  expect_data_frame(as.data.frame(project$redcap$project_info) , nrows = 0)
+  project_with_metadata <- withr::with_envvar(
+    c(REDCapSync_TEST_REDCAPR = "9A068C425B1341D69E83064A2D273A70"),
+    {get_redcap_metadata(project)})
+  # expect_true(project_with_metadata$internals$ever_connected)
+  expect_data_frame(project_with_metadata$metadata$forms, min.rows = 1)
+  expect_data_frame(project_with_metadata$metadata$fields, min.rows = 1)
+  expect_data_frame(project_with_metadata$metadata$choices, min.rows = 1)
+  expect_data_frame(project_with_metadata$redcap$users, min.rows = 1)
+  expect_data_frame(project_with_metadata$redcap$project_info , nrows = 1)
+})
+test_that("get_redcap_metadata works on real server, longitudinal!", {
+  skip_on_cran()
+  project <- REDCapR_project()$.internal
+  expect_data_frame(as.data.frame(project$metadata$forms) , nrows = 0)
+  expect_data_frame(as.data.frame(project$metadata$fields) , nrows = 0)
+  expect_data_frame(as.data.frame(project$metadata$choices) , nrows = 0)
+  expect_data_frame(as.data.frame(project$redcap$users) , nrows = 0)
+  expect_data_frame(as.data.frame(project$redcap$project_info) , nrows = 0)
+  project_with_metadata <- withr::with_envvar(
+    c(REDCapSync_TEST_REDCAPR = "DA6F2BB23146BD5A7EA3408C1A44A556"),
+    {get_redcap_metadata(project)})
+  expect_data_frame(project_with_metadata$metadata$forms, min.rows = 1)
+  expect_data_frame(project_with_metadata$metadata$fields, min.rows = 1)
+  expect_data_frame(project_with_metadata$metadata$choices, min.rows = 1)
+  expect_data_frame(project_with_metadata$redcap$users, min.rows = 1)
+  expect_data_frame(project_with_metadata$redcap$project_info , nrows = 1)
 })
 # add_field_elements ( Internal )
 test_that("add_field_elements works!", {
@@ -18,6 +52,13 @@ test_that("get_redcap_log works!", {
 })
 # get_redcap_denormalized ( Internal )
 test_that("get_redcap_denormalized works!", {
+  # skip_on_cran()
+  project <- REDCapR_project()$.internal
+  expect_data_frame(as.data.frame(project$data) , nrows = 0)
+  project_data <- withr::with_envvar(
+    c(REDCapSync_TEST_REDCAPR = "DA6F2BB23146BD5A7EA3408C1A44A556"),
+    {get_redcap_denormalized(project)})
+  expect_data_frame(project_data, min.rows = 1)
 })
 # get_redcap_report ( Exported )
 test_that("get_redcap_report works!", {
@@ -85,4 +126,39 @@ test_that("rcon_result returns expected structure without real API calls", {
   # check a few returned values come from our fake rcon
   expect_identical(out$project_info$project_id, "9999")
   expect_s3_class(out$forms, "data.frame")
+})
+test_that("upload_form_to_redcap() calls REDCapR::redcap_write expected args", {
+  project <- list(
+    links = list(redcap_uri = "https://redcap.fake.edu/api/")
+  )
+  to_be_uploaded <- data.frame(
+    record_id = c("1", "2"),
+    age = c(50L, 60L),
+    stringsAsFactors = FALSE
+  )
+  captured <- list()
+  # Stub token lookup so we don't depend on env vars
+  mockery::stub(upload_form_to_redcap, "get_project_token", function(project) {
+    "0123456789ABCDEF0123456789ABCDEF"
+  })
+  # Stub the network call and capture args
+  mockery::stub(upload_form_to_redcap, "REDCapR::redcap_write", function(...) {
+    captured <<- list(...)
+    list(success = TRUE)
+  })
+  result <- upload_form_to_redcap(
+    to_be_uploaded = to_be_uploaded,
+    project = project,
+    batch_size = 123L
+  )
+  expect_true(isTRUE(result$success))
+  # Check behavior of RosyUtils::all_character_cols()
+  expect_true(is.data.frame(captured$ds_to_write))
+  expect_true(all(vapply(captured$ds_to_write, is.character, logical(1L))))
+  expect_identical(captured$batch_size, 123L)
+  expect_identical(captured$interbatch_delay, 0.2)
+  expect_false(captured$continue_on_error)
+  expect_identical(captured$redcap_uri, "https://redcap.fake.edu/api/")
+  expect_identical(captured$token, "0123456789ABCDEF0123456789ABCDEF")
+  expect_true(captured$overwrite_with_blanks)
 })

@@ -307,6 +307,33 @@ test_that("normalize_redcap works with classic project", {
       colnames(result$text)
   )
 })
+test_that("normalize_redcap works with longitudinal project", {
+  project <- TEST_LONGITUDINAL
+  denormalized <- readRDS(
+    test_path("fixtures", "TEST_LONGITUDINAL_call_list.rds"))$data
+  result <- normalize_redcap(denormalized, project, labelled = TRUE)
+  expect_type(result, type = "list")
+  form_names <- names(result)
+  expected_forms <- project$metadata$forms$form_name
+  expect_all_true(expected_forms %in% form_names)
+  expect_all_true(unlist(lapply(result, is.data.frame)))
+  id_col <- project$metadata$id_col
+  fields <- project$metadata$fields
+  expect_true(id_col %in% colnames(result$demographics))
+  expect_all_true(
+    fields$field_name[which(fields$form_name == "demographics")] %in%
+      colnames(result$demographics))
+  fields <- fields[which(fields$field_name != id_col), ]
+  expect_all_false(
+    fields$field_name[which(fields$form_name == "demographics")] %in%
+      colnames(result$other))
+  expect_all_false(
+    fields$field_name[
+      which(fields$form_name == "demographics" &
+              (!fields$field_type %in% c("checkbox", "descriptive")))] %in%
+      colnames(result$text)
+  )
+})
 # clean_data_list ( Internal )
 # get_key_col_list ( Internal )
 # normalize_redcap ( Internal )

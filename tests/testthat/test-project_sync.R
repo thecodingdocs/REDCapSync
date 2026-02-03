@@ -1,26 +1,5 @@
 # sync_project ( Exported )
 # sync ( Exported )
-test_that("sync_project works!", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
-  # Mock rcon_result to return fixture data
-  project$internals$ever_connected <- FALSE
-  # mockery::stub(sync_project, "rcon_result", function(project) {
-  #   readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
-  # })
-  # project <- sync_project(project)
-})
-# sync ( Exported )
 test_that("sync works!", {
 })
 test_that("due_for_sync works", {

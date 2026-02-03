@@ -295,6 +295,32 @@ test_that("get_redcap_denormalized works!", {
   })
   expect_data_frame(project_data, min.rows = 1)
 })
+test_that("get_redcap_denormalized works no API call!", {
+  test_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      fake_cache
+    }
+  )
+  original_name <- "TEST_CLASSIC"
+  project <- load_test_project()$.internal
+  project$project_name <- original_name
+  project$dir_path <- set_dir(test_dir)
+  project <- REDCapR_project()$.internal
+  mockery::stub(
+    get_redcap_denormalized,
+    "REDCapR::redcap_read",
+    function(...) {
+      readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
+    }
+  )
+  # denorm <- get_redcap_denormalized(project)
+  # normalize_redcap(denorm, project)
+})
 # get_redcap_report ( Exported )
 test_that("get_redcap_report works!", {
 })

@@ -366,6 +366,9 @@ due_for_sync <- function(project_name) {
     if (sync_frequency == "never") {
       return(FALSE)
     }
+    if (sync_frequency == "once") {
+      return(is.na(then))
+    }
     have_to_check <-
       sync_frequency %in% c("hourly", "daily", "weekly", "monthly")
     if (have_to_check) {

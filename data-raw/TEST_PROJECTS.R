@@ -155,6 +155,13 @@ for (project_name in project_names) {
     envir = globalenv()
   )
 }
+data.frame(record_id = as.character(1:10)) |> TEST_CLASSIC$upload()
+data.frame(record_id = as.character(1:10)) |> TEST_REPEATING$upload()
+data.frame(record_id = as.character(1:10)) |> TEST_LONGITUDINAL$upload()
+data.frame(record_id = as.character(1:10)) |> TEST_MULTIARM$upload()
+data.frame(record_id = as.character(1:10)) |> TEST_EDGE$upload()
+data.frame(record_id = as.character(1:10)) |> TEST_DATA$upload()
+data.frame(record_id = as.character(1:10)) |> TEST_CANCER$upload()
 usethis::use_data(
   TEST_CLASSIC,
   TEST_REPEATING,

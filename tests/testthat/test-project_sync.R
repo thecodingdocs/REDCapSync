@@ -1,6 +1,107 @@
 # sync_project ( Exported )
-# sync_all ( Exported )
+# sync ( Exported )
+test_that("sync_project works!", {
+  test_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      fake_cache
+    }
+  )
+  project <- load_test_project()$.internal
+  project$dir_path <- set_dir(test_dir)
+  # Mock rcon_result to return fixture data
+  project$internals$ever_connected <- FALSE
+  # mockery::stub(sync_project, "rcon_result", function(project) {
+  #   readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
+  # })
+  # project <- sync_project(project)
+})
+# sync ( Exported )
 test_that("sync works!", {
+})
+test_that("due_for_sync works", {
+  test_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(test_dir, "fake_cache")
+  local_mocked_bindings(
+    get_cache = function(...) {
+      fake_cache <- hoardr::hoard()
+      fake_cache$cache_path_set(full_path = fake_cache_location)
+      fake_cache$mkdir()
+      fake_cache
+    }
+  )
+  # true for nonexistent
+  expect_true(due_for_sync("NONEXISTENT_PROJECT"))
+  project <- load_test_project()$.internal
+  project$dir_path <- set_dir(test_dir)
+  project_details <- extract_project_details(project)
+  project_details$last_sync <- NA
+  add_project_details_to_cache(project_details)
+  #returns TRUE when last_sync is NA
+  expect_true(due_for_sync(project$project_name))
+  #returns TRUE when sync_frequency is always
+  project_details$sync_frequency <- "always"
+  project_details$last_sync <- now_time()
+  add_project_details_to_cache(project_details)
+  expect_true(due_for_sync(project$project_name))
+  #returns FALSE when sync_frequency is never
+  project_details$sync_frequency <- "never"
+  project_details$last_sync <- now_time() - lubridate::ddays(100L)
+  add_project_details_to_cache(project_details)
+  expect_false(due_for_sync(project$project_name))
+  #returns FALSE for hourly when last_sync < 1 hour ago
+  project_details$sync_frequency <- "hourly"
+  project_details$last_sync <- now_time() - lubridate::dminutes(30L)
+  add_project_details_to_cache(project_details)
+  expect_false(due_for_sync(project$project_name))
+  #returns TRUE for hourly when last_sync >= 1 hour ago
+  project_details$last_sync <- now_time() - lubridate::dminutes(30L)
+  add_project_details_to_cache(project_details)
+  expect_false(due_for_sync(project$project_name))
+  #returns FALSE for daily when last_sync < 1 day ago
+  project_details$sync_frequency <- "daily"
+  project_details$last_sync <- now_time() - lubridate::dhours(12L)
+  add_project_details_to_cache(project_details)
+  expect_false(due_for_sync(project$project_name))
+  #returns TRUE for daily when last_sync >= 1 day ago
+  project_details$last_sync <- now_time() - lubridate::ddays(2L)
+  add_project_details_to_cache(project_details)
+  expect_true(due_for_sync(project$project_name))
+  #returns FALSE for weekly when last_sync < 1 week ago
+  project_details$sync_frequency <- "weekly"
+  project_details$last_sync <- now_time() - lubridate::ddays(3L)
+  add_project_details_to_cache(project_details)
+  expect_false(due_for_sync(project$project_name))
+  #returns TRUE for weekly when last_sync >= 1 week ago
+  project_details$last_sync <- now_time() - lubridate::dweeks(2L)
+  add_project_details_to_cache(project_details)
+  expect_true(due_for_sync(project$project_name))
+  #returns FALSE for monthly when last_sync < 1 month ago
+  project_details$sync_frequency <- "monthly"
+  project_details$last_sync <- now_time() - lubridate::ddays(15L)
+  add_project_details_to_cache(project_details)
+  expect_false(due_for_sync(project$project_name))
+  #returns TRUE for monthly when last_sync >= 1 month ago
+  project_details$last_sync <- now_time() - lubridate::dmonths(2L)
+  add_project_details_to_cache(project_details)
+  expect_true(due_for_sync(project$project_name))
+  #returns FALSE for once when already synced
+  project_details$sync_frequency <- "once"
+  project_details$last_sync <- now_time()
+  add_project_details_to_cache(project_details)
+  expect_false(due_for_sync(project$project_name))
+  #returns FALSE for once when already synced
+  project_details$last_sync <- now_time()
+  add_project_details_to_cache(project_details)
+  expect_false(due_for_sync(project$project_name))
+  #returns TRUE for once when never synced
+  project_details$last_sync <- NA
+  add_project_details_to_cache(project_details)
+  expect_true(due_for_sync(project$project_name))
 })
 # sweep_dirs_for_cache ( Internal )
 test_that("sweep_dirs_for_cache updates cache when project files exist", {

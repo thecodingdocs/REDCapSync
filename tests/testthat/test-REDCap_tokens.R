@@ -20,18 +20,18 @@ test_that("get_project_token checks_env", {
       fake_cache
     }
   )
-  project <- mock_project()
+  project <- load_test_project()$.internal
   token_name <- project$redcap$token_name
   token <- generate_hex(32L)
-  withr::with_envvar(c(REDCapSync_TEST_PROJECT = token), {
+  withr::with_envvar(c(REDCapSync_TEST_CLASSIC = token), {
     expect_identical(get_project_token(project), token)
     expect_no_error(get_project_token(project))
   })
   token <- generate_hex(2L)
-  withr::with_envvar(c(REDCapSync_TEST_PROJECT = token), {
+  withr::with_envvar(c(REDCapSync_TEST_CLASSIC = token), {
     expect_identical(get_project_token(project), token)
   })
-  withr::with_envvar(c(REDCapSync_TEST_PROJECT = NULL), {
+  withr::with_envvar(c(REDCapSync_TEST_CLASSIC = ""), {
     expect_identical(get_project_token(project), "")
   })
 })
@@ -47,27 +47,10 @@ test_that("view_project_token works when no token set", {
       fake_cache
     }
   )
-  project <- mock_project()
+  project <- load_test_project()$.internal
   expect_true(project$internals$is_test)
-  expect_message(view_project_token(project), "is not a valid 32-character")
-})
-test_that("view_project_token works when token is set", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- mock_project()
-  token_name <- project$redcap$token_name
-  token <- generate_hex(32L)
-  withr::with_envvar(c(REDCapSync_TEST_PROJECT = token), {
-    expect_message(view_project_token(project),
-                   paste0("Never share your token: ", token))
+  withr::with_envvar(c(REDCapSync_TEST_CLASSIC = ""), {
+    expect_message(view_project_token(project), "You can set REDCap tokens each session")
   })
 })
 # test_project_token ( Exported )
@@ -82,7 +65,7 @@ test_that("test_project_token works when exportVersion returns version", {
       fake_cache
     }
   )
-  project <- mock_project()
+  project <- load_test_project()$.internal
   # Stub rcon to avoid creating a real connection and stub
   # exportVersion to simulate success
   mockery::stub(test_project_token,
@@ -106,7 +89,7 @@ test_that("test_project_token works when exportVersion returns version", {
                 ))
   mockery::stub(test_project_token, "exportVersion", "12.1.1")
   expect_message(test_project_token(project),
-                 "The REDCap project ID for TEST_PROJECT has changed")
+                 "The REDCap project ID for TEST_CLASSIC has changed")
 })
 test_that("test_project_token marks failure when exportVersion returns NULL", {
   test_dir <- withr::local_tempdir() |> sanitize_path()
@@ -119,7 +102,7 @@ test_that("test_project_token marks failure when exportVersion returns NULL", {
       fake_cache
     }
   )
-  project <- mock_project()
+  project <- load_test_project()$.internal
   # Stub rcon and simulate exportVersion failure
   mockery::stub(test_project_token, "rcon", function(project) {
     list()

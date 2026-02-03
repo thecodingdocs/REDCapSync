@@ -29,7 +29,7 @@ test_that("extract_project_details works", {
       fake_cache
     }
   )
-  project <- mock_project()
+  project <- load_test_project()$.internal
   project_details <- extract_project_details(project)
   expect_data_frame(project_details,
                     ncols = ncol(.blank_project_details),
@@ -51,7 +51,7 @@ test_that("save_projects_to_cache works", {
   )
   projects <- get_projects()
   expect_data_frame(projects, nrows = 0L)
-  project <- mock_project()
+  project <- load_test_project()$.internal
   project$dir_path <- set_dir(test_dir)
   #no connection should not save to cache
   project_details <- extract_project_details(project)
@@ -91,7 +91,7 @@ test_that("add_project_details_to_cache works", {
   projects <- get_projects()
   expect_data_frame(projects, nrows = 0L)
   # add project details to cache
-  project <- mock_project()
+  project <- load_test_project()$.internal
   project_details <- extract_project_details(project)
   expect_no_error(add_project_details_to_cache(project_details))
   projects <- get_projects()
@@ -115,7 +115,7 @@ test_that("add_project_details_to_cache works", {
 #       fake_cache
 #     }
 #   )
-#   project <- mock_project()
+#   project <- load_test_project()$.internal
 #   project$dir_path <- set_dir(test_dir)
 #   # ensure details path does not exist initially
 #   details_path <- get_project_path2(project, type = "details")

@@ -10,9 +10,9 @@ test_that("fields_to_choices works", {
       fake_cache
     }
   )
-  project <- mock_project()
+  project <- load_test_project()$.internal
   fields <- project$metadata$fields
-  fields <- fields |> dplyr::bind_rows(
+  fields <- fields[0,] |> dplyr::bind_rows(
     data.frame(
       field_name = c("sex", "yes_no1", "yes_no2", "race", "location"),
       form_name = "form_one",
@@ -90,7 +90,7 @@ test_that("add_project_summary works!", {
       fake_cache
     }
   )
-  project <- mock_project()
+  project <- load_test_project()$.internal
   summary_name <- "MY_SUMMARY_TEST"
   project <- add_project_summary(
     project = project,

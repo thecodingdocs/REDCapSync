@@ -10,7 +10,7 @@ test_that("test_dir works", {
 test_that("setup_project creates a valid project object and valid directory", {
   test_dir <- withr::local_tempdir() |> sanitize_path()
   expect_error(assert_dir(dir_path = test_dir))
-  project_name <- "TEST_PROJECT"
+  project_name <- "TEST_CLASSIC"
   redcap_uri <- "https://redcap.miami.edu/api/"
   # test_short_names
   expect_error(assert_env_name("A project"))
@@ -77,7 +77,7 @@ test_that("save_project doesn't save if blank but will save if valid", {
       fake_cache
     }
   )
-  project_name <- "TEST_PROJECT"
+  project_name <- "TEST_CLASSIC"
   redcap_uri <- "https://redcap.miami.edu/api/"
   project <- setup_project(project_name = project_name,
                            dir_path = test_dir,

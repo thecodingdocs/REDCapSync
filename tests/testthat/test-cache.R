@@ -69,18 +69,18 @@ test_that("cache_remove_project works", {
       fake_cache
     }
   )
-  project <- mock_project()
+  project <- load_test_project()$.internal
   projects <- get_projects()
   project_details <- extract_project_details(project)
   expect_message(cache_remove_project(project_name = "TEST_other"),
                  "Nothing to do")
   expect_false("TEST_other" %in% projects$project_name)
-  expect_false("TEST_PROJECT" %in% projects$project_name)
+  expect_false("TEST_CLASSIC" %in% projects$project_name)
   add_project_details_to_cache(project_details)
   projects <- get_projects()
-  expect_true("TEST_PROJECT" %in% projects$project_name)
-  expect_message(cache_remove_project(project_name = "TEST_PROJECT"),
+  expect_true("TEST_CLASSIC" %in% projects$project_name)
+  expect_message(cache_remove_project(project_name = "TEST_CLASSIC"),
                  "removed from cache")
   projects <- get_projects()
-  expect_false("TEST_PROJECT" %in% projects$project_name)
+  expect_false("TEST_CLASSIC" %in% projects$project_name)
 })

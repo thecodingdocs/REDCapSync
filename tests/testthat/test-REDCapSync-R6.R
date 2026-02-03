@@ -1,5 +1,5 @@
 test_that("R6 object works!", {
-  project_r6 <- REDCapSync_project$new(mock_project())
+  project_r6 <- REDCapSync_project$new(load_test_project()$.internal)
   expect_r6_class(project_r6, "REDCapSync_project")
   REDCapSync_project$public_methods |> names()
   REDCapSync_project$active |> names()
@@ -13,7 +13,7 @@ test_that("R6 object works!", {
   )
 })
 test_that("active_bindings R6 read-only", {
-  project_r6 <- REDCapSync_project$new(mock_project())
+  project_r6 <- REDCapSync_project$new(load_test_project()$.internal)
   names(REDCapSync_project$active)
   for (active_name in names(REDCapSync_project$active)){
     original <- project_r6[[active_name]]

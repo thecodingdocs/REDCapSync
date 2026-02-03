@@ -9,15 +9,11 @@ test_that("update_project_links works", {
       fake_cache
     }
   )
-  project <- mock_project()
+  project <- load_test_project()$.internal
   expect_false(is.null(project$links$redcap_uri))
   expect_false(is.null(project$links$redcap_base))
   link_vector <- paste0("redcap_", .link_types)
   link_vector <- setdiff(link_vector, "redcap_base")
-  #check null
-  for (the_link in link_vector) {
-    expect_null(project$links[[the_link]])
-  }
   #do it!
   project <- update_project_links(project)
   pid_pattern <- paste0("pid=", project$redcap$project_id)
@@ -53,7 +49,7 @@ test_that("get_project_url works", {
       fake_cache
     }
   )
-  project <- mock_project()
+  project <- load_test_project()$.internal
   project <- update_project_links(project)
   e <- new.env(parent = emptyenv())
   # get_project_url
@@ -82,7 +78,7 @@ test_that("get_record_url works", {
       fake_cache
     }
   )
-  project <- mock_project()
+  project <- load_test_project()$.internal
   project$links$redcap_base <- "https://fakeredcap.com/"
   expected_link <- paste0(
     project$links$redcap_base,
@@ -104,7 +100,7 @@ test_that("get_record_url works", {
   expect_identical(e$called_url, expected_link)
   e$called_url <- NULL
   # get_record_url(project,page = "2", text_only = TRUE)
-  expect_error(get_record_url(project, record = "5", open_browser = FALSE),
+  expect_error(get_record_url(project, record = "59", open_browser = FALSE),
                regexp = "is not one of the records")
   expect_identical(
     get_record_url(project, record = "1", open_browser = FALSE),

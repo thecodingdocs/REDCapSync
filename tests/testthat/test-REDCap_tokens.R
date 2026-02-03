@@ -50,7 +50,8 @@ test_that("view_project_token works when no token set", {
   project <- load_test_project()$.internal
   expect_true(project$internals$is_test)
   withr::with_envvar(c(REDCapSync_TEST_CLASSIC = ""), {
-    expect_message(view_project_token(project), "You can set REDCap tokens each session")
+    expect_message(view_project_token(project),
+                   "You can set REDCap tokens each session")
   })
 })
 # test_project_token ( Exported )

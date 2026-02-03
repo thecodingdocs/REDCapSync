@@ -8,8 +8,10 @@ scrub_test_project <- function(project, pid) {
     project$redcap$project_id <- pid
   project$redcap$log$username <- "u1230"
   project$redcap$log$details <- NA
-  project$redcap$log <- project$redcap$log[which(!is.na(project$redcap$log$record)), ]
-  project$redcap$log <- project$redcap$log[which(project$redcap$log$action_type != "Users"), ]
+  project$redcap$log <-
+    project$redcap$log[which(!is.na(project$redcap$log$record)), ]
+  project$redcap$log <-
+    project$redcap$log[which(project$redcap$log$action_type != "Users"), ]
   project$redcap$users$username <- "u1230"
   project$redcap$users$email <- "thecodingdocs@gmail.com"
   project$links$redcap_uri <- "https://redcap.fake.edu/api/"
@@ -88,9 +90,12 @@ project <- setup_project(
   hard_reset = hard_reset
 )$sync()
 # redcapr --------------------
-Sys.setenv("REDCapSync_TEST_REDCAPR_SIMPLE" = "9A068C425B1341D69E83064A2D273A70")
-Sys.setenv("REDCapSync_TEST_REDCAPR_LONGITUDINAL" = "DA6F2BB23146BD5A7EA3408C1A44A556")
-Sys.setenv("REDCapSync_TEST_REDCAPR_CLIN_TRIAL" = "F2A02137BA58ABFC001058ADAC9B36D2")
+Sys.setenv(
+  "REDCapSync_TEST_REDCAPR_SIMPLE" = "9A068C425B1341D69E83064A2D273A70")
+Sys.setenv(
+  "REDCapSync_TEST_REDCAPR_LONGITUDINAL" = "DA6F2BB23146BD5A7EA3408C1A44A556")
+Sys.setenv(
+  "REDCapSync_TEST_REDCAPR_CLIN_TRIAL" = "F2A02137BA58ABFC001058ADAC9B36D2")
 project <- setup_project(
   project_name = "TEST_REDCAPR_SIMPLE",
   redcap_uri = "https://redcap-dev-2.ouhsc.edu/redcap/api/",
@@ -141,7 +146,8 @@ for (project_name in project_names) {
   project$internals$is_test <- TRUE
   saveRDS(
     rcon_list,
-    file.path("tests/testthat/fixtures/", paste0(project_name, "_call_list.rds"))
+    file.path("tests/testthat/fixtures/",
+              paste0(project_name, "_call_list.rds"))
   )
   assign(
     x = project_name,

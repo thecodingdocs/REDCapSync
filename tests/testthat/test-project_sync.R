@@ -2,6 +2,23 @@
 # sync ( Exported )
 test_that("sync works!", {
 })
+test_that("sync_project_hard_reset works!", {
+  project_name <- "TEST_CLASSIC"
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  project <- mock_test_project(project_name, temp_dir)$.internal
+  call_list <- mock_test_calls(project_name)
+  # project$data <- .blank_project$data
+  mockery::stub(sync_project_hard_reset, "get_redcap_metadata", project)
+  mockery::stub(sync_project_hard_reset, "update_project_links", project)
+  mockery::stub(sync_project_hard_reset, "get_redcap_data", project$data)
+  mockery::stub(sync_project_hard_reset, "get_redcap_log", project$redcap$log)
+  result <- project
+  result$metadata <- .blank_project$metadata
+  result["data"] <- list(NULL)
+  result <- sync_project_hard_reset(result)
+  expect_identical(result$metadata, project$metadata)
+  expect_identical(result$data, project$data)
+})
 test_that("due_for_sync works", {
   temp_dir <- withr::local_tempdir() |> sanitize_path()
   fake_cache_location <- file.path(temp_dir, "fake_cache")

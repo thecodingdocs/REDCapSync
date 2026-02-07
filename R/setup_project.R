@@ -491,6 +491,12 @@ save_project <- function(project, silent = FALSE) {
   invisible(project)
 }
 #' @noRd
+.test_redcapr_names <- c(
+  "TEST_REDCAPR_SIMPLE",
+  "TEST_REDCAPR_LONGITUDINAL",
+  "TEST_REDCAPR_CLIN_TRIAL"
+)
+#' @noRd
 .test_project_names <- c(
   "TEST_CLASSIC",
   "TEST_REPEATING",
@@ -499,9 +505,7 @@ save_project <- function(project, silent = FALSE) {
   "TEST_EDGE",
   "TEST_DATA",
   "TEST_CANCER",
-  "TEST_REDCAPR_SIMPLE",
-  "TEST_REDCAPR_LONGITUDINAL",
-  "TEST_REDCAPR_CLIN_TRIAL"
+  .test_redcapr_names
 )
 #' @noRd
 .blank_project <- list(

@@ -26,9 +26,9 @@ test_that("active_bindings R6 read-only", {
 })
 test_that("R6 info works!", {
   project_r6 <- REDCapSync_project$new(load_test_project()$.internal)
-  expect_message(project_r6$info(),"Project Name: TEST_CLASSIC")
-  expect_message(project_r6$info(),"Token Name: REDCapSync_TEST_CLASSIC")
-  expect_message(project_r6$info(),"PID: 12341")
+  expect_message(project_r6$info(), "Project Name: TEST_CLASSIC")
+  expect_message(project_r6$info(), "Token Name: REDCapSync_TEST_CLASSIC")
+  expect_message(project_r6$info(), "PID: 12341")
 })
 test_that("R6 add_summary works!", {
   temp_dir <- withr::local_tempdir() |> sanitize_path()

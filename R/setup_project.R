@@ -430,7 +430,7 @@ load_project <- function(project_name) {
 #' @rdname setup-load
 #' @export
 load_test_project <- function(project_name) {
-  if(missing(project_name)){
+  if (missing(project_name)) {
     cli_alert_info(paste(
       "TEST project choices:",
       toString(.test_project_names)

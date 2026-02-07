@@ -454,10 +454,10 @@ get_redcap_files <- function(project,
 }
 #' @noRd
 get_redcap_log <- function(project,
-                            log_begin_date = Sys.Date() - 10L) {
+                           log_begin_date = Sys.Date() - 10L) {
   assert_setup_project(project)
   assert_date(log_begin_date)
-  beginTime <- as.character(log_begin_date) |>
+  log_begin_time <- as.character(log_begin_date) |>
     paste("00:00:00") |>
     as.POSIXct()
   redcap_log <- exportLogging(
@@ -466,7 +466,7 @@ get_redcap_log <- function(project,
     logtype = character(0L),
     user = character(0L),
     record = character(0L),
-    beginTime = beginTime,
+    beginTime = log_begin_time,
     endTime = as.POSIXct(character(0L))
   )
   #addtrycatch NULL

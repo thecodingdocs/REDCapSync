@@ -12,7 +12,7 @@ test_that("fields_to_choices works", {
   )
   project <- load_test_project()$.internal
   fields <- project$metadata$fields
-  fields <- fields[0,] |> dplyr::bind_rows(
+  fields <- fields[0, ] |> dplyr::bind_rows(
     data.frame(
       field_name = c("sex", "yes_no1", "yes_no2", "race", "location"),
       form_name = "form_one",

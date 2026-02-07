@@ -5,11 +5,11 @@ test_that("get_redcap_metadata works on real server, simple!", {
   temp_dir <- withr::local_tempdir() |> sanitize_path()
   project <- real_test_project(project_name, temp_dir)$.internal
   # expect_false(project$internals$ever_connected)
-  expect_data_frame(as.data.frame(project$metadata$forms) , nrows = 0)
-  expect_data_frame(as.data.frame(project$metadata$fields) , nrows = 0)
-  expect_data_frame(as.data.frame(project$metadata$choices) , nrows = 0)
-  expect_data_frame(as.data.frame(project$redcap$users) , nrows = 0)
-  expect_data_frame(as.data.frame(project$redcap$project_info) , nrows = 0)
+  expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0)
+  expect_data_frame(as.data.frame(project$metadata$fields), nrows = 0)
+  expect_data_frame(as.data.frame(project$metadata$choices), nrows = 0)
+  expect_data_frame(as.data.frame(project$redcap$users), nrows = 0)
+  expect_data_frame(as.data.frame(project$redcap$project_info), nrows = 0)
   project_with_metadata <- withr::with_envvar(real_dev_tokens, {
     get_redcap_metadata(project)
   })
@@ -18,18 +18,18 @@ test_that("get_redcap_metadata works on real server, simple!", {
   expect_data_frame(project_with_metadata$metadata$fields, min.rows = 1)
   expect_data_frame(project_with_metadata$metadata$choices, min.rows = 1)
   expect_data_frame(project_with_metadata$redcap$users, min.rows = 1)
-  expect_data_frame(project_with_metadata$redcap$project_info , nrows = 1)
+  expect_data_frame(project_with_metadata$redcap$project_info, nrows = 1)
 })
 test_that("get_redcap_metadata works on real server, longitudinal!", {
   skip_on_cran()
   project_name <- "TEST_REDCAPR_SIMPLE"
   temp_dir <- withr::local_tempdir() |> sanitize_path()
   project <- real_test_project(project_name, temp_dir)$.internal
-  expect_data_frame(as.data.frame(project$metadata$forms) , nrows = 0)
-  expect_data_frame(as.data.frame(project$metadata$fields) , nrows = 0)
-  expect_data_frame(as.data.frame(project$metadata$choices) , nrows = 0)
-  expect_data_frame(as.data.frame(project$redcap$users) , nrows = 0)
-  expect_data_frame(as.data.frame(project$redcap$project_info) , nrows = 0)
+  expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0)
+  expect_data_frame(as.data.frame(project$metadata$fields), nrows = 0)
+  expect_data_frame(as.data.frame(project$metadata$choices), nrows = 0)
+  expect_data_frame(as.data.frame(project$redcap$users), nrows = 0)
+  expect_data_frame(as.data.frame(project$redcap$project_info), nrows = 0)
   project_with_metadata <- withr::with_envvar(real_dev_tokens, {
     get_redcap_metadata(project)
   })
@@ -37,7 +37,7 @@ test_that("get_redcap_metadata works on real server, longitudinal!", {
   expect_data_frame(project_with_metadata$metadata$fields, min.rows = 1)
   expect_data_frame(project_with_metadata$metadata$choices, min.rows = 1)
   expect_data_frame(project_with_metadata$redcap$users, min.rows = 1)
-  expect_data_frame(project_with_metadata$redcap$project_info , nrows = 1)
+  expect_data_frame(project_with_metadata$redcap$project_info, nrows = 1)
 })
 test_that("get_redcap_metadata works with fixture data (classic)", {
   project_name <- "TEST_CLASSIC"
@@ -127,7 +127,7 @@ test_that("get_redcap_denormalized works!", {
   skip_on_cran()
   temp_dir <- withr::local_tempdir() |> sanitize_path()
   project <- real_test_project("TEST_REDCAPR_LONGITUDINAL", temp_dir)$.internal
-  expect_data_frame(as.data.frame(project$data) , nrows = 0)
+  expect_data_frame(as.data.frame(project$data), nrows = 0)
   suppressWarnings({ #REDCapR has warnings
     project_data <- withr::with_envvar(
       real_dev_tokens,
@@ -149,6 +149,13 @@ test_that("get_redcap_report works!", {
 })
 # get_redcap_data ( Internal )
 test_that("get_redcap_data works!", {
+  # project_name <- "TEST_CLASSIC"
+  # temp_dir <- withr::local_tempdir() |> sanitize_path()
+  # project <- mock_test_project(project_name, temp_dir)$.internal
+  # call_list <- mock_test_calls(project_name)
+  # mockery::stub(get_redcap_denormalized, "redcap_read", call_list)
+  # result <- get_redcap_denormalized(project)
+  # expect_data_frame(result, min.rows = 1)
 })
 # rename_forms_redcap_to_default ( Internal )
 test_that("rename_forms_redcap_to_default works!", {

@@ -392,9 +392,8 @@ form_to_wb <- function(form,
           first_active_col <- first_active_col +
             freeze_key_cols[length(freeze_key_cols)]
         } else {
-          warning(
-            "key_cols must be consecutive and start from left most column.",
-            immediate. = TRUE)
+          the_warning <- "key_cols should be consecutive and start at the left."
+          warning(the_warning, immediate. = TRUE)
         }
       }
       openxlsx::freezePane(wb,

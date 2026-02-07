@@ -19,13 +19,13 @@ real_test_project <- function(project_name = "TEST_REDCAPR_SIMPLE", temp_dir) {
       fake_cache
     }
   )
-  project <- setup_project(
-    project_name = project_name,
-    dir_path = temp_dir,
-    redcap_uri = "https://redcap-dev-2.ouhsc.edu/redcap/api/")
+  redcap_uri <- "https://redcap-dev-2.ouhsc.edu/redcap/api/"
+  project <- setup_project(project_name = project_name,
+                           dir_path = temp_dir,
+                           redcap_uri = redcap_uri)
   project
 }
-mock_test_project <- function(project_name = "TEST_CLASSIC", temp_dir){
+mock_test_project <- function(project_name = "TEST_CLASSIC", temp_dir) {
   assert_choice(project_name, .test_project_names)
   local_mocked_bindings(
     get_cache = function(...) {

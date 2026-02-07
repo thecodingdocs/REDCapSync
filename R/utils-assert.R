@@ -262,7 +262,7 @@ assert_project_details <- function(project_details, nrows = NULL) {
     project_details$project_name |>
       lapply(function(project_name) {
         assert_env_name(project_name, max.chars = 31L)
-    })
+      })
     assert_names(project_details$project_name, type = "unique")
   }
   project_details

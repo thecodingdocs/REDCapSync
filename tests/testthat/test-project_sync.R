@@ -3,8 +3,8 @@
 test_that("sync works!", {
 })
 test_that("due_for_sync works", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -16,7 +16,7 @@ test_that("due_for_sync works", {
   # true for nonexistent
   expect_true(due_for_sync("NONEXISTENT_PROJECT"))
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   project_details <- extract_project_details(project)
   project_details$last_sync <- NA
   add_project_details_to_cache(project_details)
@@ -84,8 +84,8 @@ test_that("due_for_sync works", {
 })
 # sweep_dirs_for_cache ( Internal )
 test_that("sweep_dirs_for_cache updates cache when project files exist", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -96,7 +96,7 @@ test_that("sweep_dirs_for_cache updates cache when project files exist", {
   )
   # Setup initial project
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   project_details <- extract_project_details(project)
   add_project_details_to_cache(project_details)
   # Create project files on disk
@@ -119,8 +119,8 @@ test_that("sweep_dirs_for_cache updates cache when project files exist", {
   expect_true(project$project_name %in% projects$project_name)
 })
 test_that("sweep_dirs_for_cache handles empty cache", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -137,8 +137,8 @@ test_that("sweep_dirs_for_cache handles empty cache", {
   expect_identical(nrow(projects_after), 0L)
 })
 test_that("sweep_dirs_for_cache handles non-existent project_names", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -149,7 +149,7 @@ test_that("sweep_dirs_for_cache handles non-existent project_names", {
   )
   # Setup one project
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   project_details <- extract_project_details(project)
   add_project_details_to_cache(project_details)
   # Try to sweep with non-existent project names
@@ -161,8 +161,8 @@ test_that("sweep_dirs_for_cache handles non-existent project_names", {
   expect_true(project$project_name %in% projects$project_name)
 })
 test_that("sweep_dirs_for_cache compares cached and disk project details", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -173,7 +173,7 @@ test_that("sweep_dirs_for_cache compares cached and disk project details", {
   )
   # Setup initial project
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   project_details <- extract_project_details(project)
   add_project_details_to_cache(project_details)
   # Create project files with updated details

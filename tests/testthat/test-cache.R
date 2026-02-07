@@ -4,8 +4,8 @@ test_that("hoardr cache exsists", {
 })
 # get_cache ( Internal )
 test_that("fake_cache sets and clears", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -29,8 +29,8 @@ test_that("fake_cache sets and clears", {
 # cache_clear ( Exported )
 # cache_projects_exists ( Internal )
 test_that("cache_projects_exists, cache_clear works", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -59,8 +59,8 @@ test_that("cache_projects_exists, cache_clear works", {
 # cache_exists ( Internal )
 # cache_remove_project ( Exported )
 test_that("cache_remove_project works", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()

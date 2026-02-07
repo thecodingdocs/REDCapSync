@@ -1,7 +1,7 @@
 # get_projects ( Exported )
 test_that("get_projects is df and has appropriate columns", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -19,8 +19,8 @@ test_that("get_projects is df and has appropriate columns", {
 })
 # extract_project_details ( Internal )
 test_that("extract_project_details works", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -39,8 +39,8 @@ test_that("extract_project_details works", {
 })
 # save_projects_to_cache ( Internal )
 test_that("save_projects_to_cache works", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -52,7 +52,7 @@ test_that("save_projects_to_cache works", {
   projects <- get_projects()
   expect_data_frame(projects, nrows = 0L)
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   #no connection should not save to cache
   project_details <- extract_project_details(project)
   projects <- get_projects()
@@ -77,8 +77,8 @@ test_that("save_projects_to_cache works", {
 # na_if_null ( Internal )
 # add_project_details_to_cache ( Internal )
 test_that("add_project_details_to_cache works", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()

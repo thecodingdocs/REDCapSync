@@ -83,19 +83,19 @@ test_that("drop_nas works!", {
 })
 # excel_to_list ( Internal )
 test_that("excel_to_list works!", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  expect_true(file.exists(test_dir))
-  test_file <- file.path(test_dir, "cars.xlsx")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  expect_true(file.exists(temp_dir))
+  test_file <- file.path(temp_dir, "cars.xlsx")
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
-  list_to_excel(df_list, dir = test_dir, file_name = "cars")
+  list_to_excel(df_list, dir = temp_dir, file_name = "cars")
   expect_true(file.exists(test_file))
   df_list_saved <- excel_to_list(test_file)
   expect_list(df_list, len = 2L)
   expect_named(df_list, names(df_list_saved))
   expect_identical(nrow(df_list$one), nrow(df_list_saved$one))
   expect_identical(nrow(df_list$two), nrow(df_list_saved$two))
-  expect_error(list_to_excel(file.path(test_dir, "fake_cars.xlsx")))
+  expect_error(list_to_excel(file.path(temp_dir, "fake_cars.xlsx")))
 })
 # is_named_df_list ( Internal )
 test_that("is_named_df_list works!", {
@@ -132,17 +132,17 @@ test_that("unique_trimmed_strings works!", {
 })
 # list_to_excel ( Internal )
 test_that("list_to_excel works!", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  expect_true(file.exists(test_dir))
-  test_file <- file.path(test_dir, "cars.xlsx")
-  test_file_one <- file.path(test_dir, "cars_one.xlsx")
-  test_file_two <- file.path(test_dir, "cars_two.xlsx")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  expect_true(file.exists(temp_dir))
+  test_file <- file.path(temp_dir, "cars.xlsx")
+  test_file_one <- file.path(temp_dir, "cars_one.xlsx")
+  test_file_two <- file.path(temp_dir, "cars_two.xlsx")
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
-  list_to_excel(df_list, dir = test_dir, file_name = "cars")
+  list_to_excel(df_list, dir = temp_dir, file_name = "cars")
   expect_true(file.exists(test_file))
   list_to_excel(df_list,
-                dir = test_dir,
+                dir = temp_dir,
                 file_name = "cars",
                 separate = TRUE)
   expect_true(file.exists(test_file_one))
@@ -156,14 +156,14 @@ test_that("list_to_excel works!", {
 })
 # list_to_csv ( Internal )
 test_that("list_to_csv works!", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  expect_true(file.exists(test_dir))
-  test_file <- file.path(test_dir, "cars.csv")
-  test_file_one <- file.path(test_dir, "cars_one.csv")
-  test_file_two <- file.path(test_dir, "cars_two.csv")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  expect_true(file.exists(temp_dir))
+  test_file <- file.path(temp_dir, "cars.csv")
+  test_file_one <- file.path(temp_dir, "cars_one.csv")
+  test_file_two <- file.path(temp_dir, "cars_two.csv")
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
-  list_to_csv(df_list, dir = test_dir, file_name = "cars")
+  list_to_csv(df_list, dir = temp_dir, file_name = "cars")
   expect_true(file.exists(test_file_one))
   expect_true(file.exists(test_file_two))
   one <- read.csv(test_file_one)
@@ -178,13 +178,13 @@ test_that("save_wb works!", {
 })
 # save_csv ( Internal )
 test_that("save_csv works!", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  expect_true(file.exists(test_dir))
-  test_file <- file.path(test_dir, "cars.csv")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  expect_true(file.exists(temp_dir))
+  test_file <- file.path(temp_dir, "cars.csv")
   expect_false(file.exists(test_file))
   save_csv(
     form = mtcars,
-    dir = test_dir,
+    dir = temp_dir,
     file_name = "cars",
     overwrite = TRUE
   )
@@ -196,7 +196,7 @@ test_that("save_csv works!", {
   expect_message(
     save_csv(
       form = cars,
-      dir = test_dir,
+      dir = temp_dir,
       file_name = "cars",
       overwrite = FALSE
     ),

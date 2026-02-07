@@ -1,7 +1,7 @@
 # repair_projects ( Internal )
 test_that("repair_projects works with valid project details", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -11,7 +11,7 @@ test_that("repair_projects works with valid project details", {
     }
   )
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   project_path <- get_project_path(
     project_name = project$project_name,
     dir_path = project$dir_path
@@ -62,8 +62,8 @@ test_that("repair_projects handles missing project files", {
 })
 # repair_project_details ( Internal )
 test_that("repair_project_details works with valid project file", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -73,7 +73,7 @@ test_that("repair_project_details works with valid project file", {
     }
   )
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   # Save project to disk
   project_path <- get_project_path(
     project_name = project$project_name,
@@ -112,16 +112,16 @@ test_that("repair_project_details returns NULL when dir_path is NA", {
   expect_null(result)
 })
 test_that("repair_project_details handles corrupted project file", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
   project_details_df <- data.frame(
     project_name = "CORRUPT_PROJECT",
-    dir_path = test_dir,
+    dir_path = temp_dir,
     stringsAsFactors = FALSE
   )
   # Create corrupted project file
   project_path <- get_project_path(
     project_name = "CORRUPT_PROJECT",
-    dir_path = test_dir
+    dir_path = temp_dir
   )
   dir.create(dirname(project_path), showWarnings = FALSE, recursive = TRUE)
   saveRDS("not a valid project object", file = project_path)
@@ -129,8 +129,8 @@ test_that("repair_project_details handles corrupted project file", {
   expect_null(result)
 })
 test_that("repair_project_details extracts correct project details", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -140,7 +140,7 @@ test_that("repair_project_details extracts correct project details", {
     }
   )
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   # Save project to disk
   project_path <- get_project_path(
     project_name = project$project_name,
@@ -162,8 +162,8 @@ test_that("repair_project_details extracts correct project details", {
 })
 # repair_setup_project ( Internal )
 test_that("repair_setup_project works with valid project", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -173,7 +173,7 @@ test_that("repair_setup_project works with valid project", {
     }
   )
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   result <- repair_setup_project(project)
   expect_list(result)
   expect_true(test_setup_project(result))
@@ -205,8 +205,8 @@ test_that("repair_setup_project returns NULL for invalid project_name", {
 #   expect_null(result)
 # })
 test_that("repair_setup_project repairs invalid internals", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -216,7 +216,7 @@ test_that("repair_setup_project repairs invalid internals", {
     }
   )
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   # Set invalid internals
   project$internals$sync_frequency <- "invalid"
   project$internals$labelled <- NA
@@ -229,8 +229,8 @@ test_that("repair_setup_project repairs invalid internals", {
   expect_identical(result$internals$timezone, Sys.timezone())
 })
 test_that("repair_setup_project repairs invalid batch sizes", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -240,7 +240,7 @@ test_that("repair_setup_project repairs invalid batch sizes", {
     }
   )
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   # Set invalid batch sizes
   project$internals$batch_size_download <- 0L
   project$internals$batch_size_upload <- NA
@@ -251,8 +251,8 @@ test_that("repair_setup_project repairs invalid batch sizes", {
   expect_identical(result$internals$batch_size_upload, 500L)
 })
 test_that("repair_setup_project repairs invalid logical fields", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -262,7 +262,7 @@ test_that("repair_setup_project repairs invalid logical fields", {
     }
   )
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   # Set invalid logical fields
   project$internals$get_files <- NA
   project$internals$get_file_repository <- "yes"
@@ -275,8 +275,8 @@ test_that("repair_setup_project repairs invalid logical fields", {
   expect_identical(result$internals$entire_log, FALSE)
 })
 test_that("repair_setup_project repairs invalid get_type", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -286,15 +286,15 @@ test_that("repair_setup_project repairs invalid get_type", {
     }
   )
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   project$internals$get_type <- "invalid_type"
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))
   expect_identical(result$internals$get_type, "identified")
 })
 test_that("repair_setup_project handles character vector fields", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -304,7 +304,7 @@ test_that("repair_setup_project handles character vector fields", {
     }
   )
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   # Set valid character vectors
   project$internals$records <- c("1", "2", "3")
   project$internals$fields <- c("field1", "field2")
@@ -316,8 +316,8 @@ test_that("repair_setup_project handles character vector fields", {
   expect_identical(result$internals$forms, c("form1", "form2"))
 })
 test_that("repair_setup_project repairs invalid character vectors", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -327,7 +327,7 @@ test_that("repair_setup_project repairs invalid character vectors", {
     }
   )
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   # Set invalid character vectors (wrong type or length)
   project$internals$records <- 123L
   project$internals$fields <- TRUE
@@ -340,8 +340,8 @@ test_that("repair_setup_project repairs invalid character vectors", {
   expect_true(is.na(result$internals$forms))
 })
 test_that("repair_setup_project repairs invalid days_of_log", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -351,7 +351,7 @@ test_that("repair_setup_project repairs invalid days_of_log", {
     }
   )
   project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   project$internals$days_of_log <- 0L
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))

@@ -1,7 +1,7 @@
 # fields_to_choices ( Internal )
 test_that("fields_to_choices works", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -80,8 +80,8 @@ test_that("clean_column_for_table works!", {
 })
 # add_project_summary ( Exported )
 test_that("add_project_summary works!", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -118,8 +118,8 @@ test_that("add_project_summary works!", {
 })
 # save_summary ( Internal )
 test_that("save_summary works", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -129,8 +129,8 @@ test_that("save_summary works", {
     }
   )
   project <- TEST_CLASSIC
-  project$dir_path <- test_dir
-  dir.create(file.path(test_dir, "output"), recursive = TRUE)
+  project$dir_path <- temp_dir
+  dir.create(file.path(temp_dir, "output"), recursive = TRUE)
   summary_name <- "SAVE_SUMMARY_TEST"
   project <- add_project_summary(
     project = project,
@@ -237,8 +237,8 @@ test_that("merge_non_repeating works!", {
 })
 # summarize_project ( Internal )
 test_that("summarize_project works", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  fake_cache_location <- file.path(temp_dir, "fake_cache")
   local_mocked_bindings(
     get_cache = function(...) {
       fake_cache <- hoardr::hoard()
@@ -248,7 +248,7 @@ test_that("summarize_project works", {
     }
   )
   project <- TEST_CLASSIC
-  project$dir_path <- set_dir(test_dir)
+  project$dir_path <- set_dir(temp_dir)
   dir.create(
     path = file.path(project$dir_path, "REDCap", project$project_name),
     showWarnings = FALSE

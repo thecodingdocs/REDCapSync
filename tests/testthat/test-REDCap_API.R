@@ -1,16 +1,18 @@
 # get_redcap_metadata ( Internal )
 test_that("get_redcap_metadata works on real server, simple!", {
   skip_on_cran()
-  project <- REDCapR_project()$.internal
+  project_name <- "TEST_REDCAPR_SIMPLE"
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  project <- real_test_project(project_name, temp_dir)$.internal
   # expect_false(project$internals$ever_connected)
   expect_data_frame(as.data.frame(project$metadata$forms) , nrows = 0)
   expect_data_frame(as.data.frame(project$metadata$fields) , nrows = 0)
   expect_data_frame(as.data.frame(project$metadata$choices) , nrows = 0)
   expect_data_frame(as.data.frame(project$redcap$users) , nrows = 0)
   expect_data_frame(as.data.frame(project$redcap$project_info) , nrows = 0)
-  project_with_metadata <- withr::with_envvar(
-    c(REDCapSync_TEST_REDCAPR = "9A068C425B1341D69E83064A2D273A70"),
-    {get_redcap_metadata(project)})
+  project_with_metadata <- withr::with_envvar(real_dev_tokens, {
+    get_redcap_metadata(project)
+  })
   # expect_true(project_with_metadata$internals$ever_connected)
   expect_data_frame(project_with_metadata$metadata$forms, min.rows = 1)
   expect_data_frame(project_with_metadata$metadata$fields, min.rows = 1)
@@ -20,63 +22,65 @@ test_that("get_redcap_metadata works on real server, simple!", {
 })
 test_that("get_redcap_metadata works on real server, longitudinal!", {
   skip_on_cran()
-  project <- REDCapR_project()$.internal
+  project_name <- "TEST_REDCAPR_SIMPLE"
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  project <- real_test_project(project_name, temp_dir)$.internal
   expect_data_frame(as.data.frame(project$metadata$forms) , nrows = 0)
   expect_data_frame(as.data.frame(project$metadata$fields) , nrows = 0)
   expect_data_frame(as.data.frame(project$metadata$choices) , nrows = 0)
   expect_data_frame(as.data.frame(project$redcap$users) , nrows = 0)
   expect_data_frame(as.data.frame(project$redcap$project_info) , nrows = 0)
-  project_with_metadata <- withr::with_envvar(
-    c(REDCapSync_TEST_REDCAPR = "DA6F2BB23146BD5A7EA3408C1A44A556"),
-    {get_redcap_metadata(project)})
+  project_with_metadata <- withr::with_envvar(real_dev_tokens, {
+    get_redcap_metadata(project)
+  })
   expect_data_frame(project_with_metadata$metadata$forms, min.rows = 1)
   expect_data_frame(project_with_metadata$metadata$fields, min.rows = 1)
   expect_data_frame(project_with_metadata$metadata$choices, min.rows = 1)
   expect_data_frame(project_with_metadata$redcap$users, min.rows = 1)
   expect_data_frame(project_with_metadata$redcap$project_info , nrows = 1)
 })
-test_that("get_redcap_metadata works with fixture data (simple)", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
-  # Mock rcon_result to return fixture data
-  mockery::stub(get_redcap_metadata, "rcon_result", function(project) {
-    readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
-  })
+test_that("get_redcap_metadata works with fixture data (classic)", {
+  project_name <- "TEST_CLASSIC"
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  project <- mock_test_project(project_name, temp_dir)$.internal
+  call_list <- mock_test_calls(project_name)
+  mockery::stub(get_redcap_metadata, "rcon_result", call_list)
   result <- get_redcap_metadata(project)
-  expect_list(result)
   expect_identical(result$project_name, project$project_name)
+  expect_identical(call_list$project_info, project$redcap$project_info)
+  project$metadata <- .blank_project$metadata # clear exisiting data
+  expect_null(project$metadata$fields)
+  expect_null(project$metadata$forms)
+  expect_list(result)
   expect_true(!is.null(result$metadata))
   expect_true(!is.null(result$redcap$project_info))
   expect_data_frame(result$metadata$forms, min.rows = 1)
   expect_data_frame(result$metadata$fields, min.rows = 1)
+  expect_true(!is.null(result$redcap$project_title))
+  expect_true(!is.null(result$redcap$project_id))
+  expect_data_frame(result$metadata$forms)
+  expect_true("form_name" %in% colnames(result$metadata$forms))
+  expect_data_frame(result$metadata$fields)
+  expect_true("field_name" %in% colnames(result$metadata$fields))
+  expect_true("form_name" %in% colnames(result$metadata$fields))
+  expect_data_frame(result$metadata$choices)
+  expect_data_frame(result$redcap$users)
+  expect_true(result$redcap$has_user_access)
+  expect_true(is.logical(result$redcap$has_log_access))
+  if (is_something(result$metadata$missing_codes)) {
+    expect_data_frame(result$metadata$missing_codes)
+  }
+  expect_identical(result$project_name, project_name)
 })
 test_that("get_redcap_metadata works with fixture data (longitudinal)", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
-  project$redcap$is_longitudinal <- TRUE
-  mockery::stub(get_redcap_metadata, "rcon_result", function(project) {
-    readRDS(test_path("fixtures", "TEST_REDCAPR_LONGITUDINAL_call_list.rds"))
-  })
+  project_name <- "TEST_REDCAPR_LONGITUDINAL"
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  project <- mock_test_project(project_name, temp_dir)$.internal
+  call_list <- mock_test_calls(project_name)
+  mockery::stub(get_redcap_metadata, "rcon_result", call_list)
+  project$metadata <- .blank_project$metadata # clear exisiting data
+  expect_null(project$metadata$fields)
+  expect_null(project$metadata$forms)
   result <- get_redcap_metadata(project)
   expect_list(result)
   expect_true(result$metadata$is_longitudinal)
@@ -85,188 +89,15 @@ test_that("get_redcap_metadata works with fixture data (longitudinal)", {
   expect_data_frame(result$metadata$events, min.rows = 1)
 })
 test_that("get_redcap_metadata works with fixture data (repeating forms)", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
-  mockery::stub(get_redcap_metadata, "rcon_result", function(project) {
-    readRDS(test_path("fixtures", "TEST_REPEATING_call_list.rds"))
-  })
+  project_name <- "TEST_REPEATING"
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  project <- mock_test_project(project_name, temp_dir)$.internal
+  call_list <- mock_test_calls(project_name)
+  mockery::stub(get_redcap_metadata, "rcon_result", call_list)
+  project$metadata <- .blank_project$metadata # clear exisiting data
   result <- get_redcap_metadata(project)
   expect_list(result)
   expect_true(result$metadata$has_repeating_forms_or_events)
-})
-test_that("get_redcap_metadata extracts correct project info from fixture", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
-  fixture <- readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
-  mockery::stub(get_redcap_metadata, "rcon_result", function(project) {fixture})
-  result <- get_redcap_metadata(project)
-  # Verify project info fields are populated
-  expect_true(!is.null(result$redcap$project_title))
-  expect_true(!is.null(result$redcap$project_id))
-  expect_identical(result$redcap$project_info, fixture$project_info)
-})
-test_that("get_redcap_metadata handles forms from fixture", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
-  mockery::stub(get_redcap_metadata, "rcon_result", function(project) {
-    readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
-  })
-  result <- get_redcap_metadata(project)
-  expect_data_frame(result$metadata$forms)
-  expect_true("form_name" %in% colnames(result$metadata$forms))
-})
-test_that("get_redcap_metadata handles fields from fixture", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
-  mockery::stub(get_redcap_metadata, "rcon_result", function(project) {
-    readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
-  })
-  result <- get_redcap_metadata(project)
-  expect_data_frame(result$metadata$fields)
-  expect_true("field_name" %in% colnames(result$metadata$fields))
-  expect_true("form_name" %in% colnames(result$metadata$fields))
-})
-test_that("get_redcap_metadata handles choices from fixture", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
-  mockery::stub(get_redcap_metadata, "rcon_result", function(project) {
-    readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
-  })
-  result <- get_redcap_metadata(project)
-  expect_data_frame(result$metadata$choices)
-})
-test_that("get_redcap_metadata handles users from fixture", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
-  mockery::stub(get_redcap_metadata, "rcon_result", function(project) {
-    readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
-  })
-  result <- get_redcap_metadata(project)
-  expect_data_frame(result$redcap$users)
-  expect_true(result$redcap$has_user_access)
-})
-test_that("get_redcap_metadata detects logging access from fixture", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
-  mockery::stub(get_redcap_metadata, "rcon_result", function(project) {
-    readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
-  })
-  result <- get_redcap_metadata(project)
-  # Check if logging access is correctly detected
-  expect_true(is.logical(result$redcap$has_log_access))
-})
-test_that("get_redcap_metadata handles missing_data_codes from fixture", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(test_dir)
-  mockery::stub(get_redcap_metadata, "rcon_result", function(project) {
-    readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
-  })
-  result <- get_redcap_metadata(project)
-  # Check missing codes handling
-  if (!is.na(result$metadata$missing_codes)) {
-    expect_data_frame(result$metadata$missing_codes)
-  }
-})
-test_that("get_redcap_metadata preserves project name", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  original_name <- "TEST_CLASSIC"
-  project <- load_test_project()$.internal
-  project$project_name <- original_name
-  project$dir_path <- set_dir(test_dir)
-  mockery::stub(get_redcap_metadata, "rcon_result", function(project) {
-    readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
-  })
-  result <- get_redcap_metadata(project)
-  expect_identical(result$project_name, original_name)
 })
 # add_field_elements ( Internal )
 test_that("add_field_elements works!", {
@@ -281,45 +112,37 @@ test_that("get_redcap_files works!", {
 test_that("get_redcap_users works!", {
 })
 # get_redcap_log ( Internal )
-test_that("get_redcap_log works!", {
+#need dev server with log access?
+test_that("get_redcap_log works on fixture!", {
+  project_name <- "TEST_REPEATING"
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  project <- mock_test_project(project_name, temp_dir)$.internal
+  call_list <- mock_test_calls(project_name)
+  mockery::stub(get_redcap_log, "exportLogging", call_list$logging)
+  result <- get_redcap_log(project)
+  expect_data_frame(result, min.rows = 1)
 })
 # get_redcap_denormalized ( Internal )
 test_that("get_redcap_denormalized works!", {
   skip_on_cran()
-  project <- REDCapR_project()$.internal
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  project <- real_test_project("TEST_REDCAPR_LONGITUDINAL", temp_dir)$.internal
   expect_data_frame(as.data.frame(project$data) , nrows = 0)
   suppressWarnings({ #REDCapR has warnings
     project_data <- withr::with_envvar(
-      c(REDCapSync_TEST_REDCAPR = "DA6F2BB23146BD5A7EA3408C1A44A556"),
+      real_dev_tokens,
       {get_redcap_denormalized(project)})
   })
   expect_data_frame(project_data, min.rows = 1)
 })
 test_that("get_redcap_denormalized works no API call!", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(test_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  original_name <- "TEST_CLASSIC"
-  project <- load_test_project()$.internal
-  project$project_name <- original_name
-  project$dir_path <- set_dir(test_dir)
-  project <- REDCapR_project()$.internal
-  mockery::stub(
-    get_redcap_denormalized,
-    "REDCapR::redcap_read",
-    function(...) {
-      readRDS(test_path("fixtures", "TEST_REDCAPR_SIMPLE_call_list.rds"))
-    }
-  )
-  # denorm <- get_redcap_denormalized(project)
-  # normalize_redcap(denorm, project)
+  project_name <- "TEST_CLASSIC"
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  project <- mock_test_project(project_name, temp_dir)$.internal
+  call_list <- mock_test_calls(project_name)
+  mockery::stub(get_redcap_denormalized, "redcap_read", call_list)
+  result <- get_redcap_denormalized(project)
+  expect_data_frame(result, min.rows = 1)
 })
 # get_redcap_report ( Exported )
 test_that("get_redcap_report works!", {
@@ -388,7 +211,7 @@ test_that("rcon_result returns expected structure without real API calls", {
   expect_identical(out$project_info$project_id, "9999")
   expect_s3_class(out$forms, "data.frame")
 })
-test_that("upload_form_to_redcap() calls REDCapR::redcap_write expected args", {
+test_that("upload_form_to_redcap() calls redcap_write expected args", {
   project <- list(
     links = list(redcap_uri = "https://redcap.fake.edu/api/")
   )
@@ -403,7 +226,7 @@ test_that("upload_form_to_redcap() calls REDCapR::redcap_write expected args", {
     "0123456789ABCDEF0123456789ABCDEF"
   })
   # Stub the network call and capture args
-  mockery::stub(upload_form_to_redcap, "REDCapR::redcap_write", function(...) {
+  mockery::stub(upload_form_to_redcap, "redcap_write", function(...) {
     captured <<- list(...)
     list(success = TRUE)
   })

@@ -31,13 +31,13 @@ test_that("R6 info works!", {
   expect_message(project_r6$info(),"PID: 12341")
 })
 test_that("R6 add_summary works!", {
-  test_dir <- withr::local_tempdir() |> sanitize_path()
+  temp_dir <- withr::local_tempdir() |> sanitize_path()
   project_r6 <- REDCapSync_project$new(load_test_project()$.internal)
   project_r6$add_summary(
     "new_summary",
     filter_field = "var_yesno",
     filter_choices = "Yes",
-    dir_other = test_dir
+    dir_other = temp_dir
   )
   x <- project_r6$generate_summary("new_summary")
   expect_list(x)

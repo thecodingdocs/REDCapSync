@@ -68,6 +68,13 @@ cache_projects_exists <- function() {
 get_cache <- function() {
   cache <- hoardr::hoard()
   cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
+  cache_dir <- Sys.getenv("REDCAPSYNC_CACHE_PATH", unset = NA)
+  if (!is.na(cache_dir) && nzchar(cache_dir)) {
+    if (!file.exists(cache_dir)) {
+      stop("'Sys.getenv(\"REDCAPSYNC_CACHE_PATH\")' is set but does not exist")
+    }
+    cache$cache_path_set(full_path = cache_dir)
+  }
   cache$mkdir()
   cache
 }
@@ -76,7 +83,7 @@ get_cache <- function() {
 #' @description
 #' This will remove a project from the cache. The cache only stores information
 #' like project_name, token_name, directory location, and details
-#' from setup_project. If yo?u want to truly delete the project files, you must
+#' from setup_project. If you want to truly delete the project files, you must
 #' do so at the project directory you set up.
 #' @return message of outcome
 #' @family Project Cache Functions

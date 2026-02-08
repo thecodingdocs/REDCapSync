@@ -192,18 +192,15 @@ setup_project <- function(project_name,
   if (missing(redcap_uri)) {
     #use options or Renviron?
   }
-  projects <- get_projects()
-  if (paste0(.token_prefix, project_name) != token_name) {
-    # maybe a message
-  }
-  in_proj_cache <- project_name %in% projects$project_name
   missing_dir_path <- missing(dir_path)
-  was_loaded <- FALSE
   original_details <- NULL
-  if (!in_proj_cache && !missing_dir_path) {
-    #this will add existing project to cache if not there already
-  }
   if (!hard_reset) {
+    projects <- get_projects()
+    in_proj_cache <- project_name %in% projects$project_name
+    if (!in_proj_cache && !missing_dir_path) {
+      #this will add existing project to cache if not there already
+    }
+    was_loaded <- FALSE
     # attempt to load existing project unless hard_reset
     project <- tryCatch(
       expr = {

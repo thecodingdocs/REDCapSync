@@ -1,9 +1,10 @@
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # get_redcap_metadata ( Internal )
 test_that("get_redcap_metadata works on real server, simple!", {
   skip_on_cran()
   project_name <- "TEST_REDCAPR_SIMPLE"
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  project <- real_test_project(project_name, temp_dir)$.internal
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
+  project <- real_test_project(project_name)$.internal
   # expect_false(project$internals$ever_connected)
   expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0)
   expect_data_frame(as.data.frame(project$metadata$fields), nrows = 0)
@@ -23,8 +24,7 @@ test_that("get_redcap_metadata works on real server, simple!", {
 test_that("get_redcap_metadata works on real server, longitudinal!", {
   skip_on_cran()
   project_name <- "TEST_REDCAPR_SIMPLE"
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  project <- real_test_project(project_name, temp_dir)$.internal
+  project <- real_test_project(project_name)$.internal
   expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0)
   expect_data_frame(as.data.frame(project$metadata$fields), nrows = 0)
   expect_data_frame(as.data.frame(project$metadata$choices), nrows = 0)
@@ -41,8 +41,7 @@ test_that("get_redcap_metadata works on real server, longitudinal!", {
 })
 test_that("get_redcap_metadata works with fixture data (classic)", {
   project_name <- "TEST_CLASSIC"
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  project <- mock_test_project(project_name, temp_dir)$.internal
+  project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
   mockery::stub(get_redcap_metadata, "rcon_result", call_list)
   result <- get_redcap_metadata(project)
@@ -74,8 +73,7 @@ test_that("get_redcap_metadata works with fixture data (classic)", {
 })
 test_that("get_redcap_metadata works with fixture data (longitudinal)", {
   project_name <- "TEST_REDCAPR_LONGITUDINAL"
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  project <- mock_test_project(project_name, temp_dir)$.internal
+  project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
   mockery::stub(get_redcap_metadata, "rcon_result", call_list)
   project$metadata <- .blank_project$metadata # clear exisiting data
@@ -90,8 +88,7 @@ test_that("get_redcap_metadata works with fixture data (longitudinal)", {
 })
 test_that("get_redcap_metadata works with fixture data (repeating forms)", {
   project_name <- "TEST_REPEATING"
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  project <- mock_test_project(project_name, temp_dir)$.internal
+  project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
   mockery::stub(get_redcap_metadata, "rcon_result", call_list)
   project$metadata <- .blank_project$metadata # clear exisiting data
@@ -115,8 +112,7 @@ test_that("get_redcap_users works!", {
 #need dev server with log access?
 test_that("get_redcap_log works on fixture!", {
   project_name <- "TEST_REPEATING"
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  project <- mock_test_project(project_name, temp_dir)$.internal
+  project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
   mockery::stub(get_redcap_log, "exportLogging", call_list$logging)
   result <- get_redcap_log(project)
@@ -125,8 +121,7 @@ test_that("get_redcap_log works on fixture!", {
 # get_redcap_denormalized ( Internal )
 test_that("get_redcap_denormalized works!", {
   skip_on_cran()
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  project <- real_test_project("TEST_REDCAPR_LONGITUDINAL", temp_dir)$.internal
+  project <- real_test_project("TEST_REDCAPR_LONGITUDINAL")$.internal
   expect_data_frame(as.data.frame(project$data), nrows = 0)
   suppressWarnings({ #REDCapR has warnings
     project_data <- withr::with_envvar(
@@ -137,8 +132,7 @@ test_that("get_redcap_denormalized works!", {
 })
 test_that("get_redcap_denormalized works no API call!", {
   project_name <- "TEST_CLASSIC"
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  project <- mock_test_project(project_name, temp_dir)$.internal
+  project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
   mockery::stub(get_redcap_denormalized, "redcap_read", call_list)
   result <- get_redcap_denormalized(project)
@@ -150,8 +144,8 @@ test_that("get_redcap_report works!", {
 # get_redcap_data ( Internal )
 test_that("get_redcap_data works!", {
   # project_name <- "TEST_CLASSIC"
-  # temp_dir <- withr::local_tempdir() |> sanitize_path()
-  # project <- mock_test_project(project_name, temp_dir)$.internal
+  # temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
+  # project <- mock_test_project(project_name)$.internal
   # call_list <- mock_test_calls(project_name)
   # mockery::stub(get_redcap_denormalized, "redcap_read", call_list)
   # result <- get_redcap_denormalized(project)

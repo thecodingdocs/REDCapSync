@@ -1,15 +1,7 @@
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # repair_projects ( Internal )
 test_that("repair_projects works with valid project details", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   project$dir_path <- set_dir(temp_dir)
   project_path <- get_project_path(
@@ -62,16 +54,7 @@ test_that("repair_projects handles missing project files", {
 })
 # repair_project_details ( Internal )
 test_that("repair_project_details works with valid project file", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   project$dir_path <- set_dir(temp_dir)
   # Save project to disk
@@ -112,7 +95,7 @@ test_that("repair_project_details returns NULL when dir_path is NA", {
   expect_null(result)
 })
 test_that("repair_project_details handles corrupted project file", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project_details_df <- data.frame(
     project_name = "CORRUPT_PROJECT",
     dir_path = temp_dir,
@@ -129,16 +112,7 @@ test_that("repair_project_details handles corrupted project file", {
   expect_null(result)
 })
 test_that("repair_project_details extracts correct project details", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   project$dir_path <- set_dir(temp_dir)
   # Save project to disk
@@ -162,16 +136,7 @@ test_that("repair_project_details extracts correct project details", {
 })
 # repair_setup_project ( Internal )
 test_that("repair_setup_project works with valid project", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   project$dir_path <- set_dir(temp_dir)
   result <- repair_setup_project(project)
@@ -205,16 +170,7 @@ test_that("repair_setup_project returns NULL for invalid project_name", {
 #   expect_null(result)
 # })
 test_that("repair_setup_project repairs invalid internals", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   project$dir_path <- set_dir(temp_dir)
   # Set invalid internals
@@ -229,16 +185,7 @@ test_that("repair_setup_project repairs invalid internals", {
   expect_identical(result$internals$timezone, Sys.timezone())
 })
 test_that("repair_setup_project repairs invalid batch sizes", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   project$dir_path <- set_dir(temp_dir)
   # Set invalid batch sizes
@@ -251,16 +198,7 @@ test_that("repair_setup_project repairs invalid batch sizes", {
   expect_identical(result$internals$batch_size_upload, 500L)
 })
 test_that("repair_setup_project repairs invalid logical fields", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   project$dir_path <- set_dir(temp_dir)
   # Set invalid logical fields
@@ -275,16 +213,7 @@ test_that("repair_setup_project repairs invalid logical fields", {
   expect_identical(result$internals$entire_log, FALSE)
 })
 test_that("repair_setup_project repairs invalid get_type", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   project$dir_path <- set_dir(temp_dir)
   project$internals$get_type <- "invalid_type"
@@ -293,16 +222,7 @@ test_that("repair_setup_project repairs invalid get_type", {
   expect_identical(result$internals$get_type, "identified")
 })
 test_that("repair_setup_project handles character vector fields", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   project$dir_path <- set_dir(temp_dir)
   # Set valid character vectors
@@ -316,16 +236,7 @@ test_that("repair_setup_project handles character vector fields", {
   expect_identical(result$internals$forms, c("form1", "form2"))
 })
 test_that("repair_setup_project repairs invalid character vectors", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   project$dir_path <- set_dir(temp_dir)
   # Set invalid character vectors (wrong type or length)
@@ -340,16 +251,7 @@ test_that("repair_setup_project repairs invalid character vectors", {
   expect_true(is.na(result$internals$forms))
 })
 test_that("repair_setup_project repairs invalid days_of_log", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   project$dir_path <- set_dir(temp_dir)
   project$internals$days_of_log <- 0L

@@ -1,15 +1,6 @@
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # get_projects ( Exported )
 test_that("get_projects is df and has appropriate columns", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
   df <- get_projects()
   expect_s3_class(df, "data.frame")
   expect_true(all(colnames(df) %in% .blank_project_cols))
@@ -19,17 +10,7 @@ test_that("get_projects is df and has appropriate columns", {
 })
 # extract_project_details ( Internal )
 test_that("extract_project_details works", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
+  project <- mock_test_project()$.internal
   project_details <- extract_project_details(project)
   expect_data_frame(project_details,
                     ncols = ncol(.blank_project_details),
@@ -39,20 +20,12 @@ test_that("extract_project_details works", {
 })
 # save_projects_to_cache ( Internal )
 test_that("save_projects_to_cache works", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
+  cache_location <- file.path(temp_dir, ".cache")
   projects <- get_projects()
   expect_data_frame(projects, nrows = 0L)
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   #no connection should not save to cache
   project_details <- extract_project_details(project)
   projects <- get_projects()
@@ -65,28 +38,19 @@ test_that("save_projects_to_cache works", {
   expect_identical(project_details$project_name, projects$project_name)
   expect_data_frame(project_details, nrows = 1L)
   cache_clear()
-  expect_false(file.exists(file.path(fake_cache_location, "projects.rds")))
+  expect_false(file.exists(file.path(cache_location, "projects.rds")))
   projects <- get_projects()
   expect_data_frame(projects, nrows = 0L)
   expect_message(save_projects_to_cache(project_details, silent = FALSE),
                  "saved")
-  expect_true(file.exists(file.path(fake_cache_location, "projects.rds")))
+  expect_true(file.exists(file.path(cache_location, "projects.rds")))
   expect_no_message(save_projects_to_cache(project_details, silent = TRUE))
 })
 # blank_tibble ( Internal )
 # na_if_null ( Internal )
 # add_project_details_to_cache ( Internal )
 test_that("add_project_details_to_cache works", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
   # start empty
   projects <- get_projects()
   expect_data_frame(projects, nrows = 0L)

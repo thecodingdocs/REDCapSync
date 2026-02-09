@@ -1,15 +1,7 @@
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # fields_to_choices ( Internal )
 test_that("fields_to_choices works", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   fields <- project$metadata$fields
   fields <- fields[0, ] |> dplyr::bind_rows(
@@ -80,16 +72,7 @@ test_that("clean_column_for_table works!", {
 })
 # add_project_summary ( Exported )
 test_that("add_project_summary works!", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- load_test_project()$.internal
   summary_name <- "MY_SUMMARY_TEST"
   project <- add_project_summary(
@@ -118,16 +101,7 @@ test_that("add_project_summary works!", {
 })
 # save_summary ( Internal )
 test_that("save_summary works", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- TEST_CLASSIC
   project$dir_path <- temp_dir
   dir.create(file.path(temp_dir, "output"), recursive = TRUE)
@@ -237,16 +211,7 @@ test_that("merge_non_repeating works!", {
 })
 # summarize_project ( Internal )
 test_that("summarize_project works", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- TEST_CLASSIC
   project$dir_path <- set_dir(temp_dir)
   dir.create(

@@ -1,3 +1,4 @@
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # is_valid_redcap_token ( Internal )
 test_that("is_valid_redcap_token respects the rules of 32L hexadecimal", {
   expect_true(is_valid_redcap_token(generate_hex(32L)))
@@ -10,16 +11,6 @@ test_that("is_valid_redcap_token respects the rules of 32L hexadecimal", {
   expect_false(is_valid_redcap_token(paste0("_", generate_hex(31L))))
 })
 test_that("get_project_token checks_env", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
   project <- load_test_project()$.internal
   token_name <- project$redcap$token_name
   token <- generate_hex(32L)
@@ -37,16 +28,6 @@ test_that("get_project_token checks_env", {
 })
 # view_project_token ( Exported )
 test_that("view_project_token works when no token set", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
   project <- load_test_project()$.internal
   expect_true(project$internals$is_test)
   withr::with_envvar(c(REDCapSync_TEST_CLASSIC = ""), {
@@ -56,16 +37,6 @@ test_that("view_project_token works when no token set", {
 })
 # test_project_token ( Exported )
 test_that("test_project_token works when exportVersion returns version", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
   project <- load_test_project()$.internal
   # Stub rcon to avoid creating a real connection and stub
   # exportVersion to simulate success
@@ -93,16 +64,6 @@ test_that("test_project_token works when exportVersion returns version", {
                  "The REDCap project ID for TEST_CLASSIC has changed")
 })
 test_that("test_project_token marks failure when exportVersion returns NULL", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
   project <- load_test_project()$.internal
   # Stub rcon and simulate exportVersion failure
   mockery::stub(test_project_token, "rcon", function(project) {

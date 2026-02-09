@@ -1,3 +1,4 @@
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # clean_for_cli ( Internal )
 test_that("clean_for_cli works!", {
 })
@@ -83,7 +84,7 @@ test_that("drop_nas works!", {
 })
 # excel_to_list ( Internal )
 test_that("excel_to_list works!", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   expect_true(file.exists(temp_dir))
   test_file <- file.path(temp_dir, "cars.xlsx")
   expect_false(file.exists(test_file))
@@ -132,7 +133,8 @@ test_that("unique_trimmed_strings works!", {
 })
 # list_to_excel ( Internal )
 test_that("list_to_excel works!", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   expect_true(file.exists(temp_dir))
   test_file <- file.path(temp_dir, "cars.xlsx")
   test_file_one <- file.path(temp_dir, "cars_one.xlsx")
@@ -156,7 +158,7 @@ test_that("list_to_excel works!", {
 })
 # list_to_csv ( Internal )
 test_that("list_to_csv works!", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   expect_true(file.exists(temp_dir))
   test_file <- file.path(temp_dir, "cars.csv")
   test_file_one <- file.path(temp_dir, "cars_one.csv")
@@ -178,7 +180,7 @@ test_that("save_wb works!", {
 })
 # save_csv ( Internal )
 test_that("save_csv works!", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   expect_true(file.exists(temp_dir))
   test_file <- file.path(temp_dir, "cars.csv")
   expect_false(file.exists(test_file))

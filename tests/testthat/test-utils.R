@@ -1,3 +1,4 @@
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # add_redcap_links_to_form ( Internal )
 test_that("add_redcap_links_to_form works!", {
   project <- TEST_CLASSIC

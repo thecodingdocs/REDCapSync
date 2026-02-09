@@ -13,24 +13,22 @@ get_projects <- function() {
   does_exist <- cache_projects_exists()
   is_ok <- FALSE
   if (does_exist) {
-    projects <- cache_path() |>
+    projects <-  cache_path() |>
       file.path("projects.rds") |>
-      readRDS()
-    if (!does_exist) {
-      cli_alert_warning("You have no projects cached. Try `setup_project(...)`")
-      return(.blank_project_details)
-    }
+      readRDS() # add try catch?
     is_ok <- all(.blank_project_cols %in% colnames(projects))
     if (!is_ok) {
       projects <- repair_projects(projects)
       is_ok <- !is.null(projects)
     }
+    if (!is_ok) {
+      cli_alert_warning(
+        paste0("You have projects cached. But due to a version change or other",
+               " issue, it has to be reset. Use `setup_project(...)`"))
+      cache_clear()
+    }
   }
   if (!is_ok) {
-    cli_alert_warning(
-      paste0("You have projects cached. But due to a version change or other",
-             " issue, it has to be reset. Use `setup_project(...)`"))
-    cache_clear()
     return(.blank_project_details)
   }
   # projects$project_name |> paste0(collapse = "\n") |> message()

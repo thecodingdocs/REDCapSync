@@ -1,11 +1,11 @@
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # sync_project ( Exported )
 # sync ( Exported )
 test_that("sync works!", {
 })
 test_that("sync_project_hard_reset works!", {
   project_name <- "TEST_CLASSIC"
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  project <- mock_test_project(project_name, temp_dir)$.internal
+  project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
   # project$data <- .blank_project$data
   mockery::stub(sync_project_hard_reset, "get_redcap_metadata", project)
@@ -20,20 +20,9 @@ test_that("sync_project_hard_reset works!", {
   expect_identical(result$data, project$data)
 })
 test_that("due_for_sync works", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
   # true for nonexistent
   expect_true(due_for_sync("NONEXISTENT_PROJECT"))
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   project_details <- extract_project_details(project)
   project_details$last_sync <- NA
   add_project_details_to_cache(project_details)
@@ -101,19 +90,7 @@ test_that("due_for_sync works", {
 })
 # sweep_dirs_for_cache ( Internal )
 test_that("sweep_dirs_for_cache updates cache when project files exist", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  # Setup initial project
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   project_details <- extract_project_details(project)
   add_project_details_to_cache(project_details)
   # Create project files on disk
@@ -136,37 +113,16 @@ test_that("sweep_dirs_for_cache updates cache when project files exist", {
   expect_true(project$project_name %in% projects$project_name)
 })
 test_that("sweep_dirs_for_cache handles empty cache", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
+  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
   projects_before <- get_projects()
   expect_identical(nrow(projects_before), 0L)
-  # Sweep should handle empty cache gracefully
+  # Sweep should handle empty cache
   expect_no_error(sweep_dirs_for_cache())
   projects_after <- get_projects()
   expect_identical(nrow(projects_after), 0L)
 })
 test_that("sweep_dirs_for_cache handles non-existent project_names", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  # Setup one project
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   project_details <- extract_project_details(project)
   add_project_details_to_cache(project_details)
   # Try to sweep with non-existent project names
@@ -178,19 +134,7 @@ test_that("sweep_dirs_for_cache handles non-existent project_names", {
   expect_true(project$project_name %in% projects$project_name)
 })
 test_that("sweep_dirs_for_cache compares cached and disk project details", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  # Setup initial project
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   project_details <- extract_project_details(project)
   add_project_details_to_cache(project_details)
   # Create project files with updated details

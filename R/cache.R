@@ -54,26 +54,28 @@ cache_exists <- function() {
 }
 #' @noRd
 cache_projects_exists <- function() {
+  does_exist <- FALSE
   if (cache_exists()) {
-    outcome <- cache_path() |>
+    does_exist <- cache_path() |>
       file.path("projects.rds") |>
       file.exists()
-  } else {
-    cli_alert_warning("Cache doesn't exist")
-    outcome <- FALSE
+    if (!does_exist) {
+      cli_alert_warning("No cached projects... use `setup_project(...)`")
+    }
   }
-  outcome
+  does_exist
 }
 #' @noRd
 get_cache <- function() {
   cache <- hoardr::hoard()
   cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
-  cache_dir <- Sys.getenv("REDCAPSYNC_CACHE_PATH", unset = NA)
+  cache_dir <- Sys.getenv("REDCAPSYNC_CACHE", unset = NA)
   if (!is.na(cache_dir) && nzchar(cache_dir)) {
-    if (!file.exists(cache_dir)) {
-      stop("'Sys.getenv(\"REDCAPSYNC_CACHE_PATH\")' is set but does not exist")
+    if(dir.exists(cache_dir)){
+      full_path <- file.path(cache_dir, ".cache")
+      dir.create(full_path, showWarnings = FALSE)
+      cache$cache_path_set(full_path = full_path)
     }
-    cache$cache_path_set(full_path = cache_dir)
   }
   cache$mkdir()
   cache

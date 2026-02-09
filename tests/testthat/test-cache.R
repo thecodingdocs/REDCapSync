@@ -1,51 +1,56 @@
-test_that("hoardr cache exsists", {
-  expect_true(file.exists(cache_path()))
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+test_that("local_envvar seen by tests, exists, but empty at first", {
+  expect_false(Sys.getenv("REDCAPSYNC_CACHE") == "")
+  expect_directory_exists(Sys.getenv("REDCAPSYNC_CACHE"))
+  real_cache_path <- Sys.getenv("REDCAPSYNC_CACHE") |>
+    file.path(".cache")
+  real_cache_path_projects <- real_cache_path |>
+    file.path("projects.rds")
+  expect_false(test_directory_exists(real_cache_path))
+  expect_false(test_directory_exists(real_cache_path_projects))
+})
+test_that("hoardr cache works at baseline", {
+  withr::local_envvar(REDCAPSYNC_CACHE = NA)
+  expect_directory_exists(cache_path())
   expect_true(cache_exists())
 })
+test_that("cache_path works inside and outside of testing", {
+  expect_false(Sys.getenv("REDCAPSYNC_CACHE") == "")
+  testing_path <- Sys.getenv("REDCAPSYNC_CACHE") |>
+    file.path(".cache")
+  expect_directory_exists(cache_path())
+  expect_directory_exists(testing_path)
+  expect_identical(cache_path(), testing_path)
+  withr::local_envvar(REDCAPSYNC_CACHE = NA)
+  expect_true(Sys.getenv("REDCAPSYNC_CACHE") == "")
+  fake_other_cache <- hoardr::hoard()
+  fake_other_cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
+  expected_user_path <- sanitize_path(fake_other_cache$cache_path_get())
+  expect_directory_exists(cache_path())
+  expect_directory_exists(expected_user_path)
+  expect_identical(cache_path(), expected_user_path)
+})
 # get_cache ( Internal )
-test_that("fake_cache sets and clears", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  expect_false(file.exists(fake_cache_location))
-  fake_cache <- get_cache()
-  expect_true(file.exists(fake_cache_location))
-  expect_true(file.exists(fake_cache$cache_path_get()))
-  expect_identical(fake_cache$cache_path_get(), fake_cache_location)
-  test_file <- file.path(fake_cache$cache_path_get(), "projects.rds")
+test_that("can save files to cache and delete", {
+  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  test_cache <- get_cache()
+  test_cache_path <- test_cache$cache_path_get()
+  expect_directory_exists(test_cache_path)
+  test_file <- file.path(test_cache_path, "projects.rds")
   expect_false(file.exists(test_file))
   file.create(test_file)
-  expect_true(file.exists(test_file))
-  fake_cache$delete_all()
+  expect_file_exists(test_file)
+  test_cache$delete_all()
   expect_false(file.exists(test_file))
 })
 # cache_clear ( Exported )
 # cache_projects_exists ( Internal )
-test_that("cache_projects_exists, cache_clear works", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  expect_false(file.exists(fake_cache_location))
-  fake_cache <- get_cache()
-  expect_true(file.exists(fake_cache_location))
-  expect_true(file.exists(fake_cache$cache_path_get()))
-  expect_identical(fake_cache$cache_path_get(), fake_cache_location)
-  test_file <- file.path(fake_cache$cache_path_get(), "projects.rds")
+test_that("cache_projects_exists works", {
+  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
   expect_false(cache_projects_exists())
+  expect_message(cache_projects_exists(),"No cached projects")
+  fake_cache <- get_cache()
+  test_file <- file.path(fake_cache$cache_path_get(), "projects.rds")
   file.create(test_file)
   expect_true(cache_projects_exists())
   expect_no_error(cache_clear())
@@ -58,18 +63,8 @@ test_that("cache_projects_exists, cache_clear works", {
 # cache_path ( Exported )
 # cache_exists ( Internal )
 # cache_remove_project ( Exported )
-test_that("cache_remove_project works", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
-  project <- load_test_project()$.internal
+test_that("add and remove project details from cache works", {
+  project <- mock_test_project()$.internal
   projects <- get_projects()
   project_details <- extract_project_details(project)
   expect_message(cache_remove_project(project_name = "TEST_other"),

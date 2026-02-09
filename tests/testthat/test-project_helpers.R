@@ -1,14 +1,5 @@
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 test_that("update_project_links works", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
   project <- load_test_project()$.internal
   expect_false(is.null(project$links$redcap_uri))
   expect_false(is.null(project$links$redcap_base))
@@ -39,16 +30,6 @@ test_that("update_project_links works", {
 })
 # get_project_url ( Exported )
 test_that("get_project_url works", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
   project <- load_test_project()$.internal
   project <- update_project_links(project)
   e <- new.env(parent = emptyenv())
@@ -68,16 +49,6 @@ test_that("get_project_url works", {
 })
 # get_record_url ( Exported )
 test_that("get_record_url works", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
-  fake_cache_location <- file.path(temp_dir, "fake_cache")
-  local_mocked_bindings(
-    get_cache = function(...) {
-      fake_cache <- hoardr::hoard()
-      fake_cache$cache_path_set(full_path = fake_cache_location)
-      fake_cache$mkdir()
-      fake_cache
-    }
-  )
   project <- load_test_project()$.internal
   project$links$redcap_base <- "https://fakeredcap.com/"
   expected_link <- paste0(

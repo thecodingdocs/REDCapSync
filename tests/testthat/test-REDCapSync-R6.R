@@ -1,3 +1,4 @@
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 test_that("R6 object works!", {
   project_r6 <- REDCapSync_project$new(load_test_project()$.internal)
   expect_r6_class(project_r6, "REDCapSync_project")
@@ -31,7 +32,7 @@ test_that("R6 info works!", {
   expect_message(project_r6$info(), "PID: 12341")
 })
 test_that("R6 add_summary works!", {
-  temp_dir <- withr::local_tempdir() |> sanitize_path()
+  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project_r6 <- REDCapSync_project$new(load_test_project()$.internal)
   project_r6$add_summary(
     "new_summary",

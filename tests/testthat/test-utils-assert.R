@@ -1,3 +1,4 @@
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # assert_dir ( Internal )
 test_that("assert_dir works!", {
 })

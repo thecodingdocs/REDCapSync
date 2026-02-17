@@ -127,94 +127,90 @@ sync_project_check <- function(project, hard_reset) {
   #   "There is data in 'project$transformation$data_updates' that has not ",
   #     "been uploaded to REDCap yet..."))
   # }
+  hard_reset <- hard_reset ||
+    !is_something(project$internals$last_metadata_update) ||
+    !is_something(project$internals$last_data_update) ||
+    !is_something(project$internals$last_full_update)
   if (!hard_reset) {
     # check log interim
-    if (!is_something(project$internals$last_metadata_update) ||
-        !is_something(project$internals$last_data_update) ||
-        !is_something(project$internals$last_full_update)) {
-      hard_reset <- TRUE
-    } else {
-      if (!project$redcap$has_log_access) {
-        cli_alert_danger(
-          paste0( # fix for when access is changed
-            "You do not have logging access to this REDCap project. If you ",
-            "want to refresh the data use `project$sync(hard_reset = TRUE)`.",
-            " Request logging access for more effecient use of API exports."
-          )
+    if (!project$redcap$has_log_access) {
+      cli_alert_danger(
+        paste0( # fix for when access is changed
+          "You do not have logging access to this REDCap project. If you ",
+          "want to refresh the data use `project$sync(hard_reset = TRUE)`.",
+          " Request logging access for more effecient use of API exports."
         )
-        return(project)
-      }
-      interim_log <- get_redcap_log(project, log_begin_date = as.Date(
-        strptime(project$redcap$log$timestamp[1L], format = "%Y-%m-%d")
-      )) |> unique()
-      if (nrow(interim_log) <= nrow(project$redcap$log)) {
-        head_of_log <- project$redcap$log |>
-          utils::head(n = nrow(interim_log))
-      } else {
-        head_of_log <- project$redcap$log
-      }
-      unique_log <- interim_log |>
-        rbind(head_of_log) |>
+      )
+      return(project)
+    }
+    interim_log <- get_redcap_log(project, log_begin_date = as.Date(
+      strptime(project$redcap$log$timestamp[1L], format = "%Y-%m-%d")
+    )) |> unique()
+    if (nrow(interim_log) <= nrow(project$redcap$log)) {
+      head_of_log <- project$redcap$log |>
+        utils::head(n = nrow(interim_log))
+    } else {
+      head_of_log <- project$redcap$log
+    }
+    unique_log <- interim_log |>
+      rbind(head_of_log) |>
+      unique()
+    # dup <- unique_log[
+    #which(duplicated(
+    #rbind(unique_log, head_of_log),fromLast = TRUE)[
+    #seq_len(nrow(unique_log)]), ]
+    interim_log <- unique_log[
+      which(!duplicated(
+        rbind(unique_log, head_of_log), fromLast = TRUE)[
+          seq_len(nrow(unique_log))]), ]
+    if (nrow(interim_log) > 0L) {
+      project$redcap$log <- interim_log |>
+        bind_rows(project$redcap$log) |>
         unique()
-      # dup <- unique_log[
-      #which(duplicated(
-      #rbind(unique_log, head_of_log),fromLast = TRUE)[
-      #seq_len(nrow(unique_log)]), ]
-      interim_log <- unique_log[
-        which(!duplicated(
-          rbind(unique_log, head_of_log), fromLast = TRUE)[
-            seq_len(nrow(unique_log))]), ]
-      if (nrow(interim_log) > 0L) {
-        project$redcap$log <- interim_log |>
-          bind_rows(project$redcap$log) |>
-          unique()
-        interim_log$timestamp <- NULL
-        interim_log_metadata <- interim_log[
-          which(is.na(interim_log$record)), ]
-        # inclusion
-        interim_log_metadata <- interim_log_metadata[
-          which(
-            interim_log_metadata$action_type == "Metadata Change Major"), ]
-        interim_log_metadata_minor <-
-          any(interim_log_metadata$action_type == "Metadata Change Minor")
-        if (nrow(interim_log_metadata) > 0L ||
-            interim_log_metadata_minor) {
-          # account for minor changes later
-          hard_reset <- TRUE
-          message("Update because: Metadata was changed!")
-        } else {
-          interim_log_data <-
-            interim_log[which(!is.na(interim_log$record)), ]
-          interim_log_data <-
-            interim_log_data[which(interim_log_data$action_type != "Users"), ]
-          deleted_records <-
-            interim_log_data$record[
-              which(interim_log_data$action_type == "Delete")]
-          if (length(deleted_records) > 0L) {
-            warning(
-              "There were recent records deleted from redcap",
-              "Consider running with 'hard_reset = TRUE'. Records: ",
-              toString(deleted_records),
-              immediate. = TRUE
-            )
-          }
-          stale_records <- unique(interim_log_data$record)
-          if (length(stale_records) == 0L) {
-            stale_records <- NULL
-            will_update <- FALSE
-          }
-        }
+      interim_log$timestamp <- NULL
+      interim_log_metadata <- interim_log[
+        which(is.na(interim_log$record)), ]
+      # inclusion
+      interim_log_metadata <- interim_log_metadata[
+        which(
+          interim_log_metadata$action_type == "Metadata Change Major"), ]
+      interim_log_metadata_minor <-
+        any(interim_log_metadata$action_type == "Metadata Change Minor")
+      if (nrow(interim_log_metadata) > 0L ||
+          interim_log_metadata_minor) {
+        # account for minor changes later
+        hard_reset <- TRUE
+        message("Update because: Metadata was changed!")
       } else {
-        will_update <- FALSE
+        interim_log_data <-
+          interim_log[which(!is.na(interim_log$record)), ]
+        interim_log_data <-
+          interim_log_data[which(interim_log_data$action_type != "Users"), ]
+        deleted_records <-
+          interim_log_data$record[
+            which(interim_log_data$action_type == "Delete")]
+        if (length(deleted_records) > 0L) {
+          warning(
+            "There were recent records deleted from redcap",
+            "Consider running with 'hard_reset = TRUE'. Records: ",
+            toString(deleted_records),
+            immediate. = TRUE
+          )
+        }
+        stale_records <- unique(interim_log_data$record)
+        if (length(stale_records) == 0L) {
+          stale_records <- NULL
+          will_update <- FALSE
+        }
       }
+    } else {
+      will_update <- FALSE
     }
   }
-  if (hard_reset) {
-    project <- sync_project_hard_reset(project)
-    cli_alert_wrap(paste0("Full ", project$project_name, " update!"),
-                   bullet_type = "v")
-    was_updated <- TRUE
-  } else {
+  if (!hard_reset) {
+    if (!will_update){
+      cli_alert_success("Up to date already!")
+    }
     if (will_update) {
       id_col <- project$metadata$id_col
       project$data <- all_character_cols_list(project$data)
@@ -276,9 +272,12 @@ sync_project_check <- function(project, hard_reset) {
       }
       cli_alert_success(paste("Updated:", message_string))
       was_updated <- TRUE
-    } else {
-      cli_alert_success("Up to date already!")
     }
+  }
+  if (hard_reset) {
+    project <- sync_project_hard_reset(project)
+    cli_alert_success("Full {project$project_name} update!")
+    was_updated <- TRUE
   }
   project$internals$last_sync <- now_time()
   list(

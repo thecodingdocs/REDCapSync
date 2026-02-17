@@ -19,6 +19,14 @@ test_that("sync_project_hard_reset works!", {
   expect_identical(result$metadata, project$metadata)
   expect_identical(result$data, project$data)
 })
+test_that("sync_project_check work!",{
+  project_name <- "TEST_CLASSIC"
+  project <- mock_test_project(project_name)$.internal
+  call_list <- mock_test_calls(project_name)
+  project$internals$last_test_connection_outcome <- FALSE
+  mockery::stub(sync_project_check, "test_project_token", project)
+  expect_message(sync_project_check(project),"Could not connect")
+})
 test_that("due_for_sync works", {
   # true for nonexistent
   expect_true(due_for_sync("NONEXISTENT_PROJECT"))

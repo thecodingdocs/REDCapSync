@@ -69,16 +69,34 @@ cache_projects_exists <- function() {
 get_cache <- function() {
   cache <- hoardr::hoard()
   cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
-  cache_dir <- Sys.getenv("REDCAPSYNC_CACHE", unset = NA)
-  if (!is.na(cache_dir) && nzchar(cache_dir)) {
-    if(dir.exists(cache_dir)){
-      full_path <- file.path(cache_dir, ".cache")
-      dir.create(full_path, showWarnings = FALSE)
-      cache$cache_path_set(full_path = full_path)
-    }
+  cache_dir <- get_cache_dir()
+  if (!is.null(cache_dir)) {
+    full_path <- file.path(cache_dir, ".cache")
+    dir.create(full_path, showWarnings = FALSE)
+    cache$cache_path_set(full_path = full_path)
   }
   cache$mkdir()
   cache
+}
+#' @noRd
+get_cache_dir <- function() {
+  cache_dir <- Sys.getenv("REDCAPSYNC_CACHE", unset = NA)
+  if (!is.na(cache_dir) && nzchar(cache_dir)) {
+    user_dir_exists <- dir.exists(cache_dir)
+    if (!user_dir_exists) {
+      check_directory_exists(cache_dir)
+      cli_alert_warning(
+        paste(
+          "Cache directory via `Sys.getenv(\"REDCAPSYNC_CACHE\")`",
+          "does not exist!"
+        )
+      )
+    }
+    if (user_dir_exists) {
+      return(cache_dir)
+    }
+  }
+  NULL
 }
 #' @title Remove project from cache
 #' @inheritParams setup_project

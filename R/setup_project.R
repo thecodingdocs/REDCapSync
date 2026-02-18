@@ -574,7 +574,8 @@ save_project <- function(project, silent = FALSE) {
     is_test = FALSE,
     ever_connected = FALSE,
     is_clean = FALSE,
-    hard_reset = FALSE
+    hard_reset = FALSE,
+    was_updated = FALSE
   ),
   links = list(
     redcap_uri = NULL,

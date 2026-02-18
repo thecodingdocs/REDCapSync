@@ -27,6 +27,24 @@ test_that("sync_project_check work!",{
   mockery::stub(sync_project_check, "test_project_token", project)
   expect_message(sync_project_check(project),"Could not connect")
 })
+test_that("sync_project_check wont update if nothing new", {
+  project_name <- "TEST_CLASSIC"
+  project <- mock_test_project(project_name)$.internal
+  call_list <- mock_test_calls(project_name)
+  # Setup: ensure project is ready for sync_project_check
+  project$internals$last_test_connection_outcome <- TRUE
+  project$internals$last_metadata_update <- now_time() - lubridate::ddays(100L)
+  project$internals$last_data_update <- now_time() - lubridate::ddays(100L)
+  interim_log <- head(project$redcap$log)
+  # Mock the test_project_token to simulate successful connection
+  mockery::stub(sync_project_check, "test_project_token", project)
+  mockery::stub(sync_project_check, "get_redcap_log", interim_log)
+  # Call sync_project_check with hard_reset = FALSE
+  result <- sync_project_check(project, hard_reset = FALSE)
+  expect_true("project" %in% names(result))
+  expect_true("was_updated" %in% names(result))
+  expect_false(result$was_updated)
+})
 test_that("due_for_sync works", {
   # true for nonexistent
   expect_true(due_for_sync("NONEXISTENT_PROJECT"))

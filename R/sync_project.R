@@ -21,8 +21,7 @@ sync_project <- function(project,
   }
   if (do_sync) {
     project <- sync_project_check(project = project, hard_reset = hard_reset)
-    was_updated <- project$was_updated
-    project <- project$project
+    was_updated <- project$internals$was_updated
   }
   if (project$internals$add_default_summaries) {
     if (!is_something(project$summary$REDCapSync) ||
@@ -111,7 +110,7 @@ sync_project_hard_reset <- function(project) {
 sync_project_check <- function(project, hard_reset) {
   stale_records <- NULL
   will_update <- TRUE
-  was_updated <- FALSE
+  project$internals$was_updated <- FALSE
   # project$internals$last_directory_save
   # project$internals$last_test_connection_attempt
   project <- test_project_token(project)
@@ -271,19 +270,16 @@ sync_project_check <- function(project, hard_reset) {
         }
       }
       cli_alert_success(paste("Updated:", message_string))
-      was_updated <- TRUE
+      project$internals$was_updated <- TRUE
     }
   }
   if (hard_reset) {
     project <- sync_project_hard_reset(project)
     cli_alert_success("Full {project$project_name} update!")
-    was_updated <- TRUE
+    project$internals$was_updated <- TRUE
   }
   project$internals$last_sync <- now_time()
-  list(
-    project = project,
-    was_updated = was_updated
-  )
+  project
 }
 #' @title Synchronize REDCap Data
 #' @description

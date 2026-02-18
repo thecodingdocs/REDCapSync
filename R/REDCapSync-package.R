@@ -21,6 +21,7 @@
 #' @importFrom checkmate assert_class
 #' @importFrom checkmate assert_directory_exists
 #' @importFrom checkmate assert_set_equal
+#' @importFrom checkmate check_directory_exists
 #' @importFrom checkmate check_set_equal
 #' @importFrom checkmate check_true
 #' @importFrom checkmate expect_data_frame

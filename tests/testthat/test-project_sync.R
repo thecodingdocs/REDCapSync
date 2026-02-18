@@ -41,9 +41,7 @@ test_that("sync_project_check wont update if nothing new", {
   mockery::stub(sync_project_check, "get_redcap_log", interim_log)
   # Call sync_project_check with hard_reset = FALSE
   result <- sync_project_check(project, hard_reset = FALSE)
-  expect_true("project" %in% names(result))
-  expect_true("was_updated" %in% names(result))
-  expect_false(result$was_updated)
+  expect_false(result$internals$was_updated)
 })
 test_that("due_for_sync works", {
   # true for nonexistent

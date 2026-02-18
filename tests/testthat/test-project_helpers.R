@@ -88,7 +88,7 @@ test_that("get_record_url works", {
   # )
 })
 test_that("deidentify_data_list works", {
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
   data_list$metadata$fields$field_type_R <- NA
   data_list$metadata$fields$in_original_redcap <- NA
@@ -137,7 +137,7 @@ test_that("deidentify_data_list works", {
   )
 })
 test_that("deidentify_data_list works", {
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
   data_list <- metadata_add_default_cols(data_list)
   fields <- data_list$metadata$fields
@@ -246,7 +246,7 @@ test_that("get_min_dates works", {
 })
 # normalize_redcap ( Internal )
 test_that("normalize_redcap works with classic project", {
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   denormalized <- readRDS(
     test_path("fixtures", "TEST_CLASSIC_call_list.rds"))$data
   result <- normalize_redcap(denormalized, project, labelled = TRUE)

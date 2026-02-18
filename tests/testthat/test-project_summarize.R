@@ -102,7 +102,7 @@ test_that("add_project_summary works!", {
 # save_summary ( Internal )
 test_that("save_summary works", {
   temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   project$dir_path <- temp_dir
   dir.create(file.path(temp_dir, "output"), recursive = TRUE)
   summary_name <- "SAVE_SUMMARY_TEST"
@@ -145,7 +145,7 @@ test_that("save_summary works", {
 })
 # generate_project_summary ( Exported )
 test_that("generate_project_summary works!", {
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   project_summary <- generate_project_summary(
     project = project,
     summary_name = "REDCapSync")
@@ -172,7 +172,7 @@ test_that("generate_project_summary works!", {
 })
 # merge_non_repeating ( Internal )
 test_that("merge_non_repeating works!", {
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   expect_contains(names(project$data), project$metadata$forms$form_name)
   id_col <- project$metadata$id_col
   text_field_names <- colnames(project$data$text) |> setdiff(id_col)
@@ -212,7 +212,7 @@ test_that("merge_non_repeating works!", {
 # summarize_project ( Internal )
 test_that("summarize_project works", {
   temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   project$dir_path <- set_dir(temp_dir)
   dir.create(
     path = file.path(project$dir_path, "REDCap", project$project_name),
@@ -240,7 +240,7 @@ test_that("summarize_project works", {
 })
 # clear_project_summaries ( Exported )
 test_that("clear_project_summaries works!", {
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   summaries <- c("REDCapSync", "REDCapSync_raw")
   expect_all_true(summaries %in% names(project$summary))
   expect_all_true(summaries %in% names(project$summary$all_records))
@@ -256,7 +256,7 @@ test_that("extract_project_records works!", {
 })
 # get_log ( Internal )
 test_that("get_log works!", {
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   records <- as.character(sample.int(n = 50L, size = 10L))
   log <- project$redcap$log
   all_record_ids <- unique(log$record)
@@ -271,7 +271,7 @@ test_that("annotate_users works!", {
 })
 # get_summary_records ( Internal )
 test_that("get_summary_records works!", {
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   project <- project |>
     add_project_summary(
       summary_name = "test_branching_yes",
@@ -307,7 +307,7 @@ test_that("check_summaries works!", {
 })
 # add_default_summaries ( Internal )
 test_that("add_default_summaries works", {
-  project <- clear_project_summaries(TEST_CLASSIC)
+  project <- mock_test_project()$.internal
   project <- clear_project_summaries(project)
   summaries <- c("REDCapSync", "REDCapSync_raw")
   expect_all_false(summaries %in% names(project$summary))
@@ -335,7 +335,7 @@ test_that("add_default_summaries works", {
 })
 # labelled_to_raw_form ( Exported )
 test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   project_summary <- generate_project_summary(project)
   merged <- all_character_cols(project_summary$merged)
   var_yesno_labelled <- merged$var_yesno
@@ -360,7 +360,7 @@ test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
 })
 # labelled_to_raw_data_list ( Internal )
 test_that("labelled_to_raw_data_listand raw_to_labelled_data_list works!", {
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   # ensure project is marked as labelled and has labelled values
   expect_true(project$internals$labelled)
   # sanity check: labelled value present in example form
@@ -382,7 +382,7 @@ test_that("labelled_to_raw_data_listand raw_to_labelled_data_list works!", {
 })
 # get_all_field_names ( Internal )
 test_that("get_all_field_names works!", {
-  project <- TEST_CLASSIC
+  project <- mock_test_project()$.internal
   field_names <- get_all_field_names(project)
   expect_all_true(field_names %in% project$metadata$fields$field_name)
 })

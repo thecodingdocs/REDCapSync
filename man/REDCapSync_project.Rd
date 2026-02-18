@@ -52,7 +52,6 @@ users and log.}
 \item \href{#method-REDCapSync_project-summarize}{\code{REDCapSync_project$summarize()}}
 \item \href{#method-REDCapSync_project-save_summary}{\code{REDCapSync_project$save_summary()}}
 \item \href{#method-REDCapSync_project-save}{\code{REDCapSync_project$save()}}
-\item \href{#method-REDCapSync_project-show_token}{\code{REDCapSync_project$show_token()}}
 \item \href{#method-REDCapSync_project-test_token}{\code{REDCapSync_project$test_token()}}
 \item \href{#method-REDCapSync_project-url_launch}{\code{REDCapSync_project$url_launch()}}
 \item \href{#method-REDCapSync_project-upload}{\code{REDCapSync_project$upload()}}
@@ -424,20 +423,6 @@ are inherited according to what was set with \code{add_project_summary}.}
 Add a new summary entry
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$save()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSync_project-show_token"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSync_project-show_token}{}}}
-\subsection{Method \code{show_token()}}{
-Displays the REDCap API token currently stored in the session as an
-environment variable. It's essentially a wrapper for
-Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
-formatted like a REDCap token and provides messages if not valid.
-The token is not returned as an R object to maintain security.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$show_token()}\if{html}{\out{</div>}}
 }
 
 }

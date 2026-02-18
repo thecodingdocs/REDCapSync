@@ -35,6 +35,7 @@ test_that("sync_project_check wont update if nothing new", {
   project$internals$last_test_connection_outcome <- TRUE
   project$internals$last_metadata_update <- now_time() - lubridate::ddays(100L)
   project$internals$last_data_update <- now_time() - lubridate::ddays(100L)
+  project$internals$was_updated <- FALSE
   interim_log <- head(project$redcap$log)
   # Mock the test_project_token to simulate successful connection
   mockery::stub(sync_project_check, "test_project_token", project)

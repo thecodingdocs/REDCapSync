@@ -39,7 +39,7 @@ test_that("repair_projects handles missing project files", {
   projects <- data.frame(
     project_name = "NONEXISTENT",
     redcap_uri = "https://redcap.fake.edu/api/",
-    token_name = "REDCapSync_NONEXISTENT",
+    token_name = "REDCAPSYNC_NONEXISTENT",
     project_id = "9999",
     dir_path = "/nonexistent/path",
     stringsAsFactors = FALSE

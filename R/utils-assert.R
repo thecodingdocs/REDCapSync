@@ -66,7 +66,7 @@ get_project_token <- function(project, silent = TRUE) {
       )
     }
   }
-  token
+  invisible(token)
 }
 #' @noRd
 assert_web_link <- function(link) {
@@ -89,7 +89,7 @@ assert_web_link <- function(link) {
   link
 }
 #' @noRd
-assert_env_name <- function(x, max.chars = 26L) {
+assert_env_name <- function(x, max.chars = 26L, all_caps = FALSE) {
   assert_character(x, len = 1L, min.chars = 1L, any.missing = FALSE)
   # can change to min.length for projects
   assert_integerish(max.chars,
@@ -102,11 +102,15 @@ assert_env_name <- function(x, max.chars = 26L) {
     n.chars = NULL,
     min.chars = 1L,
     max.chars = max.chars,
-    pattern = "^[A-Za-z][A-Za-z0-9_]*$",
+    pattern = ifelse(all_caps, "^[A-Z][A-Z0-9_]*$", "^[A-Za-z][A-Za-z0-9_]*$"),
     fixed = NULL,
-    ignore.case = TRUE
+    ignore.case = !all_caps
   )
   invisible(x)
+}
+#' @noRd
+test_all_caps <- function(x) {
+  x == toupper(x) & nchar(x) > 0
 }
 #' @noRd
 test_env_name <- function(x, max.chars = 26L) {

@@ -31,7 +31,7 @@
 #' @param redcap_uri A character string representing the base URL of the REDCap
 #' server.
 #' @param token_name An optional character string for setting your token name.
-#' Default is `REDCapSync_<project_name>`
+#' Default is `REDCAPSYNC_<project_name>`
 #' @param sync_frequency Frequency of sync. Options are "always", "hourly",
 #' 'daily', 'weekly', "monthly",and "never". The check is only triggered by
 #' calling the function, but can be automated with other packages.
@@ -87,7 +87,7 @@
 setup_project <- function(project_name,
                           dir_path,
                           redcap_uri,
-                          token_name = paste0("REDCapSync_", project_name),
+                          token_name = paste0("REDCAPSYNC_", project_name),
                           sync_frequency = "daily",
                           labelled = TRUE,
                           hard_reset = FALSE,

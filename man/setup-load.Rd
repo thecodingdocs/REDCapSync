@@ -10,7 +10,7 @@ setup_project(
   project_name,
   dir_path,
   redcap_uri,
-  token_name = paste0("REDCapSync_", project_name),
+  token_name = paste0("REDCAPSYNC_", project_name),
   sync_frequency = "daily",
   labelled = TRUE,
   hard_reset = FALSE,
@@ -51,7 +51,7 @@ will only be in current R session.}
 server.}
 
 \item{token_name}{An optional character string for setting your token name.
-Default is \verb{REDCapSync_<project_name>}}
+Default is \verb{REDCAPSYNC_<project_name>}}
 
 \item{sync_frequency}{Frequency of sync. Options are "always", "hourly",
 'daily', 'weekly', "monthly",and "never". The check is only triggered by

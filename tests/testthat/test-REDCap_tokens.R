@@ -14,25 +14,16 @@ test_that("get_project_token checks_env", {
   project <- mock_test_project()$.internal
   token_name <- project$redcap$token_name
   token <- generate_hex(32L)
-  withr::with_envvar(c(REDCapSync_TEST_CLASSIC = token), {
+  withr::with_envvar(c(REDCAPSYNC_TEST_CLASSIC = token), {
     expect_identical(get_project_token(project), token)
     expect_no_error(get_project_token(project))
   })
   token <- generate_hex(2L)
-  withr::with_envvar(c(REDCapSync_TEST_CLASSIC = token), {
+  withr::with_envvar(c(REDCAPSYNC_TEST_CLASSIC = token), {
     expect_identical(get_project_token(project), token)
   })
-  withr::with_envvar(c(REDCapSync_TEST_CLASSIC = ""), {
+  withr::with_envvar(c(REDCAPSYNC_TEST_CLASSIC = ""), {
     expect_identical(get_project_token(project), "")
-  })
-})
-# view_project_token ( Exported )
-test_that("view_project_token works when no token set", {
-  project <- mock_test_project()$.internal
-  expect_true(project$internals$is_test)
-  withr::with_envvar(c(REDCapSync_TEST_CLASSIC = ""), {
-    expect_message(view_project_token(project),
-                   "You can set REDCap tokens each session")
   })
 })
 # test_project_token ( Exported )

@@ -79,7 +79,7 @@ repair_setup_project <- function(project) {
     project$redcap$token_name <- project$redcap$token_name |>
       test_env_name(max.chars = 50L) |>
       ifelse(project$redcap$token_name,
-             paste0("REDCapSync_", project$project_name))
+             paste0("REDCAPSYNC_", project$project_name))
     project$internals$sync_frequency <-
       project$internals$sync_frequency |>
       test_choice(choices = .sync_frequency) |>

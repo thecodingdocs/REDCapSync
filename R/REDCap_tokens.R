@@ -1,13 +1,4 @@
 #' @noRd
-view_project_token <- function(project) {
-  project <- assert_blank_project(project)
-  token <- get_project_token(project, silent = FALSE)
-  if (is_something(token)) {
-    cli_alert_warning(paste0("Never share your token: ", token))
-  }
-  invisible()
-}
-#' @noRd
 test_project_token <- function(project) {
   assert_setup_project(project)
   rcon <- redcapConnection(url = project$links$redcap_uri,
@@ -119,4 +110,4 @@ is_hexadecimal <- function(string, length = NULL) {
   grepl(pattern, string)
 }
 #' @noRd
-.token_prefix <- "REDCapSync_"
+.token_prefix <- "REDCAPSYNC_"

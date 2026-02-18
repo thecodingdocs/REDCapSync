@@ -44,7 +44,7 @@ scrub_test_rcon <- function(rcon_list, pid) {
   rcon_list
 }
 entire_log <- TRUE
-hard_reset <- FALSE
+hard_reset <- TRUE
 # now -----
 project <- setup_project(
   project_name = "TEST_CLASSIC",
@@ -91,11 +91,11 @@ project <- setup_project(
 )$sync()
 # redcapr --------------------
 Sys.setenv(
-  "REDCapSync_TEST_REDCAPR_SIMPLE" = "9A068C425B1341D69E83064A2D273A70")
+  "REDCAPSYNC_TEST_REDCAPR_SIMPLE" = "9A068C425B1341D69E83064A2D273A70")
 Sys.setenv(
-  "REDCapSync_TEST_REDCAPR_LONGITUDINAL" = "DA6F2BB23146BD5A7EA3408C1A44A556")
+  "REDCAPSYNC_TEST_REDCAPR_LONGITUDINAL" = "DA6F2BB23146BD5A7EA3408C1A44A556")
 Sys.setenv(
-  "REDCapSync_TEST_REDCAPR_CLIN_TRIAL" = "F2A02137BA58ABFC001058ADAC9B36D2")
+  "REDCAPSYNC_TEST_REDCAPR_CLIN_TRIAL" = "F2A02137BA58ABFC001058ADAC9B36D2")
 project <- setup_project(
   project_name = "TEST_REDCAPR_SIMPLE",
   redcap_uri = "https://redcap-dev-2.ouhsc.edu/redcap/api/",

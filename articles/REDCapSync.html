@@ -101,15 +101,15 @@
 <p>You can set your REDCap token in two ways! If you need more help
 setting your tokens see this article –&gt; placeholder</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co">#1. set each time in your session (not recommended in saved/shared scripts!)</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCapSync_TEST1 =</span> <span class="st">"YoUrNevErShaReToken"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_TEST1 =</span> <span class="st">"YoUrNevErShaReToken"</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#2. set to your private R sessions!</span></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">edit_r_environ</span>()                                       <span class="co">#finds your file</span></span>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># or</span></span>
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>rstudioapi<span class="sc">::</span><span class="fu">navigateToFile</span>(<span class="fu">file.path</span>(<span class="fu">Sys.getenv</span>(<span class="st">"HOME"</span>)), <span class="st">".Renviron"</span>)<span class="er">)</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co"># Then you add --&gt; REDCapSync_TEST1 = 'YoUrNevErShaReToken'</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co"># Then you add --&gt; REDCAPSYNC_TEST1 = 'YoUrNevErShaReToken'</span></span>
 <span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co"># then save file and restart R</span></span>
 <span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co"># If it worked you will see your token when you run...</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCapSync_TEST1"</span>)</span></code></pre></div>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCAPSYNC_TEST1"</span>)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="run-core-functions">Run Core Functions<a class="anchor" aria-label="anchor" href="#run-core-functions"></a>
@@ -118,7 +118,7 @@ setting your tokens see this article –&gt; placeholder</p>
 package.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">setup_project</a></span><span class="op">(</span></span>
-<span>  project_name <span class="op">=</span> <span class="st">"TEST1"</span>,          <span class="co"># must match token pattern REDCapSync_*******</span></span>
+<span>  project_name <span class="op">=</span> <span class="st">"TEST1"</span>,          <span class="co"># must match token pattern REDCAPSYNC_*******</span></span>
 <span>  redcap_uri <span class="op">=</span> <span class="st">"https://redcap.fakei.edu/api/"</span>,        <span class="co"># your institution's link</span></span>
 <span>  dir_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>     <span class="co"># your project file path, real data will be stored here</span></span>
 <span><span class="op">)</span></span>

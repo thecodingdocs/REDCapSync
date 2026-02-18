@@ -63,7 +63,7 @@
 <span>  <span class="va">project_name</span>,</span>
 <span>  <span class="va">dir_path</span>,</span>
 <span>  <span class="va">redcap_uri</span>,</span>
-<span>  token_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"REDCapSync_"</span>, <span class="va">project_name</span><span class="op">)</span>,</span>
+<span>  token_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"REDCAPSYNC_"</span>, <span class="va">project_name</span><span class="op">)</span>,</span>
 <span>  sync_frequency <span class="op">=</span> <span class="st">"daily"</span>,</span>
 <span>  labelled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  hard_reset <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -115,7 +115,7 @@ server.</p></dd>
 
 <dt id="arg-token-name">token_name<a class="anchor" aria-label="anchor" href="#arg-token-name"></a></dt>
 <dd><p>An optional character string for setting your token name.
-Default is <code>REDCapSync_&lt;project_name&gt;</code></p></dd>
+Default is <code>REDCAPSYNC_&lt;project_name&gt;</code></p></dd>
 
 
 <dt id="arg-sync-frequency">sync_frequency<a class="anchor" aria-label="anchor" href="#arg-sync-frequency"></a></dt>
@@ -245,7 +245,7 @@ Neither function directly attempts communication with REDCap.</p>
 Mainly, it sets your unique <code>project_name</code> and your intended directory.
 Unless you run <code>hard_reset = TRUE</code> the default will first try
 load_project. dir_path is technically optional but without it the user cannot
-save/load/update projects.</p>
+save/load/update projects. Must be all capital letters!</p>
 <p><code>load_project</code> can be used with just the <code>project_name</code> parameter after you
 have
 already run <code>setup_project</code> in the past with an established directory.

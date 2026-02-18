@@ -17,15 +17,15 @@ your tokens see this article –\> placeholder
 
 ``` r
 #1. set each time in your session (not recommended in saved/shared scripts!)
-Sys.setenv(REDCapSync_TEST1 = "YoUrNevErShaReToken")
+Sys.setenv(REDCAPSYNC_TEST1 = "YoUrNevErShaReToken")
 #2. set to your private R sessions!
 usethis::edit_r_environ()                                       #finds your file
 # or
 rstudioapi::navigateToFile(file.path(Sys.getenv("HOME")), ".Renviron"))
-# Then you add --> REDCapSync_TEST1 = 'YoUrNevErShaReToken'
+# Then you add --> REDCAPSYNC_TEST1 = 'YoUrNevErShaReToken'
 # then save file and restart R
 # If it worked you will see your token when you run...
-Sys.getenv("REDCapSync_TEST1")
+Sys.getenv("REDCAPSYNC_TEST1")
 ```
 
 ## Run Core Functions
@@ -34,7 +34,7 @@ The following functions represent the core functions of the package.
 
 ``` r
 project <- setup_project(
-  project_name = "TEST1",          # must match token pattern REDCapSync_*******
+  project_name = "TEST1",          # must match token pattern REDCAPSYNC_*******
   redcap_uri = "https://redcap.fakei.edu/api/",        # your institution's link
   dir_path = getwd()     # your project file path, real data will be stored here
 )

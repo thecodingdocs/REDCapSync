@@ -9,7 +9,7 @@ setup_project(
   project_name,
   dir_path,
   redcap_uri,
-  token_name = paste0("REDCapSync_", project_name),
+  token_name = paste0("REDCAPSYNC_", project_name),
   sync_frequency = "daily",
   labelled = TRUE,
   hard_reset = FALSE,
@@ -58,7 +58,7 @@ load_test_project(project_name)
 - token_name:
 
   An optional character string for setting your token name. Default is
-  `REDCapSync_<project_name>`
+  `REDCAPSYNC_<project_name>`
 
 - sync_frequency:
 
@@ -182,7 +182,7 @@ with REDCap.
 project. Mainly, it sets your unique `project_name` and your intended
 directory. Unless you run `hard_reset = TRUE` the default will first try
 load_project. dir_path is technically optional but without it the user
-cannot save/load/update projects.
+cannot save/load/update projects. Must be all capital letters!
 
 `load_project` can be used with just the `project_name` parameter after
 you have already run `setup_project` in the past with an established

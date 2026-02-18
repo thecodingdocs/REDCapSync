@@ -75,8 +75,6 @@ for initializing the `project` object.'
 
 - [`REDCapSync_project$save()`](#method-REDCapSync_project-save)
 
-- [`REDCapSync_project$show_token()`](#method-REDCapSync_project-show_token)
-
 - [`REDCapSync_project$test_token()`](#method-REDCapSync_project-test_token)
 
 - [`REDCapSync_project$url_launch()`](#method-REDCapSync_project-url_launch)
@@ -522,20 +520,6 @@ Add a new summary entry
 #### Usage
 
     REDCapSync_project$save()
-
-------------------------------------------------------------------------
-
-### Method `show_token()`
-
-Displays the REDCap API token currently stored in the session as an
-environment variable. It's essentially a wrapper for
-Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
-formatted like a REDCap token and provides messages if not valid. The
-token is not returned as an R object to maintain security.
-
-#### Usage
-
-    REDCapSync_project$show_token()
 
 ------------------------------------------------------------------------
 

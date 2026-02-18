@@ -101,10 +101,10 @@ the REDCap website. If you are working on a <em>real</em> REDCap project
 it’s good practice to regenerate your token periodically, such as once a
 week, just to be safe.</p>
 <p>Precisely because tokens are sensitive, REDCapSync is designed to
-only reference the name of your token, such as “REDCapSync_TEST”. If
+only reference the name of your token, such as “REDCAPSYNC_TEST”. If
 REDCapSync ever wants to use the token to make an API call to REDCap, it
-will check <code>Sys.getenv("REDCapSync_TEST")</code>. By default are
-token names start with “REDCapSync_”, followed by the
+will check <code>Sys.getenv("REDCAPSYNC_TEST")</code>. By default are
+token names start with “REDCAPSYNC_”, followed by the
 <code>project_name</code> you chose in
 <code><a href="../reference/setup-load.html">setup_project()</a></code>.Below demonstrates how to set and check
 your tokens…</p>
@@ -112,14 +112,14 @@ your tokens…</p>
 <h3 id="setting-your-token-for-one-session">Setting Your Token for One Session<a class="anchor" aria-label="anchor" href="#setting-your-token-for-one-session"></a>
 </h3>
 <p>You can set manually with base R. Unless you specifically set the
-token <code>Sys.getenv("REDCapSync_TEST")</code> will be blank.</p>
+token <code>Sys.getenv("REDCAPSYNC_TEST")</code> will be blank.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set your token manually</span></span>
 <span><span class="co"># again having this in a script is not advised but possible</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>REDCapSync_TEST<span class="op">=</span><span class="st">"a_FaKe_TOkEn"</span><span class="op">)</span> </span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>REDCAPSYNC_TEST<span class="op">=</span><span class="st">"a_FaKe_TOkEn"</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="co"># Get your token</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCapSync_TEST"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCAPSYNC_TEST"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;[1] "a_FaKe_TOkEn"</span></span></code></pre></div>
 <p>Now the token is set for this R session only. If you restarted R, it
 would be blank again.</p>
@@ -135,17 +135,17 @@ not a part of any cloud storage or git or GitHub. You can use
 <code>usethis::edit_r_environ()</code> to semi-permanently save your
 token. Each time you launch an R session this file will run and your
 token will be visible to you if specifically called with
-<code>Sys.getenv("REDCapSync_TEST")</code>.</p>
+<code>Sys.getenv("REDCAPSYNC_TEST")</code>.</p>
 <ol style="list-style-type: decimal">
 <li>Open the .Renviron file with
 <code>usethis::edit_r_environ()</code>
 </li>
 <li>Add the token like this…
-<code>REDCapSync_TEST = "faKeTokeN"</code>
+<code>REDCAPSYNC_TEST = "faKeTokeN"</code>
 </li>
 <li>Save the file and Close</li>
 <li>Restart R Session (Session tab or <code>.rs.restartR()</code>).</li>
-<li>Confirm with <code>Sys.getenv("REDCapSync_TEST")</code>
+<li>Confirm with <code>Sys.getenv("REDCAPSYNC_TEST")</code>
 </li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -153,11 +153,11 @@ token will be visible to you if specifically called with
 <span><span class="co">#install.packages("usethis") </span></span>
 <span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_r_environ</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># Now save your token.... (without the comment symbol '#')</span></span>
-<span><span class="co"># REDCapSync_TEST = "faKeTokeN"</span></span>
+<span><span class="co"># REDCAPSYNC_TEST = "faKeTokeN"</span></span>
 <span><span class="co"># Save the file and Close</span></span>
 <span><span class="co"># Restart R Session (session tab)</span></span>
 <span><span class="co"># .rs.restartR() # this will also restart R session for you.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCapSync_TEST"</span><span class="op">)</span> <span class="co"># now should contain your token</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCAPSYNC_TEST"</span><span class="op">)</span> <span class="co"># now should contain your token</span></span></code></pre></div>
 <p>The only reference to your token that is ever made or saved in
 REDCapSync is with its name. For example, any REDCap project object will
 have the token name at <code>project$token_name</code>. In the future,

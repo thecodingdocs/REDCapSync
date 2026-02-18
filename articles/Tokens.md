@@ -13,25 +13,25 @@ practice to regenerate your token periodically, such as once a week,
 just to be safe.
 
 Precisely because tokens are sensitive, REDCapSync is designed to only
-reference the name of your token, such as “REDCapSync_TEST”. If
+reference the name of your token, such as “REDCAPSYNC_TEST”. If
 REDCapSync ever wants to use the token to make an API call to REDCap, it
-will check `Sys.getenv("REDCapSync_TEST")`. By default are token names
-start with “REDCapSync\_”, followed by the `project_name` you chose in
+will check `Sys.getenv("REDCAPSYNC_TEST")`. By default are token names
+start with “REDCAPSYNC\_”, followed by the `project_name` you chose in
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).Below
 demonstrates how to set and check your tokens…
 
 ### Setting Your Token for One Session
 
 You can set manually with base R. Unless you specifically set the token
-`Sys.getenv("REDCapSync_TEST")` will be blank.
+`Sys.getenv("REDCAPSYNC_TEST")` will be blank.
 
 ``` r
 # Set your token manually
 # again having this in a script is not advised but possible
-Sys.setenv(REDCapSync_TEST="a_FaKe_TOkEn") 
+Sys.setenv(REDCAPSYNC_TEST="a_FaKe_TOkEn") 
 
 # Get your token
-Sys.getenv("REDCapSync_TEST")
+Sys.getenv("REDCAPSYNC_TEST")
 #>[1] "a_FaKe_TOkEn"
 ```
 
@@ -48,24 +48,24 @@ of any cloud storage or git or GitHub. You can use
 `usethis::edit_r_environ()` to semi-permanently save your token. Each
 time you launch an R session this file will run and your token will be
 visible to you if specifically called with
-`Sys.getenv("REDCapSync_TEST")`.
+`Sys.getenv("REDCAPSYNC_TEST")`.
 
 1.  Open the .Renviron file with `usethis::edit_r_environ()`
-2.  Add the token like this… `REDCapSync_TEST = "faKeTokeN"`
+2.  Add the token like this… `REDCAPSYNC_TEST = "faKeTokeN"`
 3.  Save the file and Close
 4.  Restart R Session (Session tab or `.rs.restartR()`).
-5.  Confirm with `Sys.getenv("REDCapSync_TEST")`
+5.  Confirm with `Sys.getenv("REDCAPSYNC_TEST")`
 
 ``` r
 #Install usethis if you don't have it.
 #install.packages("usethis") 
 usethis::edit_r_environ()
 # Now save your token.... (without the comment symbol '#')
-# REDCapSync_TEST = "faKeTokeN"
+# REDCAPSYNC_TEST = "faKeTokeN"
 # Save the file and Close
 # Restart R Session (session tab)
 # .rs.restartR() # this will also restart R session for you.
-Sys.getenv("REDCapSync_TEST") # now should contain your token
+Sys.getenv("REDCAPSYNC_TEST") # now should contain your token
 ```
 
 The only reference to your token that is ever made or saved in

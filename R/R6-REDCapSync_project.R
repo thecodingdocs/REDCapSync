@@ -207,7 +207,7 @@ REDCapSync_project <- R6Class(
     initialize = function(project) {
       assert_setup_project(project)
       private$project <- project
-      invisible()
+      invisible(self)
     },
     #' @description Print project metadata
     info = function() {
@@ -238,7 +238,7 @@ REDCapSync_project <- R6Class(
                     hard_reset = FALSE) {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not communicate with the API")
-        return(invisible())
+        return(invisible(self))
       }
       private$project <- sync_project(
         project = private$project,
@@ -246,7 +246,7 @@ REDCapSync_project <- R6Class(
         save_to_dir = save_to_dir,
         hard_check = hard_check,
         hard_reset = hard_reset)
-      invisible()
+      invisible(self)
     },
     #' @description  Add a new summary entry
     add_summary = function(summary_name,
@@ -308,7 +308,7 @@ REDCapSync_project <- R6Class(
         file_name = file_name,
         hard_reset = hard_reset
       )
-      invisible()
+      invisible(self)
     },
     #' @description  Clear all project summaries
     remove_summaries = function(summary_names = NULL) {
@@ -316,7 +316,7 @@ REDCapSync_project <- R6Class(
         project = private$project,
         summary_names = summary_names
       )
-      invisible()
+      invisible(self)
     },
     #' @description  Add a new summary entry
     generate_summary = function(summary_name = "REDCapSync", envir = NULL) {
@@ -347,18 +347,18 @@ REDCapSync_project <- R6Class(
                          units = NA,
                          data_func = NA) {
       message("Added field! (placeholder)")
-      invisible()
+      invisible(self)
     },
     #' @description  Removes summary entry
     remove_fields = function(field_names = NULL) {
       message("Removed field! (placeholder)")
-      invisible()
+      invisible(self)
     },
     #' @description summarize project and save to Excel
     summarize = function(hard_reset = FALSE) {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not save to directories!")
-        return(invisible())
+        return(invisible(self))
       }
       first_stamp <- private$project$internals$last_summary
       private$project <-
@@ -369,54 +369,45 @@ REDCapSync_project <- R6Class(
         #consider separating just saving last in details
         private$project <- save_project(private$project)
       }
-      invisible()
+      invisible(self)
     },
     #' @description save summary to Excel
     save_summary = function(summary_name) {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not save to directories!")
-        return(invisible())
+        return(invisible(self))
       }
       summary_names <- private$project$summary |>
         names() |>
         setdiff("all_records")
       assert_choice(summary_name, summary_names, null.ok = FALSE)
       private$project <- save_summary(project = private$project, summary_name)
-      invisible()
+      invisible(self)
     },
     #' @description  Add a new summary entry
     save = function() {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not save to directories!")
-        return(invisible())
+        return(invisible(self))
       }
       private$project <- save_project(private$project)
-      invisible()
-    },
-    #' @description
-    #' Displays the REDCap API token currently stored in the session as an
-    #' environment variable. It's essentially a wrapper for
-    #' Sys.getenv("YOUR_TOKEN_NAME"), but it also validates that the token is
-    #' formatted like a REDCap token and provides messages if not valid.
-    #' The token is not returned as an R object to maintain security.
-    show_token = function() {
-      view_project_token(private$project)
+      invisible(self)
     },
     #' @description test connection via communication with API
     test_token = function() {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not communicate with the API")
-        return(invisible())
+        return(invisible(self))
       }
       private$project <- test_project_token(private$project)
-      invisible()
+      invisible(self)
     },
     #' @description opens links in browser
     url_launch = function(link_type = "home",
                           open_browser = TRUE) {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not link to the web!")
-        return(invisible())
+        return(invisible(self))
       }
       get_project_url(private$project,
                       link_type = link_type,
@@ -430,7 +421,7 @@ REDCapSync_project <- R6Class(
     upload = function(to_be_uploaded, batch_size = 500L) {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not communicate with the API")
-        return(invisible())
+        return(invisible(self))
       }
       # add detect labelled vs raw?
       if (!is_named_df_list(to_be_uploaded, strict = TRUE)) {

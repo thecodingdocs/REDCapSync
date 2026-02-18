@@ -204,6 +204,9 @@ repair_setup_project <- function(project) {
       project$internals$add_default_summaries |>
       test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$add_default_summaries, TRUE)
-  }
+    project$internals$was_updated <-
+      project$internals$was_updated |>
+      test_logical(len = 1L, any.missing = FALSE) |>
+      ifelse(project$internals$was_updated, FALSE)  }
   project
 }

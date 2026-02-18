@@ -449,6 +449,7 @@ load_test_project <- function(project_name) {
     TEST_REDCAPR_CLIN_TRIAL = TEST_REDCAPR_CLIN_TRIAL
   )
   project <- .test_projects[[project_name]]
+  project <- repair_setup_project(project)
   project$internals$is_test <- TRUE
   project <- REDCapSync_project$new(project)
   cli_alert_success("Loaded TEST project {project$project_name}!")

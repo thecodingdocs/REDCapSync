@@ -234,6 +234,9 @@ assert_setup_project <- function(project) {
   assert_logical(project$internals$add_default_summaries,
                  len = 1L,
                  any.missing = FALSE)
+  assert_logical(project$internals$was_updated,
+                 len = 1L,
+                 any.missing = FALSE)
   invisible(project)
 }
 #' @noRd

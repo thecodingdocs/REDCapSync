@@ -14,7 +14,7 @@
 #' Mainly, it sets your unique `project_name` and your intended directory.
 #' Unless you run \code{hard_reset = TRUE} the default will first try
 #' load_project. dir_path is technically optional but without it the user cannot
-#' save/load/update projects.
+#' save/load/update projects. Must be all capital letters!
 #'
 #' `load_project` can be used with just the `project_name` parameter after you
 #' have
@@ -109,10 +109,11 @@ setup_project <- function(project_name,
                           add_default_fields = FALSE,
                           add_default_transformation = FALSE,
                           add_default_summaries = TRUE) {
-  assert_env_name(project_name, max.chars = 31L)
+  #add better message for all caps!
+  assert_env_name(project_name, max.chars = 31L, all_caps = TRUE)
   # dir_path
   # redcap_uri
-  assert_env_name(token_name, max.chars = 50L)
+  assert_env_name(token_name, max.chars = 50L, all_caps = TRUE)
   assert_choice(sync_frequency, choices = .sync_frequency)
   assert_logical(labelled, len = 1L, any.missing = FALSE)
   assert_logical(hard_reset, len = 1L, any.missing = FALSE)
@@ -328,7 +329,7 @@ get_project_path <- function(project_name,
                              dir_path,
                              type = "",
                              check_dir = FALSE) {
-  assert_env_name(project_name, max.chars = 31L)
+  assert_env_name(project_name, max.chars = 31L, all_caps = TRUE)
   if (check_dir) {
     assert_dir(dir_path)
   }

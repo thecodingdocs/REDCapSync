@@ -102,22 +102,31 @@ assert_env_name <- function(x, max.chars = 26L, all_caps = FALSE) {
     n.chars = NULL,
     min.chars = 1L,
     max.chars = max.chars,
-    pattern = ifelse(all_caps, "^[A-Z][A-Z0-9_]*$", "^[A-Za-z][A-Za-z0-9_]*$"),
+    pattern =  "^[A-Za-z][A-Za-z0-9_]*$",
     fixed = NULL,
-    ignore.case = !all_caps
+    ignore.case = TRUE
   )
+  if(all_caps){
+    assert_string(
+      x,
+      n.chars = NULL,
+      min.chars = 1L,
+      max.chars = max.chars,
+      pattern = "^[A-Z][A-Z0-9_]*$",
+      fixed = NULL,
+      ignore.case = FALSE
+    )
+  }
   invisible(x)
 }
 #' @noRd
-test_all_caps <- function(x) {
-  x == toupper(x) & nchar(x) > 0
-}
-#' @noRd
-test_env_name <- function(x, max.chars = 26L) {
+test_env_name <- function(x, max.chars = 26L, all_caps = FALSE) {
   x <- tryCatch(
     expr = {
       suppressWarnings({
-        assert_env_name(x = x, max.chars = max.chars)
+        assert_env_name(x = x,
+                        max.chars = max.chars,
+                        all_caps = all_caps)
       })
     },
     error = function(e) {
@@ -137,10 +146,10 @@ assert_blank_project <- function(project) {
 #' @noRd
 assert_setup_project <- function(project) {
   assert_blank_project(project)
-  assert_env_name(project$project_name, max.chars = 31L)
+  assert_env_name(project$project_name, max.chars = 31L, all_caps = TRUE)
   # dir_path
   # redcap_uri
-  assert_env_name(project$redcap$token_name, max.chars = 50L)
+  assert_env_name(project$redcap$token_name, max.chars = 50L, all_caps = TRUE)
   assert_choice(project$internals$sync_frequency, choices = .sync_frequency)
   assert_logical(project$internals$labelled, len = 1L, any.missing = FALSE)
   assert_logical(project$internals$hard_reset, len = 1L, any.missing = FALSE)
@@ -268,7 +277,7 @@ assert_project_details <- function(project_details, nrows = NULL) {
   if (nrow(project_details) > 0L) {
     project_details$project_name |>
       lapply(function(project_name) {
-        assert_env_name(project_name, max.chars = 31L)
+        assert_env_name(project_name, max.chars = 31L, all_caps = TRUE)
       })
     assert_names(project_details$project_name, type = "unique")
   }

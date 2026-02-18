@@ -55,7 +55,7 @@ test_that("add_project_details_to_cache works", {
   projects <- get_projects()
   expect_data_frame(projects, nrows = 0L)
   # add project details to cache
-  project <- load_test_project()$.internal
+  project <- mock_test_project()$.internal
   project_details <- extract_project_details(project)
   expect_no_error(add_project_details_to_cache(project_details))
   projects <- get_projects()

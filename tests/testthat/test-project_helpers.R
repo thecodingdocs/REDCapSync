@@ -1,6 +1,6 @@
 withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 test_that("update_project_links works", {
-  project <- load_test_project()$.internal
+  project <- mock_test_project()$.internal
   expect_false(is.null(project$links$redcap_uri))
   expect_false(is.null(project$links$redcap_base))
   link_vector <- paste0("redcap_", .link_types)
@@ -30,7 +30,7 @@ test_that("update_project_links works", {
 })
 # get_project_url ( Exported )
 test_that("get_project_url works", {
-  project <- load_test_project()$.internal
+  project <- mock_test_project()$.internal
   project <- update_project_links(project)
   e <- new.env(parent = emptyenv())
   # get_project_url
@@ -49,7 +49,7 @@ test_that("get_project_url works", {
 })
 # get_record_url ( Exported )
 test_that("get_record_url works", {
-  project <- load_test_project()$.internal
+  project <- mock_test_project()$.internal
   project$links$redcap_base <- "https://fakeredcap.com/"
   expected_link <- paste0(
     project$links$redcap_base,

@@ -55,7 +55,7 @@ test_that("remove_from_form_list works!", {
 })
 # remove_records_from_project ( Internal )
 test_that("remove_records_from_project works!", {
-  project <- load_test_project()$.internal
+  project <- mock_test_project()$.internal
   # Add some records to form_example and transformation$data
   project$data$form_example <- data.frame(
     record_id = c("1", "2", "3"),

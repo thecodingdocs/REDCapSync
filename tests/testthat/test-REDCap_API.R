@@ -3,7 +3,6 @@ withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 test_that("get_redcap_metadata works on real server, simple!", {
   skip_on_cran()
   project_name <- "TEST_REDCAPR_SIMPLE"
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project <- real_test_project(project_name)$.internal
   # expect_false(project$internals$ever_connected)
   expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0)
@@ -155,7 +154,7 @@ test_that("get_redcap_data works!", {
 test_that("rename_forms_redcap_to_default works!", {
 })
 test_that("rcon_result returns expected structure without real API calls", {
-  project <- load_test_project()$.internal
+  project <- mock_test_project()$.internal
   # Create a fake rcon with the methods used by rcon_result
   fake_rcon <- list(
     projectInformation = function() {

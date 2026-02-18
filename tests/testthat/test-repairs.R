@@ -1,14 +1,11 @@
 withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # repair_projects ( Internal )
 test_that("repair_projects works with valid project details", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   project_path <- get_project_path(
     project_name = project$project_name,
     dir_path = project$dir_path
   )
-  dir.create(dirname(project_path), showWarnings = FALSE, recursive = TRUE)
   saveRDS(project, file = project_path)
   # Create valid project details
   project_details <- extract_project_details(project)
@@ -54,15 +51,12 @@ test_that("repair_projects handles missing project files", {
 })
 # repair_project_details ( Internal )
 test_that("repair_project_details works with valid project file", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   # Save project to disk
   project_path <- get_project_path(
     project_name = project$project_name,
     dir_path = project$dir_path
   )
-  dir.create(dirname(project_path), showWarnings = FALSE, recursive = TRUE)
   saveRDS(project, file = project_path)
   # Create project_details with matching project_name and dir_path
   project_details <- data.frame(
@@ -106,21 +100,17 @@ test_that("repair_project_details handles corrupted project file", {
     project_name = "CORRUPT_PROJECT",
     dir_path = temp_dir
   )
-  dir.create(dirname(project_path), showWarnings = FALSE, recursive = TRUE)
   saveRDS("not a valid project object", file = project_path)
   result <- repair_project_details(project_details_df)
   expect_null(result)
 })
 test_that("repair_project_details extracts correct project details", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   # Save project to disk
   project_path <- get_project_path(
     project_name = project$project_name,
     dir_path = project$dir_path
   )
-  dir.create(dirname(project_path), showWarnings = FALSE, recursive = TRUE)
   saveRDS(project, file = project_path)
   project_details <- data.frame(
     project_name = project$project_name,
@@ -136,9 +126,7 @@ test_that("repair_project_details extracts correct project details", {
 })
 # repair_setup_project ( Internal )
 test_that("repair_setup_project works with valid project", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   result <- repair_setup_project(project)
   expect_list(result)
   expect_true(test_setup_project(result))
@@ -158,21 +146,19 @@ test_that("repair_setup_project returns NULL when missing required fields", {
   expect_null(result)
 })
 test_that("repair_setup_project returns NULL for invalid project_name", {
-  project <- load_test_project()$.internal
+  project <- mock_test_project()$.internal
   project$project_name <- "invalid name with spaces"
   result <- repair_setup_project(project)
   expect_null(result)
 })
 # test_that("repair_setup_project returns NULL for invalid redcap_uri", {
-#   project <- load_test_project()$.internal
+#   project <- mock_test_project()$.internal
 #   project$links$redcap_uri <- "not a valid uri"
 #   result <- repair_setup_project(project)
 #   expect_null(result)
 # })
 test_that("repair_setup_project repairs invalid internals", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   # Set invalid internals
   project$internals$sync_frequency <- "invalid"
   project$internals$labelled <- NA
@@ -185,9 +171,7 @@ test_that("repair_setup_project repairs invalid internals", {
   expect_identical(result$internals$timezone, Sys.timezone())
 })
 test_that("repair_setup_project repairs invalid batch sizes", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   # Set invalid batch sizes
   project$internals$batch_size_download <- 0L
   project$internals$batch_size_upload <- NA
@@ -198,9 +182,7 @@ test_that("repair_setup_project repairs invalid batch sizes", {
   expect_identical(result$internals$batch_size_upload, 500L)
 })
 test_that("repair_setup_project repairs invalid logical fields", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   # Set invalid logical fields
   project$internals$get_files <- NA
   project$internals$get_file_repository <- "yes"
@@ -213,18 +195,14 @@ test_that("repair_setup_project repairs invalid logical fields", {
   expect_identical(result$internals$entire_log, FALSE)
 })
 test_that("repair_setup_project repairs invalid get_type", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   project$internals$get_type <- "invalid_type"
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))
   expect_identical(result$internals$get_type, "identified")
 })
 test_that("repair_setup_project handles character vector fields", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   # Set valid character vectors
   project$internals$records <- c("1", "2", "3")
   project$internals$fields <- c("field1", "field2")
@@ -236,9 +214,7 @@ test_that("repair_setup_project handles character vector fields", {
   expect_identical(result$internals$forms, c("form1", "form2"))
 })
 test_that("repair_setup_project repairs invalid character vectors", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   # Set invalid character vectors (wrong type or length)
   project$internals$records <- 123L
   project$internals$fields <- TRUE
@@ -251,9 +227,7 @@ test_that("repair_setup_project repairs invalid character vectors", {
   expect_true(is.na(result$internals$forms))
 })
 test_that("repair_setup_project repairs invalid days_of_log", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  project <- load_test_project()$.internal
-  project$dir_path <- set_dir(temp_dir)
+  project <- mock_test_project()$.internal
   project$internals$days_of_log <- 0L
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))

@@ -11,7 +11,7 @@ test_that("is_valid_redcap_token respects the rules of 32L hexadecimal", {
   expect_false(is_valid_redcap_token(paste0("_", generate_hex(31L))))
 })
 test_that("get_project_token checks_env", {
-  project <- load_test_project()$.internal
+  project <- mock_test_project()$.internal
   token_name <- project$redcap$token_name
   token <- generate_hex(32L)
   withr::with_envvar(c(REDCapSync_TEST_CLASSIC = token), {
@@ -28,7 +28,7 @@ test_that("get_project_token checks_env", {
 })
 # view_project_token ( Exported )
 test_that("view_project_token works when no token set", {
-  project <- load_test_project()$.internal
+  project <- mock_test_project()$.internal
   expect_true(project$internals$is_test)
   withr::with_envvar(c(REDCapSync_TEST_CLASSIC = ""), {
     expect_message(view_project_token(project),
@@ -37,7 +37,7 @@ test_that("view_project_token works when no token set", {
 })
 # test_project_token ( Exported )
 test_that("test_project_token works when exportVersion returns version", {
-  project <- load_test_project()$.internal
+  project <- mock_test_project()$.internal
   # Stub rcon to avoid creating a real connection and stub
   # exportVersion to simulate success
   mockery::stub(test_project_token,
@@ -64,7 +64,7 @@ test_that("test_project_token works when exportVersion returns version", {
                  "The REDCap project ID for TEST_CLASSIC has changed")
 })
 test_that("test_project_token marks failure when exportVersion returns NULL", {
-  project <- load_test_project()$.internal
+  project <- mock_test_project()$.internal
   # Stub rcon and simulate exportVersion failure
   mockery::stub(test_project_token, "rcon", function(project) {
     list()

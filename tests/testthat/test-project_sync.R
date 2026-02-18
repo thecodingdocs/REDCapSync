@@ -122,7 +122,6 @@ test_that("sweep_dirs_for_cache updates cache when project files exist", {
     project_name = project$project_name,
     dir_path = project$dir_path
   )
-  dir.create(dirname(project_path), showWarnings = FALSE, recursive = TRUE)
   saveRDS(project, file = project_path)
   details_path <- get_project_path(
     project_name = project$project_name,
@@ -166,7 +165,6 @@ test_that("sweep_dirs_for_cache compares cached and disk project details", {
     project_name = project$project_name,
     dir_path = project$dir_path
   )
-  dir.create(dirname(project_path), showWarnings = FALSE, recursive = TRUE)
   # Modify the project details
   project$redcap$version <- "13.0.0"
   updated_project_details <- extract_project_details(project)

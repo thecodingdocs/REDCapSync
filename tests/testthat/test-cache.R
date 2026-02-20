@@ -22,7 +22,7 @@ test_that("cache_path works inside and outside of testing", {
   expect_directory_exists(testing_path)
   expect_identical(cache_path(), testing_path)
   withr::local_envvar(REDCAPSYNC_CACHE = NA)
-  expect_true(Sys.getenv("REDCAPSYNC_CACHE") == "")
+  expect_identical(Sys.getenv("REDCAPSYNC_CACHE"), "")
   fake_other_cache <- hoardr::hoard()
   fake_other_cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
   expected_user_path <- sanitize_path(fake_other_cache$cache_path_get())
@@ -48,7 +48,7 @@ test_that("can save files to cache and delete", {
 test_that("cache_projects_exists works", {
   withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
   expect_false(cache_projects_exists())
-  expect_message(cache_projects_exists(),"No cached projects")
+  expect_message(cache_projects_exists(), "No cached projects")
   fake_cache <- get_cache()
   test_file <- file.path(fake_cache$cache_path_get(), "projects.rds")
   file.create(test_file)

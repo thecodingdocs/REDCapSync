@@ -39,10 +39,10 @@ remove_from_form_list <- function(form_list, id_col, records = NULL) {
   if (is.null(records)) {
     return(form_list)
   }
-  form_names <- names(form_list)[
-    which(unlist(lapply(names(form_list), function(form_name) {
-      nrow(form_list[[form_name]]) > 0L
-  })))]
+  rows_for_forms <- which(unlist(lapply(names(form_list), function(form_name) {
+    nrow(form_list[[form_name]]) > 0L
+  })))
+  form_names <- names(form_list)[rows_for_forms]
   for (form_name in form_names) {
     chosen_rows <- which(!form_list[[form_name]][[id_col]] %in% records)
     form_list[[form_name]] <- form_list[[form_name]][chosen_rows, ]
@@ -108,12 +108,4 @@ get_match <- function(x, return_field, match_field, match_text) {
 file_ext_alias <- function(x) {
   pos <- regexpr("\\.([[:alnum:]]+)$", x)
   ifelse(pos > -1L, substring(x, pos + 1L), "")
-}
-#' @noRd
-user_renviron <- function() {
-  path <- Sys.getenv("R_ENVIRON_USER", unset = NA_character_)
-  if (is.na(path) || !nzchar(path)) {
-    path <- file.path(Sys.getenv("HOME"), ".Renviron")
-  }
-  normalizePath(path, winslash = "/", mustWork = FALSE)
 }

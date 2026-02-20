@@ -29,6 +29,7 @@
 #' @importFrom checkmate expect_file_exists
 #' @importFrom checkmate expect_r6
 #' @importFrom checkmate expect_list
+#' @importFrom checkmate expect_logical
 #' @importFrom checkmate expect_class
 #' @importFrom checkmate test_scalar_na
 #' @importFrom checkmate test_character

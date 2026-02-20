@@ -25,7 +25,13 @@ get_project_token <- function(project, silent = TRUE) {
   valid <- is_valid_redcap_token(token = token, silent = silent)
   fake_token <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
   if (!silent) {
-    user_renviron_path <- user_renviron()
+    user_renviron_path <- Sys.getenv("R_ENVIRON_USER", unset = NA_character_)
+    if (is.na(user_renviron_path) || !nzchar(user_renviron_path)) {
+      user_renviron_path <- file.path(Sys.getenv("HOME"), ".Renviron")
+    }
+    user_renviron_path <- normalizePath(path = user_renviron_path,
+                                        winslash = "/",
+                                        mustWork = FALSE)
     cli_alert_wrap(
       paste0(
         "You can set REDCap tokens each session with `Sys.setenv(",
@@ -106,7 +112,7 @@ assert_env_name <- function(x, max.chars = 26L, all_caps = FALSE) {
     fixed = NULL,
     ignore.case = TRUE
   )
-  if(all_caps){
+  if (all_caps) {
     assert_string(
       x,
       n.chars = NULL,

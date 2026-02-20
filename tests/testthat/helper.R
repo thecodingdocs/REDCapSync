@@ -11,12 +11,12 @@ real_dev_tokens <- c(
 )
 real_test_project <- function(project_name = "TEST_REDCAPR_SIMPLE") {
   assert_choice(project_name, .test_redcapr_names)
-  REDCAPSYNC_CACHE <- Sys.getenv("REDCAPSYNC_CACHE") |>
+  cache_location <- Sys.getenv("REDCAPSYNC_CACHE") |>
     sanitize_path() |>
     assert_directory()
   redcap_uri <- "https://redcap-dev-2.ouhsc.edu/redcap/api/"
   project <- setup_project(project_name = project_name,
-                           dir_path = REDCAPSYNC_CACHE,
+                           dir_path = cache_location,
                            redcap_uri = redcap_uri,
                            hard_reset = TRUE)
   project
@@ -25,12 +25,12 @@ mock_test_project <- function(project_name = "TEST_CLASSIC",
                               ever_connected = TRUE) {
   assert_choice(project_name, .test_project_names)
   assert_logical(ever_connected)
-  REDCAPSYNC_CACHE <- Sys.getenv("REDCAPSYNC_CACHE") |>
+  cache_location <- Sys.getenv("REDCAPSYNC_CACHE") |>
     sanitize_path() |>
     assert_directory()
   if (ever_connected) {
     project <- load_test_project(project_name)$.internal
-    project$dir_path <- set_dir(REDCAPSYNC_CACHE)
+    project$dir_path <- set_dir(cache_location)
     dir.create(
       path = file.path(project$dir_path, "REDCap", project_name),
       showWarnings = FALSE
@@ -38,7 +38,7 @@ mock_test_project <- function(project_name = "TEST_CLASSIC",
     project <- REDCapSync_project$new(project)
   } else {
     project <- setup_project(project_name = project_name,
-                             dir_path = REDCAPSYNC_CACHE,
+                             dir_path = cache_location,
                              redcap_uri = "https://redcap.fake.edu/api/",
                              hard_reset = TRUE)
   }

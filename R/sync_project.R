@@ -207,7 +207,7 @@ sync_project_check <- function(project, hard_reset) {
     }
   }
   if (!hard_reset) {
-    if (!will_update){
+    if (!will_update) {
       cli_alert_success("Up to date already!")
     }
     if (will_update) {

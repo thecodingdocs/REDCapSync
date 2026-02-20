@@ -41,7 +41,7 @@ test_that("repair_projects handles missing project files", {
     redcap_uri = "https://redcap.fake.edu/api/",
     token_name = "REDCAPSYNC_NONEXISTENT",
     project_id = "9999",
-    dir_path = "/nonexistent/path",
+    dir_path = file.path("nonexistent", "path"),
     stringsAsFactors = FALSE
   )
   expect_message(
@@ -73,7 +73,7 @@ test_that("repair_project_details works with valid project file", {
 test_that("repair_project_details returns NULL when project file missing", {
   project_details <- data.frame(
     project_name = "NONEXISTENT",
-    dir_path = "/nonexistent/path",
+    dir_path = file.path("nonexistent", "path"),
     stringsAsFactors = FALSE
   )
   result <- repair_project_details(project_details)
@@ -139,7 +139,7 @@ test_that("repair_setup_project returns NULL for non-list input", {
 test_that("repair_setup_project returns NULL when missing required fields", {
   project <- list(
     project_name = "TEST",
-    dir_path = "/test/path"
+    dir_path = file.path("test", "path")
     # missing: redcap, metadata, data, internals
   )
   result <- repair_setup_project(project)
@@ -162,12 +162,12 @@ test_that("repair_setup_project repairs invalid internals", {
   # Set invalid internals
   project$internals$sync_frequency <- "invalid"
   project$internals$labelled <- NA
-  project$internals$timezone <- "Invalid/Zone"
+  project$internals$timezone <- "Invalid_Zone"
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))
   # Check that defaults were applied
   expect_identical(result$internals$sync_frequency, "daily")
-  expect_identical(result$internals$labelled, TRUE)
+  expect_true(result$internals$labelled)
   expect_identical(result$internals$timezone, Sys.timezone())
 })
 test_that("repair_setup_project repairs invalid batch sizes", {
@@ -190,9 +190,9 @@ test_that("repair_setup_project repairs invalid logical fields", {
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))
   # Check that defaults were applied
-  expect_identical(result$internals$get_files, FALSE)
-  expect_identical(result$internals$get_file_repository, FALSE)
-  expect_identical(result$internals$entire_log, FALSE)
+  expect_false(result$internals$get_files)
+  expect_false(result$internals$get_file_repository)
+  expect_false(result$internals$entire_log)
 })
 test_that("repair_setup_project repairs invalid get_type", {
   project <- mock_test_project()$.internal

@@ -30,14 +30,8 @@ test_project_token <- function(project) {
     project_id_changed <- !identical(project$redcap$project_id,
                                      as.character(project_info$project_id))
     if (project_id_changed) {
-      cli_alert_warning(
-        paste0(
-          "The REDCap project ID for {project$project_name} has changed",
-          "since the last setup."
-        )
-      )
-      return(invisible(project))
-    }
+      cli_abort("The REDCap project ID for {project$project_name} has changed!")
+    } # move this?
   }
   project$internals$ever_connected <- TRUE
   if (version_changed || is.null(project$links$redcap_home)) {

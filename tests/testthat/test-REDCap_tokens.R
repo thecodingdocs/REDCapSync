@@ -51,7 +51,7 @@ test_that("test_project_token works when exportVersion returns version", {
                   }
                 ))
   mockery::stub(test_project_token, "exportVersion", "12.1.1")
-  expect_message(test_project_token(project),
+  expect_error(test_project_token(project),
                  "The REDCap project ID for TEST_CLASSIC has changed")
 })
 test_that("test_project_token marks failure when exportVersion returns NULL", {

@@ -377,8 +377,8 @@ get_redcap_files <- function(project,
                              original_file_names = FALSE,
                              overwrite = FALSE) {
   file_rows <- which(project$metadata$fields$field_type == "file")
-  out_dir <- file.path(
-    project$dir_path, "REDCap", project$project_name, "files")
+  project_name <- project$project_name
+  out_dir <- file.path(project$dir_path, "REDCap", project_name, "files")
   if (length(file_rows) > 0L) {
     dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
     for (field_name in project$metadata$fields$field_name[file_rows]) {
@@ -430,8 +430,9 @@ get_redcap_files <- function(project,
             file_ext_alias(file_name)
           )
         )
-        if (!file.exists(file.path(out_dir_folder, file_name)) ||
-            overwrite) {
+        out_file_path <- file.path(out_dir_folder, file_name)
+        if (!file.exists(out_file_path) || overwrite) {
+          #try catch?
           redcap_file_download_oneshot(
             redcap_uri = project$links$redcap_uri,
             token = get_project_token(project),
@@ -443,7 +444,14 @@ get_redcap_files <- function(project,
             repeat_instance = repeat_instance,
             verbose = FALSE
           )
-          cli_alert_wrap(paste0("`", file_name, "` saved."), bullet_type = ">")
+          succeeded <- file.exists(out_file_path)
+          if (succeeded) {
+            cli_alert_wrap(text = paste0("`", file_name, "` saved."),
+                           bullet_type = ">")
+          } else {
+            cli_alert_wrap(text = paste0("`", file_name, "` failed to save!"),
+                           bullet_type = "x")
+          }
         }
       }
     }

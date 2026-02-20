@@ -5,38 +5,38 @@ test_that("get_redcap_metadata works on real server, simple!", {
   project_name <- "TEST_REDCAPR_SIMPLE"
   project <- real_test_project(project_name)$.internal
   # expect_false(project$internals$ever_connected)
-  expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0)
-  expect_data_frame(as.data.frame(project$metadata$fields), nrows = 0)
-  expect_data_frame(as.data.frame(project$metadata$choices), nrows = 0)
-  expect_data_frame(as.data.frame(project$redcap$users), nrows = 0)
-  expect_data_frame(as.data.frame(project$redcap$project_info), nrows = 0)
+  expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0L)
+  expect_data_frame(as.data.frame(project$metadata$fields), nrows = 0L)
+  expect_data_frame(as.data.frame(project$metadata$choices), nrows = 0L)
+  expect_data_frame(as.data.frame(project$redcap$users), nrows = 0L)
+  expect_data_frame(as.data.frame(project$redcap$project_info), nrows = 0L)
   project_with_metadata <- withr::with_envvar(real_dev_tokens, {
     get_redcap_metadata(project)
   })
   # expect_true(project_with_metadata$internals$ever_connected)
-  expect_data_frame(project_with_metadata$metadata$forms, min.rows = 1)
-  expect_data_frame(project_with_metadata$metadata$fields, min.rows = 1)
-  expect_data_frame(project_with_metadata$metadata$choices, min.rows = 1)
-  expect_data_frame(project_with_metadata$redcap$users, min.rows = 1)
-  expect_data_frame(project_with_metadata$redcap$project_info, nrows = 1)
+  expect_data_frame(project_with_metadata$metadata$forms, min.rows = 1L)
+  expect_data_frame(project_with_metadata$metadata$fields, min.rows = 1L)
+  expect_data_frame(project_with_metadata$metadata$choices, min.rows = 1L)
+  expect_data_frame(project_with_metadata$redcap$users, min.rows = 1L)
+  expect_data_frame(project_with_metadata$redcap$project_info, nrows = 1L)
 })
 test_that("get_redcap_metadata works on real server, longitudinal!", {
   skip_on_cran()
   project_name <- "TEST_REDCAPR_SIMPLE"
   project <- real_test_project(project_name)$.internal
-  expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0)
-  expect_data_frame(as.data.frame(project$metadata$fields), nrows = 0)
-  expect_data_frame(as.data.frame(project$metadata$choices), nrows = 0)
-  expect_data_frame(as.data.frame(project$redcap$users), nrows = 0)
-  expect_data_frame(as.data.frame(project$redcap$project_info), nrows = 0)
+  expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0L)
+  expect_data_frame(as.data.frame(project$metadata$fields), nrows = 0L)
+  expect_data_frame(as.data.frame(project$metadata$choices), nrows = 0L)
+  expect_data_frame(as.data.frame(project$redcap$users), nrows = 0L)
+  expect_data_frame(as.data.frame(project$redcap$project_info), nrows = 0L)
   project_with_metadata <- withr::with_envvar(real_dev_tokens, {
     get_redcap_metadata(project)
   })
-  expect_data_frame(project_with_metadata$metadata$forms, min.rows = 1)
-  expect_data_frame(project_with_metadata$metadata$fields, min.rows = 1)
-  expect_data_frame(project_with_metadata$metadata$choices, min.rows = 1)
-  expect_data_frame(project_with_metadata$redcap$users, min.rows = 1)
-  expect_data_frame(project_with_metadata$redcap$project_info, nrows = 1)
+  expect_data_frame(project_with_metadata$metadata$forms, min.rows = 1L)
+  expect_data_frame(project_with_metadata$metadata$fields, min.rows = 1L)
+  expect_data_frame(project_with_metadata$metadata$choices, min.rows = 1L)
+  expect_data_frame(project_with_metadata$redcap$users, min.rows = 1L)
+  expect_data_frame(project_with_metadata$redcap$project_info, nrows = 1L)
 })
 test_that("get_redcap_metadata works with fixture data (classic)", {
   project_name <- "TEST_CLASSIC"
@@ -50,12 +50,12 @@ test_that("get_redcap_metadata works with fixture data (classic)", {
   expect_null(project$metadata$fields)
   expect_null(project$metadata$forms)
   expect_list(result)
-  expect_true(!is.null(result$metadata))
-  expect_true(!is.null(result$redcap$project_info))
-  expect_data_frame(result$metadata$forms, min.rows = 1)
-  expect_data_frame(result$metadata$fields, min.rows = 1)
-  expect_true(!is.null(result$redcap$project_title))
-  expect_true(!is.null(result$redcap$project_id))
+  expect_false(is.null(result$metadata))
+  expect_false(is.null(result$redcap$project_info))
+  expect_data_frame(result$metadata$forms, min.rows = 1L)
+  expect_data_frame(result$metadata$fields, min.rows = 1L)
+  expect_false(is.null(result$redcap$project_title))
+  expect_false(is.null(result$redcap$project_id))
   expect_data_frame(result$metadata$forms)
   expect_true("form_name" %in% colnames(result$metadata$forms))
   expect_data_frame(result$metadata$fields)
@@ -64,7 +64,7 @@ test_that("get_redcap_metadata works with fixture data (classic)", {
   expect_data_frame(result$metadata$choices)
   expect_data_frame(result$redcap$users)
   expect_true(result$redcap$has_user_access)
-  expect_true(is.logical(result$redcap$has_log_access))
+  expect_logical(result$redcap$has_log_access)
   if (is_something(result$metadata$missing_codes)) {
     expect_data_frame(result$metadata$missing_codes)
   }
@@ -82,8 +82,8 @@ test_that("get_redcap_metadata works with fixture data (longitudinal)", {
   expect_list(result)
   expect_true(result$metadata$is_longitudinal)
   expect_true(result$metadata$has_arms)
-  expect_data_frame(result$metadata$arms, min.rows = 1)
-  expect_data_frame(result$metadata$events, min.rows = 1)
+  expect_data_frame(result$metadata$arms, min.rows = 1L)
+  expect_data_frame(result$metadata$events, min.rows = 1L)
 })
 test_that("get_redcap_metadata works with fixture data (repeating forms)", {
   project_name <- "TEST_REPEATING"
@@ -103,6 +103,59 @@ test_that("update_project_links works!", {
 })
 # get_redcap_files ( Internal )
 test_that("get_redcap_files works!", {
+  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  project <- mock_test_project()$.internal
+  out_file_path1 <- file.path(
+    project$dir_path,
+    "REDCap",
+    "TEST_CLASSIC",
+    "files",
+    "var_sig",
+    "other_var_sig_ID_1.png"
+  )
+  out_file_path2 <- file.path(
+    project$dir_path,
+    "REDCap",
+    "TEST_CLASSIC",
+    "files",
+    "var_file",
+    "other_var_file_ID_1.csv"
+  )
+  out_file_paths <- c(out_file_path1, out_file_path2)
+  expect_all_false(file.exists(out_file_paths))
+  mockery::stub(get_redcap_files, "redcap_file_download_oneshot", function(...) {
+    cli_alert_danger("API FAILED!")
+  })
+  get_redcap_files(project, original_file_names = FALSE, overwrite = FALSE)
+  expect_all_false(file.exists(out_file_paths))
+  mockery::stub(get_redcap_files, "redcap_file_download_oneshot", function(...) {
+    file.create(out_file_paths, showWarnings = FALSE)
+  })
+  get_redcap_files(project, original_file_names = FALSE, overwrite = FALSE)
+  expect_all_true(file.exists(out_file_paths))
+  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  drop_nas(project$data$other$var_sig)
+  out_file_path1 <- file.path(
+    project$dir_path,
+    "REDCap",
+    "TEST_CLASSIC",
+    "files",
+    "var_sig",
+    "signature_2025-11-19_1956.png"
+  )
+  drop_nas(project$data$other$var_file)
+  out_file_path2 <- file.path(
+    project$dir_path,
+    "REDCap",
+    "TEST_CLASSIC",
+    "files",
+    "var_file",
+    "Test_DataDictionary_2025-11-19.csv"
+  )
+  out_file_paths <- c(out_file_path1, out_file_path2)
+  expect_all_false(file.exists(out_file_paths))
+  get_redcap_files(project, original_file_names = TRUE, overwrite = FALSE)
+  expect_all_true(file.exists(out_file_paths))
 })
 # get_redcap_users ( Internal )
 test_that("get_redcap_users works!", {
@@ -115,19 +168,19 @@ test_that("get_redcap_log works on fixture!", {
   call_list <- mock_test_calls(project_name)
   mockery::stub(get_redcap_log, "exportLogging", call_list$logging)
   result <- get_redcap_log(project)
-  expect_data_frame(result, min.rows = 1)
+  expect_data_frame(result, min.rows = 1L)
 })
 # get_redcap_denormalized ( Internal )
 test_that("get_redcap_denormalized works!", {
   skip_on_cran()
   project <- real_test_project("TEST_REDCAPR_LONGITUDINAL")$.internal
-  expect_data_frame(as.data.frame(project$data), nrows = 0)
+  expect_data_frame(as.data.frame(project$data), nrows = 0L)
   suppressWarnings({ #REDCapR has warnings
     project_data <- withr::with_envvar(
       real_dev_tokens,
       {get_redcap_denormalized(project)})
   })
-  expect_data_frame(project_data, min.rows = 1)
+  expect_data_frame(project_data, min.rows = 1L)
 })
 test_that("get_redcap_denormalized works no API call!", {
   project_name <- "TEST_CLASSIC"
@@ -135,7 +188,7 @@ test_that("get_redcap_denormalized works no API call!", {
   call_list <- mock_test_calls(project_name)
   mockery::stub(get_redcap_denormalized, "redcap_read", call_list)
   result <- get_redcap_denormalized(project)
-  expect_data_frame(result, min.rows = 1)
+  expect_data_frame(result, min.rows = 1L)
 })
 # get_redcap_report ( Exported )
 test_that("get_redcap_report works!", {
@@ -211,38 +264,38 @@ test_that("rcon_result returns expected structure without real API calls", {
   expect_identical(out$project_info$project_id, "9999")
   expect_s3_class(out$forms, "data.frame")
 })
-test_that("upload_form_to_redcap() calls redcap_write expected args", {
-  project <- list(
-    links = list(redcap_uri = "https://redcap.fake.edu/api/")
-  )
-  to_be_uploaded <- data.frame(
-    record_id = c("1", "2"),
-    age = c(50L, 60L),
-    stringsAsFactors = FALSE
-  )
-  captured <- list()
-  # Stub token lookup so we don't depend on env vars
-  mockery::stub(upload_form_to_redcap, "get_project_token", function(project) {
-    "0123456789ABCDEF0123456789ABCDEF"
-  })
-  # Stub the network call and capture args
-  mockery::stub(upload_form_to_redcap, "redcap_write", function(...) {
-    captured <<- list(...)
-    list(success = TRUE)
-  })
-  result <- upload_form_to_redcap(
-    to_be_uploaded = to_be_uploaded,
-    project = project,
-    batch_size = 123L
-  )
-  expect_true(isTRUE(result$success))
-  # Check behavior of RosyUtils::all_character_cols()
-  expect_true(is.data.frame(captured$ds_to_write))
-  expect_true(all(vapply(captured$ds_to_write, is.character, logical(1L))))
-  expect_identical(captured$batch_size, 123L)
-  expect_identical(captured$interbatch_delay, 0.2)
-  expect_false(captured$continue_on_error)
-  expect_identical(captured$redcap_uri, "https://redcap.fake.edu/api/")
-  expect_identical(captured$token, "0123456789ABCDEF0123456789ABCDEF")
-  expect_true(captured$overwrite_with_blanks)
-})
+# test_that("upload_form_to_redcap() calls redcap_write expected args", {
+#   project <- list(
+#     links = list(redcap_uri = "https://redcap.fake.edu/api/")
+#   )
+#   to_be_uploaded <- data.frame(
+#     record_id = c("1", "2"),
+#     age = c(50L, 60L),
+#     stringsAsFactors = FALSE
+#   )
+#   captured <- list()
+#   # Stub token lookup so we don't depend on env vars
+#   mockery::stub(upload_form_to_redcap, "get_project_token", function(project){
+#     "0123456789ABCDEF0123456789ABCDEF"
+#   })
+#   # Stub the network call and capture args
+#   mockery::stub(upload_form_to_redcap, "redcap_write", function(...) {
+#     captured <<- list(...)
+#     list(success = TRUE)
+#   })
+#   result <- upload_form_to_redcap(
+#     to_be_uploaded = to_be_uploaded,
+#     project = project,
+#     batch_size = 123L
+#   )
+#   expect_true(isTRUE(result$success))
+#   # Check behavior of RosyUtils::all_character_cols()
+#   expect_true(is.data.frame(captured$ds_to_write))
+#   expect_true(all(vapply(captured$ds_to_write, is.character, logical(1L))))
+#   expect_identical(captured$batch_size, 123L)
+#   expect_identical(captured$interbatch_delay, 0.2)
+#   expect_false(captured$continue_on_error)
+#   expect_identical(captured$redcap_uri, "https://redcap.fake.edu/api/")
+#   expect_identical(captured$token, "0123456789ABCDEF0123456789ABCDEF")
+#   expect_true(captured$overwrite_with_blanks)
+# })

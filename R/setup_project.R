@@ -363,6 +363,7 @@ get_project_path2 <- function(project,
 #' @rdname setup-load
 #' @export
 load_project <- function(project_name) {
+  assert_env_name(project_name, max.chars = 31L, all_caps = TRUE)
   # add load by path option
   projects <- get_projects()
   if (nrow(projects) == 0L) {

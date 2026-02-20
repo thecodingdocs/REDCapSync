@@ -677,15 +677,6 @@ generate_project_summary <- function(project,
   }
   data_list$data <- project$data
   data_list <- metadata_add_default_cols(data_list)
-  data_list$data <- filter_data_list(
-    data_list = data_list,
-    field_names = field_names,
-    form_names = form_names,
-    filter_field = filter_field,
-    filter_choices = filter_choices,
-    filter_list = filter_list,
-    filter_strict = filter_strict
-  )
   # if (is_something(project$transformation$field_functions)) {
   #   add_fields <- TRUE
   #   if (provided_summary_name) {
@@ -698,12 +689,7 @@ generate_project_summary <- function(project,
   # data_list = data_list, transformation = project$transformation)
   #   }
   # }
-  data_list$data <- deidentify_data_list(
-    data_list = data_list,
-    exclude_identifiers = exclude_identifiers,
-    exclude_free_text = exclude_free_text,
-    date_handling = date_handling
-  )
+  #cache or store these to make it faster?
   if (transformation_type == "default") {
     data_list <- merge_non_repeating(
       data_list = data_list,
@@ -721,6 +707,21 @@ generate_project_summary <- function(project,
   if (transformation_type == "flat") {
     data_list <- flatten_redcap(data_list = data_list)
   }
+  data_list$data <- filter_data_list(
+    data_list = data_list,
+    field_names = field_names,
+    form_names = form_names,
+    filter_field = filter_field,
+    filter_choices = filter_choices,
+    filter_list = filter_list,
+    filter_strict = filter_strict
+  )
+  data_list$data <- deidentify_data_list(
+    data_list = data_list,
+    exclude_identifiers = exclude_identifiers,
+    exclude_free_text = exclude_free_text,
+    date_handling = date_handling
+  )
   if (clean) {
     #include warning for if missing codes will prevent uploads
     if (is_something(data_list$metadata$missing_codes)) {

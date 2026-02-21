@@ -67,7 +67,7 @@ repair_setup_project <- function(project) {
                  "data",
                  "internals")
   missing_important <-
-    !test_env_name(project$project_name, all_caps = TRUE) ||
+    !test_env_name(project$project_name) ||
     !test_character(project$dir_path, len = 1L) ||
     !test_character(project$links$redcap_uri,
                     len = 1L,
@@ -76,6 +76,7 @@ repair_setup_project <- function(project) {
     return(NULL)
   }
   if (!test_setup_project(project)) {
+    project$project_name <- toupper(project$project_name)
     project$redcap$token_name <- project$redcap$token_name |>
       test_env_name(max.chars = 50L, all_caps = TRUE) |>
       ifelse(project$redcap$token_name,

@@ -605,9 +605,9 @@ save_summary <- function(project, summary_name) {
   project$summary[[summary_name]]$n_records <- n_records
   project$summary[[summary_name]]$last_save_time <- last_save_time
   project$summary[[summary_name]]$final_form_tab_names <- final_form_tab_names
-  row_match <- which(project$summary$all_records[[id_col]] %in% records)
-  project$summary$all_records[[summary_name]][row_match] <- TRUE
-  project$summary$all_records$was_saved[row_match] <- TRUE
+  row_new <- which(project$summary$all_records[[id_col]] %in% records)
+  project$summary$all_records[[summary_name]][row_new] <- TRUE
+  project$summary$all_records$was_saved[row_new] <- TRUE
   project$internals$last_summary <- last_summary
   invisible(project)
 }

@@ -79,4 +79,7 @@ test_that("is_hexadecimal works!", {
   expect_false(is_hexadecimal("C*"))
   expect_true(is_hexadecimal("abd3"))
   expect_true(is_hexadecimal("123"))
+  expect_false(is_hexadecimal(NA))
+  expect_false(is_hexadecimal(""))
+  expect_error(is_hexadecimal())
 })

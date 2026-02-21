@@ -383,8 +383,8 @@ load_project <- function(project_name) {
   if (!file.exists(dir_path)) {
     stop("`dir_path` doesn't exist: '", dir_path, "'")
   }
-  project_path <-
-    get_project_path(project_name = project_name, dir_path = dir_path)
+  project_path <- get_project_path(project_name = project_name,
+                                   dir_path = dir_path)
   assert_project_path(project_path)
   if (!file.exists(project_path)) {
     stop(

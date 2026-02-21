@@ -2,6 +2,7 @@ withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # get_redcap_metadata ( Internal )
 test_that("get_redcap_metadata works on real server, simple!", {
   skip_on_cran()
+  skip_if_offline()
   project_name <- "TEST_REDCAPR_SIMPLE"
   project <- real_test_project(project_name)$.internal
   # expect_false(project$internals$ever_connected)
@@ -22,6 +23,7 @@ test_that("get_redcap_metadata works on real server, simple!", {
 })
 test_that("get_redcap_metadata works on real server, longitudinal!", {
   skip_on_cran()
+  skip_if_offline()
   project_name <- "TEST_REDCAPR_SIMPLE"
   project <- real_test_project(project_name)$.internal
   expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0L)
@@ -173,6 +175,7 @@ test_that("get_redcap_log works on fixture!", {
 # get_redcap_denormalized ( Internal )
 test_that("get_redcap_denormalized works!", {
   skip_on_cran()
+  skip_if_offline()
   project <- real_test_project("TEST_REDCAPR_LONGITUDINAL")$.internal
   expect_data_frame(as.data.frame(project$data), nrows = 0L)
   suppressWarnings({ #REDCapR has warnings

@@ -502,7 +502,8 @@ get_redcap_denormalized <- function(project,
     interbatch_delay = 0.1,
     records = records,
     raw_or_label = ifelse(labelled, "label", "raw")
-  )$data |> all_character_cols()
+  )$data
+  denormalized <- all_character_cols(denormalized)
   denormalized
 }
 #' @noRd
@@ -532,6 +533,21 @@ get_redcap_data <- function(project,
                                 project = project,
                                 labelled = labelled)
   form_list
+}
+#' @noRd
+get_redcap_records <- function(project) {
+  assert_setup_project(project)
+  records <- suppressMessages({
+    REDCapR::redcap_read_oneshot(
+      redcap_uri = project$links$redcap_uri,
+      token = get_project_token(project),
+      fields = project$metadata$id_col,
+      raw_or_label = "raw"
+    )
+  })
+  # consider error check
+  records <- unique(records$data[[project$metadata$id_col]])
+  records
 }
 #' @noRd
 upload_form_to_redcap <- function(to_be_uploaded, project, batch_size = 500L) {

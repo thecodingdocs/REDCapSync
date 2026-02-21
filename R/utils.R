@@ -66,6 +66,8 @@ remove_records_from_project <- function(project, records) {
     id_col = id_col,
     records = records
   )
+  keep_rows <- !project$summary$all_records[[id_col]] %in% records
+  project$summary$all_records <- project$summary$all_records[which(keep_rows), ]
   invisible(project)
 }
 #' @noRd

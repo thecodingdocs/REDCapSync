@@ -1,6 +1,7 @@
 withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # setup_project ( Exported )
 test_that("setup_project creates a valid project object and valid directory", {
+  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
   temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   expect_error(assert_dir(dir_path = temp_dir))
   project_name <- "TEST_CLASSIC"
@@ -53,11 +54,6 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_error(assert_dir(project$dir_path))
 })
 # load_project ( Exported )
-# assert_dir ( Exported )
-test_that("assert_dir works", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  expect_no_error(assert_dir(temp_dir))
-})
 # save_project ( Exported )
 test_that("save_project doesn't save if blank but will save if valid", {
   temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))

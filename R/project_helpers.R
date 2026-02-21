@@ -551,6 +551,7 @@ normalize_redcap <- function(denormalized, project, labelled) {
       form_list[[form_name]] <- raw_subset
     }
   }
+  form_list <- all_character_cols_list(form_list)
   form_list
 }
 #' @noRd

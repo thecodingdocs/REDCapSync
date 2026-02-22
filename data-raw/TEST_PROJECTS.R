@@ -81,6 +81,7 @@ project <- setup_project(
   project_name = "TEST_LONGITUDINAL",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
   dir_path =  Sys.getenv("dir_path_UTTEST"),
+  entire_log = entire_log,
   hard_reset = hard_reset
 )$sync()
 project <- setup_project(

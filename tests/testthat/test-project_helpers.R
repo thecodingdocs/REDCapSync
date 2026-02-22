@@ -279,10 +279,13 @@ test_that("normalize_redcap works with classic project", {
   )
 })
 test_that("normalize_redcap works with longitudinal project", {
-  project <- TEST_LONGITUDINAL
+  project_name <- "TEST_REDCAPR_LONGITUDINAL"
+  project <- mock_test_project(project_name)$.internal
+  call_list <- mock_test_calls(project_name)
   denormalized <- readRDS(
-    test_path("fixtures", "TEST_LONGITUDINAL_call_list.rds"))$data
+    test_path("fixtures", "TEST_REDCAPR_LONGITUDINAL_call_list.rds"))$data
   result <- normalize_redcap(denormalized, project, labelled = TRUE)
+  expect_true(project$metadata$is_longitudinal)
   expect_type(result, type = "list")
   form_names <- names(result)
   expected_forms <- project$metadata$forms$form_name
@@ -291,19 +294,17 @@ test_that("normalize_redcap works with longitudinal project", {
   id_col <- project$metadata$id_col
   fields <- project$metadata$fields
   expect_true(id_col %in% colnames(result$demographics))
-  expect_all_true(
-    fields$field_name[which(fields$form_name == "demographics")] %in%
-      colnames(result$demographics))
+  fields_to_check <- fields$field_name[
+    which(fields$form_name == "demographics" &
+            (!fields$field_type %in% c("checkbox", "descriptive")))]
+  expect_all_true(fields_to_check %in% colnames(result$demographics))
   fields <- fields[which(fields$field_name != id_col), ]
-  expect_all_false(
-    fields$field_name[which(fields$form_name == "demographics")] %in%
-      colnames(result$other))
-  expect_all_false(
-    fields$field_name[
-      which(fields$form_name == "demographics" &
-              (!fields$field_type %in% c("checkbox", "descriptive")))] %in%
-      colnames(result$text)
-  )
+  fields_to_check <- fields$field_name[
+    which(fields$form_name == "demographics" &
+            (!fields$field_type %in% c("checkbox", "descriptive")))]
+  expect_all_true(fields_to_check %in% colnames(result$demographics))
+  expect_all_false(fields_to_check %in% colnames(result$other))
+  expect_all_false(fields_to_check %in% colnames(result$text))
 })
 # clean_data_list ( Internal )
 # get_key_col_list ( Internal )

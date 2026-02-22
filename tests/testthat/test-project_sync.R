@@ -44,7 +44,7 @@ test_that("sync_project_check wont update if nothing new", {
   result <- sync_project_check(project, hard_reset = FALSE)
   expect_false(result$internals$was_updated)
 })
-test_that("sync_project_check will update if new", {
+test_that("sync_project will update if new", {
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal
   project$internals$last_test_connection_outcome <- TRUE
@@ -86,8 +86,8 @@ test_that("sync_project_check will update if new", {
   # Call sync_project_check with hard_reset = FALSE
   result <- sync_project(
     project = project,
-    summarize = FALSE,
-    save_to_dir = FALSE,
+    summarize = TRUE,
+    save_to_dir = TRUE,
     hard_reset = FALSE
   )
   row_for_one <- which(result$data$text$record_id == "1")
@@ -97,6 +97,19 @@ test_that("sync_project_check will update if new", {
   expect_identical(new_var_text_integer, updated_var_text_integer_one)
   expect_identical(var_text_integer_two, updated_var_text_integer_two)
   # expect_false(result$internals$was_updated)
+})
+test_that("sync_project will work if not due", {
+  project_name <- "TEST_CLASSIC"
+  project <- mock_test_project(project_name)$.internal
+  local_mocked_bindings(
+    due_for_sync = function(...) FALSE
+  )
+  expect_message(sync_project(
+    project = project,
+    summarize = FALSE,
+    save_to_dir = TRUE,
+    hard_reset = FALSE
+  ), "not due for sync")
 })
 test_that("due_for_sync works", {
   # true for nonexistent

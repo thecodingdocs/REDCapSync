@@ -7,7 +7,7 @@ test_that("local_envvar seen by tests, exists, but empty at first", {
   real_cache_path_projects <- real_cache_path |>
     file.path("projects.rds")
   expect_false(test_directory_exists(real_cache_path))
-  expect_false(test_directory_exists(real_cache_path_projects))
+  expect_false(test_file_exists(real_cache_path_projects))
 })
 test_that("hoardr cache works at baseline", {
   withr::local_envvar(REDCAPSYNC_CACHE = NA)

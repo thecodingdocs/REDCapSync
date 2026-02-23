@@ -33,6 +33,7 @@
 #' @importFrom checkmate expect_class
 #' @importFrom checkmate test_scalar_na
 #' @importFrom checkmate test_character
+#' @importFrom checkmate test_file_exists
 #' @importFrom checkmate test_directory_exists
 #' @importFrom checkmate test_logical
 #' @importFrom checkmate test_integerish

@@ -1329,7 +1329,7 @@ labelled_to_raw_form <- function(form, project) {
                   form <- project$metadata$missing_codes$code[coded_redcap2]
                 } else {
                   stop(
-                    "Mismatch in choices compared to REDCap (above)! Column: ",
+                    "Mismatch in choices compared to REDCap! Column: ",
                     field_name,
                     ", Choice: ",
                     x
@@ -1337,7 +1337,7 @@ labelled_to_raw_form <- function(form, project) {
                 }
               } else {
                 stop(
-                  "Mismatch in choices compared to REDCap (above)! Column: ",
+                  "Mismatch in choices compared to REDCap! Column: ",
                   field_name,
                   ", Choice: ",
                   x,
@@ -1618,8 +1618,12 @@ field_names_metadata <- function(project, field_names, col_names) {
 }
 #' @noRd
 filter_fields_from_form <- function(form, project) {
-  forms <- project |> field_names_to_form_names(field_names = colnames(form))
-  if (any(forms %in% project$metadata$forms$repeating)) {
+  forms <- field_names_to_form_names(project = project,
+                                     field_names = colnames(form),
+                                     strict = TRUE)
+  repeating_form_rows <- which(project$metadata$forms$repeating)
+  repeating_forms <- project$metadata$forms$form_name[repeating_form_rows]
+  if (length(forms) > 1 && any(forms %in% repeating_forms)) {
     stop(
       "All column names in your form must match only one form in your",
       "metadata, `project$metadata$forms$form_name`, unless they are",
@@ -1629,7 +1633,7 @@ filter_fields_from_form <- function(form, project) {
   fields <- project |> field_names_metadata(field_names = colnames(form))
   fields <- fields[which(fields$field_type != "descriptive"), ]
   fields$has_choices <- !is.na(fields$select_choices_or_calculations)
-  fields$has_choices[
-    which(fields$field_type %in% c("calc", "text", "slider"))] <- FALSE
+  rows_no_choices <- which(fields$field_type %in% c("calc", "text", "slider"))
+  fields$has_choices[rows_no_choices] <- FALSE
   fields
 }

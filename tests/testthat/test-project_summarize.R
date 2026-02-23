@@ -65,6 +65,19 @@ test_that("annotate_records works!", {
 })
 # clean_form ( Internal )
 test_that("clean_form works!", {
+  project <- mock_test_project()$.internal
+  form <- project$data$text
+  project <- metadata_add_default_cols(project)
+  fields <- project$metadata$fields
+  form <- clean_form(form = form, fields = fields)
+  expect_identical(attr(form$var_text_only, "label"), "Text Only")
+  expect_identical(attr(form$var_birth_date, "label"), "Birth Date")
+  # fields$field_name[which(fields$field_type == "radio")]
+  row_to_change <- which(fields$field_name == "var_multi_radio")
+  new_var <- "1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, 5"
+  fields$select_choices_or_calculations[row_to_change] <- new_var
+  form <- project$data$other
+  expect_warning(clean_form(form = form, fields = fields), "dupplicate names")
 })
 # clean_column_for_table ( Internal )
 test_that("clean_column_for_table works!", {
@@ -77,6 +90,8 @@ test_that("add_project_summary works!", {
     project = project,
     summary_name = summary_name,
     transformation_type = "default",
+    drop_blanks = FALSE,
+    drop_missing_codes = TRUE,
     include_metadata = TRUE,
     include_records = FALSE,
     include_users = TRUE,
@@ -87,15 +102,15 @@ test_that("add_project_summary works!", {
     use_csv = FALSE
   )
   expect_true(summary_name %in% names(project$summary))
-  s <- project$summary[[summary_name]]
-  expect_identical(s$summary_name, summary_name)
-  expect_identical(s$transformation_type, "default")
-  expect_true(s$include_metadata)
-  expect_false(s$include_records)
-  expect_true(s$include_users)
-  expect_false(s$with_links)
-  expect_false(s$separate)
-  expect_type(s$file_name, type = "character")
+  summary <- project$summary[[summary_name]]
+  expect_identical(summary$summary_name, summary_name)
+  expect_identical(summary$transformation_type, "default")
+  expect_true(summary$include_metadata)
+  expect_false(summary$include_records)
+  expect_true(summary$include_users)
+  expect_false(summary$with_links)
+  expect_false(summary$separate)
+  expect_type(summary$file_name, type = "character")
 })
 # save_summary ( Internal )
 test_that("save_summary works", {
@@ -346,6 +361,23 @@ test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
   expect_vector(values, size = 2L)
   expect_contains(values, c("Yes", "No"))
   expect_identical(var_yesno_labelled, var_yesno_labelled_again)
+  expect_in("Unknown", project$metadata$missing_codes$name)
+  labelled <- merged |> select(record_id, var_branching)
+  labelled$var_branching[3] <- "Unknown"
+  labelled$var_branching[5] <- "Not applicable"
+  raw <- labelled_to_raw_form(labelled, project)
+  expect_identical("UNK", raw$var_branching[3])
+  expect_identical("NA", raw$var_branching[5])
+  labelled <- raw_to_labelled_form(raw, project)
+  expect_identical("Unknown", labelled$var_branching[3])
+  expect_identical("Not applicable", labelled$var_branching[5])
+  mismatch <- merged |> select(record_id, var_branching)
+  mismatch$var_branching[3] <- "Random Thing"
+  error_message <- "Mismatch in choices compared to REDCap"
+  expect_error(labelled_to_raw_form(mismatch, project), error_message)
+  raw_mismatch <- raw
+  raw_mismatch$var_branching[3] <- "Random Thing"
+  expect_warning(raw_to_labelled_form(raw_mismatch, project), error_message)
 })
 # labelled_to_raw_data_list ( Internal )
 test_that("labelled_to_raw_data_listand raw_to_labelled_data_list works!", {
@@ -415,4 +447,12 @@ test_that("field_names_metadata works!", {
 })
 # filter_fields_from_form ( Internal )
 test_that("filter_fields_from_form works!", {
+  project <- mock_test_project("TEST_REPEATING")$.internal
+  form <- project$data$repeating_2 |> bind_rows(project$data$repeating)
+  expect_error(filter_fields_from_form(form,project))
+  expect_error(filter_fields_from_form(form,project))
+  form <- project$data$form_1
+  expect_no_error(filter_fields_from_form(form,project))
+  fields <- filter_fields_from_form(form,project)
+  expect_data_frame(fields, nrows = ncol(form))
 })

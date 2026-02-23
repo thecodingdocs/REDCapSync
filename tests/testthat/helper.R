@@ -23,6 +23,7 @@ real_test_project <- function(project_name = "TEST_REDCAPR_SIMPLE") {
 }
 mock_test_project <- function(project_name = "TEST_CLASSIC",
                               ever_connected = TRUE) {
+  # withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
   assert_choice(project_name, .test_project_names)
   assert_logical(ever_connected)
   cache_location <- Sys.getenv("REDCAPSYNC_CACHE") |>

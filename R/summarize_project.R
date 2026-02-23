@@ -124,8 +124,6 @@ annotate_forms <- function(data_list,
 annotate_choices <- function(data_list,
                              summarize_data = TRUE,
                              drop_blanks = FALSE) {
-  # forms <- data_list$metadata$forms
-  # fields <- data_list$metadata$fields
   choices <- data_list$metadata$choices
   if (drop_blanks) {
     choices <- choices[

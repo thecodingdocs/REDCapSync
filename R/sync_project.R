@@ -412,7 +412,6 @@ generate_comment_table <- function(redcap_log, only_most_recent = FALSE) {
 #' @description
 #' Syncs with REDCap via `project` object that user defined with
 #' \link{setup_project}
-#'
 #' @details
 #' Syncs all projects by default but can be used to hands-free sync one or
 #' defined set projects. This is not intended to return project object. User

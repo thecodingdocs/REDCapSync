@@ -76,3 +76,12 @@ test_that("R6 save works!", {
   project_r6$save()
   test_file_exists(proj_path)
 })
+test_that("R6 save works!", {
+  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  project <- mock_test_project()$.internal
+  dir_path <- project$dir_path
+  proj_path <- file.path(dir_path, "R_objects", "TEST_CLASSIC_REDCapSync.RData")
+  project_r6 <- REDCapSync_project$new(project)
+  expect_message(project_r6$summarize(), "TEST projects do not")
+  expect_message(project_r6$sync(), "TEST projects do not")
+})

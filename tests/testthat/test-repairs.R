@@ -226,3 +226,10 @@ test_that("repair_setup_project repairs invalid character vectors", {
   expect_true(is.na(result$internals$fields))
   expect_true(is.na(result$internals$forms))
 })
+test_that("repair_setup_project repairs invalid days_of_log", {
+  project <- mock_test_project()$.internal
+  project$internals$days_of_log <- 0L
+  result <- repair_setup_project(project)
+  expect_true(test_setup_project(result))
+  expect_identical(result$internals$days_of_log, 10L)
+})

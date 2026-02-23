@@ -70,5 +70,13 @@
 #' @importFrom REDCapR redcap_write
 #' @importFrom REDCapR sanitize_token
 #' @importFrom R6 R6Class
+#' @importFrom stringr str_match
+#' @importFrom stringr str_replace_all
+#' @importFrom stringr str_remove
+#' @importFrom stringr str_trunc
+#' @importFrom stringr str_length
+#' @importFrom stringr str_split_fixed
+#' @importFrom stringr str_extract
+#' @importFrom stringr str_to_title
 ## usethis namespace: end
 NULL

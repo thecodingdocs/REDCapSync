@@ -294,7 +294,7 @@ analyze_log <- function(interim_log, id_col) {
         append(log_list$Update$record) |>
         unique()
       update_list <- log_list$Update$details |>
-        stringr::str_replace_all(" = '[^']*'", "") |>
+        str_replace_all(" = '[^']*'", "") |>
         strsplit(", ")
       names(update_list) <- log_list$Update$record
       if (length(update_list) > 0) {
@@ -381,17 +381,32 @@ log_change_messages <- function(log_changes, max_print = 8) {
   invisible(NULL)
 }
 #' @noRd
-comment_table <- function(log_comments){
-  log_comments$comment_type <- log_comments$details |>
+generate_comment_table <- function(redcap_log, only_most_recent = FALSE) {
+  assert_data_frame(redcap_log)
+  assert_logical(only_most_recent)
+  redcap_log <- redcap_log |> filter(action_type == "Comment")
+  redcap_log$comment_type <- redcap_log$details |>
     strsplit(" ") |>
     lapply(first) |>
     unlist()
-  inner <- stringr::str_match(log_comments$details, "\\((.*)\\)$")[,2]
-  log_comments$comment_details <- inner |>
-    stringr::str_remove("^.*Comment:\\s\"") |>
-    stringr::str_remove("\"$")
-  log_comments$comment_field <- stringr::str_match(inner, ", Field:\\s([^,]+)")[,2]
-  log_comments
+  inner <- str_match(redcap_log$details, "\\((.*)\\)$")[,2]
+  redcap_log$comment_field <- str_match(inner, ", Field:\\s([^,]+)")[, 2]
+  if (only_most_recent && is_something(redcap_log)) {
+    redcap_log <- redcap_log |>
+      split(redcap_log$record) |>
+      lapply(function(record){
+        record |> split(record$comment_field) |> lapply(first) |>  bind_rows()
+      }) |>
+      bind_rows() |>
+      filter(comment_type != "Delete")
+  }
+  if (nrow(redcap_log) == 0) {
+    return(NULL)
+  }
+  redcap_log$comment_details <- inner |>
+    str_remove("^.*Comment:\\s\"") |>
+    str_remove("\"$")
+  redcap_log
 }
 #' @title Synchronize REDCap Data
 #' @description

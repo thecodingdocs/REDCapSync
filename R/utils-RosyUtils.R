@@ -269,7 +269,7 @@ form_to_wb <- function(form,
   form[] <- lapply(form, function(col) {
     out <- col
     if (is.character(col)) {
-      out <- stringr::str_trunc(col, str_trunc_length, ellipsis = "")
+      out <- str_trunc(col, str_trunc_length, ellipsis = "")
     }
     out
   })
@@ -463,7 +463,7 @@ list_to_wb <- function(input_list,
 }
 #' @noRd
 rename_list_names_excel <- function(list_names) {
-  list_names_rename <- stringr::str_trunc(list_names,
+  list_names_rename <- str_trunc(list_names,
                                           width = 31L,
                                           side = "right",
                                           ellipsis = "")
@@ -499,9 +499,9 @@ unique_trimmed_strings <- function(strings, max_length) {
     # Keep adjusting the string until it's unique
     while (new_string %in% unique_strings) {
       new_string <- paste0(
-        stringr::str_trunc(
+        str_trunc(
           base_string,
-          width = max_length - stringr::str_length(counter),
+          width = max_length - str_length(counter),
           side = "right",
           ellipsis = ""
         ),

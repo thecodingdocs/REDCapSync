@@ -631,7 +631,7 @@ clean_redcap_log <- function(redcap_log) {
     starts_with(
       match = .log_details_comments,
       vars = redcap_log$details[design_rows])]
-  redcap_log$record_id[comment_rows] <- stringr::str_extract(
+  redcap_log$record_id[comment_rows] <- str_extract(
     string = redcap_log$details[comment_rows], pattern = "(?<=Record: )[^,]+")
   redcap_log$action_type[comment_rows] <- "Comment"
   redcap_log$action_type[

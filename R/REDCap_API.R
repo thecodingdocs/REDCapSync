@@ -275,7 +275,7 @@ add_field_elements <- function(fields) {
     field_label <- field_name |>
       strsplit("_") |>
       unlist() |>
-      stringr::str_to_title() |>
+      str_to_title() |>
       paste(collapse = " ")
     new_row <- data.frame(
       field_name = field_name, # check if conflicts,

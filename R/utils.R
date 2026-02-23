@@ -78,7 +78,7 @@ split_choices <- function(x) {
   result <- result |>
     strsplit("[|]") |>
     unlist() |>
-    stringr::str_split_fixed(",", 2L)
+    str_split_fixed(",", 2L)
   check_length <- length(result[, 1L])
   choices_data <- data.frame(
     code = trimws(result[, 1L]),

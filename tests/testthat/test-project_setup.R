@@ -79,13 +79,15 @@ test_that("setup_project checks exisiting dir", {
   )$.internal # change to R6 later
   expect_identical(project_loaded$project_name, project$project_name)
   expect_identical(project_loaded$redcap$project_id, project$redcap$project_id)
-  project_loaded <- setup_project(
-    project_name = project_name,
-    dir_path = temp_dir,
-    redcap_uri = redcap_uri,
-    labelled = FALSE,
-    hard_reset = FALSE
-  )$.internal # change to R6 later
+  expect_warning({
+    project_loaded <- setup_project(
+      project_name = project_name,
+      dir_path = temp_dir,
+      redcap_uri = redcap_uri,
+      labelled = FALSE,
+      hard_reset = FALSE
+    )$.internal
+  }, "The project that was loaded was labelled and you chose raw")
   expect_null(project_loaded$internals$last_data_update)
 })
 # load_project ( Exported )

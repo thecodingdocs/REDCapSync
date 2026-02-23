@@ -384,7 +384,7 @@ log_change_messages <- function(log_changes, max_print = 8) {
 generate_comment_table <- function(redcap_log, only_most_recent = FALSE) {
   assert_data_frame(redcap_log)
   assert_logical(only_most_recent)
-  redcap_log <- redcap_log |> filter(action_type == "Comment")
+  redcap_log <- redcap_log |> filter("action_type" == "Comment")
   redcap_log$comment_type <- redcap_log$details |>
     strsplit(" ") |>
     lapply(first) |>
@@ -398,7 +398,7 @@ generate_comment_table <- function(redcap_log, only_most_recent = FALSE) {
         record |> split(record$comment_field) |> lapply(first) |>  bind_rows()
       }) |>
       bind_rows() |>
-      filter(comment_type != "Delete")
+      filter("comment_type" != "Delete")
   }
   if (nrow(redcap_log) == 0) {
     return(NULL)

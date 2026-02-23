@@ -231,14 +231,11 @@ test_that("summarize_project works", {
     exclude_free_text = TRUE,
     date_handling = "none"
   )
-  # run summarize_project
   expect_no_error({
     project_saved <- summarize_project(project, hard_reset = TRUE)
   })
-  # internals updated
   expect_false(is.null(project_saved$internals$last_summary))
   expect_s3_class(project_saved$internals$last_summary, "POSIXt")
-  # main summary file exists (REDCapSync should be written as a single file)
   expect_true("REDCapSync" %in% names(project_saved$summary))
   expect_true(file.exists(project_saved$summary$REDCapSync$file_path))
 })

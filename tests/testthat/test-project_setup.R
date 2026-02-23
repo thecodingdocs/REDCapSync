@@ -57,7 +57,8 @@ test_that("setup_project checks exisiting dir", {
   withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
   temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   expect_error(assert_dir(dir_path = temp_dir))
-  project <- mock_test_project()$.internal
+  project_name <- "TEST_CLASSIC"
+  project <- mock_test_project(project_name)$.internal
   save_project(project)
   redcap_uri <- "https://redcap.miami.edu/api/"
   # Run setup_project
@@ -87,7 +88,6 @@ test_that("setup_project checks exisiting dir", {
   )$.internal # change to R6 later
   expect_null(project_loaded$internals$last_data_update)
 })
-
 # load_project ( Exported )
 # save_project ( Exported )
 test_that("save_project doesn't save if blank but will save if valid", {

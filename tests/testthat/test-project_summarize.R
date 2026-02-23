@@ -112,8 +112,8 @@ test_that("add_project_summary works!", {
   expect_false(summary$separate)
   expect_type(summary$file_name, type = "character")
 })
-# save_summary ( Internal )
-test_that("save_summary works", {
+# save_project_summary ( Internal )
+test_that("save_project_summary works", {
   project <- mock_test_project()$.internal
   summary_name <- "SAVE_SUMMARY_TEST"
   project <- add_project_summary(
@@ -131,7 +131,7 @@ test_that("save_summary works", {
   )
   # save and capture returned project
   expect_no_error({
-    project <- save_summary(project, summary_name)
+    project <- save_project_summary(project, summary_name)
   })
   # file created
   file_path <- project$summary[[summary_name]]$file_path

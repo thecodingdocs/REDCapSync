@@ -496,7 +496,7 @@ data_list_to_save <- function(data_list,
   to_save_list
 }
 #' @noRd
-save_summary <- function(project, summary_name) {
+save_project_summary <- function(project, summary_name) {
   id_col <- project$metadata$id_col
   summary_list <- project$summary[[summary_name]]
   data_list <- generate_project_summary(project = project,
@@ -1025,7 +1025,7 @@ summarize_project <- function(project, hard_reset = FALSE) {
     if (is_something(summary_names)) {
       for (summary_name in summary_names) {
         project <- tryCatch(
-          expr = save_summary(project, summary_name),
+          expr = save_project_summary(project, summary_name),
           error = function(e) {
             cli_alert_warning("Failed to save summary `{summary_name}`.")
             invisible(project)

@@ -361,8 +361,8 @@ REDCapSync_project <- R6Class(
         return(invisible(self))
       }
       first_stamp <- private$project$internals$last_summary
-      private$project <-
-        summarize_project(project = private$project, hard_reset = hard_reset)
+      private$project <- summarize_project(project = private$project,
+                                           hard_reset = hard_reset)
       second_stamp <- private$project$internals$last_summary
       was_updated <- !identical(first_stamp, second_stamp)
       if (was_updated) {
@@ -381,7 +381,8 @@ REDCapSync_project <- R6Class(
         names() |>
         setdiff("all_records")
       assert_choice(summary_name, summary_names, null.ok = FALSE)
-      private$project <- save_summary(project = private$project, summary_name)
+      private$project <- save_project_summary(project = private$project,
+                                              summary_name = summary_name)
       invisible(self)
     },
     #' @description  Add a new summary entry
@@ -435,6 +436,8 @@ REDCapSync_project <- R6Class(
         }
         to_be_uploaded <- list(upload = to_be_uploaded)
       }
+      id_col <- private$project$metadata$id_col
+      refresh_records <- extract_values_from_form_list(to_be_uploaded, id_col)
       is_labelled <- private$project$internals$labelled
       for (upload_name in names(to_be_uploaded)) {
         upload_this <- to_be_uploaded[[upload_name]]
@@ -450,13 +453,10 @@ REDCapSync_project <- R6Class(
           batch_size = batch_size
         )
       }
-      # add check for uploaded something
-      private$project <- sync_project(
+      Sys.sleep(3)
+      private$project <- sync_project_refresh(
         project = private$project,
-        # summarize = summarize,
-        # save_to_dir = save_to_dir,
-        hard_check = TRUE
-        # hard_reset = hard_reset
+        refresh_records = refresh_records
       )
       invisible(TRUE) #maybe give TRUE FALSE here instead of self
     }

@@ -62,26 +62,37 @@ test_that("R6 add_summary and remove_summaries works!", {
     setdiff("all_records")
   expect_length(summary_names, 0)
 })
-test_that("R6 save works!", {
+test_that("R6 test projects!", {
   withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
   project <- mock_test_project()$.internal
   dir_path <- project$dir_path
   proj_path <- file.path(dir_path, "R_objects", "TEST_CLASSIC_REDCapSync.RData")
   project_r6 <- REDCapSync_project$new(project)
+  expect_message(project_r6$test_token(), "TEST projects do not")
+  expect_message(project_r6$url_launch(), "TEST projects do not")
+  expect_message(project_r6$summarize(), "TEST projects do not")
+  expect_message(project_r6$sync(), "TEST projects do not")
+  expect_message(project_r6$save_summary(), "TEST projects do not")
+  expect_message(project_r6$upload(), "TEST projects do not")
   expect_false(test_file_exists(proj_path))
   expect_message(project_r6$save(), "TEST projects do not save to directories")
   expect_false(test_file_exists(proj_path))
+  set_dir(project$dir_path)
   project$internals$is_test <- FALSE
   project_r6 <- REDCapSync_project$new(project)
   project_r6$save()
-  test_file_exists(proj_path)
-})
-test_that("R6 save works!", {
-  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
-  project <- mock_test_project()$.internal
-  dir_path <- project$dir_path
-  proj_path <- file.path(dir_path, "R_objects", "TEST_CLASSIC_REDCapSync.RData")
-  project_r6 <- REDCapSync_project$new(project)
-  expect_message(project_r6$summarize(), "TEST projects do not")
-  expect_message(project_r6$sync(), "TEST projects do not")
+  expect_file_exists(proj_path)
+  project_r6$remove_summaries()
+  project_r6$add_summary(
+    summary_name = "fake"
+  )
+  project_r6$summarize()
+  expect_file_exists(file.path(dir_path, "output", "TEST_CLASSIC_fake.xlsx"))
+  project_r6$add_summary(
+    summary_name = "fake2"
+  )
+  project_r6$save_summary(
+    summary_name = "fake2"
+  )
+  expect_file_exists(file.path(dir_path, "output", "TEST_CLASSIC_fake2.xlsx"))
 })

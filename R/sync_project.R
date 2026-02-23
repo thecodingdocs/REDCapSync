@@ -418,7 +418,6 @@ generate_comment_table <- function(redcap_log, only_most_recent = FALSE) {
 #' defined set projects. This is not intended to return project object. User
 #' should use `load_project("project_name")`. However, by default will invisibly
 #' return the last project in the set of project_names.
-#'
 #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
 #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
 #' parameter from `setup_project()`)

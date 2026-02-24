@@ -416,9 +416,8 @@ add_project_summary <- function(project,
   if (!is.null(summary_list_old) && !hard_reset) {
     important_vars <- names(summary_list_new) |>
       vec1_not_in_vec2(.not_important_summary_names)
-    are_identical <-
-      identical(
-        summary_list_new[important_vars], summary_list_old[important_vars])
+    are_identical <- identical(summary_list_new[important_vars],
+                               summary_list_old[important_vars])
     if (are_identical) {
       # optional message?
       return(invisible(project))

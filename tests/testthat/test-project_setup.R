@@ -45,7 +45,7 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_true("dir_path" %in% names(project))
   expect_false(project$internals$is_blank)
   expect_false(project$internals$is_test)
-  expect_true(file.exists(project$dir_path))
+  expect_directory_exists(project$dir_path)
   expect_identical(project$project_name, project_name)
   test_dir_files <- list.files(temp_dir)
   expect_true(all(.dir_folders %in% test_dir_files))
@@ -116,7 +116,7 @@ test_that("save_project doesn't save if blank but will save if valid", {
   expected_save_location <- file.path(project$dir_path,
                                       "R_objects",
                                       paste0(project_name, "_REDCapSync.RData"))
-  expect_true(file.exists(expected_save_location))
+  expect_file_exists(expected_save_location)
   # check cached proj
   projects <- get_projects()
   expect_identical(nrow(get_projects()), 1L)
@@ -142,7 +142,7 @@ test_that("set_dir handles existing directory correctly", {
   dir_path <- file.path(temp_dir, "existing_dir")
   dir.create(dir_path)
   expect_message(set_dir(dir_path), "Directory is Valid!")
-  expect_true(file.exists(dir_path))
+  expect_directory_exists(dir_path)
   expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
 test_that("set_dir throws an error for invalid directory path", {
@@ -154,7 +154,7 @@ test_that("set_dir creates missing internal directories", {
   dir.create(dir_path)
   dir.create(file.path(dir_path, "R_objects"))
   expect_message(set_dir(dir_path), "Directory is Valid!")
-  expect_true(file.exists(dir_path))
+  expect_directory_exists(dir_path)
   expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
 test_that("set_dir stops if user chooses not to create directory", {
@@ -172,7 +172,7 @@ test_that("set_dir validates the directory structure", {
     dir.create(file.path(dir_path, folder))
   }
   expect_message(set_dir(dir_path), "Directory is Valid!")
-  expect_true(file.exists(dir_path))
+  expect_directory_exists(dir_path)
   expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
 # clean_dir_path ( Internal )

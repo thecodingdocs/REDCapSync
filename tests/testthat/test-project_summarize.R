@@ -135,7 +135,7 @@ test_that("save_project_summary works", {
   })
   # file created
   file_path <- project$summary[[summary_name]]$file_path
-  expect_true(file.exists(file_path))
+  expect_file_exists(file_path)
   # summary metadata updated
   expect_false(is.null(project$summary[[summary_name]]$n_records))
   expect_false(is.null(project$summary[[summary_name]]$last_save_time))
@@ -152,6 +152,33 @@ test_that("save_project_summary works", {
       "summary_details"
     ) %in% names(what_was_saved)
   )
+  # csv
+  summary_name <- "SAVE_SUMMARY_TEST_CSV"
+  project <- add_project_summary(
+    project = project,
+    summary_name = summary_name,
+    transformation_type = "default",
+    include_metadata = TRUE,
+    include_records = TRUE,
+    include_users = TRUE,
+    include_log = FALSE,
+    annotate_from_log = FALSE,
+    with_links = FALSE,
+    separate = FALSE,
+    use_csv = TRUE
+  )
+  # save and capture returned project
+  expect_no_error({
+    project <- save_project_summary(project, summary_name)
+  })
+  # file created
+  file_path <- file.path(project$dir_path,
+                         "output",
+                         paste0("TEST_CLASSIC_SAVE_SUMMARY_TEST_CSV",
+                                c("_merged.csv",
+                                  "_forms.csv",
+                                  "_summary_details.csv")))
+  expect_file_exists(file_path)
 })
 # generate_project_summary ( Exported )
 test_that("generate_project_summary works!", {
@@ -222,7 +249,7 @@ test_that("merge_non_repeating works!", {
 # summarize_project ( Internal )
 test_that("summarize_project works", {
   project <- mock_test_project()$.internal
-  expect_true(file.exists(project$dir_path))
+  expect_directory_exists(project$dir_path)
   # ensure default summaries present
   project <- clear_project_summaries(project)
   project <- add_default_summaries(
@@ -237,7 +264,7 @@ test_that("summarize_project works", {
   expect_false(is.null(project_saved$internals$last_summary))
   expect_s3_class(project_saved$internals$last_summary, "POSIXt")
   expect_true("REDCapSync" %in% names(project_saved$summary))
-  expect_true(file.exists(project_saved$summary$REDCapSync$file_path))
+  expect_file_exists(project_saved$summary$REDCapSync$file_path)
 })
 # clear_project_summaries ( Exported )
 test_that("clear_project_summaries works!", {

@@ -85,12 +85,12 @@ test_that("drop_nas works!", {
 # excel_to_list ( Internal )
 test_that("excel_to_list works!", {
   temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  expect_true(file.exists(temp_dir))
+  expect_directory_exists(temp_dir)
   test_file <- file.path(temp_dir, "cars.xlsx")
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
   list_to_excel(df_list, dir = temp_dir, file_name = "cars")
-  expect_true(file.exists(test_file))
+  expect_file_exists(test_file)
   df_list_saved <- excel_to_list(test_file)
   expect_list(df_list, len = 2L)
   expect_named(df_list, names(df_list_saved))
@@ -135,20 +135,20 @@ test_that("unique_trimmed_strings works!", {
 test_that("list_to_excel works!", {
   withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
   temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  expect_true(file.exists(temp_dir))
+  expect_directory_exists(temp_dir)
   test_file <- file.path(temp_dir, "cars.xlsx")
   test_file_one <- file.path(temp_dir, "cars_one.xlsx")
   test_file_two <- file.path(temp_dir, "cars_two.xlsx")
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
   list_to_excel(df_list, dir = temp_dir, file_name = "cars")
-  expect_true(file.exists(test_file))
+  expect_file_exists(test_file)
   list_to_excel(df_list,
                 dir = temp_dir,
                 file_name = "cars",
                 separate = TRUE)
-  expect_true(file.exists(test_file_one))
-  expect_true(file.exists(test_file_two))
+  expect_file_exists(test_file_one)
+  expect_file_exists(test_file_two)
   one <- readxl::read_excel(test_file_one)
   two <- readxl::read_excel(test_file_two)
   expect_data_frame(one, nrows = nrow(mtcars), ncols = ncol(mtcars))
@@ -159,15 +159,15 @@ test_that("list_to_excel works!", {
 # list_to_csv ( Internal )
 test_that("list_to_csv works!", {
   temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  expect_true(file.exists(temp_dir))
+  expect_directory_exists(temp_dir)
   test_file <- file.path(temp_dir, "cars.csv")
   test_file_one <- file.path(temp_dir, "cars_one.csv")
   test_file_two <- file.path(temp_dir, "cars_two.csv")
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
   list_to_csv(df_list, dir = temp_dir, file_name = "cars")
-  expect_true(file.exists(test_file_one))
-  expect_true(file.exists(test_file_two))
+  expect_file_exists(test_file_one)
+  expect_file_exists(test_file_two)
   one <- read.csv(test_file_one)
   two <- read.csv(test_file_two)
   expect_data_frame(one, nrows = nrow(mtcars), ncols = ncol(mtcars))
@@ -181,7 +181,7 @@ test_that("save_wb works!", {
 # save_csv ( Internal )
 test_that("save_csv works!", {
   temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  expect_true(file.exists(temp_dir))
+  expect_directory_exists(temp_dir)
   test_file <- file.path(temp_dir, "cars.csv")
   expect_false(file.exists(test_file))
   save_csv(
@@ -190,7 +190,7 @@ test_that("save_csv works!", {
     file_name = "cars",
     overwrite = TRUE
   )
-  expect_true(file.exists(test_file))
+  expect_file_exists(test_file)
   test_saved_csv <- read.csv(test_file)
   expect_data_frame(test_saved_csv,
                     nrows = nrow(mtcars),

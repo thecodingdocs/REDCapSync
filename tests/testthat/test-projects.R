@@ -43,7 +43,7 @@ test_that("save_projects_to_cache works", {
   expect_data_frame(projects, nrows = 0L)
   expect_message(save_projects_to_cache(project_details, silent = FALSE),
                  "saved")
-  expect_true(file.exists(file.path(cache_location, "projects.rds")))
+  expect_file_exists(file.path(cache_location, "projects.rds"))
   expect_no_message(save_projects_to_cache(project_details, silent = TRUE))
 })
 # blank_tibble ( Internal )

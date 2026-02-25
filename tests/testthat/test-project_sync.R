@@ -1,7 +1,7 @@
-withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # sync_project ( Exported )
 # sync ( Exported )
 test_that("sync works!", {
+  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
   local_mocked_bindings(
     sweep_dirs_for_cache = function(...) NULL,
     load_project = function(...) NULL,
@@ -9,14 +9,14 @@ test_that("sync works!", {
   )
   expect_message(sync(), "No projects in cache")
   local_mocked_bindings(
+    sweep_dirs_for_cache = function(...) NULL,
     get_projects = function(...) data.frame(project_name = "TEST_CLASSIC")
   )
   expect_message(sync(), "Unable to load")
   local_mocked_bindings(
-    load_project = function(...) mock_test_project(project_name)
+    load_project = function(...) mock_test_project()
   )
   expect_message(sync(), "TEST projects do not communicate with the API")
-
 })
 test_that("sync_project_hard_reset works!", {
   project_name <- "TEST_CLASSIC"
@@ -384,37 +384,24 @@ test_that("sweep_dirs_for_cache compares cached and disk project details", {
   ]
   expect_identical(cached_project$version, "13.0.0")
 })
-generate_comment_table
 test_that("generate_comment_table works", {
   redcap_log <- TEST_CLASSIC$redcap$log[10, ]
   time_offset <- seq(from = 100000, to = 1000000, by = 100000)
-  comment_generator <- function(action_type = "Add",
-                                record = "1",
-                                field_name = "var_branching",
-                                comment = "some comment") {
-    text_string <- action_type |>
-      paste0(" field comment (Record: ", record, ", Field: ",field_name)
-    if(!is.null(comment)){
-      text_string <- text_string |> paste0(", Comment: \"", comment,"\"")
-    }
-    text_string <- text_string |> paste0(")")
-    text_string
-  }
   redcap_log_comments <- data.frame(
     timestamp = rep(Sys.time(), 10) - time_offset,
     username = "commenter5",
     action = c("Manage/Design"),
     details = c(
-      comment_generator("Edit", "1", "var_multi_dropdown", "some comment"),
-      comment_generator("Add", "2", "var_branching", "different comment"),
-      comment_generator("Delete", "2", "var_branching", "A comment"),
-      comment_generator("Add", "2", "var_branching", "A comment"),
-      comment_generator("Add", "3", "var_multi_dropdown", "some comment"),
-      comment_generator("Add", "4", "var_branching", "a comment"),
-      comment_generator("Edit", "1", "var_multi_dropdown", NULL),
-      comment_generator("Add", "5", "var_multi_dropdown", "another comment"),
-      comment_generator("Add", "1", "var_branching", "some comment"),
-      comment_generator("Add", "1", "var_multi_dropdown", "some comment")
+      generate_comments("Edit", "1", "var_multi_dropdown", "some comment"),
+      generate_comments("Add", "2", "var_branching", "different comment"),
+      generate_comments("Delete", "2", "var_branching", "A comment"),
+      generate_comments("Add", "2", "var_branching", "A comment"),
+      generate_comments("Add", "3", "var_multi_dropdown", "some comment"),
+      generate_comments("Add", "4", "var_branching", "a comment"),
+      generate_comments("Edit", "1", "var_multi_dropdown", NULL),
+      generate_comments("Add", "5", "var_multi_dropdown", "another comment"),
+      generate_comments("Add", "1", "var_branching", "some comment"),
+      generate_comments("Add", "1", "var_multi_dropdown", "some comment")
     ),
     record = c("1", "1", "2", "2", "3", "4", "1", "5", "1", "1"),
     action_type = "Comment"

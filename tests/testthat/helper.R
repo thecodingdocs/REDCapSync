@@ -4,6 +4,18 @@ generate_hex <- function(length = 32L) {
     paste(collapse = "") |>
     toupper()
 }
+generate_comments <- function(action_type = "Add",
+                              record = "1",
+                              field_name = "var_branching",
+                              comment = "some comment") {
+  text_string <- action_type |>
+    paste0(" field comment (Record: ", record, ", Field: ",field_name)
+  if(!is.null(comment)){
+    text_string <- text_string |> paste0(", Comment: \"", comment,"\"")
+  }
+  text_string <- text_string |> paste0(")")
+  text_string
+}
 real_dev_tokens <- c(
   REDCAPSYNC_TEST_REDCAPR_SIMPLE = "9A068C425B1341D69E83064A2D273A70",
   REDCAPSYNC_TEST_REDCAPR_LONGITUDINAL = "DA6F2BB23146BD5A7EA3408C1A44A556",
@@ -23,7 +35,6 @@ real_test_project <- function(project_name = "TEST_REDCAPR_SIMPLE") {
 }
 mock_test_project <- function(project_name = "TEST_CLASSIC",
                               ever_connected = TRUE) {
-  # withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
   assert_choice(project_name, .test_project_names)
   assert_logical(ever_connected)
   cache_location <- Sys.getenv("REDCAPSYNC_CACHE") |>

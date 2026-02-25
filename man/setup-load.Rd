@@ -120,8 +120,8 @@ will add default fields}
 \item{add_default_transformation}{Logical (TRUE/FALSE). If TRUE,
 will add default transformation}
 
-\item{add_default_summaries}{Logical (TRUE/FALSE). If TRUE,
-will add default summaries}
+\item{add_default_summaries}{Logical (TRUE/FALSE). If TRUE, will add default
+summaries}
 }
 \value{
 REDCapSync \code{project} list object.

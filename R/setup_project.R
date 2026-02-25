@@ -61,8 +61,8 @@
 #' will add default fields
 #' @param add_default_transformation Logical (TRUE/FALSE). If TRUE,
 #' will add default transformation
-#' @param add_default_summaries Logical (TRUE/FALSE). If TRUE,
-#' will add default summaries
+#' @param add_default_summaries Logical (TRUE/FALSE). If TRUE, will add default
+#' summaries
 #' @param get_type optional character of REDCap API call type.
 #' data as if user ran `sync_project`. Default is `FALSE`.
 #' @param batch_size_download Integer. Number of records to process in each

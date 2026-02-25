@@ -1,3 +1,4 @@
+withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # sync_project ( Exported )
 # sync ( Exported )
 test_that("sync works!", {

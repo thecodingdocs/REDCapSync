@@ -40,6 +40,7 @@ test_that("get_redcap_metadata works on real server, longitudinal!", {
   expect_data_frame(project_with_metadata$redcap$users, min.rows = 1L)
   expect_data_frame(project_with_metadata$redcap$project_info, nrows = 1L)
 })
+# compare fixture colnames to real con colnames
 test_that("get_redcap_metadata works with fixture data (classic)", {
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal

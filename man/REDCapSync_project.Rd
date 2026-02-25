@@ -329,10 +329,9 @@ Add a new summary entry
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{field_name}}{Character. The name of the field to which the
-transformation
-will be applied.}
+transformation will be applied.}
 
-\item{\code{form_name}}{Character. The name of the form containing the field.}
+\item{\code{form_name}}{Character. The name of the form containing \code{field_name}.}
 
 \item{\code{field_type}}{Character. The type of the field in REDCap (e.g., "text",
 "checkbox", "dropdown").}
@@ -448,11 +447,13 @@ opens links in browser
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{link_type}}{choose one of "base", "home", "record_home",
-"records_dashboard", "api", "api_playground", "codebook", "user_rights",
-"setup", "logging", "designer", "dictionary", "data_quality", "identifiers"}
+\item{\code{link_type}}{Character. Type of REDCap URL to retrieve. Choose one of
+"base", "home", "record_home", "records_dashboard", "api",
+"api_playground", "codebook", "user_rights", "setup", "logging",
+"designer", "dictionary", "data_quality", or "identifiers".}
 
-\item{\code{open_browser}}{logical for launching the link in internet browser}
+\item{\code{open_browser}}{Logical. If TRUE, launches the link in the default
+browser.}
 }
 \if{html}{\out{</div>}}
 }
@@ -472,9 +473,10 @@ there's an issue. Missing rows and columns are allowed!
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{to_be_uploaded}}{data.frame in raw coded form.}
+\item{\code{to_be_uploaded}}{data.frame in raw coded form to upload.}
 
-\item{\code{batch_size}}{numeric of how big the REDCap batch upload is. Default 500.}
+\item{\code{batch_size}}{Integer. Maximum number of rows per API write batch when
+uploading to REDCap. Default is 500L.}
 }
 \if{html}{\out{</div>}}
 }

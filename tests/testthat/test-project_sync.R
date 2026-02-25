@@ -2,6 +2,21 @@ withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
 # sync_project ( Exported )
 # sync ( Exported )
 test_that("sync works!", {
+  local_mocked_bindings(
+    sweep_dirs_for_cache = function(...) NULL,
+    load_project = function(...) NULL,
+    get_projects = function(...) .blank_project_details
+  )
+  expect_message(sync(), "No projects in cache")
+  local_mocked_bindings(
+    get_projects = function(...) data.frame(project_name = "TEST_CLASSIC")
+  )
+  expect_message(sync(), "Unable to load")
+  local_mocked_bindings(
+    load_project = function(...) mock_test_project(project_name)
+  )
+  expect_message(sync(), "TEST projects do not communicate with the API")
+
 })
 test_that("sync_project_hard_reset works!", {
   project_name <- "TEST_CLASSIC"

@@ -1108,7 +1108,7 @@ annotate_users <- function(data_list,
   summary_users <- data_list$redcap$users |>
     select(c("username", "email", "firstname", "lastname"))
   user_groups <- NULL
-  if(is_something(redcap_log)){
+  if (is_something(redcap_log)) {
     user_groups <- split(redcap_log, redcap_log$username)
   }
   names_in_log <- names(user_groups)
@@ -1623,7 +1623,7 @@ filter_fields_from_form <- function(form, project) {
                                      strict = TRUE)
   repeating_form_rows <- which(project$metadata$forms$repeating)
   repeating_forms <- project$metadata$forms$form_name[repeating_form_rows]
-  if (length(forms) > 1 && any(forms %in% repeating_forms)) {
+  if (length(forms) > 1L && any(forms %in% repeating_forms)) {
     stop(
       "All column names in your form must match only one form in your",
       "metadata, `project$metadata$forms$form_name`, unless they are",

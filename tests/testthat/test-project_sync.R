@@ -52,7 +52,7 @@ test_that("sync_project_check wont update if nothing new", {
   project$internals$last_metadata_update <- now_time() - lubridate::ddays(100L)
   project$internals$last_data_update <- now_time() - lubridate::ddays(100L)
   project$internals$was_updated <- FALSE
-  interim_log <- head(project$redcap$log, n = 0L)
+  interim_log <- utils::head(project$redcap$log, n = 0L)
   # Mock the test_project_token to simulate successful connection
   mockery::stub(sync_project_check, "test_project_token", project)
   mockery::stub(sync_project_check, "get_interim_log", interim_log)
@@ -67,7 +67,7 @@ test_that("sync_project will update if new", {
   project$internals$last_metadata_update <- now_time() - lubridate::ddays(100L)
   project$internals$last_data_update <- now_time() - lubridate::ddays(100L)
   project$internals$was_updated <- FALSE
-  interim_log <- head(project$redcap$log, n = 10L)
+  interim_log <- utils::head(project$redcap$log, n = 10L)
   ordered_records <- project$summary$all_records$record_id
   row_for_one <- which(project$data$text$record_id == "1")
   row_for_two <- which(project$data$text$record_id == "2")
@@ -84,8 +84,8 @@ test_that("sync_project will update if new", {
   )
   row_for_one <- which(new_data$text$record_id == "1")
   row_for_two <- which(new_data$text$record_id == "2")
-  expect_length(row_for_one, 1)
-  expect_length(row_for_two, 0)
+  expect_length(row_for_one, 1L)
+  expect_length(row_for_two, 0L)
   new_var_text_integer <- new_data$text$var_text_integer[row_for_one]
   expect_identical(new_var_text_integer, var_text_integer_one)
   new_data$text$var_text_integer[row_for_one] <- "99"
@@ -210,7 +210,7 @@ test_that("get_interim_log works", {
     timestamp = as.character(Sys.time()),
     username = "u1231",
     action = "Create record (API) 99",
-    details = NA,
+    details = "some details",
     record = "99",
     action_type = "Create"
   )
@@ -239,7 +239,7 @@ test_that("analyze_log works", {
     action = "Create record (API) 99",
     details = NA,
     record = "99",
-    action_type = c("Create","Update")
+    action_type = c("Create", "Update")
   )
   expect_identical(analyze_log(interim_log, id_col)$length_updated_records, 1L)
   interim_log <- data.frame(
@@ -288,23 +288,23 @@ test_that("log_change_messages works", {
     updated_records = NULL,
     renamed_records = NULL,
     comment_records = NULL,
-    length_deleted_records = 0,
-    length_updated_records = 0,
-    length_renamed_records = 0,
-    length_comment_records = 0
+    length_deleted_records = 0L,
+    length_updated_records = 0L,
+    length_renamed_records = 0L,
+    length_comment_records = 0L
   )
   expect_message(log_change_messages(log_changes), "Up to date")
   log_changes$refresh_metadata <- TRUE
   expect_message(log_change_messages(log_changes), "Full update triggered")
   log_changes$refresh_metadata <- FALSE
   log_changes$renamed_records <- "1c"
-  log_changes$length_renamed_records <- 1
+  log_changes$length_renamed_records <- 1L
   expect_message(log_change_messages(log_changes), "Full update triggered")
   log_changes$renamed_records <- NULL
-  log_changes$length_renamed_records <- 0
-  log_changes$length_comment_records <- 1
-  log_changes$length_deleted_records <- 1
-  log_changes$length_updated_records <- 1
+  log_changes$length_renamed_records <- 0L
+  log_changes$length_comment_records <- 1L
+  log_changes$length_deleted_records <- 1L
+  log_changes$length_updated_records <- 1L
   log_changes$comment_records <- "comment_record"
   log_changes$deleted_records <- "deleted_record"
   log_changes$updated_records <- "updated_record"
@@ -386,10 +386,10 @@ test_that("sweep_dirs_for_cache compares cached and disk project details", {
   expect_identical(cached_project$version, "13.0.0")
 })
 test_that("generate_comment_table works", {
-  redcap_log <- TEST_CLASSIC$redcap$log[10, ]
-  time_offset <- seq(from = 100000, to = 1000000, by = 100000)
+  redcap_log <- TEST_CLASSIC$redcap$log[10L, ]
+  time_offset <- seq(from = 100000L, to = 1000000L, by = 100000L)
   redcap_log_comments <- data.frame(
-    timestamp = rep(Sys.time(), 10) - time_offset,
+    timestamp = rep(Sys.time(), 10L) - time_offset,
     username = "commenter5",
     action = c("Manage/Design"),
     details = c(
@@ -411,9 +411,9 @@ test_that("generate_comment_table works", {
   expect_contains(comment_table$comment_type, c("Add", "Edit", "Delete"))
   expect_all_false(is.na(comment_table$comment_type))
   expect_all_false(is.na(comment_table$comment_field))
-  expect_all_false(is.na(comment_table$comment_details[-7]))
-  expect_scalar_na(comment_table$comment_details[7])
-  expect_data_frame(comment_table, nrows = 10)
+  expect_all_false(is.na(comment_table$comment_details[-7L]))
+  expect_scalar_na(comment_table$comment_details[7L])
+  expect_data_frame(comment_table, nrows = 10L)
   comment_table <- generate_comment_table(redcap_log = redcap_log_comments,
                                           only_most_recent = TRUE)
   comment_table

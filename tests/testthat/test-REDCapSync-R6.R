@@ -60,7 +60,7 @@ test_that("R6 add_summary and remove_summaries works!", {
   summary_names <- project_r6$.internal$summary |>
     names() |>
     setdiff("all_records")
-  expect_length(summary_names, 0)
+  expect_length(summary_names, 0L)
 })
 test_that("R6 test projects!", {
   withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
@@ -95,4 +95,34 @@ test_that("R6 test projects!", {
     summary_name = "fake2"
   )
   expect_file_exists(file.path(dir_path, "output", "TEST_CLASSIC_fake2.xlsx"))
+  expected_link <- "https://redcap.fake.edu/redcap_v16.1.1/index.php?pid=12341"
+  expect_identical(project_r6$url_launch(open_browser = FALSE), expected_link)
+})
+test_that("R6 add_fields and remove_fields works!", {
+  project_r6 <- mock_test_project()
+  expect_message(project_r6$add_field(), "placeholder")
+  expect_message(project_r6$remove_fields(), "placeholder")
+})
+test_that("R6 upload works!", {
+  project <- mock_test_project()$.internal
+  project$internals$is_test <- FALSE # override test block for tests
+  project_r6 <- REDCapSync_project$new(project)
+  local_mocked_bindings(
+    upload_form_to_redcap = function(...) message("Would have uploaded!"),
+    sync_project_refresh = function(...) {
+      message("Would have synced!")
+      project
+    }
+  )
+  local_mocked_bindings(
+    Sys.sleep = function(...) {
+      NULL
+    },
+    .package = "base"
+  )
+  expect_error(project_r6$upload(mtcars), "names in your form must match")
+  to_be_uploaded <- project_r6$data$text |> utils::head(2L)
+  to_be_uploaded$var_text_only <- c("New text", "Add text")
+  to_be_uploaded$text_complete <- "Complete"
+  expect_no_error(project_r6$upload(to_be_uploaded))
 })

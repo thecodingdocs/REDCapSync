@@ -7,11 +7,16 @@ scrub_test_project <- function(project, pid) {
   project$redcap$project_info$project_id <-
     project$redcap$project_id <- pid
   project$redcap$log$username <- "u1230"
-  project$redcap$log$details <- NA
   project$redcap$log <-
     project$redcap$log[which(!is.na(project$redcap$log$record)), ]
-  project$redcap$log <-
-    project$redcap$log[which(project$redcap$log$action_type != "Users"), ]
+  keep_rows <- which(
+    !project$redcap$log$action_type %in% c("Users", "Tokens", "Exports") &
+      !is.na(project$redcap$log$action_type) &
+      !is.na(project$redcap$log$record)
+  )
+  project$redcap$log <- unique(project$redcap$log[keep_rows, ]) |> head(10)
+  # project$redcap$log$details <- NA
+
   project$redcap$users$username <- "u1230"
   project$redcap$users$email <- "thecodingdocs@gmail.com"
   project$links$redcap_uri <- "https://redcap.fake.edu/api/"
@@ -31,8 +36,16 @@ scrub_test_rcon <- function(rcon_list, pid) {
     rcon_list$project_info$project_id <- pid
   }
   if (is_something(rcon_list$logging)) {
-    rcon_list$logging$username <- "u1230"
-    rcon_list$logging$details <- "REDACTED"
+    # rcon_list$logging$username <- "u1230"
+    # kep_col_names <- colnames(rcon_list$logging)
+    # rcon_list$logging <- clean_redcap_log(redcap_log = rcon_list$logging,
+    #                                       drop_exports = TRUE)
+    # keep_rows <- which(
+    #   !rcon_list$logging$action_type %in% c("Users", "Tokens") &
+    #     !is.na(rcon_list$logging$action_type)
+    # )
+    # rcon_list$logging <- rcon_list$logging[keep_rows, kep_col_names]
+    rcon_list$logging <- rcon_list$logging[0L, ]
   }
   if (is_something(rcon_list$users)) {
     rcon_list$users$username <- "u1230"
@@ -131,6 +144,7 @@ project_names <- c(
 names(project_names) <- paste0("1234", seq_len(length(project_names)))
 project_name <- project_names |> sample(1)
 projects <- get_projects()
+project_name <- "TEST_CLASSIC"
 for (project_name in project_names) {
   pid <- names(project_names)[which(project_names == project_name)]
   project <- load_project(project_name)$.internal
@@ -156,6 +170,21 @@ for (project_name in project_names) {
     envir = globalenv()
   )
 }
+for (project_name in project_names) {
+  pid <- names(project_names)[which(project_names == project_name)]
+  project <- load_project(project_name)$.internal
+  if(!startsWith(project_name,"TEST_REDCAPR_")){
+    project <- project |> scrub_test_project(pid = pid)
+  }
+  project$internals$is_test <- TRUE
+  project$internals$hard_reset <- FALSE
+  assign(
+    x = project_name,
+    value = project,
+    envir = globalenv()
+  )
+}
+
 data.frame(record_id = as.character(1:10)) |> TEST_CLASSIC$upload()
 data.frame(record_id = as.character(1:10)) |> TEST_REPEATING$upload()
 data.frame(record_id = as.character(1:10)) |> TEST_LONGITUDINAL$upload()

@@ -35,8 +35,9 @@ test_that("remove_from_form_list works!", {
   )
   form_list <- list(form1 = df1, form2 = df2)
   # Remove records "2" and "3"
-  out <- remove_from_form_list(
-    form_list, id_col = "record_id", records = c("2", "3"))
+  out <- remove_from_form_list(form_list = form_list,
+                               id_col = "record_id",
+                               records = c("2", "3"))
   expect_identical(out$form1$record_id, "1")
   expect_identical(out$form2$record_id, "4")
   # Remove no records (NULL)
@@ -44,14 +45,17 @@ test_that("remove_from_form_list works!", {
   expect_identical(out2$form1$record_id, c("1", "2", "3"))
   expect_identical(out2$form2$record_id, c("2", "3", "4"))
   # Remove all records
-  out3 <- remove_from_form_list(
-    form_list, id_col = "record_id", records = c("1", "2", "3", "4"))
+  out3 <- remove_from_form_list(form_list = form_list,
+                                id_col = "record_id",
+                                records = c("1", "2", "3", "4")
+  )
   expect_identical(nrow(out3$form1), 0L)
   expect_identical(nrow(out3$form2), 0L)
   # Empty form_list returns itself
-  expect_identical(
-    remove_from_form_list(list(), id_col = "record_id", records = "1"),
-    list())
+  expect_identical(remove_from_form_list(form_list = list(),
+                                         id_col = "record_id",
+                                         records = "1"),
+                   list())
 })
 # remove_records_from_project ( Internal )
 test_that("remove_records_from_project works!", {

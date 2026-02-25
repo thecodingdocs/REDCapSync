@@ -11,6 +11,7 @@ sync_project <- function(project,
   assert_logical(save_to_dir,
                  any.missing = FALSE,
                  len = 1L)
+  hard_reset <- hard_reset || project$internals$hard_reset
   do_sync <- due_for_sync(project_name = project$project_name) ||
     hard_reset || hard_check
   was_updated <- FALSE
@@ -84,19 +85,17 @@ sync_project_hard_reset <- function(project) {
       batch_size = project$internals$batch_size_download
     )
     # if error records comma
-    redcap_log <- project$redcap$log # in case there is a log already
     if (project$redcap$has_log_access) {
       if (project$internals$entire_log) {
-        log_begin_date <-
-          as.POSIXct(project$redcap$project_info$creation_time) |>
-          as.Date()
+        creation_time <- project$redcap$project_info$creation_time
+        log_begin_date <- as.Date(as.POSIXct(creation_time))
+        log_begin_date <- log_begin_date - 1L
       } else {
         log_begin_date <- Sys.Date() - project$internals$days_of_log
       }
-      new_log <- get_redcap_log(project, log_begin_date = log_begin_date)
-      project$redcap$log <- redcap_log |>
-        bind_rows(new_log) |>
-        sort_redcap_log()
+      # don't need old log in this case
+      project$redcap$log <- get_redcap_log(project = project,
+                                           log_begin_date = log_begin_date)
     }
     project$summary$all_records <- extract_project_records(project)
     project$summary$all_records$last_api_call <-
@@ -104,6 +103,7 @@ sync_project_hard_reset <- function(project) {
       project$internals$last_metadata_update <-
       project$internals$last_data_update <- now_time()
   }
+  project$internals$hard_reset <- FALSE
   cli_alert_success("Full {project$project_name} update!")
   project
 }
@@ -124,9 +124,8 @@ sync_project_check <- function(project, hard_reset) {
     interim_log <- get_interim_log(project)
     log_changes <- analyze_log(interim_log, id_col = project$metadata$id_col)
     log_change_messages(log_changes)
-    has_interim_log <- is_something(interim_log)
     hard_reset <- log_changes$hard_reset
-    if(is_something(interim_log)){
+    if (is_something(interim_log)) {
       project$redcap$log <- interim_log |>
         bind_rows(project$redcap$log) |>
         unique()
@@ -138,7 +137,7 @@ sync_project_check <- function(project, hard_reset) {
       refresh_records <- unique(c(deleted_records, updated_records))
       project <- sync_project_refresh(project = project,
                                       refresh_records = refresh_records)
-      if(is.null(project)){
+      if (is.null(project)) {
         # anything wrong with refresh should force hard_reset
         hard_reset <- TRUE
       }
@@ -259,10 +258,10 @@ analyze_log <- function(interim_log, id_col) {
     updated_records = NULL,
     renamed_records = NULL,
     comment_records = NULL,
-    length_deleted_records = 0,
-    length_updated_records = 0,
-    length_renamed_records = 0,
-    length_comment_records = 0
+    length_deleted_records = 0L,
+    length_updated_records = 0L,
+    length_renamed_records = 0L,
+    length_comment_records = 0L
   )
   if (nrow(interim_log) > 0L) {
     # interim_log$timestamp <- NULL
@@ -285,8 +284,8 @@ analyze_log <- function(interim_log, id_col) {
     interim_log_data <- interim_log[which(!is.na(interim_log$record)), ]
     interim_log_data <-
       interim_log_data[which(interim_log_data$action_type != "Users"), ]
-    if (nrow(interim_log_data) > 0) {
-      log_list <- interim_log_data |> split(interim_log_data$action_type)
+    if (nrow(interim_log_data) > 0L) {
+      log_list <- split(interim_log_data, interim_log_data$action_type)
       log_changes$comment_records <- unique(log_list$Comment$record)
       log_changes$deleted_records <- unique(log_list$Delete$record)
       log_changes$updated_records <- log_changes$deleted_records |>
@@ -297,7 +296,7 @@ analyze_log <- function(interim_log, id_col) {
         str_replace_all(" = '[^']*'", "") |>
         strsplit(", ")
       names(update_list) <- log_list$Update$record
-      if (length(update_list) > 0) {
+      if (length(update_list) > 0L) {
         log_changes$renamed_records <-  update_list |>
           lapply(function(detail) {
             id_col %in% detail
@@ -311,17 +310,14 @@ analyze_log <- function(interim_log, id_col) {
       log_changes$length_updated_records <- length(log_changes$updated_records)
       log_changes$length_renamed_records <- length(log_changes$renamed_records)
       log_changes$length_comment_records <- length(log_changes$comment_records)
-      log_changes$refresh_data <- (log_changes$length_deleted_records > 0) ||
-        (log_changes$length_updated_records > 0)
-      if (log_changes$length_comment_records > 0) {
-        log_changes$hard_reset <- TRUE # affects log
-      }
+      log_changes$refresh_data <- (log_changes$length_deleted_records > 0L) ||
+        (log_changes$length_updated_records > 0L)
     }
   }
   log_changes
 }
 #' @noRd
-log_change_messages <- function(log_changes, max_print = 8) {
+log_change_messages <- function(log_changes, max_print = 8L) {
   if (log_changes$refresh_metadata) {
     cli_alert_warning("Full update triggered: Metadata was changed!")
     return(invisible())
@@ -331,49 +327,49 @@ log_change_messages <- function(log_changes, max_print = 8) {
     log_changes$length_updated_records,
     log_changes$length_renamed_records,
     log_changes$length_comment_records
-  ) == 0
+  ) == 0L
   if (nothing_to_do) {
     cli_alert_success("Up to date already!")
     return(invisible())
   }
-  if (log_changes$length_renamed_records > 0) {
+  if (log_changes$length_renamed_records > 0L) {
     cli_alert_info(paste(
       "Renamed:",
       ifelse(
         log_changes$length_renamed_records > max_print,
-        paste(log_changes$length_renamed_records, "records") ,
+        paste(log_changes$length_renamed_records, "records"),
         toString(log_changes$renamed_records)
       )
     ))
     cli_alert_warning("Full update triggered: Records were renamed!")
     return(invisible())
   }
-  if (log_changes$length_deleted_records > 0) {
+  if (log_changes$length_deleted_records > 0L) {
     cli_alert_info(paste(
       "Deleted:",
       ifelse(
         log_changes$length_deleted_records > max_print,
-        paste(log_changes$length_deleted_records, "records") ,
+        paste(log_changes$length_deleted_records, "records"),
         toString(log_changes$deleted_records)
       )
     ))
   }
-  if (log_changes$length_updated_records > 0) {
+  if (log_changes$length_updated_records > 0L) {
     cli_alert_info(paste0(
       "Updated: ",
       ifelse(
         log_changes$length_updated_records > max_print,
-        paste(log_changes$length_updated_records, "records") ,
+        paste(log_changes$length_updated_records, "records"),
         toString(log_changes$updated_records)
       )
     ))
   }
-  if (log_changes$length_comment_records > 0) {
+  if (log_changes$length_comment_records > 0L) {
     cli_alert_info(paste(
       "Comments:",
       ifelse(
         log_changes$length_comment_records > max_print,
-        paste(log_changes$length_comment_records, " records") ,
+        paste(log_changes$length_comment_records, " records"),
         toString(log_changes$comment_records)
       )
     ))
@@ -390,11 +386,11 @@ generate_comment_table <- function(redcap_log, only_most_recent = FALSE) {
     lapply(first) |>
     unlist()
   inner <- sub("^.*?\\((.*)\\)$", "\\1", redcap_log$details)
-  redcap_log$comment_field <- str_match(inner, ", Field:\\s([^,]+)")[, 2]
+  redcap_log$comment_field <- str_match(inner, ", Field:\\s([^,]+)")[, 2L]
   if (only_most_recent && is_something(redcap_log)) {
     redcap_log <- redcap_log |>
       split(redcap_log$record) |>
-      lapply(function(record){
+      lapply(function(record) {
         record |> split(record$comment_field) |> lapply(first) |>  bind_rows()
       }) |>
       bind_rows()
@@ -402,7 +398,7 @@ generate_comment_table <- function(redcap_log, only_most_recent = FALSE) {
     redcap_log <- redcap_log[keep_rows, ]
     inner <- inner[keep_rows]
   }
-  if (nrow(redcap_log) == 0) {
+  if (nrow(redcap_log) == 0L) {
     return(NULL)
   }
   redcap_log$comment_details <- inner |>

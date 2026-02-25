@@ -77,15 +77,21 @@ test_that("get_record_url works", {
     get_record_url(project, record = "1", open_browser = FALSE),
     paste0(expected_link, "&id=1")
   )
-  # expect_identical(
-  #   get_record_url(
-  #     project,
-  #     record = "1",
-  #     page = "form_example",
-  #     open_browser = FALSE
-  #   ),
-  #   paste0(expected_link, "&id=1")
-  # )
+  expect_identical(
+    get_record_url(
+      project,
+      page = "text",
+      open_browser = FALSE
+    ),
+    paste0(gsub("record_home", "index", expected_link), "&page=text")
+  )
+  expect_error(
+    get_record_url(
+      project,
+      page = "text_2",
+      open_browser = FALSE
+    )
+  )
 })
 test_that("deidentify_data_list works", {
   project <- mock_test_project()$.internal

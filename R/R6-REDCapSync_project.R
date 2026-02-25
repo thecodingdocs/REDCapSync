@@ -456,7 +456,7 @@ REDCapSync_project <- R6Class(
           batch_size = batch_size
         )
       }
-      Sys.sleep(3)
+      Sys.sleep(3L)
       private$project <- sync_project_refresh(
         project = private$project,
         refresh_records = refresh_records

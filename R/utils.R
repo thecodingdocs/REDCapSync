@@ -111,3 +111,12 @@ file_ext_alias <- function(x) {
   pos <- regexpr("\\.([[:alnum:]]+)$", x)
   ifelse(pos > -1L, substring(x, pos + 1L), "")
 }
+#' @noRd
+try_else_null <- function(expr) {
+  tryCatch(
+    expr = expr,
+    error = function(e) {
+      NULL
+    }
+  )
+}

@@ -183,26 +183,22 @@ test_that("save_project_summary works", {
 # generate_project_summary ( Exported )
 test_that("generate_project_summary works!", {
   project <- mock_test_project()$.internal
-  project_summary <- generate_project_summary(
-    project = project,
-    summary_name = "REDCapSync")
+  project_summary <- generate_project_summary(project = project,
+                                              summary_name = "REDCapSync")
   expect_true(is_df_list(project_summary))
-  project_summary <- generate_project_summary(
-    project = project,
-    include_metadata = TRUE)
+  project_summary <- generate_project_summary(project = project,
+                                              include_metadata = TRUE)
   expect_contains(names(project_summary), "forms")
   expect_contains(names(project_summary), "fields")
   expect_contains(names(project_summary), "choices")
-  project_summary <- generate_project_summary(
-    project = project,
-    include_metadata = FALSE)
+  project_summary <- generate_project_summary(project = project,
+                                              include_metadata = FALSE)
   expect_false("forms" %in% names(project_summary))
   expect_false("fields" %in% names(project_summary))
   expect_false("choices" %in% names(project_summary))
-  project_summary <- generate_project_summary(
-    project = project,
-    summary_name = "REDCapSync",
-    exclude_identifiers = FALSE)
+  project_summary <- generate_project_summary(project = project,
+                                              summary_name = "REDCapSync",
+                                              exclude_identifiers = FALSE)
   fields <- project$metadata$fields
   fields$field_name[which(fields$identifier == "y")]
   colnames(project_summary$merged)
@@ -285,14 +281,11 @@ test_that("extract_project_records works!", {
 # get_log ( Internal )
 test_that("get_log works!", {
   project <- mock_test_project()$.internal
-  records <- as.character(sample.int(n = 50L, size = 10L))
   log <- project$redcap$log
-  all_record_ids <- unique(log$record)
-  expect_length(all_record_ids, 50L)
+  records <- unique(log$record) |> sample(1L)
   log_subset <- get_log(project, records)
-  subset_record_ids <- unique(log_subset$record)
-  expect_length(subset_record_ids, 10L)
-  expect_contains(subset_record_ids, records)
+  subset_record_id <- unique(log_subset$record)
+  expect_in(subset_record_id, records)
 })
 # annotate_users ( Internal )
 test_that("annotate_users works!", {
@@ -387,20 +380,20 @@ test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
   expect_identical(var_yesno_labelled, var_yesno_labelled_again)
   expect_in("Unknown", project$metadata$missing_codes$name)
   labelled <- merged |> select(record_id, var_branching)
-  labelled$var_branching[3] <- "Unknown"
-  labelled$var_branching[5] <- "Not applicable"
+  labelled$var_branching[3L] <- "Unknown"
+  labelled$var_branching[5L] <- "Not applicable"
   raw <- labelled_to_raw_form(labelled, project)
-  expect_identical("UNK", raw$var_branching[3])
-  expect_identical("NA", raw$var_branching[5])
+  expect_identical("UNK", raw$var_branching[3L])
+  expect_identical("NA", raw$var_branching[5L])
   labelled <- raw_to_labelled_form(raw, project)
-  expect_identical("Unknown", labelled$var_branching[3])
-  expect_identical("Not applicable", labelled$var_branching[5])
+  expect_identical("Unknown", labelled$var_branching[3L])
+  expect_identical("Not applicable", labelled$var_branching[5L])
   mismatch <- merged |> select(record_id, var_branching)
-  mismatch$var_branching[3] <- "Random Thing"
+  mismatch$var_branching[3L] <- "Random Thing"
   error_message <- "Mismatch in choices compared to REDCap"
   expect_error(labelled_to_raw_form(mismatch, project), error_message)
   raw_mismatch <- raw
-  raw_mismatch$var_branching[3] <- "Random Thing"
+  raw_mismatch$var_branching[3L] <- "Random Thing"
   expect_warning(raw_to_labelled_form(raw_mismatch, project), error_message)
 })
 # labelled_to_raw_data_list ( Internal )
@@ -473,10 +466,10 @@ test_that("field_names_metadata works!", {
 test_that("filter_fields_from_form works!", {
   project <- mock_test_project("TEST_REPEATING")$.internal
   form <- project$data$repeating_2 |> bind_rows(project$data$repeating)
-  expect_error(filter_fields_from_form(form,project))
-  expect_error(filter_fields_from_form(form,project))
+  expect_error(filter_fields_from_form(form, project))
+  expect_error(filter_fields_from_form(form, project))
   form <- project$data$form_1
-  expect_no_error(filter_fields_from_form(form,project))
-  fields <- filter_fields_from_form(form,project)
+  expect_no_error(filter_fields_from_form(form, project))
+  fields <- filter_fields_from_form(form, project)
   expect_data_frame(fields, nrows = ncol(form))
 })

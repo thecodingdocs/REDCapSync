@@ -2,82 +2,27 @@
 rcon_result <- function(project) {
   rcon <- redcapConnection(url = project$links$redcap_uri,
                                       token = get_project_token(project))
-  list(
-    project_info = tryCatch(
-      expr = rcon$projectInformation(),
-      error = function(e) {
-        NULL
-      }),
-    arms = tryCatch(
-      expr = rcon$arms(),
-      error = function(e) {
-        NULL
-      }),
-    events = tryCatch(
-      expr = rcon$events(),
-      error = function(e) {
-        NULL
-      }),
-    mapping = tryCatch(
-      expr = rcon$mapping(),
-      error = function(e) {
-        NULL
-      }),
-    forms = tryCatch(
-      expr = rcon$instruments(),
-      error = function(e) {
-        NULL
-      }),
-    repeating = tryCatch(
-      expr = rcon$repeatInstrumentEvent(),
-      error = function(e) {
-        NULL
-      }),
-    fields = tryCatch(
-      expr = rcon$metadata(),
-      error = function(e) {
-        NULL
-      }),
-    # logging needed
-    logging = tryCatch(
-      expr = exportLogging(rcon = rcon, beginTime = Sys.time() - 100000L),
-      error = function(e) {
-        NULL
-      }),
-    # user access needed
-    users = tryCatch(
-      expr = rcon$users(),
-      error = function(e) {
-        NULL
-      }),
-    user_roles = tryCatch(
-      expr = rcon$user_roles(),
-      error = function(e) {
-        NULL
-      }),
-    user_role_assignment = tryCatch(
-      expr = rcon$user_role_assignment(),
-      error = function(e) {
-        NULL
-      }),
-    #DAG access needed
-    dags = tryCatch(
-      expr = rcon$dags(),
-      error = function(e) {
-        NULL
-      }),
-    dag_assignment = tryCatch(
-      expr = rcon$dag_assignment(),
-      error = function(e) {
-        NULL
-      }),
-    # file repo needed
-    file_repository = tryCatch(
-      expr = rcon$fileRepository(),
-      error = function(e) {
-        NULL
-      })
+  result <- list(
+    project_info = try_else_null(all_character_cols(rcon$projectInformation())),
+    arms = try_else_null(all_character_cols(rcon$arms())),
+    events = try_else_null(all_character_cols(rcon$events())),
+    mapping = try_else_null(all_character_cols(rcon$mapping())),
+    forms = try_else_null(all_character_cols(rcon$instruments())),
+    repeating = try_else_null(all_character_cols(rcon$repeatInstrumentEvent())),
+    fields = try_else_null(all_character_cols(rcon$metadata())),
+    logging = try_else_null(all_character_cols(
+      exportLogging(rcon = rcon, beginTime = Sys.time() - 100000L)
+    )),
+    users = try_else_null(all_character_cols(rcon$users())),
+    user_roles = try_else_null(all_character_cols(rcon$user_roles())),
+    user_role_assignment = try_else_null(all_character_cols(
+      rcon$user_role_assignment()
+    )),
+    dags = try_else_null(all_character_cols(rcon$dags())),
+    dag_assignment = try_else_null(all_character_cols(rcon$dag_assignment())),
+    file_repository = try_else_null(all_character_cols(rcon$file_repository()))
   )
+  result
 }
 #' @noRd
 get_redcap_metadata <- function(project, include_users = TRUE) {
@@ -89,8 +34,8 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   project$redcap$project_title <- project$redcap$project_info$project_title
   project$redcap$project_id <-
     as.character(project$redcap$project_info$project_id)
-  project$metadata$is_longitudinal <-
-    as.logical(project$redcap$project_info$is_longitudinal)
+  is_longitudinal <- project$redcap$project_info$is_longitudinal == "1"
+  project$metadata$is_longitudinal <- is_longitudinal
   missing_data_codes <- NA
   if ("missing_data_codes" %in% colnames(project$redcap$project_info)) {
     missing_data_codes <- project$redcap$project_info$missing_data_codes
@@ -114,8 +59,9 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   project$metadata$forms$repeating <- FALSE
   project$metadata$has_repeating_forms <- FALSE
   project$metadata$has_repeating_events <- FALSE
-  project$metadata$has_repeating_forms_or_events <-
-    as.logical(project$redcap$project_info$has_repeating_instruments_or_events)
+  has_repeat_forms_or_events <-
+    project$redcap$project_info$has_repeating_instruments_or_events == "1"
+  project$metadata$has_repeating_forms_or_events <- has_repeat_forms_or_events
   # if(project$redcap$project_info$has_repeating_instruments_or_events=="1")
   if (is.data.frame(project$metadata$repeating_forms_events)) {
     #  test if you can do this if you dont have designer privileges
@@ -251,7 +197,8 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   }
   # other-------
   project$redcap$users <- NA
-  if (include_users && project$redcap$has_user_access) {
+  has_users <- is_something(result$users)
+  if (include_users && project$redcap$has_user_access && has_users) {
     keep_cols <- c("unique_role_name", "role_label")
     project$redcap$users <- result$user_roles[, keep_cols] |>
       merge(result$user_role_assignment, by = "unique_role_name") |>
@@ -507,17 +454,6 @@ get_redcap_denormalized <- function(project,
   denormalized
 }
 #' @noRd
-get_redcap_report <- function(project, report_id, silent = TRUE) {
-  report_id <- as.integer(report_id)
-  report <- redcap_report(
-    redcap_uri = project$links$redcap_uri,
-    token = get_project_token(project),
-    report_id = report_id,
-    verbose = !silent
-  )
-  report
-}
-#' @noRd
 get_redcap_data <- function(project,
                             labelled = TRUE,
                             records = NULL,
@@ -537,16 +473,17 @@ get_redcap_data <- function(project,
 #' @noRd
 get_redcap_records <- function(project) {
   assert_setup_project(project)
+  id_col <- project$metadata$id_col
   records <- suppressMessages({
-    REDCapR::redcap_read_oneshot(
+    redcap_read_oneshot(
       redcap_uri = project$links$redcap_uri,
       token = get_project_token(project),
-      fields = project$metadata$id_col,
+      fields = id_col,
       raw_or_label = "raw"
     )
   })
   # consider error check
-  records <- unique(records$data[[project$metadata$id_col]])
+  records <- records$data[[id_col]] |> unique() |> as.character()
   records
 }
 #' @noRd
@@ -559,15 +496,5 @@ upload_form_to_redcap <- function(to_be_uploaded, project, batch_size = 500L) {
     redcap_uri = project$links$redcap_uri,
     token = get_project_token(project),
     overwrite_with_blanks = TRUE
-  )
-}
-#' @noRd
-delete_records_redcap <- function(records, project) {
-  # add message for are you sure? vs options
-  # add assert check
-  redcap_delete(
-    redcap_uri = project$links$redcap_uri,
-    token = get_project_token(project),
-    records_to_delete = records
   )
 }

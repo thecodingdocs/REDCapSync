@@ -77,22 +77,24 @@
 #' @param file_name Character. The base name of the file where the summary will
 #' be saved. Default is `<project_name>_<summary_name>`.
 #' @param envir environment variable
-#' @param form string of raw form name such as "survey_one"
-#' @param link_type choose one of "base", "home", "record_home",
-#' "records_dashboard", "api", "api_playground", "codebook", "user_rights",
-#' "setup", "logging", "designer", "dictionary", "data_quality", "identifiers"
-#' @param open_browser logical for launching the link in internet browser
+#' @param form string of raw REDCap form name, such as "survey_one".
+#' @param link_type Character. Type of REDCap URL to retrieve. Choose one of
+#' "base", "home", "record_home", "records_dashboard", "api",
+#' "api_playground", "codebook", "user_rights", "setup", "logging",
+#' "designer", "dictionary", "data_quality", or "identifiers".
+#' @param open_browser Logical. If TRUE, launches the link in the default
+#'   browser.
 #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data in
 #' the project object to the directory at `dir_path`. Ignored when `dir_path` is
 #'  `NULL`. Default is `TRUE`.
 #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
 #' parameter from `setup_project()`)
-#' @param type string of either "fields","forms", or "choices"
+#' @param type Character. The metadata component to request. One of "fields",
+#' "forms", or "choices".
 #' @param field_name Character. The name of the field to which the
-#' transformation
-#' will be applied.
-#' @param form_name Character. The name of the form containing the field.
+#' transformation will be applied.
+#' @param form_name Character. The name of the form containing `field_name`.
 #' @param field_type Character. The type of the field in REDCap (e.g., "text",
 #' "checkbox", "dropdown").
 #' @param field_type_R Character. The corresponding R data type for the field.
@@ -110,8 +112,9 @@
 #' @param data_func Function or NA. An optional function to transform or
 #' validate the data in the field. Default is `NA`.
 #' @param summary_names One or more summary names. Default is `NULL`.
-#' @param to_be_uploaded data.frame in raw coded form.
-#' @param batch_size numeric of how big the REDCap batch upload is. Default 500.
+#' @param to_be_uploaded data.frame in raw coded form to upload.
+#' @param batch_size Integer. Maximum number of rows per API write batch when
+#' uploading to REDCap. Default is 500L.
 #' @return An R6ClassGenerator
 #' @keywords internal
 REDCapSync_project <- R6Class(

@@ -16,7 +16,7 @@ get_projects <- function() {
     projects <-  cache_path() |>
       file.path("projects.rds") |>
       readRDS() # add try catch?
-    is_ok <- all(.blank_project_cols %in% colnames(projects))
+    is_ok <- test_project_details(projects)
     if (!is_ok) {
       projects <- repair_projects(projects)
       is_ok <- !is.null(projects)

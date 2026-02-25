@@ -384,12 +384,12 @@ log_change_messages <- function(log_changes, max_print = 8) {
 generate_comment_table <- function(redcap_log, only_most_recent = FALSE) {
   assert_data_frame(redcap_log)
   assert_logical(only_most_recent)
-  redcap_log <- redcap_log |> filter("action_type" == "Comment")
+  redcap_log <- redcap_log[which(redcap_log$action_type == "Comment"), ]
   redcap_log$comment_type <- redcap_log$details |>
     strsplit(" ") |>
     lapply(first) |>
     unlist()
-  inner <- str_match(redcap_log$details, "\\((.*)\\)$")[,2]
+  inner <- sub("^.*?\\((.*)\\)$", "\\1", redcap_log$details)
   redcap_log$comment_field <- str_match(inner, ", Field:\\s([^,]+)")[, 2]
   if (only_most_recent && is_something(redcap_log)) {
     redcap_log <- redcap_log |>
@@ -397,15 +397,25 @@ generate_comment_table <- function(redcap_log, only_most_recent = FALSE) {
       lapply(function(record){
         record |> split(record$comment_field) |> lapply(first) |>  bind_rows()
       }) |>
-      bind_rows() |>
-      filter("comment_type" != "Delete")
+      bind_rows()
+    keep_rows <- which(redcap_log$comment_type != "Delete")
+    redcap_log <- redcap_log[keep_rows, ]
+    inner <- inner[keep_rows]
   }
   if (nrow(redcap_log) == 0) {
     return(NULL)
   }
   redcap_log$comment_details <- inner |>
-    str_remove("^.*Comment:\\s\"") |>
+    str_remove("^.*, Comment:\\s\"") |>
     str_remove("\"$")
+  redcap_log$comment_details[which(
+    redcap_log$comment_details == paste0(
+      "Record: ",
+      redcap_log$record,
+      ", Field: ",
+      redcap_log$comment_field
+    )
+  )] <- NA
   redcap_log
 }
 #' @title Synchronize REDCap Data

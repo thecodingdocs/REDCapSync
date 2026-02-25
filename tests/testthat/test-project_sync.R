@@ -369,3 +369,49 @@ test_that("sweep_dirs_for_cache compares cached and disk project details", {
   ]
   expect_identical(cached_project$version, "13.0.0")
 })
+generate_comment_table
+test_that("generate_comment_table works", {
+  redcap_log <- TEST_CLASSIC$redcap$log[10, ]
+  time_offset <- seq(from = 100000, to = 1000000, by = 100000)
+  comment_generator <- function(action_type = "Add",
+                                record = "1",
+                                field_name = "var_branching",
+                                comment = "some comment") {
+    text_string <- action_type |>
+      paste0(" field comment (Record: ", record, ", Field: ",field_name)
+    if(!is.null(comment)){
+      text_string <- text_string |> paste0(", Comment: \"", comment,"\"")
+    }
+    text_string <- text_string |> paste0(")")
+    text_string
+  }
+  redcap_log_comments <- data.frame(
+    timestamp = rep(Sys.time(), 10) - time_offset,
+    username = "commenter5",
+    action = c("Manage/Design"),
+    details = c(
+      comment_generator("Edit", "1", "var_multi_dropdown", "some comment"),
+      comment_generator("Add", "2", "var_branching", "different comment"),
+      comment_generator("Delete", "2", "var_branching", "A comment"),
+      comment_generator("Add", "2", "var_branching", "A comment"),
+      comment_generator("Add", "3", "var_multi_dropdown", "some comment"),
+      comment_generator("Add", "4", "var_branching", "a comment"),
+      comment_generator("Edit", "1", "var_multi_dropdown", NULL),
+      comment_generator("Add", "5", "var_multi_dropdown", "another comment"),
+      comment_generator("Add", "1", "var_branching", "some comment"),
+      comment_generator("Add", "1", "var_multi_dropdown", "some comment")
+    ),
+    record = c("1", "1", "2", "2", "3", "4", "1", "5", "1", "1"),
+    action_type = "Comment"
+  )
+  comment_table <- generate_comment_table(redcap_log = redcap_log_comments)
+  expect_contains(comment_table$comment_type, c("Add", "Edit", "Delete"))
+  expect_all_false(is.na(comment_table$comment_type))
+  expect_all_false(is.na(comment_table$comment_field))
+  expect_all_false(is.na(comment_table$comment_details[-7]))
+  expect_scalar_na(comment_table$comment_details[7])
+  expect_data_frame(comment_table, nrows = 10)
+  comment_table <- generate_comment_table(redcap_log = redcap_log_comments,
+                                          only_most_recent = TRUE)
+  comment_table
+})

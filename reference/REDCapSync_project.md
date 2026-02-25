@@ -418,7 +418,7 @@ Add a new summary entry
 
 - `form_name`:
 
-  Character. The name of the form containing the field.
+  Character. The name of the form containing `field_name`.
 
 - `field_type`:
 
@@ -545,13 +545,14 @@ opens links in browser
 
 - `link_type`:
 
-  choose one of "base", "home", "record_home", "records_dashboard",
-  "api", "api_playground", "codebook", "user_rights", "setup",
-  "logging", "designer", "dictionary", "data_quality", "identifiers"
+  Character. Type of REDCap URL to retrieve. Choose one of "base",
+  "home", "record_home", "records_dashboard", "api", "api_playground",
+  "codebook", "user_rights", "setup", "logging", "designer",
+  "dictionary", "data_quality", or "identifiers".
 
 - `open_browser`:
 
-  logical for launching the link in internet browser
+  Logical. If TRUE, launches the link in the default browser.
 
 ------------------------------------------------------------------------
 
@@ -570,8 +571,9 @@ an issue. Missing rows and columns are allowed!
 
 - `to_be_uploaded`:
 
-  data.frame in raw coded form.
+  data.frame in raw coded form to upload.
 
 - `batch_size`:
 
-  numeric of how big the REDCap batch upload is. Default 500.
+  Integer. Maximum number of rows per API write batch when uploading to
+  REDCap. Default is 500L.

@@ -455,12 +455,11 @@ are inherited according to what was set with <code>add_project_summary</code>.</
 <h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>field_name</code></dt>
 <dd><p>Character. The name of the field to which the
-transformation
-will be applied.</p></dd>
+transformation will be applied.</p></dd>
 
 
 <dt><code>form_name</code></dt>
-<dd><p>Character. The name of the form containing the field.</p></dd>
+<dd><p>Character. The name of the form containing <code>field_name</code>.</p></dd>
 
 
 <dt><code>field_type</code></dt>
@@ -584,13 +583,15 @@ are inherited according to what was set with <code>add_project_summary</code>.</
 <div class="section">
 <h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>link_type</code></dt>
-<dd><p>choose one of "base", "home", "record_home",
-"records_dashboard", "api", "api_playground", "codebook", "user_rights",
-"setup", "logging", "designer", "dictionary", "data_quality", "identifiers"</p></dd>
+<dd><p>Character. Type of REDCap URL to retrieve. Choose one of
+"base", "home", "record_home", "records_dashboard", "api",
+"api_playground", "codebook", "user_rights", "setup", "logging",
+"designer", "dictionary", "data_quality", or "identifiers".</p></dd>
 
 
 <dt><code>open_browser</code></dt>
-<dd><p>logical for launching the link in internet browser</p></dd>
+<dd><p>Logical. If TRUE, launches the link in the default
+browser.</p></dd>
 
 
 </dl><p></p></div>
@@ -609,11 +610,12 @@ there's an issue. Missing rows and columns are allowed!</p><div class="section">
 <div class="section">
 <h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>to_be_uploaded</code></dt>
-<dd><p>data.frame in raw coded form.</p></dd>
+<dd><p>data.frame in raw coded form to upload.</p></dd>
 
 
 <dt><code>batch_size</code></dt>
-<dd><p>numeric of how big the REDCap batch upload is. Default 500.</p></dd>
+<dd><p>Integer. Maximum number of rows per API write batch when
+uploading to REDCap. Default is 500L.</p></dd>
 
 
 </dl><p></p></div>

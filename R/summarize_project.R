@@ -1107,7 +1107,10 @@ annotate_users <- function(data_list,
   # role_label not inculded now
   summary_users <- data_list$redcap$users |>
     select(c("username", "email", "firstname", "lastname"))
-  user_groups <- split(redcap_log, redcap_log$username)
+  user_groups <- NULL
+  if(is_something(redcap_log)){
+    user_groups <- split(redcap_log, redcap_log$username)
+  }
   names_in_log <- names(user_groups)
   if (!is_something(user_groups) || length(names_in_log) == 0L) {
     return(summary_users)

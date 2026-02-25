@@ -409,7 +409,7 @@ REDCapSync_project <- R6Class(
     #' @description opens links in browser
     url_launch = function(link_type = "home",
                           open_browser = TRUE) {
-      if (private$project$internals$is_test) {
+      if (private$project$internals$is_test && open_browser) {
         cli_alert_info("TEST projects do not link to the web!")
         return(invisible(self))
       }
@@ -461,7 +461,7 @@ REDCapSync_project <- R6Class(
         project = private$project,
         refresh_records = refresh_records
       )
-      invisible(TRUE) #maybe give TRUE FALSE here instead of self
+      invisible(TRUE) # FYI cannot chain because not self
     }
   ),
   private = list(

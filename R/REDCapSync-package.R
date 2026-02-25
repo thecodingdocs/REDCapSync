@@ -70,6 +70,7 @@
 #' @importFrom REDCapR redcap_delete
 #' @importFrom REDCapR redcap_file_download_oneshot
 #' @importFrom REDCapR redcap_read
+#' @importFrom REDCapR redcap_read_oneshot
 #' @importFrom REDCapR redcap_report
 #' @importFrom REDCapR redcap_write
 #' @importFrom REDCapR sanitize_token

@@ -562,7 +562,7 @@ sort_redcap_log <- function(redcap_log) {
   unique(redcap_log[order(redcap_log$timestamp, decreasing = TRUE), ])
 }
 #' @noRd
-clean_redcap_log <- function(redcap_log) {
+clean_redcap_log <- function(redcap_log, drop_exports = FALSE) {
   redcap_log <- unique(redcap_log)
   redcap_log$record_id <- NA
   redcap_log$action_type <- NA
@@ -673,7 +673,17 @@ clean_redcap_log <- function(redcap_log) {
   redcap_log$action_type[row_index] <- "Users"
   redcap_log$record_id <- NULL
   redcap_log$username[which(redcap_log$username == "[survey respondent]")] <- NA
-  # add drop exports?
+  cannot_label_rows <- which(is.na(redcap_log$action_type))
+  if (length(cannot_label_rows) > 0L) {
+    warning_about_unlabelled_log <- paste0(
+      "Some log elements could not be labelled... Report to issues page \n",
+      "    `x <- project$redcap$log[which(is.na(redcap_log$action_type)), ]`"
+    )
+    cli_alert_warning(warning_about_unlabelled_log)
+  }
+  if (drop_exports) {
+    redcap_log <- redcap_log[which(redcap_log$action_type != "Exports"), ]
+  }
   redcap_log <- sort_redcap_log(redcap_log)
   redcap_log
 }

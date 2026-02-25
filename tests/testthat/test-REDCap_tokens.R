@@ -21,9 +21,14 @@ test_that("get_project_token checks_env", {
   token <- generate_hex(2L)
   withr::with_envvar(c(REDCAPSYNC_TEST_CLASSIC = token), {
     expect_identical(get_project_token(project), token)
+    expect_message(get_project_token(project = project, silent = FALSE),
+                   "Valid token for TEST_CLASSIC is set")
+
   })
   withr::with_envvar(c(REDCAPSYNC_TEST_CLASSIC = ""), {
     expect_identical(get_project_token(project), "")
+    expect_message(get_project_token(project = project, silent = FALSE),
+                   "is not a valid 32-character hexadecimal value")
   })
 })
 # test_project_token ( Exported )

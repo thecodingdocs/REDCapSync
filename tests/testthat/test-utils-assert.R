@@ -1,7 +1,4 @@
 withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
-# get_project_token ( Internal )
-test_that("get_project_token works!", {
-})
 # assert_web_link ( Internal )
 test_that("assert_web_link works!", {
 })

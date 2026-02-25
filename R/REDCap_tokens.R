@@ -1,8 +1,9 @@
 #' @noRd
-test_project_token <- function(project) {
+test_project_token <- function(project, silent = TRUE) {
   assert_setup_project(project)
   rcon <- redcapConnection(url = project$links$redcap_uri,
-                                      token = get_project_token(project))
+                           token = get_project_token(project = project,
+                                                     silent = silent))
   redcap_version <- tryCatch(
     expr = exportVersion(rcon = rcon),
     error = function(e) {
@@ -31,6 +32,7 @@ test_project_token <- function(project) {
                                      as.character(project_info$project_id))
     if (project_id_changed) {
       cli_abort("The REDCap project ID for {project$project_name} has changed!")
+      #trigger hard_rest
     } # move this?
   }
   project$internals$ever_connected <- TRUE

@@ -72,7 +72,6 @@ test_that("clean_form works!", {
   form <- clean_form(form = form, fields = fields)
   expect_identical(attr(form$var_text_only, "label"), "Text Only")
   expect_identical(attr(form$var_birth_date, "label"), "Birth Date")
-  # fields$field_name[which(fields$field_type == "radio")]
   row_to_change <- which(fields$field_name == "var_multi_radio")
   new_var <- "1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, 5"
   fields$select_choices_or_calculations[row_to_change] <- new_var
@@ -224,8 +223,6 @@ test_that("merge_non_repeating works!", {
       return_field = "field_name"
     ) |>
     setdiff(id_col)
-  # expect_identical(text_field_names,text_field_names2)
-  # expect_identical(other_field_names,other_field_names2)
   merge_form_name <- "merged_form"
   merged <- merge_non_repeating(
     data_list = project,
@@ -233,10 +230,11 @@ test_that("merge_non_repeating works!", {
     merge_to_rep = TRUE
   ) #NA for classic)
   expect_identical(merge_form_name, names(merged$data))
-  expect_identical(
-    nrow(merged$data[[merge_form_name]]), nrow(project$data$text))
-  expect_identical(
-    nrow(merged$data[[merge_form_name]]), nrow(project$data$other))
+  a <- nrow(merged$data[[merge_form_name]])
+  b <- nrow(project$data$text)
+  c <- nrow(project$data$other)
+  expect_identical(a, b)
+  expect_identical(a, c)
   expected_col_names <-  c(id_col, text_field_names, other_field_names)
   expected_col_length <- length_unique(expected_col_names)
   expect_identical(ncol(merged$data[[merge_form_name]]), expected_col_length)
@@ -390,7 +388,7 @@ test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
   expect_identical("Not applicable", labelled$var_branching[5L])
   mismatch <- merged |> select(record_id, var_branching)
   mismatch$var_branching[3L] <- "Random Thing"
-  error_message <- "Mismatch in choices compared to REDCap"
+  error_message <- "Mismatched REDCap"
   expect_error(labelled_to_raw_form(mismatch, project), error_message)
   raw_mismatch <- raw
   raw_mismatch$var_branching[3L] <- "Random Thing"
@@ -410,13 +408,11 @@ test_that("labelled_to_raw_data_listand raw_to_labelled_data_list works!", {
   # internals updated
   expect_false(project_converted$internals$labelled)
   # values converted from labelled ("Yes"/"No") to raw codes ("1"/"0")
-  expect_all_true(
-    project_converted$data$other$var_yesno %in% c("0", "1"))
+  expect_all_true(project_converted$data$other$var_yesno %in% c("0", "1"))
   expect_no_error({
     project_again <- raw_to_labelled_data_list(project_converted)
   })
-  expect_all_true(
-    project_again$data$other$var_yesno %in% c("Yes", "No"))
+  expect_all_true(project_again$data$other$var_yesno %in% c("Yes", "No"))
 })
 # get_all_field_names ( Internal )
 test_that("get_all_field_names works!", {
@@ -427,31 +423,34 @@ test_that("get_all_field_names works!", {
 # get_all_field_names ( Internal )
 test_that("get_identifier_fields works", {
   # minimal metadata/fields to exercise deidentified / strict / super_strict
+  field_names <- c("record_id", "email", "cell", "dob", "other", "notes", "int")
+  valid_types <- c(NA, "email", "phone", "date_mdy", NA, NA, "integer")
   fields <- data.frame(
-    field_name = c("record_id", "email", "phone", "dob", "other"),
-    identifier = c("y", NA, NA, NA, NA),
-    text_validation_type_or_show_slider_number =
-      c(NA, "email", "phone", "date_mdy", NA),
+    field_name = field_names,
+    identifier = c("y", NA, NA, "y", NA, NA, NA),
+    field_type = c("text", "text", "text", "text", "text", "notes", "text"),
+    text_validation_type_or_show_slider_number = valid_types,
     stringsAsFactors = FALSE
   )
   data_list <- list(metadata = list(fields = fields))
+  data_list$metadata$form_key_cols <- "record_id"
   # deidentified: only explicit identifier flagged "y"
   out_deid <- get_identifier_fields(data_list, get_type = "deidentified")
-  expect_length(out_deid, 1L)
-  expect_true("record_id" %in% out_deid)
+  expect_identical(out_deid, c("record_id", "dob"))
   # deidentified_strict: includes fields with validation types
   # in strict list (email, phone)
-  out_strict <-
-    get_identifier_fields(data_list, get_type = "deidentified_strict")
-  expect_true(setequal(out_strict, c("record_id", "email", "phone")))
+  out_strict <- get_identifier_fields(data_list = data_list,
+                                      get_type = "deidentified_strict")
+  expect_identical(out_strict, c("record_id", "email", "cell", "dob"))
   # deidentified_super_strict: includes additional validation  (dates, etc.)
-  out_super <-
-    get_identifier_fields(data_list, get_type = "deidentified_super_strict")
-  expect_true(setequal(out_super, c("record_id", "email", "phone", "dob")))
+  out_super <- get_identifier_fields(data_list = data_list,
+                                     get_type = "deidentified_super_strict")
+  expect_identical(out_super, setdiff(field_names, "int"))
   # invert = TRUE should return the complement set
-  out_inv <-
-    get_identifier_fields(data_list, get_type = "deidentified", invert = TRUE)
-  expect_true(setequal(out_inv, setdiff(fields$field_name, "record_id")))
+  out_inv <-get_identifier_fields(data_list = data_list,
+                                  get_type = "deidentified",
+                                  invert = TRUE)
+  expect_identical(out_inv, c("email", "cell", "other", "notes", "int"))
 })
 # field_names_to_form_names ( Internal )
 test_that("field_names_to_form_names works!", {

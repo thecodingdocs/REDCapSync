@@ -34,15 +34,14 @@ test_that("get_project_url works", {
   project <- update_project_links(project)
   e <- new.env(parent = emptyenv())
   # get_project_url
-  e$called_url <- NULL
+  e$url <- NULL
   mockery::stub(get_project_url, "utils::browseURL", function(url) {
-    e$called_url <- url
+    e$url <- url
   })
   for (link_type in .link_types) {
-    e$called_url <- NULL
+    e$url <- NULL
     get_project_url(project, link_type = link_type, open_browser = TRUE)
-    expect_identical(
-      e$called_url, project$links[[paste0("redcap_", link_type)]])
+    expect_identical(e$url, project$links[[paste0("redcap_", link_type)]])
     out <- get_project_url(project, link_type = link_type, open_browser = FALSE)
     expect_identical(out, project$links[[paste0("redcap_", link_type)]])
   }
@@ -60,17 +59,16 @@ test_that("get_record_url works", {
   )
   e <- new.env(parent = emptyenv())
   # get_project_url
-  e$called_url <- NULL
+  e$url <- NULL
   mockery::stub(get_record_url, "utils::browseURL", function(url) {
-    e$called_url <- url
+    e$url <- url
   })
   expect_identical(get_record_url(project, open_browser = FALSE), expected_link)
-  expect_null(e$called_url) # does not call url
-  e$called_url <- NULL
+  expect_null(e$url) # does not call url
+  e$url <- NULL
   get_record_url(project, open_browser = TRUE)
-  expect_identical(e$called_url, expected_link)
-  e$called_url <- NULL
-  # get_record_url(project,page = "2", text_only = TRUE)
+  expect_identical(e$url, expected_link)
+  e$url <- NULL
   expect_error(get_record_url(project, record = "59", open_browser = FALSE),
                regexp = "is not one of the records")
   expect_identical(
@@ -102,31 +100,26 @@ test_that("deidentify_data_list works", {
     unlist() |>
     unique()
   fields <- data_list$metadata$fields
-  initial_identifiers <- fields$field_name[which(
-    fields$identifier == "y" |
-      fields$text_validation_type_or_show_slider_number %in%
-      .redcap_maybe_ids_strict
-  )]
-  free_text_rows <- which(
-    fields$field_type == "notes" |
-      (
-        fields$field_type == "text" &
-          is.na(fields$text_validation_type_or_show_slider_number)
-      ) &
-      !fields$field_name %in% id_cols
-  )
-  free_text_fields <- fields$field_name[free_text_rows]
+  is_identifier <- fields$identifier == "y"
+  fields$validation_type <- fields$text_validation_type_or_show_slider_number
+  is_likely_identifier <- fields$validation_type %in% .redcap_maybe_ids_strict
+  identifier_rows <- which(is_identifier | is_likely_identifier)
+  initial_identifiers <- fields$field_name[identifier_rows]
+  is_notes <- fields$field_type == "notes"
+  is_text <- fields$field_type == "text"
+  has_validation <- is.na(fields$text_validation_type_or_show_slider_number)
+  not_id <- !fields$field_name %in% id_cols
+  is_free_text <- is_notes | (is_text & has_validation) & not_id
+  free_text_fields <- fields$field_name[which(is_free_text)]
   expect_all_true(initial_identifiers %in% colnames(data_list$data$merged))
-  no_ids <- deidentify_data_list(
-    data_list = data_list,
-    exclude_identifiers = TRUE,
-    exclude_free_text = FALSE)
+  no_ids <- deidentify_data_list(data_list = data_list,
+                                 exclude_identifiers = TRUE,
+                                 exclude_free_text = FALSE)
   expect_all_false(initial_identifiers %in% colnames(no_ids$data$merged))
   expect_all_true(free_text_fields %in% colnames(data_list$data$merged))
-  no_free_text <- deidentify_data_list(
-    data_list = data_list,
-    exclude_identifiers = FALSE,
-    exclude_free_text = TRUE)
+  no_free_text <- deidentify_data_list(data_list = data_list,
+                                       exclude_identifiers = FALSE,
+                                       exclude_free_text = TRUE)
   expect_all_false(initial_identifiers %in% colnames(no_free_text$data$merged))
   keep_rows <-
     which(!data_list$metadata$fields$field_name %in% initial_identifiers)
@@ -148,62 +141,34 @@ test_that("deidentify_data_list works", {
   data_list <- metadata_add_default_cols(data_list)
   fields <- data_list$metadata$fields
   merged <- data_list$data$merged
-  expect_all_true(
-    c(
-      "var_birth_date",
-      "var_text_date_dmy",
-      "var_text_date_mdy",
-      "var_text_date_ymd"
-    ) %in% colnames(merged)
-  )
+  expected_cols <- c("var_birth_date",
+                     "var_text_date_dmy",
+                     "var_text_date_mdy",
+                     "var_text_date_ymd")
+  expect_all_true(expected_cols %in% colnames(merged))
   expect_error(deidentify_data_list(data_list = data_list, date_handling = "1"))
   # 'none'
   merged_none <- deidentify_data_list(
     data_list = data_list,
-    # exclude_identifiers = FALSE,
     date_handling = "none"
   )$merged
-  expect_all_true(
-    c(
-      "var_birth_date",
-      "var_text_date_dmy",
-      "var_text_date_mdy",
-      "var_text_date_ymd"
-    ) %in% colnames(merged_none)
-  )
+  expect_all_true(expected_cols %in% colnames(merged_none))
   # 'exclude_dates'
-  merged_exclude_dates <-
-    deidentify_data_list(
-      data_list = data_list, date_handling = "exclude_dates")$merged
-  expect_all_false(
-    c(
-      "var_birth_date",
-      "var_text_date_dmy",
-      "var_text_date_mdy",
-      "var_text_date_ymd"
-    ) %in% colnames(merged_exclude_dates)
-  )
+  excluded_dates <- deidentify_data_list(data_list = data_list,
+                                         date_handling = "exclude_dates")$merged
+  expect_all_false(expected_cols %in% colnames(excluded_dates))
   # 'random_shift_by_record'
-  merged_random_shift_by_record <-
-    deidentify_data_list(
-      data_list = data_list, date_handling = "random_shift_by_record")$merged
-  expect_all_true(
-    c(
-      "var_birth_date",
-      "var_text_date_dmy",
-      "var_text_date_mdy",
-      "var_text_date_ymd"
-    ) %in% colnames(merged_random_shift_by_record)
-  )
-  expect_all_false(
-    merged_random_shift_by_record$var_text_date_dmy == merged$var_text_date_dmy)
+  random_shift <- deidentify_data_list(data_list = data_list,
+                                       date_handling = "random_shift_by_record")
+  random_shift <- random_shift$merged
+  expect_all_true(expected_cols %in% colnames(random_shift))
+  expect_all_false(random_shift$var_text_date_dmy == merged$var_text_date_dmy)
   time_check1 <- as.Date(merged$var_text_date_dmy) -
     as.Date(merged$var_birth_date)
-  time_check2 <- as.Date(merged_random_shift_by_record$var_text_date_dmy) -
-    as.Date(merged_random_shift_by_record$var_birth_date)
+  time_check2 <- as.Date(random_shift$var_text_date_dmy) -
+    as.Date(random_shift$var_birth_date)
   expect_all_true(time_check1 == time_check2) #math is same
-  as.Date(merged$var_birth_date) -
-    as.Date(merged_random_shift_by_record$var_birth_date)
+  as.Date(merged$var_birth_date) - as.Date(random_shift$var_birth_date)
   # 'random_shift_by_project'
   # merged_random_shift_by_project <- deidentify_data_list(
   #   data_list = data_list,date_handling = "random_shift_by_project")
@@ -243,18 +208,18 @@ test_that("get_min_dates works", {
   expect_data_frame(out, nrows = 3L, ncols = 2L)
   expect_true(all(c("record_id", "date") %in% colnames(out)))
   # values: min date per record across forms
-  expect_identical(
-    as.character(out$date[match("1", out$record_id)]), "2020-01-01")
-  expect_identical(
-    as.character(out$date[match("2", out$record_id)]), "2020-01-05")
-  expect_identical(
-    as.character(out$date[match("3", out$record_id)]), "2020-01-15")
+  one <- as.character(out$date[match("1", out$record_id)])
+  two <- as.character(out$date[match("2", out$record_id)])
+  three <- as.character(out$date[match("3", out$record_id)])
+  expect_identical(one, "2020-01-01")
+  expect_identical(two, "2020-01-05")
+  expect_identical(three, "2020-01-15")
 })
 # normalize_redcap ( Internal )
 test_that("normalize_redcap works with classic project", {
   project <- mock_test_project()$.internal
-  denormalized <- readRDS(
-    test_path("fixtures", "TEST_CLASSIC_call_list.rds"))$data
+  call_list <- mock_test_calls()
+  denormalized <- call_list$data
   result <- normalize_redcap(denormalized, project, labelled = TRUE)
   expect_type(result, type = "list")
   form_names <- names(result)
@@ -263,33 +228,22 @@ test_that("normalize_redcap works with classic project", {
   expect_all_true(unlist(lapply(result, is.data.frame)))
   id_col <- project$metadata$id_col
   fields <- project$metadata$fields
-  expect_true(id_col %in% colnames(result$text))
-  expect_all_true(
-    fields$field_name[which(fields$form_name == "text")] %in%
-      colnames(result$text))
-  expect_all_true(
-    fields$field_name[
-      which(fields$form_name == "other" &
-              (!fields$field_type %in% c("checkbox", "descriptive")))] %in%
-      colnames(result$other)
-  )
   fields <- fields[which(fields$field_name != id_col), ]
-  expect_all_false(
-    fields$field_name[which(fields$form_name == "text")] %in%
-      colnames(result$other))
-  expect_all_false(
-    fields$field_name[
-      which(fields$form_name == "other" &
-              (!fields$field_type %in% c("checkbox", "descriptive")))] %in%
-      colnames(result$text)
-  )
+  text_fields <- fields$field_name[which(fields$form_name == "text")]
+  expect_true(id_col %in% colnames(result$text))
+  expect_all_true(text_fields %in% colnames(result$text))
+  rows_x <- which(fields$form_name == "other" &
+                    (!fields$field_type %in% c("checkbox", "descriptive")))
+  other_fields <- fields$field_name[rows_x]
+  expect_all_true(other_fields %in% colnames(result$other))
+  expect_all_false(text_fields %in% colnames(result$other))
+  expect_all_false(other_fields %in% colnames(result$text))
 })
 test_that("normalize_redcap works with longitudinal project", {
   project_name <- "TEST_REDCAPR_LONGITUDINAL"
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
-  denormalized <- readRDS(
-    test_path("fixtures", "TEST_REDCAPR_LONGITUDINAL_call_list.rds"))$data
+  denormalized <- call_list$data
   result <- normalize_redcap(denormalized, project, labelled = TRUE)
   expect_true(project$metadata$is_longitudinal)
   expect_type(result, type = "list")
@@ -300,14 +254,14 @@ test_that("normalize_redcap works with longitudinal project", {
   id_col <- project$metadata$id_col
   fields <- project$metadata$fields
   expect_true(id_col %in% colnames(result$demographics))
-  fields_to_check <- fields$field_name[
-    which(fields$form_name == "demographics" &
-            (!fields$field_type %in% c("checkbox", "descriptive")))]
+  field_rows <- which(fields$form_name == "demographics" &
+                        (!fields$field_type %in% c("checkbox", "descriptive")))
+  fields_to_check <- fields$field_name[field_rows]
   expect_all_true(fields_to_check %in% colnames(result$demographics))
   fields <- fields[which(fields$field_name != id_col), ]
-  fields_to_check <- fields$field_name[
-    which(fields$form_name == "demographics" &
-            (!fields$field_type %in% c("checkbox", "descriptive")))]
+  field_rows <-  which(fields$form_name == "demographics" &
+                         (!fields$field_type %in% c("checkbox", "descriptive")))
+  fields_to_check <- fields$field_name[field_rows]
   expect_all_true(fields_to_check %in% colnames(result$demographics))
   expect_all_false(fields_to_check %in% colnames(result$other))
   expect_all_false(fields_to_check %in% colnames(result$text))

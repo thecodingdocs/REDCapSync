@@ -23,7 +23,6 @@ test_that("sync_project_hard_reset works!", {
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
-  # project$data <- .blank_project$data
   mockery::stub(sync_project_hard_reset, "get_redcap_metadata", project)
   mockery::stub(sync_project_hard_reset, "update_project_links", project)
   mockery::stub(sync_project_hard_reset, "get_redcap_data", project$data)
@@ -112,7 +111,6 @@ test_that("sync_project will update if new", {
   updated_var_text_integer_two <- result$data$text$var_text_integer[row_for_two]
   expect_identical(new_var_text_integer, updated_var_text_integer_one)
   expect_identical(var_text_integer_two, updated_var_text_integer_two)
-  # expect_false(result$internals$was_updated)
 })
 test_that("sync_project will work if not due", {
   project_name <- "TEST_CLASSIC"

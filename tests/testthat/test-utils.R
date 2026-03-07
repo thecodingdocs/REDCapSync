@@ -47,8 +47,7 @@ test_that("remove_from_form_list works!", {
   # Remove all records
   out3 <- remove_from_form_list(form_list = form_list,
                                 id_col = "record_id",
-                                records = c("1", "2", "3", "4")
-  )
+                                records = c("1", "2", "3", "4"))
   expect_identical(nrow(out3$form1), 0L)
   expect_identical(nrow(out3$form2), 0L)
   # Empty form_list returns itself

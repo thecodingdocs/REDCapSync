@@ -1,7 +1,7 @@
 #' @noRd
 rcon_result <- function(project) {
   rcon <- redcapConnection(url = project$links$redcap_uri,
-                                      token = get_project_token(project))
+                           token = get_project_token(project))
   result <- list(
     project_info = try_else_null(all_character_cols(rcon$projectInformation())),
     arms = try_else_null(all_character_cols(rcon$arms())),
@@ -88,8 +88,6 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
     unlist() |>
     unique()
   project$metadata$fields <- add_field_elements(project$metadata$fields)
-  # project$metadata$fields <-
-  # project |> annotate_fields(summarize_data = FALSE, drop_blanks = FALSE)
   project$metadata$choices <-
     fields_to_choices(fields = project$metadata$fields)
   # add a check for existing conflict possibilities
@@ -163,31 +161,20 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
     if (project$metadata$has_arms_that_matter) {
       project$metadata$has_arms_that_matter <-
         !(project$metadata$arms$arm_number |>
-        lapply(function(arm) {
-          project$metadata$event_mapping$form[
-            which(project$metadata$event_mapping$arm_number == arm)]
-        }) |>
-        check_match())
+            lapply(function(arm) {
+              project$metadata$event_mapping$form[
+                which(project$metadata$event_mapping$arm_number == arm)]
+            }) |>
+            check_match())
     }
-    # if(is.data.frame(project$unique_events)){
-    #   project$metadata$events <- data.frame(
-    #     event_name = unique(project$unique_events$event_name),
-    #     arms = unique(project$unique_events$event_name) |>
-    # lapply(function(event_name){
-    #       project$unique_events$arm_number[
-    #which(project$unique_events$event_name==event_name)] |> unique() |>
-    #paste0(collapse = " | ")
-    #     })
-    #   )
-    # }
     project$metadata$forms$repeating_via_events <- FALSE
     project$metadata$forms$repeating_via_events[
       which(
         unlist(lapply(project$metadata$forms$form_name, function(form_name) {
-      anyDuplicated(
-        project$metadata$event_mapping$arm_num[
-          which(project$metadata$event_mapping$form == form_name)]) > 0L
-    })))] <- TRUE
+          anyDuplicated(
+            project$metadata$event_mapping$arm_num[
+              which(project$metadata$event_mapping$form == form_name)]) > 0L
+        })))] <- TRUE
   } else {
     project$metadata$has_arms <- FALSE
     project$metadata$has_multiple_arms <- FALSE
@@ -305,7 +292,6 @@ update_project_links <- function(project) {
   identifiers <- paste0(home, "&route=IdentifierCheckController:index")
   project$links$redcap_home <- paste0(link_head, home)
   project$links$redcap_record_home <- paste0(link_head, record_home)
-  # project$links$redcap_record_subpage <- paste0(link_head, record_subpage)
   project$links$redcap_records_dashboard <- paste0(link_head, dashboard)
   project$links$redcap_api <- paste0(link_head, api)
   project$links$redcap_api_playground <- paste0(link_head, api_playground)
@@ -426,12 +412,10 @@ get_redcap_log <- function(project,
   )
   #addtrycatch NULL
   if (is.null(redcap_log)) {
-    # message(httr::content(response)$error)
     return(NULL)
   }
   if (is.data.frame(redcap_log)) {
     if (nrow(redcap_log) > 0L) {
-      # redcap_log[redcap_log == ""] <- NA
       redcap_log <- clean_redcap_log(redcap_log)
     }
   }

@@ -25,6 +25,7 @@ deidentify_data_list <- function(data_list,
         "You can set it in REDCap Project Setup and update ",
         "project OR define your idenitifiers in this functions ",
         "`identifiers` argument.",
+        call. = TRUE,
         immediate. = TRUE
       )
     }
@@ -39,9 +40,7 @@ deidentify_data_list <- function(data_list,
       toString(bad_identifiers)
     )
   }
-  id_cols <- metadata$form_key_cols |>
-    unlist() |>
-    unique()
+  id_cols <- metadata$form_key_cols |> unlist() |> unique()
   if (is_something(id_cols) && any(id_cols %in% exclusions)) {
     stop("ID cols not allowed... ",
          toString(id_cols),
@@ -67,9 +66,6 @@ deidentify_data_list <- function(data_list,
   }
   if (is_something(data_forms)) {
     date_vector <- fields$field_name[which(fields$field_type_R == "date")]
-    # records <- lapply(data_forms,function(form){
-    #   form[[id_cols[1]]]
-    # }) |> unlist() |> unique()
     date_list <- Map(
       f = function(x, col_names) {
         date_vector[which(date_vector %in% col_names)]
@@ -119,7 +115,6 @@ deidentify_data_list <- function(data_list,
         }
       }
       # if you have dates you already mutated no need to drop anymore
-      # exclusions <- exclusions[which(!exclusions %in% date_vector)]
     }
     drop_list <- Map(function(x, col_names) {
       exclusions[which(exclusions %in% col_names)]
@@ -153,9 +148,7 @@ filter_data_list <- function(data_list,
       field_names = field_names_minus, strict = TRUE)
     form_names <- vec1_in_vec2(form_names, form_names_minus)
   }
-  # missing_filter <- is.null(filter_list) &&
-  #   is.null(filter_choices) &&
-  #   is.null(filter_field)
+  # missing_filter ?
   out_list <- list()
   if (is.null(filter_list)) {
     if (!is.null(filter_field) && !is.null(filter_choices)) {
@@ -172,8 +165,6 @@ filter_data_list <- function(data_list,
       names() |>
       drop_if("")
     # should be unique
-    # filter_field_names |>
-    # vec1_not_in_vec2(data_list$metadata$fields$field_name) # should be empty
     filter_form <-
       field_names_to_form_names(project = data_list,
                                 field_names = filter_field_names)
@@ -191,9 +182,6 @@ filter_data_list <- function(data_list,
       unlist() |>
       unique()
     is_key <- all(filter_field_names %in% form_key_cols)
-    # repeating_rows <- which(data_list$metadata$forms$repeating)
-    # is_repeating_filter_form <- filter_form %in%
-    #   data_list$metadata$forms$form_name[repeating_rows]
   }
   # can use this to have repeats capture non-rep events
   for (form_name in form_names) {
@@ -290,9 +278,6 @@ get_min_dates <- function(data_list) {
     return(empty)
   }
   date_vector <- fields$field_name[which(fields$field_type_R == "date")]
-  # records <- lapply(data,function(form){
-  #   form[[id_cols[1]]]
-  # }) |> unlist() |> unique()
   all_dates <- list()
   # Loop through each form in the list
   for (form in data_forms) {
@@ -393,20 +378,6 @@ get_record_url <- function(project,
   link
 }
 #' @noRd
-# construct_key_col_list <- function(project) {
-#   form_list <- project$data
-#   data_field_list <- form_list |> lapply(colnames)
-#   form_names <- names(form_list)
-#   key_cols_list <- form_names |> lapply(function(form_name) {
-#     key_cols <- which(
-#       data_field_list[[form_name]] %in% project$metadata$raw_structure_cols
-#     )
-#     data_field_list[[form_name]][key_cols]
-#   })
-#   names(key_cols_list) <- form_names
-#   key_cols_list
-# }
-#' @noRd
 get_key_col_list <- function(data_list) {
   forms <- data_list$metadata$forms
   if (!is_something(forms)) {
@@ -414,8 +385,9 @@ get_key_col_list <- function(data_list) {
   }
   out_list <- seq_len(nrow(forms)) |> lapply(function(i) {
     out <- data_list$metadata$id_col
-    if (data_list$metadata$is_longitudinal)
+    if (data_list$metadata$is_longitudinal) {
       out <- append(out, "redcap_event_name")
+    }
     if (forms$repeating[i]) {
       out <- append(out, "redcap_repeat_instrument")
       out <- append(out, "redcap_repeat_instance")

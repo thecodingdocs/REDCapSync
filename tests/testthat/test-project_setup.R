@@ -26,7 +26,7 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_error(assert_blank_project(.blank_project[[-1L]]))
   expect_error(assert_blank_project(1L))
   expect_error(assert_blank_project(data.frame()))
-  expect_error(assert_dir(project$dir_path))
+  expect_error(assert_dir(temp_dir))
   # Run setup_project
   project <- setup_project(
     project_name = project_name,
@@ -36,7 +36,6 @@ test_that("setup_project creates a valid project object and valid directory", {
   )$.internal # change to R6 later
   expect_no_error(assert_dir(dir_path = temp_dir))
   expect_no_error(assert_blank_project(project = project))
-  # expect_no_error(get_dir(project))
   check_dir <- assert_dir(project$dir_path)
   expect_identical(temp_dir, check_dir)
   expect_type(project, type = "list")
@@ -128,13 +127,7 @@ test_that("save_project doesn't save if blank but will save if valid", {
   # loads what we saved
   # change to R6 later
   project2 <- load_project(project_name = project_name)$.internal
-  # project$internals$last_directory_save |> attr("tzone")
-  # project2$internals$last_directory_save |> attr("tzone")
   expect_identical(project, project2)
-  # # delete_project works...
-  # expect_no_warning(delete_project(project))
-  # expect_warning(delete_project(project)) # warning for deleting twice
-  # expect_error(load_project(project_name = project_name)) # wont load deleted
 })
 # set_dir ( Internal )
 test_that("set_dir handles existing directory correctly", {

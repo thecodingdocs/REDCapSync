@@ -127,19 +127,24 @@ assert_env_name <- function(x, max.chars = 26L, all_caps = FALSE) {
 }
 #' @noRd
 test_env_name <- function(x, max.chars = 26L, all_caps = FALSE) {
-  x <- tryCatch(
-    expr = {
-      suppressWarnings({
-        assert_env_name(x = x,
-                        max.chars = max.chars,
-                        all_caps = all_caps)
-      })
-    },
-    error = function(e) {
-      NULL
-    }
-  )
+  x <- try_else_null({
+    suppressWarnings({
+      assert_env_name(x = x,
+                      max.chars = max.chars,
+                      all_caps = all_caps)
+    })
+  })
   !is.null(x)
+}
+#' @noRd
+test_unique_character <- function(x){
+  test_character(
+    x,
+    min.chars = 1L,
+    unique = TRUE,
+    min.len = 1L,
+    any.missing = FALSE
+  )
 }
 #' @noRd
 assert_blank_project <- function(project) {

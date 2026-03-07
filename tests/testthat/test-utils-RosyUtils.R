@@ -76,9 +76,6 @@ test_that("length_unique works!", {
   expect_identical(length_unique(c("a", "a", "b", "b", "c", "c", "c")), 3L)
   expect_identical(length_unique(c("a", "a", "b", "b", "c", "d")), 4L)
 })
-# length_which ( Internal )
-test_that("length_which works!", {
-})
 # drop_nas ( Internal )
 test_that("drop_nas works!", {
 })
@@ -245,9 +242,6 @@ test_that("remove_html_tags works!", {
 # object_size ( Internal )
 test_that("object_size works!", {
 })
-# file_size ( Internal )
-test_that("file_size works!", {
-})
 # drop_if ( Internal )
 test_that("drop_if works!", {
   abc <- c("a", "b", "c")
@@ -292,7 +286,6 @@ test_that("is_df_list works!", {
   expect_true(is_df_list(list(one = df1, two = df2)))
   # mixed list -> TRUE when strict = FALSE, FALSE when strict = TRUE
   mixed <- list(df1, list())
-  # expect_true(is_df_list(mixed))
   expect_false(is_df_list(mixed, strict = TRUE))
   mixed2 <- list(df1, 1L)
   expect_true(is_df_list(mixed2))
@@ -338,7 +331,6 @@ test_that("is_env_name works!", {
   expect_false(is_env_name(""))
   expect_false(is_env_name("1start"))    # starts with digit
   expect_false(is_env_name("bad-char!")) # invalid character
-  # expect_false(is_env_name("_start"))    # starts with underscore
   # messaging behavior
   expect_message(is_env_name("1start", silent = FALSE),
                  "Short name cannot start with a number")
@@ -346,18 +338,11 @@ test_that("is_env_name works!", {
 })
 # is_nested_list ( Internal )
 test_that("is_nested_list works!", {
-  # non-list inputs -> FALSE
   expect_false(is_nested_list(NULL))
   expect_false(is_nested_list(1L))
   expect_false(is_nested_list("a"))
-  # data.frame -> FALSE even though data.frames are lists
   expect_false(is_nested_list(data.frame()))
-  # empty list -> TRUE (treated as nested)
   expect_true(is_nested_list(list()))
-  # simple flat list -> FALSE
   expect_false(is_nested_list(list(a = 1L, b = "x", c = TRUE)))
-  # nested list -> TRUE
-  # expect_true(is_nested_list(list(list(1))))
-  # expect_true(is_nested_list(list(a = list(b = 1))))
   expect_true(is_nested_list(list(a = list(), b = 1L)))
 })

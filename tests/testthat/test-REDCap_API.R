@@ -6,7 +6,6 @@ test_that("get_redcap_ works on real server, simple!", {
   skip_if_offline()
   project_name <- "TEST_REDCAPR_SIMPLE"
   project <- real_test_project(project_name)$.internal
-  # expect_false(project$internals$ever_connected)
   expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0L)
   expect_data_frame(as.data.frame(project$metadata$fields), nrows = 0L)
   expect_data_frame(as.data.frame(project$metadata$choices), nrows = 0L)
@@ -15,7 +14,6 @@ test_that("get_redcap_ works on real server, simple!", {
   project_with_metadata <- withr::with_envvar(real_dev_tokens, {
     get_redcap_metadata(project)
   })
-  # expect_true(project_with_metadata$internals$ever_connected)
   expect_data_frame(project_with_metadata$metadata$forms, min.rows = 1L)
   expect_data_frame(project_with_metadata$metadata$fields, min.rows = 1L)
   expect_data_frame(project_with_metadata$metadata$choices, min.rows = 1L)

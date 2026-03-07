@@ -143,7 +143,7 @@ REDCapSync_project <- R6Class(
     },
     #' @field data Read-only named list where each name is an instrument name.
     #' See public methods for [REDCapSync_project].
-        data = function(value) {
+    data = function(value) {
       if (!missing(value)) {
         cli_alert_danger(
           paste0(

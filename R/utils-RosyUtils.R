@@ -15,9 +15,7 @@ cli_alert_wrap <- function(text = "",
   url_if <- ""
   file_if <- ""
   if (length(url) > 0L) {
-    # url |> lapply(function(x){assert_web_link(x)})
-    # doesnt work for /subheaders/
-    # url_if <- " {.url {url}}"
+    # assert?
     url_names <- names(url)
     if (is.list(url)) {
       url_names <- unlist(url)
@@ -28,8 +26,9 @@ cli_alert_wrap <- function(text = "",
     }
     if (is.null(url_names))
       url_names <- url
-    if (collapse)
+    if (collapse) {
       url_if <- paste0(url_if, collapse = " and ")
+    }
     url_if <- paste0(
       " {cli::col_blue(cli::style_hyperlink('",
       clean_for_cli(url_names),
@@ -42,14 +41,16 @@ cli_alert_wrap <- function(text = "",
     file_names <- names(file)
     if (is.list(file)) {
       file_names <- unlist(file)
-      if (is_named_list(file))
+      if (is_named_list(file)) {
         file_names <- names(file)
+      }
       file <- unlist(file)
     }
     if (is.null(file_names))
       file_names <- file
-    if (collapse)
+    if (collapse) {
       file_if <- paste0(file_if, collapse = " and ")
+    }
     file_if <- paste0(
       " {cli::col_blue(cli::style_hyperlink('",
       sanitize_path(file_names) |> clean_for_cli(),
@@ -165,10 +166,6 @@ vec1_not_in_vec2 <- function(vec1, vec2) {
 #' @noRd
 length_unique <- function(x) {
   length(unique(x))
-}
-#' @noRd
-length_which <- function(x) {
-  length(which(x))
 }
 #' @noRd
 drop_nas <- function(x) {
@@ -292,14 +289,7 @@ form_to_wb <- function(form,
     freeze_key_cols <- which(all_cols %in% key_cols)
     if (length(freeze_key_cols) > 0L) {
       if (!is_consecutive_srt_1(freeze_key_cols)) {
-        # warning(
-        #   "please keep your key cols on the left consecutively. Fixing ",
-        #   form_name,
-        #   ": ",
-        #   toString(key_cols),
-        #   ".",
-        #   immediate. = TRUE
-        # ) # instead will fix add on problem
+        # warning?
         non_key_cols <- seq_len(ncol(form))
         non_key_cols <- non_key_cols[which(!non_key_cols %in% freeze_key_cols)]
         new_col_order <- c(freeze_key_cols, non_key_cols)
@@ -330,9 +320,7 @@ form_to_wb <- function(form,
     for (i in seq_along(link_col_list)) {
       if (link_col_list[[i]] %in% colnames(form)) {
         class(form[[link_col_list[[i]]]]) <- "hyperlink"
-      } else {
-        # warning("",immediate. = TRUE)
-      }
+      } # else warning?
       if (has_names) {
         if (names(link_col_list)[i] %in% colnames(form)) {
           hyperlink_col <- which(colnames(form) == names(link_col_list)[i])
@@ -344,9 +332,7 @@ form_to_wb <- function(form,
             startCol = hyperlink_col + pad_cols
           )
           form[[link_col_list[[i]]]] <- NULL
-        } else {
-          # warning("",immediate. = TRUE)
-        }
+        } # else warning?
       }
     }
   }
@@ -464,17 +450,21 @@ list_to_wb <- function(input_list,
 #' @noRd
 rename_list_names_excel <- function(list_names) {
   list_names_rename <- str_trunc(list_names,
-                                          width = 31L,
-                                          side = "right",
-                                          ellipsis = "")
+                                 width = 31L,
+                                 side = "right",
+                                 ellipsis = "")
   bad_names <- which_duplicated(list_names_rename)
   if (length(bad_names) > 0L) {
     cli_alert_danger(paste0(
       "Duplicated names when trimmed from right 31 max in Excel: ",
-      toString(list_names[bad_names])))
-    cli_alert_info(paste0(
-      "Use CSV or shorten the names and make sure they are unique if they",
-      " are trimmed to 31 char. For now will make unique by adding number."))
+      toString(list_names[bad_names])
+    ))
+    cli_alert_info(
+      paste0(
+        "Use CSV or shorten the names and make sure they are unique if they",
+        " are trimmed to 31 char. For now will make unique by adding number."
+      )
+    )
     list_names_rename <-
       unique_trimmed_strings(list_names_rename, max_length = 31L)
   }
@@ -555,10 +545,8 @@ list_to_excel <- function(input_list,
       }
       keep_keys <- which(names(key_cols_list) == list_names[i])
       keep_deriveds <- which(names(derived_cols_list) == list_names[i])
-      # keep_links <- which(names(link_col_list) == list_names[i])
       key_cols_list_i <- key_cols_list[keep_keys]
       derived_cols_list_i <- derived_cols_list[keep_deriveds]
-      # link_col_list_i <- link_col_list[keep_links]
       save_wb(
         wb = list_to_wb(
           input_list = sub_list,
@@ -694,10 +682,6 @@ object_size <- function(x) {
   format(utils::object.size(x), units = "auto")
 }
 #' @noRd
-file_size <- function(path) {
-  format(structure(file.size(path), class = "object_size"), units = "auto")
-}
-#' @noRd
 drop_if <- function(x, drops) {
   x[which(!x %in% drops)]
 }
@@ -728,7 +712,7 @@ clean_env_names <- function(env_names,
                 "', added numbers...")
       }
       cleaned_name <- cleaned_name |>
-        paste0("_", max(length_which(cleaned_name %in% cleaned_names)) + 1L)
+        paste0("_", max(length(which(cleaned_name %in% cleaned_names))) + 1L)
     }
     cleaned_names[i] <- cleaned_name
   }
@@ -764,7 +748,10 @@ is_env_name <- function(env_name, silent = FALSE) {
     if (is.null(env_name)) {
       stop("env_name is NULL")
     }
-    if (nchar(env_name) == 0L) {
+    if (is.na(env_name)) {
+      stop("env_name is NA")
+    }
+    if (!nzchar(env_name)) {
       stop("Short name cannot be empty.")
     }
     if (grepl("^\\d", env_name)) {
@@ -776,7 +763,7 @@ is_env_name <- function(env_name, silent = FALSE) {
     return(TRUE)
   }, error = function(e) {
     if (!silent) {
-      message(e$message)
+      cli_alert_danger(e$message)
     }
     FALSE
   })

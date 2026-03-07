@@ -29,10 +29,11 @@ get_projects <- function() {
     }
   }
   if (!is_ok) {
+    # message here?
     return(.blank_project_details)
   }
-  # projects$project_name |> paste0(collapse = "\n") |> message()
-  projects
+  # message here? would have to silence internally
+  projects # invisibile?
 }
 #' @noRd
 .blank_project_cols <- c(

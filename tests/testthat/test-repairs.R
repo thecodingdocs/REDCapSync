@@ -151,12 +151,6 @@ test_that("repair_setup_project returns NULL for invalid project_name", {
   result <- repair_setup_project(project)
   expect_null(result)
 })
-# test_that("repair_setup_project returns NULL for invalid redcap_uri", {
-#   project <- mock_test_project()$.internal
-#   project$links$redcap_uri <- "not a valid uri"
-#   result <- repair_setup_project(project)
-#   expect_null(result)
-# })
 test_that("repair_setup_project repairs invalid internals", {
   project <- mock_test_project()$.internal
   # Set invalid internals

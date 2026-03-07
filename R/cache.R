@@ -113,16 +113,14 @@ cache_remove_project <- function(project_name) {
   projects <- get_projects()
   is_in_cache <- project_name %in% projects$project_name
   if (!is_in_cache) {
-    cli_alert_warning(
-      paste0("'", project_name, "' is not saved in your cache. ",
-             "Nothing to do. "))
+    cli_alert_warning("'{project_name}' is not in your cache. Nothing to do.")
     return(invisible())
   }
   projects <- projects[which(projects$project_name != project_name), ]
   save_projects_to_cache(projects, silent = TRUE)
-  cli_alert_success(
-    paste0("'", project_name, "' removed from cache, but its associated files",
-    " are located at the directory you assigned to '", project_name, "' and",
-    " must be deleted manually."
-           ))
+  success_message <- paste0("'{project_name}' removed from cache, but it's",
+                            " associated files are still located in the ",
+                            " directory assigned `setup_project` and can be",
+                            " deleted manually.")
+  cli_alert_success(success_message)
 }

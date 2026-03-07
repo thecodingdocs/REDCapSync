@@ -224,16 +224,20 @@ setup_project <- function(project_name,
       projects <- get_projects()
       cache_details <- projects[which(projects$project_name == project_name), ]
       if (original_details$redcap_uri != redcap_uri) {
-        stop("There is an existing project at your chosen directory with same ",
-             "`project_name` but a different `redcap_uri`. You can use ",
-             "setup_project(..., hard_reset = TRUE) to override."
-        )
+        stop_message <- paste0("There is an existing project at your chosen",
+                               " directory with same `project_name` but a",
+                               " different `redcap_uri`. You can use",
+                               " setup_project(..., hard_reset = TRUE) to",
+                               " override.")
+        stop(stop_message)
       }
       if (original_details$project_id != cache_details$project_id) {
-        stop("There is an existing project at your chosen directory with same ",
-             "`project_name` but a different `redcap_uri`. You can use ",
-             "setup_project(..., hard_reset = TRUE) to override."
-        )
+        stop_message <- paste0("There is an existing project at your chosen",
+                               " directory with same `project_name` but a",
+                               " different `project_id`. You can use",
+                               " setup_project(..., hard_reset = TRUE) to",
+                               " override.")
+        stop(stop_message)
       }
       if (!is.null(project$internals$labelled)) {
         if (project$internals$labelled != labelled) {
@@ -306,10 +310,7 @@ setup_project <- function(project_name,
       paste0("No valid token in session: Sys.getenv('", token_name, "')"))
   }
   project <- assert_setup_project(project)
-  if (!is.null(original_details)) {
-    # final_details <- project |> extract_project_details()
-    # message about changes compared to original
-  }
+  # final_details ? compare if original_details not NULL
   invisible(REDCapSync_project$new(project))
 }
 .sync_frequency <- c("always",
@@ -402,7 +403,7 @@ load_project <- function(project_name) {
   if (!identical(dir_path, loaded_dir)) {
     cli_alert_warning(
       paste0("loaded dir_path did not match your cached dir_path. This should ",
-        "only happen with cloud or shared directories.")
+             "only happen with cloud or shared directories.")
     )
   }
   project$dir_path <- dir_path
@@ -461,7 +462,6 @@ load_test_project <- function(project_name) {
 #' @noRd
 save_project <- function(project, silent = FALSE) {
   assert_setup_project(project)
-  # assert_setup_project(project)
   if (!project$internals$ever_connected) {
     cli_alert_danger(
       paste0(
@@ -481,7 +481,7 @@ save_project <- function(project, silent = FALSE) {
   saveRDS(
     object = project_details,
     file = get_project_path2(project, type = "details")
-    ) # add error check
+  ) # add error check
   cli_alert_wrap(
     paste0("Saved ", project$project_name, "!"),
     url = save_project_path,
@@ -585,7 +585,7 @@ save_project <- function(project, silent = FALSE) {
     redcap_base = NULL,
     redcap_home = NULL,
     redcap_record_home = NULL,
-    # redcap_record_subpage = NULL,
+    # redcap_record_subpage ?
     redcap_records_dashboard = NULL,
     redcap_api = NULL,
     redcap_api_playground = NULL,

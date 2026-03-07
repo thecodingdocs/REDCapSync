@@ -16,23 +16,22 @@ sync_project <- function(project,
     hard_reset || hard_check
   was_updated <- FALSE
   if (!do_sync) {
-    cli_alert_info(
-      paste0("{project$project_name} not due for sync ",
-             "({project$internals$sync_frequency})"))
+    info_message <- paste0("{project$project_name} not due for sync ",
+                           "({project$internals$sync_frequency})")
+    cli_alert_info(info_message)
   }
   if (do_sync) {
     project <- sync_project_check(project = project, hard_reset = hard_reset)
     was_updated <- project$internals$was_updated
   }
   if (project$internals$add_default_summaries) {
-    if (!is_something(project$summary$REDCapSync) ||
-        !is_something(project$summary$REDCapSync_raw)) {
+    missing_redcapsync <- !is_something(project$summary$REDCapSync)
+    missing_redcapsync_raw <- !is_something(project$summary$REDCapSync_raw)
+    if (missing_redcapsync || missing_redcapsync_raw) {
       project <- add_default_summaries(project)
     }
   }
-  # if (project$internals$add_default_fields) {
-  #   project <- add_default_fields(project)
-  # }
+  # ?add_default_fields
   if (save_to_dir && !is.null(project$dir_path)) {
     if (is_something(project$data)) {
       if (project$internals$get_files) {
@@ -45,7 +44,7 @@ sync_project <- function(project,
       }
     }
     if (project$internals$get_file_repository) {
-      # get_redcap_file_repository()
+      # get redcap file repo
     }
     if (summarize) {
       first_stamp <- project$internals$last_summary
@@ -71,11 +70,11 @@ sync_project <- function(project,
 #' @noRd
 sync_project_hard_reset <- function(project) {
   assert_setup_project(project)
-  project <- get_redcap_metadata(
-    project = project,
-    include_users = !project$internals$metadata_only)
+  include_users <- !project$internals$metadata_only
+  project <- get_redcap_metadata(project = project,
+                                 include_users = include_users)
   project <- update_project_links(project)
-  if (!project$internals$metadata_only) {
+  if (include_users) {
     project$data <- list()
     project$data_updates <- list()
     project$summary <- list()
@@ -185,8 +184,9 @@ sync_project_refresh <- function(project, refresh_records) {
     project$data[[form_name]] <- project$data[[form_name]][reorder_records, ]
     rownames(project$data[[form_name]]) <- NULL
   }
-  missing_from_summary <- records_received[
-    which(!records_received %in% project$summary$all_records[[id_col]])]
+  records_summary <- project$summary$all_records[[id_col]]
+  missing_records_i <- which(!records_received %in% records_summary)
+  missing_from_summary <- records_received[missing_records_i]
   if (length(missing_from_summary) > 0L) {
     x <- data.frame(
       record = missing_from_summary,
@@ -238,9 +238,10 @@ get_interim_log <- function(project) {
   #which(duplicated(
   #rbind(unique_log, head_of_log),fromLast = TRUE)[
   #seq_len(nrow(unique_log)]), ]
-  interim_log <- unique_log[
-    which(!duplicated(bind_rows(unique_log, head_of_log), fromLast = TRUE)[
-        seq_len(nrow(unique_log))]), ]
+  log_to_clean <- bind_rows(unique_log, head_of_log)
+  indices <- seq_len(nrow(unique_log))
+  unique_rows <- which(!duplicated(log_to_clean, fromLast = TRUE)[indices])
+  interim_log <- unique_log[unique_rows, ]
   interim_log
 }
 #' @noRd
@@ -264,7 +265,7 @@ analyze_log <- function(interim_log, id_col) {
     length_comment_records = 0L
   )
   if (nrow(interim_log) > 0L) {
-    # interim_log$timestamp <- NULL
+    # interim_log timestamp ? NULL
     maybe_metadata <- interim_log$action_type[which(is.na(interim_log$record))]
     # inclusion
     refresh_metadata_major <- "Metadata Change Major" %in% maybe_metadata
@@ -448,11 +449,7 @@ sync <- function(project_names = NULL,
     }
   }
   for (project_name in project_names) {
-    project <- tryCatch(
-      expr = load_project(project_name),
-      error = function(e) {
-        NULL
-      })
+    project <- try_else_null(load_project(project_name))
     if (is.null(project)) {
       cli_alert_danger("Unable to load {project_name}")
       #add to bad list
@@ -477,7 +474,6 @@ due_for_sync <- function(project_name) {
     assert_names(projects$project_name, must.include = project_name)
     project_row <- which(projects$project_name == project_name)
     last_sync <- projects$last_sync[project_row]
-    # assert_posixct(last_data_update, len = 1, any.missing = TRUE)
     if (is.na(last_sync)) {
       return(TRUE)
     }
@@ -537,40 +533,27 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
       dir_path = from_cache$dir_path,
       type = "details"
     )
-    from_cache <- tryCatch(
-      expr = assert_project_details(from_cache, nrows = 1L),
-      error = function(e) {
-        NULL
-      })
+    from_cache <- try_else_null(assert_project_details(from_cache, nrows = 1L))
     to_cache <- NULL
     if (file.exists(expected_path)) {
-      to_cache <- tryCatch(
-        expr = {
-          x <- suppressWarnings({
-            readRDS(expected_path)
-          })
-          assert_project_details(x, nrows = 1L)
-          x
-        },
-        error = function(e) {
-          NULL
-        }
-      )
+      to_cache <- try_else_null({
+        x <- suppressWarnings({
+          readRDS(expected_path)
+        })
+        assert_project_details(x, nrows = 1L)
+        x
+      })
     }
     if (is.null(from_cache) || is.null(to_cache)) {
-      loaded_cache <- tryCatch(
-        expr = {
-          load_project(project_name = project_name)$.internal |>
-            extract_project_details()
-        },
-        error = function(e) {
-          NULL
-        }
-      )
+      loaded_cache <- try_else_null({
+        load_project(project_name = project_name)$.internal |>
+          extract_project_details()
+      })
       if (is.null(loaded_cache)) {
-        cli_alert_danger(
-          paste0("Unable to load ", project_name, ". Removed! Retry ",
-                 "`setup_project(...)`"))
+        danger_message <- paste0("Unable to load ",
+                                 project_name,
+                                 ". Removed! Retry `setup_project(...)`")
+        cli_alert_danger(danger_message)
         project_list[[project_name]] <- NULL
         had_change <- TRUE
       } else {
@@ -589,9 +572,9 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
     }
   }
   if (had_change) {
-    cli_alert_info(
-      paste0("Updated cache! This can happen when using multiple",
-             " computers or with version changes..."))
+    updating_message <- paste0("Updated cache! This can happen when using",
+                               " multiple computers or with version changes.")
+    cli_alert_info(updating_message)
     save_projects_to_cache(bind_rows(project_list), silent = FALSE)
   }
 }

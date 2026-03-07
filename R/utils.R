@@ -2,12 +2,11 @@
 add_redcap_links_to_form <- function(form, project) {
   # add instance links
   if (project$metadata$id_col %in% colnames(form)) {
-    form_structure_cols <- project$metadata$raw_structure_cols[
-      which(project$metadata$raw_structure_cols %in% colnames(form))]
-    form_structure_cols <- project$metadata$raw_structure_cols[which(
+    rows_x <- which(
       project$metadata$raw_structure_cols %in% colnames(form) &
         project$metadata$raw_structure_cols != project$metadata$id_col
-    )]
+    )
+    form_structure_cols <- project$metadata$raw_structure_cols[rows_x]
     link_head <- project$links$redcap_record_home
     link_tail <- paste0("&id=", form[[project$metadata$id_col]])
     if ("redcap_repeat_instrument" %in% form_structure_cols) {
@@ -95,7 +94,7 @@ split_choices <- function(x) {
   if (nrow(choices_data) != check_length) {
     stop("split choice error: ", x)
   }
-  if (any(choices_data$name == "")) {
+  if (any(!nzchar(choices_data$name))) {
     stop("split choice error: ", x)
   }
   choices_data

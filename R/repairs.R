@@ -97,65 +97,25 @@ repair_setup_project <- function(project) {
       project$internals$get_type |>
       test_choice(choices = .get_type) |>
       ifelse(project$internals$get_type, "identified")
-    project$internals$records <-
-      (test_scalar_na(project$internals$records) ||
-          test_character(
-            project$internals$records,
-            # add exist warning
-            min.chars = 1L,
-            unique = TRUE,
-            min.len = 1L,
-            any.missing = FALSE
-          )
-      ) |>
+    records_na <- test_scalar_na(project$internals$records)
+    records_char <- test_unique_character(project$internals$records)
+    project$internals$records <-(records_na || records_char) |>
       ifelse(project$internals$records, NA)
-    project$internals$fields <-
-      (test_scalar_na(project$internals$fields) ||
-          test_character(
-            project$internals$fields,
-            # add exist warning
-            min.chars = 1L,
-            unique = TRUE,
-            min.len = 1L,
-            any.missing = FALSE
-          )
-      ) |>
+    fields_na <- test_scalar_na(project$internals$fields)
+    fields_char <- test_unique_character(project$internals$fields)
+    project$internals$fields <- (fields_na || fields_char) |>
       ifelse(project$internals$fields, NA)
-    project$internals$forms <-
-      (test_scalar_na(project$internals$forms) ||
-          test_character(
-            project$internals$forms,
-            # add exist warning
-            min.chars = 1L,
-            unique = TRUE,
-            min.len = 1L,
-            any.missing = FALSE
-          )
-      ) |>
+    forms_na <- test_scalar_na(project$internals$forms)
+    forms_char <- test_unique_character(project$internals$forms)
+    project$internals$forms <- (forms_na || forms_char) |>
       ifelse(project$internals$forms, NA)
-    project$internals$events <-
-      (test_scalar_na(project$internals$events) ||
-          test_character(
-            project$internals$events,
-            # add exist warning
-            min.chars = 1L,
-            unique = TRUE,
-            min.len = 1L,
-            any.missing = FALSE
-          )
-      ) |>
+    events_na <- test_scalar_na(project$internals$events)
+    events_char <- test_unique_character(project$internals$events)
+    project$internals$events <- (events_na || events_char) |>
       ifelse(project$internals$events, NA)
-    project$internals$filter_logic <-
-      (test_scalar_na(project$internals$filter_logic) ||
-          test_character(
-            project$internals$filter_logic,
-            # add exist warning
-            min.chars = 1L,
-            unique = TRUE,
-            min.len = 1L,
-            any.missing = FALSE
-          )
-      ) |>
+    filter_logic_na <- test_scalar_na(project$internals$filter_logic)
+    filter_logic_char <- test_unique_character(project$internals$filter_logic)
+    project$internals$filter_logic <- (filter_logic_na || filter_logic_char) |>
       ifelse(project$internals$filter_logic, NA)
     project$internals$metadata_only <-
       project$internals$metadata_only |>
@@ -209,6 +169,6 @@ repair_setup_project <- function(project) {
       project$internals$was_updated |>
       test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$was_updated, FALSE)
-    }
+  }
   project
 }

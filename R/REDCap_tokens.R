@@ -65,7 +65,7 @@ is_valid_redcap_token <- function(token, silent = TRUE) {
     )
     return(FALSE)
   }
-  if (nchar(token) == 0L) {
+  if (!nzchar(token)) {
     token_text <- "`` (empty),"
     cli_alert_wrap(
       paste0(start_text, token_text, end_text),

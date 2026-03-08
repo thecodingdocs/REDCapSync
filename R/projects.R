@@ -6,9 +6,9 @@
 #' there project information is stored,
 #' which can be used to find, move, edit, delete that data.
 #' @return data.frame of projects from the cache
-#' @family Project Cache Functions
-#' @keywords Project Cache Functions
-#' @seealso [cache_clear()]
+#' @family Cache
+#' @keywords Cache
+#' @seealso `vignette("Cache", package = "REDCapSync")`
 #' @export
 get_projects <- function() {
   does_exist <- cache_projects_exists()

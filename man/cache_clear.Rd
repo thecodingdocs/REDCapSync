@@ -22,6 +22,12 @@ and deletes stored project information (not data)! If you provide
 The cache only stores information like project_name, token_name, directory
 location, and other details from \code{\link[=setup_project]{setup_project()}}. If you want to truly delete
 the project files, you must do so at the project directory you set up.
+See the \code{vignette("Cache", package = "REDCapSync")} Vignette.
+
+Or try \href{../doc/Cache.html}{\code{vignette("Cache", package = "REDCapSync")}}
+Or try \link[REDCapSync]{Cache}
+Or try \link[REDCapSync]{REDCapSync_project}
+Or try \vignette{Cache}
 }
 \examples{
 \dontrun{
@@ -30,6 +36,10 @@ cache_clear() # every project
 }
 }
 \seealso{
-\code{\link[=get_projects]{get_projects()}},
-\code{vignette("project_cache", package = "REDCapSync")}
+\code{vignette("Cache", package = "REDCapSync")}
+
+Other Cache: 
+\code{\link{get_projects}()}
 }
+\concept{Cache}
+\keyword{Cache}

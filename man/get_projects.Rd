@@ -17,9 +17,10 @@ there project information is stored,
 which can be used to find, move, edit, delete that data.
 }
 \seealso{
-\code{\link[=cache_clear]{cache_clear()}}
+\code{vignette("Cache", package = "REDCapSync")}
+
+Other Cache: 
+\code{\link{cache_clear}()}
 }
-\concept{Project Cache Functions}
+\concept{Cache}
 \keyword{Cache}
-\keyword{Functions}
-\keyword{Project}

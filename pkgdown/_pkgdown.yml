@@ -23,22 +23,29 @@ template:
       card: summary_large_image
 
 reference:
-  - title: Core Pipeline Functions (Basic)
+  - title: Setup and Load
     desc: For basic users use these core functions to maintain REDCap data pipelines. Setup or Load your project. Update from REDCap using what is already saved. Save the outputs to a directory.
     contents:
       - setup_project
       - load_project
       - load_test_project
+
+  - title: Project Object
+    desc: Once setup, the project object can be used to run sync and define custom transformations and subset to be passed to spreadsheets.
+    contents:
       - REDCapSync_project
 
-  - title: Other (Intermediate/Advanced)
-    desc: Expands on functionality and breaksdown core feautures into more customizable parts
-  - subtitle: Project Cache
+  - title: Multiple Projects
+    desc: Once setup, the project object can be used to run sync and define custom transformations and subset to be passed to spreadsheets
+    contents:
+      - sync
+
+  - title: Project Cache
     desc: REDCapSync cahces user-level project metadata (name, directory, links, last update and other details). Tokens and data are NOT stored here.
     contents:
       - get_projects
       - cache_clear
-      - sync
+
 
 articles:
   - title: Feautures by R User Level

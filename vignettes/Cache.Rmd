@@ -1,8 +1,8 @@
 ---
-title: "The Project Cache"
+title: "Cache"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{The Project Cache}
+  %\VignetteIndexEntry{Cache}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,11 +20,9 @@ The REDCapSync package benefits from storing/caching information about your diff
 library(REDCapSync) # don't forget to load the package
 ```
 
-# The Cache
-
 Using the `hoadr` package, R finds the standard location where R typically stores cahced package data. For example, on Mac the location might look like, "/Users/yourmacname/Library/Caches/R/REDCapSync". 
 
-## Location
+# Location
 Your exact path can be found for any R package with `rappdirs::user_cache_dir("R")`. The only thing that REDCapSync stores in this cache is the projects data.frame, which can be loaded with `projects <- get_projects()`.
 
 ```{r, eval=F}
@@ -35,7 +33,7 @@ redcapsync_cache_location
 utils::browseURL(redcapsync_cache_location)
 ```
 
-## Clearing
+# Clearing
 
 You can clear the entire cache or only delete specific projects. This will only delete REDCapSync's "knowledge" of project information and location; it will not delete any files from any project directories. If you want to delete files, please do so using your own methods.
 

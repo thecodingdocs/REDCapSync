@@ -23,11 +23,10 @@ The cache only stores information like project_name, token_name, directory
 location, and other details from \code{\link[=setup_project]{setup_project()}}. If you want to truly delete
 the project files, you must do so at the project directory you set up.
 See the \code{vignette("Cache", package = "REDCapSync")} Vignette.
-\code{vignette("Cache", package = "REDCapSync")}
+Or try \code{vignette("Cache", package = "REDCapSync")}
 Or try \href{../doc/Cache.html}{\code{vignette("Cache", package = "REDCapSync")}}
-Or try \link[REDCapSync]{Cache}
 Or try \link[REDCapSync]{REDCapSync_project}
-Or try \vignette{Cache}
+Or try \link[REDCapSync]{REDCapSync_project$sync()}
 }
 \examples{
 \dontrun{

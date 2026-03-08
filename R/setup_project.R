@@ -111,6 +111,9 @@ setup_project <- function(project_name,
                           add_default_summaries = TRUE) {
   #add better message for all caps!
   assert_env_name(project_name, max.chars = 31L, all_caps = TRUE)
+  if(project_name %in% .forbiden_project_names){
+    cli_abort("project_name {project_name} not allowed!")
+  }
   # dir_path
   # redcap_uri
   assert_env_name(token_name, max.chars = 50L, all_caps = TRUE)
@@ -191,32 +194,37 @@ setup_project <- function(project_name,
   assert_logical(add_default_transformation, len = 1L, any.missing = FALSE)
   assert_logical(add_default_summaries, len = 1L, any.missing = FALSE)
   if (missing(redcap_uri)) {
-    #use options or Renviron?
+    redcap_uri <- Sys.getenv("REDCAPSYNC_REDCAP_URI", unset = NA)
   }
+  # assert redcap_uri
   missing_dir_path <- missing(dir_path)
   original_details <- NULL
   if (!hard_reset) {
     projects <- get_projects()
     in_proj_cache <- project_name %in% projects$project_name
-    if (!in_proj_cache && !missing_dir_path) {
-      #this will add existing project to cache if not there already
-    }
     was_loaded <- FALSE
-    # attempt to load existing project unless hard_reset
-    project <- tryCatch(
-      expr = {
-        suppressWarnings({
+    if (in_proj_cache) {
+      project <- try_else_null({
+        suppressWarnings({ # will ignore supplied dir_path ? add coompare
           load_project(project_name = project_name)$.internal
         })
-      },
-      error = function(e) {
-        NULL
-      }
-    )
-    was_loaded <- !is.null(project)
+      })
+      was_loaded <- !is.null(project)
+    }
+    if(!was_loaded && !missing_dir_path) {
+      project <- try_else_null({
+        suppressWarnings({ # will ignore supplied dir_path ? add coompare
+          load_project_from_dir(project_name = project_name,
+                                dir_path = dir_path,
+                                validate = TRUE)
+        })
+      })
+      was_loaded <- !is.null(project)
+    }
+    # attempt to load existing project unless hard_reset
     if (!was_loaded) {
       project <- .blank_project
-      cli_alert_warning("Setup blank project. Nothing in cache or directory.")
+      cli_alert_warning("Setup blank project. Unable to find, load, or repair.")
     }
     if (was_loaded) {
       # compare current setting to previous settings...
@@ -254,6 +262,8 @@ setup_project <- function(project_name,
           )
         }
       }
+      dir_path <- project$dir_path
+      missing_dir_path <- missing(dir_path)
     }
   }
   if (hard_reset) {
@@ -313,6 +323,7 @@ setup_project <- function(project_name,
   # final_details ? compare if original_details not NULL
   invisible(REDCapSync_project$new(project))
 }
+#' @noRd
 .sync_frequency <- c("always",
                      "hourly",
                      "daily",
@@ -358,7 +369,13 @@ get_project_path2 <- function(project,
   )
 }
 #' @noRd
-.project_file_types <- c("", "transformation", "details")
+.project_file_types <- c("",
+                         "details",
+                         "metadata",
+                         "data",
+                         "data_default",
+                         "data_flat",
+                         "data_merge_non_repeating")
 #' @noRd
 .project_path_suffix <- "_REDCapSync.RData"
 #' @rdname setup-load
@@ -378,12 +395,17 @@ load_project <- function(project_name) {
       toString(projects$project_name)
     )
   }
-  dir_path <- projects$dir_path[
-    which(projects$project_name == project_name)] |> sanitize_path()
+  project_row <- which(projects$project_name == project_name)
+  dir_path <- sanitize_path(projects$dir_path[project_row])
+  project <- load_project_from_dir(project_name = project_name,
+                                   dir_path = dir_path,
+                                   validate = TRUE)
+  invisible(REDCapSync_project$new(project))
+}
+#' @noRd
+load_project_from_dir <- function(project_name, dir_path, validate = TRUE) {
+  assert_env_name(project_name, max.chars = 31L, all_caps = TRUE)
   assert_dir(dir_path)
-  if (!file.exists(dir_path)) {
-    stop("`dir_path` doesn't exist: '", dir_path, "'")
-  }
   project_path <- get_project_path(project_name = project_name,
                                    dir_path = dir_path)
   assert_project_path(project_path)
@@ -395,7 +417,19 @@ load_project <- function(project_name) {
     )
   }
   project <- readRDS(file = project_path)
+  if(!validate) {
+    return(project)
+  }
   project <- repair_setup_project(project)
+  if (is.null(project)) {
+    abort_message <- paste0("Failed to load/repair project with proper",
+                             " validation. This can happen with version",
+                             " changes. You can still try to load the object",
+                             " with `readRDS(\"{project_path}\")`. You should",
+                             " re-run `project <- setup_project(...)`",
+                             " and `project$sync()`.")
+    cli_abort(abort_message)
+  }
   project <- assert_setup_project(project)
   #   check if in cache already and relation!
   # SAVE
@@ -410,7 +444,7 @@ load_project <- function(project_name) {
   project_details_path <- get_project_path(project_name = project_name,
                                            dir_path = dir_path,
                                            type = "details")
-  if (file.exists(project_details_path)) {
+  if (file.exists(project_details_path)) { # will update timestamps
     saved_project_details <- readRDS(project_details_path)
     if (saved_project_details$project_name == project$project_name) {
       project$internals$last_sync <- saved_project_details$last_sync
@@ -425,7 +459,7 @@ load_project <- function(project_name) {
       the_message, " Due for sync. Run `project$sync()` to update.")
   }
   cli_alert_success(the_message)
-  invisible(REDCapSync_project$new(project))
+  project
 }
 #' @rdname setup-load
 #' @export

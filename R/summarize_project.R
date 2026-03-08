@@ -411,12 +411,13 @@ add_project_summary <- function(project,
   invisible(project)
 }
 #' @noRd
-.forbiden_summary_names <- c("last_api_call",
-                             "all_records",
-                             "was_saved")
+.forbiden_project_names <- c("CACHE_OVERRIDE", "REDCAP_URI")
 #' @noRd
-.not_important_summary_names <-
-  c("n_records", "last_save_time", "final_form_tab_names")
+.forbiden_summary_names <- c("last_api_call", "all_records", "was_saved")
+#' @noRd
+.not_important_summary_names <- c("n_records",
+                                  "last_save_time",
+                                  "final_form_tab_names")
 #' @noRd
 data_list_to_save <- function(data_list,
                               include_metadata,
@@ -634,6 +635,8 @@ generate_project_summary <- function(project,
     include_log <- summary_list$include_log
     annotate_from_log <- summary_list$annotate_from_log
   }
+  # function to do asserts here
+  assert_choice(transformation_type, .tranformation_types)
   data_list <- NULL
   data_list$metadata <- project$metadata
   if (labelled != project$internals$labelled) {
@@ -769,6 +772,8 @@ generate_project_summary <- function(project,
   )
   invisible(to_save_list)
 }
+#' @noRd
+.tranformation_types <- c("default", "none", "flat", "merge_non_repeating")
 #' @noRd
 merge_non_repeating <- function(data_list,
                                 merge_form_name,

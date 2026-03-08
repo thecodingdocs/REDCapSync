@@ -41,18 +41,13 @@ repair_project_details <- function(project_details) {
   if (!file.exists(project_path)) {
     return(NULL)
   }
-  project_details <- tryCatch(
-    expr = {
-      suppressWarnings({
-        project <- readRDS(file = project_path)
-        project$dir_path <- dir_path
-        extract_project_details(project)
-      })
-    },
-    error = function(e) {
-      NULL
-    }
-  )
+  project_details <- try_else_null({
+    suppressWarnings({
+      project <- readRDS(file = project_path)
+      project$dir_path <- dir_path
+      extract_project_details(project)
+    })
+  })
   project_details
 }
 #' @noRd

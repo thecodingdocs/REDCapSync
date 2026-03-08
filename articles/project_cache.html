@@ -88,14 +88,15 @@
 
     
     
-<p>The REDCapSync package benefits from storing/caching key information
+<p>The REDCapSync package benefits from storing/caching information
 about your different projects. The two most important pieces of
 information is the <code>project_name</code> and <code>directory</code>
 where it’s stored. This is enough information to be able to find where
 you have chosen to securely store your files, load what has already been
 collected, and then communicate with R to fetch any new updates.
 REDCapSync’s ability to store your projects in a standardized directory
-is what allows for powerful pipeline tasks.</p>
+is what allows for powerful pipeline tasks. Importantly, no direct
+project data or tokens are stored in the cache!</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a></span><span class="op">)</span> <span class="co"># don't forget to load the package</span></span></code></pre></div>
 <div class="section level2">
@@ -104,18 +105,44 @@ is what allows for powerful pipeline tasks.</p>
 <p>Using the <code>hoadr</code> package, R finds the standard location
 where R typically stores cahced package data. For example, on Mac the
 location might look like,
-“/Users/yourmacname/Library/Caches/R/REDCapSync”. Your exact path can be
-found with <code><a href="../reference/cache_path.html">cache_path()</a></code> At the time writing this article,
-the only thing that REDCapSync stores in this cache is the projects
-data.frame, which can be loaded with
-<code>projects &lt;- get_projects()</code>.</p>
+“/Users/yourmacname/Library/Caches/R/REDCapSync”.</p>
+<div class="section level3">
+<h3 id="location">Location<a class="anchor" aria-label="anchor" href="#location"></a>
+</h3>
+<p>Your exact path can be found for any R package with
+<code>rappdirs::user_cache_dir("R")</code>. The only thing that
+REDCapSync stores in this cache is the projects data.frame, which can be
+loaded with <code>projects &lt;- get_projects()</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/cache_path.html">cache_path</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">user_cache_location</span> <span class="op">&lt;-</span> <span class="fu">rappdirs</span><span class="fu">::</span><span class="fu"><a href="https://rappdirs.r-lib.org/reference/user_cache_dir.html" class="external-link">user_cache_dir</a></span><span class="op">(</span><span class="st">"R"</span><span class="op">)</span> </span>
+<span><span class="va">redcapsync_cache_location</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">user_cache_location</span>, <span class="st">"REDCapSync"</span><span class="op">)</span></span>
+<span><span class="va">redcapsync_cache_location</span></span>
+<span><span class="co"># launch the folder on your computer</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="va">redcapsync_cache_location</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="clearing">Clearing<a class="anchor" aria-label="anchor" href="#clearing"></a>
+</h3>
+<p>You can clear the entire cache or only delete specific projects. This
+will only delete REDCapSync’s “knowledge” of project information and
+location; it will not delete any files from any project directories. If
+you want to delete files, please do so using your own methods.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># clear entire cache (all projects)</span></span>
+<span><span class="fu"><a href="../reference/cache_clear.html">cache_clear</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># clear specific project</span></span>
+<span><span class="fu"><a href="../reference/cache_clear.html">cache_clear</a></span><span class="op">(</span><span class="st">"OLD_PROJECT1"</span><span class="op">)</span></span>
+<span><span class="co"># clear specific project1</span></span>
+<span><span class="fu"><a href="../reference/cache_clear.html">cache_clear</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"OLD_PROJECT2"</span>, <span class="st">"OLD_PROJECT3"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="projects">Projects<a class="anchor" aria-label="anchor" href="#projects"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>If you setup and subsequently sync/save a project, it will appear
+using the code below. If you haven’t setup any projects, it will be an
+empty data.frame.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">projects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_projects.html">get_projects</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.dataframe.html" class="external-link">print.data.frame</a></span><span class="op">(</span><span class="va">projects</span><span class="op">)</span></span></code></pre></div>
 </div>

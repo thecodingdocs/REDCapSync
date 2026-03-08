@@ -1,27 +1,46 @@
 # Clear your cached projects
 
-Included for transparency and confirmation/testing.
+Finds the location of the cache established by
+[`hoard`](https://docs.ropensci.org/hoardr/reference/hoard.html) and
+deletes stored project information (not data)! If you provide
+`project_names`, it will remove only those projects from the cache.
 
 ## Usage
 
 ``` r
-cache_clear()
+cache_clear(project_names = NULL)
 ```
+
+## Arguments
+
+- project_names:
+
+  character vector of project project_names previously setup. If NULL,
+  will get all from
+  [`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)
 
 ## Value
 
-messages confirming deleted cache
+message of outcome
 
 ## Details
 
-This function checks the location of the cache established by
-[`hoard`](https://docs.ropensci.org/hoardr/reference/hoard.html) and
-deletes it! This will not delete project data, just the packages stored
-"memory" of it.
+The cache only stores information like project_name, token_name,
+directory location, and other details from
+[`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
+If you want to truly delete the project files, you must do so at the
+project directory you set up.
 
 ## See also
 
-Other Project Cache Functions:
-[`cache_path()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_path.md),
-[`cache_remove_project()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_remove_project.md),
-[`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)
+[`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md),
+[`vignette("project_cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/project_cache.md)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+cache_clear("OLD_PROJECT")
+cache_clear() # every project
+} # }
+```

@@ -5,7 +5,11 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Clear your cached projects — cache_clear"><meta name="description" content="Included for transparency and confirmation/testing."><meta property="og:description" content="Included for transparency and confirmation/testing."><meta property="og:image" content="https://thecodingdocs.github.io/REDCapSync/reference/figures/logo.png"><meta property="og:image:alt" content="Brandon Rose"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@brosemdmph"><meta name="twitter:site" content="@thecodingdocs"></head><body>
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Clear your cached projects — cache_clear"><meta name="description" content="Finds the location of the cache established by hoard
+and deletes stored project information (not data)! If you provide
+project_names, it will remove only those projects from the cache."><meta property="og:description" content="Finds the location of the cache established by hoard
+and deletes stored project information (not data)! If you provide
+project_names, it will remove only those projects from the cache."><meta property="og:image" content="https://thecodingdocs.github.io/REDCapSync/reference/figures/logo.png"><meta property="og:image:alt" content="Brandon Rose"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@brosemdmph"><meta name="twitter:site" content="@thecodingdocs"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -54,32 +58,49 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Included for transparency and confirmation/testing.</p>
+    <p>Finds the location of the cache established by <code><a href="https://docs.ropensci.org/hoardr/reference/hoard.html" class="external-link">hoard</a></code>
+and deletes stored project information (not data)! If you provide
+<code>project_names</code>, it will remove only those projects from the cache.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cache_clear</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cache_clear</span><span class="op">(</span>project_names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-project-names">project_names<a class="anchor" aria-label="anchor" href="#arg-project-names"></a></dt>
+<dd><p>character vector of project project_names previously
+setup. If NULL, will get all from <code><a href="get_projects.html">get_projects()</a></code></p></dd>
+
+</dl></div>
+    <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>messages confirming deleted cache</p>
+    <p>message of outcome</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function checks the location of the cache established by
-<code><a href="https://docs.ropensci.org/hoardr/reference/hoard.html" class="external-link">hoard</a></code> and deletes it!
-This will not delete project data, just the packages stored "memory" of it.</p>
+    <p>The cache only stores information like project_name, token_name, directory
+location, and other details from <code><a href="setup-load.html">setup_project()</a></code>. If you want to truly delete
+the project files, you must do so at the project directory you set up.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>Other Project Cache Functions:
-<code><a href="cache_path.html">cache_path()</a></code>,
-<code><a href="cache_remove_project.html">cache_remove_project()</a></code>,
-<code><a href="get_projects.html">get_projects()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="get_projects.html">get_projects()</a></code>,
+<code><a href="../articles/project_cache.html">vignette("project_cache", package = "REDCapSync")</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu">cache_clear</span><span class="op">(</span><span class="st">"OLD_PROJECT"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">cache_clear</span><span class="op">(</span><span class="op">)</span> <span class="co"># every project</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

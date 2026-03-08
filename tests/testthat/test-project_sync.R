@@ -1,8 +1,10 @@
-withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+tempdir_file <- sanitize_path(withr::local_tempdir())
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 # sync_project ( Exported )
 # sync ( Exported )
 test_that("sync works!", {
-  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
   local_mocked_bindings(
     sweep_dirs_for_cache = function(...) NULL,
     load_project = function(...) NULL,
@@ -334,7 +336,8 @@ test_that("sweep_dirs_for_cache updates cache when project files exist", {
   expect_true(project$project_name %in% projects$project_name)
 })
 test_that("sweep_dirs_for_cache handles empty cache", {
-  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
   projects_before <- get_projects()
   expect_identical(nrow(projects_before), 0L)
   # Sweep should handle empty cache

@@ -23,7 +23,7 @@ real_dev_tokens <- c(
 )
 real_test_project <- function(project_name = "TEST_REDCAPR_SIMPLE") {
   assert_choice(project_name, .test_redcapr_names)
-  cache_location <- Sys.getenv("REDCAPSYNC_CACHE") |>
+  cache_location <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") |>
     sanitize_path() |>
     assert_directory()
   redcap_uri <- "https://redcap-dev-2.ouhsc.edu/redcap/api/"
@@ -37,7 +37,7 @@ mock_test_project <- function(project_name = "TEST_CLASSIC",
                               ever_connected = TRUE) {
   assert_choice(project_name, .test_project_names)
   assert_logical(ever_connected)
-  cache_location <- Sys.getenv("REDCAPSYNC_CACHE") |>
+  cache_location <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") |>
     sanitize_path() |>
     assert_directory()
   if (ever_connected) {
@@ -62,3 +62,4 @@ mock_test_calls <- function(project_name = "TEST_CLASSIC") {
   call_list <- readRDS(test_path("fixtures", file_name))
   call_list
 }
+tempdir_main <- sanitize_path(withr::local_tempdir())

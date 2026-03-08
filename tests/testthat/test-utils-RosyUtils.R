@@ -1,4 +1,5 @@
-withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+tempdir_file <- sanitize_path(withr::local_tempdir())
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 # clean_for_cli ( Internal )
 test_that("clean_for_cli works!", {
 })
@@ -81,19 +82,18 @@ test_that("drop_nas works!", {
 })
 # excel_to_list ( Internal )
 test_that("excel_to_list works!", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  expect_directory_exists(temp_dir)
-  test_file <- file.path(temp_dir, "cars.xlsx")
+  expect_directory_exists(tempdir_file)
+  test_file <- file.path(tempdir_file, "cars.xlsx")
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
-  list_to_excel(df_list, dir = temp_dir, file_name = "cars")
+  list_to_excel(df_list, dir = tempdir_file, file_name = "cars")
   expect_file_exists(test_file)
   df_list_saved <- excel_to_list(test_file)
   expect_list(df_list, len = 2L)
   expect_named(df_list, names(df_list_saved))
   expect_identical(nrow(df_list$one), nrow(df_list_saved$one))
   expect_identical(nrow(df_list$two), nrow(df_list_saved$two))
-  expect_error(list_to_excel(file.path(temp_dir, "fake_cars.xlsx")))
+  expect_error(list_to_excel(file.path(tempdir_file, "fake_cars.xlsx")))
 })
 # is_named_df_list ( Internal )
 test_that("is_named_df_list works!", {
@@ -130,18 +130,17 @@ test_that("unique_trimmed_strings works!", {
 })
 # list_to_excel ( Internal )
 test_that("list_to_excel works!", {
-  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  expect_directory_exists(temp_dir)
-  test_file <- file.path(temp_dir, "cars.xlsx")
-  test_file_one <- file.path(temp_dir, "cars_one.xlsx")
-  test_file_two <- file.path(temp_dir, "cars_two.xlsx")
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  expect_directory_exists(tempdir_test)
+  test_file <- file.path(tempdir_test, "cars.xlsx")
+  test_file_one <- file.path(tempdir_test, "cars_one.xlsx")
+  test_file_two <- file.path(tempdir_test, "cars_two.xlsx")
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
-  list_to_excel(df_list, dir = temp_dir, file_name = "cars")
+  list_to_excel(df_list, dir = tempdir_test, file_name = "cars")
   expect_file_exists(test_file)
   list_to_excel(df_list,
-                dir = temp_dir,
+                dir = tempdir_test,
                 file_name = "cars",
                 separate = TRUE)
   expect_file_exists(test_file_one)
@@ -155,14 +154,13 @@ test_that("list_to_excel works!", {
 })
 # list_to_csv ( Internal )
 test_that("list_to_csv works!", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  expect_directory_exists(temp_dir)
-  test_file <- file.path(temp_dir, "cars.csv")
-  test_file_one <- file.path(temp_dir, "cars_one.csv")
-  test_file_two <- file.path(temp_dir, "cars_two.csv")
+  expect_directory_exists(tempdir_file)
+  test_file <- file.path(tempdir_file, "cars.csv")
+  test_file_one <- file.path(tempdir_file, "cars_one.csv")
+  test_file_two <- file.path(tempdir_file, "cars_two.csv")
   expect_false(file.exists(test_file))
   df_list <- list(one = mtcars, two = cars)
-  list_to_csv(df_list, dir = temp_dir, file_name = "cars")
+  list_to_csv(df_list, dir = tempdir_file, file_name = "cars")
   expect_file_exists(test_file_one)
   expect_file_exists(test_file_two)
   one <- read.csv(test_file_one)
@@ -177,13 +175,12 @@ test_that("save_wb works!", {
 })
 # save_csv ( Internal )
 test_that("save_csv works!", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  expect_directory_exists(temp_dir)
-  test_file <- file.path(temp_dir, "cars.csv")
+  expect_directory_exists(tempdir_file)
+  test_file <- file.path(tempdir_file, "cars.csv")
   expect_false(file.exists(test_file))
   save_csv(
     form = mtcars,
-    dir = temp_dir,
+    dir = tempdir_file,
     file_name = "cars",
     overwrite = TRUE
   )
@@ -195,7 +192,7 @@ test_that("save_csv works!", {
   expect_message(
     save_csv(
       form = cars,
-      dir = temp_dir,
+      dir = tempdir_file,
       file_name = "cars",
       overwrite = FALSE
     ),

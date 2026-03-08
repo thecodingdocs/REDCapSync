@@ -1,4 +1,5 @@
-withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+tempdir_file <- sanitize_path(withr::local_tempdir())
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 # get_redcap_metadata ( Internal )
 # get_redcap_data ( Internal )
 test_that("get_redcap_ works on real server, simple!", {
@@ -168,7 +169,8 @@ test_that("update_project_links works!", {
 })
 # get_redcap_files ( Internal )
 test_that("get_redcap_files works!", {
-  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
   project <- mock_test_project()$.internal
   out_file_path1 <- file.path(
     project$dir_path,
@@ -198,7 +200,8 @@ test_that("get_redcap_files works!", {
   })
   get_redcap_files(project, original_file_names = FALSE, overwrite = FALSE)
   expect_all_true(file.exists(out_file_paths))
-  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
   drop_nas(project$data$other$var_sig)
   out_file_path1 <- file.path(
     project$dir_path,

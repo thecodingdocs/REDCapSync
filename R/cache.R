@@ -80,17 +80,15 @@ get_cache <- function() {
 }
 #' @noRd
 get_cache_dir <- function() {
-  cache_dir <- Sys.getenv("REDCAPSYNC_CACHE", unset = NA)
+  cache_dir <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE", unset = NA)
   if (!is.na(cache_dir) && nzchar(cache_dir)) {
     user_dir_exists <- dir.exists(cache_dir)
     if (!user_dir_exists) {
       check_directory_exists(cache_dir)
-      cli_alert_warning(
-        paste(
-          "Cache directory via `Sys.getenv(\"REDCAPSYNC_CACHE\")`",
-          "does not exist!"
-        )
-      )
+      warning_message <- paste("Cache directory via",
+                               "`Sys.getenv(\"REDCAPSYNC_CACHE_OVERRIDE\")`",
+                               "does not exist!")
+      cli_alert_warning(warning_message)
     }
     if (user_dir_exists) {
       return(cache_dir)

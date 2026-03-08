@@ -1,4 +1,5 @@
-withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+tempdir_file <- sanitize_path(withr::local_tempdir())
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 test_that("R6 object works!", {
   project_r6 <- REDCapSync_project$new(mock_test_project()$.internal)
   expect_r6_class(project_r6, "REDCapSync_project")
@@ -32,7 +33,8 @@ test_that("R6 info works!", {
   expect_message(project_r6$info(), "PID: 12341")
 })
 test_that("R6 add_summary and remove_summaries works!", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
   project_r6 <- mock_test_project()
   summary_names <- project_r6$.internal$summary |>
     names() |>
@@ -42,7 +44,7 @@ test_that("R6 add_summary and remove_summaries works!", {
     "new_summary",
     filter_field = "var_yesno",
     filter_choices = "Yes",
-    dir_other = temp_dir
+    dir_other = tempdir_test
   )
   summary_names <- project_r6$.internal$summary |>
     names() |>
@@ -63,7 +65,8 @@ test_that("R6 add_summary and remove_summaries works!", {
   expect_length(summary_names, 0L)
 })
 test_that("R6 test projects!", {
-  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
   project <- mock_test_project()$.internal
   dir_path <- project$dir_path
   proj_path <- file.path(dir_path, "R_objects", "TEST_CLASSIC_REDCapSync.RData")

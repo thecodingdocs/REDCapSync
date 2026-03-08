@@ -1,9 +1,10 @@
-withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+tempdir_file <- sanitize_path(withr::local_tempdir())
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 # setup_project ( Exported )
 test_that("setup_project creates a valid project object and valid directory", {
-  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  expect_error(assert_dir(dir_path = temp_dir))
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  expect_error(assert_dir(dir_path = tempdir_test))
   project_name <- "TEST_CLASSIC"
   redcap_uri <- "https://redcap.miami.edu/api/"
   # test_short_names
@@ -26,18 +27,18 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_error(assert_blank_project(.blank_project[[-1L]]))
   expect_error(assert_blank_project(1L))
   expect_error(assert_blank_project(data.frame()))
-  expect_error(assert_dir(temp_dir))
+  expect_error(assert_dir(tempdir_test))
   # Run setup_project
   project <- setup_project(
     project_name = project_name,
-    dir_path = temp_dir,
+    dir_path = tempdir_test,
     redcap_uri = redcap_uri,
     hard_reset = TRUE
   )$.internal # change to R6 later
-  expect_no_error(assert_dir(dir_path = temp_dir))
+  expect_no_error(assert_dir(dir_path = tempdir_test))
   expect_no_error(assert_blank_project(project = project))
   check_dir <- assert_dir(project$dir_path)
-  expect_identical(temp_dir, check_dir)
+  expect_identical(tempdir_test, check_dir)
   expect_type(project, type = "list")
   expect_named(project)
   expect_true("project_name" %in% names(project))
@@ -46,16 +47,16 @@ test_that("setup_project creates a valid project object and valid directory", {
   expect_false(project$internals$is_test)
   expect_directory_exists(project$dir_path)
   expect_identical(project$project_name, project_name)
-  test_dir_files <- list.files(temp_dir)
+  test_dir_files <- list.files(tempdir_test)
   expect_true(all(.dir_folders %in% test_dir_files))
-  project$dir_path <- file.path(temp_dir, "another_fake_folder") |>
+  project$dir_path <- file.path(tempdir_test, "another_fake_folder") |>
     sanitize_path()
   expect_error(assert_dir(project$dir_path))
 })
 test_that("setup_project checks exisiting dir", {
-  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  expect_error(assert_dir(dir_path = temp_dir))
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  expect_error(assert_dir(dir_path = tempdir_test))
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal
   save_project(project)
@@ -64,7 +65,7 @@ test_that("setup_project checks exisiting dir", {
   expect_error(
     setup_project(
       project_name = project_name,
-      dir_path = temp_dir,
+      dir_path = tempdir_test,
       redcap_uri = redcap_uri,
       hard_reset = FALSE
     )$.internal # change to R6 later
@@ -72,7 +73,7 @@ test_that("setup_project checks exisiting dir", {
   redcap_uri <- project$links$redcap_uri
   project_loaded <- setup_project(
     project_name = project_name,
-    dir_path = temp_dir,
+    dir_path = tempdir_test,
     redcap_uri = redcap_uri,
     hard_reset = FALSE
   )$.internal # change to R6 later
@@ -81,7 +82,7 @@ test_that("setup_project checks exisiting dir", {
   expect_warning({
     project_loaded <- setup_project(
       project_name = project_name,
-      dir_path = temp_dir,
+      dir_path = tempdir_test,
       redcap_uri = redcap_uri,
       labelled = FALSE,
       hard_reset = FALSE
@@ -92,11 +93,10 @@ test_that("setup_project checks exisiting dir", {
 # load_project ( Exported )
 # save_project ( Exported )
 test_that("save_project doesn't save if blank but will save if valid", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project_name <- "TEST_CLASSIC"
   redcap_uri <- "https://redcap.miami.edu/api/"
   project <- setup_project(project_name = project_name,
-                           dir_path = temp_dir,
+                           dir_path = tempdir_file,
                            redcap_uri = redcap_uri)$.internal # change to R6
   save_project(project)
   expect_false(file.exists(file.path(
@@ -121,7 +121,7 @@ test_that("save_project doesn't save if blank but will save if valid", {
   expect_identical(nrow(get_projects()), 1L)
   expect_identical(projects$project_name, project_name)
   expect_identical(projects$redcap_uri, redcap_uri)
-  expect_identical(projects$dir_path, temp_dir)
+  expect_identical(projects$dir_path, tempdir_file)
   # loading tests wont load unknown project
   expect_error(load_project("a_project"))
   # loads what we saved
@@ -131,8 +131,7 @@ test_that("save_project doesn't save if blank but will save if valid", {
 })
 # set_dir ( Internal )
 test_that("set_dir handles existing directory correctly", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  dir_path <- file.path(temp_dir, "existing_dir")
+  dir_path <- file.path(tempdir_file, "existing_dir")
   dir.create(dir_path)
   expect_message(set_dir(dir_path), "Directory is Valid!")
   expect_directory_exists(dir_path)
@@ -142,8 +141,7 @@ test_that("set_dir throws an error for invalid directory path", {
   expect_error(set_dir(123L), "dir must be a character string")
 })
 test_that("set_dir creates missing internal directories", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  dir_path <- file.path(temp_dir, "partial_dir")
+  dir_path <- file.path(tempdir_file, "partial_dir")
   dir.create(dir_path)
   dir.create(file.path(dir_path, "R_objects"))
   expect_message(set_dir(dir_path), "Directory is Valid!")
@@ -151,15 +149,13 @@ test_that("set_dir creates missing internal directories", {
   expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
 test_that("set_dir stops if user chooses not to create directory", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  dir_path <- file.path(temp_dir, "no_create_dir")
+  dir_path <- file.path(tempdir_file, "no_create_dir")
   # Mock user input to not create the directory
   expect_error(set_dir(dir_path), "Path not found. Use absolute path")
   expect_false(file.exists(dir_path))
 })
 test_that("set_dir validates the directory structure", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
-  dir_path <- file.path(temp_dir, "valid_dir")
+  dir_path <- file.path(tempdir_file, "valid_dir")
   dir.create(dir_path)
   for (folder in .dir_folders) {
     dir.create(file.path(dir_path, folder))

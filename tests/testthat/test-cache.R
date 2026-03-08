@@ -1,8 +1,9 @@
-withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+tempdir_file <- sanitize_path(withr::local_tempdir())
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 test_that("local_envvar seen by tests, exists, but empty at first", {
-  expect_false(Sys.getenv("REDCAPSYNC_CACHE") == "")
-  expect_directory_exists(Sys.getenv("REDCAPSYNC_CACHE"))
-  real_cache_path <- Sys.getenv("REDCAPSYNC_CACHE") |>
+  expect_false(Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") == "")
+  expect_directory_exists(Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE"))
+  real_cache_path <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") |>
     file.path(".cache")
   real_cache_path_projects <- real_cache_path |>
     file.path("projects.rds")
@@ -10,19 +11,19 @@ test_that("local_envvar seen by tests, exists, but empty at first", {
   expect_false(test_file_exists(real_cache_path_projects))
 })
 test_that("hoardr cache works at baseline", {
-  withr::local_envvar(REDCAPSYNC_CACHE = NA)
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = NA)
   expect_directory_exists(cache_path())
   expect_true(cache_exists())
 })
 test_that("cache_path works inside and outside of testing", {
-  expect_false(Sys.getenv("REDCAPSYNC_CACHE") == "")
-  testing_path <- Sys.getenv("REDCAPSYNC_CACHE") |>
+  expect_false(Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") == "")
+  testing_path <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") |>
     file.path(".cache")
   expect_directory_exists(cache_path())
   expect_directory_exists(testing_path)
   expect_identical(cache_path(), testing_path)
-  withr::local_envvar(REDCAPSYNC_CACHE = NA)
-  expect_identical(Sys.getenv("REDCAPSYNC_CACHE"), "")
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = NA)
+  expect_identical(Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE"), "")
   fake_other_cache <- hoardr::hoard()
   fake_other_cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
   expected_user_path <- sanitize_path(fake_other_cache$cache_path_get())
@@ -32,7 +33,8 @@ test_that("cache_path works inside and outside of testing", {
 })
 # get_cache ( Internal )
 test_that("can save files to cache and delete", {
-  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
   test_cache <- get_cache()
   test_cache_path <- test_cache$cache_path_get()
   expect_directory_exists(test_cache_path)
@@ -46,7 +48,8 @@ test_that("can save files to cache and delete", {
 # cache_clear ( Exported )
 # cache_projects_exists ( Internal )
 test_that("cache_projects_exists works", {
-  withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
   expect_false(cache_projects_exists())
   expect_message(cache_projects_exists(), "No cached projects")
   fake_cache <- get_cache()

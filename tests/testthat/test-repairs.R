@@ -1,4 +1,5 @@
-withr::local_envvar(REDCAPSYNC_CACHE = sanitize_path(withr::local_tempdir()))
+tempdir_file <- sanitize_path(withr::local_tempdir())
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 # repair_projects ( Internal )
 test_that("repair_projects works with valid project details", {
   project <- mock_test_project()$.internal
@@ -89,16 +90,15 @@ test_that("repair_project_details returns NULL when dir_path is NA", {
   expect_null(result)
 })
 test_that("repair_project_details handles corrupted project file", {
-  temp_dir <- assert_directory(Sys.getenv("REDCAPSYNC_CACHE"))
   project_details_df <- data.frame(
     project_name = "CORRUPT_PROJECT",
-    dir_path = temp_dir,
+    dir_path = tempdir_file,
     stringsAsFactors = FALSE
   )
   # Create corrupted project file
   project_path <- get_project_path(
     project_name = "CORRUPT_PROJECT",
-    dir_path = temp_dir
+    dir_path = tempdir_file
   )
   saveRDS("not a valid project object", file = project_path)
   result <- repair_project_details(project_details_df)

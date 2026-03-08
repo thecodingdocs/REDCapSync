@@ -7,20 +7,15 @@
 #' The cache only stores information like project_name, token_name, directory
 #' location, and other details from [setup_project()]. If you want to truly delete
 #' the project files, you must do so at the project directory you set up.
-#' See the `vignette("Cache", package = "REDCapSync")` Vignette.
-#' Or try \code{vignette("Cache", package = "REDCapSync")}
-#' Or try \href{../doc/Cache.html}{\code{vignette("Cache", package = "REDCapSync")}}
-#' Or try \link[REDCapSync]{REDCapSync_project}
-#' Or try \link[REDCapSync]{REDCapSync_project$sync()}
 #' @inheritParams sync
 #' @examples
 #' \dontrun{
 #' cache_clear("OLD_PROJECT")
 #' cache_clear() # every project
 #' }
-#' @family Cache
-#' @keywords Cache
-#' @seealso `vignette("Cache", package = "REDCapSync")`
+#' @family Cache Functions
+#' @keywords Cache Functions
+#' @seealso \code{vignette("Cache", package = "REDCapSync")}
 #' @return message of outcome
 #' @export
 cache_clear <- function(project_names = NULL) {

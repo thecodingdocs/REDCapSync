@@ -38,8 +38,6 @@ reference:
     contents:
       - get_projects
       - cache_clear
-      - cache_path
-      - cache_remove_project
       - sync
 
 articles:

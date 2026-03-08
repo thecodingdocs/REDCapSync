@@ -70,7 +70,7 @@ test_that("add and remove project details from cache works", {
   project <- mock_test_project()$.internal
   projects <- get_projects()
   project_details <- extract_project_details(project)
-  expect_message(cache_remove_project(project_name = "TEST_other"),
+  expect_message(cache_remove_project(project_name = "TEST_OTHER"),
                  "Nothing to do")
   expect_false("TEST_other" %in% projects$project_name)
   expect_false("TEST_CLASSIC" %in% projects$project_name)

@@ -1,45 +1,33 @@
-#' @title Get your Get Cache Path
-#' @description
-#' Included for transparency and confirmation/testing. This is where the basic
-#' information about your projects is cached when you use the REDCapSync
-#' package.
-#' @details
-#' This function checks the location of the cache established by
-#' \code{\link[hoardr]{hoard}}.
-#' \emph{No project data is stored here. Tokens are not stored here either.}
-#' Key information stored here is `project_name` (primary key for REDCapSync
-#' projects) and other details about project information.
-#' @return The file path of your REDCapSync cache
-#' @seealso
-#' For more details, see \code{\link[hoardr]{hoard}}.
-#' @examples
-#' \dontrun{
-#' path <- cache_path()
-#' print(path)
-#' }
-#' @family Project Cache Functions
-#' @keywords Project Cache Functions
-#' @export
-cache_path <- function() {
-  cache <- get_cache()
-  path <- sanitize_path(cache$cache_path_get())
-  path
-}
 #' @title Clear your cached projects
 #' @description
-#' Included for transparency and confirmation/testing.
+#' Finds the location of the cache established by \code{\link[hoardr]{hoard}}
+#' and deletes stored project information (not data)! If you provide
+#' `project_names`, it will remove only those projects from the cache.
 #' @details
-#' This function checks the location of the cache established by
-#' \code{\link[hoardr]{hoard}} and deletes it!
-#' This will not delete project data, just the packages stored "memory" of it.
-#' @return messages confirming deleted cache
-#' @family Project Cache Functions
-#' @keywords Project Cache Functions
+#' The cache only stores information like project_name, token_name, directory
+#' location, and other details from [setup_project()]. If you want to truly delete
+#' the project files, you must do so at the project directory you set up.
+#'
+#' @inheritParams sync
+#' @seealso [get_projects()],
+#' `vignette("project_cache", package = "REDCapSync")`
+#' @examples
+#' \dontrun{
+#' cache_clear("OLD_PROJECT")
+#' cache_clear() # every project
+#' }
+#' @return message of outcome
 #' @export
-cache_clear <- function() {
+cache_clear <- function(project_names = NULL) {
   cache <- get_cache()
+  if (!is.null(project_names)) {
+    for (project_name in project_names) {
+      cache_remove_project(project_name)
+    }
+    return(invisible())
+  }
   cache$delete_all()
-  cli_alert_warning("You must delete other files manually from the directory.")
+  cli_alert_warning("You must delete any files manually from the directory.")
   cli_alert_wrap(
     "REDCapSync cache cleared!",
     file = cache$cache_path_get(),
@@ -48,22 +36,20 @@ cache_clear <- function() {
   invisible()
 }
 #' @noRd
-cache_exists <- function() {
-  cache <- get_cache()
-  file.exists(cache$cache_path_get())
-}
-#' @noRd
-cache_projects_exists <- function() {
-  does_exist <- FALSE
-  if (cache_exists()) {
-    does_exist <- cache_path() |>
-      file.path("projects.rds") |>
-      file.exists()
-    if (!does_exist) {
-      cli_alert_warning("No cached projects... use `setup_project(...)`")
-    }
+cache_remove_project <- function(project_name) {
+  assert_env_name(project_name, max.chars = 31L, all_caps = TRUE)
+  projects <- get_projects()
+  is_in_cache <- project_name %in% projects$project_name
+  if (!is_in_cache) {
+    cli_alert_warning("'{project_name}' is not in your cache. Nothing to do.")
+    return(invisible())
   }
-  does_exist
+  projects <- projects[which(projects$project_name != project_name), ]
+  save_projects_to_cache(projects, silent = TRUE)
+  success_message <- paste0("'{project_name}' removed from cache, but files",
+                            " may still be located in the directory.")
+  cli_alert_success(success_message)
+  invisible()
 }
 #' @noRd
 get_cache <- function() {
@@ -96,29 +82,27 @@ get_cache_dir <- function() {
   }
   NULL
 }
-#' @title Remove project from cache
-#' @inheritParams setup_project
-#' @description
-#' This will remove a project from the cache. The cache only stores information
-#' like project_name, token_name, directory location, and details
-#' from setup_project. If you want to truly delete the project files, you must
-#' do so at the project directory you set up.
-#' @return message of outcome
-#' @family Project Cache Functions
-#' @keywords Project Cache Functions
-#' @export
-cache_remove_project <- function(project_name) {
-  projects <- get_projects()
-  is_in_cache <- project_name %in% projects$project_name
-  if (!is_in_cache) {
-    cli_alert_warning("'{project_name}' is not in your cache. Nothing to do.")
-    return(invisible())
+#' @noRd
+cache_exists <- function() {
+  cache <- get_cache()
+  file.exists(cache$cache_path_get())
+}
+#' @noRd
+cache_projects_exists <- function() {
+  does_exist <- FALSE
+  if (cache_exists()) {
+    does_exist <- cache_path() |>
+      file.path("projects.rds") |>
+      file.exists()
+    if (!does_exist) {
+      cli_alert_warning("No cached projects... use `setup_project(...)`")
+    }
   }
-  projects <- projects[which(projects$project_name != project_name), ]
-  save_projects_to_cache(projects, silent = TRUE)
-  success_message <- paste0("'{project_name}' removed from cache, but it's",
-                            " associated files are still located in the ",
-                            " directory assigned `setup_project` and can be",
-                            " deleted manually.")
-  cli_alert_success(success_message)
+  does_exist
+}
+#' @noRd
+cache_path <- function() {
+  cache <- get_cache()
+  path <- sanitize_path(cache$cache_path_get())
+  path
 }

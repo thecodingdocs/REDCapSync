@@ -8,6 +8,7 @@
 #' @return data.frame of projects from the cache
 #' @family Project Cache Functions
 #' @keywords Project Cache Functions
+#' @seealso [cache_clear()]
 #' @export
 get_projects <- function() {
   does_exist <- cache_projects_exists()
@@ -214,7 +215,7 @@ add_project_details_to_cache <- function(project_details) {
         " PID {projects$project_id[bad_row]}] that you have already setup ",
         "[{projects$project_name[bad_row]} PID {project_details$project_id}] ",
         "You can load the old project or run ",
-        "`cache_remove_project(\"{projects$project_name[bad_row]}\")`"
+        "`cache_clear(\"{projects$project_name[bad_row]}\")`"
       )
     )
   }

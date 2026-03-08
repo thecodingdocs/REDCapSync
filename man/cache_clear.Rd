@@ -4,26 +4,32 @@
 \alias{cache_clear}
 \title{Clear your cached projects}
 \usage{
-cache_clear()
+cache_clear(project_names = NULL)
+}
+\arguments{
+\item{project_names}{character vector of project project_names previously
+setup. If NULL, will get all from \code{get_projects()}}
 }
 \value{
-messages confirming deleted cache
+message of outcome
 }
 \description{
-Included for transparency and confirmation/testing.
+Finds the location of the cache established by \code{\link[hoardr]{hoard}}
+and deletes stored project information (not data)! If you provide
+\code{project_names}, it will remove only those projects from the cache.
 }
 \details{
-This function checks the location of the cache established by
-\code{\link[hoardr]{hoard}} and deletes it!
-This will not delete project data, just the packages stored "memory" of it.
+The cache only stores information like project_name, token_name, directory
+location, and other details from \code{\link[=setup_project]{setup_project()}}. If you want to truly delete
+the project files, you must do so at the project directory you set up.
+}
+\examples{
+\dontrun{
+cache_clear("OLD_PROJECT")
+cache_clear() # every project
+}
 }
 \seealso{
-Other Project Cache Functions: 
-\code{\link{cache_path}()},
-\code{\link{cache_remove_project}()},
-\code{\link{get_projects}()}
+\code{\link[=get_projects]{get_projects()}},
+\code{vignette("project_cache", package = "REDCapSync")}
 }
-\concept{Project Cache Functions}
-\keyword{Cache}
-\keyword{Functions}
-\keyword{Project}

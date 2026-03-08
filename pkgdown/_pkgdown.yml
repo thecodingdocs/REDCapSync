@@ -62,7 +62,7 @@ articles:
       - Tokens
   - title: Setup
     contents:
-      - project_cache
+      - Cache
       - project_object
       - multiple_projects
   - title: File Management

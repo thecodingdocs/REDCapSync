@@ -52,7 +52,7 @@
     </div>
 
     <div class="section level2">
-      <h2 id="core-pipeline-functions-basic-">Core Pipeline Functions (Basic)<a class="anchor" aria-label="anchor" href="#core-pipeline-functions-basic-"></a></h2>
+      <h2 id="setup-and-load">Setup and Load<a class="anchor" aria-label="anchor" href="#setup-and-load"></a></h2>
 
       <div class="section-desc"><p>For basic users use these core functions to maintain REDCap data pipelines. Setup or Load your project. Update from REDCap using what is already saved. Save the outputs to a directory.</p></div>
 
@@ -67,21 +67,41 @@
 
         </dt>
         <dd>Setup or Load REDCapSync Project</dd>
+      </dl></div><div class="section level2">
+      <h2 id="project-object">Project Object<a class="anchor" aria-label="anchor" href="#project-object"></a></h2>
 
-        <dt>
+      <div class="section-desc"><p>Once setup, the project object can be used to run sync and define custom transformations and subset to be passed to spreadsheets.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="REDCapSync_project.html">REDCapSync_project</a></code>
 
         </dt>
         <dd>REDCapSync Encapsulated Project Object</dd>
       </dl></div><div class="section level2">
-      <h2 id="other-intermediate-advanced-">Other (Intermediate/Advanced)<a class="anchor" aria-label="anchor" href="#other-intermediate-advanced-"></a></h2>
+      <h2 id="multiple-projects">Multiple Projects<a class="anchor" aria-label="anchor" href="#multiple-projects"></a></h2>
 
-      <div class="section-desc"><p>Expands on functionality and breaksdown core feautures into more customizable parts</p></div>
+      <div class="section-desc"><p>Once setup, the project object can be used to run sync and define custom transformations and subset to be passed to spreadsheets</p></div>
 
       <dl></dl></div><div class="section level2">
 
-      <h3 id="project-cache">Project Cache<a class="anchor" aria-label="anchor" href="#project-cache"></a></h3>
+
+
+
+      <dl><dt>
+
+          <code><a href="sync.html">sync()</a></code>
+
+        </dt>
+        <dd>Synchronize REDCap Data</dd>
+      </dl></div><div class="section level2">
+      <h2 id="project-cache">Project Cache<a class="anchor" aria-label="anchor" href="#project-cache"></a></h2>
+
       <div class="section-desc"><p>REDCapSync cahces user-level project metadata (name, directory, links, last update and other details). Tokens and data are NOT stored here.</p></div>
 
       <dl></dl></div><div class="section level2">
@@ -102,13 +122,6 @@
 
         </dt>
         <dd>Clear your cached projects</dd>
-
-        <dt>
-
-          <code><a href="sync.html">sync()</a></code>
-
-        </dt>
-        <dd>Synchronize REDCap Data</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

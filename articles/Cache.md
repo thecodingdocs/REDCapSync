@@ -1,0 +1,61 @@
+# Cache
+
+The REDCapSync package benefits from storing/caching information about
+your different projects. The two most important pieces of information is
+the `project_name` and `directory` where it’s stored. This is enough
+information to be able to find where you have chosen to securely store
+your files, load what has already been collected, and then communicate
+with R to fetch any new updates. REDCapSync’s ability to store your
+projects in a standardized directory is what allows for powerful
+pipeline tasks. Importantly, no direct project data or tokens are stored
+in the cache!
+
+``` r
+library(REDCapSync) # don't forget to load the package
+```
+
+Using the `hoadr` package, R finds the standard location where R
+typically stores cahced package data. For example, on Mac the location
+might look like, “/Users/yourmacname/Library/Caches/R/REDCapSync”.
+
+## Location
+
+Your exact path can be found for any R package with
+`rappdirs::user_cache_dir("R")`. The only thing that REDCapSync stores
+in this cache is the projects data.frame, which can be loaded with
+`projects <- get_projects()`.
+
+``` r
+user_cache_location <- rappdirs::user_cache_dir("R") 
+redcapsync_cache_location <- file.path(user_cache_location, "REDCapSync")
+redcapsync_cache_location
+# launch the folder on your computer
+utils::browseURL(redcapsync_cache_location)
+```
+
+## Clearing
+
+You can clear the entire cache or only delete specific projects. This
+will only delete REDCapSync’s “knowledge” of project information and
+location; it will not delete any files from any project directories. If
+you want to delete files, please do so using your own methods.
+
+``` r
+# clear entire cache (all projects)
+cache_clear()
+# clear specific project
+cache_clear("OLD_PROJECT1")
+# clear specific project1
+cache_clear(c("OLD_PROJECT2", "OLD_PROJECT3"))
+```
+
+## Projects
+
+If you setup and subsequently sync/save a project, it will appear using
+the code below. If you haven’t setup any projects, it will be an empty
+data.frame.
+
+``` r
+projects <- get_projects()
+print.data.frame(projects)
+```

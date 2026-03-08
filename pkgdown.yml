@@ -4,17 +4,17 @@ pkgdown_sha: ~
 articles:
   Advanced: Advanced.html
   Basic: Basic.html
+  Cache: Cache.html
   Download: Download.html
   Intermediate: Intermediate.html
   multiple_projects: multiple_projects.html
-  project_cache: project_cache.html
   project_object: project_object.html
   REDCap: REDCap.html
   REDCapSync: REDCapSync.html
   Security: Security.html
   Tokens: Tokens.html
   Upload: Upload.html
-last_built: 2026-03-08T21:04Z
+last_built: 2026-03-08T21:51Z
 urls:
   reference: https://thecodingdocs.github.io/REDCapSync/reference
   article: https://thecodingdocs.github.io/REDCapSync/articles

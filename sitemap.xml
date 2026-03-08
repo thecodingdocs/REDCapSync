@@ -4,6 +4,7 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/LICENSE.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Advanced.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Basic.html</loc></url>
+<url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Cache.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Download.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Intermediate.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/REDCap.html</loc></url>
@@ -13,7 +14,6 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Upload.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/index.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/multiple_projects.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/articles/project_cache.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/project_object.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/authors.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/index.html</loc></url>

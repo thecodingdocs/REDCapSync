@@ -17,4 +17,7 @@ data.frame of projects from the cache
 
 ## See also
 
+[`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
+
+Other Cache:
 [`cache_clear()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_clear.md)

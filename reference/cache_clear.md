@@ -29,12 +29,22 @@ The cache only stores information like project_name, token_name,
 directory location, and other details from
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 If you want to truly delete the project files, you must do so at the
-project directory you set up.
+project directory you set up. See the
+[`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
+Vignette.
+[`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
+Or try
+[[`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)](https://thecodingdocs.github.io/REDCapSync/doc/Cache.md)
+Or try Cache Or try
+[REDCapSync_project](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync_project.md)
+Or try Cache
 
 ## See also
 
-[`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md),
-[`vignette("project_cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/project_cache.md)
+[`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
+
+Other Cache:
+[`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)
 
 ## Examples
 

@@ -31,13 +31,13 @@ directory location, and other details from
 If you want to truly delete the project files, you must do so at the
 project directory you set up. See the
 [`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
-Vignette.
+Vignette. Or try
 [`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
 Or try
 [[`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)](https://thecodingdocs.github.io/REDCapSync/doc/Cache.md)
-Or try Cache Or try
+Or try
 [REDCapSync_project](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync_project.md)
-Or try Cache
+Or try REDCapSync_project\$sync()
 
 ## See also
 

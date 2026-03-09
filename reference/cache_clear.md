@@ -35,6 +35,9 @@ project directory you set up.
 
 [`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
 
+Other Cache Functions:
+[`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)
+
 ## Examples
 
 ``` r

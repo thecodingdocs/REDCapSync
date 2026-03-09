@@ -230,6 +230,10 @@ clean_form <- function(form,
                       fields$field_label[x_row])[[1L]]
       x_levels <- NULL
       if (!is.na(x_class)) {
+        if (is_something(drop_others)) {
+            erase_rows <- which(form[[field_name]] %in% drop_others)
+            form[[field_name]][erase_rows] <- NA
+        }
         if (x_class == "factor") {
           select_choices <- fields$select_choices_or_calculations[x_row]
           if (!is.na(select_choices)) {
@@ -255,16 +259,16 @@ clean_form <- function(form,
             x_levels <-
               x_levels[which(x_levels %in% unique(form[[field_name]]))]
           }
-          if (!is.null(drop_others)) {
-            if (length(drop_others) > 0L) {
-              x_levels <- x_levels[which(!x_levels %in% drop_others)]
-            }
+          if (is_something(drop_others)) {
+            x_levels <- x_levels[which(!x_levels %in% drop_others)]
           }
         }
         if (x_class == "integer") {
+          #warning about missing codes?
           form[[field_name]] <- as.integer(form[[field_name]])
         }
         if (x_class == "numeric") {
+          #warning about missing codes?
           form[[field_name]] <- as.numeric(form[[field_name]])
         }
         form

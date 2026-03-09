@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
 # fields_to_choices ( Internal )
 test_that("fields_to_choices works", {
   project <- mock_test_project()$.internal
@@ -183,11 +183,15 @@ test_that("save_project_summary works", {
 # generate_project_summary ( Exported )
 test_that("generate_project_summary works!", {
   project <- mock_test_project()$.internal
+  expect_error(generate_project_summary(project = project,
+                                        summary_name = "non-existing"),
+               regexp = "not included in the current project summaries")
   project_summary <- generate_project_summary(project = project,
                                               summary_name = "REDCapSync")
   expect_true(is_df_list(project_summary))
   project_summary <- generate_project_summary(project = project,
-                                              include_metadata = TRUE)
+                                              include_metadata = TRUE,
+                                              include_log = TRUE)
   expect_contains(names(project_summary), "forms")
   expect_contains(names(project_summary), "fields")
   expect_contains(names(project_summary), "choices")
@@ -202,6 +206,12 @@ test_that("generate_project_summary works!", {
   fields <- project$metadata$fields
   fields$field_name[which(fields$identifier == "y")]
   colnames(project_summary$merged)
+  should_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1]
+  expect_identical(should_be_missing, "Unknown")
+  project_summary <- generate_project_summary(project = project,
+                                              drop_missing_codes = TRUE)
+  should_not_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1]
+  expect_scalar_na(should_not_be_missing)
 })
 # merge_non_repeating ( Internal )
 test_that("merge_non_repeating works!", {

@@ -374,7 +374,31 @@ Add a new summary entry
 
 #### Usage
 
-    REDCapSync_project$generate_summary(summary_name = "REDCapSync", envir = NULL)
+    REDCapSync_project$generate_summary(
+      summary_name,
+      envir = NULL,
+      transformation_type = "default",
+      merge_form_name = "merged",
+      filter_field = NULL,
+      filter_choices = NULL,
+      filter_list = NULL,
+      filter_strict = TRUE,
+      field_names = NULL,
+      form_names = NULL,
+      exclude_identifiers = TRUE,
+      exclude_free_text = FALSE,
+      date_handling = "none",
+      labelled = TRUE,
+      clean = TRUE,
+      drop_blanks = FALSE,
+      drop_missing_codes = FALSE,
+      drop_others = NULL,
+      include_metadata = TRUE,
+      include_records = TRUE,
+      include_users = TRUE,
+      include_log = FALSE,
+      annotate_from_log = TRUE
+    )
 
 #### Arguments
 
@@ -387,6 +411,122 @@ Add a new summary entry
 - `envir`:
 
   environment variable
+
+- `transformation_type`:
+
+  Character scalar. How to transform data for the summary. Default is
+  "default". Other options are "none", "flat", "merge_non_repeating".
+  "default" first merges non-repeating and if there are repeating forms,
+  it merges non-repeating variables to the right of repeating
+  instruments. "flat" is one-record, one-row, even if there are
+  repeating forms. "none" does not transform anything.
+  "merge_non_repeating" still merges all non-repeating instruments but
+  does not merge them to repeating instruments.
+
+- `merge_form_name`:
+
+  A character string representing the name of the merged form. Default
+  is "merged".
+
+- `filter_field`:
+
+  Character. The name of the field in the database to filter on. Used
+  with `filter_choices`.
+
+- `filter_choices`:
+
+  Vector. The values of `filter_field` used to define the summary. An
+  alternative to providing a full `filter_list`.
+
+- `filter_list`:
+
+  Vector. The values of `filter_field` used to define the summary. Names
+  are field names; values are the allowed value set(s). Use either
+  `filter_list` or `filter_field` with `filter_choices`.
+
+- `filter_strict`:
+
+  Logical. If `TRUE`, all forms will be filtered by criteria. If
+  `FALSE`, will convert original filter to ID column and filter all
+  other forms by that record. Default is `TRUE`.
+
+- `field_names`:
+
+  Character vector. Names of specific fields to include in the summary.
+  Default is `NULL`, which includes all fields.
+
+- `form_names`:
+
+  Character vector. Names of forms to include in the summary. Default is
+  `NULL`, which includes all forms.
+
+- `exclude_identifiers`:
+
+  Logical. Whether to exclude identifiers in the data in the summary.
+  Default is `TRUE`.
+
+- `exclude_free_text`:
+
+  Logical. If `TRUE`, exclude free text fields intended for
+  de-identification workflows. Default is `FALSE`.
+
+- `date_handling`:
+
+  character string. One of `none`,`exclude_dates`,
+  `random_shift_by_record`, `random_shift_by_project`, `zero_by_record`,
+  or `zero_by_project`. Random shift is +/- 90 unless changed with
+  options.
+
+- `labelled`:
+
+  Logical. If `TRUE`, the data will be converted to labelled. If
+  `FALSE`, returns raw coded values. Default is `TRUE`.
+
+- `clean`:
+
+  Logical. If `TRUE`, the data will be cleaned (e.g., standardizing
+  missing/blank values) before summarizing. Default is `TRUE`. If
+  missing codes are present in a number or date variable, R will convert
+  missing codes to NA and will make that variable not upload compatible.
+
+- `drop_blanks`:
+
+  Logical. If `TRUE`, records with blank fields will be dropped during
+  cleaning. Default is `TRUE`.
+
+- `drop_missing_codes`:
+
+  Logical. If `TRUE`, will convert missing codes to NA. Default is
+  `FALSE`.
+
+- `drop_others`:
+
+  Character vector of other values that should be dropped.
+
+- `include_metadata`:
+
+  Logical. If `TRUE`, metadata will be included in the summary. Default
+  is `TRUE`.
+
+- `include_records`:
+
+  Logical. If `TRUE`, a record summary will be included in the generated
+  summary. Default is `TRUE`.
+
+- `include_users`:
+
+  Logical. If `TRUE`, user-related information will be included in the
+  summary. Default is `TRUE`.
+
+- `include_log`:
+
+  Logical. If `TRUE`, the log of changes will be included in the
+  summary. Default is `TRUE`.
+
+- `annotate_from_log`:
+
+  Logical. If `TRUE`, the metadata, users, and records will be annotated
+  using the log. Default is `TRUE`.
 
 ------------------------------------------------------------------------
 

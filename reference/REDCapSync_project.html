@@ -415,7 +415,31 @@ with the same name. Default is <code>FALSE</code>.</p></dd>
 <h3 id="method-generate-summary-">Method <code>generate_summary()</code><a class="anchor" aria-label="anchor" href="#method-generate-summary-"></a></h3>
 <p>Add a new summary entry</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">generate_summary</span><span class="op">(</span>summary_name <span class="op">=</span> <span class="st">"REDCapSync"</span>, envir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSync_project</span><span class="op">$</span><span class="fu">generate_summary</span><span class="op">(</span></span>
+<span>  <span class="va">summary_name</span>,</span>
+<span>  envir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  transformation_type <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  merge_form_name <span class="op">=</span> <span class="st">"merged"</span>,</span>
+<span>  filter_field <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_choices <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_strict <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  field_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  form_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  exclude_identifiers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_free_text <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  date_handling <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>  labelled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  clean <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  drop_blanks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  drop_missing_codes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  drop_others <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  include_metadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  include_records <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  include_users <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  include_log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  annotate_from_log <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -428,6 +452,123 @@ are inherited according to what was set with <code>add_project_summary</code>.</
 
 <dt><code>envir</code></dt>
 <dd><p>environment variable</p></dd>
+
+
+<dt><code>transformation_type</code></dt>
+<dd><p>Character scalar. How to transform data for the
+summary.
+Default is "default".
+Other options are "none", "flat", "merge_non_repeating".
+"default" first merges non-repeating and if there are repeating forms, it
+merges non-repeating variables to the right of repeating instruments.
+"flat" is one-record, one-row, even if there are repeating forms.
+"none" does not transform anything.
+"merge_non_repeating" still merges all non-repeating instruments but
+does not merge them to repeating instruments.</p></dd>
+
+
+<dt><code>merge_form_name</code></dt>
+<dd><p>A character string representing the name of the merged
+form. Default is "merged".</p></dd>
+
+
+<dt><code>filter_field</code></dt>
+<dd><p>Character. The name of the field in the database to
+filter on. Used with <code>filter_choices</code>.</p></dd>
+
+
+<dt><code>filter_choices</code></dt>
+<dd><p>Vector. The values of <code>filter_field</code> used to define the
+summary. An alternative to providing a full <code>filter_list</code>.</p></dd>
+
+
+<dt><code>filter_list</code></dt>
+<dd><p>Vector. The values of <code>filter_field</code> used to define the
+summary. Names are field names; values are the allowed value set(s). Use
+either <code>filter_list</code> or <code>filter_field</code> with <code>filter_choices</code>.</p></dd>
+
+
+<dt><code>filter_strict</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, all forms will be filtered by
+criteria. If <code>FALSE</code>, will convert original filter to ID column and filter
+all other forms by that record. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>field_names</code></dt>
+<dd><p>Character vector. Names of specific fields to include in
+the summary. Default is <code>NULL</code>, which includes all fields.</p></dd>
+
+
+<dt><code>form_names</code></dt>
+<dd><p>Character vector. Names of forms to include in the summary.
+Default is <code>NULL</code>, which includes all forms.</p></dd>
+
+
+<dt><code>exclude_identifiers</code></dt>
+<dd><p>Logical. Whether to exclude identifiers in the
+data in the summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>exclude_free_text</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, exclude free text fields
+intended for de-identification workflows. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt><code>date_handling</code></dt>
+<dd><p>character string. One of <code>none</code>,<code>exclude_dates</code>,
+<code>random_shift_by_record</code>, <code>random_shift_by_project</code>, <code>zero_by_record</code>, or
+<code>zero_by_project</code>. Random shift is +/- 90 unless changed with options.</p></dd>
+
+
+<dt><code>labelled</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, the data will be converted to labelled.
+If <code>FALSE</code>, returns raw coded values. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>clean</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, the data will be cleaned (e.g.,
+standardizing missing/blank values) before summarizing. Default is <code>TRUE</code>. If
+missing codes are present in a number or date variable, R will convert
+missing codes to NA and will make that variable not upload compatible.</p></dd>
+
+
+<dt><code>drop_blanks</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, records with blank fields will be
+dropped during cleaning. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>drop_missing_codes</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, will convert missing codes
+to NA. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt><code>drop_others</code></dt>
+<dd><p>Character vector of other values that should be dropped.</p></dd>
+
+
+<dt><code>include_metadata</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, metadata will be included in the
+summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>include_records</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, a record summary will be
+included in the generated summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>include_users</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, user-related information will be
+included in the summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>include_log</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, the log of changes will be included in
+the summary. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt><code>annotate_from_log</code></dt>
+<dd><p>Logical. If <code>TRUE</code>, the metadata, users, and records
+will be annotated using the log. Default is <code>TRUE</code>.</p></dd>
 
 
 </dl><p></p></div>

@@ -35,7 +35,7 @@ setup_project(
 
 load_project(project_name)
 
-load_test_project(project_name)
+load_test_project(project_name, dir_path)
 ```
 
 ## Arguments

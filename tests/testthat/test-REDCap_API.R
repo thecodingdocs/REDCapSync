@@ -73,7 +73,9 @@ test_that("get_redcap_metadata works with fixture data (classic)", {
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
-  mockery::stub(get_redcap_metadata, "rcon_result", call_list)
+  local_mocked_bindings(
+    rcon_result = function(...) call_list
+  )
   result <- get_redcap_metadata(project)
   expect_identical(result$project_name, project$project_name)
   expect_identical(call_list$project_info, project$redcap$project_info)
@@ -105,7 +107,9 @@ test_that("get_redcap_metadata works with fixture data (longitudinal)", {
   project_name <- "TEST_REDCAPR_LONGITUDINAL"
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
-  mockery::stub(get_redcap_metadata, "rcon_result", call_list)
+  local_mocked_bindings(
+    rcon_result = function(...) call_list
+  )
   project$metadata <- .blank_project$metadata # clear exisiting data
   expect_null(project$metadata$fields)
   expect_null(project$metadata$forms)
@@ -120,7 +124,9 @@ test_that("get_redcap_metadata works with fixture data (repeating forms)", {
   project_name <- "TEST_REPEATING"
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
-  mockery::stub(get_redcap_metadata, "rcon_result", call_list)
+  local_mocked_bindings(
+    rcon_result = function(...) call_list
+  )
   project$metadata <- .blank_project$metadata # clear exisiting data
   result <- get_redcap_metadata(project)
   expect_list(result)
@@ -130,7 +136,9 @@ test_that("get_redcap_data works with fixture data (classic)", {
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
-  mockery::stub(get_redcap_data, "get_redcap_denormalized", call_list$data)
+  local_mocked_bindings(
+    get_redcap_denormalized = function(...) call_list$data
+  )
   result <- get_redcap_data(project)
   expect_identical(result, project$data) # matches fixture call
   result_not_labelled <- get_redcap_data(project, labelled = FALSE)
@@ -140,7 +148,9 @@ test_that("get_redcap_data works with fixture data (longitudinal)", {
   project_name <- "TEST_REDCAPR_LONGITUDINAL"
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
-  mockery::stub(get_redcap_metadata, "rcon_result", call_list)
+  local_mocked_bindings(
+    rcon_result = function(...) call_list
+  )
   project$metadata <- .blank_project$metadata # clear exisiting data
   expect_null(project$metadata$fields)
   expect_null(project$metadata$forms)
@@ -155,7 +165,9 @@ test_that("get_redcap_data works with fixture data (repeating forms)", {
   project_name <- "TEST_REPEATING"
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
-  mockery::stub(get_redcap_metadata, "rcon_result", call_list)
+  local_mocked_bindings(
+    rcon_result = function(...) call_list
+  )
   project$metadata <- .blank_project$metadata # clear exisiting data
   result <- get_redcap_metadata(project)
   expect_list(result)
@@ -190,14 +202,18 @@ test_that("get_redcap_files works!", {
   )
   out_file_paths <- c(out_file_path1, out_file_path2)
   expect_all_false(file.exists(out_file_paths))
-  mockery::stub(get_redcap_files, "redcap_file_download_oneshot", function(...) {
-    cli_alert_danger("API FAILED!")
-  })
+  local_mocked_bindings(
+    redcap_file_download_oneshot = function(...) {
+      cli_alert_danger("API FAILED!")
+    }
+  )
   get_redcap_files(project, original_file_names = FALSE, overwrite = FALSE)
   expect_all_false(file.exists(out_file_paths))
-  mockery::stub(get_redcap_files, "redcap_file_download_oneshot", function(...) {
-    file.create(out_file_paths, showWarnings = FALSE)
-  })
+  local_mocked_bindings(
+    redcap_file_download_oneshot = function(...) {
+      file.create(out_file_paths, showWarnings = FALSE)
+    }
+  )
   get_redcap_files(project, original_file_names = FALSE, overwrite = FALSE)
   expect_all_true(file.exists(out_file_paths))
   tempdir_test <- sanitize_path(withr::local_tempdir())
@@ -234,7 +250,9 @@ test_that("get_redcap_log works on fixture!", {
   project_name <- "TEST_REPEATING"
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
-  mockery::stub(get_redcap_log, "exportLogging", call_list$logging)
+  local_mocked_bindings(
+    exportLogging = function(...) call_list$logging
+  )
   result <- get_redcap_log(project)
   expect_data_frame(result)
 })
@@ -255,7 +273,9 @@ test_that("get_redcap_denormalized works no API call!", {
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
-  mockery::stub(get_redcap_denormalized, "redcap_read", call_list)
+  local_mocked_bindings(
+    redcap_read = function(...) call_list
+  )
   result <- get_redcap_denormalized(project)
   expect_data_frame(result, min.rows = 1L)
 })
@@ -298,10 +318,10 @@ test_that("rcon_result returns expected structure without real API calls", {
     fileRepository = function() data.frame()
   )
   # Stub redcapConnection and exportLogging inside rcon_result to avoid API call
-  mockery::stub(rcon_result, "redcapConnection", function(url, token) fake_rcon)
-  mockery::stub(rcon_result, "exportLogging", function(rcon, beginTime) {
-    data.frame()
-  })
+  local_mocked_bindings(
+    redcapConnection = function(...) fake_rcon,
+    exportLogging = function(...) data.frame()
+  )
   out <- rcon_result(project)
   # replace with real data from fixtures
   expect_type(out, "list")

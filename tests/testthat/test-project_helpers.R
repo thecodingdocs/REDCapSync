@@ -36,9 +36,11 @@ test_that("get_project_url works", {
   e <- new.env(parent = emptyenv())
   # get_project_url
   e$url <- NULL
-  mockery::stub(get_project_url, "utils::browseURL", function(url) {
-    e$url <- url
-  })
+  local_mocked_bindings(
+    browseURL = function(url) {
+      e$url <- url
+    }
+  )
   for (link_type in .link_types) {
     e$url <- NULL
     get_project_url(project, link_type = link_type, open_browser = TRUE)
@@ -61,9 +63,14 @@ test_that("get_record_url works", {
   e <- new.env(parent = emptyenv())
   # get_project_url
   e$url <- NULL
-  mockery::stub(get_record_url, "utils::browseURL", function(url) {
-    e$url <- url
-  })
+  # mockery::stub(get_record_url, "utils::browseURL", function(url) {
+  #   e$url <- url
+  # })
+  local_mocked_bindings(
+    browseURL = function(url) {
+      e$url <- url
+    }
+  )
   expect_identical(get_record_url(project, open_browser = FALSE), expected_link)
   expect_null(e$url) # does not call url
   e$url <- NULL
@@ -266,6 +273,37 @@ test_that("normalize_redcap works with longitudinal project", {
   expect_all_true(fields_to_check %in% colnames(result$demographics))
   expect_all_false(fields_to_check %in% colnames(result$other))
   expect_all_false(fields_to_check %in% colnames(result$text))
+})
+test_that("normalize_redcap works with repeating project", {
+  project_name <- "TEST_REPEATING"
+  project <- mock_test_project(project_name)$.internal
+  call_list <- mock_test_calls(project_name)
+  denormalized <- call_list$data
+  result <- normalize_redcap(denormalized, project, labelled = TRUE)
+  expect_false(project$metadata$is_longitudinal)
+  expect_type(result, type = "list")
+  form_names <- names(result)
+  expected_forms <- project$metadata$forms$form_name
+  expect_all_true(expected_forms %in% form_names)
+  expect_all_true(unlist(lapply(result, is.data.frame)))
+  id_col <- project$metadata$id_col
+  fields <- project$metadata$fields
+  expect_true(id_col %in% colnames(result$form_1))
+  field_rows <- which(fields$form_name == "form_1" &
+                        (!fields$field_type %in% c("checkbox", "descriptive")))
+  fields_to_check <- fields$field_name[field_rows]
+  expect_all_true(fields_to_check %in% colnames(result$form_1))
+  extra_cols <- c("record_id",
+                  "redcap_repeat_instrument",
+                  "redcap_repeat_instance")
+  field_rows <-  which(fields$form_name == "repeating" &
+                         (!fields$field_type %in% c("checkbox", "descriptive")))
+  fields_to_check <- unique(append(extra_cols, fields$field_name[field_rows]))
+  expect_all_true(fields_to_check %in% colnames(result$repeating))
+  field_rows <-  which(fields$form_name == "repeating_2" &
+                         (!fields$field_type %in% c("checkbox", "descriptive")))
+  fields_to_check <- unique(append(extra_cols, fields$field_name[field_rows]))
+  expect_all_true(fields_to_check %in% colnames(result$repeating_2))
 })
 # clean_data_list ( Internal )
 # get_key_col_list ( Internal )

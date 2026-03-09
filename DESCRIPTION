@@ -47,7 +47,6 @@ Imports:
 Suggests: 
     knitr,
     listviewer,
-    mockery,
     rmarkdown,
     testthat (>= 3.3.0),
     withr

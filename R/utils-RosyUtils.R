@@ -633,7 +633,7 @@ save_csv <- function(form, dir, file_name, overwrite = TRUE) {
     cli_alert_wrap(paste0("Already a file!"), file = path)
   }
   if (write_it) {
-    utils::write.csv(x = form, file = path, row.names = FALSE)
+    write.csv(x = form, file = path, row.names = FALSE)
     cli_alert_wrap(paste0("Saved '", basename(path), "'!"), file = path)
   }
 }
@@ -679,7 +679,7 @@ remove_html_tags <- function(text_vector) {
 }
 #' @noRd
 object_size <- function(x) {
-  format(utils::object.size(x), units = "auto")
+  format(object.size(x), units = "auto")
 }
 #' @noRd
 drop_if <- function(x, drops) {

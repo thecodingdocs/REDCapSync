@@ -25,10 +25,12 @@ test_that("sync_project_hard_reset works!", {
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
-  mockery::stub(sync_project_hard_reset, "get_redcap_metadata", project)
-  mockery::stub(sync_project_hard_reset, "update_project_links", project)
-  mockery::stub(sync_project_hard_reset, "get_redcap_data", project$data)
-  mockery::stub(sync_project_hard_reset, "get_redcap_log", project$redcap$log)
+  local_mocked_bindings(
+    get_redcap_metadata = function(...) project,
+    update_project_links = function(...) project,
+    get_redcap_data = function(...) project$data,
+    get_redcap_log = function(...) project$redcap$log
+  )
   result <- project
   result$metadata <- .blank_project$metadata
   result["data"] <- list(NULL)
@@ -41,7 +43,9 @@ test_that("sync_project_check cannot connect!", {
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
   project$internals$last_test_connection_outcome <- FALSE
-  mockery::stub(sync_project_check, "test_project_token", project)
+  local_mocked_bindings(
+    test_project_token = function(...) project
+  )
   expect_message(sync_project_check(project), "Could not connect")
 })
 test_that("sync_project_check wont update if nothing new", {
@@ -54,9 +58,11 @@ test_that("sync_project_check wont update if nothing new", {
   project$internals$last_data_update <- now_time() - lubridate::ddays(100L)
   project$internals$was_updated <- FALSE
   interim_log <- utils::head(project$redcap$log, n = 0L)
+  local_mocked_bindings(
+    test_project_token = function(...) project,
+    get_interim_log = function(...) interim_log
+  )
   # Mock the test_project_token to simulate successful connection
-  mockery::stub(sync_project_check, "test_project_token", project)
-  mockery::stub(sync_project_check, "get_interim_log", interim_log)
   # Call sync_project_check with hard_reset = FALSE
   result <- sync_project_check(project, hard_reset = FALSE)
   expect_false(result$internals$was_updated)
@@ -204,7 +210,9 @@ test_that("get_interim_log works", {
   project$redcap$has_log_access <- FALSE
   expect_message(get_interim_log(project), "You do not have logging access")
   project$redcap$has_log_access <- TRUE
-  mockery::stub(get_interim_log, "get_redcap_log", interim_log)
+  local_mocked_bindings(
+    get_redcap_log = function(...) interim_log
+  )
   expect_data_frame(get_interim_log(project), nrows = 0L)
   new_interim_log_info <- data.frame(
     timestamp = as.character(Sys.time()),
@@ -215,7 +223,9 @@ test_that("get_interim_log works", {
     action_type = "Create"
   )
   interim_log <- new_interim_log_info |> bind_rows(interim_log)
-  mockery::stub(get_interim_log, "get_redcap_log", interim_log)
+  local_mocked_bindings(
+    get_redcap_log = function(...) interim_log
+  )
   extracted_interim <- get_interim_log(project)
   expect_data_frame(extracted_interim, nrows = 1L)
   expect_identical(new_interim_log_info, extracted_interim)

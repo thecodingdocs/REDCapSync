@@ -82,5 +82,9 @@
 #' @importFrom stringr str_split_fixed
 #' @importFrom stringr str_to_title
 #' @importFrom stringr str_trunc
+#' @importFrom utils browseURL
+#' @importFrom utils head
+#' @importFrom utils object.size
+#' @importFrom utils write.csv
 ## usethis namespace: end
 NULL

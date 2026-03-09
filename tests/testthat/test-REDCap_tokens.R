@@ -38,36 +38,39 @@ test_that("test_project_token works when exportVersion returns version", {
   project <- mock_test_project()$.internal
   # Stub rcon to avoid creating a real connection and stub
   # exportVersion to simulate success
-  mockery::stub(test_project_token,
-                "redcapConnection",
-                list(
-                  projectInformation = function() {
-                    list(project_id = project$redcap$project_id)
-                  }
-                ))
-  mockery::stub(test_project_token, "exportVersion", "12.1.1")
+  local_mocked_bindings(
+    redcapConnection = function(...) {
+      list(
+        projectInformation = function() {
+          list(project_id = project$redcap$project_id)
+        }
+      )
+    },
+    exportVersion = function(...) "12.1.1"
+  )
   expect_message(test_project_token(project), "Connected to REDCap")
   out <- test_project_token(project)
   expect_true(out$internals$last_test_connection_outcome)
   expect_false(is.null(out$internals$last_test_connection_attempt))
-  mockery::stub(test_project_token,
-                "redcapConnection",
-                list(
-                  projectInformation = function() {
-                    list(project_id = "5678")
-                  }
-                ))
-  mockery::stub(test_project_token, "exportVersion", "12.1.1")
-  expect_error(test_project_token(project),
-               "The REDCap project ID for TEST_CLASSIC has changed")
+  local_mocked_bindings(
+    redcapConnection = function(...) {
+      list(
+        projectInformation = function() {
+          list(project_id = "5678")
+        }
+      )
+    },
+    exportVersion = function(...) "12.1.1"
+  )
+  regexp <- "The REDCap project ID for TEST_CLASSIC has changed"
+  expect_error(test_project_token(project), regexp = regexp)
 })
 test_that("test_project_token marks failure when exportVersion returns NULL", {
   project <- mock_test_project()$.internal
-  # Stub rcon and simulate exportVersion failure
-  mockery::stub(test_project_token, "rcon", function(project) {
-    list()
-  })
-  mockery::stub(test_project_token, "redcapAPI::exportVersion", NULL)
+  local_mocked_bindings(
+    redcapConnection = function(...) list(),
+    exportVersion = function(...) NULL
+  )
   out <- test_project_token(project)
   expect_false(out$internals$last_test_connection_outcome)
   expect_false(is.null(out$internals$last_test_connection_attempt))

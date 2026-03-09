@@ -317,7 +317,7 @@ get_project_url <- function(project,
   )
   the_link <- project$links[[paste0("redcap_", link_type)]]
   if (open_browser) {
-    utils::browseURL(the_link)
+    browseURL(the_link)
     return(invisible())
   }
   the_link
@@ -372,7 +372,7 @@ get_record_url <- function(project,
     }
   }
   if (open_browser) {
-    utils::browseURL(link)
+    browseURL(link)
     return(invisible())
   }
   link

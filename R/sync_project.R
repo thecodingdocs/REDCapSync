@@ -227,7 +227,7 @@ get_interim_log <- function(project) {
     strptime(project$redcap$log$timestamp[1L], format = "%Y-%m-%d")
   )) |> unique()
   if (nrow(interim_log) <= nrow(project$redcap$log)) {
-    head_of_log <- utils::head(project$redcap$log, n = nrow(interim_log))
+    head_of_log <- head(project$redcap$log, n = nrow(interim_log))
   } else {
     head_of_log <- project$redcap$log
   }

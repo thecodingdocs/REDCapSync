@@ -1,11 +1,4 @@
 #' @noRd
-sort_redcap_log <- function(redcap_log) {
-  if (nrow(redcap_log) == 0L) {
-    return(redcap_log)
-  }
-  unique(redcap_log[order(redcap_log$timestamp, decreasing = TRUE), ])
-}
-#' @noRd
 clean_redcap_log <- function(redcap_log, drop_exports = FALSE) {
   redcap_log <- unique(redcap_log)
   redcap_log$record_id <- NA
@@ -128,7 +121,11 @@ clean_redcap_log <- function(redcap_log, drop_exports = FALSE) {
   if (drop_exports) {
     redcap_log <- redcap_log[which(redcap_log$action_type != "Exports"), ]
   }
-  redcap_log <- sort_redcap_log(redcap_log)
+  if (nrow(redcap_log) == 0L) {
+    return(redcap_log)
+  }
+  new_order <- order(redcap_log$timestamp, decreasing = TRUE)
+  redcap_log <- unique(redcap_log[new_order, ])
   redcap_log
 }
 #' @noRd

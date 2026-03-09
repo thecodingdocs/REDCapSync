@@ -511,3 +511,45 @@ due_for_sync <- function(project_name) {
   }
   TRUE
 }
+#' @noRd
+remove_from_form_list <- function(form_list, id_col, records = NULL) {
+  if (!is_something(form_list)) {
+    return(form_list)
+  }
+  if (!is_df_list(form_list)) {
+    stop("form_list is not a list of data.frames as expected.")
+  }
+  if (is.null(records)) {
+    return(form_list)
+  }
+  rows_for_forms <- which(unlist(lapply(names(form_list), function(form_name) {
+    nrow(form_list[[form_name]]) > 0L
+  })))
+  form_names <- names(form_list)[rows_for_forms]
+  for (form_name in form_names) {
+    chosen_rows <- which(!form_list[[form_name]][[id_col]] %in% records)
+    form_list[[form_name]] <- form_list[[form_name]][chosen_rows, ]
+  }
+  form_list
+}
+#' @noRd
+remove_records_from_project <- function(project, records) {
+  id_col <- project$metadata$id_col
+  if (length(records) == 0L) {
+    stop(
+      "no records supplied to remove_records_from_project, but it's used in",
+      "update which depends on records."
+    )
+  }
+  project$data <- remove_from_form_list(form_list = project$data,
+                                        id_col = id_col,
+                                        records = records)
+  project$transformation$data <- remove_from_form_list(
+    form_list = project$transformation$data,
+    id_col = id_col,
+    records = records
+  )
+  keep_rows <- !project$summary$all_records[[id_col]] %in% records
+  project$summary$all_records <- project$summary$all_records[which(keep_rows), ]
+  invisible(project)
+}

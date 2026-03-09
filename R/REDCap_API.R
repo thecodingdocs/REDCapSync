@@ -51,16 +51,15 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   }
   # metadata ----------
   project$metadata$fields <- result$fields
-  project$metadata$fields$section_header <-
-    remove_html_tags(project$metadata$fields$section_header)
-  project$metadata$fields$field_label <-
-    remove_html_tags(project$metadata$fields$field_label)
+  section_header <- project$metadata$fields$section_header
+  project$metadata$fields$section_header <- remove_html_tags(section_header)
+  field_label <- project$metadata$fields$field_label
+  project$metadata$fields$field_label <- remove_html_tags(field_label)
   # RISKY? add to setup project and simple test of unique
   project$metadata$id_col <- as.character(project$metadata$fields[1L, 1L])
   project$metadata$form_key_cols <- get_key_col_list(data_list = project)
-  project$metadata$raw_structure_cols <- project$metadata$form_key_cols |>
-    unlist() |>
-    unique()
+  form_key_cols <- project$metadata$form_key_cols
+  project$metadata$raw_structure_cols <- form_key_cols |> unlist() |> unique()
   project$metadata$fields <- add_field_elements(project$metadata$fields)
   project$metadata$choices <-
     fields_to_choices(fields = project$metadata$fields)
@@ -69,16 +68,16 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   field_names <- unique(project$metadata$choices$field_name)
   if (length(field_names) > 0L) {
     choices <- project$metadata$choices
-    row_of_conflicts <- field_names |>
+    has_conflict <- field_names |>
       lapply(function(field_name) {
         anyDuplicated(
           choices$name[which(choices$field_name == field_name)]) > 0L
       }) |>
       unlist()
-    project$metadata$has_coding_conflicts <- any(row_of_conflicts)
+    project$metadata$has_coding_conflicts <- any(has_conflict)
     if (project$metadata$has_coding_conflicts) {
-      project$metadata$coding_conflict_field_names <-
-        field_names[which(row_of_conflicts)]
+      conflict_rows <- which(has_conflict)
+      project$metadata$coding_conflict_field_names <- field_names[conflict_rows]
     }
   }
   # is longitudinal ------

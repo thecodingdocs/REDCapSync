@@ -1,4 +1,107 @@
 #' @noRd
+save_project_summary <- function(project, summary_name) {
+  id_col <- project$metadata$id_col
+  summary_list <- project$summary[[summary_name]]
+  data_list <- generate_project_summary(project = project,
+                                        summary_name = summary_name,
+                                        internal_use = TRUE)
+  # add headers-------
+  form_names <- names(data_list$data)
+  header_df_list <- construct_header_list(data_list)
+  key_cols_list <- get_key_col_list(data_list)
+  cols_start <- 4L
+  if (summary_name == "REDCapSync_raw") {
+    cols_start <- 1L
+    header_df_list <- NULL
+  }
+  records <- data_list$data[form_names] |>
+    lapply(function(form) {
+      form[[id_col]]
+    }) |>
+    unlist() |>
+    sort() |>
+    unique()
+  n_records <- length(records)
+  # track form names
+  data_list <- data_list_to_save(
+    data_list = data_list,
+    include_metadata = summary_list$include_metadata,
+    include_users = summary_list$include_users,
+    include_records = summary_list$include_records,
+    include_log = summary_list$include_log
+  )
+  link_col_list <- list()
+  if (summary_list$with_links) {
+    if (project$internals$project_type == "redcap") {
+      add_links <- which(names(data_list) %in% form_names)
+      if (length(add_links) > 0L) {
+        data_list[add_links] <- data_list[add_links] |>
+          lapply(function(form) {
+            add_redcap_links_to_form(form, project)
+          })
+        if (summary_list$include_records) {
+          if ("records" %in% names(data_list)) {
+            data_list$records <- add_redcap_links_to_form(
+              form = data_list$records,
+              project = project)
+          }
+        }
+        #check for conflicting name
+        link_col_list <- list("redcap_link")
+        names(link_col_list) <- id_col
+      }
+    }
+  }
+  # save -----
+  last_save_time <- now_time()
+  final_form_tab_names <- rename_list_names_excel(list_names = names(data_list))
+  names(final_form_tab_names) <- names(data_list)
+  last_summary <- now_time()
+  summary_details <- project$summary[[summary_name]]
+  summary_details$n_records <- n_records
+  summary_details$last_save_time <- last_save_time
+  summary_details$final_form_tab_names <- final_form_tab_names
+  summary_details$raw_form_names <- form_names
+  summary_details$cols_start <- cols_start
+  value <- summary_details |>
+    lapply(function(x_row) {
+      paste0(x_row, collapse = " | ")
+    }) |>
+    unlist() |>
+    unname()
+  data_list$summary_details <- data.frame(
+    paramater = names(summary_details),
+    value = value
+  )
+  if (summary_list$use_csv) {
+    list_to_csv(
+      input_list = data_list,
+      dir = summary_list$dir_other,
+      file_name = summary_list$file_name,
+      overwrite = TRUE
+    ) # account for links with CSV like new column
+  } else {
+    list_to_excel(
+      input_list = data_list,
+      dir = summary_list$dir_other,
+      separate = summary_list$separate,
+      link_col_list = link_col_list,
+      key_cols_list = key_cols_list,
+      file_name = summary_list$file_name,
+      header_df_list = header_df_list,
+      overwrite = TRUE
+    )
+  }
+  project$summary[[summary_name]]$n_records <- n_records
+  project$summary[[summary_name]]$last_save_time <- last_save_time
+  project$summary[[summary_name]]$final_form_tab_names <- final_form_tab_names
+  row_new <- which(project$summary$all_records[[id_col]] %in% records)
+  project$summary$all_records[[summary_name]][row_new] <- TRUE
+  project$summary$all_records$was_saved[row_new] <- TRUE
+  project$internals$last_summary <- last_summary
+  invisible(project)
+}
+#' @noRd
 summarize_project <- function(project, hard_reset = FALSE) {
   assert_setup_project(project)
   if (is_something(project$data)) {
@@ -695,110 +798,6 @@ data_list_to_save <- function(data_list,
   to_save_list
 }
 #' @noRd
-save_project_summary <- function(project, summary_name) {
-  id_col <- project$metadata$id_col
-  summary_list <- project$summary[[summary_name]]
-  data_list <- generate_project_summary(project = project,
-                                        summary_name = summary_name,
-                                        internal_use = TRUE)
-  # add headers-------
-  form_names <- names(data_list$data)
-  header_df_list <- construct_header_list(data_list)
-  key_cols_list <- get_key_col_list(data_list)
-  cols_start <- 4L
-  if (summary_name == "REDCapSync_raw") {
-    cols_start <- 1L
-    header_df_list <- NULL
-  }
-  records <- data_list$data[form_names] |>
-    lapply(function(form) {
-      form[[id_col]]
-    }) |>
-    unlist() |>
-    sort() |>
-    unique()
-  n_records <- length(records)
-  # track form names
-  data_list <- data_list_to_save(
-    data_list = data_list,
-    include_metadata = summary_list$include_metadata,
-    include_users = summary_list$include_users,
-    include_records = summary_list$include_records,
-    include_log = summary_list$include_log
-  )
-  link_col_list <- list()
-  if (summary_list$with_links) {
-    if (project$internals$project_type == "redcap") {
-      add_links <- which(names(data_list) %in% form_names)
-      if (length(add_links) > 0L) {
-        data_list[add_links] <- data_list[add_links] |>
-          lapply(function(form) {
-            add_redcap_links_to_form(form, project)
-          })
-        if (summary_list$include_records) {
-          if ("records" %in% names(data_list)) {
-            data_list$records <- add_redcap_links_to_form(
-              form = data_list$records,
-              project = project)
-          }
-        }
-        #check for conflicting name
-        link_col_list <- list("redcap_link")
-        names(link_col_list) <- id_col
-      }
-    }
-  }
-  # save -----
-  last_save_time <- now_time()
-  final_form_tab_names <-
-    rename_list_names_excel(list_names = names(data_list))
-  names(final_form_tab_names) <- names(data_list)
-  last_summary <- now_time()
-  summary_details <- project$summary[[summary_name]]
-  summary_details$n_records <- n_records
-  summary_details$last_save_time <- last_save_time
-  summary_details$final_form_tab_names <- final_form_tab_names
-  summary_details$raw_form_names <- form_names
-  summary_details$cols_start <- cols_start
-  value <- summary_details |>
-    lapply(function(x_row) {
-      paste0(x_row, collapse = " | ")
-    }) |>
-    unlist() |>
-    unname()
-  data_list$summary_details <- data.frame(
-    paramater = names(summary_details),
-    value = value
-  )
-  if (summary_list$use_csv) {
-    list_to_csv(
-      input_list = data_list,
-      dir = summary_list$dir_other,
-      file_name = summary_list$file_name,
-      overwrite = TRUE
-    ) # account for links with CSV like new column
-  } else {
-    list_to_excel(
-      input_list = data_list,
-      dir = summary_list$dir_other,
-      separate = summary_list$separate,
-      link_col_list = link_col_list,
-      key_cols_list = key_cols_list,
-      file_name = summary_list$file_name,
-      header_df_list = header_df_list,
-      overwrite = TRUE
-    )
-  }
-  project$summary[[summary_name]]$n_records <- n_records
-  project$summary[[summary_name]]$last_save_time <- last_save_time
-  project$summary[[summary_name]]$final_form_tab_names <- final_form_tab_names
-  row_new <- which(project$summary$all_records[[id_col]] %in% records)
-  project$summary$all_records[[summary_name]][row_new] <- TRUE
-  project$summary$all_records$was_saved[row_new] <- TRUE
-  project$internals$last_summary <- last_summary
-  invisible(project)
-}
-#' @noRd
 .tranformation_types <- c("default", "none", "flat", "merge_non_repeating")
 #' @noRd
 merge_non_repeating <- function(data_list,
@@ -995,6 +994,8 @@ field_types_to_R <- function(fields) {
                                     "phone",
                                     "vmrn",
                                     "zipcode")
+#' @noRd
+.field_types_not_in_data <- c("descriptive", "checkbox")
 #' @noRd
 clear_project_summaries <- function(project, summary_names = NULL) {
   assert_setup_project(project)

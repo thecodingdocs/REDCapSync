@@ -1,229 +1,68 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
-test_that("update_project_links works", {
+# labelled_to_raw_data_list (Internal)
+test_that("labelled_to_raw_data_list and raw_to_labelled_data_list works!", {
   project <- mock_test_project()$.internal
-  expect_false(is.null(project$links$redcap_uri))
-  expect_false(is.null(project$links$redcap_base))
-  link_vector <- paste0("redcap_", .link_types)
-  link_vector <- setdiff(link_vector, "redcap_base")
-  #do it!
-  project <- update_project_links(project)
-  pid_pattern <- paste0("pid=", project$redcap$project_id)
-  version_pattern <- paste0("redcap_v", project$redcap$version)
-  for (the_link in link_vector) {
-    expect_false(is.null(project$links[[the_link]]))
-    expect_true(grepl(pid_pattern, project$links[[the_link]]))
-    expect_true(grepl(version_pattern, project$links[[the_link]]))
-  }
-  # version changed!
-  version_old <- project$redcap$version
-  version_new <- "14.2.3"
-  project$redcap$version <- version_new
-  project <- update_project_links(project)
-  expect_identical(project$redcap$version, version_new)
-  pid_pattern <- paste0("pid=", project$redcap$project_id)
-  version_pattern <- paste0("redcap_v", project$redcap$version)
-  for (the_link in link_vector) {
-    expect_false(is.null(project$links[[the_link]]))
-    expect_true(grepl(pid_pattern, project$links[[the_link]]))
-    expect_true(grepl(version_pattern, project$links[[the_link]]))
-  }
+  # ensure project is marked as labelled and has labelled values
+  expect_true(project$internals$labelled)
+  # sanity check: labelled value present in example form
+  expect_all_true(project$data$other$var_yesno %in% c("Yes", "No"))
+  # convert and capture returned project
+  expect_no_error({
+    project_converted <- labelled_to_raw_data_list(project)
+  })
+  # internals updated
+  expect_false(project_converted$internals$labelled)
+  # values converted from labelled ("Yes"/"No") to raw codes ("1"/"0")
+  expect_all_true(project_converted$data$other$var_yesno %in% c("0", "1"))
+  expect_no_error({
+    project_again <- raw_to_labelled_data_list(project_converted)
+  })
+  expect_all_true(project_again$data$other$var_yesno %in% c("Yes", "No"))
 })
-# get_project_url ( Exported )
-test_that("get_project_url works", {
+# labelled_to_raw_form (Internal)
+test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
   project <- mock_test_project()$.internal
-  project <- update_project_links(project)
-  e <- new.env(parent = emptyenv())
-  # get_project_url
-  e$url <- NULL
-  local_mocked_bindings(
-    browseURL = function(url) {
-      e$url <- url
-    }
-  )
-  for (link_type in .link_types) {
-    e$url <- NULL
-    get_project_url(project, link_type = link_type, open_browser = TRUE)
-    expect_identical(e$url, project$links[[paste0("redcap_", link_type)]])
-    out <- get_project_url(project, link_type = link_type, open_browser = FALSE)
-    expect_identical(out, project$links[[paste0("redcap_", link_type)]])
-  }
+  project_summary <- generate_project_summary(project)
+  merged <- all_character_cols(project_summary$merged)
+  var_yesno_labelled <- merged$var_yesno
+  values <- unique(merged$var_yesno)
+  expect_vector(values, size = 2L)
+  expect_contains(values, c("Yes", "No"))
+  merged <- labelled_to_raw_form(merged, project)
+  var_yesno_coded <- merged$var_yesno
+  values <- unique(merged$var_yesno)
+  expect_vector(values, size = 2L)
+  expect_contains(values, c("1", "0"))
+  var_yesno_labelled_check <- (var_yesno_labelled == "Yes") |>
+    as.integer() |>
+    as.character()
+  expect_identical(var_yesno_labelled_check, var_yesno_coded)
+  merged <- raw_to_labelled_form(merged, project)
+  var_yesno_labelled_again <- merged$var_yesno
+  values <- unique(merged$var_yesno)
+  expect_vector(values, size = 2L)
+  expect_contains(values, c("Yes", "No"))
+  expect_identical(var_yesno_labelled, var_yesno_labelled_again)
+  expect_in("Unknown", project$metadata$missing_codes$name)
+  labelled <- merged |> select(record_id, var_branching)
+  labelled$var_branching[3L] <- "Unknown"
+  labelled$var_branching[5L] <- "Not applicable"
+  raw <- labelled_to_raw_form(labelled, project)
+  expect_identical("UNK", raw$var_branching[3L])
+  expect_identical("NA", raw$var_branching[5L])
+  labelled <- raw_to_labelled_form(raw, project)
+  expect_identical("Unknown", labelled$var_branching[3L])
+  expect_identical("Not applicable", labelled$var_branching[5L])
+  mismatch <- merged |> select(record_id, var_branching)
+  mismatch$var_branching[3L] <- "Random Thing"
+  error_message <- "Mismatched REDCap"
+  expect_error(labelled_to_raw_form(mismatch, project), error_message)
+  raw_mismatch <- raw
+  raw_mismatch$var_branching[3L] <- "Random Thing"
+  expect_warning(raw_to_labelled_form(raw_mismatch, project), error_message)
 })
-# get_record_url ( Exported )
-test_that("get_record_url works", {
-  project <- mock_test_project()$.internal
-  project$links$redcap_base <- "https://fakeredcap.com/"
-  expected_link <- paste0(
-    project$links$redcap_base,
-    "redcap_v",
-    project$redcap$version,
-    "/DataEntry/record_home.php?pid=",
-    project$redcap$project_id
-  )
-  e <- new.env(parent = emptyenv())
-  # get_project_url
-  e$url <- NULL
-  # mockery::stub(get_record_url, "utils::browseURL", function(url) {
-  #   e$url <- url
-  # })
-  local_mocked_bindings(
-    browseURL = function(url) {
-      e$url <- url
-    }
-  )
-  expect_identical(get_record_url(project, open_browser = FALSE), expected_link)
-  expect_null(e$url) # does not call url
-  e$url <- NULL
-  get_record_url(project, open_browser = TRUE)
-  expect_identical(e$url, expected_link)
-  e$url <- NULL
-  expect_error(get_record_url(project, record = "59", open_browser = FALSE),
-               regexp = "is not one of the records")
-  expect_identical(
-    get_record_url(project, record = "1", open_browser = FALSE),
-    paste0(expected_link, "&id=1")
-  )
-  expect_identical(
-    get_record_url(
-      project,
-      page = "text",
-      open_browser = FALSE
-    ),
-    paste0(gsub("record_home", "index", expected_link), "&page=text")
-  )
-  expect_error(
-    get_record_url(
-      project,
-      page = "text_2",
-      open_browser = FALSE
-    )
-  )
-})
-test_that("deidentify_data_list works", {
-  project <- mock_test_project()$.internal
-  data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
-  data_list$metadata$fields$field_type_R <- NA
-  data_list$metadata$fields$in_original_redcap <- NA
-  id_cols <- data_list$metadata$form_key_cols |>
-    unlist() |>
-    unique()
-  fields <- data_list$metadata$fields
-  is_identifier <- fields$identifier == "y"
-  fields$validation_type <- fields$text_validation_type_or_show_slider_number
-  is_likely_identifier <- fields$validation_type %in% .redcap_maybe_ids_strict
-  identifier_rows <- which(is_identifier | is_likely_identifier)
-  initial_identifiers <- fields$field_name[identifier_rows]
-  is_notes <- fields$field_type == "notes"
-  is_text <- fields$field_type == "text"
-  has_validation <- is.na(fields$text_validation_type_or_show_slider_number)
-  not_id <- !fields$field_name %in% id_cols
-  is_free_text <- is_notes | (is_text & has_validation) & not_id
-  free_text_fields <- fields$field_name[which(is_free_text)]
-  expect_all_true(initial_identifiers %in% colnames(data_list$data$merged))
-  no_ids <- deidentify_data_list(data_list = data_list,
-                                 exclude_identifiers = TRUE,
-                                 exclude_free_text = FALSE)
-  expect_all_false(initial_identifiers %in% colnames(no_ids$data$merged))
-  expect_all_true(free_text_fields %in% colnames(data_list$data$merged))
-  no_free_text <- deidentify_data_list(data_list = data_list,
-                                       exclude_identifiers = FALSE,
-                                       exclude_free_text = TRUE)
-  expect_all_false(initial_identifiers %in% colnames(no_free_text$data$merged))
-  keep_rows <-
-    which(!data_list$metadata$fields$field_name %in% initial_identifiers)
-  data_list$metadata$fields <- data_list$metadata$fields[keep_rows, ]
-  keep_cols <- which(!colnames(data_list$data$merged) %in% initial_identifiers)
-  data_list$data$merged <- data_list$data$merged[, keep_cols]
-  expect_warning(
-    deidentify_data_list(
-      data_list = data_list,
-      exclude_identifiers = TRUE,
-      exclude_free_text = FALSE
-    ),
-    "You have no identifiers marked"
-  )
-})
-test_that("deidentify_data_list works", {
-  project <- mock_test_project()$.internal
-  data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
-  data_list <- metadata_add_default_cols(data_list)
-  fields <- data_list$metadata$fields
-  merged <- data_list$data$merged
-  expected_cols <- c("var_birth_date",
-                     "var_text_date_dmy",
-                     "var_text_date_mdy",
-                     "var_text_date_ymd")
-  expect_all_true(expected_cols %in% colnames(merged))
-  expect_error(deidentify_data_list(data_list = data_list, date_handling = "1"))
-  # 'none'
-  merged_none <- deidentify_data_list(
-    data_list = data_list,
-    date_handling = "none"
-  )$merged
-  expect_all_true(expected_cols %in% colnames(merged_none))
-  # 'exclude_dates'
-  excluded_dates <- deidentify_data_list(data_list = data_list,
-                                         date_handling = "exclude_dates")$merged
-  expect_all_false(expected_cols %in% colnames(excluded_dates))
-  # 'random_shift_by_record'
-  random_shift <- deidentify_data_list(data_list = data_list,
-                                       date_handling = "random_shift_by_record")
-  random_shift <- random_shift$merged
-  expect_all_true(expected_cols %in% colnames(random_shift))
-  expect_all_false(random_shift$var_text_date_dmy == merged$var_text_date_dmy)
-  time_check1 <- as.Date(merged$var_text_date_dmy) -
-    as.Date(merged$var_birth_date)
-  time_check2 <- as.Date(random_shift$var_text_date_dmy) -
-    as.Date(random_shift$var_birth_date)
-  expect_all_true(time_check1 == time_check2) #math is same
-  as.Date(merged$var_birth_date) - as.Date(random_shift$var_birth_date)
-  # 'random_shift_by_project'
-  # merged_random_shift_by_project <- deidentify_data_list(
-  #   data_list = data_list,date_handling = "random_shift_by_project")
-  # # 'zero_by_record'
-  # merged_zero_by_record <- deidentify_data_list(
-  #   data_list = data_list,date_handling = "zero_by_record")
-  # # 'zero_by_project'
-  # merged_zero_by_project <- deidentify_data_list(
-  #   data_list = data_list,date_handling = "zero_by_project")
-})
-test_that("get_min_dates works", {
-  # construct minimal data_list with date fields across forms
-  data_list <- list(
-    data = list(
-      form1 = data.frame(
-        record_id = c("1", "2"),
-        date1 = c("2020-01-01", "2020-01-05"),
-        stringsAsFactors = FALSE
-      ),
-      form2 = data.frame(
-        record_id = c("2", "3"),
-        date2 = c("2020-02-01", "2020-01-15"),
-        stringsAsFactors = FALSE
-      )
-    ),
-    metadata = list(
-      fields = data.frame(
-        field_name = c("record_id", "date1", "date2"),
-        field_type_R = c(NA, "date", "date"),
-        stringsAsFactors = FALSE
-      ),
-      form_key_cols = list(record_id = "record_id")
-    )
-  )
-  out <- get_min_dates(data_list)
-  # basic structure checks
-  expect_data_frame(out, nrows = 3L, ncols = 2L)
-  expect_true(all(c("record_id", "date") %in% colnames(out)))
-  # values: min date per record across forms
-  one <- as.character(out$date[match("1", out$record_id)])
-  two <- as.character(out$date[match("2", out$record_id)])
-  three <- as.character(out$date[match("3", out$record_id)])
-  expect_identical(one, "2020-01-01")
-  expect_identical(two, "2020-01-05")
-  expect_identical(three, "2020-01-15")
-})
-# normalize_redcap ( Internal )
+# normalize_redcap (Internal)
 test_that("normalize_redcap works with classic project", {
   project <- mock_test_project()$.internal
   call_list <- mock_test_calls()
@@ -305,186 +144,186 @@ test_that("normalize_redcap works with repeating project", {
   fields_to_check <- unique(append(extra_cols, fields$field_name[field_rows]))
   expect_all_true(fields_to_check %in% colnames(result$repeating_2))
 })
-# clean_data_list ( Internal )
-# get_key_col_list ( Internal )
-# normalize_redcap ( Internal )
-# sort_redcap_log ( Internal )
-# clean_redcap_log ( Internal )
-# clean_redcap_log ( Internal )
-# clean_redcap_log ( Internal )
-# clean_redcap_log ( Internal )
-test_that("clean_redcap_log removes duplicates", {
-  redcap_log <- data.frame(
-    timestamp = c("2024-01-15 10:30:00",
-                  "2024-01-15 10:30:00",
-                  "2024-01-15 10:35:00"),
-    username = c("user1", "user1", "user2"),
-    action = c("Update record 123", "Update record 123", "Create record 456"),
-    details = c("Field updated", "Field updated", "New record"),
-    record = c("123", "123", "456"),
+# raw_to_labelled_data_list (Internal)
+test_that("raw_to_labelled_data_list works!", {
+})
+# raw_to_labelled_form (Internal)
+test_that("raw_to_labelled_form works!", {
+})
+# construct_header_list (Internal)
+test_that("construct_header_list works!", {
+})
+# extract_project_records (Internal)
+test_that("extract_project_records works!", {
+})
+# extract_values_from_form_list (Internal)
+test_that("extract_values_from_form_list works!", {
+})
+# field_names_metadata (Internal)
+test_that("field_names_metadata works!", {
+})
+# field_names_to_form_names (Internal)
+test_that("field_names_to_form_names works!", {
+})
+# filter_fields_from_form (Internal)
+test_that("filter_fields_from_form works!", {
+  project <- mock_test_project("TEST_REPEATING")$.internal
+  form <- project$data$repeating_2 |> bind_rows(project$data$repeating)
+  expect_error(filter_fields_from_form(form, project))
+  expect_error(filter_fields_from_form(form, project))
+  form <- project$data$form_1
+  expect_no_error(filter_fields_from_form(form, project))
+  fields <- filter_fields_from_form(form, project)
+  expect_data_frame(fields, nrows = ncol(form))
+})
+# generate_choices_table (Internal)
+test_that("generate_choices_table works!", {
+})
+# get_all_field_names (Internal)
+test_that("get_all_field_names works!", {
+  project <- mock_test_project()$.internal
+  field_names <- get_all_field_names(project)
+  expect_all_true(field_names %in% project$metadata$fields$field_name)
+})
+# get_identifier_fields (Internal)
+test_that("get_identifier_fields works!", {
+  # minimal metadata/fields to exercise deidentified / strict / super_strict
+  field_names <- c("record_id", "email", "cell", "dob", "other", "notes", "int")
+  valid_types <- c(NA, "email", "phone", "date_mdy", NA, NA, "integer")
+  fields <- data.frame(
+    field_name = field_names,
+    identifier = c("y", NA, NA, "y", NA, NA, NA),
+    field_type = c("text", "text", "text", "text", "text", "notes", "text"),
+    text_validation_type_or_show_slider_number = valid_types,
     stringsAsFactors = FALSE
   )
-  result <- clean_redcap_log(redcap_log)
-  expect_identical(nrow(result), 2L)
+  data_list <- list(metadata = list(fields = fields))
+  data_list$metadata$form_key_cols <- "record_id"
+  # deidentified: only explicit identifier flagged "y"
+  out_deid <- get_identifier_fields(data_list, get_type = "deidentified")
+  expect_identical(out_deid, c("record_id", "dob"))
+  # deidentified_strict: includes fields with validation types
+  # in strict list (email, phone)
+  out_strict <- get_identifier_fields(data_list = data_list,
+                                      get_type = "deidentified_strict")
+  expect_identical(out_strict, c("record_id", "email", "cell", "dob"))
+  # deidentified_super_strict: includes additional validation  (dates, etc.)
+  out_super <- get_identifier_fields(data_list = data_list,
+                                     get_type = "deidentified_super_strict")
+  expect_identical(out_super, setdiff(field_names, "int"))
+  # invert = TRUE should return the complement set
+  out_inv <-get_identifier_fields(data_list = data_list,
+                                  get_type = "deidentified",
+                                  invert = TRUE)
+  expect_identical(out_inv, c("email", "cell", "other", "notes", "int"))
 })
-test_that("clean_redcap_log trims whitespace", {
-  redcap_log <- data.frame(
-    timestamp = "2024-01-15 10:30:00",
-    username = "  user1  ",
-    action = "  Update record 123  ",
-    details = "  Field updated  ",
-    record = "123",
-    stringsAsFactors = FALSE
-  )
-  result <- clean_redcap_log(redcap_log)
-  expect_false(grepl("^\\s|\\s$", result$username[1L]))
-  expect_false(grepl("^\\s|\\s$", result$action[1L]))
-  expect_false(grepl("^\\s|\\s$", result$details[1L]))
+# get_key_col_list (Internal)
+test_that("get_key_col_list works!", {
 })
-test_that("clean_redcap_log identifies record actions", {
-  redcap_log <- data.frame(
-    timestamp = c(
-      "2024-01-15 10:30:00",
-      "2024-01-15 10:35:00",
-      "2024-01-15 10:40:00",
-      "2024-01-15 10:45:00"
+# get_min_dates (Internal)
+test_that("get_min_dates works!", {
+  # construct minimal data_list with date fields across forms
+  data_list <- list(
+    data = list(
+      form1 = data.frame(
+        record_id = c("1", "2"),
+        date1 = c("2020-01-01", "2020-01-05"),
+        stringsAsFactors = FALSE
+      ),
+      form2 = data.frame(
+        record_id = c("2", "3"),
+        date2 = c("2020-02-01", "2020-01-15"),
+        stringsAsFactors = FALSE
+      )
     ),
-    username = c("user1", "user2", "user3", "user4"),
-    action = c(
-      "Update record 123",
-      "Delete record 456",
-      "Create record 789",
-      "Lock/Unlock Record 321"
+    metadata = list(
+      fields = data.frame(
+        field_name = c("record_id", "date1", "date2"),
+        field_type_R = c(NA, "date", "date"),
+        stringsAsFactors = FALSE
+      ),
+      form_key_cols = list(record_id = "record_id")
+    )
+  )
+  out <- get_min_dates(data_list)
+  # basic structure checks
+  expect_data_frame(out, nrows = 3L, ncols = 2L)
+  expect_true(all(c("record_id", "date") %in% colnames(out)))
+  # values: min date per record across forms
+  one <- as.character(out$date[match("1", out$record_id)])
+  two <- as.character(out$date[match("2", out$record_id)])
+  three <- as.character(out$date[match("3", out$record_id)])
+  expect_identical(one, "2020-01-01")
+  expect_identical(two, "2020-01-05")
+  expect_identical(three, "2020-01-15")
+})
+# get_project_url (Internal)
+test_that("get_project_url works!", {
+  project <- mock_test_project()$.internal
+  project <- update_project_links(project)
+  e <- new.env(parent = emptyenv())
+  # get_project_url
+  e$url <- NULL
+  local_mocked_bindings(
+    browseURL = function(url) {
+      e$url <- url
+    }
+  )
+  for (link_type in .link_types) {
+    e$url <- NULL
+    get_project_url(project, link_type = link_type, open_browser = TRUE)
+    expect_identical(e$url, project$links[[paste0("redcap_", link_type)]])
+    out <- get_project_url(project, link_type = link_type, open_browser = FALSE)
+    expect_identical(out, project$links[[paste0("redcap_", link_type)]])
+  }
+})
+# get_record_url (Internal)
+test_that("get_record_url works!", {
+  project <- mock_test_project()$.internal
+  project$links$redcap_base <- "https://fakeredcap.com/"
+  expected_link <- paste0(
+    project$links$redcap_base,
+    "redcap_v",
+    project$redcap$version,
+    "/DataEntry/record_home.php?pid=",
+    project$redcap$project_id
+  )
+  e <- new.env(parent = emptyenv())
+  # get_project_url
+  e$url <- NULL
+  # mockery::stub(get_record_url, "utils::browseURL", function(url) {
+  #   e$url <- url
+  # })
+  local_mocked_bindings(
+    browseURL = function(url) {
+      e$url <- url
+    }
+  )
+  expect_identical(get_record_url(project, open_browser = FALSE), expected_link)
+  expect_null(e$url) # does not call url
+  e$url <- NULL
+  get_record_url(project, open_browser = TRUE)
+  expect_identical(e$url, expected_link)
+  e$url <- NULL
+  expect_error(get_record_url(project, record = "59", open_browser = FALSE),
+               regexp = "is not one of the records")
+  expect_identical(
+    get_record_url(project, record = "1", open_browser = FALSE),
+    paste0(expected_link, "&id=1")
+  )
+  expect_identical(
+    get_record_url(
+      project,
+      page = "text",
+      open_browser = FALSE
     ),
-    details = c("Updated", "Deleted", "Created", "Locked"),
-    record = c("123", "456", "789", "321"),
-    stringsAsFactors = FALSE
+    paste0(gsub("record_home", "index", expected_link), "&page=text")
   )
-  result <- clean_redcap_log(redcap_log)
-  # Check that record_id was extracted and action_type was set
-  expect_all_true(!is.na(result$action_type[1L:4L]))
-  expect_all_true(
-    result$action_type[1L:4L] %in%
-      c("Update", "Delete", "Create", "Lock/Unlock")
+  expect_error(
+    get_record_url(
+      project,
+      page = "text_2",
+      open_browser = FALSE
+    )
   )
 })
-test_that("clean_redcap_log handles Manage/Design actions", {
-  redcap_log <- data.frame(
-    timestamp = c(
-      "2024-01-15 10:30:00",
-      "2024-01-15 10:35:00"
-    ),
-    username = c("user1", "user2"),
-    action = c("Manage/Design", "Manage/Design"),
-    details = c(
-      "Edit project field: field_name",
-      "Create project field: new_field"
-    ),
-    record = c(NA, NA),
-    stringsAsFactors = FALSE
-  )
-  result <- clean_redcap_log(redcap_log)
-  expect_true(any(result$action_type == "Metadata Change Major", na.rm = TRUE))
-})
-test_that("clean_redcap_log converts [survey respondent] to NA", {
-  redcap_log <- data.frame(
-    timestamp = c("2024-01-15 10:35:00", "2024-01-15 10:30:00"),
-    username = c("[survey respondent]", "user1"),
-    action = c("Update record 123", "Create record 456"),
-    details = c("Survey submitted", "Created"),
-    record = c("123", "456"),
-    stringsAsFactors = FALSE
-  )
-  result <- clean_redcap_log(redcap_log)
-  expect_s3_class(result, "data.frame")
-  expect_true(is.na(result$username[1L]))
-  expect_identical(result$username[2L], "user1")
-})
-test_that("clean_redcap_log sets action_type column", {
-  redcap_log <- data.frame(
-    timestamp = "2024-01-15 10:30:00",
-    username = "user1",
-    action = "Update record 123",
-    details = "Updated",
-    record = "123",
-    stringsAsFactors = FALSE
-  )
-  result <- clean_redcap_log(redcap_log)
-  expect_true("action_type" %in% colnames(result))
-  expect_false(all(is.na(result$action_type)))
-})
-test_that("clean_redcap_log handles export actions", {
-  redcap_log <- data.frame(
-    timestamp = c(
-      "2024-01-15 10:30:00",
-      "2024-01-15 10:35:00"
-    ),
-    username = c("user1", "user2"),
-    action = c("Data export", "Download uploaded file"),
-    details = c("Exported data", "Downloaded file"),
-    record = c(NA, NA),
-    stringsAsFactors = FALSE
-  )
-  result <- clean_redcap_log(redcap_log)
-  expect_true(all(result$action_type %in% c("Exports", NA)))
-})
-test_that("clean_redcap_log handles user actions", {
-  redcap_log <- data.frame(
-    timestamp = c(
-      "2024-01-15 10:30:00",
-      "2024-01-15 10:35:00"
-    ),
-    username = c("user1", "user2"),
-    action = c("Add user test", "Edit user admin"),
-    details = c("User added", "User edited"),
-    record = c(NA, NA),
-    stringsAsFactors = FALSE
-  )
-  result <- clean_redcap_log(redcap_log)
-  expect_true(all(result$action_type %in% c("Users", NA)))
-})
-test_that("clean_redcap_log handles no-changes actions", {
-  redcap_log <- data.frame(
-    timestamp = "2024-01-15 10:30:00",
-    username = "user1",
-    action = "Enable external module test",
-    details = "Module enabled",
-    record = NA,
-    stringsAsFactors = FALSE
-  )
-  result <- clean_redcap_log(redcap_log)
-  expect_identical(result$action_type[1L], "No Changes")
-})
-test_that("clean_redcap_log sorts by timestamp descending", {
-  redcap_log <- data.frame(
-    timestamp = c(
-      "2024-01-15 10:30:00",
-      "2024-01-15 10:45:00",
-      "2024-01-15 10:35:00"
-    ),
-    username = c("user1", "user2", "user3"),
-    action = c("Update record 1", "Update record 2", "Update record 3"),
-    details = c("Updated", "Updated", "Updated"),
-    record = c("1", "2", "3"),
-    stringsAsFactors = FALSE
-  )
-  result <- clean_redcap_log(redcap_log)
-  # Should be sorted by timestamp descending
-  expect_identical(result$timestamp[1L], "2024-01-15 10:45:00")
-  expect_identical(result$timestamp[2L], "2024-01-15 10:35:00")
-  expect_identical(result$timestamp[3L], "2024-01-15 10:30:00")
-})
-test_that("clean_redcap_log removes record_id column", {
-  redcap_log <- data.frame(
-    timestamp = "2024-01-15 10:30:00",
-    username = "user1",
-    action = "Update record 123",
-    details = "Updated",
-    record = "123",
-    record_id = NA,
-    stringsAsFactors = FALSE
-  )
-  result <- clean_redcap_log(redcap_log)
-  expect_false("record_id" %in% colnames(result))
-})
-# check_missing_codes ( Internal )

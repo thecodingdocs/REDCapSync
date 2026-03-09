@@ -1,16 +1,37 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
-# get_projects ( Exported )
-test_that("get_projects is df and has appropriate columns", {
+# get_projects (Exported)
+test_that("get_projects works!", {
   df <- get_projects()
   expect_s3_class(df, "data.frame")
   expect_true(all(colnames(df) %in% .blank_project_cols))
   df <- .blank_project_details
   expect_s3_class(df, "data.frame")
   expect_true(all(colnames(df) %in% .blank_project_cols))
+  # can test after adding project
 })
-# extract_project_details ( Internal )
-test_that("extract_project_details works", {
+# add_project_details_to_cache (Internal)
+test_that("add_project_details_to_cache works!", {
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  # start empty
+  projects <- get_projects()
+  expect_data_frame(projects, nrows = 0L)
+  # add project details to cache
+  project <- mock_test_project()$.internal
+  project_details <- extract_project_details(project)
+  expect_no_error(add_project_details_to_cache(project_details))
+  projects <- get_projects()
+  expect_data_frame(projects, nrows = 1L)
+  expect_true(project_details$project_name %in% projects$project_name)
+  # conflict: same project_id & same base redcap_uri
+  #but different project_name -> error
+  project_details_conflict <- project_details
+  project_details_conflict$project_name <- "TEST_OTHER"
+  expect_error(add_project_details_to_cache(project_details_conflict))
+})
+# extract_project_details (Internal)
+test_that("extract_project_details works!", {
   project <- mock_test_project()$.internal
   project_details <- extract_project_details(project)
   expect_data_frame(project_details,
@@ -19,8 +40,8 @@ test_that("extract_project_details works", {
   expect_identical(colnames(project_details),
                    colnames(.blank_project_details))
 })
-# save_projects_to_cache ( Internal )
-test_that("save_projects_to_cache works", {
+# save_projects_to_cache (Internal)
+test_that("save_projects_to_cache works!", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
   withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
   cache_location <- file.path(tempdir_test, ".cache")
@@ -46,26 +67,4 @@ test_that("save_projects_to_cache works", {
                  "saved")
   expect_file_exists(file.path(cache_location, "projects.rds"))
   expect_no_message(save_projects_to_cache(project_details, silent = TRUE))
-})
-# blank_tibble ( Internal )
-# na_if_null ( Internal )
-# add_project_details_to_cache ( Internal )
-test_that("add_project_details_to_cache works", {
-  tempdir_test <- sanitize_path(withr::local_tempdir())
-  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
-  # start empty
-  projects <- get_projects()
-  expect_data_frame(projects, nrows = 0L)
-  # add project details to cache
-  project <- mock_test_project()$.internal
-  project_details <- extract_project_details(project)
-  expect_no_error(add_project_details_to_cache(project_details))
-  projects <- get_projects()
-  expect_data_frame(projects, nrows = 1L)
-  expect_true(project_details$project_name %in% projects$project_name)
-  # conflict: same project_id & same base redcap_uri
-  #but different project_name -> error
-  project_details_conflict <- project_details
-  project_details_conflict$project_name <- "TEST_OTHER"
-  expect_error(add_project_details_to_cache(project_details_conflict))
 })

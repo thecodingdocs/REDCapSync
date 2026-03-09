@@ -1,56 +1,6 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
-# repair_projects ( Internal )
-test_that("repair_projects works with valid project details", {
-  project <- mock_test_project()$.internal
-  project_path <- get_project_path(
-    project_name = project$project_name,
-    dir_path = project$dir_path
-  )
-  saveRDS(project, file = project_path)
-  # Create valid project details
-  project_details <- extract_project_details(project)
-  projects <- project_details
-  # Test repair_projects with valid data
-  result <- repair_projects(projects)
-  expect_s3_class(result, "data.frame")
-  expect_true(test_project_details(result))
-  expect_identical(nrow(result), 1L)
-  expect_identical(result$project_name, project$project_name)
-})
-test_that("repair_projects returns blank when given empty data frame", {
-  projects <- data.frame()
-  result <- repair_projects(projects)
-  expect_s3_class(result, "data.frame")
-  expect_identical(nrow(result), 0L)
-})
-test_that("repair_projects returns NULL for non-data.frame input", {
-  result <- repair_projects("not a data frame")
-  expect_null(result)
-})
-test_that("repair_projects returns NULL when missing required columns", {
-  projects <- data.frame(
-    project_name = "TEST",
-    stringsAsFactors = FALSE
-  )
-  result <- repair_projects(projects)
-  expect_null(result)
-})
-test_that("repair_projects handles missing project files", {
-  projects <- data.frame(
-    project_name = "NONEXISTENT",
-    redcap_uri = "https://redcap.fake.edu/api/",
-    token_name = "REDCAPSYNC_NONEXISTENT",
-    project_id = "9999",
-    dir_path = file.path("nonexistent", "path"),
-    stringsAsFactors = FALSE
-  )
-  expect_message(
-    repair_projects(projects),
-    "Cannot extract project details"
-  )
-})
-# repair_project_details ( Internal )
+# repair_project_details (Internal)
 test_that("repair_project_details works with valid project file", {
   project <- mock_test_project()$.internal
   # Save project to disk
@@ -124,7 +74,57 @@ test_that("repair_project_details extracts correct project details", {
   expect_identical(result$token_name, project$redcap$token_name)
   expect_identical(result$redcap_uri, project$links$redcap_uri)
 })
-# repair_setup_project ( Internal )
+# repair_projects (Internal)
+test_that("repair_projects works with valid project details", {
+  project <- mock_test_project()$.internal
+  project_path <- get_project_path(
+    project_name = project$project_name,
+    dir_path = project$dir_path
+  )
+  saveRDS(project, file = project_path)
+  # Create valid project details
+  project_details <- extract_project_details(project)
+  projects <- project_details
+  # Test repair_projects with valid data
+  result <- repair_projects(projects)
+  expect_s3_class(result, "data.frame")
+  expect_true(test_project_details(result))
+  expect_identical(nrow(result), 1L)
+  expect_identical(result$project_name, project$project_name)
+})
+test_that("repair_projects returns blank when given empty data frame", {
+  projects <- data.frame()
+  result <- repair_projects(projects)
+  expect_s3_class(result, "data.frame")
+  expect_identical(nrow(result), 0L)
+})
+test_that("repair_projects returns NULL for non-data.frame input", {
+  result <- repair_projects("not a data frame")
+  expect_null(result)
+})
+test_that("repair_projects returns NULL when missing required columns", {
+  projects <- data.frame(
+    project_name = "TEST",
+    stringsAsFactors = FALSE
+  )
+  result <- repair_projects(projects)
+  expect_null(result)
+})
+test_that("repair_projects handles missing project files", {
+  projects <- data.frame(
+    project_name = "NONEXISTENT",
+    redcap_uri = "https://redcap.fake.edu/api/",
+    token_name = "REDCAPSYNC_NONEXISTENT",
+    project_id = "9999",
+    dir_path = file.path("nonexistent", "path"),
+    stringsAsFactors = FALSE
+  )
+  expect_message(
+    repair_projects(projects),
+    "Cannot extract project details"
+  )
+})
+# repair_setup_project (Internal)
 test_that("repair_setup_project works with valid project", {
   project <- mock_test_project()$.internal
   result <- repair_setup_project(project)

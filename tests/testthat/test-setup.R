@@ -1,6 +1,12 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
-# setup_project ( Exported )
+# load_project (Exported)
+test_that("load_project works!", {
+})
+# load_test_project (Exported)
+test_that("load_test_project works!", {
+})
+# setup_project (Exported)
 test_that("setup_project creates a valid project object and valid directory", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
   withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
@@ -90,9 +96,20 @@ test_that("setup_project checks exisiting dir", {
   }, "The project that was loaded was labelled and you chose raw")
   expect_null(project_loaded$internals$last_data_update)
 })
-# load_project ( Exported )
-# save_project ( Exported )
-test_that("save_project doesn't save if blank but will save if valid", {
+# clean_dir_path (Internal)
+test_that("clean_dir_path works!", {
+})
+# get_project_path (Internal)
+test_that("get_project_path works!", {
+})
+# get_project_path2 (Internal)
+test_that("get_project_path2 works!", {
+})
+# load_project_from_dir (Internal)
+test_that("load_project_from_dir works!", {
+})
+# save_project (Internal)
+test_that("save_project works!", {
   project_name <- "TEST_CLASSIC"
   redcap_uri <- "https://redcap.miami.edu/api/"
   project <- setup_project(project_name = project_name,
@@ -129,7 +146,7 @@ test_that("save_project doesn't save if blank but will save if valid", {
   project2 <- load_project(project_name = project_name)$.internal
   expect_identical(project, project2)
 })
-# set_dir ( Internal )
+# set_dir (Internal)
 test_that("set_dir handles existing directory correctly", {
   dir_path <- file.path(tempdir_file, "existing_dir")
   dir.create(dir_path)
@@ -164,4 +181,3 @@ test_that("set_dir validates the directory structure", {
   expect_directory_exists(dir_path)
   expect_true(all(.dir_folders %in% list.files(dir_path)))
 })
-# clean_dir_path ( Internal )

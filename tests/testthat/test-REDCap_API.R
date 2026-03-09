@@ -1,7 +1,22 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
-# get_redcap_metadata ( Internal )
-# get_redcap_data ( Internal )
+# get_redcap_log (Internal)
+test_that("get_redcap_log works!", {
+  skip_on_cran()
+  skip_if_offline()
+  # need dev server with log access?
+})
+test_that("get_redcap_log works on fixture!", {
+  project_name <- "TEST_REPEATING"
+  project <- mock_test_project(project_name)$.internal
+  call_list <- mock_test_calls(project_name)
+  local_mocked_bindings(
+    exportLogging = function(...) call_list$logging
+  )
+  result <- get_redcap_log(project)
+  expect_data_frame(result)
+})
+# get_redcap_metadata (Internal)
 test_that("get_redcap_ works on real server, simple!", {
   skip_on_cran()
   skip_if_offline()
@@ -68,7 +83,6 @@ test_that("get_redcap_ works on real server, longitudinal!", {
   expect_character(project_records, unique = TRUE, min.len = 1L)
   expect_in(project_records, data_list$demographics$record_id)
 })
-# compare fixture colnames to real con colnames
 test_that("get_redcap_metadata works with fixture data (classic)", {
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal
@@ -132,158 +146,14 @@ test_that("get_redcap_metadata works with fixture data (repeating forms)", {
   expect_list(result)
   expect_true(result$metadata$has_repeating_forms_or_events)
 })
-test_that("get_redcap_data works with fixture data (classic)", {
-  project_name <- "TEST_CLASSIC"
-  project <- mock_test_project(project_name)$.internal
-  call_list <- mock_test_calls(project_name)
-  local_mocked_bindings(
-    get_redcap_denormalized = function(...) call_list$data
-  )
-  result <- get_redcap_data(project)
-  expect_identical(result, project$data) # matches fixture call
-  result_not_labelled <- get_redcap_data(project, labelled = FALSE)
-  expect_in(c("0", "1"), result_not_labelled$other$var_yesno)
+# get_redcap_records (Internal)
+test_that("get_redcap_records works!", {
 })
-test_that("get_redcap_data works with fixture data (longitudinal)", {
-  project_name <- "TEST_REDCAPR_LONGITUDINAL"
-  project <- mock_test_project(project_name)$.internal
-  call_list <- mock_test_calls(project_name)
-  local_mocked_bindings(
-    rcon_result = function(...) call_list
-  )
-  project$metadata <- .blank_project$metadata # clear exisiting data
-  expect_null(project$metadata$fields)
-  expect_null(project$metadata$forms)
-  result <- get_redcap_metadata(project)
-  expect_list(result)
-  expect_true(result$metadata$is_longitudinal)
-  expect_true(result$metadata$has_arms)
-  expect_data_frame(result$metadata$arms, min.rows = 1L)
-  expect_data_frame(result$metadata$events, min.rows = 1L)
-})
-test_that("get_redcap_data works with fixture data (repeating forms)", {
-  project_name <- "TEST_REPEATING"
-  project <- mock_test_project(project_name)$.internal
-  call_list <- mock_test_calls(project_name)
-  local_mocked_bindings(
-    rcon_result = function(...) call_list
-  )
-  project$metadata <- .blank_project$metadata # clear exisiting data
-  result <- get_redcap_metadata(project)
-  expect_list(result)
-  expect_true(result$metadata$has_repeating_forms_or_events)
-})
-# add_field_elements ( Internal )
-test_that("add_field_elements works!", {
-})
-# update_project_links ( Internal )
-test_that("update_project_links works!", {
-})
-# get_redcap_files ( Internal )
-test_that("get_redcap_files works!", {
-  tempdir_test <- sanitize_path(withr::local_tempdir())
-  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
-  project <- mock_test_project()$.internal
-  out_file_path1 <- file.path(
-    project$dir_path,
-    "REDCap",
-    "TEST_CLASSIC",
-    "files",
-    "var_sig",
-    "other_var_sig_ID_1.png"
-  )
-  out_file_path2 <- file.path(
-    project$dir_path,
-    "REDCap",
-    "TEST_CLASSIC",
-    "files",
-    "var_file",
-    "other_var_file_ID_1.csv"
-  )
-  out_file_paths <- c(out_file_path1, out_file_path2)
-  expect_all_false(file.exists(out_file_paths))
-  local_mocked_bindings(
-    redcap_file_download_oneshot = function(...) {
-      cli_alert_danger("API FAILED!")
-    }
-  )
-  get_redcap_files(project, original_file_names = FALSE, overwrite = FALSE)
-  expect_all_false(file.exists(out_file_paths))
-  local_mocked_bindings(
-    redcap_file_download_oneshot = function(...) {
-      file.create(out_file_paths, showWarnings = FALSE)
-    }
-  )
-  get_redcap_files(project, original_file_names = FALSE, overwrite = FALSE)
-  expect_all_true(file.exists(out_file_paths))
-  tempdir_test <- sanitize_path(withr::local_tempdir())
-  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
-  drop_nas(project$data$other$var_sig)
-  out_file_path1 <- file.path(
-    project$dir_path,
-    "REDCap",
-    "TEST_CLASSIC",
-    "files",
-    "var_sig",
-    "signature_2025-11-19_1956.png"
-  )
-  drop_nas(project$data$other$var_file)
-  out_file_path2 <- file.path(
-    project$dir_path,
-    "REDCap",
-    "TEST_CLASSIC",
-    "files",
-    "var_file",
-    "Test_DataDictionary_2025-11-19.csv"
-  )
-  out_file_paths <- c(out_file_path1, out_file_path2)
-  expect_all_false(file.exists(out_file_paths))
-  get_redcap_files(project, original_file_names = TRUE, overwrite = FALSE)
-  expect_all_true(file.exists(out_file_paths))
-})
-# get_redcap_users ( Internal )
-test_that("get_redcap_users works!", {
-})
-# get_redcap_log ( Internal )
-#need dev server with log access?
-test_that("get_redcap_log works on fixture!", {
-  project_name <- "TEST_REPEATING"
-  project <- mock_test_project(project_name)$.internal
-  call_list <- mock_test_calls(project_name)
-  local_mocked_bindings(
-    exportLogging = function(...) call_list$logging
-  )
-  result <- get_redcap_log(project)
-  expect_data_frame(result)
-})
-# get_redcap_denormalized ( Internal )
-test_that("get_redcap_denormalized works!", {
+# rcon_result (Internal)
+test_that("rcon_result works!", {
   skip_on_cran()
   skip_if_offline()
-  project <- real_test_project("TEST_REDCAPR_LONGITUDINAL")$.internal
-  expect_data_frame(as.data.frame(project$data), nrows = 0L)
-  project_data <- suppressWarnings({
-    withr::with_envvar(real_dev_tokens, {
-      get_redcap_denormalized(project)
-    })
-  })
-  expect_data_frame(project_data, min.rows = 1L)
-})
-test_that("get_redcap_denormalized works no API call!", {
-  project_name <- "TEST_CLASSIC"
-  project <- mock_test_project(project_name)$.internal
-  call_list <- mock_test_calls(project_name)
-  local_mocked_bindings(
-    redcap_read = function(...) call_list
-  )
-  result <- get_redcap_denormalized(project)
-  expect_data_frame(result, min.rows = 1L)
-})
-# get_redcap_report ( Exported )
-test_that("get_redcap_report works!", {
-})
-# rename_forms_redcap_to_default ( Internal )
-test_that("rename_forms_redcap_to_default works!", {
+  # compare fixture colnames to real con colnames
 })
 test_that("rcon_result returns expected structure without real API calls", {
   project <- mock_test_project()$.internal
@@ -343,4 +213,141 @@ test_that("rcon_result returns expected structure without real API calls", {
   # check a few returned values come from our fake rcon
   expect_identical(out$project_info$project_id, "9999")
   expect_s3_class(out$forms, "data.frame")
+})
+# upload_form_to_redcap (Internal)
+test_that("upload_form_to_redcap works!", {
+})
+# add_field_elements (Internal)
+test_that("add_field_elements works!", {
+})
+# get_redcap_data (Internal)
+test_that("get_redcap_data works with fixture data (classic)", {
+  project_name <- "TEST_CLASSIC"
+  project <- mock_test_project(project_name)$.internal
+  call_list <- mock_test_calls(project_name)
+  local_mocked_bindings(
+    get_redcap_denormalized = function(...) call_list$data
+  )
+  result <- get_redcap_data(project)
+  expect_identical(result, project$data) # matches fixture call
+  result_not_labelled <- get_redcap_data(project, labelled = FALSE)
+  expect_in(c("0", "1"), result_not_labelled$other$var_yesno)
+})
+test_that("get_redcap_data works with fixture data (longitudinal)", {
+  project_name <- "TEST_REDCAPR_LONGITUDINAL"
+  project <- mock_test_project(project_name)$.internal
+  call_list <- mock_test_calls(project_name)
+  local_mocked_bindings(
+    rcon_result = function(...) call_list
+  )
+  project$metadata <- .blank_project$metadata # clear exisiting data
+  expect_null(project$metadata$fields)
+  expect_null(project$metadata$forms)
+  result <- get_redcap_metadata(project)
+  expect_list(result)
+  expect_true(result$metadata$is_longitudinal)
+  expect_true(result$metadata$has_arms)
+  expect_data_frame(result$metadata$arms, min.rows = 1L)
+  expect_data_frame(result$metadata$events, min.rows = 1L)
+})
+test_that("get_redcap_data works with fixture data (repeating forms)", {
+  project_name <- "TEST_REPEATING"
+  project <- mock_test_project(project_name)$.internal
+  call_list <- mock_test_calls(project_name)
+  local_mocked_bindings(
+    rcon_result = function(...) call_list
+  )
+  project$metadata <- .blank_project$metadata # clear exisiting data
+  result <- get_redcap_metadata(project)
+  expect_list(result)
+  expect_true(result$metadata$has_repeating_forms_or_events)
+})
+# get_redcap_denormalized (Internal)
+test_that("get_redcap_denormalized works!", {
+  skip_on_cran()
+  skip_if_offline()
+  project <- real_test_project("TEST_REDCAPR_LONGITUDINAL")$.internal
+  expect_data_frame(as.data.frame(project$data), nrows = 0L)
+  project_data <- suppressWarnings({
+    withr::with_envvar(real_dev_tokens, {
+      get_redcap_denormalized(project)
+    })
+  })
+  expect_data_frame(project_data, min.rows = 1L)
+})
+test_that("get_redcap_denormalized works no API call!", {
+  project_name <- "TEST_CLASSIC"
+  project <- mock_test_project(project_name)$.internal
+  call_list <- mock_test_calls(project_name)
+  local_mocked_bindings(
+    redcap_read = function(...) call_list
+  )
+  result <- get_redcap_denormalized(project)
+  expect_data_frame(result, min.rows = 1L)
+})
+# get_redcap_files (Internal)
+test_that("get_redcap_files works!", {
+  skip_on_cran()
+  skip_if_offline()
+})
+test_that("get_redcap_files works, no API call!", {
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  project <- mock_test_project()$.internal
+  out_file_path1 <- file.path(
+    project$dir_path,
+    "REDCap",
+    "TEST_CLASSIC",
+    "files",
+    "var_sig",
+    "other_var_sig_ID_1.png"
+  )
+  out_file_path2 <- file.path(
+    project$dir_path,
+    "REDCap",
+    "TEST_CLASSIC",
+    "files",
+    "var_file",
+    "other_var_file_ID_1.csv"
+  )
+  out_file_paths <- c(out_file_path1, out_file_path2)
+  expect_all_false(file.exists(out_file_paths))
+  local_mocked_bindings(
+    redcap_file_download_oneshot = function(...) {
+      cli_alert_danger("API FAILED!")
+    }
+  )
+  get_redcap_files(project, original_file_names = FALSE, overwrite = FALSE)
+  expect_all_false(file.exists(out_file_paths))
+  local_mocked_bindings(
+    redcap_file_download_oneshot = function(...) {
+      file.create(out_file_paths, showWarnings = FALSE)
+    }
+  )
+  get_redcap_files(project, original_file_names = FALSE, overwrite = FALSE)
+  expect_all_true(file.exists(out_file_paths))
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  drop_nas(project$data$other$var_sig)
+  out_file_path1 <- file.path(
+    project$dir_path,
+    "REDCap",
+    "TEST_CLASSIC",
+    "files",
+    "var_sig",
+    "signature_2025-11-19_1956.png"
+  )
+  drop_nas(project$data$other$var_file)
+  out_file_path2 <- file.path(
+    project$dir_path,
+    "REDCap",
+    "TEST_CLASSIC",
+    "files",
+    "var_file",
+    "Test_DataDictionary_2025-11-19.csv"
+  )
+  out_file_paths <- c(out_file_path1, out_file_path2)
+  expect_all_false(file.exists(out_file_paths))
+  get_redcap_files(project, original_file_names = TRUE, overwrite = FALSE)
+  expect_all_true(file.exists(out_file_paths))
 })

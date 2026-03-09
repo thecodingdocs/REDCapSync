@@ -1,7 +1,212 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
-# fields_to_choices ( Internal )
-test_that("fields_to_choices works", {
+# add_default_summaries (Internal)
+test_that("add_default_summaries works!", {
+  project <- mock_test_project()$.internal
+  project <- clear_project_summaries(project)
+  summaries <- c("REDCapSync", "REDCapSync_raw")
+  expect_all_false(summaries %in% names(project$summary))
+  expect_all_false(summaries %in% names(project$summary$all_records))
+  expect_no_error({
+    project <- add_default_summaries(
+      project = project,
+      exclude_identifiers = TRUE,
+      exclude_free_text = TRUE,
+      date_handling = "none"
+    )
+  })
+  expect_all_true(summaries %in% names(project$summary))
+  expect_all_true(summaries %in% names(project$summary$all_records))
+  raw <- project$summary$REDCapSync_raw
+  main <- project$summary$REDCapSync
+  # check expected settings for raw summary
+  expect_identical(raw$transformation_type, "none")
+  expect_false(raw$include_records)
+  expect_true(raw$separate)
+  # check expected settings for main summary
+  expect_identical(main$transformation_type, "default")
+  expect_true(main$include_records)
+  expect_false(main$separate)
+})
+# add_labels_to_checkbox (Internal)
+test_that("add_labels_to_checkbox works!", {
+})
+# add_project_summary (Internal)
+test_that("add_project_summary works!", {
+  project <- mock_test_project()$.internal
+  summary_name <- "MY_SUMMARY_TEST"
+  project <- add_project_summary(
+    project = project,
+    summary_name = summary_name,
+    transformation_type = "default",
+    drop_blanks = FALSE,
+    drop_missing_codes = TRUE,
+    include_metadata = TRUE,
+    include_records = FALSE,
+    include_users = TRUE,
+    include_log = FALSE,
+    annotate_from_log = FALSE,
+    with_links = FALSE,
+    separate = FALSE,
+    use_csv = FALSE
+  )
+  expect_true(summary_name %in% names(project$summary))
+  summary <- project$summary[[summary_name]]
+  expect_identical(summary$summary_name, summary_name)
+  expect_identical(summary$transformation_type, "default")
+  expect_true(summary$include_metadata)
+  expect_false(summary$include_records)
+  expect_true(summary$include_users)
+  expect_false(summary$with_links)
+  expect_false(summary$separate)
+  expect_type(summary$file_name, type = "character")
+})
+# annotate_choices (Internal)
+test_that("annotate_choices works!", {
+})
+# annotate_fields (Internal)
+test_that("annotate_fields works!", {
+})
+# annotate_forms (Internal)
+test_that("annotate_forms works!", {
+})
+# annotate_records (Internal)
+test_that("annotate_records works!", {
+})
+# annotate_users (Internal)
+test_that("annotate_users works!", {
+})
+# check_summaries (Internal)
+test_that("check_summaries works!", {
+})
+# clean_column_for_table (Internal)
+test_that("clean_column_for_table works!", {
+})
+# clean_data_list (Internal)
+test_that("clean_data_list works!", {
+})
+# clean_form (Internal)
+test_that("clean_form works!", {
+  project <- mock_test_project()$.internal
+  form <- project$data$text
+  project <- metadata_add_default_cols(project)
+  fields <- project$metadata$fields
+  form <- clean_form(form = form, fields = fields)
+  expect_identical(attr(form$var_text_only, "label"), "Text Only")
+  expect_identical(attr(form$var_birth_date, "label"), "Birth Date")
+  row_to_change <- which(fields$field_name == "var_multi_radio")
+  new_var <- "1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, 5"
+  fields$select_choices_or_calculations[row_to_change] <- new_var
+  form <- project$data$other
+  expect_warning(clean_form(form = form, fields = fields), "dupplicate names")
+})
+# clear_project_summaries (Internal)
+test_that("clear_project_summaries works!", {
+  project <- mock_test_project()$.internal
+  summaries <- c("REDCapSync", "REDCapSync_raw")
+  expect_all_true(summaries %in% names(project$summary))
+  expect_all_true(summaries %in% names(project$summary$all_records))
+  project <- clear_project_summaries(project)
+  expect_all_false(summaries %in% names(project$summary))
+  expect_all_false(summaries %in% names(project$summary$all_records))
+})
+# data_list_to_save (Internal)
+test_that("data_list_to_save works!", {
+})
+# deidentify_data_list (Internal)
+test_that("deidentify_data_list works!", {
+  project <- mock_test_project()$.internal
+  data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
+  data_list$metadata$fields$field_type_R <- NA
+  data_list$metadata$fields$in_original_redcap <- NA
+  id_cols <- data_list$metadata$form_key_cols |>
+    unlist() |>
+    unique()
+  fields <- data_list$metadata$fields
+  is_identifier <- fields$identifier == "y"
+  fields$validation_type <- fields$text_validation_type_or_show_slider_number
+  is_likely_identifier <- fields$validation_type %in% .redcap_maybe_ids_strict
+  identifier_rows <- which(is_identifier | is_likely_identifier)
+  initial_identifiers <- fields$field_name[identifier_rows]
+  is_notes <- fields$field_type == "notes"
+  is_text <- fields$field_type == "text"
+  has_validation <- is.na(fields$text_validation_type_or_show_slider_number)
+  not_id <- !fields$field_name %in% id_cols
+  is_free_text <- is_notes | (is_text & has_validation) & not_id
+  free_text_fields <- fields$field_name[which(is_free_text)]
+  expect_all_true(initial_identifiers %in% colnames(data_list$data$merged))
+  no_ids <- deidentify_data_list(data_list = data_list,
+                                 exclude_identifiers = TRUE,
+                                 exclude_free_text = FALSE)
+  expect_all_false(initial_identifiers %in% colnames(no_ids$data$merged))
+  expect_all_true(free_text_fields %in% colnames(data_list$data$merged))
+  no_free_text <- deidentify_data_list(data_list = data_list,
+                                       exclude_identifiers = FALSE,
+                                       exclude_free_text = TRUE)
+  expect_all_false(initial_identifiers %in% colnames(no_free_text$data$merged))
+  keep_rows <-
+    which(!data_list$metadata$fields$field_name %in% initial_identifiers)
+  data_list$metadata$fields <- data_list$metadata$fields[keep_rows, ]
+  keep_cols <- which(!colnames(data_list$data$merged) %in% initial_identifiers)
+  data_list$data$merged <- data_list$data$merged[, keep_cols]
+  expect_warning(
+    deidentify_data_list(
+      data_list = data_list,
+      exclude_identifiers = TRUE,
+      exclude_free_text = FALSE
+    ),
+    "You have no identifiers marked"
+  )
+})
+test_that("deidentify_data_list works2", {
+  project <- mock_test_project()$.internal
+  data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
+  data_list <- metadata_add_default_cols(data_list)
+  fields <- data_list$metadata$fields
+  merged <- data_list$data$merged
+  expected_cols <- c("var_birth_date",
+                     "var_text_date_dmy",
+                     "var_text_date_mdy",
+                     "var_text_date_ymd")
+  expect_all_true(expected_cols %in% colnames(merged))
+  expect_error(deidentify_data_list(data_list = data_list, date_handling = "1"))
+  # 'none'
+  merged_none <- deidentify_data_list(
+    data_list = data_list,
+    date_handling = "none"
+  )$merged
+  expect_all_true(expected_cols %in% colnames(merged_none))
+  # 'exclude_dates'
+  excluded_dates <- deidentify_data_list(data_list = data_list,
+                                         date_handling = "exclude_dates")$merged
+  expect_all_false(expected_cols %in% colnames(excluded_dates))
+  # 'random_shift_by_record'
+  random_shift <- deidentify_data_list(data_list = data_list,
+                                       date_handling = "random_shift_by_record")
+  random_shift <- random_shift$merged
+  expect_all_true(expected_cols %in% colnames(random_shift))
+  expect_all_false(random_shift$var_text_date_dmy == merged$var_text_date_dmy)
+  time_check1 <- as.Date(merged$var_text_date_dmy) -
+    as.Date(merged$var_birth_date)
+  time_check2 <- as.Date(random_shift$var_text_date_dmy) -
+    as.Date(random_shift$var_birth_date)
+  expect_all_true(time_check1 == time_check2) #math is same
+  as.Date(merged$var_birth_date) - as.Date(random_shift$var_birth_date)
+  # 'random_shift_by_project'
+  # merged_random_shift_by_project <- deidentify_data_list(
+  #   data_list = data_list,date_handling = "random_shift_by_project")
+  # # 'zero_by_record'
+  # merged_zero_by_record <- deidentify_data_list(
+  #   data_list = data_list,date_handling = "zero_by_record")
+  # # 'zero_by_project'
+  # merged_zero_by_project <- deidentify_data_list(
+  #   data_list = data_list,date_handling = "zero_by_project")
+})
+# field_types_to_R (Internal)
+test_that("field_types_to_R works!", {
+})
+# fields_to_choices (Internal)
+test_that("fields_to_choices works!", {
   project <- mock_test_project()$.internal
   fields <- project$metadata$fields
   fields <- fields[0L, ] |> dplyr::bind_rows(
@@ -49,71 +254,127 @@ test_that("fields_to_choices works", {
   #check warning for same name different code here?
   expect_false(anyDuplicated(should_be_unique) > 0L)
 })
-# add_labels_to_checkbox ( Internal )
-test_that("add_labels_to_checkbox works!", {
+# filter_data_list (Internal)
+test_that("filter_data_list works!", {
 })
-# annotate_fields ( Internal )
-test_that("annotate_fields works!", {
+# flatten_redcap (Internal)
+test_that("flatten_redcap works!", {
 })
-# annotate_forms ( Internal )
-test_that("annotate_forms works!", {
-})
-# annotate_choices ( Internal )
-test_that("annotate_choices works!", {
-})
-# annotate_records ( Internal )
-test_that("annotate_records works!", {
-})
-# clean_form ( Internal )
-test_that("clean_form works!", {
+# generate_project_summary (Internal)
+test_that("generate_project_summary works!", {
   project <- mock_test_project()$.internal
-  form <- project$data$text
-  project <- metadata_add_default_cols(project)
+  expect_error(generate_project_summary(project = project,
+                                        summary_name = "non-existing"),
+               regexp = "not included in the current project summaries")
+  project_summary <- generate_project_summary(project = project,
+                                              summary_name = "REDCapSync")
+  expect_true(is_df_list(project_summary))
+  project_summary <- generate_project_summary(project = project,
+                                              include_metadata = TRUE,
+                                              include_log = TRUE)
+  expect_contains(names(project_summary), "forms")
+  expect_contains(names(project_summary), "fields")
+  expect_contains(names(project_summary), "choices")
+  project_summary <- generate_project_summary(project = project,
+                                              include_metadata = FALSE)
+  expect_false("forms" %in% names(project_summary))
+  expect_false("fields" %in% names(project_summary))
+  expect_false("choices" %in% names(project_summary))
+  project_summary <- generate_project_summary(project = project,
+                                              summary_name = "REDCapSync",
+                                              exclude_identifiers = FALSE)
   fields <- project$metadata$fields
-  form <- clean_form(form = form, fields = fields)
-  expect_identical(attr(form$var_text_only, "label"), "Text Only")
-  expect_identical(attr(form$var_birth_date, "label"), "Birth Date")
-  row_to_change <- which(fields$field_name == "var_multi_radio")
-  new_var <- "1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, 5"
-  fields$select_choices_or_calculations[row_to_change] <- new_var
-  form <- project$data$other
-  expect_warning(clean_form(form = form, fields = fields), "dupplicate names")
+  fields$field_name[which(fields$identifier == "y")]
+  colnames(project_summary$merged)
+  should_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1]
+  expect_identical(should_be_missing, "Unknown")
+  project_summary <- generate_project_summary(project = project,
+                                              drop_missing_codes = TRUE)
+  should_not_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1]
+  expect_scalar_na(should_not_be_missing)
 })
-# clean_column_for_table ( Internal )
-test_that("clean_column_for_table works!", {
-})
-# add_project_summary ( Exported )
-test_that("add_project_summary works!", {
+# get_log (Internal)
+test_that("get_log works!", {
   project <- mock_test_project()$.internal
-  summary_name <- "MY_SUMMARY_TEST"
-  project <- add_project_summary(
-    project = project,
-    summary_name = summary_name,
-    transformation_type = "default",
-    drop_blanks = FALSE,
-    drop_missing_codes = TRUE,
-    include_metadata = TRUE,
-    include_records = FALSE,
-    include_users = TRUE,
-    include_log = FALSE,
-    annotate_from_log = FALSE,
-    with_links = FALSE,
-    separate = FALSE,
-    use_csv = FALSE
-  )
-  expect_true(summary_name %in% names(project$summary))
-  summary <- project$summary[[summary_name]]
-  expect_identical(summary$summary_name, summary_name)
-  expect_identical(summary$transformation_type, "default")
-  expect_true(summary$include_metadata)
-  expect_false(summary$include_records)
-  expect_true(summary$include_users)
-  expect_false(summary$with_links)
-  expect_false(summary$separate)
-  expect_type(summary$file_name, type = "character")
+  log <- project$redcap$log
+  records <- unique(log$record) |> sample(1L)
+  log_subset <- get_log(project, records)
+  subset_record_id <- unique(log_subset$record)
+  expect_in(subset_record_id, records)
 })
-# save_project_summary ( Internal )
-test_that("save_project_summary works", {
+# get_summary_records (Internal)
+test_that("get_summary_records works!", {
+  project <- mock_test_project()$.internal
+  project <- project |>
+    add_project_summary(
+      summary_name = "test_branching_yes",
+      filter_field = "var_branching",
+      filter_choices = "Yes"
+    ) |>
+    add_project_summary(
+      summary_name = "test_branching_no",
+      filter_field = "var_branching",
+      filter_choices = "No"
+    )
+  other <- project$data$other
+  expect_true("test_branching_yes" %in% names(project$summary))
+  expect_true("test_branching_no" %in% names(project$summary))
+  record_ids_yes <- other$record_id[which(other$var_branching == "Yes")] |>
+    sort()
+  record_ids_no <- other$record_id[which(other$var_branching == "No")] |>
+    sort()
+  get_sum_records_yes <- project |>
+    get_summary_records("test_branching_yes") |>
+    sort()
+  get_sum_records_no <- project |>
+    get_summary_records("test_branching_no") |>
+    sort()
+  expect_identical(record_ids_yes, get_sum_records_yes)
+  expect_identical(record_ids_no, get_sum_records_no)
+})
+# merge_non_repeating (Internal)
+test_that("merge_non_repeating works!", {
+  project <- mock_test_project()$.internal
+  expect_contains(names(project$data), project$metadata$forms$form_name)
+  id_col <- project$metadata$id_col
+  text_field_names <- colnames(project$data$text) |> setdiff(id_col)
+  other_field_names <- colnames(project$data$other) |> setdiff(id_col)
+  text_field_names2 <- project$metadata$fields |>
+    get_match(
+      match_field = "form_name",
+      match_text = "text",
+      return_field = "field_name"
+    ) |>
+    setdiff(id_col)
+  other_field_names2 <- project$metadata$fields |>
+    get_match(
+      match_field = "form_name",
+      match_text = "other",
+      return_field = "field_name"
+    ) |>
+    setdiff(id_col)
+  merge_form_name <- "merged_form"
+  merged <- merge_non_repeating(
+    data_list = project,
+    merge_form_name = merge_form_name,
+    merge_to_rep = TRUE
+  ) #NA for classic)
+  expect_identical(merge_form_name, names(merged$data))
+  a <- nrow(merged$data[[merge_form_name]])
+  b <- nrow(project$data$text)
+  c <- nrow(project$data$other)
+  expect_identical(a, b)
+  expect_identical(a, c)
+  expected_col_names <-  c(id_col, text_field_names, other_field_names)
+  expected_col_length <- length_unique(expected_col_names)
+  expect_identical(ncol(merged$data[[merge_form_name]]), expected_col_length)
+  expect_named(merged$data[[merge_form_name]], expected_col_names)
+})
+# metadata_add_default_cols (Internal)
+test_that("metadata_add_default_cols works!", {
+})
+# save_project_summary (Internal)
+test_that("save_project_summary works!", {
   project <- mock_test_project()$.internal
   summary_name <- "SAVE_SUMMARY_TEST"
   project <- add_project_summary(
@@ -180,79 +441,8 @@ test_that("save_project_summary works", {
                                   "_summary_details.csv")))
   expect_file_exists(file_path)
 })
-# generate_project_summary ( Exported )
-test_that("generate_project_summary works!", {
-  project <- mock_test_project()$.internal
-  expect_error(generate_project_summary(project = project,
-                                        summary_name = "non-existing"),
-               regexp = "not included in the current project summaries")
-  project_summary <- generate_project_summary(project = project,
-                                              summary_name = "REDCapSync")
-  expect_true(is_df_list(project_summary))
-  project_summary <- generate_project_summary(project = project,
-                                              include_metadata = TRUE,
-                                              include_log = TRUE)
-  expect_contains(names(project_summary), "forms")
-  expect_contains(names(project_summary), "fields")
-  expect_contains(names(project_summary), "choices")
-  project_summary <- generate_project_summary(project = project,
-                                              include_metadata = FALSE)
-  expect_false("forms" %in% names(project_summary))
-  expect_false("fields" %in% names(project_summary))
-  expect_false("choices" %in% names(project_summary))
-  project_summary <- generate_project_summary(project = project,
-                                              summary_name = "REDCapSync",
-                                              exclude_identifiers = FALSE)
-  fields <- project$metadata$fields
-  fields$field_name[which(fields$identifier == "y")]
-  colnames(project_summary$merged)
-  should_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1]
-  expect_identical(should_be_missing, "Unknown")
-  project_summary <- generate_project_summary(project = project,
-                                              drop_missing_codes = TRUE)
-  should_not_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1]
-  expect_scalar_na(should_not_be_missing)
-})
-# merge_non_repeating ( Internal )
-test_that("merge_non_repeating works!", {
-  project <- mock_test_project()$.internal
-  expect_contains(names(project$data), project$metadata$forms$form_name)
-  id_col <- project$metadata$id_col
-  text_field_names <- colnames(project$data$text) |> setdiff(id_col)
-  other_field_names <- colnames(project$data$other) |> setdiff(id_col)
-  text_field_names2 <- project$metadata$fields |>
-    get_match(
-      match_field = "form_name",
-      match_text = "text",
-      return_field = "field_name"
-    ) |>
-    setdiff(id_col)
-  other_field_names2 <- project$metadata$fields |>
-    get_match(
-      match_field = "form_name",
-      match_text = "other",
-      return_field = "field_name"
-    ) |>
-    setdiff(id_col)
-  merge_form_name <- "merged_form"
-  merged <- merge_non_repeating(
-    data_list = project,
-    merge_form_name = merge_form_name,
-    merge_to_rep = TRUE
-  ) #NA for classic)
-  expect_identical(merge_form_name, names(merged$data))
-  a <- nrow(merged$data[[merge_form_name]])
-  b <- nrow(project$data$text)
-  c <- nrow(project$data$other)
-  expect_identical(a, b)
-  expect_identical(a, c)
-  expected_col_names <-  c(id_col, text_field_names, other_field_names)
-  expected_col_length <- length_unique(expected_col_names)
-  expect_identical(ncol(merged$data[[merge_form_name]]), expected_col_length)
-  expect_named(merged$data[[merge_form_name]], expected_col_names)
-})
-# summarize_project ( Internal )
-test_that("summarize_project works", {
+# summarize_project (Internal)
+test_that("summarize_project works!", {
   project <- mock_test_project()$.internal
   expect_directory_exists(project$dir_path)
   # ensure default summaries present
@@ -271,215 +461,6 @@ test_that("summarize_project works", {
   expect_true("REDCapSync" %in% names(project_saved$summary))
   expect_file_exists(project_saved$summary$REDCapSync$file_path)
 })
-# clear_project_summaries ( Exported )
-test_that("clear_project_summaries works!", {
-  project <- mock_test_project()$.internal
-  summaries <- c("REDCapSync", "REDCapSync_raw")
-  expect_all_true(summaries %in% names(project$summary))
-  expect_all_true(summaries %in% names(project$summary$all_records))
-  project <- clear_project_summaries(project)
-  expect_all_false(summaries %in% names(project$summary))
-  expect_all_false(summaries %in% names(project$summary$all_records))
-})
-# extract_values_from_form_list ( Internal )
-test_that("extract_values_from_form_list works!", {
-})
-# extract_project_records ( Internal )
-test_that("extract_project_records works!", {
-})
-# get_log ( Internal )
-test_that("get_log works!", {
-  project <- mock_test_project()$.internal
-  log <- project$redcap$log
-  records <- unique(log$record) |> sample(1L)
-  log_subset <- get_log(project, records)
-  subset_record_id <- unique(log_subset$record)
-  expect_in(subset_record_id, records)
-})
-# annotate_users ( Internal )
-test_that("annotate_users works!", {
-})
-# get_summary_records ( Internal )
-test_that("get_summary_records works!", {
-  project <- mock_test_project()$.internal
-  project <- project |>
-    add_project_summary(
-      summary_name = "test_branching_yes",
-      filter_field = "var_branching",
-      filter_choices = "Yes"
-    ) |>
-    add_project_summary(
-      summary_name = "test_branching_no",
-      filter_field = "var_branching",
-      filter_choices = "No"
-    )
-  other <- project$data$other
-  expect_true("test_branching_yes" %in% names(project$summary))
-  expect_true("test_branching_no" %in% names(project$summary))
-  record_ids_yes <- other$record_id[which(other$var_branching == "Yes")] |>
-    sort()
-  record_ids_no <- other$record_id[which(other$var_branching == "No")] |>
-    sort()
-  get_sum_records_yes <- project |>
-    get_summary_records("test_branching_yes") |>
-    sort()
-  get_sum_records_no <- project |>
-    get_summary_records("test_branching_no") |>
-    sort()
-  expect_identical(record_ids_yes, get_sum_records_yes)
-  expect_identical(record_ids_no, get_sum_records_no)
-})
-# summary_records_due ( Internal )
+# summary_records_due (Internal)
 test_that("summary_records_due works!", {
-})
-# check_summaries ( Internal )
-test_that("check_summaries works!", {
-})
-# add_default_summaries ( Internal )
-test_that("add_default_summaries works", {
-  project <- mock_test_project()$.internal
-  project <- clear_project_summaries(project)
-  summaries <- c("REDCapSync", "REDCapSync_raw")
-  expect_all_false(summaries %in% names(project$summary))
-  expect_all_false(summaries %in% names(project$summary$all_records))
-  expect_no_error({
-    project <- add_default_summaries(
-      project = project,
-      exclude_identifiers = TRUE,
-      exclude_free_text = TRUE,
-      date_handling = "none"
-    )
-  })
-  expect_all_true(summaries %in% names(project$summary))
-  expect_all_true(summaries %in% names(project$summary$all_records))
-  raw <- project$summary$REDCapSync_raw
-  main <- project$summary$REDCapSync
-  # check expected settings for raw summary
-  expect_identical(raw$transformation_type, "none")
-  expect_false(raw$include_records)
-  expect_true(raw$separate)
-  # check expected settings for main summary
-  expect_identical(main$transformation_type, "default")
-  expect_true(main$include_records)
-  expect_false(main$separate)
-})
-# labelled_to_raw_form ( Exported )
-test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
-  project <- mock_test_project()$.internal
-  project_summary <- generate_project_summary(project)
-  merged <- all_character_cols(project_summary$merged)
-  var_yesno_labelled <- merged$var_yesno
-  values <- unique(merged$var_yesno)
-  expect_vector(values, size = 2L)
-  expect_contains(values, c("Yes", "No"))
-  merged <- labelled_to_raw_form(merged, project)
-  var_yesno_coded <- merged$var_yesno
-  values <- unique(merged$var_yesno)
-  expect_vector(values, size = 2L)
-  expect_contains(values, c("1", "0"))
-  var_yesno_labelled_check <- (var_yesno_labelled == "Yes") |>
-    as.integer() |>
-    as.character()
-  expect_identical(var_yesno_labelled_check, var_yesno_coded)
-  merged <- raw_to_labelled_form(merged, project)
-  var_yesno_labelled_again <- merged$var_yesno
-  values <- unique(merged$var_yesno)
-  expect_vector(values, size = 2L)
-  expect_contains(values, c("Yes", "No"))
-  expect_identical(var_yesno_labelled, var_yesno_labelled_again)
-  expect_in("Unknown", project$metadata$missing_codes$name)
-  labelled <- merged |> select(record_id, var_branching)
-  labelled$var_branching[3L] <- "Unknown"
-  labelled$var_branching[5L] <- "Not applicable"
-  raw <- labelled_to_raw_form(labelled, project)
-  expect_identical("UNK", raw$var_branching[3L])
-  expect_identical("NA", raw$var_branching[5L])
-  labelled <- raw_to_labelled_form(raw, project)
-  expect_identical("Unknown", labelled$var_branching[3L])
-  expect_identical("Not applicable", labelled$var_branching[5L])
-  mismatch <- merged |> select(record_id, var_branching)
-  mismatch$var_branching[3L] <- "Random Thing"
-  error_message <- "Mismatched REDCap"
-  expect_error(labelled_to_raw_form(mismatch, project), error_message)
-  raw_mismatch <- raw
-  raw_mismatch$var_branching[3L] <- "Random Thing"
-  expect_warning(raw_to_labelled_form(raw_mismatch, project), error_message)
-})
-# labelled_to_raw_data_list ( Internal )
-test_that("labelled_to_raw_data_listand raw_to_labelled_data_list works!", {
-  project <- mock_test_project()$.internal
-  # ensure project is marked as labelled and has labelled values
-  expect_true(project$internals$labelled)
-  # sanity check: labelled value present in example form
-  expect_all_true(project$data$other$var_yesno %in% c("Yes", "No"))
-  # convert and capture returned project
-  expect_no_error({
-    project_converted <- labelled_to_raw_data_list(project)
-  })
-  # internals updated
-  expect_false(project_converted$internals$labelled)
-  # values converted from labelled ("Yes"/"No") to raw codes ("1"/"0")
-  expect_all_true(project_converted$data$other$var_yesno %in% c("0", "1"))
-  expect_no_error({
-    project_again <- raw_to_labelled_data_list(project_converted)
-  })
-  expect_all_true(project_again$data$other$var_yesno %in% c("Yes", "No"))
-})
-# get_all_field_names ( Internal )
-test_that("get_all_field_names works!", {
-  project <- mock_test_project()$.internal
-  field_names <- get_all_field_names(project)
-  expect_all_true(field_names %in% project$metadata$fields$field_name)
-})
-# get_all_field_names ( Internal )
-test_that("get_identifier_fields works", {
-  # minimal metadata/fields to exercise deidentified / strict / super_strict
-  field_names <- c("record_id", "email", "cell", "dob", "other", "notes", "int")
-  valid_types <- c(NA, "email", "phone", "date_mdy", NA, NA, "integer")
-  fields <- data.frame(
-    field_name = field_names,
-    identifier = c("y", NA, NA, "y", NA, NA, NA),
-    field_type = c("text", "text", "text", "text", "text", "notes", "text"),
-    text_validation_type_or_show_slider_number = valid_types,
-    stringsAsFactors = FALSE
-  )
-  data_list <- list(metadata = list(fields = fields))
-  data_list$metadata$form_key_cols <- "record_id"
-  # deidentified: only explicit identifier flagged "y"
-  out_deid <- get_identifier_fields(data_list, get_type = "deidentified")
-  expect_identical(out_deid, c("record_id", "dob"))
-  # deidentified_strict: includes fields with validation types
-  # in strict list (email, phone)
-  out_strict <- get_identifier_fields(data_list = data_list,
-                                      get_type = "deidentified_strict")
-  expect_identical(out_strict, c("record_id", "email", "cell", "dob"))
-  # deidentified_super_strict: includes additional validation  (dates, etc.)
-  out_super <- get_identifier_fields(data_list = data_list,
-                                     get_type = "deidentified_super_strict")
-  expect_identical(out_super, setdiff(field_names, "int"))
-  # invert = TRUE should return the complement set
-  out_inv <-get_identifier_fields(data_list = data_list,
-                                  get_type = "deidentified",
-                                  invert = TRUE)
-  expect_identical(out_inv, c("email", "cell", "other", "notes", "int"))
-})
-# field_names_to_form_names ( Internal )
-test_that("field_names_to_form_names works!", {
-})
-# construct_header_list ( Internal )
-test_that("construct_header_list works!", {
-})
-# field_names_metadata ( Internal )
-test_that("field_names_metadata works!", {
-})
-# filter_fields_from_form ( Internal )
-test_that("filter_fields_from_form works!", {
-  project <- mock_test_project("TEST_REPEATING")$.internal
-  form <- project$data$repeating_2 |> bind_rows(project$data$repeating)
-  expect_error(filter_fields_from_form(form, project))
-  expect_error(filter_fields_from_form(form, project))
-  form <- project$data$form_1
-  expect_no_error(filter_fields_from_form(form, project))
-  fields <- filter_fields_from_form(form, project)
-  expect_data_frame(fields, nrows = ncol(form))
 })

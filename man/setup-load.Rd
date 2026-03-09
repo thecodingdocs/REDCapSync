@@ -36,7 +36,7 @@ setup_project(
 
 load_project(project_name)
 
-load_test_project(project_name)
+load_test_project(project_name, dir_path)
 }
 \arguments{
 \item{project_name}{A character string with no spaces or symbols representing

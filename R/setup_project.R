@@ -463,7 +463,7 @@ load_project_from_dir <- function(project_name, dir_path, validate = TRUE) {
 }
 #' @rdname setup-load
 #' @export
-load_test_project <- function(project_name) {
+load_test_project <- function(project_name, dir_path) {
   if (missing(project_name)) {
     cli_alert_info(paste(
       "TEST project choices:",
@@ -487,11 +487,18 @@ load_test_project <- function(project_name) {
   )
   project <- .test_projects[[project_name]]
   project <- repair_setup_project(project)
+  assert_setup_project(project)
+  if(!missing(dir_path)){
+    project$dir_path <- set_dir(dir_path)
+    dir.create(
+      path = file.path(project$dir_path, "REDCap", project_name),
+      showWarnings = FALSE
+    )
+  }
   project$internals$is_test <- TRUE
-  project <- REDCapSync_project$new(project)
   cli_alert_success("Loaded TEST project {project$project_name}!")
   cli_alert_warning("Does not actually communicate with any REDCap API")
-  invisible(project)
+  invisible(REDCapSync_project$new(project))
 }
 #' @noRd
 save_project <- function(project, silent = FALSE) {

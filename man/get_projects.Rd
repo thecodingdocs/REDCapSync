@@ -18,6 +18,9 @@ which can be used to find, move, edit, delete that data.
 }
 \seealso{
 \code{vignette("Cache", package = "REDCapSync")}
+
+Other Cache Functions: 
+\code{\link{cache_clear}()}
 }
-\concept{Cache}
+\concept{Cache Functions}
 \keyword{Cache}

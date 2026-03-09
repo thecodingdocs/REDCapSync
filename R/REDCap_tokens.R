@@ -42,6 +42,41 @@ test_project_token <- function(project, silent = TRUE) {
   invisible(project)
 }
 #' @noRd
+update_project_links <- function(project) {
+  redcap_base <- project$links$redcap_base
+  redcap_version <- project$redcap$version
+  link_head <- paste0(redcap_base, "redcap_v", redcap_version)
+  link_tail <- paste0("?pid=", project$redcap$project_id)
+  home <- paste0("/index.php", link_tail)
+  record_home <-  paste0("/DataEntry/record_home.php", link_tail)
+  # record_subpage <- "/DataEntry/index.php", link_tail)
+  dashboard <-  paste0("/DataEntry/record_status_dashboard.php", link_tail)
+  api <-  paste0("/API/project_api.php", link_tail)
+  api_playground <-  paste0("/API/playground.php", link_tail)
+  setup <-  paste0("/ProjectSetup/index.php", link_tail)
+  user_rights <-  paste0("/UserRights/index.php", link_tail)
+  logging <-  paste0("/Logging/index.php", link_tail)
+  designer <-  paste0("/Design/online_designer.php", link_tail)
+  codebook <-  paste0("/Design/data_dictionary_codebook.php", link_tail)
+  dictionary <-  paste0("/Design/data_dictionary_upload.php", link_tail)
+  data_quality <- paste0("/DataQuality/index.php", link_tail)
+  identifiers <- paste0(home, "&route=IdentifierCheckController:index")
+  project$links$redcap_home <- paste0(link_head, home)
+  project$links$redcap_record_home <- paste0(link_head, record_home)
+  project$links$redcap_records_dashboard <- paste0(link_head, dashboard)
+  project$links$redcap_api <- paste0(link_head, api)
+  project$links$redcap_api_playground <- paste0(link_head, api_playground)
+  project$links$redcap_setup <- paste0(link_head, setup)
+  project$links$redcap_user_rights <- paste0(link_head, user_rights)
+  project$links$redcap_logging <- paste0(link_head, logging)
+  project$links$redcap_designer <- paste0(link_head, designer)
+  project$links$redcap_codebook <- paste0(link_head, codebook)
+  project$links$redcap_dictionary <- paste0(link_head, dictionary)
+  project$links$redcap_data_quality <- paste0(link_head, data_quality)
+  project$links$redcap_identifiers <- paste0(link_head, identifiers)
+  invisible(project)
+}
+#' @noRd
 is_valid_redcap_token <- function(token, silent = TRUE) {
   start_text <- "The token "
   token_text <- NULL

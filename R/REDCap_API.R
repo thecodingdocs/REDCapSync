@@ -1,30 +1,4 @@
 #' @noRd
-rcon_result <- function(project) {
-  rcon <- redcapConnection(url = project$links$redcap_uri,
-                           token = get_project_token(project))
-  result <- list(
-    project_info = try_else_null(all_character_cols(rcon$projectInformation())),
-    arms = try_else_null(all_character_cols(rcon$arms())),
-    events = try_else_null(all_character_cols(rcon$events())),
-    mapping = try_else_null(all_character_cols(rcon$mapping())),
-    forms = try_else_null(all_character_cols(rcon$instruments())),
-    repeating = try_else_null(all_character_cols(rcon$repeatInstrumentEvent())),
-    fields = try_else_null(all_character_cols(rcon$metadata())),
-    logging = try_else_null(all_character_cols(
-      exportLogging(rcon = rcon, beginTime = Sys.time() - 100000L)
-    )),
-    users = try_else_null(all_character_cols(rcon$users())),
-    user_roles = try_else_null(all_character_cols(rcon$user_roles())),
-    user_role_assignment = try_else_null(all_character_cols(
-      rcon$user_role_assignment()
-    )),
-    dags = try_else_null(all_character_cols(rcon$dags())),
-    dag_assignment = try_else_null(all_character_cols(rcon$dag_assignment())),
-    file_repository = try_else_null(all_character_cols(rcon$file_repository()))
-  )
-  result
-}
-#' @noRd
 get_redcap_metadata <- function(project, include_users = TRUE) {
   assert_setup_project(project)
   result <- rcon_result(project)
@@ -201,6 +175,32 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   invisible(project)
 }
 #' @noRd
+rcon_result <- function(project) {
+  rcon <- redcapConnection(url = project$links$redcap_uri,
+                           token = get_project_token(project))
+  result <- list(
+    project_info = try_else_null(all_character_cols(rcon$projectInformation())),
+    arms = try_else_null(all_character_cols(rcon$arms())),
+    events = try_else_null(all_character_cols(rcon$events())),
+    mapping = try_else_null(all_character_cols(rcon$mapping())),
+    forms = try_else_null(all_character_cols(rcon$instruments())),
+    repeating = try_else_null(all_character_cols(rcon$repeatInstrumentEvent())),
+    fields = try_else_null(all_character_cols(rcon$metadata())),
+    logging = try_else_null(all_character_cols(
+      exportLogging(rcon = rcon, beginTime = Sys.time() - 100000L)
+    )),
+    users = try_else_null(all_character_cols(rcon$users())),
+    user_roles = try_else_null(all_character_cols(rcon$user_roles())),
+    user_role_assignment = try_else_null(all_character_cols(
+      rcon$user_role_assignment()
+    )),
+    dags = try_else_null(all_character_cols(rcon$dags())),
+    dag_assignment = try_else_null(all_character_cols(rcon$dag_assignment())),
+    file_repository = try_else_null(all_character_cols(rcon$file_repository()))
+  )
+  result
+}
+#' @noRd
 add_field_elements <- function(fields) {
   #assert_fields should be here
   form_names <- unique(fields$form_name)
@@ -271,39 +271,37 @@ add_field_elements <- function(fields) {
   fields
 }
 #' @noRd
-update_project_links <- function(project) {
-  redcap_base <- project$links$redcap_base
-  redcap_version <- project$redcap$version
-  link_head <- paste0(redcap_base, "redcap_v", redcap_version)
-  link_tail <- paste0("?pid=", project$redcap$project_id)
-  home <- paste0("/index.php", link_tail)
-  record_home <-  paste0("/DataEntry/record_home.php", link_tail)
-  # record_subpage <- "/DataEntry/index.php", link_tail)
-  dashboard <-  paste0("/DataEntry/record_status_dashboard.php", link_tail)
-  api <-  paste0("/API/project_api.php", link_tail)
-  api_playground <-  paste0("/API/playground.php", link_tail)
-  setup <-  paste0("/ProjectSetup/index.php", link_tail)
-  user_rights <-  paste0("/UserRights/index.php", link_tail)
-  logging <-  paste0("/Logging/index.php", link_tail)
-  designer <-  paste0("/Design/online_designer.php", link_tail)
-  codebook <-  paste0("/Design/data_dictionary_codebook.php", link_tail)
-  dictionary <-  paste0("/Design/data_dictionary_upload.php", link_tail)
-  data_quality <- paste0("/DataQuality/index.php", link_tail)
-  identifiers <- paste0(home, "&route=IdentifierCheckController:index")
-  project$links$redcap_home <- paste0(link_head, home)
-  project$links$redcap_record_home <- paste0(link_head, record_home)
-  project$links$redcap_records_dashboard <- paste0(link_head, dashboard)
-  project$links$redcap_api <- paste0(link_head, api)
-  project$links$redcap_api_playground <- paste0(link_head, api_playground)
-  project$links$redcap_setup <- paste0(link_head, setup)
-  project$links$redcap_user_rights <- paste0(link_head, user_rights)
-  project$links$redcap_logging <- paste0(link_head, logging)
-  project$links$redcap_designer <- paste0(link_head, designer)
-  project$links$redcap_codebook <- paste0(link_head, codebook)
-  project$links$redcap_dictionary <- paste0(link_head, dictionary)
-  project$links$redcap_data_quality <- paste0(link_head, data_quality)
-  project$links$redcap_identifiers <- paste0(link_head, identifiers)
-  invisible(project)
+get_redcap_data <- function(project,
+                            labelled = TRUE,
+                            records = NULL,
+                            batch_size = 2000L) {
+  form_list <- list()
+  denormalized <- get_redcap_denormalized(
+    project = project,
+    labelled = FALSE,
+    records = records,
+    batch_size = batch_size
+  ) # add check for dag and api
+  form_list <- normalize_redcap(denormalized = denormalized,
+                                project = project,
+                                labelled = labelled)
+  form_list
+}
+#' @noRd
+get_redcap_denormalized <- function(project,
+                                    labelled = FALSE,
+                                    records = NULL,
+                                    batch_size = 1000L) {
+  denormalized <- redcap_read(
+    redcap_uri = project$links$redcap_uri,
+    token = get_project_token(project),
+    batch_size = batch_size,
+    interbatch_delay = 0.1,
+    records = records,
+    raw_or_label = ifelse(labelled, "label", "raw")
+  )$data
+  denormalized <- all_character_cols(denormalized)
+  denormalized
 }
 #' @noRd
 get_redcap_files <- function(project,
@@ -422,39 +420,6 @@ get_redcap_log <- function(project,
   redcap_log # deal with if NA if user does not have log privileges.
 }
 #' @noRd
-get_redcap_denormalized <- function(project,
-                                    labelled = FALSE,
-                                    records = NULL,
-                                    batch_size = 1000L) {
-  denormalized <- redcap_read(
-    redcap_uri = project$links$redcap_uri,
-    token = get_project_token(project),
-    batch_size = batch_size,
-    interbatch_delay = 0.1,
-    records = records,
-    raw_or_label = ifelse(labelled, "label", "raw")
-  )$data
-  denormalized <- all_character_cols(denormalized)
-  denormalized
-}
-#' @noRd
-get_redcap_data <- function(project,
-                            labelled = TRUE,
-                            records = NULL,
-                            batch_size = 2000L) {
-  form_list <- list()
-  denormalized <- get_redcap_denormalized(
-    project = project,
-    labelled = FALSE,
-    records = records,
-    batch_size = batch_size
-  ) # add check for dag and api
-  form_list <- normalize_redcap(denormalized = denormalized,
-                                project = project,
-                                labelled = labelled)
-  form_list
-}
-#' @noRd
 get_redcap_records <- function(project) {
   assert_setup_project(project)
   id_col <- project$metadata$id_col
@@ -482,3 +447,127 @@ upload_form_to_redcap <- function(to_be_uploaded, project, batch_size = 500L) {
     overwrite_with_blanks = TRUE
   )
 }
+#' @noRd
+.log_colnames <- c(
+  "timestamp",
+  "username",
+  "action",
+  "details",
+  "record",
+  "action_type"
+)
+#' @noRd
+.users_colnames <- c(
+  "username",
+  "email",
+  "firstname",
+  "lastname",
+  "expiration",
+  "data_access_group",
+  "data_access_group_id",
+  "design",
+  "alerts",
+  "user_rights",
+  "data_access_groups",
+  "reports",
+  "stats_and_charts",
+  "manage_survey_participants",
+  "calendar",
+  "data_import_tool",
+  "data_comparison_tool",
+  "logging",
+  "file_repository",
+  "data_quality_create",
+  "data_quality_execute",
+  "api_export",
+  "api_import",
+  "api_modules",
+  "mobile_app",
+  "mobile_app_download_data",
+  "record_create",
+  "record_rename",
+  "record_delete",
+  "lock_records_all_forms",
+  "lock_records",
+  "lock_records_customization",
+  "forms_export"
+)
+#' @noRd
+.field_colnames <- c(
+  "field_name",
+  "form_name",
+  "section_header",
+  "field_type",
+  "field_label",
+  "select_choices_or_calculations",
+  "field_note",
+  "text_validation_type_or_show_slider_number",
+  "text_validation_min",
+  "text_validation_max",
+  "identifier",
+  "branching_logic",
+  "required_field",
+  "custom_alignment",
+  "question_number",
+  "matrix_group_name",
+  "matrix_ranking",
+  "field_annotation"
+)
+#' @noRd
+.arms_colnames <- c(
+  "arm_number",
+  "arm_name"
+)
+#' @noRd
+.events_colnames <- c(
+  "event_name",
+  "arm_number",
+  "unique_event_name",
+  "custom_event_label",
+  "event_id"
+)
+#' @noRd
+.event_mapping_colnames <- c(
+  "arm_num",
+  "unique_event_name",
+  "form"
+)
+#' @noRd
+.forms_colnames <- c(
+  "form_name",
+  "form_label"
+)
+.choices_colnames <- c(
+  "field_name",
+  "code",
+  "name"
+)
+#' @noRd
+.project_info_colnames <- c(
+  "project_id",
+  "project_title",
+  "creation_time",
+  "production_time",
+  "in_production",
+  "project_language",
+  "purpose",
+  "purpose_other",
+  "project_notes",
+  "custom_record_label",
+  "secondary_unique_field",
+  "is_longitudinal",
+  "has_repeating_instruments_or_events",
+  "surveys_enabled",
+  "scheduling_enabled",
+  "record_autonumbering_enabled",
+  "randomization_enabled",
+  "ddp_enabled",
+  "project_irb_number",
+  "project_grant_number",
+  "project_pi_firstname",
+  "project_pi_lastname",
+  "display_today_now_button",
+  "missing_data_codes",
+  "external_modules",
+  "bypass_branching_erase_field_prompt"
+)

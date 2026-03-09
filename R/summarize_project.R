@@ -1,4 +1,312 @@
 #' @noRd
+summarize_project <- function(project, hard_reset = FALSE) {
+  assert_setup_project(project)
+  if (is_something(project$data)) {
+    summary_names <- check_summaries(project)
+    if (hard_reset) {
+      summary_names <- project$summary |> names() |> setdiff("all_records")
+    }
+    if (is_something(summary_names)) {
+      for (summary_name in summary_names) {
+        project <- tryCatch(
+          expr = save_project_summary(project, summary_name),
+          error = function(e) {
+            cli_alert_warning("Failed to save summary `{summary_name}`.")
+            invisible(project)
+          })
+      }
+    }
+  }
+  invisible(project)
+}
+#' @noRd
+generate_project_summary <- function(project,
+                                     summary_name,
+                                     transformation_type = "default",
+                                     merge_form_name = "merged",
+                                     filter_field = NULL,
+                                     filter_choices = NULL,
+                                     filter_list = NULL,
+                                     filter_strict = TRUE,
+                                     field_names = NULL,
+                                     form_names = NULL,
+                                     exclude_identifiers = TRUE,
+                                     exclude_free_text = FALSE,
+                                     date_handling = "none",
+                                     labelled = TRUE,
+                                     clean = TRUE,
+                                     drop_blanks = FALSE,
+                                     drop_missing_codes = FALSE,
+                                     drop_others = NULL,
+                                     include_metadata = TRUE,
+                                     include_users = TRUE,
+                                     include_records = TRUE,
+                                     include_log = FALSE,
+                                     annotate_from_log = TRUE,
+                                     internal_use = FALSE) {
+  assert_env_name(merge_form_name, max.chars = 31L)
+  provided_summary_name <- !missing(summary_name)
+  if (provided_summary_name) {
+    if (!summary_name %in% names(project$summary)) {
+      stop(summary_name,
+           " is not included in the current project summaries")
+    }
+    summary_list <- project$summary[[summary_name]]#warning about other params?
+    transformation_type <- summary_list$transformation_type
+    merge_form_name <- summary_list$merge_form_name
+    filter_list <- summary_list$filter_list
+    filter_strict <- summary_list$filter_strict
+    field_names <- summary_list$field_names
+    form_names <- summary_list$form_names
+    exclude_identifiers <- summary_list$exclude_identifiers
+    exclude_free_text <- summary_list$exclude_free_text
+    date_handling <- summary_list$date_handling
+    labelled <- summary_list$labelled
+    clean <- summary_list$clean
+    drop_blanks <- summary_list$drop_blanks
+    drop_missing_codes <- summary_list$drop_missing_codes
+    drop_others <- summary_list$drop_others
+    include_metadata <- summary_list$include_metadata
+    include_records <- summary_list$include_records
+    include_users <- summary_list$include_users
+    include_log <- summary_list$include_log
+    annotate_from_log <- summary_list$annotate_from_log
+  }
+  # function to do asserts here
+  assert_choice(transformation_type, .tranformation_types)
+  data_list <- NULL
+  data_list$metadata <- project$metadata
+  if (labelled != project$internals$labelled) {
+    if (project$internals$labelled) {
+      project <- labelled_to_raw_data_list(project)
+    }
+    if (!project$internals$labelled) {
+      project <- raw_to_labelled_data_list(project)
+    }
+  }
+  data_list$data <- project$data
+  data_list <- metadata_add_default_cols(data_list)
+  #cache or store these to make it faster?
+  if (transformation_type == "default") {
+    data_list <- merge_non_repeating(
+      data_list = data_list,
+      merge_form_name = merge_form_name,
+      merge_to_rep = TRUE
+    )
+  }
+  if (transformation_type == "merge_non_repeating") {
+    data_list <- merge_non_repeating(
+      data_list = data_list,
+      merge_form_name = merge_form_name,
+      merge_to_rep = FALSE
+    )
+  }
+  if (transformation_type == "flat") {
+    data_list <- flatten_redcap(data_list = data_list)
+  }
+  data_list$data <- filter_data_list(
+    data_list = data_list,
+    field_names = field_names,
+    form_names = form_names,
+    filter_field = filter_field,
+    filter_choices = filter_choices,
+    filter_list = filter_list,
+    filter_strict = filter_strict
+  )
+  data_list$data <- deidentify_data_list(
+    data_list = data_list,
+    exclude_identifiers = exclude_identifiers,
+    exclude_free_text = exclude_free_text,
+    date_handling = date_handling
+  )
+  if (clean) {
+    #include warning for if missing codes will prevent uploads
+    if (is_something(data_list$metadata$missing_codes)) {
+      if (drop_missing_codes) {
+        if (labelled) {
+          exclude_these <- data_list$metadata$missing_codes$name
+        }else {
+          exclude_these <- data_list$metadata$missing_codes$code
+        }
+        drop_others <- drop_others |>
+          append(exclude_these) |>
+          unique() |>
+          drop_nas()
+      }
+    }
+    data_list$data <- clean_data_list(
+      data_list = data_list,
+      drop_blanks = drop_blanks,
+      drop_others = drop_others
+    )
+  }
+  if (include_metadata) {
+    if (is_something(data_list$metadata)) {
+      data_list$metadata$forms <- annotate_forms(
+        data_list = data_list,
+        summarize_data = TRUE,
+        drop_blanks = drop_blanks
+      )
+      data_list$metadata$fields <- annotate_fields(
+        data_list = data_list,
+        summarize_data = TRUE,
+        drop_blanks = drop_blanks
+      )
+      data_list$metadata$choices <- annotate_choices(
+        data_list = data_list,
+        summarize_data = TRUE,
+        drop_blanks = drop_blanks
+      )
+    }
+  }
+  records <- extract_project_records(data_list)[[1L]]
+  data_list$redcap <- project$redcap
+  data_list$summary$all_records <- project$summary$all_records
+  if (include_log) {
+    if (data_list$redcap$has_log_access) {
+      data_list$log <- get_log(data_list = data_list, records = records)
+    } else {
+      cli_alert_warning("You don't have log access so that can't be included.")
+      include_log <- FALSE
+    }
+  }
+  if (annotate_from_log && (include_users || include_records)) {
+    if (!data_list$redcap$has_log_access) {
+      cli_alert_warning("You don't have log access so that data can't be used.")
+      annotate_from_log <- FALSE
+    }
+  }
+  if (include_records) {
+    if (!is.null(records)) {
+      data_list$records <- annotate_records(
+        data_list = data_list, summarize_data = annotate_from_log)
+    }
+  }
+  if (include_users) {
+    if (data_list$redcap$has_user_access) {
+      data_list$users <- annotate_users(
+        data_list = data_list,
+        records = records,
+        summarize_data = annotate_from_log,
+        drop_blanks = drop_blanks
+      )
+    } else {
+      cli_alert_warning("You don't have user access that can't be included.")
+      include_users <- FALSE
+    }
+  }
+  data_list$redcap <- NULL
+  data_list$summary <- NULL
+  if (internal_use) {
+    return(invisible(data_list))
+  }
+  to_save_list <- data_list_to_save(
+    data_list = data_list,
+    include_metadata = include_metadata,
+    include_users = include_users,
+    include_records = include_records,
+    include_log = include_log
+  )
+  invisible(to_save_list)
+}
+#' @noRd
+add_project_summary <- function(project,
+                                summary_name,
+                                transformation_type = "default",
+                                merge_form_name = "merged",
+                                filter_field = NULL,
+                                filter_choices = NULL,
+                                filter_list = NULL,
+                                filter_strict = TRUE,
+                                field_names = NULL,
+                                form_names = NULL,
+                                exclude_identifiers = TRUE,
+                                exclude_free_text = FALSE,
+                                date_handling = "none",
+                                labelled = TRUE,
+                                clean = TRUE,
+                                drop_blanks = FALSE,
+                                drop_missing_codes = FALSE,
+                                drop_others = NULL,
+                                include_metadata = TRUE,
+                                include_records = TRUE,
+                                include_users = TRUE,
+                                include_log = FALSE,
+                                annotate_from_log = TRUE,
+                                with_links = TRUE,
+                                separate = FALSE,
+                                use_csv = FALSE,
+                                dir_other = NULL,
+                                file_name = NULL,
+                                hard_reset = FALSE) {
+  # sync_frequency ... project$internals$sync_frequency
+  forbiden_summary_names <- c(project$metadata$id_col, .forbiden_summary_names)
+  if (summary_name %in% forbiden_summary_names) {
+    stop(summary_name,
+         " is a forbidden summary name. Used for REDCapSync.")
+  }
+  if (is.null(dir_other)) {
+    dir_other <- file.path(project$dir_path, "output")
+  }
+  if (is.null(file_name)) {
+    file_name <- paste0(project$project_name, "_", summary_name)
+  }
+  if (is.null(filter_list)) {
+    if (!is.null(filter_choices) && !is.null(filter_field)) {
+      filter_list <- list(filter_choices)
+      names(filter_list) <- filter_field
+    } else {
+      # warning
+    }
+  }
+  file_extension <- ifelse(use_csv, ".csv", ".xlsx")
+  summary_list_new <- list(
+    summary_name = summary_name,
+    transformation_type = transformation_type,
+    merge_form_name = merge_form_name,
+    filter_list = filter_list,
+    filter_strict = filter_strict,
+    field_names = field_names,
+    form_names = form_names,
+    exclude_identifiers = exclude_identifiers,
+    exclude_free_text = exclude_free_text,
+    date_handling = date_handling,
+    labelled = labelled,
+    clean = clean,
+    drop_blanks = drop_blanks,
+    drop_missing_codes = drop_missing_codes,
+    drop_others = drop_others,
+    include_metadata = include_metadata,
+    include_records = include_records,
+    include_users = include_users,
+    include_log = include_log,
+    annotate_from_log = annotate_from_log,
+    with_links = with_links,
+    separate = separate,
+    use_csv = use_csv,
+    dir_other = dir_other,
+    file_name = file_name,
+    file_path = file.path(dir_other, paste0(file_name, file_extension)),
+    n_records = NULL,
+    last_save_time = NULL,
+    final_form_tab_names = NULL
+  )
+  summary_list_old <- project$summary[[summary_name]]
+  if (!is.null(summary_list_old) && !hard_reset) {
+    important_vars <- names(summary_list_new) |>
+      vec1_not_in_vec2(.not_important_summary_names)
+    are_identical <- identical(summary_list_new[important_vars],
+                               summary_list_old[important_vars])
+    if (are_identical) {
+      # optional message?
+      return(invisible(project))
+    }
+  }
+  project$summary[[summary_name]] <- summary_list_new
+  project$summary$all_records[[summary_name]] <- FALSE
+  invisible(project)
+}
+#' @noRd
 fields_to_choices <- function(fields) {
   fields <- fields[which(fields$field_type %in% .redcap_factor_fields), ]
   fields <- fields[which(!is.na(fields$select_choices_or_calculations)), ]
@@ -318,103 +626,6 @@ clean_column_for_table <- function(field, class, label, units, levels) {
   field
 }
 #' @noRd
-add_project_summary <- function(project,
-                                summary_name,
-                                transformation_type = "default",
-                                merge_form_name = "merged",
-                                filter_field = NULL,
-                                filter_choices = NULL,
-                                filter_list = NULL,
-                                filter_strict = TRUE,
-                                field_names = NULL,
-                                form_names = NULL,
-                                exclude_identifiers = TRUE,
-                                exclude_free_text = FALSE,
-                                date_handling = "none",
-                                labelled = TRUE,
-                                clean = TRUE,
-                                drop_blanks = FALSE,
-                                drop_missing_codes = FALSE,
-                                drop_others = NULL,
-                                include_metadata = TRUE,
-                                include_records = TRUE,
-                                include_users = TRUE,
-                                include_log = FALSE,
-                                annotate_from_log = TRUE,
-                                with_links = TRUE,
-                                separate = FALSE,
-                                use_csv = FALSE,
-                                dir_other = NULL,
-                                file_name = NULL,
-                                hard_reset = FALSE) {
-  # sync_frequency ... project$internals$sync_frequency
-  forbiden_summary_names <- c(project$metadata$id_col, .forbiden_summary_names)
-  if (summary_name %in% forbiden_summary_names) {
-    stop(summary_name,
-         " is a forbidden summary name. Used for REDCapSync.")
-  }
-  if (is.null(dir_other)) {
-    dir_other <- file.path(project$dir_path, "output")
-  }
-  if (is.null(file_name)) {
-    file_name <- paste0(project$project_name, "_", summary_name)
-  }
-  if (is.null(filter_list)) {
-    if (!is.null(filter_choices) && !is.null(filter_field)) {
-      filter_list <- list(filter_choices)
-      names(filter_list) <- filter_field
-    } else {
-      # warning
-    }
-  }
-  file_extension <- ifelse(use_csv, ".csv", ".xlsx")
-  summary_list_new <- list(
-    summary_name = summary_name,
-    transformation_type = transformation_type,
-    merge_form_name = merge_form_name,
-    filter_list = filter_list,
-    filter_strict = filter_strict,
-    field_names = field_names,
-    form_names = form_names,
-    exclude_identifiers = exclude_identifiers,
-    exclude_free_text = exclude_free_text,
-    date_handling = date_handling,
-    labelled = labelled,
-    clean = clean,
-    drop_blanks = drop_blanks,
-    drop_missing_codes = drop_missing_codes,
-    drop_others = drop_others,
-    include_metadata = include_metadata,
-    include_records = include_records,
-    include_users = include_users,
-    include_log = include_log,
-    annotate_from_log = annotate_from_log,
-    with_links = with_links,
-    separate = separate,
-    use_csv = use_csv,
-    dir_other = dir_other,
-    file_name = file_name,
-    file_path = file.path(dir_other, paste0(file_name, file_extension)),
-    n_records = NULL,
-    last_save_time = NULL,
-    final_form_tab_names = NULL
-  )
-  summary_list_old <- project$summary[[summary_name]]
-  if (!is.null(summary_list_old) && !hard_reset) {
-    important_vars <- names(summary_list_new) |>
-      vec1_not_in_vec2(.not_important_summary_names)
-    are_identical <- identical(summary_list_new[important_vars],
-                               summary_list_old[important_vars])
-    if (are_identical) {
-      # optional message?
-      return(invisible(project))
-    }
-  }
-  project$summary[[summary_name]] <- summary_list_new
-  project$summary$all_records[[summary_name]] <- FALSE
-  invisible(project)
-}
-#' @noRd
 .forbiden_project_names <- c("CACHE_OVERRIDE", "REDCAP_URI")
 #' @noRd
 .forbiden_summary_names <- c("last_api_call", "all_records", "was_saved")
@@ -587,196 +798,6 @@ save_project_summary <- function(project, summary_name) {
   invisible(project)
 }
 #' @noRd
-generate_project_summary <- function(project,
-                                     summary_name,
-                                     transformation_type = "default",
-                                     merge_form_name = "merged",
-                                     filter_field = NULL,
-                                     filter_choices = NULL,
-                                     filter_list = NULL,
-                                     filter_strict = TRUE,
-                                     field_names = NULL,
-                                     form_names = NULL,
-                                     exclude_identifiers = TRUE,
-                                     exclude_free_text = FALSE,
-                                     date_handling = "none",
-                                     labelled = TRUE,
-                                     clean = TRUE,
-                                     drop_blanks = FALSE,
-                                     drop_missing_codes = FALSE,
-                                     drop_others = NULL,
-                                     include_metadata = TRUE,
-                                     include_users = TRUE,
-                                     include_records = TRUE,
-                                     include_log = FALSE,
-                                     annotate_from_log = TRUE,
-                                     internal_use = FALSE) {
-  assert_env_name(merge_form_name, max.chars = 31L)
-  provided_summary_name <- !missing(summary_name)
-  if (provided_summary_name) {
-    if (!summary_name %in% names(project$summary)) {
-      stop(summary_name,
-           " is not included in the current project summaries")
-    }
-    summary_list <- project$summary[[summary_name]]#warning about other params?
-    transformation_type <- summary_list$transformation_type
-    merge_form_name <- summary_list$merge_form_name
-    filter_list <- summary_list$filter_list
-    filter_strict <- summary_list$filter_strict
-    field_names <- summary_list$field_names
-    form_names <- summary_list$form_names
-    exclude_identifiers <- summary_list$exclude_identifiers
-    exclude_free_text <- summary_list$exclude_free_text
-    date_handling <- summary_list$date_handling
-    labelled <- summary_list$labelled
-    clean <- summary_list$clean
-    drop_blanks <- summary_list$drop_blanks
-    drop_missing_codes <- summary_list$drop_missing_codes
-    drop_others <- summary_list$drop_others
-    include_metadata <- summary_list$include_metadata
-    include_records <- summary_list$include_records
-    include_users <- summary_list$include_users
-    include_log <- summary_list$include_log
-    annotate_from_log <- summary_list$annotate_from_log
-  }
-  # function to do asserts here
-  assert_choice(transformation_type, .tranformation_types)
-  data_list <- NULL
-  data_list$metadata <- project$metadata
-  if (labelled != project$internals$labelled) {
-    if (project$internals$labelled) {
-      project <- labelled_to_raw_data_list(project)
-    }
-    if (!project$internals$labelled) {
-      project <- raw_to_labelled_data_list(project)
-    }
-  }
-  data_list$data <- project$data
-  data_list <- metadata_add_default_cols(data_list)
-  #cache or store these to make it faster?
-  if (transformation_type == "default") {
-    data_list <- merge_non_repeating(
-      data_list = data_list,
-      merge_form_name = merge_form_name,
-      merge_to_rep = TRUE
-    )
-  }
-  if (transformation_type == "merge_non_repeating") {
-    data_list <- merge_non_repeating(
-      data_list = data_list,
-      merge_form_name = merge_form_name,
-      merge_to_rep = FALSE
-    )
-  }
-  if (transformation_type == "flat") {
-    data_list <- flatten_redcap(data_list = data_list)
-  }
-  data_list$data <- filter_data_list(
-    data_list = data_list,
-    field_names = field_names,
-    form_names = form_names,
-    filter_field = filter_field,
-    filter_choices = filter_choices,
-    filter_list = filter_list,
-    filter_strict = filter_strict
-  )
-  data_list$data <- deidentify_data_list(
-    data_list = data_list,
-    exclude_identifiers = exclude_identifiers,
-    exclude_free_text = exclude_free_text,
-    date_handling = date_handling
-  )
-  if (clean) {
-    #include warning for if missing codes will prevent uploads
-    if (is_something(data_list$metadata$missing_codes)) {
-      if (drop_missing_codes) {
-        if (labelled) {
-          exclude_these <- data_list$metadata$missing_codes$name
-        }else {
-          exclude_these <- data_list$metadata$missing_codes$code
-        }
-        drop_others <- drop_others |>
-          append(exclude_these) |>
-          unique() |>
-          drop_nas()
-      }
-    }
-    data_list$data <- clean_data_list(
-      data_list = data_list,
-      drop_blanks = drop_blanks,
-      drop_others = drop_others
-    )
-  }
-  if (include_metadata) {
-    if (is_something(data_list$metadata)) {
-      data_list$metadata$forms <- annotate_forms(
-        data_list = data_list,
-        summarize_data = TRUE,
-        drop_blanks = drop_blanks
-      )
-      data_list$metadata$fields <- annotate_fields(
-        data_list = data_list,
-        summarize_data = TRUE,
-        drop_blanks = drop_blanks
-      )
-      data_list$metadata$choices <- annotate_choices(
-        data_list = data_list,
-        summarize_data = TRUE,
-        drop_blanks = drop_blanks
-      )
-    }
-  }
-  records <- extract_project_records(data_list)[[1L]]
-  data_list$redcap <- project$redcap
-  data_list$summary$all_records <- project$summary$all_records
-  if (include_log) {
-    if (data_list$redcap$has_log_access) {
-      data_list$log <- get_log(data_list = data_list, records = records)
-    } else {
-      cli_alert_warning("You don't have log access so that can't be included.")
-      include_log <- FALSE
-    }
-  }
-  if (annotate_from_log && (include_users || include_records)) {
-    if (!data_list$redcap$has_log_access) {
-      cli_alert_warning("You don't have log access so that data can't be used.")
-      annotate_from_log <- FALSE
-    }
-  }
-  if (include_records) {
-    if (!is.null(records)) {
-      data_list$records <- annotate_records(
-        data_list = data_list, summarize_data = annotate_from_log)
-    }
-  }
-  if (include_users) {
-    if (data_list$redcap$has_user_access) {
-      data_list$users <- annotate_users(
-        data_list = data_list,
-        records = records,
-        summarize_data = annotate_from_log,
-        drop_blanks = drop_blanks
-      )
-    } else {
-      cli_alert_warning("You don't have user access that can't be included.")
-      include_users <- FALSE
-    }
-  }
-  data_list$redcap <- NULL
-  data_list$summary <- NULL
-  if (internal_use) {
-    return(invisible(data_list))
-  }
-  to_save_list <- data_list_to_save(
-    data_list = data_list,
-    include_metadata = include_metadata,
-    include_users = include_users,
-    include_records = include_records,
-    include_log = include_log
-  )
-  invisible(to_save_list)
-}
-#' @noRd
 .tranformation_types <- c("default", "none", "flat", "merge_non_repeating")
 #' @noRd
 merge_non_repeating <- function(data_list,
@@ -942,8 +963,11 @@ field_types_to_R <- function(fields) {
   field_types_R
 }
 #' @noRd
-.redcap_factor_fields <-
-  c("radio", "yesno", "dropdown", "checkbox_choice", "truefalse")
+.redcap_factor_fields <- c("radio",
+                           "yesno",
+                           "dropdown",
+                           "checkbox_choice",
+                           "truefalse")
 #' @noRd
 .redcap_logical_fields <- c("yesno", "checkbox_choice", "truefalse") # tbd
 #' @noRd
@@ -970,27 +994,6 @@ field_types_to_R <- function(fields) {
                                     "phone",
                                     "vmrn",
                                     "zipcode")
-#' @noRd
-summarize_project <- function(project, hard_reset = FALSE) {
-  assert_setup_project(project)
-  if (is_something(project$data)) {
-    summary_names <- check_summaries(project)
-    if (hard_reset) {
-      summary_names <- project$summary |> names() |> setdiff("all_records")
-    }
-    if (is_something(summary_names)) {
-      for (summary_name in summary_names) {
-        project <- tryCatch(
-          expr = save_project_summary(project, summary_name),
-          error = function(e) {
-            cli_alert_warning("Failed to save summary `{summary_name}`.")
-            invisible(project)
-          })
-      }
-    }
-  }
-  invisible(project)
-}
 #' @noRd
 clear_project_summaries <- function(project, summary_names = NULL) {
   assert_setup_project(project)

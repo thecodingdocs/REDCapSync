@@ -1,3 +1,54 @@
+#' @title Synchronize REDCap Data
+#' @description
+#' Syncs with REDCap via `project` object that user defined with
+#' \link{setup_project}
+#' @details
+#' Syncs all projects by default but can be used to hands-free sync one or
+#' defined set projects. This is not intended to return project object. User
+#' should use `load_project("project_name")`. However, by default will invisibly
+#' return the last project in the set of project_names.
+#' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
+#' @param hard_check Will check REDCap even if not due (see `sync_frequency`
+#' parameter from `setup_project()`)
+#' @param hard_reset Logical that forces a fresh update if TRUE. Default is
+#' `FALSE`.
+#' @param project_names character vector of project project_names previously
+#' setup. If NULL, will get all from `get_projects()`
+#' @return invisible return of last project
+#' @seealso
+#' \link{setup_project} for initializing the `project` object.
+#' @export
+sync <- function(project_names = NULL,
+                 summarize = TRUE,
+                 hard_check = FALSE,
+                 hard_reset = FALSE) {
+  sweep_dirs_for_cache(project_names = project_names)
+  if (is.null(project_names)) {
+    projects <- get_projects()
+    project_names <- projects$project_name
+    if (length(project_names) == 0L) {
+      cli_alert_info("No projects in cache. Start with `?setup_project()`")
+      return(invisible())
+    }
+  }
+  for (project_name in project_names) {
+    project <- try_else_null(load_project(project_name))
+    if (is.null(project)) {
+      cli_alert_danger("Unable to load {project_name}")
+      #add to bad list
+    } else {
+      project$sync(
+        save_to_dir = TRUE,
+        summarize = summarize,
+        hard_check = hard_check,
+        hard_reset = hard_reset
+      )
+    }
+  }
+  # consider adding message/df
+  cli_alert_success("All projects are synced!")
+  invisible(project)
+}
 #' @noRd
 sync_project <- function(project,
                          summarize = TRUE,
@@ -415,57 +466,6 @@ generate_comment_table <- function(redcap_log, only_most_recent = FALSE) {
   )] <- NA
   redcap_log
 }
-#' @title Synchronize REDCap Data
-#' @description
-#' Syncs with REDCap via `project` object that user defined with
-#' \link{setup_project}
-#' @details
-#' Syncs all projects by default but can be used to hands-free sync one or
-#' defined set projects. This is not intended to return project object. User
-#' should use `load_project("project_name")`. However, by default will invisibly
-#' return the last project in the set of project_names.
-#' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
-#' @param hard_check Will check REDCap even if not due (see `sync_frequency`
-#' parameter from `setup_project()`)
-#' @param hard_reset Logical that forces a fresh update if TRUE. Default is
-#' `FALSE`.
-#' @param project_names character vector of project project_names previously
-#' setup. If NULL, will get all from `get_projects()`
-#' @return invisible return of last project
-#' @seealso
-#' \link{setup_project} for initializing the `project` object.
-#' @export
-sync <- function(project_names = NULL,
-                 summarize = TRUE,
-                 hard_check = FALSE,
-                 hard_reset = FALSE) {
-  sweep_dirs_for_cache(project_names = project_names)
-  if (is.null(project_names)) {
-    projects <- get_projects()
-    project_names <- projects$project_name
-    if (length(project_names) == 0L) {
-      cli_alert_info("No projects in cache. Start with `?setup_project()`")
-      return(invisible())
-    }
-  }
-  for (project_name in project_names) {
-    project <- try_else_null(load_project(project_name))
-    if (is.null(project)) {
-      cli_alert_danger("Unable to load {project_name}")
-      #add to bad list
-    } else {
-      project$sync(
-        save_to_dir = TRUE,
-        summarize = summarize,
-        hard_check = hard_check,
-        hard_reset = hard_reset
-      )
-    }
-  }
-  # consider adding message/df
-  cli_alert_success("All projects are synced!")
-  invisible(project)
-}
 #' @noRd
 due_for_sync <- function(project_name) {
   now <- now_time()
@@ -510,71 +510,4 @@ due_for_sync <- function(project_name) {
     }
   }
   TRUE
-}
-# for if others are using the same object
-#' @noRd
-sweep_dirs_for_cache <- function(project_names = NULL) {
-  projects <- get_projects()
-  if (nrow(projects) == 0L) {
-    return(invisible())
-  }
-  project_list <- split(projects, projects$project_name)
-  had_change <- FALSE
-  all_project_names <- names(project_list)
-  if (is.null(project_names)) {
-    project_names <- all_project_names
-  }
-  project_names <- project_names[which(project_names %in% all_project_names)]
-  updated_projects <- NULL
-  for (project_name in project_names) {
-    from_cache <- project_list[[project_name]]
-    expected_path <- get_project_path(
-      project_name = project_name,
-      dir_path = from_cache$dir_path,
-      type = "details"
-    )
-    from_cache <- try_else_null(assert_project_details(from_cache, nrows = 1L))
-    to_cache <- NULL
-    if (file.exists(expected_path)) {
-      to_cache <- try_else_null({
-        x <- suppressWarnings({
-          readRDS(expected_path)
-        })
-        assert_project_details(x, nrows = 1L)
-        x
-      })
-    }
-    if (is.null(from_cache) || is.null(to_cache)) {
-      loaded_cache <- try_else_null({
-        load_project(project_name = project_name)$.internal |>
-          extract_project_details()
-      })
-      if (is.null(loaded_cache)) {
-        danger_message <- paste0("Unable to load ",
-                                 project_name,
-                                 ". Removed! Retry `setup_project(...)`")
-        cli_alert_danger(danger_message)
-        project_list[[project_name]] <- NULL
-        had_change <- TRUE
-      } else {
-        project_list[[project_name]] <- loaded_cache
-      }
-    }
-    if (!is.null(to_cache)) {
-      if (!identical(from_cache, to_cache)) {
-        if (!is.null(from_cache)) {
-          to_cache$dir_path <- from_cache$dir_path
-        } # could cause issue?
-        project_list[[project_name]] <- to_cache
-        updated_projects <-  append(updated_projects, project_name)
-        had_change <- TRUE
-      }
-    }
-  }
-  if (had_change) {
-    updating_message <- paste0("Updated cache! This can happen when using",
-                               " multiple computers or with version changes.")
-    cli_alert_info(updating_message)
-    save_projects_to_cache(bind_rows(project_list), silent = FALSE)
-  }
 }

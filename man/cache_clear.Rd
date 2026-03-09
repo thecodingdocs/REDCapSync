@@ -31,7 +31,9 @@ cache_clear() # every project
 }
 \seealso{
 \code{vignette("Cache", package = "REDCapSync")}
+
+Other Cache Functions: 
+\code{\link{get_projects}()}
 }
 \concept{Cache Functions}
 \keyword{Cache}
-\keyword{Functions}

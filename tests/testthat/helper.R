@@ -33,27 +33,13 @@ real_test_project <- function(project_name = "TEST_REDCAPR_SIMPLE") {
                            hard_reset = TRUE)
   project
 }
-mock_test_project <- function(project_name = "TEST_CLASSIC",
-                              ever_connected = TRUE) {
+mock_test_project <- function(project_name = "TEST_CLASSIC") {
   assert_choice(project_name, .test_project_names)
-  assert_logical(ever_connected)
-  cache_location <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") |>
+  dir_path <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") |>
     sanitize_path() |>
     assert_directory()
-  if (ever_connected) {
-    project <- load_test_project(project_name)$.internal
-    project$dir_path <- set_dir(cache_location)
-    dir.create(
-      path = file.path(project$dir_path, "REDCap", project_name),
-      showWarnings = FALSE
-    )
-    project <- REDCapSync_project$new(project)
-  } else {
-    project <- setup_project(project_name = project_name,
-                             dir_path = cache_location,
-                             redcap_uri = "https://redcap.fake.edu/api/",
-                             hard_reset = TRUE)
-  }
+  project <- load_test_project(project_name = project_name,
+                               dir_path = dir_path)
   project
 }
 mock_test_calls <- function(project_name = "TEST_CLASSIC") {
@@ -62,4 +48,3 @@ mock_test_calls <- function(project_name = "TEST_CLASSIC") {
   call_list <- readRDS(test_path("fixtures", file_name))
   call_list
 }
-tempdir_main <- sanitize_path(withr::local_tempdir())

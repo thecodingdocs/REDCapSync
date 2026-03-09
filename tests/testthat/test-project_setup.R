@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
 # setup_project ( Exported )
 test_that("setup_project creates a valid project object and valid directory", {
   tempdir_test <- sanitize_path(withr::local_tempdir())

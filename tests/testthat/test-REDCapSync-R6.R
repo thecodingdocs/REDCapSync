@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
 test_that("R6 object works!", {
   project_r6 <- REDCapSync_project$new(mock_test_project()$.internal)
   expect_r6_class(project_r6, "REDCapSync_project")

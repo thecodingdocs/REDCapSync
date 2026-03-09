@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
 test_that("local_envvar seen by tests, exists, but empty at first", {
   expect_false(Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") == "")
   expect_directory_exists(Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE"))

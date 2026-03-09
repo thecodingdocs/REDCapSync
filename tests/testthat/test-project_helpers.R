@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
 test_that("update_project_links works", {
   project <- mock_test_project()$.internal
   expect_false(is.null(project$links$redcap_uri))

@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
 # is_valid_redcap_token ( Internal )
 test_that("is_valid_redcap_token respects the rules of 32L hexadecimal", {
   expect_true(is_valid_redcap_token(generate_hex(32L)))

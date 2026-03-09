@@ -1,38 +1,38 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
-test_that("REDCapSync_project object works!", {
-  project_r6 <- REDCapSync_project$new(mock_test_project()$.internal)
-  expect_r6_class(project_r6, "REDCapSync_project")
-  REDCapSync_project$public_methods |> names()
-  REDCapSync_project$active |> names()
-  REDCapSync_project$private_fields |> names()
+test_that("REDCapSyncProject object works!", {
+  project_r6 <- REDCapSyncProject$new(mock_test_project()$.internal)
+  expect_r6_class(project_r6, "REDCapSyncProject")
+  REDCapSyncProject$public_methods |> names()
+  REDCapSyncProject$active |> names()
+  REDCapSyncProject$private_fields |> names()
   expect_r6(
     project_r6,
-    classes = "REDCapSync_project",
-    private = names(REDCapSync_project$private_fields),
-    public = c(names(REDCapSync_project$public_methods)),
+    classes = "REDCapSyncProject",
+    private = names(REDCapSyncProject$private_fields),
+    public = c(names(REDCapSyncProject$public_methods)),
     cloneable = FALSE
   )
 })
-test_that("REDCapSync_project active_bindings are read-only", {
+test_that("REDCapSyncProject active_bindings are read-only", {
   project_r6 <- mock_test_project()
-  names(REDCapSync_project$active)
-  for (active_name in names(REDCapSync_project$active)){
+  names(REDCapSyncProject$active)
+  for (active_name in names(REDCapSyncProject$active)){
     original <- project_r6[[active_name]]
-    expect_in(active_name, names(REDCapSync_project$active))
+    expect_in(active_name, names(REDCapSyncProject$active))
     expect_message({
       project_r6[[active_name]] <- "fake data"
     }, "is read only")
     expect_identical(original, project_r6[[active_name]])
   }
 })
-test_that("REDCapSync_project with test projects!", {
+test_that("REDCapSyncProject with test projects!", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
   withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
   project <- mock_test_project()$.internal
   dir_path <- project$dir_path
   proj_path <- file.path(dir_path, "R_objects", "TEST_CLASSIC_REDCapSync.RData")
-  project_r6 <- REDCapSync_project$new(project)
+  project_r6 <- REDCapSyncProject$new(project)
   expect_message(project_r6$test_token(), "TEST projects do not")
   expect_message(project_r6$url_launch(), "TEST projects do not")
   expect_message(project_r6$summarize(), "TEST projects do not")
@@ -44,7 +44,7 @@ test_that("REDCapSync_project with test projects!", {
   expect_false(test_file_exists(proj_path))
   set_dir(project$dir_path)
   project$internals$is_test <- FALSE
-  project_r6 <- REDCapSync_project$new(project)
+  project_r6 <- REDCapSyncProject$new(project)
   project_r6$save()
   expect_file_exists(proj_path)
   project_r6$remove_summaries()
@@ -63,16 +63,16 @@ test_that("REDCapSync_project with test projects!", {
   expected_link <- "https://redcap.fake.edu/redcap_v16.1.1/index.php?pid=12341"
   expect_identical(project_r6$url_launch(open_browser = FALSE), expected_link)
 })
-# REDCapSync_project$add_field (Exported)
-# REDCapSync_project$remove_fields (Exported)
-test_that("REDCapSync_project$add_field and remove_fields works!", {
+# REDCapSyncProject$add_field (Exported)
+# REDCapSyncProject$remove_fields (Exported)
+test_that("REDCapSyncProject$add_field and remove_fields works!", {
   project_r6 <- mock_test_project()
   expect_message(project_r6$add_field(), "placeholder")
   expect_message(project_r6$remove_fields(), "placeholder")
 })
-# REDCapSync_project$add_summary (Exported)
-# REDCapSync_project$remove_summaries (Exported)
-test_that("REDCapSync_project$add_summary and remove_summaries works!", {
+# REDCapSyncProject$add_summary (Exported)
+# REDCapSyncProject$remove_summaries (Exported)
+test_that("REDCapSyncProject$add_summary and remove_summaries works!", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
   withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
   project_r6 <- mock_test_project()
@@ -107,43 +107,43 @@ test_that("REDCapSync_project$add_summary and remove_summaries works!", {
                                    filter_choices = "Yes")
   expect_all_true(x$merged$var_branching == "Yes")
 })
-# REDCapSync_project$generate_summary (Exported)
-test_that("REDCapSync_project$generate_summary works!", {
+# REDCapSyncProject$generate_summary (Exported)
+test_that("REDCapSyncProject$generate_summary works!", {
 })
-# REDCapSync_project$info (Exported)
-test_that("REDCapSync_project$info works!", {
+# REDCapSyncProject$info (Exported)
+test_that("REDCapSyncProject$info works!", {
   project_r6 <- mock_test_project()
   expect_message(project_r6$info(), "Project Name: TEST_CLASSIC")
   expect_message(project_r6$info(), "Token Name: REDCAPSYNC_TEST_CLASSIC")
   expect_message(project_r6$info(), "PID: 12341")
 })
-# REDCapSync_project$initialize (Exported)
-test_that("REDCapSync_project$initialize works!", {
+# REDCapSyncProject$initialize (Exported)
+test_that("REDCapSyncProject$initialize works!", {
 })
-test_that("REDCapSync_project$remove_fields works!", {
+test_that("REDCapSyncProject$remove_fields works!", {
 })
-test_that("REDCapSync_project$remove_summaries works!", {
+test_that("REDCapSyncProject$remove_summaries works!", {
 })
-# REDCapSync_project$save (Exported)
-test_that("REDCapSync_project$save works!", {
+# REDCapSyncProject$save (Exported)
+test_that("REDCapSyncProject$save works!", {
 })
-# REDCapSync_project$save_summary (Exported)
-test_that("REDCapSync_project$save_summary works!", {
+# REDCapSyncProject$save_summary (Exported)
+test_that("REDCapSyncProject$save_summary works!", {
 })
-# REDCapSync_project$summarize (Exported)
-test_that("REDCapSync_project$summarize works!", {
+# REDCapSyncProject$summarize (Exported)
+test_that("REDCapSyncProject$summarize works!", {
 })
-# REDCapSync_project$sync (Exported)
-test_that("REDCapSync_project$sync works!", {
+# REDCapSyncProject$sync (Exported)
+test_that("REDCapSyncProject$sync works!", {
 })
-# REDCapSync_project$test_token (Exported)
-test_that("REDCapSync_project$test_token works!", {
+# REDCapSyncProject$test_token (Exported)
+test_that("REDCapSyncProject$test_token works!", {
 })
-# REDCapSync_project$upload (Exported)
-test_that("REDCapSync_project$upload works!", {
+# REDCapSyncProject$upload (Exported)
+test_that("REDCapSyncProject$upload works!", {
   project <- mock_test_project()$.internal
   project$internals$is_test <- FALSE # override test block for tests
-  project_r6 <- REDCapSync_project$new(project)
+  project_r6 <- REDCapSyncProject$new(project)
   local_mocked_bindings(
     upload_form_to_redcap = function(...) message("Would have uploaded!"),
     sync_project_refresh = function(...) {
@@ -163,6 +163,6 @@ test_that("REDCapSync_project$upload works!", {
   to_be_uploaded$text_complete <- "Complete"
   expect_no_error(project_r6$upload(to_be_uploaded))
 })
-# REDCapSync_project$url_launch (Exported)
-test_that("REDCapSync_project$url_launch works!", {
+# REDCapSyncProject$url_launch (Exported)
+test_that("REDCapSyncProject$url_launch works!", {
 })

@@ -321,7 +321,7 @@ setup_project <- function(project_name,
   }
   project <- assert_setup_project(project)
   # final_details ? compare if original_details not NULL
-  invisible(REDCapSync_project$new(project))
+  invisible(REDCapSyncProject$new(project))
 }
 #' @noRd
 .sync_frequency <- c("always",
@@ -400,7 +400,7 @@ load_project <- function(project_name) {
   project <- load_project_from_dir(project_name = project_name,
                                    dir_path = dir_path,
                                    validate = TRUE)
-  invisible(REDCapSync_project$new(project))
+  invisible(REDCapSyncProject$new(project))
 }
 #' @noRd
 load_project_from_dir <- function(project_name, dir_path, validate = TRUE) {
@@ -498,7 +498,7 @@ load_test_project <- function(project_name, dir_path) {
   project$internals$is_test <- TRUE
   cli_alert_success("Loaded TEST project {project$project_name}!")
   cli_alert_warning("Does not actually communicate with any REDCap API")
-  invisible(REDCapSync_project$new(project))
+  invisible(REDCapSyncProject$new(project))
 }
 #' @noRd
 save_project <- function(project, silent = FALSE) {

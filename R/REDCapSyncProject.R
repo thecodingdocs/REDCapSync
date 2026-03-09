@@ -117,8 +117,8 @@
 #' uploading to REDCap. Default is 500L.
 #' @return An R6ClassGenerator
 #' @keywords internal
-REDCapSync_project <- R6Class(
-  "REDCapSync_project",
+REDCapSyncProject <- R6Class(
+  "REDCapSyncProject",
   #' @description
   #' Active binding are read-only
   active = list(
@@ -142,7 +142,7 @@ REDCapSync_project <- R6Class(
       private$project$dir_path
     },
     #' @field data Read-only named list where each name is an instrument name.
-    #' See public methods for [REDCapSync_project].
+    #' See public methods for [REDCapSyncProject].
     data = function(value) {
       if (!missing(value)) {
         cli_alert_danger(
@@ -157,7 +157,7 @@ REDCapSync_project <- R6Class(
       private$project$data
     },
     #' @field metadata Read-only named list with REDCap metadata. See
-    #' public methods for [REDCapSync_project].
+    #' public methods for [REDCapSyncProject].
     metadata = function(value) {
       if (!missing(value)) {
         cli_alert_wrap(
@@ -195,7 +195,7 @@ REDCapSync_project <- R6Class(
     .internal  = function(value) {
       if (!missing(value)) {
         cli_alert_danger(
-          "`.internal` is read only. Use public `REDCapSync_project` methods"
+          "`.internal` is read only. Use public `REDCapSyncProject` methods"
         )
       }
       private$project

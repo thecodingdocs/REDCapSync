@@ -322,17 +322,69 @@ REDCapSync_project <- R6Class(
       invisible(self)
     },
     #' @description  Add a new summary entry
-    generate_summary = function(summary_name = "REDCapSync", envir = NULL) {
+    generate_summary = function(summary_name,
+                                envir = NULL,
+                                transformation_type = "default",
+                                merge_form_name = "merged",
+                                filter_field = NULL,
+                                filter_choices = NULL,
+                                filter_list = NULL,
+                                filter_strict = TRUE,
+                                field_names = NULL,
+                                form_names = NULL,
+                                exclude_identifiers = TRUE,
+                                exclude_free_text = FALSE,
+                                date_handling = "none",
+                                labelled = TRUE,
+                                clean = TRUE,
+                                drop_blanks = FALSE,
+                                drop_missing_codes = FALSE,
+                                drop_others = NULL,
+                                include_metadata = TRUE,
+                                include_records = TRUE,
+                                include_users = TRUE,
+                                include_log = FALSE,
+                                annotate_from_log = TRUE) {
       assert_environment(envir, null.ok = TRUE)
-      summary_names <- private$project$summary |>
-        names() |>
-        setdiff("all_records")
-      assert_choice(summary_name, summary_names, null.ok = FALSE)
-      project_summary <-
-        generate_project_summary(
+      provided_summary_name <- !missing(summary_name)
+      if (provided_summary_name) {
+        summary_names <- private$project$summary |>
+          names() |>
+          setdiff("all_records")
+        assert_choice(summary_name, summary_names, null.ok = FALSE)
+        if (!summary_name %in% names(private$project$summary)) {
+          stop(summary_name,
+               " is not included in the current project summaries")
+        }
+        project_summary <- generate_project_summary(project = private$project,
+                                                    summary_name = summary_name)
+      } else {
+        project_summary <- generate_project_summary(
           project = private$project,
-          summary_name = summary_name
+          transformation_type = transformation_type,
+          merge_form_name = merge_form_name,
+          filter_field = filter_field,
+          filter_choices = filter_choices,
+          filter_list = filter_list,
+          filter_strict = filter_strict,
+          field_names = field_names,
+          form_names = form_names,
+          exclude_identifiers = exclude_identifiers,
+          exclude_free_text = exclude_free_text,
+          date_handling = date_handling,
+          labelled = labelled,
+          clean = clean,
+          drop_blanks = drop_blanks,
+          drop_missing_codes = drop_missing_codes,
+          drop_others = drop_others,
+          include_metadata = include_metadata,
+          include_users = include_users,
+          include_records = include_records,
+          include_log = include_log,
+          annotate_from_log = annotate_from_log,
+          internal_use = FALSE
         )
+      }
       if (!is.null(envir)) {
         list2env(project_summary, envir = envir)
       }

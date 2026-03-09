@@ -290,7 +290,31 @@ Clear all project summaries
 \subsection{Method \code{generate_summary()}}{
 Add a new summary entry
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$generate_summary(summary_name = "REDCapSync", envir = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSync_project$generate_summary(
+  summary_name,
+  envir = NULL,
+  transformation_type = "default",
+  merge_form_name = "merged",
+  filter_field = NULL,
+  filter_choices = NULL,
+  filter_list = NULL,
+  filter_strict = TRUE,
+  field_names = NULL,
+  form_names = NULL,
+  exclude_identifiers = TRUE,
+  exclude_free_text = FALSE,
+  date_handling = "none",
+  labelled = TRUE,
+  clean = TRUE,
+  drop_blanks = FALSE,
+  drop_missing_codes = FALSE,
+  drop_others = NULL,
+  include_metadata = TRUE,
+  include_records = TRUE,
+  include_users = TRUE,
+  include_log = FALSE,
+  annotate_from_log = TRUE
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -301,6 +325,81 @@ to generate the summary. *If you provide \code{summary_name} all other parameter
 are inherited according to what was set with \code{add_project_summary}.}
 
 \item{\code{envir}}{environment variable}
+
+\item{\code{transformation_type}}{Character scalar. How to transform data for the
+summary.
+Default is "default".
+Other options are "none", "flat", "merge_non_repeating".
+"default" first merges non-repeating and if there are repeating forms, it
+merges non-repeating variables to the right of repeating instruments.
+"flat" is one-record, one-row, even if there are repeating forms.
+"none" does not transform anything.
+"merge_non_repeating" still merges all non-repeating instruments but
+does not merge them to repeating instruments.}
+
+\item{\code{merge_form_name}}{A character string representing the name of the merged
+form. Default is "merged".}
+
+\item{\code{filter_field}}{Character. The name of the field in the database to
+filter on. Used with \code{filter_choices}.}
+
+\item{\code{filter_choices}}{Vector. The values of \code{filter_field} used to define the
+summary. An alternative to providing a full \code{filter_list}.}
+
+\item{\code{filter_list}}{Vector. The values of \code{filter_field} used to define the
+summary. Names are field names; values are the allowed value set(s). Use
+either \code{filter_list} or \code{filter_field} with \code{filter_choices}.}
+
+\item{\code{filter_strict}}{Logical. If \code{TRUE}, all forms will be filtered by
+criteria. If \code{FALSE}, will convert original filter to ID column and filter
+all other forms by that record. Default is \code{TRUE}.}
+
+\item{\code{field_names}}{Character vector. Names of specific fields to include in
+the summary. Default is \code{NULL}, which includes all fields.}
+
+\item{\code{form_names}}{Character vector. Names of forms to include in the summary.
+Default is \code{NULL}, which includes all forms.}
+
+\item{\code{exclude_identifiers}}{Logical. Whether to exclude identifiers in the
+data in the summary. Default is \code{TRUE}.}
+
+\item{\code{exclude_free_text}}{Logical. If \code{TRUE}, exclude free text fields
+intended for de-identification workflows. Default is \code{FALSE}.}
+
+\item{\code{date_handling}}{character string. One of \code{none},\code{exclude_dates},
+\code{random_shift_by_record}, \code{random_shift_by_project}, \code{zero_by_record}, or
+\code{zero_by_project}. Random shift is +/- 90 unless changed with options.}
+
+\item{\code{labelled}}{Logical. If \code{TRUE}, the data will be converted to labelled.
+If \code{FALSE}, returns raw coded values. Default is \code{TRUE}.}
+
+\item{\code{clean}}{Logical. If \code{TRUE}, the data will be cleaned (e.g.,
+standardizing missing/blank values) before summarizing. Default is \code{TRUE}. If
+missing codes are present in a number or date variable, R will convert
+missing codes to NA and will make that variable not upload compatible.}
+
+\item{\code{drop_blanks}}{Logical. If \code{TRUE}, records with blank fields will be
+dropped during cleaning. Default is \code{TRUE}.}
+
+\item{\code{drop_missing_codes}}{Logical. If \code{TRUE}, will convert missing codes
+to NA. Default is \code{FALSE}.}
+
+\item{\code{drop_others}}{Character vector of other values that should be dropped.}
+
+\item{\code{include_metadata}}{Logical. If \code{TRUE}, metadata will be included in the
+summary. Default is \code{TRUE}.}
+
+\item{\code{include_records}}{Logical. If \code{TRUE}, a record summary will be
+included in the generated summary. Default is \code{TRUE}.}
+
+\item{\code{include_users}}{Logical. If \code{TRUE}, user-related information will be
+included in the summary. Default is \code{TRUE}.}
+
+\item{\code{include_log}}{Logical. If \code{TRUE}, the log of changes will be included in
+the summary. Default is \code{TRUE}.}
+
+\item{\code{annotate_from_log}}{Logical. If \code{TRUE}, the metadata, users, and records
+will be annotated using the log. Default is \code{TRUE}.}
 }
 \if{html}{\out{</div>}}
 }

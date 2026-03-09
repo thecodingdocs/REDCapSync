@@ -45,6 +45,7 @@ generate_project_summary <- function(project,
                                      annotate_from_log = TRUE,
                                      internal_use = FALSE) {
   assert_env_name(merge_form_name, max.chars = 31L)
+  #add more asserts
   provided_summary_name <- !missing(summary_name)
   if (provided_summary_name) {
     if (!summary_name %in% names(project$summary)) {
@@ -207,7 +208,7 @@ generate_project_summary <- function(project,
     include_records = include_records,
     include_log = include_log
   )
-  invisible(to_save_list)
+  invisible(to_save_list) # change to R6 and add save as method?
 }
 #' @noRd
 add_project_summary <- function(project,

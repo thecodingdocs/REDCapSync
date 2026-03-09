@@ -442,3 +442,7 @@ try_else_null <- function(expr) {
     }
   )
 }
+#' @noRd
+na_if_null <- function(x) {
+  ifelse(is.null(x), NA, x)
+}

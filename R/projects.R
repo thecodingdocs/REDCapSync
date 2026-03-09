@@ -131,10 +131,6 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
   }
 }
 #' @noRd
-na_if_null <- function(x) {
-  ifelse(is.null(x), NA, x)
-}
-#' @noRd
 extract_project_details <- function(project) {
   assert_setup_project(project)
   project_details <- matrix(

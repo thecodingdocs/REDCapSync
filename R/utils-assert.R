@@ -18,63 +18,6 @@ assert_dir <- function(dir_path, silent = FALSE) {
   dir_path
 }
 #' @noRd
-get_project_token <- function(project, silent = TRUE) {
-  assert_setup_project(project)
-  token_name <- project$redcap$token_name
-  token <- Sys.getenv(token_name)
-  valid <- is_valid_redcap_token(token = token, silent = silent)
-  fake_token <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
-  if (!silent) {
-    user_renviron_path <- Sys.getenv("R_ENVIRON_USER", unset = NA_character_)
-    if (is.na(user_renviron_path) || !nzchar(user_renviron_path)) {
-      user_renviron_path <- file.path(Sys.getenv("HOME"), ".Renviron")
-    }
-    user_renviron_path <- normalizePath(path = user_renviron_path,
-                                        winslash = "/",
-                                        mustWork = FALSE)
-    cli_alert_wrap(
-      paste0(
-        "You can set REDCap tokens each session with `Sys.setenv(",
-        token_name,
-        "='",
-        fake_token,
-        "')`... or for higher security add `",
-        token_name,
-        " = '",
-        fake_token,
-        "'` to your user .Renviron file ",
-        "...(then restart R under session tab after saving ",
-        "file)... The way to tell it worked is to run the code, `Sys.getenv('",
-        token_name,
-        "')`"
-      )
-    )
-    cli_alert_info("User R environ file --> {.file {user_renviron_path}}")
-    cli_alert_info("Try `edit_r_environ()` from `usethis` package.")
-    cli_alert_info("See the {.vignette REDCapSync::Tokens} vignette.")
-    if (is_something(project$links$redcap_api)) {
-      cli_alert_wrap(
-        paste0(
-          "You can request, regenerate, or delete with ",
-          "`project$url_launch('api')` or go here: "
-        ),
-        url = project$links$redcap_api
-      )
-    }
-    if (valid) {
-      cli_alert_wrap(
-        paste0(
-          "Valid token for ",
-          project$project_name,
-          " is set in your R session (pending connection)!"
-        ),
-        bullet_type = "v"
-      )
-    }
-  }
-  invisible(token)
-}
-#' @noRd
 assert_web_link <- function(link) {
   #change to validate api endpoint
   if (is.null(link))

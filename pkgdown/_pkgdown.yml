@@ -46,7 +46,6 @@ reference:
       - get_projects
       - cache_clear
 
-
 articles:
   - title: Feautures by R User Level
     navbar: ~

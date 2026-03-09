@@ -411,6 +411,389 @@ add_project_summary <- function(project,
   invisible(project)
 }
 #' @noRd
+deidentify_data_list <- function(data_list,
+                                 exclude_identifiers = TRUE,
+                                 exclude_free_text = FALSE,
+                                 exclude_additional = NULL,
+                                 date_handling = "none") {
+  # assert_data_list contains data and metadata with forms and fields
+  assert_choice(date_handling, choices = .date_handling_choices)
+  assert_logical(exclude_identifiers)
+  assert_logical(exclude_free_text)
+  data_forms <- data_list$data
+  metadata <- data_list$metadata
+  fields <- metadata$fields
+  exclusions <- exclude_additional
+  if (exclude_identifiers) {
+    initial_identifiers <- fields$field_name[which(
+      fields$identifier == "y" |
+        fields$text_validation_type_or_show_slider_number %in%
+        .redcap_maybe_ids_strict
+    )]
+    if (length(initial_identifiers) == 0L) {
+      warning(
+        "You have no identifiers marked in ",
+        "`project$metadata$fields$identifier`. ",
+        "You can set it in REDCap Project Setup and update ",
+        "project OR define your idenitifiers in this functions ",
+        "`identifiers` argument.",
+        call. = TRUE,
+        immediate. = TRUE
+      )
+    }
+    exclusions <- exclusions |>
+      append(initial_identifiers) |>
+      unique()
+  }
+  bad_identifiers <- exclusions[which(!exclusions %in% fields$field_name)]
+  if (length(bad_identifiers) > 0L) {
+    stop(
+      "There is a bad identifier. see `fields$field_name`: ",
+      toString(bad_identifiers)
+    )
+  }
+  id_cols <- metadata$form_key_cols |> unlist() |> unique()
+  if (is_something(id_cols) && any(id_cols %in% exclusions)) {
+    stop("ID cols not allowed... ",
+         toString(id_cols),
+         " <-- use hashing (in dev)")
+  }
+  if (exclude_free_text) {
+    # placeholder
+    # drop free text only if there is no validation
+    # make function for that ?external
+    free_text_rows <- which(
+      fields$field_type == "notes" |
+        (
+          fields$field_type == "text" &
+            is.na(fields$text_validation_type_or_show_slider_number)
+        ) &
+        !fields$field_name %in% id_cols &
+        fields$in_original_redcap
+    )
+    free_text_fields <- fields$field_name[free_text_rows]
+    exclusions <- exclusions |>
+      append(free_text_fields) |>
+      unique()
+  }
+  if (is_something(data_forms)) {
+    date_vector <- fields$field_name[which(fields$field_type_R == "date")]
+    date_list <- Map(
+      f = function(x, col_names) {
+        date_vector[which(date_vector %in% col_names)]
+      },
+      names(data_forms),
+      lapply(data_forms, colnames)
+    )
+    if (date_handling != "none") {
+      if (date_handling == "exclude_dates") {
+        exclusions <- exclusions |>
+          append(date_vector) |>
+          unique()
+      }
+      if (date_handling %in% c("random_shift_by_record",
+                               "random_shift_by_project",
+                               "zero_by_record",
+                               "zero_by_project")) {
+        number <- 90L # can set in options
+        shift_range <- setdiff(-number:number, 0L)
+        min_dates <- get_min_dates(data_list)
+        if (date_handling == "random_shift_by_record") {
+          min_dates$shift_amount <- sample(shift_range,
+                                           size = nrow(min_dates),
+                                           replace = TRUE)
+        }
+        if (date_handling == "random_shift_by_project") {
+          min_dates$shift_amount <-
+            sample(shift_range, size = 1L, replace = TRUE)
+        }
+        if (date_handling == "zero_by_record") {
+          # should you edit fields to now be field_type_R integer?
+          min_dates$shift_amount <- min_dates$date
+        }
+        if (date_handling == "zero_by_project") {
+          # should you edit fields to now be field_type_R integer?
+          min_dates$shift_amount <- min(min_dates$date)
+        }
+        for (form_name in names(date_list)) {
+          field_record <- data_forms[[form_name]][[id_cols[1L]]]
+          match_date_diff <- match(field_record, min_dates$record_id)
+          difference <- min_dates$shift_amount[match_date_diff]
+          for (field_name in date_list[[form_name]]) {
+            field <- data_forms[[form_name]][[field_name]]
+            data_forms[[form_name]][[field_name]] <-
+              as.character(as.Date(field) - difference)
+          }
+        }
+      }
+      # if you have dates you already mutated no need to drop anymore
+    }
+    drop_list <- Map(function(x, col_names) {
+      exclusions[which(exclusions %in% col_names)]
+    }, names(data_forms), lapply(data_forms, colnames))
+    drop_list <- drop_list[unlist(lapply(drop_list, length)) > 0L]
+    for (form_name in names(drop_list)) {
+      for (field_name in drop_list[[form_name]]) {
+        data_forms[[form_name]][[field_name]] <- NULL
+      }
+    }
+  }
+  invisible(data_forms)
+}
+#' @noRd
+filter_data_list <- function(data_list,
+                             field_names = NULL,
+                             form_names = NULL,
+                             filter_field = NULL,
+                             filter_choices = NULL,
+                             filter_list = NULL,
+                             filter_strict = TRUE) {
+  if (is.null(field_names))
+    field_names <- get_all_field_names(data_list)
+  if (is.null(form_names))
+    form_names <- data_list$metadata$forms$form_name
+  the_rows <- which(!field_names %in% data_list$metadata$raw_structure_cols)
+  field_names_minus <- field_names[the_rows]
+  if (length(field_names_minus) > 0L) {
+    form_names_minus <- field_names_to_form_names(
+      project = data_list,
+      field_names = field_names_minus, strict = TRUE)
+    form_names <- vec1_in_vec2(form_names, form_names_minus)
+  }
+  # missing_filter ?
+  out_list <- list()
+  if (is.null(filter_list)) {
+    if (!is.null(filter_field) && !is.null(filter_choices)) {
+      filter_list <- list(filter_choices)
+      names(filter_list) <- filter_field
+    }
+  } else if (!is.null(filter_field) || !is.null(filter_choices)) {
+    cli_alert_warning(
+      "use `filter_list` or `filter_field` & `filter_choices`")
+  }
+  filter_field_names <- NULL
+  if (!is.null(filter_list)) {
+    filter_field_names <- filter_list |>
+      names() |>
+      drop_if("")
+    # should be unique
+    filter_form <-
+      field_names_to_form_names(project = data_list,
+                                field_names = filter_field_names)
+    if (length(filter_field_names) == 1L) {
+      if (filter_field_names == data_list$metadata$id_col) {
+        filter_form <- data_list$metadata$forms$form_name[1L]
+        # RISKY? id_position like REDCapR, add to setup
+      }
+    }
+    # should be length 1
+    if (length(filter_form) > 1L) {
+      stop("You can only filter_list by multiple columns part of one form")
+    }
+    form_key_cols <- data_list$metadata$form_key_cols |>
+      unlist() |>
+      unique()
+    is_key <- all(filter_field_names %in% form_key_cols)
+  }
+  # can use this to have repeats capture non-rep events
+  for (form_name in form_names) {
+    form <- data_list$data[[form_name]]
+    if (is_something(form)) {
+      row_index <- seq_len(nrow(form))
+      if (!is.null(filter_list)) {
+        row_logic <- NULL
+        for (filter_field_name in filter_field_names) {
+          filter_field_final <- filter_field_name
+          filter_choices_final <- filter_list[[filter_field_name]]
+          if (!filter_strict) {
+            if (!is_key) {
+              # need to account for instances
+              if (form_name != filter_form) {
+                filter_field_final <- data_list$metadata$id_col
+                filtered_form <- data_list$data[[filter_form]]
+                the_rows <- which(
+                  filtered_form[[filter_field_name]] %in% filter_choices_final)
+                filter_choices_final <-
+                  unique(filtered_form[[filter_field_final]][the_rows])
+              }
+            }
+          }
+          index_test <- rep(FALSE, nrow(form))
+          if (filter_field_final %in% colnames(data_list$data[[form_name]])) {
+            index_test <- data_list$data[[form_name]][[filter_field_final]] %in%
+              filter_choices_final
+          }
+          if (is.null(row_logic)) {
+            row_logic <- index_test
+          }
+          field_index <- which(names(filter_list) == filter_field_name)
+          op_index <- (field_index - 1L)
+          if (op_index <= length(filter_list)) {
+            if (field_index != 1L) {
+              is_and <- filter_list[[op_index]] == "and"
+              if (is_and) {
+                row_logic <- row_logic & index_test
+              } else {
+                row_logic <- row_logic | index_test
+              }
+            }
+          }
+        }
+        if (is.null(row_logic))
+          row_logic <- NA
+        row_index <- which(row_logic)
+      }
+      field_names_adj <- c(field_names, filter_field_names)
+      col_names <- colnames(form)[which(colnames(form) %in% field_names_adj)]
+      if (length(row_index) > 0L && length(col_names) > 0L) {
+        col_names <- colnames(form)[which(colnames(form) %in% unique(
+          c(data_list$metadata$form_key_cols[[form_name]], field_names_adj)
+        ))]
+        out_list[[form_name]] <- form[row_index, col_names, drop = FALSE]
+      }
+    }
+  }
+  invisible(out_list)
+}
+#' @noRd
+clean_data_list <- function(data_list,
+                            drop_blanks = TRUE,
+                            drop_others = NULL) {
+  # assert data list
+  data_forms <- data_list$data
+  metadata <- data_list$metadata
+  for (form_name in names(data_forms)) {
+    data_forms[[form_name]] <- clean_form(
+      form = data_forms[[form_name]],
+      fields = metadata$fields,
+      drop_blanks = drop_blanks,
+      drop_others = drop_others
+    )
+  }
+  invisible(data_forms)
+}
+#' @noRd
+merge_non_repeating <- function(data_list,
+                                merge_form_name,
+                                merge_to_rep = FALSE) {
+  forms_transformation <- data_list$metadata$forms
+  is_longitudinal <-
+    "repeating_via_events" %in% colnames(data_list$metadata$forms)
+  if (is_longitudinal) {
+    forms_transformation <- forms_transformation[
+      order(forms_transformation$repeating_via_events), ]
+  }
+  forms_transformation <- forms_transformation[
+    order(forms_transformation$repeating), ]
+  forms_transformation$form_name_remap <- forms_transformation$form_name
+  forms_transformation$form_label_remap <- forms_transformation$form_label
+  row_check <- !forms_transformation$repeating
+  if (is_longitudinal) {
+    row_check <- row_check & !forms_transformation$repeating_via_events
+  }
+  forms_transformation$form_name_remap[which(row_check)] <- merge_form_name
+  merge_form_name_label <- merge_form_name # can captialize here
+  if (merge_form_name %in% forms_transformation$form_name) {
+    merge_form_name_label <-
+      forms_transformation$form_label[
+        which(forms_transformation$form_name == merge_form_name)]
+  }
+  non_rep_form_names <- forms_transformation$form_name[which(row_check)]
+  forms_transformation$form_label_remap[which(row_check)] <-
+    merge_form_name_label
+  forms_transformation_original <- forms_transformation
+  cols_to_keep <- c(
+    "form_name_remap",
+    "form_label_remap",
+    "repeating",
+    "repeating_via_events",
+    "key_cols",
+    "key_names",
+    ""
+  )
+  cols_to_keep <- cols_to_keep[
+    which(cols_to_keep %in% colnames(forms_transformation))]
+  forms_transformation <- unique(forms_transformation[, cols_to_keep])
+  colnames(forms_transformation)[
+    which(colnames(forms_transformation) == "form_name_remap")] <- "form_name"
+  colnames(forms_transformation)[
+    which(colnames(forms_transformation) == "form_label_remap")] <- "form_label"
+  forms_transformation$original_form_name <- forms_transformation$form_name |>
+    lapply(function(form_name) {
+      forms_transformation_original$form_name[
+        which(forms_transformation_original$form_name_remap == form_name)] |>
+        paste0(collapse = " | ")
+    }) |>
+    unlist() |>
+    as.character()
+  data_list$metadata$forms <- forms_transformation
+  fields <- data_list$metadata$fields
+  fields$original_form_name <- fields$form_name
+  fields$form_name <- forms_transformation_original$form_name_remap[
+    match(fields$form_name, forms_transformation_original$form_name)]
+  fields <- fields[
+    order(match(fields$form_name, forms_transformation$form_name)), ]
+  # new function RosyUtils
+  first <- 1L:which(colnames(fields) == "form_name")
+  move <- which(colnames(fields) == "original_form_name")
+  last <- which(colnames(fields) != "original_form_name")[-first]
+  fields <- fields[, c(first, move, last)]
+  data_list$metadata$fields <- fields
+  data_list$metadata$choices <- fields_to_choices(fields)
+  data_list
+  data_list$metadata$form_key_cols <- get_key_col_list(data_list = data_list)
+  if (is_something(data_list$data)) {
+    merge_form <- NULL
+    non_rep_form_names <-
+      non_rep_form_names[
+        non_rep_form_names |>
+          lapply(function(non_rep_form_name) {
+            is_something(data_list$data[[non_rep_form_name]])
+          }) |>
+          unlist() |>
+          which()]
+    i <- 0L
+    for (non_rep_form_name in non_rep_form_names) {
+      if (non_rep_form_name == non_rep_form_names[[1L]]) {
+        merge_form <- data_list$data[[non_rep_form_name]]
+      } else {
+        to_be_merged <- data_list$data[[non_rep_form_name]]
+        to_be_merged$arm_number <- NULL
+        merge_form <- merge(
+          x = merge_form,
+          y = to_be_merged,
+          by = data_list$metadata$id_col,
+          all = TRUE,
+          sort = FALSE,
+          suffixes = c("", paste0("_merged_", i))
+        )
+      }
+      data_list$data[[non_rep_form_name]] <- NULL
+      i <- i + 1L
+    }
+    data_list$data[[merge_form_name]] <- merge_form
+    other_forms <- setdiff(names(data_list$data), merge_form_name)
+    if (merge_to_rep) {
+      for (other_form in other_forms) {
+        data_list$data[[other_form]] <- merge(
+          x = data_list$data[[other_form]],
+          y = merge_form,
+          by = data_list$metadata$id_col,
+          all.x = TRUE,
+          sort = FALSE,
+          suffixes = c("", "_merged")
+        )
+      }
+    }
+    data_list$data <- data_list$data[c(merge_form_name, other_forms)]
+  }
+  data_list
+}
+#' @noRd
+flatten_redcap <- function(data_list) {
+  cli_alert_info("placeholder")
+}
+#' @noRd
 fields_to_choices <- function(fields) {
   fields <- fields[which(fields$field_type %in% .redcap_factor_fields), ]
   fields <- fields[which(!is.na(fields$select_choices_or_calculations)), ]
@@ -800,127 +1183,6 @@ data_list_to_save <- function(data_list,
 #' @noRd
 .tranformation_types <- c("default", "none", "flat", "merge_non_repeating")
 #' @noRd
-merge_non_repeating <- function(data_list,
-                                merge_form_name,
-                                merge_to_rep = FALSE) {
-  forms_transformation <- data_list$metadata$forms
-  is_longitudinal <-
-    "repeating_via_events" %in% colnames(data_list$metadata$forms)
-  if (is_longitudinal) {
-    forms_transformation <- forms_transformation[
-      order(forms_transformation$repeating_via_events), ]
-  }
-  forms_transformation <- forms_transformation[
-    order(forms_transformation$repeating), ]
-  forms_transformation$form_name_remap <- forms_transformation$form_name
-  forms_transformation$form_label_remap <- forms_transformation$form_label
-  row_check <- !forms_transformation$repeating
-  if (is_longitudinal) {
-    row_check <- row_check & !forms_transformation$repeating_via_events
-  }
-  forms_transformation$form_name_remap[which(row_check)] <- merge_form_name
-  merge_form_name_label <- merge_form_name # can captialize here
-  if (merge_form_name %in% forms_transformation$form_name) {
-    merge_form_name_label <-
-      forms_transformation$form_label[
-        which(forms_transformation$form_name == merge_form_name)]
-  }
-  non_rep_form_names <- forms_transformation$form_name[which(row_check)]
-  forms_transformation$form_label_remap[which(row_check)] <-
-    merge_form_name_label
-  forms_transformation_original <- forms_transformation
-  cols_to_keep <- c(
-    "form_name_remap",
-    "form_label_remap",
-    "repeating",
-    "repeating_via_events",
-    "key_cols",
-    "key_names",
-    ""
-  )
-  cols_to_keep <- cols_to_keep[
-    which(cols_to_keep %in% colnames(forms_transformation))]
-  forms_transformation <- unique(forms_transformation[, cols_to_keep])
-  colnames(forms_transformation)[
-    which(colnames(forms_transformation) == "form_name_remap")] <- "form_name"
-  colnames(forms_transformation)[
-    which(colnames(forms_transformation) == "form_label_remap")] <- "form_label"
-  forms_transformation$original_form_name <- forms_transformation$form_name |>
-    lapply(function(form_name) {
-      forms_transformation_original$form_name[
-        which(forms_transformation_original$form_name_remap == form_name)] |>
-        paste0(collapse = " | ")
-    }) |>
-    unlist() |>
-    as.character()
-  data_list$metadata$forms <- forms_transformation
-  fields <- data_list$metadata$fields
-  fields$original_form_name <- fields$form_name
-  fields$form_name <- forms_transformation_original$form_name_remap[
-    match(fields$form_name, forms_transformation_original$form_name)]
-  fields <- fields[
-    order(match(fields$form_name, forms_transformation$form_name)), ]
-  # new function RosyUtils
-  first <- 1L:which(colnames(fields) == "form_name")
-  move <- which(colnames(fields) == "original_form_name")
-  last <- which(colnames(fields) != "original_form_name")[-first]
-  fields <- fields[, c(first, move, last)]
-  data_list$metadata$fields <- fields
-  data_list$metadata$choices <- fields_to_choices(fields)
-  data_list
-  data_list$metadata$form_key_cols <- get_key_col_list(data_list = data_list)
-  if (is_something(data_list$data)) {
-    merge_form <- NULL
-    non_rep_form_names <-
-      non_rep_form_names[
-        non_rep_form_names |>
-          lapply(function(non_rep_form_name) {
-            is_something(data_list$data[[non_rep_form_name]])
-          }) |>
-          unlist() |>
-          which()]
-    i <- 0L
-    for (non_rep_form_name in non_rep_form_names) {
-      if (non_rep_form_name == non_rep_form_names[[1L]]) {
-        merge_form <- data_list$data[[non_rep_form_name]]
-      } else {
-        to_be_merged <- data_list$data[[non_rep_form_name]]
-        to_be_merged$arm_number <- NULL
-        merge_form <- merge(
-          x = merge_form,
-          y = to_be_merged,
-          by = data_list$metadata$id_col,
-          all = TRUE,
-          sort = FALSE,
-          suffixes = c("", paste0("_merged_", i))
-        )
-      }
-      data_list$data[[non_rep_form_name]] <- NULL
-      i <- i + 1L
-    }
-    data_list$data[[merge_form_name]] <- merge_form
-    other_forms <- setdiff(names(data_list$data), merge_form_name)
-    if (merge_to_rep) {
-      for (other_form in other_forms) {
-        data_list$data[[other_form]] <- merge(
-          x = data_list$data[[other_form]],
-          y = merge_form,
-          by = data_list$metadata$id_col,
-          all.x = TRUE,
-          sort = FALSE,
-          suffixes = c("", "_merged")
-        )
-      }
-    }
-    data_list$data <- data_list$data[c(merge_form_name, other_forms)]
-  }
-  data_list
-}
-#' @noRd
-flatten_redcap <- function(data_list) {
-  #placeholder
-}
-#' @noRd
 metadata_add_default_cols <- function(data_list) {
   fields <- data_list$metadata$fields
   fields <- fields[which(fields$field_type != "descriptive"), ]
@@ -1011,37 +1273,6 @@ clear_project_summaries <- function(project, summary_names = NULL) {
   }
   cli_alert_success("Cleared project summaries!")
   invisible(project)
-}
-#' @noRd
-extract_values_from_form_list <- function(form_list, col_name) {
-  names(form_list) |>
-    lapply(function(form_name) {
-      form_list[[form_name]][[col_name]]
-    }) |>
-    unlist() |>
-    drop_nas() |>
-    unique()
-}
-#' @noRd
-extract_project_records <- function(data_list) {
-  all_records <- NULL
-  id_col <- data_list$metadata$id_col
-  if (is_something(data_list$data)) {
-    record_id_col <- extract_values_from_form_list(
-      form_list = data_list$data,
-      col_name = id_col
-    )
-    all_records <- data.frame(
-      record_id_col = record_id_col,
-      last_api_call = NA,
-      was_saved = FALSE,
-      stringsAsFactors = FALSE
-    )
-    rownames(all_records) <- NULL
-    colnames(all_records)[
-      which(colnames(all_records) == "record_id_col")] <- id_col
-  }
-  all_records
 }
 #' @noRd
 get_log <- function(data_list, records) {
@@ -1254,267 +1485,11 @@ add_default_summaries <- function(project,
   invisible(project)
 }
 #' @noRd
-labelled_to_raw_form <- function(form, project) {
-  form <- all_character_cols(form)
-  if (nrow(form) == 0L) {
-    return(form)
-  }
-  fields <- filter_fields_from_form(form = form, project = project)
-  for (i in seq_len(nrow(fields))) {
-    field_row <- fields[i, ]
-    field_name <- field_row$field_name
-    conversion_table <- generate_choices_table(field_row, project)
-    match_rows <- match(form[[field_name]], conversion_table$name)
-    if (field_row$has_choices) {
-      no_match <- which(is.na(match_rows) & !is.na(form[[field_name]]))
-      if (length(no_match) > 0L) {
-        bad_choices <- form[[field_name]][no_match] |> unique() |> toString()
-        cli_alert_danger(form[[field_name]][no_match])
-        stop(paste0("Mismatched REDCap! ", field_name, ": ", bad_choices))
-      }
-      form[[field_name]] <- conversion_table$code[match_rows]
-    } else {
-      map_row <- which(!is.na(match_rows))
-      form[[field_name]][map_row] <- conversion_table$name[match_rows[map_row]]
-    }
-  }
-  form
-}
-#' @noRd
-raw_to_labelled_form <- function(form, project) {
-  if (project$metadata$has_coding_conflicts) {
-    stop(
-      "You cannot use labelled = 'TRUE' because you have a coding conflict ",
-      "in your data dictionary... Try `setup_project` with labelled = 'FALSE'.",
-      "The conflicts are from: ",
-      toString(project$metadata$coding_conflict_field_names)
-    )
-  }
-  form <- all_character_cols(form)
-  if (nrow(form) == 0L) {
-    return(form)
-  }
-  fields <- filter_fields_from_form(form = form, project = project)
-  for (i in seq_len(nrow(fields))) {
-    field_row <- fields[i, ]
-    field_name <- field_row$field_name
-    conversion_table <- generate_choices_table(field_row, project)
-    match_rows <- match(form[[field_name]], conversion_table$code)
-    if (field_row$has_choices) {
-      no_match <- which(is.na(match_rows) & !is.na(form[[field_name]]))
-      if (length(no_match) > 0L) {
-        bad_choices <- form[[field_name]][no_match] |> unique() |> toString()
-        cli_alert_danger(form[[field_name]][no_match])
-        warning(paste0("Mismatched REDCap! ", field_name, ": ", bad_choices))
-      }
-      form[[field_name]] <- conversion_table$name[match_rows]
-    } else {
-      map_row <- which(!is.na(match_rows))
-      form[[field_name]][map_row] <- conversion_table$name[match_rows[map_row]]
-    }
-  }
-  form
-}
-#' @noRd
-generate_choices_table <- function(field_row, project) {
-  missing_codes <- project$metadata$missing_codes
-  use_missing_codes <- is.data.frame(project$metadata$missing_codes)
-  has_choices <- field_row$has_choices
-  conversion_table <- NULL
-  if (has_choices) {
-    choice_table <- split_choices(field_row$select_choices_or_calculations)
-    conversion_table <- conversion_table |> bind_rows(choice_table)
-  }
-  if (use_missing_codes) {
-    conversion_table <- conversion_table |> bind_rows(missing_codes)
-  }
-  conversion_table
-}
-#' @noRd
-labelled_to_raw_data_list <- function(project) {
-  project <- assert_blank_project(project)
-  if (!project$internals$labelled) {
-    stop("project is already raw or coded (not labelled values)")
-  }
-  for (form_name in names(project$data)) {
-    form <- project$data[[form_name]]
-    project$data[[form_name]] <- labelled_to_raw_form(form = form,
-                                                      project = project)
-  }
-  project$internals$labelled <- FALSE
-  invisible(project)
-}
-#' @noRd
-raw_to_labelled_data_list <- function(project) {
-  project <- assert_blank_project(project)
-  if (project$internals$labelled) {
-    stop("project is already labelled (not raw or coded values)")
-  }
-  if (project$metadata$has_coding_conflicts) {
-    stop("project has codebook conflict(s), so will not convert to labelled!")
-  }
-  for (form_name in names(project$data)) {
-    form <- project$data[[form_name]]
-    project$data[[form_name]] <- raw_to_labelled_form(form = form,
-                                                      project = project)
-  }
-  project$internals$labelled <- TRUE
-  invisible(project)
-}
-#' @noRd
-get_all_field_names <- function(data_list) {
-  data_list$data |>
-    lapply(colnames) |>
-    unlist() |>
-    unique()
-}
-#' @noRd
-get_identifier_fields <- function(data_list,
-                                  get_type = "deidentified",
-                                  invert = FALSE) {
-  assert_choice(get_type, choices = setdiff(.get_type, "identified"))
-  # assert data list
-  # what to do when record_id is marked as identifier? add psuedo
-  # handle dates seprately if shifted
-  id_cols <- data_list$metadata$form_key_cols |> unlist() |> unique()
-  fields <- data_list$metadata$fields
-  fields$validation_type <- fields$text_validation_type_or_show_slider_number
-  not_id <- !fields$field_name %in% id_cols
-  is_identifier <- fields$identifier == "y"
-  is_likely_identifier <- fields$validation_type %in% .redcap_maybe_ids_strict
-  if (get_type == "deidentified") {
-    keep_rows <- which(is_identifier)
-  }
-  if (get_type == "deidentified_strict") {
-    keep_rows <- which(is_identifier | is_likely_identifier)
-  }
-  if (get_type == "deidentified_super_strict") {
-    is_notes <- fields$field_type == "notes"
-    is_text <- fields$field_type == "text"
-    has_validation <- !is.na(fields$validation_type)
-    is_free_text <- is_notes | (is_text & !has_validation) & not_id
-    keep_rows <- which(is_identifier | is_likely_identifier | is_free_text)
-    #account for drops
-  }
-  id_fields <- fields$field_name[keep_rows]
-  if (invert) {
-    id_fields <- setdiff(fields$field_name, id_fields)
-  }
-  id_fields
-}
-#' @noRd
-field_names_to_form_names <- function(project,
-                                      field_names,
-                                      transform = FALSE,
-                                      strict = FALSE) {
-  metadata <- project$metadata
-  if (transform) {
-    metadata <- project$transformation$metadata
-  }
-  fields <- metadata$fields
-  form_key_cols <- metadata$form_key_cols |>
-    unlist() |>
-    unique()
-  field_names_keys <- field_names[which(field_names %in% form_key_cols)]
-  form_names_keys <- field_names_keys |>
-    lapply(function(field_name) {
-      metadata$form_key_cols |>
-        names() |>
-        lapply(function(form_name) {
-          if (!field_name %in% metadata$form_key_cols[[form_name]]) {
-            return(NULL)
-          }
-          form_name
-        }) |>
-        unlist()
-    }) |>
-    unlist() |>
-    as.character() |>
-    unique()
-  field_names_not_keys <-
-    field_names[which(!field_names %in% form_key_cols)] |> unique()
-  form_names_not_keys <-
-    fields$form_name[match(field_names_not_keys, fields$field_name)] |>
-    drop_nas() |>
-    unique()
-  form_names <- form_names_not_keys
-  if (!strict) {
-    form_names <- form_names |>
-      append(form_names_keys) |>
-      unique()
-  }
-  form_names
-}
-#' @noRd
-construct_header_list <- function(data_list,
-                                  md_elements = c("form_name",
-                                                  "field_type",
-                                                  "field_label")) {
-  fields <- data_list$metadata$fields
-  if (anyDuplicated(fields$field_name) > 0L)
-    stop("duplicate names not allowed in fields")
-  data_field_list <- lapply(data_list$data, colnames)
-  header_df_list <- data_field_list |> lapply(function(field_names) {
-    x <- field_names |>
-      lapply(function(field_name) {
-        x_row <- which(fields$field_name == field_name)
-        if (length(x_row) > 0L) {
-          return(as.character(fields[md_elements][x_row, ]))
-        }
-        rep("", length(md_elements))
-      }) |>
-      as.data.frame()
-    colnames(x) <- field_names
-    x <- x[which(apply(x, 1L, function(x_row) {
-      any(nzchar(x_row)) #consider use NA?
-    })), ]
-    x
-  }) |>
-    process_df_list(silent = TRUE)
-  header_df_list
-}
-#' @noRd
-field_names_metadata <- function(project, field_names, col_names) {
-  fields <- project$metadata$fields
-  bad_field_names <- field_names[which(
-    !field_names %in% c(
-      project$metadata$fields$field_name,
-      project$metadata$raw_structure_cols,
-      "arm_number",
-      "event_name"
-    )
-  )]
-  if (length(bad_field_names) > 0L)
-    stop(
-      "All column names in your form must match items in your metadata, ",
-      "`project$metadata$fields$field_name`... ",
-      toString(bad_field_names)
-    )
-  fields <- fields[which(fields$field_name %in% field_names), ]
-  if (!missing(col_names)) {
-    if (is_something(col_names))
-      fields <- fields[[col_names]]
-  }
-  fields
-}
-#' @noRd
-filter_fields_from_form <- function(form, project) {
-  forms <- field_names_to_form_names(project = project,
-                                     field_names = colnames(form),
-                                     strict = TRUE)
-  repeating_form_rows <- which(project$metadata$forms$repeating)
-  repeating_forms <- project$metadata$forms$form_name[repeating_form_rows]
-  if (any(forms %in% repeating_forms) && length(forms) > 1L) {
-    stop(
-      "All column names in your form must match only one form in your",
-      "metadata, `project$metadata$forms$form_name`, unless they are",
-      " all non-repeating"
-    )
-  }
-  fields <- project |> field_names_metadata(field_names = colnames(form))
-  fields <- fields[which(fields$field_type != "descriptive"), ]
-  fields$has_choices <- !is.na(fields$select_choices_or_calculations)
-  rows_no_choices <- which(fields$field_type %in% c("calc", "text", "slider"))
-  fields$has_choices[rows_no_choices] <- FALSE
-  fields
-}
+.date_handling_choices <- c(
+  "none",
+  "exclude_dates",
+  "random_shift_by_record",
+  "random_shift_by_project",
+  "zero_by_record",
+  "zero_by_project"
+)

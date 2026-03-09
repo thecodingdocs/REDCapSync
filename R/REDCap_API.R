@@ -61,8 +61,7 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   form_key_cols <- project$metadata$form_key_cols
   project$metadata$raw_structure_cols <- form_key_cols |> unlist() |> unique()
   project$metadata$fields <- add_field_elements(project$metadata$fields)
-  project$metadata$choices <-
-    fields_to_choices(fields = project$metadata$fields)
+  project$metadata$choices <- fields_to_choices(project$metadata$fields)
   # add a check for existing conflict possibilities
   project$metadata$has_coding_conflicts <- FALSE
   field_names <- unique(project$metadata$choices$field_name)
@@ -569,4 +568,48 @@ upload_form_to_redcap <- function(to_be_uploaded, project, batch_size = 500L) {
   "missing_data_codes",
   "external_modules",
   "bypass_branching_erase_field_prompt"
+)
+#' @noRd
+.all_missing_codes <- data.frame(
+  code = c(
+    "NI",
+    "INV",
+    "UNK",
+    "NASK",
+    "ASKU",
+    "NAV",
+    "MSK",
+    "NA",
+    "NAVU",
+    "NP",
+    "QS",
+    "QI",
+    "TRC",
+    "UNC",
+    "DER",
+    "PINF",
+    "NINF",
+    "OTH"
+  ),
+  name = c(
+    "No information",
+    "Invalid",
+    "Unknown",
+    "Not asked",
+    "Asked but unknown",
+    "Temporarily unavailable",
+    "Masked",
+    "Not applicable",
+    "Not available",
+    "Not present",
+    "Sufficient quantity",
+    "Insufficient quantity",
+    "Trace",
+    "Unencoded",
+    "Derived",
+    "Positive infinity",
+    "Negative infinity",
+    "Other"
+  ),
+  stringsAsFactors = FALSE
 )

@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 # sync (Exported)
 test_that("sync works!", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
@@ -11,8 +11,11 @@ test_that("sync works!", {
   )
   expect_message(sync(), "No projects in cache")
   local_mocked_bindings(
-    sweep_dirs_for_cache = function(...) NULL,
-    get_projects = function(...) data.frame(project_name = "TEST_CLASSIC")
+    sweep_dirs_for_cache = function(...)
+      NULL,
+    get_projects = function(...) {
+      data.frame(project_name = "TEST_CLASSIC", stringsAsFactors = FALSE)
+    }
   )
   expect_message(sync(), "Unable to load")
   local_mocked_bindings(
@@ -94,7 +97,7 @@ test_that("due_for_sync works!", {
 test_that("get_interim_log works!", {
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal
-  interim_log <- utils::head(project$redcap$log, n = 10L)
+  interim_log <- head(project$redcap$log, n = 10L)
   # Update record 3
   project$redcap$has_log_access <- FALSE
   expect_message(get_interim_log(project), "You do not have logging access")
@@ -109,9 +112,10 @@ test_that("get_interim_log works!", {
     action = "Create record (API) 99",
     details = "some details",
     record = "99",
-    action_type = "Create"
+    action_type = "Create",
+    stringsAsFactors = FALSE
   )
-  interim_log <- new_interim_log_info |> bind_rows(interim_log)
+  interim_log <- bind_rows(new_interim_log_info, interim_log)
   local_mocked_bindings(
     get_redcap_log = function(...) interim_log
   )
@@ -191,7 +195,7 @@ test_that("sync_project will update if new", {
   project$internals$last_metadata_update <- now_time() - lubridate::ddays(100L)
   project$internals$last_data_update <- now_time() - lubridate::ddays(100L)
   project$internals$was_updated <- FALSE
-  interim_log <- utils::head(project$redcap$log, n = 10L)
+  interim_log <- head(project$redcap$log, n = 10L)
   ordered_records <- project$summary$all_records$record_id
   row_for_one <- which(project$data$text$record_id == "1")
   row_for_two <- which(project$data$text$record_id == "2")
@@ -270,7 +274,7 @@ test_that("sync_project_check wont update if nothing new", {
   project$internals$last_metadata_update <- now_time() - lubridate::ddays(100L)
   project$internals$last_data_update <- now_time() - lubridate::ddays(100L)
   project$internals$was_updated <- FALSE
-  interim_log <- utils::head(project$redcap$log, n = 0L)
+  interim_log <- head(project$redcap$log, n = 0L)
   local_mocked_bindings(
     test_project_token = function(...) project,
     get_interim_log = function(...) interim_log

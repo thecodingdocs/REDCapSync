@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 # clean_redcap_log (Internal)
 test_that("clean_redcap_log removes duplicates", {
   redcap_log <- data.frame(
@@ -189,7 +189,8 @@ test_that("analyze_log works!", {
     action = "Create record (API) 99",
     details = NA,
     record = "99",
-    action_type = "Create"
+    action_type = "Create",
+    stringsAsFactors = FALSE
   )
   expect_identical(analyze_log(interim_log, id_col)$length_updated_records, 1L)
   interim_log <- data.frame(
@@ -198,7 +199,8 @@ test_that("analyze_log works!", {
     action = "Create record (API) 99",
     details = NA,
     record = "99",
-    action_type = c("Create", "Update")
+    action_type = c("Create", "Update"),
+    stringsAsFactors = FALSE
   )
   expect_identical(analyze_log(interim_log, id_col)$length_updated_records, 1L)
   interim_log <- data.frame(
@@ -207,7 +209,8 @@ test_that("analyze_log works!", {
     action = "Create record (API) 99",
     details = NA,
     record = "99",
-    action_type = "Delete"
+    action_type = "Delete",
+    stringsAsFactors = FALSE
   )
   log_changes <- analyze_log(interim_log, id_col)
   expect_identical(log_changes$length_updated_records, 1L)
@@ -222,7 +225,8 @@ test_that("analyze_log works!", {
     action = "Changes to metadata",
     details = NA,
     record = NA,
-    action_type = "Metadata Change Major"
+    action_type = "Metadata Change Major",
+    stringsAsFactors = FALSE
   )
   expect_true(analyze_log(interim_log, id_col)$refresh_metadata)
   interim_log <- data.frame(
@@ -231,7 +235,8 @@ test_that("analyze_log works!", {
     action = "Changes to metadata",
     details = NA,
     record = NA,
-    action_type = "Metadata Change Minor"
+    action_type = "Metadata Change Minor",
+    stringsAsFactors = FALSE
   )
   expect_true(analyze_log(interim_log, id_col)$refresh_metadata)
 })
@@ -279,7 +284,7 @@ test_that("generate_comment_table works!", {
   redcap_log_comments <- data.frame(
     timestamp = rep(Sys.time(), 10L) - time_offset,
     username = "commenter5",
-    action = c("Manage/Design"),
+    action = "Manage/Design",
     details = c(
       generate_comments("Edit", "1", "var_multi_dropdown", "some comment"),
       generate_comments("Add", "2", "var_branching", "different comment"),
@@ -293,7 +298,8 @@ test_that("generate_comment_table works!", {
       generate_comments("Add", "1", "var_multi_dropdown", "some comment")
     ),
     record = c("1", "1", "2", "2", "3", "4", "1", "5", "1", "1"),
-    action_type = "Comment"
+    action_type = "Comment",
+    stringsAsFactors = FALSE
   )
   comment_table <- generate_comment_table(redcap_log = redcap_log_comments)
   expect_contains(comment_table$comment_type, c("Add", "Edit", "Delete"))

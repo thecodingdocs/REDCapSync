@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 # get_project_token (Internal)
 test_that("get_project_token works!", {
   project <- mock_test_project()$.internal

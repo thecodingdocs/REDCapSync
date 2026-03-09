@@ -1,11 +1,8 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 test_that("REDCapSyncProject object works!", {
   project_r6 <- REDCapSyncProject$new(mock_test_project()$.internal)
   expect_r6_class(project_r6, "REDCapSyncProject")
-  REDCapSyncProject$public_methods |> names()
-  REDCapSyncProject$active |> names()
-  REDCapSyncProject$private_fields |> names()
   expect_r6(
     project_r6,
     classes = "REDCapSyncProject",
@@ -158,7 +155,7 @@ test_that("REDCapSyncProject$upload works!", {
     .package = "base"
   )
   expect_error(project_r6$upload(mtcars), "names in your form must match")
-  to_be_uploaded <- project_r6$data$text |> utils::head(2L)
+  to_be_uploaded <- head(project_r6$data$text, 2L)
   to_be_uploaded$var_text_only <- c("New text", "Add text")
   to_be_uploaded$text_complete <- "Complete"
   expect_no_error(project_r6$upload(to_be_uploaded))

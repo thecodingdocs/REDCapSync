@@ -1,12 +1,11 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 test_that("local_envvar seen by tests, exists, but empty at first", {
-  expect_false(Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") == "")
+  expect_true(nzchar(Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE")))
   expect_directory_exists(Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE"))
   real_cache_path <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") |>
     file.path(".cache")
-  real_cache_path_projects <- real_cache_path |>
-    file.path("projects.rds")
+  real_cache_path_projects <- file.path(real_cache_path, "projects.rds")
   expect_false(test_directory_exists(real_cache_path))
   expect_false(test_file_exists(real_cache_path_projects))
 })
@@ -17,11 +16,11 @@ test_that("cache_clear works!", {
   expect_message(cache_projects_exists(), "No cached projects")
   fake_cache <- get_cache()
   test_file <- file.path(fake_cache$cache_path_get(), "projects.rds")
-  fake_project_details <- .blank_project_details |>
-    bind_rows(data.frame(project_name = "FAKE1"))|>
-    bind_rows(data.frame(project_name = "FAKE2"))|>
-    bind_rows(data.frame(project_name = "FAKE3"))|>
-    bind_rows(data.frame(project_name = "FAKE4"))
+  fake_project_details <- .blank_project_details  |>
+    bind_rows(data.frame(project_name = "FAKE1", stringsAsFactors = FALSE)) |>
+    bind_rows(data.frame(project_name = "FAKE2", stringsAsFactors = FALSE)) |>
+    bind_rows(data.frame(project_name = "FAKE3", stringsAsFactors = FALSE)) |>
+    bind_rows(data.frame(project_name = "FAKE4", stringsAsFactors = FALSE))
   saveRDS(fake_project_details, test_file)
   expect_file_exists(test_file)
   projects <- get_projects()
@@ -35,7 +34,7 @@ test_that("cache_clear works!", {
   expect_message(cache_clear(c("FAKE1", "FAKE4")), "not in your cache")
   projects <- get_projects()
   expect_data_frame(projects, nrows = 1L)
-  expect_identical("FAKE3", projects$project_name)
+  expect_identical(projects$project_name, "FAKE3")
   expect_message(cache_clear(), "cache cleared!")
   expect_message(cache_clear(), "no files found")
   expect_message({
@@ -51,7 +50,7 @@ test_that("cache_exists works!", {
 })
 # cache_path (Internal)
 test_that("cache_path works inside and outside of testing!", {
-  expect_false(Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") == "")
+  expect_true(nzchar(Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE")))
   testing_path <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") |>
     file.path(".cache")
   expect_directory_exists(cache_path())

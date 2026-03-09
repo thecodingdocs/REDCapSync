@@ -8,12 +8,15 @@ generate_comments <- function(action_type = "Add",
                               record = "1",
                               field_name = "var_branching",
                               comment = "some comment") {
-  text_string <- action_type |>
-    paste0(" field comment (Record: ", record, ", Field: ", field_name)
+  text_string <- paste0(action_type,
+                        " field comment (Record: ",
+                        record,
+                        ", Field: ",
+                        field_name)
   if (!is.null(comment)) {
-    text_string <- text_string |> paste0(", Comment: \"", comment, "\"")
+    text_string <- paste0(text_string, ", Comment: \"", comment, "\"")
   }
-  text_string <- text_string |> paste0(")")
+  text_string <- paste0(text_string, ")")
   text_string
 }
 real_dev_tokens <- c(

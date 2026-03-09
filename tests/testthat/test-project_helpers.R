@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 # labelled_to_raw_data_list (Internal)
 test_that("labelled_to_raw_data_list and raw_to_labelled_data_list works!", {
   project <- mock_test_project()$.internal
@@ -45,16 +45,16 @@ test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
   expect_contains(values, c("Yes", "No"))
   expect_identical(var_yesno_labelled, var_yesno_labelled_again)
   expect_in("Unknown", project$metadata$missing_codes$name)
-  labelled <- merged |> select(record_id, var_branching)
+  labelled <- select(merged, record_id, var_branching)
   labelled$var_branching[3L] <- "Unknown"
   labelled$var_branching[5L] <- "Not applicable"
   raw <- labelled_to_raw_form(labelled, project)
-  expect_identical("UNK", raw$var_branching[3L])
-  expect_identical("NA", raw$var_branching[5L])
+  expect_identical(raw$var_branching[3L], "UNK")
+  expect_identical(raw$var_branching[5L], "NA")
   labelled <- raw_to_labelled_form(raw, project)
-  expect_identical("Unknown", labelled$var_branching[3L])
-  expect_identical("Not applicable", labelled$var_branching[5L])
-  mismatch <- merged |> select(record_id, var_branching)
+  expect_identical(labelled$var_branching[3L], "Unknown")
+  expect_identical(labelled$var_branching[5L], "Not applicable")
+  mismatch <- select(merged, record_id, var_branching)
   mismatch$var_branching[3L] <- "Random Thing"
   error_message <- "Mismatched REDCap"
   expect_error(labelled_to_raw_form(mismatch, project), error_message)
@@ -168,7 +168,7 @@ test_that("field_names_to_form_names works!", {
 # filter_fields_from_form (Internal)
 test_that("filter_fields_from_form works!", {
   project <- mock_test_project("TEST_REPEATING")$.internal
-  form <- project$data$repeating_2 |> bind_rows(project$data$repeating)
+  form <- bind_rows(project$data$repeating, project$data$repeating_2)
   expect_error(filter_fields_from_form(form, project))
   expect_error(filter_fields_from_form(form, project))
   form <- project$data$form_1
@@ -212,9 +212,9 @@ test_that("get_identifier_fields works!", {
                                      get_type = "deidentified_super_strict")
   expect_identical(out_super, setdiff(field_names, "int"))
   # invert = TRUE should return the complement set
-  out_inv <-get_identifier_fields(data_list = data_list,
-                                  get_type = "deidentified",
-                                  invert = TRUE)
+  out_inv <- get_identifier_fields(data_list = data_list,
+                                   get_type = "deidentified",
+                                   invert = TRUE)
   expect_identical(out_inv, c("email", "cell", "other", "notes", "int"))
 })
 # get_key_col_list (Internal)
@@ -291,9 +291,6 @@ test_that("get_record_url works!", {
   e <- new.env(parent = emptyenv())
   # get_project_url
   e$url <- NULL
-  # mockery::stub(get_record_url, "utils::browseURL", function(url) {
-  #   e$url <- url
-  # })
   local_mocked_bindings(
     browseURL = function(url) {
       e$url <- url
@@ -312,18 +309,11 @@ test_that("get_record_url works!", {
     paste0(expected_link, "&id=1")
   )
   expect_identical(
-    get_record_url(
-      project,
-      page = "text",
-      open_browser = FALSE
-    ),
-    paste0(gsub("record_home", "index", expected_link), "&page=text")
-  )
-  expect_error(
-    get_record_url(
-      project,
-      page = "text_2",
-      open_browser = FALSE
+    get_record_url(project, page = "text", open_browser = FALSE),
+    paste0(
+      gsub("record_home", "index", expected_link, fixed = TRUE),
+      "&page=text"
     )
   )
+  expect_error(get_record_url(project, page = "text_2", open_browser = FALSE))
 })

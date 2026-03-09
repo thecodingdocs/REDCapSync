@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar("REDCAPSYNC_CACHE_OVERRIDE" = tempdir_file)
+withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
 # add_default_summaries (Internal)
 test_that("add_default_summaries works!", {
   project <- mock_test_project()$.internal
@@ -286,18 +286,18 @@ test_that("generate_project_summary works!", {
   fields <- project$metadata$fields
   fields$field_name[which(fields$identifier == "y")]
   colnames(project_summary$merged)
-  should_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1]
+  should_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1L]
   expect_identical(should_be_missing, "Unknown")
   project_summary <- generate_project_summary(project = project,
                                               drop_missing_codes = TRUE)
-  should_not_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1]
+  should_not_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1L]
   expect_scalar_na(should_not_be_missing)
 })
 # get_log (Internal)
 test_that("get_log works!", {
   project <- mock_test_project()$.internal
   log <- project$redcap$log
-  records <- unique(log$record) |> sample(1L)
+  records <- unique(log$record)[1L]
   log_subset <- get_log(project, records)
   subset_record_id <- unique(log_subset$record)
   expect_in(subset_record_id, records)

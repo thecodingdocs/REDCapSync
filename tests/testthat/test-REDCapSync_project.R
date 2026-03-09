@@ -63,6 +63,9 @@ test_that("R6 add_summary and remove_summaries works!", {
     names() |>
     setdiff("all_records")
   expect_length(summary_names, 0L)
+  x <- project_r6$generate_summary(filter_field = "var_branching",
+                                   filter_choices = "Yes")
+  expect_all_true(x$merged$var_branching == "Yes")
 })
 test_that("R6 test projects!", {
   tempdir_test <- sanitize_path(withr::local_tempdir())

@@ -12,6 +12,36 @@ test_that("local_envvar seen by tests, exists, but empty at first", {
 })
 # cache_clear (Exported)
 test_that("cache_clear works!", {
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  expect_message(cache_projects_exists(), "No cached projects")
+  fake_cache <- get_cache()
+  test_file <- file.path(fake_cache$cache_path_get(), "projects.rds")
+  fake_project_details <- .blank_project_details |>
+    bind_rows(data.frame(project_name = "FAKE1"))|>
+    bind_rows(data.frame(project_name = "FAKE2"))|>
+    bind_rows(data.frame(project_name = "FAKE3"))|>
+    bind_rows(data.frame(project_name = "FAKE4"))
+  saveRDS(fake_project_details, test_file)
+  expect_file_exists(test_file)
+  projects <- get_projects()
+  expect_data_frame(projects, nrows = 4L)
+  expect_message(cache_clear("FAKE2"), "removed from cache")
+  expect_message(cache_clear("FAKE2"), "not in your cache")
+  projects <- get_projects()
+  expect_data_frame(projects, nrows = 3L)
+  expect_false("FAKE2" %in% projects$project_name)
+  expect_message(cache_clear(c("FAKE1", "FAKE4")), "removed from cache")
+  expect_message(cache_clear(c("FAKE1", "FAKE4")), "not in your cache")
+  projects <- get_projects()
+  expect_data_frame(projects, nrows = 1L)
+  expect_identical("FAKE3", projects$project_name)
+  expect_message(cache_clear(), "cache cleared!")
+  expect_message(cache_clear(), "no files found")
+  expect_message({
+    projects <- get_projects()
+  }, "No cached projects")
+  expect_false(file.exists(test_file))
 })
 # cache_exists (Internal)
 test_that("cache_exists works!", {
@@ -86,6 +116,15 @@ test_that("get_cache works and deletes!", {
 })
 # get_cache_dir (Internal)
 test_that("get_cache_dir works!", {
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  expect_directory_exists(get_cache_dir())
+  tempdir_test <- file.path(tempdir_test, "not_a_folder")
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  expect_message({
+    should_be_null <- get_cache_dir()
+  }, "does not exist")
+  expect_null(should_be_null)
 })
 # sweep_dirs_for_cache (Internal)
 test_that("sweep_dirs_for_cache updates cache when project files exist", {

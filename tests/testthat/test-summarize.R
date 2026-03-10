@@ -463,4 +463,18 @@ test_that("summarize_project works!", {
 })
 # summary_records_due (Internal)
 test_that("summary_records_due works!", {
+  tempdir_test <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  project <- mock_test_project()$.internal |> clear_project_summaries()
+  expect_false(summary_records_due(project, "REDCapSync"))
+  expect_error(save_project_summary(project, "REDCapSync"))
+  project <- add_default_summaries(project)
+  expect_contains(names(project$summary), "REDCapSync")
+  expect_true(summary_records_due(project, "REDCapSync"))
+  expect_no_error({
+    project <- save_project_summary(project, "REDCapSync")
+  })
+  expect_false(summary_records_due(project, "REDCapSync"))
+  project$summary$all_records$REDCapSync[3L] <- NA
+  expect_true(summary_records_due(project, "REDCapSync"))
 })

@@ -1355,6 +1355,13 @@ get_summary_records <- function(project, summary_name) {
 }
 #' @noRd
 summary_records_due <- function(project, summary_name) {
+  summary_names <- project$summary |>
+    names() |>
+    setdiff("all_records")
+  if (!summary_name %in% summary_names) {
+    cli_alert_danger("{summary_name} not included in current summary_names!")
+    return(FALSE)
+  }
   summary_list <- project$summary[[summary_name]]
   id_col <- project$metadata$id_col
   if (is.null(summary_list$last_save_time)) {
@@ -1394,8 +1401,8 @@ check_summaries <- function(project, summary_names) {
   # need_to_check <- any(project$summary$all_records$last_api_call >
   # summary_list$last_save_time)
   for (summary_name in summary_names) {
-    test_summary <-
-      summary_records_due(project = project, summary_name = summary_name)
+    test_summary <- summary_records_due(project = project,
+                                        summary_name = summary_name)
     if (test_summary) {
       needs_refresh <- append(needs_refresh, summary_name)
     }

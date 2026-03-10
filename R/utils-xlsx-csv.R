@@ -87,8 +87,9 @@ list_to_excel <- function(input_list,
 }
 #' @noRd
 save_wb <- function(wb, dir, file_name, overwrite = TRUE) {
-  if (!dir.exists(dir))
+  if (!dir.exists(dir)) {
     stop("dir doesn't exist")
+  }
   path <- file.path(dir, paste0(file_name, ".xlsx")) |> sanitize_path()
   openxlsx::saveWorkbook(wb = wb,
                          file = path,

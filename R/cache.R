@@ -155,15 +155,13 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
         project_list[[project_name]] <- loaded_cache
       }
     }
-    if (!is.null(to_cache)) {
-      if (!identical(from_cache, to_cache)) {
-        if (!is.null(from_cache)) {
-          to_cache$dir_path <- from_cache$dir_path
-        } # could cause issue?
-        project_list[[project_name]] <- to_cache
-        updated_projects <-  append(updated_projects, project_name)
-        had_change <- TRUE
-      }
+    if (!is.null(to_cache) && !identical(from_cache, to_cache)) {
+      if (!is.null(from_cache)) {
+        to_cache$dir_path <- from_cache$dir_path
+      } # could cause issue?
+      project_list[[project_name]] <- to_cache
+      updated_projects <-  append(updated_projects, project_name)
+      had_change <- TRUE
     }
   }
   if (had_change) {

@@ -419,7 +419,7 @@ split_choices <- function(x) {
   if (nrow(choices_data) != check_length) {
     stop("split choice error: ", x)
   }
-  if (any(!nzchar(choices_data$name))) {
+  if (!all(nzchar(choices_data$name))) {
     stop("split choice error: ", x)
   }
   choices_data

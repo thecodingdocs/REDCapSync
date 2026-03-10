@@ -237,7 +237,7 @@ add_field_elements <- function(fields) {
     checkbox_fields <- fields$field_name[which(fields$field_type == "checkbox")]
     for (field_name in checkbox_fields) {
       field_row <- which(fields$field_name == field_name)
-      x <- fields$select_choices_or_calculations[field_row] |> split_choices()
+      x <- split_choices(fields$select_choices_or_calculations[field_row])
       new_rows <- data.frame(
         field_name = paste0(field_name, "___", x$code),
         form_name = fields$form_name[field_row],

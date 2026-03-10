@@ -15,7 +15,7 @@ labelled_to_raw_form <- function(form, project) {
       if (length(no_match) > 0L) {
         bad_choices <- form[[field_name]][no_match] |> unique() |> toString()
         cli_alert_danger(form[[field_name]][no_match])
-        stop(paste0("Mismatched REDCap! ", field_name, ": ", bad_choices))
+        cli_abort("Mismatched REDCap! `{field_name}`: {bad_choices}")
       }
       form[[field_name]] <- conversion_table$code[match_rows]
     } else {
@@ -68,10 +68,10 @@ generate_choices_table <- function(field_row, project) {
   conversion_table <- NULL
   if (has_choices) {
     choice_table <- split_choices(field_row$select_choices_or_calculations)
-    conversion_table <- conversion_table |> bind_rows(choice_table)
+    conversion_table <- bind_rows(conversion_table, choice_table)
   }
   if (use_missing_codes) {
-    conversion_table <- conversion_table |> bind_rows(missing_codes)
+    conversion_table <- bind_rows(conversion_table, missing_codes)
   }
   conversion_table
 }

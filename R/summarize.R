@@ -714,7 +714,7 @@ merge_non_repeating <- function(data_list,
   forms_transformed$original_form_name <- forms_transformed$form_name |>
     lapply(function(form_name) {
       keep <- which(forms_transformed_original$form_name_remap == form_name)
-      forms_transformed_original$form_name[keep] |> paste0(collapse = " | ")
+      paste0(forms_transformed_original$form_name[keep], collapse = " | ")
     }) |>
     unlist() |>
     as.character()
@@ -1071,35 +1071,27 @@ clean_form <- function(form,
   form
 }
 #' @noRd
-clean_column_for_table <- function(field, class, label, units, levels) {
-  if (!missing(class)) {
-    if (!is.null(class)) {
-      if (!is.na(class)) {
-        if (class == "integer") {
-          field <- as.integer(field)
-        }
-        if (class == "factor") {
-          field <- factor(x = field, levels = levels, ordered = TRUE)
-        }
-        if (class == "numeric") {
-          field <- as.numeric(field)
-        }
-      }
+clean_column_for_table <- function(field,
+                                   class = NULL,
+                                   label = NULL,
+                                   units = NULL,
+                                   levels = NULL) {
+  if (is_something(class)) {
+    if (class == "integer") {
+      field <- as.integer(field)
+    }
+    if (class == "factor") {
+      field <- factor(x = field, levels = levels, ordered = TRUE)
+    }
+    if (class == "numeric") {
+      field <- as.numeric(field)
     }
   }
-  if (!missing(label)) {
-    if (!is.null(label)) {
-      if (!is.na(label)) {
-        attr(field, "label") <- label
-      }
-    }
+  if (is_something(label)) {
+    attr(field, "label") <- label
   }
-  if (!missing(units)) {
-    if (!is.null(units)) {
-      if (!is.na(units)) {
-        attr(field, "units") <- units
-      }
-    }
+  if (is_something(units)) {
+    attr(field, "units") <- units
   }
   field
 }

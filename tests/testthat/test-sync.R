@@ -11,8 +11,7 @@ test_that("sync works!", {
   )
   expect_message(sync(), "No projects in cache")
   local_mocked_bindings(
-    sweep_dirs_for_cache = function(...)
-      NULL,
+    sweep_dirs_for_cache = function(...) NULL,
     get_projects = function(...) {
       data.frame(project_name = "TEST_CLASSIC", stringsAsFactors = FALSE)
     }

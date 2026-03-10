@@ -91,6 +91,52 @@ page for the basics!
 - Thoughtful attention to how and where data you create is used and
   stored.
 
+## Contributing
+
+If you wish to contribute to this software, use github issues and pull
+requests.
+
+### Style Guidelines
+
+#### Functions
+
+- Exported function names: **snake_case**
+  - Examples: “setup_project”, “load_project”, “sync”
+- Internal function names: **snake_case**
+  - Examples: “get_project_token”, “get_redcap_data”
+  - Exceptions: “.onLoad” (R standard)
+    - redcapAPI functions (**dromedaryCase**)
+    - utils functions: write.csv, object.size, browseURL
+- Function parameters: **snake_case**
+  - examples: “project_name”, “dir_path”, “redcap_uri”, “sync_frequency”
+- Function variables: **snake_case**
+  - Exception: field_type_r
+
+#### Constants/Data
+
+- Internal constants: **.snake_case**
+  - Exceptions:
+    - redcapAPI constants: **SCREAMING_SNAKE_CASE**
+- Internal datasets: **SCREAMING_SNAKE_CASE**
+  - Examples: TEST_CLASSIC, TEST_REPEATING, TEST_CANCER
+- Environment varriable names: **SCREAMING_SNAKE_CASE**
+  - Examples: REDCAPSYNC_TEST_CLASSIC
+
+#### R6 Class
+
+- R6ClassGenerator and R6 Classes: **PascalCase** with captilized
+  “REDCap” acronym
+  - Example: “REDCapSyncProject”
+- R6 public_methods: snake_case
+  - Exception: .internal for
+
+#### Package Use
+
+- project_name: SCREAMING_SNAKE_CASE (numbers allowed if not first)
+- REDCapSyncProject object environment name can be “project” or
+  user-defined
+- option names: REDCapSync.snake_case (tidyverse convention)
+
 ## Disclaimers
 
 - With great power comes great responsibility! The REDCap API has the

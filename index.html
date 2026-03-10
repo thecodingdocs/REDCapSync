@@ -144,6 +144,98 @@
 </ul>
 </div>
 <div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>If you wish to contribute to this software, use github issues and pull requests.</p>
+<div class="section level3">
+<h3 id="style-guidelines">Style Guidelines<a class="anchor" aria-label="anchor" href="#style-guidelines"></a>
+</h3>
+<div class="section level4">
+<h4 id="functions">Functions<a class="anchor" aria-label="anchor" href="#functions"></a>
+</h4>
+<ul>
+<li>Exported function names: <strong>snake_case</strong>
+<ul>
+<li>Examples: “setup_project”, “load_project”, “sync”</li>
+</ul>
+</li>
+<li>Internal function names: <strong>snake_case</strong>
+<ul>
+<li>Examples: “get_project_token”, “get_redcap_data”</li>
+<li>Exceptions: “.onLoad” (R standard)
+<ul>
+<li>redcapAPI functions (<strong>dromedaryCase</strong>)</li>
+<li>utils functions: write.csv, object.size, browseURL</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Function parameters: <strong>snake_case</strong>
+<ul>
+<li>examples: “project_name”, “dir_path”, “redcap_uri”, “sync_frequency”</li>
+</ul>
+</li>
+<li>Function variables: <strong>snake_case</strong>
+<ul>
+<li>Exception: field_type_r</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="constantsdata">Constants/Data<a class="anchor" aria-label="anchor" href="#constantsdata"></a>
+</h4>
+<ul>
+<li>Internal constants: <strong>.snake_case</strong>
+<ul>
+<li>Exceptions:
+<ul>
+<li>redcapAPI constants: <strong>SCREAMING_SNAKE_CASE</strong>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Internal datasets: <strong>SCREAMING_SNAKE_CASE</strong>
+<ul>
+<li>Examples: TEST_CLASSIC, TEST_REPEATING, TEST_CANCER</li>
+</ul>
+</li>
+<li>Environment varriable names: <strong>SCREAMING_SNAKE_CASE</strong>
+<ul>
+<li>Examples: REDCAPSYNC_TEST_CLASSIC</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="r6-class">R6 Class<a class="anchor" aria-label="anchor" href="#r6-class"></a>
+</h4>
+<ul>
+<li>R6ClassGenerator and R6 Classes: <strong>PascalCase</strong> with captilized “REDCap” acronym
+<ul>
+<li>Example: “REDCapSyncProject”</li>
+</ul>
+</li>
+<li>R6 public_methods: snake_case
+<ul>
+<li>Exception: .internal for</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="package-use">Package Use<a class="anchor" aria-label="anchor" href="#package-use"></a>
+</h4>
+<ul>
+<li>project_name: SCREAMING_SNAKE_CASE (numbers allowed if not first)</li>
+<li>REDCapSyncProject object environment name can be “project” or user-defined</li>
+<li>option names: REDCapSync.snake_case (tidyverse convention)</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section level2">
 <h2 id="disclaimers">Disclaimers<a class="anchor" aria-label="anchor" href="#disclaimers"></a>
 </h2>
 <ul>

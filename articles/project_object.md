@@ -1,4 +1,4 @@
-# The REDCapSync_project Object
+# The REDCapSyncProject Object
 
 The goal of REDCapSync is to encapsulate a REDCap project into a
 standardized object. R6 gives a way of keeping some elements internal to

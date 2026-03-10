@@ -16,7 +16,7 @@ already saved. Save the outputs to a directory.
 Once setup, the project object can be used to run sync and define custom
 transformations and subset to be passed to spreadsheets.
 
-- [`REDCapSync_project`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync_project.md)
+- [`REDCapSyncProject`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSyncProject.md)
   : REDCapSync Encapsulated Project Object
 
 ## Multiple Projects

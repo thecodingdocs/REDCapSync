@@ -21,7 +21,7 @@
 ### Setup
 
 - [Cache](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md):
-- [The REDCapSync_project
+- [The REDCapSyncProject
   Object](https://thecodingdocs.github.io/REDCapSync/articles/project_object.md):
 - [Managing Multiple REDCap
   Projects](https://thecodingdocs.github.io/REDCapSync/articles/multiple_projects.md):

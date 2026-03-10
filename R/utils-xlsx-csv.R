@@ -352,8 +352,8 @@ rename_list_names_excel <- function(list_names) {
         " are trimmed to 31 char. For now will make unique by adding number."
       )
     )
-    list_names_rename <-
-      unique_trimmed_strings(list_names_rename, max_length = 31L)
+    list_names_rename <- unique_trimmed_strings(strings = list_names_rename,
+                                                max_length = 31L)
   }
   list_names_rename
 }

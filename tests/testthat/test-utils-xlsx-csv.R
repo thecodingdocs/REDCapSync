@@ -65,6 +65,26 @@ test_that("list_to_wb works!", {
 })
 # rename_list_names_excel (Internal)
 test_that("rename_list_names_excel works!", {
+  list_names <- c("data", "metadata", "fields", "forms", "choices")
+  expect_identical(rename_list_names_excel(list_names), list_names)
+  list_names <- c(
+    "data",
+    "metadata",
+    "fields",
+    "forms",
+    "choices",
+    "long_var_name_that_is_not_unique_until_the_very_end1"
+  )
+  list_names_match <- unique_trimmed_strings(strings = list_names,
+                                             max_length = 31L)
+  expect_identical(rename_list_names_excel(list_names), list_names_match)
+  list_names <- list_names |>
+    append("long_var_name_that_is_not_unique_until_the_very_end2")
+  expect_false(anyDuplicated(list_names) > 0L)
+  expect_message({
+    new_names <- rename_list_names_excel(list_names)
+  }, "Duplicated names when trimmed from right")
+  expect_all_true(str_length(new_names) <= 31L)
 })
 # save_csv (Internal)
 test_that("save_csv works!", {

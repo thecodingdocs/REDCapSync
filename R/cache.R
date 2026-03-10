@@ -5,8 +5,8 @@
 #' `project_names`, it will remove only those projects from the cache.
 #' @details
 #' The cache only stores information like project_name, token_name, directory
-#' location, and other details from [setup_project()]. If you want to truly delete
-#' the project files, you must do so at the project directory you set up.
+#' location, and other details from [setup_project()]. If you want to truly
+#' delete the project files, you must do so at the project directory you set up.
 #' @inheritParams sync
 #' @examples
 #' \dontrun{

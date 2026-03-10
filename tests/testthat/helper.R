@@ -19,11 +19,6 @@ generate_comments <- function(action_type = "Add",
   text_string <- paste0(text_string, ")")
   text_string
 }
-real_dev_tokens <- c(
-  REDCAPSYNC_TEST_REDCAPR_SIMPLE = "9A068C425B1341D69E83064A2D273A70",
-  REDCAPSYNC_TEST_REDCAPR_LONGITUDINAL = "DA6F2BB23146BD5A7EA3408C1A44A556",
-  REDCAPSYNC_TEST_REDCAPR_CLIN_TRIAL = "F9CBFFF78C3D78F641BAE9623F6B7E6A"
-)
 real_test_project <- function(project_name = "TEST_REDCAPR_SIMPLE") {
   assert_choice(project_name, .test_redcapr_names)
   cache_location <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") |>
@@ -51,3 +46,8 @@ mock_test_calls <- function(project_name = "TEST_CLASSIC") {
   call_list <- readRDS(test_path("fixtures", file_name))
   call_list
 }
+.real_dev_tokens <- c(
+  REDCAPSYNC_TEST_REDCAPR_SIMPLE = "9A068C425B1341D69E83064A2D273A70",
+  REDCAPSYNC_TEST_REDCAPR_LONGITUDINAL = "DA6F2BB23146BD5A7EA3408C1A44A556",
+  REDCAPSYNC_TEST_REDCAPR_CLIN_TRIAL = "F9CBFFF78C3D78F641BAE9623F6B7E6A"
+)

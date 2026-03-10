@@ -117,7 +117,7 @@ test_that("data_list_to_save works!", {
 test_that("deidentify_data_list works!", {
   project <- mock_test_project()$.internal
   data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
-  data_list$metadata$fields$field_type_R <- NA
+  data_list$metadata$fields$field_type_r <- NA
   data_list$metadata$fields$in_original_redcap <- NA
   id_cols <- data_list$metadata$form_key_cols |>
     unlist() |>
@@ -202,8 +202,8 @@ test_that("deidentify_data_list works2", {
   # merged_zero_by_project <- deidentify_data_list(
   #   data_list = data_list,date_handling = "zero_by_project")
 })
-# field_types_to_R (Internal)
-test_that("field_types_to_R works!", {
+# field_types_to_r (Internal)
+test_that("field_types_to_r works!", {
 })
 # fields_to_choices (Internal)
 test_that("fields_to_choices works!", {

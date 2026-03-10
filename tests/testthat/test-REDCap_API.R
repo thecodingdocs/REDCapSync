@@ -27,7 +27,7 @@ test_that("get_redcap_ works on real server, simple!", {
   expect_data_frame(as.data.frame(project$metadata$choices), nrows = 0L)
   expect_data_frame(as.data.frame(project$redcap$users), nrows = 0L)
   expect_data_frame(as.data.frame(project$redcap$project_info), nrows = 0L)
-  project_with_metadata <- withr::with_envvar(real_dev_tokens, {
+  project_with_metadata <- withr::with_envvar(.real_dev_tokens, {
     get_redcap_metadata(project)
   })
   expect_data_frame(project_with_metadata$metadata$forms, min.rows = 1L)
@@ -37,14 +37,14 @@ test_that("get_redcap_ works on real server, simple!", {
   expect_data_frame(project_with_metadata$redcap$project_info, nrows = 1L)
   # data_test
   expect_length(project_with_metadata$data, 0L)
-  data_list <- withr::with_envvar(real_dev_tokens, {
+  data_list <- withr::with_envvar(.real_dev_tokens, {
     suppressWarnings({
       get_redcap_data(project_with_metadata)
     })
   })
   expect_list(data_list, min.len = 1L)
   expect_data_frame(data_list$demographics, min.rows = 1L, min.cols = 2L)
-  project_records <- withr::with_envvar(real_dev_tokens, {
+  project_records <- withr::with_envvar(.real_dev_tokens, {
     get_redcap_records(project_with_metadata)
   })
   expect_character(project_records, unique = TRUE, min.len = 1L)
@@ -60,7 +60,7 @@ test_that("get_redcap_ works on real server, longitudinal!", {
   expect_data_frame(as.data.frame(project$metadata$choices), nrows = 0L)
   expect_data_frame(as.data.frame(project$redcap$users), nrows = 0L)
   expect_data_frame(as.data.frame(project$redcap$project_info), nrows = 0L)
-  project_with_metadata <- withr::with_envvar(real_dev_tokens, {
+  project_with_metadata <- withr::with_envvar(.real_dev_tokens, {
     get_redcap_metadata(project)
   })
   expect_data_frame(project_with_metadata$metadata$forms, min.rows = 1L)
@@ -70,14 +70,14 @@ test_that("get_redcap_ works on real server, longitudinal!", {
   expect_data_frame(project_with_metadata$redcap$project_info, nrows = 1L)
   # data_test
   expect_length(project_with_metadata$data, 0L)
-  data_list <- withr::with_envvar(real_dev_tokens, {
+  data_list <- withr::with_envvar(.real_dev_tokens, {
     suppressWarnings({
       get_redcap_data(project_with_metadata)
     })
   })
   expect_list(data_list, min.len = 1L)
   expect_data_frame(data_list$demographics, min.rows = 1L, min.cols = 2L)
-  project_records <- withr::with_envvar(real_dev_tokens, {
+  project_records <- withr::with_envvar(.real_dev_tokens, {
     get_redcap_records(project_with_metadata)
   })
   expect_character(project_records, unique = TRUE, min.len = 1L)
@@ -269,7 +269,7 @@ test_that("get_redcap_denormalized works!", {
   project <- real_test_project("TEST_REDCAPR_LONGITUDINAL")$.internal
   expect_data_frame(as.data.frame(project$data), nrows = 0L)
   project_data <- suppressWarnings({
-    withr::with_envvar(real_dev_tokens, {
+    withr::with_envvar(.real_dev_tokens, {
       get_redcap_denormalized(project)
     })
   })

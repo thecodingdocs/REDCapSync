@@ -94,7 +94,7 @@ repair_setup_project <- function(project) {
       ifelse(project$internals$get_type, "identified")
     records_na <- test_scalar_na(project$internals$records)
     records_char <- test_unique_character(project$internals$records)
-    project$internals$records <-(records_na || records_char) |>
+    project$internals$records <- (records_na || records_char) |>
       ifelse(project$internals$records, NA)
     fields_na <- test_scalar_na(project$internals$fields)
     fields_char <- test_unique_character(project$internals$fields)

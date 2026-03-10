@@ -111,7 +111,7 @@ setup_project <- function(project_name,
                           add_default_summaries = TRUE) {
   #add better message for all caps!
   assert_env_name(project_name, max.chars = 31L, all_caps = TRUE)
-  if(project_name %in% .forbiden_project_names){
+  if (project_name %in% .forbiden_project_names) {
     cli_abort("project_name {project_name} not allowed!")
   }
   # dir_path
@@ -211,7 +211,7 @@ setup_project <- function(project_name,
       })
       was_loaded <- !is.null(project)
     }
-    if(!was_loaded && !missing_dir_path) {
+    if (!was_loaded && !missing_dir_path) {
       project <- try_else_null({
         suppressWarnings({ # will ignore supplied dir_path ? add coompare
           load_project_from_dir(project_name = project_name,
@@ -273,9 +273,10 @@ setup_project <- function(project_name,
   }
   if (missing_dir_path) {
     if (!is_something(project$dir_path)) {
-      cli_alert_warning(paste0(
-        "If you don't supply a directory, REDCapSync will only run ",
-        "in R session. Package is meant to be used with a directory."))
+      cli_alert_warning(
+        paste0("If you don't supply a directory, REDCapSync will only run ",
+               "in R session. Package is meant to be used with a directory.")
+      )
     }
   }
   project$project_name <- project_name
@@ -316,8 +317,7 @@ setup_project <- function(project_name,
   project$internals$is_blank <- FALSE
   project$data <- all_character_cols_list(project$data)
   if (!is_valid_redcap_token(get_project_token(project))) {
-    cli_alert_warning(
-      paste0("No valid token in session: Sys.getenv('", token_name, "')"))
+    cli_alert_warning("No valid token in session: Sys.getenv('{token_name}')")
   }
   project <- assert_setup_project(project)
   # final_details ? compare if original_details not NULL
@@ -417,17 +417,17 @@ load_project_from_dir <- function(project_name, dir_path, validate = TRUE) {
     )
   }
   project <- readRDS(file = project_path)
-  if(!validate) {
+  if (!validate) {
     return(project)
   }
   project <- repair_setup_project(project)
   if (is.null(project)) {
     abort_message <- paste0("Failed to load/repair project with proper",
-                             " validation. This can happen with version",
-                             " changes. You can still try to load the object",
-                             " with `readRDS(\"{project_path}\")`. You should",
-                             " re-run `project <- setup_project(...)`",
-                             " and `project$sync()`.")
+                            " validation. This can happen with version",
+                            " changes. You can still try to load the object",
+                            " with `readRDS(\"{project_path}\")`. You should",
+                            " re-run `project <- setup_project(...)`",
+                            " and `project$sync()`.")
     cli_abort(abort_message)
   }
   project <- assert_setup_project(project)
@@ -455,8 +455,8 @@ load_project_from_dir <- function(project_name, dir_path, validate = TRUE) {
   project |> extract_project_details() |> add_project_details_to_cache()
   the_message <- paste0("Loaded {project$project_name}!")
   if (due_for_sync(project$project_name)) {
-    the_message <- paste0(
-      the_message, " Due for sync. Run `project$sync()` to update.")
+    the_message <- paste0(the_message,
+                          " Due for sync. Run `project$sync()` to update.")
   }
   cli_alert_success(the_message)
   project
@@ -488,7 +488,7 @@ load_test_project <- function(project_name, dir_path) {
   project <- .test_projects[[project_name]]
   project <- repair_setup_project(project)
   assert_setup_project(project)
-  if(!missing(dir_path)){
+  if (!missing(dir_path)) {
     project$dir_path <- set_dir(dir_path)
     dir.create(
       path = file.path(project$dir_path, "REDCap", project_name),

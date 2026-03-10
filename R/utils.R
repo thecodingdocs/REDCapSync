@@ -366,7 +366,7 @@ is_nested_list <- function(x) {
   outcome
 }
 #' @noRd
-add_redcap_links_to_form <- function(form, project) {
+add_redcap_links <- function(form, project) {
   # add instance links
   if (project$metadata$id_col %in% colnames(form)) {
     rows_x <- which(

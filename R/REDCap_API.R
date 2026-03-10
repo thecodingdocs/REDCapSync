@@ -69,8 +69,8 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
     choices <- project$metadata$choices
     has_conflict <- field_names |>
       lapply(function(field_name) {
-        anyDuplicated(
-          choices$name[which(choices$field_name == field_name)]) > 0L
+        vec_to_check <- choices$name[which(choices$field_name == field_name)]
+        anyDuplicated(vec_to_check) > 0L
       }) |>
       unlist()
     project$metadata$has_coding_conflicts <- any(has_conflict)
@@ -86,67 +86,67 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
                                    "event_name")
     project$metadata$raw_structure_cols <- unique(raw_structure_cols_vector)
     project$metadata$arms <- result$arms
-    colnames(project$metadata$arms)[
-      which(colnames(project$metadata$arms) == "arm_num")] <- "arm_number"
+    arm_name_col <- which(colnames(project$metadata$arms) == "arm_num")
+    colnames(project$metadata$arms)[arm_name_col] <- "arm_number"
     project$metadata$has_arms <- TRUE
     project$metadata$has_multiple_arms <- nrow(project$metadata$arms) > 1L
     project$metadata$has_arms_that_matter <- project$metadata$has_multiple_arms
     project$metadata$event_mapping <- result$mapping
     project$metadata$events <- result$events
-    colnames(project$metadata$events)[
-      which(colnames(project$metadata$events) == "arm_num")] <- "arm_number"
+    arm_name_col <- which(colnames(project$metadata$events) == "arm_num")
+    colnames(project$metadata$events)[arm_name_col] <- "arm_number"
     project$metadata$events$repeating <- FALSE
     project$metadata$event_mapping$repeating <- FALSE
+    unique_event_names <- project$metadata$events$unique_event_name
+    unique_event_names_map <- project$metadata$event_mapping$unique_event_name
     if (is.data.frame(project$metadata$repeating_forms_events)) {
-      project$metadata$events$repeating <-
-        project$metadata$events$unique_event_name %in%
-        project$metadata$repeating_forms_events$event_name[
-          which(is.na(project$metadata$repeating_forms_events$form_name))]
-      repeatingFormsEvents_ind <- project$metadata$repeating_forms_events[
-        which(
-          !is.na(project$metadata$repeating_forms_events$event_name) &
-            !is.na(project$metadata$repeating_forms_events$form_name)
-        ), ]
-      if (nrow(repeatingFormsEvents_ind) > 0L) {
-        rows_event_mapping <- seq_len(nrow(repeatingFormsEvents_ind)) |>
+      keep <- which(is.na(project$metadata$repeating_forms_events$form_name))
+      rep_events <- project$metadata$repeating_forms_events$event_name[keep]
+      project$metadata$events$repeating <- unique_event_names %in% rep_events
+      is_rep_event <- !is.na(project$metadata$repeating_forms_events$event_name)
+      is_rep_form <- !is.na(project$metadata$repeating_forms_events$form_name)
+      rep_rows <- which(is_rep_event & is_rep_form)
+      rep_form_ind <- project$metadata$repeating_forms_events[rep_rows, ]
+      if (nrow(rep_form_ind) > 0L) {
+        rows_event_mapping <- seq_len(nrow(rep_form_ind)) |>
           lapply(function(i) {
-            which(
-              project$metadata$event_mapping$unique_event_name ==
-                repeatingFormsEvents_ind$event_name[i] &
-                project$metadata$event_mapping$form ==
-                repeatingFormsEvents_ind$form_name[i]
-            )
+            criteria_one <- unique_event_names_map == rep_form_ind$event_name[i]
+            form_names <- project$metadata$event_mapping$form
+            criteria_two <- form_names == rep_form_ind$form_name[i]
+            which(criteria_one & criteria_two)
           }) |>
           unlist()
         project$metadata$event_mapping$repeating[rows_event_mapping] <- TRUE
       }
     }
     project$metadata$events$forms <-
-      project$metadata$events$unique_event_name |>
+      unique_event_names |>
       lapply(function(events) {
-        project$metadata$event_mapping$form[
-          which(project$metadata$event_mapping$unique_event_name == events)] |>
+        event_rows <- which(unique_event_names_map == events)
+        project$metadata$event_mapping$form[event_rows] |>
           unique() |>
           paste0(collapse = " | ")
       }) |>
       unlist()
     if (project$metadata$has_arms_that_matter) {
-      project$metadata$has_arms_that_matter <-
-        !(project$metadata$arms$arm_number |>
-            lapply(function(arm) {
-              project$metadata$event_mapping$form[
-                which(project$metadata$event_mapping$arm_number == arm)]
-            }) |>
-            check_match())
+      arm_number_vector <- project$metadata$arms$arm_number
+      project$metadata$has_arms_that_matter <- arm_number_vector |>
+        lapply(function(arm) {
+          arm_row <- which(project$metadata$event_mapping$arm_number == arm)
+          project$metadata$event_mapping$form[arm_row]
+        }) |>
+        check_match() |>
+        xor(TRUE)
     }
     project$metadata$forms$repeating_via_events <- FALSE
-    project$metadata$forms$repeating_via_events[
-      which(
-        unlist(lapply(project$metadata$forms$form_name, function(form_name) {
-          anyDuplicated(
-            project$metadata$event_mapping$arm_num[
-              which(project$metadata$event_mapping$form == form_name)]) > 0L
-        })))] <- TRUE
+    rep_via_event_rows <- project$metadata$forms$form_name |>
+      lapply(function(form_name) {
+        form_rows <- which(project$metadata$event_mapping$form == form_name)
+        anyDuplicated(project$metadata$event_mapping$arm_num[form_rows]) > 0L
+      }) |>
+      unlist() |>
+      which()
+    project$metadata$forms$repeating_via_events[rep_via_event_rows] <- TRUE
   } else {
     project$metadata$has_arms <- FALSE
     project$metadata$has_multiple_arms <- FALSE
@@ -234,24 +234,23 @@ add_field_elements <- function(fields) {
       bind_rows(bottom)
   }
   if (any(fields$field_type == "checkbox")) {
-    for (field_name in fields$field_name[
-      which(fields$field_type == "checkbox")]) {
-      x <- fields$select_choices_or_calculations[
-        which(fields$field_name == field_name)] |> split_choices()
+    checkbox_fields <- fields$field_name[which(fields$field_type == "checkbox")]
+    for (field_name in checkbox_fields) {
+      field_row <- which(fields$field_name == field_name)
+      x <- fields$select_choices_or_calculations[field_row] |> split_choices()
       new_rows <- data.frame(
         field_name = paste0(field_name, "___", x$code),
-        form_name = fields$form_name[which(fields$field_name == field_name)],
+        form_name = fields$form_name[field_row],
         field_label = x$name,
         field_type = "checkbox_choice",
         select_choices_or_calculations = "1, Checked | 0, Unchecked",
         stringsAsFactors = FALSE
       )
-      x_row <- which(fields$field_name == field_name)
       last_row <- nrow(fields)
-      top <- fields[1L:x_row, ]
+      top <- fields[1L:field_row, ]
       bottom <- NULL
-      if (last_row > x_row) {
-        bottom <- fields[(x_row + 1L):last_row, ]
+      if (last_row > field_row) {
+        bottom <- fields[(field_row + 1L):last_row, ]
       }
       fields <- top |>
         bind_rows(new_rows) |>
@@ -315,21 +314,20 @@ get_redcap_files <- function(project,
       dir.create(out_dir_folder,
                  showWarnings = FALSE,
                  recursive = TRUE)
-      form_name <- project$metadata$fields$form_name[
-        which(project$metadata$fields$field_name == field_name)]
-      is_repeating <- project$metadata$forms$repeating[
-        which(project$metadata$forms$form_name == form_name)]
+      field_row <- which(project$metadata$fields$field_name == field_name)
+      form_name <- project$metadata$fields$form_name[field_row]
+      form_row <- which(project$metadata$forms$form_name == form_name)
+      is_repeating <- project$metadata$forms$repeating[form_row]
       form <- project$data[[form_name]]
       rows_to_save <- which(!is.na(form[[field_name]]))
       for (i in rows_to_save) {
         file_name <- form[[field_name]][i]
         record_id <- form[[project$metadata$id_col]][i]
         repeat_instance <- form[["redcap_repeat_instance"]][i]
-        repeat_instance <- ifelse(
-          is.null(repeat_instance), "", repeat_instance)
+        repeat_instance <- ifelse(is.null(repeat_instance), "", repeat_instance)
         redcap_event_name <- form[["redcap_event_name"]][i]
-        redcap_event_name <- ifelse(
-          is.null(redcap_event_name), "", repeat_instance)
+        is_null_event <- is.null(redcap_event_name)
+        redcap_event_name <- ifelse(is_null_event, "", repeat_instance)
         if (!original_file_names) {
           if (anyDuplicated(file_name) > 0L) {
             warning(

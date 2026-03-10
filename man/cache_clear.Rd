@@ -20,8 +20,8 @@ and deletes stored project information (not data)! If you provide
 }
 \details{
 The cache only stores information like project_name, token_name, directory
-location, and other details from \code{\link[=setup_project]{setup_project()}}. If you want to truly delete
-the project files, you must do so at the project directory you set up.
+location, and other details from \code{\link[=setup_project]{setup_project()}}. If you want to truly
+delete the project files, you must do so at the project directory you set up.
 }
 \examples{
 \dontrun{

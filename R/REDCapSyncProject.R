@@ -97,7 +97,7 @@
 #' @param form_name Character. The name of the form containing `field_name`.
 #' @param field_type Character. The type of the field in REDCap (e.g., "text",
 #' "checkbox", "dropdown").
-#' @param field_type_R Character. The corresponding R data type for the field.
+#' @param field_type_r Character. The corresponding R data type for the field.
 #' Default is `NA`.
 #' @param field_label Character. The label for the field. Default is `NA`.
 #' @param select_choices_or_calculations Character. A string specifying the
@@ -243,12 +243,11 @@ REDCapSyncProject <- R6Class(
         cli_alert_info("TEST projects do not communicate with the API")
         return(invisible(self))
       }
-      private$project <- sync_project(
-        project = private$project,
-        summarize = summarize,
-        save_to_dir = save_to_dir,
-        hard_check = hard_check,
-        hard_reset = hard_reset)
+      private$project <- sync_project(project = private$project,
+                                      summarize = summarize,
+                                      save_to_dir = save_to_dir,
+                                      hard_check = hard_check,
+                                      hard_reset = hard_reset)
       invisible(self)
     },
     #' @description  Add a new summary entry
@@ -394,7 +393,7 @@ REDCapSyncProject <- R6Class(
     add_field = function(field_name,
                          form_name,
                          field_type,
-                         field_type_R = NA,
+                         field_type_r = NA,
                          field_label = NA,
                          select_choices_or_calculations = NA,
                          field_note = NA,
@@ -499,9 +498,8 @@ REDCapSyncProject <- R6Class(
         upload_this <- to_be_uploaded[[upload_name]]
         # add comparison check but need to test...
         if (is_labelled) {
-          upload_this <- labelled_to_raw_form(
-            form = upload_this,
-            project = private$project)
+          upload_this <- labelled_to_raw_form(form = upload_this,
+                                              project = private$project)
         }
         upload_form_to_redcap(
           to_be_uploaded = upload_this,

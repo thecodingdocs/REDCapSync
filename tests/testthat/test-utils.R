@@ -178,8 +178,8 @@ test_that("vec1_in_vec2 and vec1_not_in_vec2 works!", {
 # which_duplicated (Internal)
 test_that("which_duplicated works!", {
 })
-# add_redcap_links_to_form (Internal)
-test_that("add_redcap_links_to_form works!", {
+# add_redcap_links (Internal)
+test_that("add_redcap_links works!", {
   project <- mock_test_project()$.internal
   form <- data.frame(
     record_id = c("1", "2"),
@@ -187,7 +187,7 @@ test_that("add_redcap_links_to_form works!", {
     stringsAsFactors = FALSE
   )
   # Should add redcap_link column
-  out <- add_redcap_links_to_form(form, project)
+  out <- add_redcap_links(form, project)
   expect_true("redcap_link" %in% colnames(out))
   expect_length(out$redcap_link, 2L)
   # Links should contain record_id and project id

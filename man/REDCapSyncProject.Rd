@@ -414,7 +414,7 @@ Add a new summary entry
   field_name,
   form_name,
   field_type,
-  field_type_R = NA,
+  field_type_r = NA,
   field_label = NA,
   select_choices_or_calculations = NA,
   field_note = NA,
@@ -435,7 +435,7 @@ transformation will be applied.}
 \item{\code{field_type}}{Character. The type of the field in REDCap (e.g., "text",
 "checkbox", "dropdown").}
 
-\item{\code{field_type_R}}{Character. The corresponding R data type for the field.
+\item{\code{field_type_r}}{Character. The corresponding R data type for the field.
 Default is \code{NA}.}
 
 \item{\code{field_label}}{Character. The label for the field. Default is \code{NA}.}

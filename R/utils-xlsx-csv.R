@@ -402,13 +402,13 @@ excel_to_list <- function(path) {
 }
 #' @noRd
 .header_style <- openxlsx::createStyle(fgFill = "#74DFFF",
-                                      halign = "center",
-                                      valign = "center",
-                                      textDecoration = "Bold",
-                                      fontSize = 14L,
-                                      fontColour = "black",
-                                      border = "TopBottomLeftRight")
+                                       halign = "center",
+                                       valign = "center",
+                                       textDecoration = "Bold",
+                                       fontSize = 14L,
+                                       fontColour = "black",
+                                       border = "TopBottomLeftRight")
 #' @noRd
 .body_style <- openxlsx::createStyle(halign = "left",
-                                    valign = "center",
-                                    fontSize = 12L)
+                                     valign = "center",
+                                     fontSize = 12L)

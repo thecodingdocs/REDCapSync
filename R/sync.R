@@ -247,8 +247,8 @@ sync_project_refresh <- function(project, refresh_records) {
     )
     colnames(x)[1L] <- id_col
     project$summary$all_records <- bind_rows(project$summary$all_records, x)
-    x <- order(project$summary$all_records[[id_col]], decreasing = TRUE)
-    project$summary$all_records <- project$summary$all_records[x, ]
+    new_order <- order(project$summary$all_records[[id_col]], decreasing = TRUE)
+    project$summary$all_records <- project$summary$all_records[new_order, ]
   }
   project$internals$last_data_update <- now_time()
   row_new <- which(project$summary$all_records[[id_col]] %in% records_received)

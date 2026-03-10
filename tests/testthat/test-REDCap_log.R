@@ -175,8 +175,8 @@ test_that("clean_redcap_log removes record_id column", {
   result <- clean_redcap_log(redcap_log)
   expect_false("record_id" %in% colnames(result))
 })
-# sort_redcap_log (Internal)
-test_that("sort_redcap_log works!", {
+# redcap_log_labeler (Internal)
+test_that("redcap_log_labeler works!", {
 })
 # analyze_log (Internal)
 test_that("analyze_log works!", {

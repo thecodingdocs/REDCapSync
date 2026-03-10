@@ -80,7 +80,7 @@ test_env_name <- function(x, max.chars = 26L, all_caps = FALSE) {
   !is.null(x)
 }
 #' @noRd
-test_unique_character <- function(x){
+test_unique_character <- function(x) {
   test_character(
     x,
     min.chars = 1L,

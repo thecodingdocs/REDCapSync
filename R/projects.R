@@ -23,9 +23,10 @@ get_projects <- function() {
       is_ok <- !is.null(projects)
     }
     if (!is_ok) {
-      cli_alert_warning(
-        paste0("You have projects cached. But due to a version change or other",
-               " issue, it has to be reset. Use `setup_project(...)`"))
+      warning_message <- paste0("You have projects cached, but due to a ",
+                                "version change or other issue, it has to be ",
+                                "cleared. Use `setup_project(...)`")
+      cli_alert_warning(warning_message)
       cache_clear()
     }
   }
@@ -105,7 +106,8 @@ get_projects <- function() {
 #' @noRd
 save_projects_to_cache <- function(projects, silent = TRUE) {
   assert_project_details(projects)
-  projects <- projects[order(projects$project_name), ]
+  new_order <- order(projects$project_name)
+  projects <- projects[new_order, ]
   saveRDS(projects, file = cache_path() |> file.path("projects.rds"))
   pkg_name <- "REDCapSync"
   if (!silent) {
@@ -195,8 +197,8 @@ extract_project_details <- function(project) {
 add_project_details_to_cache <- function(project_details) {
   assert_project_details(project_details, nrows = 1L)
   projects <- get_projects()
-  projects <- projects[
-    which(projects$project_name != project_details$project_name), ]
+  proj_row_diff <- which(projects$project_name != project_details$project_name)
+  projects <- projects[proj_row_diff, ]
   bad_row <- NULL
   if (!is.na(project_details$project_id)) {
     bad_row <- which(

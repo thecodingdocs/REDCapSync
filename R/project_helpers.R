@@ -118,14 +118,11 @@ normalize_redcap <- function(denormalized, project, labelled) {
   }
   is_longitudinal <- project$metadata$is_longitudinal
   denormalized <- all_character_cols(denormalized)
-  add_ons <- c(
-    project$metadata$id_col,
-    "arm_number",
-    "event_name",
-    "redcap_event_name",
-    "redcap_repeat_instrument",
-    "redcap_repeat_instance"
-  )
+  add_ons <- c(project$metadata$id_col,
+               "arm_number",
+               "event_name",
+               "redcap_event_name",
+               .redcap_repeat_cols)
   if (is_longitudinal) {
     denormalized$id_temp <- seq_len(nrow(denormalized))
     denormalized <- merge(
@@ -138,12 +135,14 @@ normalize_redcap <- function(denormalized, project, labelled) {
     )
     add_ons <- add_ons[which(add_ons %in% colnames(denormalized))]
     col_names <- c(add_ons, colnames(denormalized)) |> unique()
-    denormalized <- denormalized[order(denormalized$id_temp), col_names |>
-                                   lapply(function(c) {
-                                     which(colnames(denormalized) == c)
-                                   }) |>
-                                   unlist() |>
-                                   as.integer()]
+    new_order <- order(denormalized$id_temp)
+    cols_to_keep <- col_names |>
+      lapply(function(c) {
+        which(colnames(denormalized) == c)
+      }) |>
+      unlist() |>
+      as.integer()
+    denormalized <- denormalized[new_order, cols_to_keep]
     denormalized$id_temp <- NULL
   }
   add_ons <- add_ons[which(add_ons %in% colnames(denormalized))]
@@ -164,11 +163,7 @@ normalize_redcap <- function(denormalized, project, labelled) {
         fields$field_name != project$metadata$id_col
     )]
     if (length(form_field_names) == 0L) {
-      cli_alert_danger(paste0(
-        "You might not have access to ",
-        form_name,
-        ". Unable to obtain."
-      ))
+      cli_alert_danger("Possibly no access to '{form_name}'. Unable to obtain.")
     }
     # consider message for what vars are missing with vec1_not_in_vec2
     row_index <- NULL
@@ -181,44 +176,33 @@ normalize_redcap <- function(denormalized, project, labelled) {
           stop("redcap_repeat_instrument not in colnames(denormalized)")
         }
         if (is_longitudinal) {
-          row_index <- which(
-            denormalized$redcap_repeat_instrument == form_name |
-              denormalized$redcap_event_name %in%
-              event_mapping$unique_event_name[
-                which(!event_mapping$repeating &
-                        event_mapping$form == form_name)]
-          )
+          has_form_event <- event_mapping$form == form_name
+          no_rep_form_event <- which(!event_mapping$repeating & has_form_event)
+          no_rep_event <- event_mapping$unique_event_name[no_rep_form_event]
+          form_no_rep_event <- denormalized$redcap_event_name %in% no_rep_event
+          form_has_rep <- denormalized$redcap_repeat_instrument == form_name
+          row_index <- which(form_has_rep | form_no_rep_event)
         }
         if (!is_longitudinal) {
-          row_index <-
-            which(denormalized$redcap_repeat_instrument == form_name)
+          row_index <- which(denormalized$redcap_repeat_instrument == form_name)
         }
       }
       if (!is_repeating_form) {
-        add_ons_x <- add_ons_x[which(!add_ons_x %in% c(
-          "redcap_repeat_instrument",
-          "redcap_repeat_instance"
-        ))]
+        add_ons_x <- add_ons_x[which(!add_ons_x %in% .redcap_repeat_cols)]
       }
-      if (!is_repeating_form &&
-          is_longitudinal && has_repeating_forms) {
-        row_index <- which(
-          is.na(denormalized$redcap_repeat_instrument) &
-            denormalized$redcap_event_name %in%
-            unique(event_mapping$unique_event_name[
-              which(event_mapping$form == form_name)])
-        )
+      if (!is_repeating_form && is_longitudinal && has_repeating_forms) {
+        form_event_rows <- which(event_mapping$form == form_name)
+        event_forms <- unique(event_mapping$unique_event_name[form_event_rows])
+        has_event_name <- denormalized$redcap_event_name %in% event_forms
+        has_rep_instrument <- is.na(denormalized$redcap_repeat_instrument)
+        row_index <- which(has_rep_instrument & has_event_name)
       }
-      if (!is_repeating_form &&
-          is_longitudinal && !has_repeating_forms) {
-        row_index <- which(
-          denormalized$redcap_event_name %in%
-            unique(event_mapping$unique_event_name[
-              which(event_mapping$form == form_name)])
-        )
+      if (!is_repeating_form && is_longitudinal && !has_repeating_forms) {
+        form_event_rows <- which(event_mapping$form == form_name)
+        event_forms <- unique(event_mapping$unique_event_name[form_event_rows])
+        row_index <- which(denormalized$redcap_event_name %in% event_forms)
       }
-      if (!is_repeating_form &&
-          !is_longitudinal && has_repeating_forms) {
+      if (!is_repeating_form && !is_longitudinal && has_repeating_forms) {
         row_index <- which(is.na(denormalized$redcap_repeat_instrument))
       }
     }
@@ -226,8 +210,7 @@ normalize_redcap <- function(denormalized, project, labelled) {
       col_names <- unique(c(add_ons_x, form_field_names))
       raw_subset <- denormalized[row_index, col_names]
       if (labelled) {
-        raw_subset <- raw_to_labelled_form(
-          form = raw_subset, project = project)
+        raw_subset <- raw_to_labelled_form(form = raw_subset, project = project)
       }
       form_list[[form_name]] <- raw_subset
     }
@@ -252,7 +235,7 @@ get_min_dates <- function(data_list) {
   if (!is_something(data_forms)) {
     return(empty)
   }
-  date_vector <- fields$field_name[which(fields$field_type_R == "date")]
+  date_vector <- fields$field_name[which(fields$field_type_r == "date")]
   all_dates <- list()
   # Loop through each form in the list
   for (form in data_forms) {
@@ -335,8 +318,8 @@ get_record_url <- function(project,
     }
     link <- paste0(link, "&page=", page)
     if (!missing(instance)) {
-      repeating_form_names <- project$metadata$forms$form_name[
-        which(project$metadata$forms$repeating)]
+      rep_rows <- which(project$metadata$forms$repeating)
+      repeating_form_names <- project$metadata$forms$form_name[rep_rows]
       if (!page %in% repeating_form_names) {
         stop(
           "If you provide an instance, it has to be a repeating instrument: ",
@@ -414,10 +397,10 @@ get_identifier_fields <- function(data_list,
   id_fields
 }
 #' @noRd
-field_names_to_form_names <- function(project,
-                                      field_names,
-                                      transform = FALSE,
-                                      strict = FALSE) {
+field_to_form_names <- function(project,
+                                field_names,
+                                transform = FALSE,
+                                strict = FALSE) {
   metadata <- project$metadata
   if (transform) {
     metadata <- project$transformation$metadata
@@ -510,9 +493,9 @@ field_names_metadata <- function(project, field_names, col_names) {
 }
 #' @noRd
 filter_fields_from_form <- function(form, project) {
-  forms <- field_names_to_form_names(project = project,
-                                     field_names = colnames(form),
-                                     strict = TRUE)
+  forms <- field_to_form_names(project = project,
+                               field_names = colnames(form),
+                               strict = TRUE)
   repeating_form_rows <- which(project$metadata$forms$repeating)
   repeating_forms <- project$metadata$forms$form_name[repeating_form_rows]
   if (any(forms %in% repeating_forms) && length(forms) > 1L) {
@@ -555,8 +538,8 @@ extract_project_records <- function(data_list) {
       stringsAsFactors = FALSE
     )
     rownames(all_records) <- NULL
-    colnames(all_records)[
-      which(colnames(all_records) == "record_id_col")] <- id_col
+    id_col_match <- which(colnames(all_records) == "record_id_col")
+    colnames(all_records)[id_col_match] <- id_col
   }
   all_records
 }
@@ -577,3 +560,4 @@ extract_project_records <- function(data_list) {
   "data_quality",
   "identifiers"
 )
+.redcap_repeat_cols <- c("redcap_repeat_instrument", "redcap_repeat_instance")

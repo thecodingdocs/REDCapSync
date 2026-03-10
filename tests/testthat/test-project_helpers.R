@@ -162,8 +162,8 @@ test_that("extract_values_from_form_list works!", {
 # field_names_metadata (Internal)
 test_that("field_names_metadata works!", {
 })
-# field_names_to_form_names (Internal)
-test_that("field_names_to_form_names works!", {
+# field_to_form_names (Internal)
+test_that("field_to_form_names works!", {
 })
 # filter_fields_from_form (Internal)
 test_that("filter_fields_from_form works!", {
@@ -239,7 +239,7 @@ test_that("get_min_dates works!", {
     metadata = list(
       fields = data.frame(
         field_name = c("record_id", "date1", "date2"),
-        field_type_R = c(NA, "date", "date"),
+        field_type_r = c(NA, "date", "date"),
         stringsAsFactors = FALSE
       ),
       form_key_cols = list(record_id = "record_id")

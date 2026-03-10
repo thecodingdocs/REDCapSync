@@ -61,6 +61,9 @@ test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
   raw_mismatch <- raw
   raw_mismatch$var_branching[3L] <- "Random Thing"
   expect_warning(raw_to_labelled_form(raw_mismatch, project), error_message)
+  project$metadata$has_coding_conflicts <- TRUE
+  error_text <- "you have a coding conflic"
+  expect_error(raw_to_labelled_form(raw_mismatch, project), error_text)
 })
 # normalize_redcap (Internal)
 test_that("normalize_redcap works with classic project", {

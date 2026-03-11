@@ -3,21 +3,19 @@
 #' [R6][R6::R6Class] project object for [REDCapSync]
 #' This is the main class for managing REDCap data, metadata, and sync
 #' operations. Users should construct objects using [setup_project()]. To reopen
-#' an existing project, use [load_project()] or explore offline examples using
-#' [load_test_project()].
+#' an existing project, use [load_project()] or explore offline toy examples
+#' using [load_test_project()].
 #' @param summary_name Character. The name of the configured summary from which
 #' to generate the summary. *If you provide `summary_name` all other parameters
 #' are inherited according to what was set with `add_project_summary`.
 #' @param transformation_type Character scalar. How to transform data for the
-#' summary.
-#' Default is "default".
-#' Other options are "none", "flat", "merge_non_repeating".
-#' "default" first merges non-repeating and if there are repeating forms, it
-#' merges non-repeating variables to the right of repeating instruments.
-#' "flat" is one-record, one-row, even if there are repeating forms.
-#' "none" does not transform anything.
-#' "merge_non_repeating" still merges all non-repeating instruments but
-#' does not merge them to repeating instruments.
+#' summary. Default is "default". Other options are "none", "flat",
+#' "merge_non_repeating". "default" first merges non-repeating and if there are
+#' repeating forms, it merges non-repeating variables to the right of repeating
+#' instruments. "flat" is one-record, one-row, even if there are repeating
+#' forms. "none" does not transform anything. "merge_non_repeating" still merges
+#' all non-repeating instruments but does not merge them to repeating
+#' instruments.
 #' @param merge_form_name A character string representing the name of the merged
 #' form. Default is "merged".
 #' @param filter_field Character. The name of the field in the database to
@@ -115,7 +113,15 @@
 #' @param to_be_uploaded data.frame in raw coded form to upload.
 #' @param batch_size Integer. Maximum number of rows per API write batch when
 #' uploading to REDCap. Default is 500L.
-#' @return An R6ClassGenerator
+#' @examples
+#' # for real projects use load_project instead of load_test_project
+#' project <- load_test_project("TEST_CLASSIC")
+#'
+#' @seealso
+#' \link{setup_project} for initializing the `project` object.'
+#' @return
+#' An R6ClassGenerator which is used internally to create or load a
+#' project object for the user
 #' @keywords internal
 REDCapSyncProject <- R6Class(
   "REDCapSyncProject",
@@ -123,7 +129,7 @@ REDCapSyncProject <- R6Class(
   #' Active binding are read-only
   active = list(
     #' @field project_name Read-only character string of project_name as
-    #' assigned from [setup_project].
+    #' assigned with [setup_project].
     project_name = function(value) {
       if (!missing(value)) {
         message(
@@ -132,7 +138,7 @@ REDCapSyncProject <- R6Class(
       }
       private$project$project_name
     },
-    #' @field dir_path Read-only directory path assigned from [setup_project].
+    #' @field dir_path Read-only directory path assigned with [setup_project].
     dir_path = function(value) {
       if (!missing(value)) {
         message(
@@ -212,7 +218,9 @@ REDCapSyncProject <- R6Class(
       private$project <- project
       invisible(self)
     },
-    #' @description Print project metadata
+    #' @description Print some key project info
+    #' @examples
+    #' project$info()
     info = function() {
       project_name <- private$project$project_name
       project_id <- private$project$redcap$project_id
@@ -229,12 +237,11 @@ REDCapSyncProject <- R6Class(
     },
     #' @description
     #' Updates the REDCap data for (`project` object) by checking REDCap log for
-    #'  changes. Sync is performed according to the `sync_frequency` set in
-    #'  [setup_project()] by default. Use `hard_check` to force a check, or `
-    #'  hard_reset` to force a complete refresh.
-    #' @return Messages for confirmation.
-    #' @seealso
-    #' \link{setup_project} for initializing the `project` object.'
+    #' changes. Sync is performed according to the `sync_frequency` set in
+    #' [setup_project()] by default. Use `hard_check` to force a check, or `
+    #' hard_reset` to force a complete refresh.
+    #' @examples
+    #' project$sync()
     sync = function(summarize = TRUE,
                     save_to_dir = TRUE,
                     hard_check = FALSE,
@@ -465,9 +472,13 @@ REDCapSyncProject <- R6Class(
         cli_alert_info("TEST projects do not link to the web!")
         return(invisible(self))
       }
-      get_project_url(private$project,
-                      link_type = link_type,
-                      open_browser = open_browser)
+      the_link <- get_project_url(private$project,
+                                  link_type = link_type,
+                                  open_browser = open_browser)
+      if (!open_browser) {
+        return(the_link)
+      }
+      invisible(self)
     },
     #' @description
     #' This will only overwrite and new data. It will not directly delete any
@@ -487,7 +498,7 @@ REDCapSyncProject <- R6Class(
         }
         if (!is_something(to_be_uploaded)) {
           cli_alert_warning("Nothing to upload...")
-          return(invisible(FALSE))
+          return(invisible(self))
         }
         to_be_uploaded <- list(upload = to_be_uploaded)
       }
@@ -512,7 +523,7 @@ REDCapSyncProject <- R6Class(
         project = private$project,
         refresh_records = refresh_records
       )
-      invisible(TRUE) # FYI cannot chain because not self
+      invisible(invisible(self))
     }
   ),
   private = list(

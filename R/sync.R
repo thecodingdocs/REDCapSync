@@ -14,7 +14,16 @@
 #' `FALSE`.
 #' @param project_names character vector of project project_names previously
 #' setup. If NULL, will get all from `get_projects()`
-#' @return invisible return of last project
+#' @examples
+#' \dontrun{
+#' # if you setup 3 projects "ONE", "TWO", "THREE" using [setup_project()]...
+#' sync() # will check all three projects for updates if due for sync
+#' sync("TWO") # will only check and sync project TWO
+#' project <- sync("TWO") # can also be used for invisible return ...
+#' sync(c("ONE","THREE")) # will only check and sync projects ONE and THREE
+#' project <- sync(c("ONE","THREE")) # invisible return of THREE ...
+#' }
+#' @return Invisibly returns last project object (R6 [REDCapSyncProject] class).
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.
 #' @export

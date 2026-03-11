@@ -24,7 +24,7 @@ parameter from \code{setup_project()})}
 \code{FALSE}.}
 }
 \value{
-invisible return of last project
+Invisibly returns last project object (R6 \link{REDCapSyncProject} class).
 }
 \description{
 Syncs with REDCap via \code{project} object that user defined with
@@ -35,6 +35,16 @@ Syncs all projects by default but can be used to hands-free sync one or
 defined set projects. This is not intended to return project object. User
 should use \code{load_project("project_name")}. However, by default will invisibly
 return the last project in the set of project_names.
+}
+\examples{
+\dontrun{
+# if you setup 3 projects "ONE", "TWO", "THREE" using [setup_project()]...
+sync() # will check all three projects for updates if due for sync
+sync("TWO") # will only check and sync project TWO
+project <- sync("TWO") # can also be used for invisible return ...
+sync(c("ONE","THREE")) # will only check and sync projects ONE and THREE
+project <- sync(c("ONE","THREE")) # invisible return of THREE ...
+}
 }
 \seealso{
 \link{setup_project} for initializing the \code{project} object.

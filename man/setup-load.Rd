@@ -124,7 +124,7 @@ will add default transformation}
 summaries}
 }
 \value{
-REDCapSync \code{project} list object.
+R6 project object with \link{REDCapSyncProject} class.
 }
 \description{
 Setup or Load the \code{project} object for pipeline.
@@ -149,15 +149,14 @@ already run \code{setup_project} in the past with an established directory.
 is optional for this function but can be used if you relocated the directory.
 }
 \examples{
-\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
+\dontrun{
 # Initialize the project object with the REDCap API token and URL
 project <- setup_project(
   project_name = "TEST",
   dir_path = "path/to/secure/file/storage",
   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 )
-project <- load_project("TEST")
-\dontshow{\}) # examplesIf}
+}
 }
 \seealso{
 \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from

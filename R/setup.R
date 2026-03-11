@@ -70,19 +70,20 @@
 #' @param batch_size_upload Integer. Number of records to process in each batch.
 #' Default is `500`.
 #' @inheritParams REDCapR::redcap_read
-#' @return REDCapSync `project` list object.
 #' @seealso
 #' \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from
 #' the directory cache.
-#' @examplesIf FALSE
+#' @examples
+#' \dontrun{
 #' # Initialize the project object with the REDCap API token and URL
 #' project <- setup_project(
 #'   project_name = "TEST",
 #'   dir_path = "path/to/secure/file/storage",
 #'   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 #' )
-#' project <- load_project("TEST")
+#' }
 #' @family project object
+#' @return R6 project object with [REDCapSyncProject] class.
 #' @export
 setup_project <- function(project_name,
                           dir_path,
@@ -312,7 +313,7 @@ setup_project <- function(project_name,
   project$internals$add_default_fields <- add_default_fields
   project$internals$add_default_transformation <- add_default_transformation
   project$internals$add_default_summaries <- add_default_summaries
-  #test theese
+  #test these
   project$links$redcap_base <- redcap_uri |> dirname() |> paste0("/")
   project$internals$is_blank <- FALSE
   project$data <- all_character_cols_list(project$data)

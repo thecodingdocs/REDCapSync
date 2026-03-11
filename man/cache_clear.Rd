@@ -11,7 +11,7 @@ cache_clear(project_names = NULL)
 setup. If NULL, will get all from \code{get_projects()}}
 }
 \value{
-message of outcome
+Message of outcome and invisible NULL.
 }
 \description{
 Finds the location of the cache established by \code{\link[hoardr]{hoard}}

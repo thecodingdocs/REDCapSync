@@ -269,16 +269,12 @@ get_min_dates <- function(data_list) {
 get_project_url <- function(project,
                             link_type = "home",
                             open_browser = TRUE) {
-  assert_choice(
-    link_type,
-    .link_types
-  )
+  assert_choice(link_type, .link_types)
   the_link <- project$links[[paste0("redcap_", link_type)]]
   if (open_browser) {
     browseURL(the_link)
-    return(invisible())
   }
-  the_link
+  return(invisible(the_link))
 }
 #' @noRd
 get_record_url <- function(project,
@@ -331,9 +327,8 @@ get_record_url <- function(project,
   }
   if (open_browser) {
     browseURL(link)
-    return(invisible())
   }
-  link
+  return(invisible(link))
 }
 #' @noRd
 get_key_col_list <- function(data_list) {

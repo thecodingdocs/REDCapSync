@@ -4,14 +4,32 @@
 \alias{REDCapSyncProject}
 \title{REDCapSync Encapsulated Project Object}
 \value{
-An R6ClassGenerator
+An R6ClassGenerator which is used internally to create or load a
+project object for the user
 }
 \description{
 \link[R6:R6Class]{R6} project object for \link{REDCapSync}
 This is the main class for managing REDCap data, metadata, and sync
 operations. Users should construct objects using \code{\link[=setup_project]{setup_project()}}. To reopen
-an existing project, use \code{\link[=load_project]{load_project()}} or explore offline examples using
-\code{\link[=load_test_project]{load_test_project()}}.
+an existing project, use \code{\link[=load_project]{load_project()}} or explore offline toy examples
+using \code{\link[=load_test_project]{load_test_project()}}.
+}
+\examples{
+# for real projects use load_project instead of load_test_project
+project <- load_test_project("TEST_CLASSIC")
+
+
+## ------------------------------------------------
+## Method `REDCapSyncProject$info`
+## ------------------------------------------------
+
+project$info()
+
+## ------------------------------------------------
+## Method `REDCapSyncProject$sync`
+## ------------------------------------------------
+
+project$sync()
 }
 \seealso{
 \link{setup_project} for initializing the \code{project} object.'
@@ -21,9 +39,9 @@ an existing project, use \code{\link[=load_project]{load_project()}} or explore 
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{project_name}}{Read-only character string of project_name as
-assigned from \link{setup_project}.}
+assigned with \link{setup_project}.}
 
-\item{\code{dir_path}}{Read-only directory path assigned from \link{setup_project}.}
+\item{\code{dir_path}}{Read-only directory path assigned with \link{setup_project}.}
 
 \item{\code{data}}{Read-only named list where each name is an instrument name.
 See public methods for \link{REDCapSyncProject}.}
@@ -83,9 +101,17 @@ methods will be accessible to any user.
 \if{html}{\out{<a id="method-REDCapSyncProject-info"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-info}{}}}
 \subsection{Method \code{info()}}{
-Print project metadata
+Print some key project info
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$info()}\if{html}{\out{</div>}}
+}
+
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{project$info()
+}
+\if{html}{\out{</div>}}
+
 }
 
 }
@@ -122,9 +148,14 @@ with the same name. Default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Returns}{
-Messages for confirmation.
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{project$sync()
 }
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSyncProject-add_summary"></a>}}
@@ -172,15 +203,13 @@ to generate the summary. *If you provide \code{summary_name} all other parameter
 are inherited according to what was set with \code{add_project_summary}.}
 
 \item{\code{transformation_type}}{Character scalar. How to transform data for the
-summary.
-Default is "default".
-Other options are "none", "flat", "merge_non_repeating".
-"default" first merges non-repeating and if there are repeating forms, it
-merges non-repeating variables to the right of repeating instruments.
-"flat" is one-record, one-row, even if there are repeating forms.
-"none" does not transform anything.
-"merge_non_repeating" still merges all non-repeating instruments but
-does not merge them to repeating instruments.}
+summary. Default is "default". Other options are "none", "flat",
+"merge_non_repeating". "default" first merges non-repeating and if there are
+repeating forms, it merges non-repeating variables to the right of repeating
+instruments. "flat" is one-record, one-row, even if there are repeating
+forms. "none" does not transform anything. "merge_non_repeating" still merges
+all non-repeating instruments but does not merge them to repeating
+instruments.}
 
 \item{\code{merge_form_name}}{A character string representing the name of the merged
 form. Default is "merged".}
@@ -327,15 +356,13 @@ are inherited according to what was set with \code{add_project_summary}.}
 \item{\code{envir}}{environment variable}
 
 \item{\code{transformation_type}}{Character scalar. How to transform data for the
-summary.
-Default is "default".
-Other options are "none", "flat", "merge_non_repeating".
-"default" first merges non-repeating and if there are repeating forms, it
-merges non-repeating variables to the right of repeating instruments.
-"flat" is one-record, one-row, even if there are repeating forms.
-"none" does not transform anything.
-"merge_non_repeating" still merges all non-repeating instruments but
-does not merge them to repeating instruments.}
+summary. Default is "default". Other options are "none", "flat",
+"merge_non_repeating". "default" first merges non-repeating and if there are
+repeating forms, it merges non-repeating variables to the right of repeating
+instruments. "flat" is one-record, one-row, even if there are repeating
+forms. "none" does not transform anything. "merge_non_repeating" still merges
+all non-repeating instruments but does not merge them to repeating
+instruments.}
 
 \item{\code{merge_form_name}}{A character string representing the name of the merged
 form. Default is "merged".}

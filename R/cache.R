@@ -16,7 +16,7 @@
 #' @family Cache Functions
 #' @keywords Cache
 #' @seealso \code{vignette("Cache", package = "REDCapSync")}
-#' @return message of outcome
+#' @return Message of outcome and invisible NULL.
 #' @export
 cache_clear <- function(project_names = NULL) {
   cache <- get_cache()
@@ -155,6 +155,8 @@ sweep_dirs_for_cache <- function(project_names = NULL) {
         project_list[[project_name]] <- loaded_cache
       }
     }
+    rownames(from_cache) <- NULL
+    rownames(to_cache) <- NULL
     if (!is.null(to_cache) && !identical(from_cache, to_cache)) {
       if (!is.null(from_cache)) {
         to_cache$dir_path <- from_cache$dir_path

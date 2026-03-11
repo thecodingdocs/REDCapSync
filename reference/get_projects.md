@@ -1,9 +1,10 @@
 # Get your REDCap projects used by REDCapSync
 
-Everytime a setup or update is performed REDCapSync stores the most
-basic information about that project to the cache so the user has a
-running log of everywhere there project information is stored, which can
-be used to find, move, edit, delete that data.
+Everytime a project is synced, basic project information is saved to the
+package user cache so that
+[load_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+and [sync](https://thecodingdocs.github.io/REDCapSync/reference/sync.md)
+work across R sessions.
 
 ## Usage
 
@@ -14,6 +15,31 @@ get_projects()
 ## Value
 
 data.frame of projects from the cache
+
+data.frame of cached projects
+
+## Details
+
+No direct project data is stored in the cache. Notably, tokens and data
+are not stored here. The key variables stored in the cache are...
+
+- `project_name` - unique identifier for REDCapSync package
+
+- `redcap_uri` - server location
+
+- `token_name` - where to find token environment with
+  [`Sys.getenv()`](https://rdrr.io/r/base/Sys.getenv.html)
+
+- `dir_path` - where to saved project and associated files locally
+
+- `project_id` - obtained from API call and "locks-in" the connection
+
+- `redcap_version` - obtained from API call and affects links
+
+- `last_sync` and `sync_frequency` - informs REDCap sync of when to
+  update
+
+- other variables from project info and some internal package mechanics
 
 ## See also
 

@@ -95,7 +95,7 @@ parameter from <code><a href="setup-load.html">setup_project()</a></code>)</p></
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>invisible return of last project</p>
+    <p>Invisibly returns last project object (R6 <a href="REDCapSyncProject.html">REDCapSyncProject</a> class).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -109,6 +109,18 @@ return the last project in the set of project_names.</p>
     <div class="dont-index"><p><a href="setup-load.html">setup_project</a> for initializing the <code>project</code> object.</p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># if you setup 3 projects "ONE", "TWO", "THREE" using [setup_project()]...</span></span></span>
+<span class="r-in"><span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span> <span class="co"># will check all three projects for updates if due for sync</span></span></span>
+<span class="r-in"><span><span class="fu">sync</span><span class="op">(</span><span class="st">"TWO"</span><span class="op">)</span> <span class="co"># will only check and sync project TWO</span></span></span>
+<span class="r-in"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu">sync</span><span class="op">(</span><span class="st">"TWO"</span><span class="op">)</span> <span class="co"># can also be used for invisible return ...</span></span></span>
+<span class="r-in"><span><span class="fu">sync</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ONE"</span>,<span class="st">"THREE"</span><span class="op">)</span><span class="op">)</span> <span class="co"># will only check and sync projects ONE and THREE</span></span></span>
+<span class="r-in"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu">sync</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ONE"</span>,<span class="st">"THREE"</span><span class="op">)</span><span class="op">)</span> <span class="co"># invisible return of THREE ...</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

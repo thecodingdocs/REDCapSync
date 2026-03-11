@@ -37,7 +37,9 @@ sync(
 
 ## Value
 
-invisible return of last project
+Invisibly returns last project object (R6
+[REDCapSyncProject](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSyncProject.md)
+class).
 
 ## Details
 
@@ -50,3 +52,16 @@ invisibly return the last project in the set of project_names.
 
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
 for initializing the `project` object.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# if you setup 3 projects "ONE", "TWO", "THREE" using [setup_project()]...
+sync() # will check all three projects for updates if due for sync
+sync("TWO") # will only check and sync project TWO
+project <- sync("TWO") # can also be used for invisible return ...
+sync(c("ONE","THREE")) # will only check and sync projects ONE and THREE
+project <- sync(c("ONE","THREE")) # invisible return of THREE ...
+} # }
+```

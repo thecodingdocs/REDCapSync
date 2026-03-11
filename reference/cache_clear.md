@@ -21,7 +21,7 @@ cache_clear(project_names = NULL)
 
 ## Value
 
-message of outcome
+Message of outcome and invisible NULL.
 
 ## Details
 

@@ -5,15 +5,9 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Get your REDCap projects used by REDCapSync — get_projects"><meta name="description" content="Everytime a setup or update is performed REDCapSync stores the most basic
-information
-about that project to the cache so the user has a running log of everywhere
-there project information is stored,
-which can be used to find, move, edit, delete that data."><meta property="og:description" content="Everytime a setup or update is performed REDCapSync stores the most basic
-information
-about that project to the cache so the user has a running log of everywhere
-there project information is stored,
-which can be used to find, move, edit, delete that data."><meta property="og:image" content="https://thecodingdocs.github.io/REDCapSync/reference/figures/logo.png"><meta property="og:image:alt" content="Brandon Rose"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@brosemdmph"><meta name="twitter:site" content="@thecodingdocs"></head><body>
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Get your REDCap projects used by REDCapSync — get_projects"><meta name="description" content="Everytime a project is synced, basic project information is saved to the
+package user cache so that load_project and sync work across R sessions."><meta property="og:description" content="Everytime a project is synced, basic project information is saved to the
+package user cache so that load_project and sync work across R sessions."><meta property="og:image" content="https://thecodingdocs.github.io/REDCapSync/reference/figures/logo.png"><meta property="og:image:alt" content="Brandon Rose"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@brosemdmph"><meta name="twitter:site" content="@thecodingdocs"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -62,11 +56,8 @@ which can be used to find, move, edit, delete that data."><meta property="og:ima
     </div>
 
     <div class="ref-description section level2">
-    <p>Everytime a setup or update is performed REDCapSync stores the most basic
-information
-about that project to the cache so the user has a running log of everywhere
-there project information is stored,
-which can be used to find, move, edit, delete that data.</p>
+    <p>Everytime a project is synced, basic project information is saved to the
+package user cache so that <a href="setup-load.html">load_project</a> and <a href="sync.html">sync</a> work across R sessions.</p>
     </div>
 
     <div class="section level2">
@@ -77,7 +68,20 @@ which can be used to find, move, edit, delete that data.</p>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>data.frame of projects from the cache</p>
+<p>data.frame of cached projects</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>No direct project data is stored in the cache. Notably, tokens and data are
+not stored here. The key variables stored in the cache are...</p><ul><li><p><code>project_name</code> - unique identifier for REDCapSync package</p></li>
+<li><p><code>redcap_uri</code> - server location</p></li>
+<li><p><code>token_name</code> - where to find token environment with <code><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv()</a></code></p></li>
+<li><p><code>dir_path</code> - where to saved project and associated files locally</p></li>
+<li><p><code>project_id</code> - obtained from API call and "locks-in" the connection</p></li>
+<li><p><code>redcap_version</code> - obtained from API call and affects links</p></li>
+<li><p><code>last_sync</code> and <code>sync_frequency</code> - informs REDCap sync of when to update</p></li>
+<li><p>other variables from project info and some internal package mechanics</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="../articles/Cache.html">vignette("Cache", package = "REDCapSync")</a></code></p>

@@ -168,7 +168,9 @@ load_test_project(project_name, dir_path)
 
 ## Value
 
-REDCapSync `project` list object.
+R6 project object with
+[REDCapSyncProject](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSyncProject.md)
+class.
 
 ## Details
 
@@ -197,13 +199,12 @@ for retrieving a list of projects from the directory cache.
 ## Examples
 
 ``` r
-if (FALSE) {
+if (FALSE) { # \dontrun{
 # Initialize the project object with the REDCap API token and URL
 project <- setup_project(
   project_name = "TEST",
   dir_path = "path/to/secure/file/storage",
   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 )
-project <- load_project("TEST")
-}
+} # }
 ```

@@ -23,7 +23,8 @@ visualization, functions, shiny apps, and more!
 The aims of [`REDCapSync`](https://thecodingdocs.github.io/REDCapSync)
 are to…
 
-1.  Encapsulate the REDCap API into one R6 object to streamline use.
+1.  Encapsulate the REDCap API into one standardized object to
+    streamline use.
 2.  Automate common tasks such as cleaning, deidentification and merges.
 3.  Automate distribution of user-defined Excel datasets to local/cloud
     storage for one or many REDCap projects.

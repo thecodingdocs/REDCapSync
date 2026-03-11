@@ -7,12 +7,13 @@ operations. Users should construct objects using
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 To reopen an existing project, use
 [`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-or explore offline examples using
+or explore offline toy examples using
 [`load_test_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 
 ## Value
 
-An R6ClassGenerator
+An R6ClassGenerator which is used internally to create or load a project
+object for the user
 
 ## See also
 
@@ -23,12 +24,12 @@ for initializing the `project` object.'
 
 - `project_name`:
 
-  Read-only character string of project_name as assigned from
+  Read-only character string of project_name as assigned with
   [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 
 - `dir_path`:
 
-  Read-only directory path assigned from
+  Read-only directory path assigned with
   [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 
 - `data`:
@@ -106,11 +107,15 @@ The remain methods will be accessible to any user.
 
 ### Method `info()`
 
-Print project metadata
+Print some key project info
 
 #### Usage
 
     REDCapSyncProject$info()
+
+#### Examples
+
+    project$info()
 
 ------------------------------------------------------------------------
 
@@ -153,9 +158,9 @@ a complete refresh.
   Logical. If `TRUE`, overwrite existing summary files with the same
   name. Default is `FALSE`.
 
-#### Returns
+#### Examples
 
-Messages for confirmation.
+    project$sync()
 
 ------------------------------------------------------------------------
 
@@ -717,3 +722,32 @@ an issue. Missing rows and columns are allowed!
 
   Integer. Maximum number of rows per API write batch when uploading to
   REDCap. Default is 500L.
+
+## Examples
+
+``` r
+# for real projects use load_project instead of load_test_project
+project <- load_test_project("TEST_CLASSIC")
+#> ✔ Loaded TEST project TEST_CLASSIC!
+#> ! Does not actually communicate with any REDCap API
+
+
+## ------------------------------------------------
+## Method `REDCapSyncProject$info`
+## ------------------------------------------------
+
+project$info()
+#> ℹ Project Name: TEST_CLASSIC
+#> ℹ PID: 12341
+#> ℹ Token Name: REDCAPSYNC_TEST_CLASSIC
+#> ℹ Last Update: 2026-02-25 13:47:32.713743
+#> ℹ REDCap Link: <https://redcap.fake.edu/redcap_v16.1.1/index.php?pid=12341>
+#> ℹ Directory: fake/path
+
+## ------------------------------------------------
+## Method `REDCapSyncProject$sync`
+## ------------------------------------------------
+
+project$sync()
+#> ℹ TEST projects do not communicate with the API
+```

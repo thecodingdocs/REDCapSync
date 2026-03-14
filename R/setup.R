@@ -74,16 +74,15 @@
 #' \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from
 #' the directory cache.
 #' @examples
-#' \dontrun{
 #' # Initialize the project object with the REDCap API token and URL
 #' project <- setup_project(
 #'   project_name = "TEST",
 #'   dir_path = "path/to/secure/file/storage",
 #'   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 #' )
-#' }
+#'
 #' @family project object
-#' @return R6 project object with [REDCapSyncProject] class.
+#' @returns R6 project object with [REDCapSyncProject] class.
 #' @export
 setup_project <- function(project_name,
                           dir_path,

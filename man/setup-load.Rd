@@ -149,14 +149,13 @@ already run \code{setup_project} in the past with an established directory.
 is optional for this function but can be used if you relocated the directory.
 }
 \examples{
-\dontrun{
 # Initialize the project object with the REDCap API token and URL
 project <- setup_project(
   project_name = "TEST",
   dir_path = "path/to/secure/file/storage",
   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 )
-}
+
 }
 \seealso{
 \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from

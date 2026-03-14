@@ -119,7 +119,7 @@
 #'
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.'
-#' @return
+#' @returns
 #' An R6ClassGenerator which is used internally to create or load a
 #' project object for the user
 #' @keywords internal

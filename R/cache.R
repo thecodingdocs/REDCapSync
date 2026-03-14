@@ -16,7 +16,7 @@
 #' @family Cache Functions
 #' @keywords Cache
 #' @seealso \code{vignette("Cache", package = "REDCapSync")}
-#' @return Message of outcome and invisible NULL.
+#' @returns Message of outcome and invisible NULL.
 #' @export
 cache_clear <- function(project_names = NULL) {
   cache <- get_cache()

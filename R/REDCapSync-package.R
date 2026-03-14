@@ -35,6 +35,7 @@
 #' @importFrom checkmate expect_scalar_na
 #' @importFrom checkmate test_character
 #' @importFrom checkmate test_choice
+#' @importFrom checkmate test_class
 #' @importFrom checkmate test_directory_exists
 #' @importFrom checkmate test_file_exists
 #' @importFrom checkmate test_integerish

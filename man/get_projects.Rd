@@ -7,8 +7,6 @@
 get_projects()
 }
 \value{
-data.frame of projects from the cache
-
 data.frame of cached projects
 }
 \description{

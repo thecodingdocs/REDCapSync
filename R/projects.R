@@ -13,11 +13,10 @@
 #' * `redcap_version` - obtained from API call and affects links
 #' * `last_sync` and `sync_frequency` - informs REDCap sync of when to update
 #' * other variables from project info and some internal package mechanics
-#' @return data.frame of projects from the cache
 #' @family Cache Functions
 #' @keywords Cache
 #' @seealso \code{vignette("Cache", package = "REDCapSync")}
-#' @return data.frame of cached projects
+#' @returns data.frame of cached projects
 #' @export
 get_projects <- function() {
   does_exist <- cache_projects_exists()

@@ -1,4 +1,7 @@
 #' @title config
+#' @description
+#' configuration
+#'
 #' @keywords internal
 config <- list(
   allow.test.names = function(default = FALSE) {

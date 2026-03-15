@@ -11,6 +11,6 @@ An object of class \code{list} of length 6.
 config
 }
 \description{
-config
+configuration
 }
 \keyword{internal}

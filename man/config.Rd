@@ -3,7 +3,7 @@
 \docType{data}
 \name{config}
 \alias{config}
-\title{config}
+\title{Configuration}
 \format{
 An object of class \code{list} of length 6.
 }
@@ -11,6 +11,21 @@ An object of class \code{list} of length 6.
 config
 }
 \description{
-configuration
+Configuration can be set with options as well as environment variables
+
+allow.test.names is a logical for if \link{setup_project} will
+allow projects that start with "TEST_", which in general will be reserved
+for test fixture data. If the user wants to override this they can.
+
+show.api.messages is a logical for showing REDCapR messages
+
+verbose is logical for how many messages to see in general
+
+cache.dir is a character file path if user wants to override
+cache location.
+
+header.style is a openxlsx style for the xlsx headers
+
+header.style is a openxlsx style for the xlsx body
 }
 \keyword{internal}

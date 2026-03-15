@@ -78,8 +78,8 @@ test_that("rename_list_names_excel works!", {
   list_names_match <- unique_trimmed_strings(strings = list_names,
                                              max_length = 31L)
   expect_identical(rename_list_names_excel(list_names), list_names_match)
-  list_names <- list_names |>
-    append("long_var_name_that_is_not_unique_until_the_very_end2")
+  long_name <- "long_var_name_that_is_not_unique_until_the_very_end2"
+  list_names <- append(list_names, long_name)
   expect_false(anyDuplicated(list_names) > 0L)
   expect_message({
     new_names <- rename_list_names_excel(list_names)

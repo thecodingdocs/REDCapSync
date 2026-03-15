@@ -68,7 +68,7 @@ get_cache <- function() {
   cache
 }
 #' @noRd
-cache_path_default <- function () {
+cache_path_default <- function() {
   cache <- get_cache_default()
   path <- sanitize_path(cache$cache_path_get())
   path

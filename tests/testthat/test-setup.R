@@ -10,7 +10,7 @@ test_that("load_test_project works!", {
 test_that("setup_project creates a valid project object and valid directory", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
   withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
-  withr::local_options(c("redcapsync.config.allow.test.names" = TRUE))
+  withr::local_options(c(redcapsync.config.allow.test.names = TRUE))
   expect_error(assert_dir(dir_path = tempdir_test))
   project_name <- "TEST_CLASSIC"
   redcap_uri <- "https://redcap.miami.edu/api/"
@@ -63,7 +63,7 @@ test_that("setup_project creates a valid project object and valid directory", {
 test_that("setup_project checks exisiting dir", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
   withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
-  withr::local_options(c("redcapsync.config.allow.test.names" = TRUE))
+  withr::local_options(c(redcapsync.config.allow.test.names = TRUE))
   expect_error(assert_dir(dir_path = tempdir_test))
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal

@@ -20,7 +20,7 @@ test_that("get_redcap_log works on fixture!", {
 test_that("get_redcap_ works on real server, simple!", {
   skip_on_cran()
   skip_if_offline()
-  withr::local_options(c("redcapsync.config.allow.test.names" = TRUE))
+  withr::local_options(c(redcapsync.config.allow.test.names = TRUE))
   project_name <- "TEST_REDCAPR_SIMPLE"
   project <- real_test_project(project_name)$.internal
   expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0L)
@@ -54,7 +54,7 @@ test_that("get_redcap_ works on real server, simple!", {
 test_that("get_redcap_ works on real server, longitudinal!", {
   skip_on_cran()
   skip_if_offline()
-  withr::local_options(c("redcapsync.config.allow.test.names" = TRUE))
+  withr::local_options(c(redcapsync.config.allow.test.names = TRUE))
   project_name <- "TEST_REDCAPR_SIMPLE"
   project <- real_test_project(project_name)$.internal
   expect_data_frame(as.data.frame(project$metadata$forms), nrows = 0L)
@@ -268,7 +268,7 @@ test_that("get_redcap_data works with fixture data (repeating forms)", {
 test_that("get_redcap_denormalized works!", {
   skip_on_cran()
   skip_if_offline()
-  withr::local_options(c("redcapsync.config.allow.test.names" = TRUE))
+  withr::local_options(c(redcapsync.config.allow.test.names = TRUE))
   project <- real_test_project("TEST_REDCAPR_LONGITUDINAL")$.internal
   expect_data_frame(as.data.frame(project$data), nrows = 0L)
   project_data <- suppressWarnings({

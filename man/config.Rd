@@ -5,7 +5,7 @@
 \alias{config}
 \title{config}
 \format{
-An object of class \code{list} of length 5.
+An object of class \code{list} of length 6.
 }
 \usage{
 config

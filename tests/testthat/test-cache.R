@@ -1,12 +1,18 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
+withr::local_envvar(REDCAPSYNC_CONFIG_CACHE_DIR = tempdir_file)
 test_that("local_envvar seen by tests, exists, but empty at first", {
   expect_true(nzchar(Sys.getenv("R_USER_CACHE_DIR")))
   expect_directory_exists(Sys.getenv("R_USER_CACHE_DIR"))
+  expect_directory_exists(Sys.getenv("REDCAPSYNC_CONFIG_CACHE_DIR"))
   testing_path <- Sys.getenv("R_USER_CACHE_DIR") |> file.path("R", "REDCapSync")
+  testing_path2 <- Sys.getenv("REDCAPSYNC_CONFIG_CACHE_DIR")
   real_cache_path_projects <- file.path(testing_path, "projects.rds")
+  real_cache_path_projects2 <- file.path(testing_path2, "projects.rds")
   expect_false(test_directory_exists(testing_path))
+  expect_directory_exists(testing_path2)
   expect_false(test_file_exists(real_cache_path_projects))
+  expect_false(test_file_exists(real_cache_path_projects2))
 })
 # cache_clear (Exported)
 test_that("cache_clear works!", {

@@ -6,14 +6,19 @@ config <- list(
                type    = "logical",
                default = default)
   },
+  show.api.messages = function(default = FALSE) {
+    config_get(opt_name = "show.api.messages",
+               type = "logical",
+               default = default)
+  },
   verbose = function(default = TRUE) {
     config_get(opt_name = "verbose",
                type = "logical",
                default = default)
   },
-  show.api.messages = function(default = FALSE) {
-    config_get(opt_name = "show.api.messages",
-               type = "logical",
+  cache.dir = function (default = cache_path_default()){
+    config_get(opt_name = "cache.dir",
+               type = "filepath",
                default = default)
   },
   header.style = function(default = .header_style) {
@@ -29,7 +34,7 @@ config <- list(
 )
 config_get <- function(opt_name, type, default) {
   assert_choice(opt_name, names(config))
-  assert_choice(type, c("logical", "openxlsx_style"))
+  assert_choice(type, c("logical", "openxlsx_style", "filepath"))
   opt_key <- paste("REDCapSync", "config", opt_name, sep = ".") |> tolower()
   opt_val <- getOption(opt_key)
   if (!is.null(opt_val)) {
@@ -55,6 +60,11 @@ config_validate <- function(opt_name, value, type, default) {
   }
   if (identical(type, "openxlsx_style")) {
     if (test_openxlsx_style(value)) {
+      return(value)
+    }
+  }
+  if (identical(type, "filepath")) {
+    if (test_directory_exists(value)) {
       return(value)
     }
   }

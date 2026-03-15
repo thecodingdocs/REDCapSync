@@ -200,7 +200,7 @@ setup_project <- function(project_name,
     projects <- get_projects()
     in_proj_cache <- project_name %in% projects$project_name
     was_loaded <- FALSE
-    if (!config$allow.test.names()) {
+    if (!.config$allow.test.names()) {
       if (project_name %in% .test_project_names) {
         project <- load_test_project(project_name = project_name,
                                      dir_path = dir_path)

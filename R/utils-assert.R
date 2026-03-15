@@ -187,7 +187,7 @@ assert_setup_project <- function(project) {
 }
 #' @noRd
 assert_project_name <- function(project_name,
-                                allow_test_names = config$allow.test.names()) {
+                                allow_test_names = .config$allow.test.names()) {
   if (grepl("[a-z]", project_name)) {
     uppercase_project_name <- toupper(project_name)
     end_message <- paste0("`project_name` must be all caps!",

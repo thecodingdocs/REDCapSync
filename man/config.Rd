@@ -3,7 +3,7 @@
 \docType{data}
 \name{config}
 \alias{config}
-\title{Configuration}
+\title{Package configuration accessors}
 \format{
 An object of class \code{list} of length 6.
 }
@@ -11,21 +11,32 @@ An object of class \code{list} of length 6.
 config
 }
 \description{
-Configuration can be set with options as well as environment variables
+Internal configuration helpers used to retrieve package configuration
+values from options or environment variables.
+}
+\details{
+Configuration is resolved in the following order:
+\enumerate{
+\item \code{options("redcapsync.config.*")}
+\item \verb{REDCAPSYNC_CONFIG_*} for logical and filepath types
+\item Function default
+}
 
-allow.test.names is a logical for if \link{setup_project} will
-allow projects that start with "TEST_", which in general will be reserved
-for test fixture data. If the user wants to override this they can.
+The \code{config} object is a list of accessor functions that retrieve
+configuration values and validate them.
 
-show.api.messages is a logical for showing REDCapR messages
-
-verbose is logical for how many messages to see in general
-
-cache.dir is a character file path if user wants to override
-cache location.
-
-header.style is a openxlsx style for the xlsx headers
-
-header.style is a openxlsx style for the xlsx body
+\describe{
+\item{allow.test.names}{Logical. Whether \code{setup_project()} allows
+project names starting with \code{"TEST_"}.}
+\item{show.api.messages}{Logical. Whether to display API messages
+returned by REDCapR.}
+\item{verbose}{Logical. Controls verbosity of package messages.}
+\item{cache.dir}{Character file path overriding the default cache
+directory.}
+\item{header.style}{\code{openxlsx} style object used for Excel header
+formatting.}
+\item{body.style}{\code{openxlsx} style object used for Excel body
+formatting.}
+}
 }
 \keyword{internal}

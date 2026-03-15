@@ -23,7 +23,7 @@
 #' sync(c("ONE","THREE")) # will only check and sync projects ONE and THREE
 #' project <- sync(c("ONE","THREE")) # invisible return of THREE ...
 #' }
-#' @returns Invisibly returns last project object (R6 [REDCapSyncProject] class).
+#' @returns Invisibly returns last project object (R6 [REDCapSyncProject] class)
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.
 #' @export

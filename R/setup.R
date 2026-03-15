@@ -113,8 +113,8 @@ setup_project <- function(project_name,
   missing_dir_path <- missing(dir_path)
   if (missing_dir_path) {
     missing_dir_message <- paste("If you don't supply a directory, REDCapSync",
-                                  "will only run in R session. The package is",
-                                  "meant to be used with a directory.")
+                                 "will only run in R session. The package is",
+                                 "meant to be used with a directory.")
   }
   assert_project_name(project_name)
   assert_env_name(token_name, max.chars = 50L, all_caps = TRUE)
@@ -201,7 +201,7 @@ setup_project <- function(project_name,
     in_proj_cache <- project_name %in% projects$project_name
     was_loaded <- FALSE
     if (!config$allow.test.names()) {
-      if(project_name %in% .test_project_names) {
+      if (project_name %in% .test_project_names) {
         project <- load_test_project(project_name = project_name,
                                      dir_path = dir_path)
         was_loaded <- TRUE
@@ -401,7 +401,7 @@ load_project <- function(project_name) {
                                      dir_path = dir_path,
                                      validate = TRUE)
   }
-  if(!project_in_cache && !project_is_test_project){
+  if (!project_in_cache && !project_is_test_project) {
     end_message <- paste0("No project called {project_name} in cache.",
                           " Use `setup_project(...) and `project$sync()`?",
                           " or try an offline test. \n\nYour projects: ",

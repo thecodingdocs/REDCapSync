@@ -43,7 +43,7 @@ config <- list(
                type = "logical",
                default = default)
   },
-  cache.dir = function (default = cache_path_default()){
+  cache.dir = function (default = cache_path_default()) {
     config_get(opt_name = "cache.dir",
                type = "filepath",
                default = default)
@@ -67,7 +67,8 @@ config_get <- function(opt_name, type, default) {
   if (!is.null(opt_val)) {
     return(config_validate(opt_name, opt_val, type, default))
   }
-  env_key <- paste("REDCapSync", "config", chartr(".", "_", opt_name), sep = "_") |> toupper()
+  env_name <- chartr(".", "_", opt_name)
+  env_key <- paste("REDCapSync", "config", env_name, sep = "_") |> toupper()
   env_val <- Sys.getenv(env_key, unset = NA)
   if (!is.na(env_val) && nzchar(env_val) && type != "openxlsx_style") {
     return(config_validate(opt_name, env_val, type, default))

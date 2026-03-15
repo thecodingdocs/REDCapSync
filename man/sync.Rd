@@ -24,7 +24,7 @@ parameter from \code{setup_project()})}
 \code{FALSE}.}
 }
 \value{
-Invisibly returns last project object (R6 \link{REDCapSyncProject} class).
+Invisibly returns last project object (R6 \link{REDCapSyncProject} class)
 }
 \description{
 Syncs with REDCap via \code{project} object that user defined with

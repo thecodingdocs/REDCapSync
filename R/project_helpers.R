@@ -274,7 +274,7 @@ get_project_url <- function(project,
   if (open_browser) {
     browseURL(the_link)
   }
-  return(invisible(the_link))
+  invisible(the_link)
 }
 #' @noRd
 get_record_url <- function(project,
@@ -328,7 +328,7 @@ get_record_url <- function(project,
   if (open_browser) {
     browseURL(link)
   }
-  return(invisible(link))
+  invisible(link)
 }
 #' @noRd
 get_key_col_list <- function(data_list) {

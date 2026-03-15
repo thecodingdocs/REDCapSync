@@ -1,8 +1,6 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 # config (Internal)
-test_that("config works!", {
-})
 # config_get (Internal)
 test_that("config_get works!", {
   # defaults
@@ -123,5 +121,25 @@ test_that("config_get works!", {
 })
 # config_validate (Internal)
 test_that("config_validate works!", {
-  # config_validate(opt_name, value, type, default) {
+  value <- config_validate(
+    opt_name = "allow.test.names",
+    value = mtcars, # not logical
+    type = "logical",
+    default = TRUE
+  )
+  expect_true(value)
+  value <- config_validate(
+    opt_name = "allow.test.names",
+    value = "FALSE", # character ok
+    type = "logical",
+    default = FALSE
+  )
+  expect_false(value)
+  value <- config_validate(
+    opt_name = "allow.test.names",
+    value = TRUE,
+    type = "logical",
+    default = FALSE
+  )
+  expect_true(value)
 })

@@ -3,7 +3,6 @@
 export(cache_clear)
 export(get_projects)
 export(load_project)
-export(load_test_project)
 export(setup_project)
 export(sync)
 importFrom(R6,R6Class)

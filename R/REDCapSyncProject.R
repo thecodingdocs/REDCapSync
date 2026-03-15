@@ -3,8 +3,7 @@
 #' [R6][R6::R6Class] project object for [REDCapSync]
 #' This is the main class for managing REDCap data, metadata, and sync
 #' operations. Users should construct objects using [setup_project()]. To reopen
-#' an existing project, use [load_project()] or explore offline toy examples
-#' using [load_test_project()].
+#' an existing project, use [load_project()].
 #' @param summary_name Character. The name of the configured summary from which
 #' to generate the summary. *If you provide `summary_name` all other parameters
 #' are inherited according to what was set with `add_project_summary`.
@@ -114,8 +113,7 @@
 #' @param batch_size Integer. Maximum number of rows per API write batch when
 #' uploading to REDCap. Default is 500L.
 #' @examples
-#' # for real projects use load_project instead of load_test_project
-#' project <- load_test_project("TEST_CLASSIC")
+#' project <- load_project("TEST_CLASSIC")
 #'
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.'

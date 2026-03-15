@@ -55,32 +55,22 @@ cache_remove_project <- function(project_name) {
 get_cache <- function() {
   cache <- hoardr::hoard()
   cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
-  cache_dir <- get_cache_dir()
-  if (!is.null(cache_dir)) {
-    full_path <- file.path(cache_dir, ".cache")
-    dir.create(full_path, showWarnings = FALSE)
-    cache$cache_path_set(full_path = full_path)
-  }
   cache$mkdir()
-  cache
-}
-#' @noRd
-get_cache_dir <- function() {
-  cache_dir <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE", unset = NA)
-  if (!is.na(cache_dir) && nzchar(cache_dir)) {
-    user_dir_exists <- dir.exists(cache_dir)
+  default_cache_dir <- sanitize_path(cache$cache_path_get())
+  user_cache_dir <- config$cache.dir()
+  if (!identical(user_cache_dir, default_cache_dir)) {
+    user_dir_exists <- dir.exists(user_cache_dir)
     if (!user_dir_exists) {
-      check_directory_exists(cache_dir)
-      warning_message <- paste("Cache directory via",
-                               "`Sys.getenv(\"REDCAPSYNC_CACHE_OVERRIDE\")`",
-                               "does not exist!")
-      cli_alert_warning(warning_message)
+      cli_alert_wrap("Cache directory does not exist!",
+                     bullet_type = "!",
+                     file = user_cache_dir)
     }
     if (user_dir_exists) {
-      return(cache_dir)
+      cache$cache_path_set(full_path = user_cache_dir)
+      cache$mkdir()
     }
   }
-  NULL
+  cache
 }
 #' @noRd
 cache_exists <- function() {
@@ -91,9 +81,7 @@ cache_exists <- function() {
 cache_projects_exists <- function() {
   does_exist <- FALSE
   if (cache_exists()) {
-    does_exist <- cache_path() |>
-      file.path("projects.rds") |>
-      file.exists()
+    does_exist <- cache_path() |>file.path("projects.rds") |> file.exists()
     if (!does_exist) {
       cli_alert_warning("No cached projects... use `setup_project(...)`")
     }
@@ -102,9 +90,11 @@ cache_projects_exists <- function() {
 }
 #' @noRd
 cache_path <- function() {
-  cache <- get_cache()
-  path <- sanitize_path(cache$cache_path_get())
-  path
+  cache <- hoardr::hoard()
+  cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
+  cache$mkdir()
+  default_cache_dir <- sanitize_path(cache$cache_path_get())
+  default_cache_dir
 }
 #' @noRd
 sweep_dirs_for_cache <- function(project_names = NULL) {

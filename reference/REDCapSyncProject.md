@@ -720,14 +720,4 @@ project <- load_project("TEST_CLASSIC")
 #> ! No cached projects... use `setup_project(...)`
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
-project$info()
-#> ℹ Project Name: TEST_CLASSIC
-#> ℹ PID: 12341
-#> ℹ Token Name: REDCAPSYNC_TEST_CLASSIC
-#> ℹ Last Update: 2026-02-25 13:47:32.713743
-#> ℹ REDCap Link: <https://redcap.fake.edu/redcap_v16.1.1/index.php?pid=12341>
-#> Error in vapply(X, FUN, FUN.VALUE = character(1), ..., USE.NAMES = USE.NAMES): values must be type 'character',
-#>  but FUN(X[[1]]) result is type 'logical'
-project$sync()
-#> ℹ TEST projects do not communicate with the API
 ```

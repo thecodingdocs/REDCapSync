@@ -39,7 +39,7 @@ sync(
 
 Invisibly returns last project object (R6
 [REDCapSyncProject](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSyncProject.md)
-class).
+class)
 
 ## Details
 

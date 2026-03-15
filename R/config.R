@@ -28,40 +28,41 @@
 #'
 #' @keywords internal
 config <- list(
-  allow.test.names = function(default = FALSE) {
+  allow.test.names = function() {
     config_get(opt_name = "allow.test.names",
-               type    = "logical",
-               default = default)
+               type = "logical",
+               default = FALSE)
   },
-  show.api.messages = function(default = FALSE) {
+  show.api.messages = function() {
     config_get(opt_name = "show.api.messages",
                type = "logical",
-               default = default)
+               default = FALSE)
   },
-  verbose = function(default = TRUE) {
+  verbose = function() {
     config_get(opt_name = "verbose",
                type = "logical",
-               default = default)
+               default = TRUE)
   },
-  cache.dir = function (default = cache_path_default()) {
+  cache.dir = function() {
     config_get(opt_name = "cache.dir",
                type = "filepath",
-               default = default)
+               default = cache_path_default())
   },
-  header.style = function(default = .header_style) {
+  header.style = function() {
     config_get(opt_name = "header.style",
                type = "openxlsx_style",
-               default = default)
+               default = .header_style)
   },
-  body.style = function(default = .body_style) {
+  body.style = function() {
     config_get(opt_name = "body.style",
                type = "openxlsx_style",
-               default = default)
+               default = .body_style)
   }
 )
+#' @noRd
 config_get <- function(opt_name, type, default) {
   assert_choice(opt_name, names(config))
-  assert_choice(type, c("logical", "openxlsx_style", "filepath"))
+  assert_choice(type, .option_types)
   opt_key <- paste("REDCapSync", "config", opt_name, sep = ".") |> tolower()
   opt_val <- getOption(opt_key)
   if (!is.null(opt_val)) {
@@ -75,14 +76,18 @@ config_get <- function(opt_name, type, default) {
   }
   default
 }
+#' @noRd
 config_validate <- function(opt_name, value, type, default) {
+  assert_choice(opt_name, names(config))
+  assert_choice(type, .option_types)
+  # add warning messages
   if (identical(type, "logical")) {
-    if (test_character(value, len = 1)) {
+    if (test_character(value, len = 1L)) {
       if (toupper(value) %in% c("TRUE", "FALSE")) {
         value <- value |> toupper() |> as.logical()
       }
     }
-    if (test_logical(value, len = 1)) {
+    if (test_logical(value, len = 1L)) {
       return(value)
     }
   }
@@ -98,3 +103,4 @@ config_validate <- function(opt_name, value, type, default) {
   }
   default
 }
+.option_types <- c("logical", "openxlsx_style", "filepath")

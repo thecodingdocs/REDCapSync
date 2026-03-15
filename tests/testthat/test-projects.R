@@ -44,7 +44,7 @@ test_that("extract_project_details works!", {
 test_that("save_projects_to_cache works!", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
   withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
-  cache_location <- file.path(tempdir_test, "R", "REDCapSync")
+  cache_location <- cache_path()
   projects <- get_projects()
   expect_data_frame(projects, nrows = 0L)
   project <- mock_test_project()$.internal

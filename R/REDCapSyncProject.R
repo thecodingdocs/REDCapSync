@@ -114,6 +114,7 @@
 #' uploading to REDCap. Default is 500L.
 #' @examples
 #' project <- load_project("TEST_CLASSIC")
+#' project$info()
 #'
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.'
@@ -217,8 +218,6 @@ REDCapSyncProject <- R6Class(
       invisible(self)
     },
     #' @description Print some key project info
-    #' @examples
-    #' project$info()
     info = function() {
       project_name <- private$project$project_name
       project_id <- private$project$redcap$project_id
@@ -238,8 +237,6 @@ REDCapSyncProject <- R6Class(
     #' changes. Sync is performed according to the `sync_frequency` set in
     #' [setup_project()] by default. Use `hard_check` to force a check, or `
     #' hard_reset` to force a complete refresh.
-    #' @examples
-    #' project$sync()
     sync = function(summarize = TRUE,
                     save_to_dir = TRUE,
                     hard_check = FALSE,

@@ -15,19 +15,8 @@ an existing project, use \code{\link[=load_project]{load_project()}}.
 }
 \examples{
 project <- load_project("TEST_CLASSIC")
-
-
-## ------------------------------------------------
-## Method `REDCapSyncProject$info`
-## ------------------------------------------------
-
 project$info()
 
-## ------------------------------------------------
-## Method `REDCapSyncProject$sync`
-## ------------------------------------------------
-
-project$sync()
 }
 \seealso{
 \link{setup_project} for initializing the \code{project} object.'
@@ -104,14 +93,6 @@ Print some key project info
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$info()}\if{html}{\out{</div>}}
 }
 
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{project$info()
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSyncProject-sync"></a>}}
@@ -146,14 +127,6 @@ with the same name. Default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{project$sync()
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSyncProject-add_summary"></a>}}

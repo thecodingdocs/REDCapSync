@@ -14,14 +14,16 @@ get_projects()
 
 ## Value
 
-data.frame of projects from the cache
-
 data.frame of cached projects
 
 ## Details
 
-No direct project data is stored in the cache. Notably, tokens and data
-are not stored here. The key variables stored in the cache are...
+The default location of the cache location is defined by using
+R_USER_CACHE_DIR if set. Otherwise, it follows platform conventions via
+[hoardr::hoardr](https://docs.ropensci.org/hoardr/reference/hoardr-package.html),
+saving a file "R/REDCapSync/projects.rds". No direct project data is
+stored in the cache. Notably, tokens and data are not stored here. The
+key variables stored in the cache are...
 
 - `project_name` - unique identifier for REDCapSync package
 

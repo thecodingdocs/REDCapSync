@@ -6,9 +6,7 @@ This is the main class for managing REDCap data, metadata, and sync
 operations. Users should construct objects using
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 To reopen an existing project, use
-[`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-or explore offline toy examples using
-[`load_test_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
+[`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 
 ## Value
 
@@ -113,10 +111,6 @@ Print some key project info
 
     REDCapSyncProject$info()
 
-#### Examples
-
-    project$info()
-
 ------------------------------------------------------------------------
 
 ### Method [`sync()`](https://thecodingdocs.github.io/REDCapSync/reference/sync.md)
@@ -157,10 +151,6 @@ a complete refresh.
 
   Logical. If `TRUE`, overwrite existing summary files with the same
   name. Default is `FALSE`.
-
-#### Examples
-
-    project$sync()
 
 ------------------------------------------------------------------------
 
@@ -726,28 +716,18 @@ an issue. Missing rows and columns are allowed!
 ## Examples
 
 ``` r
-# for real projects use load_project instead of load_test_project
-project <- load_test_project("TEST_CLASSIC")
+project <- load_project("TEST_CLASSIC")
+#> ! No cached projects... use `setup_project(...)`
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
-
-
-## ------------------------------------------------
-## Method `REDCapSyncProject$info`
-## ------------------------------------------------
-
 project$info()
 #> ℹ Project Name: TEST_CLASSIC
 #> ℹ PID: 12341
 #> ℹ Token Name: REDCAPSYNC_TEST_CLASSIC
 #> ℹ Last Update: 2026-02-25 13:47:32.713743
 #> ℹ REDCap Link: <https://redcap.fake.edu/redcap_v16.1.1/index.php?pid=12341>
-#> ℹ Directory: fake/path
-
-## ------------------------------------------------
-## Method `REDCapSyncProject$sync`
-## ------------------------------------------------
-
+#> Error in vapply(X, FUN, FUN.VALUE = character(1), ..., USE.NAMES = USE.NAMES): values must be type 'character',
+#>  but FUN(X[[1]]) result is type 'logical'
 project$sync()
 #> ℹ TEST projects do not communicate with the API
 ```

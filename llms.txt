@@ -181,7 +181,6 @@ already saved. Save the outputs to a directory.
 
 - [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   [`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-  [`load_test_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   : Setup or Load REDCapSync Project
 
 ## Project Object
@@ -191,6 +190,8 @@ transformations and subset to be passed to spreadsheets.
 
 - [`REDCapSyncProject`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSyncProject.md)
   : REDCapSync Encapsulated Project Object
+- [`config`](https://thecodingdocs.github.io/REDCapSync/reference/config.md)
+  : config
 
 ## Multiple Projects
 

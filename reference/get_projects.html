@@ -67,13 +67,15 @@ package user cache so that <a href="setup-load.html">load_project</a> and <a hre
 
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>data.frame of projects from the cache</p>
-<p>data.frame of cached projects</p>
+    <p>data.frame of cached projects</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>No direct project data is stored in the cache. Notably, tokens and data are
-not stored here. The key variables stored in the cache are...</p><ul><li><p><code>project_name</code> - unique identifier for REDCapSync package</p></li>
+    <p>The default location of the cache location is defined by using
+R_USER_CACHE_DIR if set. Otherwise, it follows platform conventions via
+<a href="https://docs.ropensci.org/hoardr/reference/hoardr-package.html" class="external-link">hoardr::hoardr</a>, saving a file "R/REDCapSync/projects.rds". No direct project data
+is stored in the cache. Notably, tokens and data are not stored here. The key
+variables stored in the cache are...</p><ul><li><p><code>project_name</code> - unique identifier for REDCapSync package</p></li>
 <li><p><code>redcap_uri</code> - server location</p></li>
 <li><p><code>token_name</code> - where to find token environment with <code><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv()</a></code></p></li>
 <li><p><code>dir_path</code> - where to saved project and associated files locally</p></li>

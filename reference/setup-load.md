@@ -34,8 +34,6 @@ setup_project(
 )
 
 load_project(project_name)
-
-load_test_project(project_name, dir_path)
 ```
 
 ## Arguments
@@ -199,12 +197,14 @@ for retrieving a list of projects from the directory cache.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 # Initialize the project object with the REDCap API token and URL
+save_folder <- tempdir() # replace with real folder
 project <- setup_project(
   project_name = "TEST",
-  dir_path = "path/to/secure/file/storage",
+  dir_path = save_folder,
   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 )
-} # }
+#> ! No cached projects... use `setup_project(...)`
+#> ! Setup blank project. Unable to find, load, or repair.
+#> ! No valid token in session: Sys.getenv('REDCAPSYNC_TEST')
 ```

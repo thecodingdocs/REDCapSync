@@ -28,12 +28,12 @@ reference:
     contents:
       - setup_project
       - load_project
-      - load_test_project
 
   - title: Project Object
     desc: Once setup, the project object can be used to run sync and define custom transformations and subset to be passed to spreadsheets.
     contents:
       - REDCapSyncProject
+      - config
 
   - title: Multiple Projects
     desc: Once setup, the project object can be used to run sync and define custom transformations and subset to be passed to spreadsheets

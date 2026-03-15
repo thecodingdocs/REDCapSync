@@ -21,23 +21,17 @@ generate_comments <- function(action_type = "Add",
 }
 real_test_project <- function(project_name = "TEST_REDCAPR_SIMPLE") {
   assert_choice(project_name, .test_redcapr_names)
-  cache_location <- Sys.getenv("R_USER_CACHE_DIR") |>
-    sanitize_path() |>
-    assert_directory()
   redcap_uri <- "https://redcap-dev-2.ouhsc.edu/redcap/api/"
   project <- setup_project(project_name = project_name,
-                           dir_path = cache_location,
+                           dir_path = cache_path(),
                            redcap_uri = redcap_uri,
                            hard_reset = TRUE)
   project
 }
 mock_test_project <- function(project_name = "TEST_CLASSIC") {
   assert_choice(project_name, .test_project_names)
-  dir_path <- Sys.getenv("R_USER_CACHE_DIR") |>
-    sanitize_path() |>
-    assert_directory()
   project <- load_test_project(project_name = project_name,
-                               dir_path = dir_path)
+                               dir_path = cache_path())
   project
 }
 mock_test_calls <- function(project_name = "TEST_CLASSIC") {

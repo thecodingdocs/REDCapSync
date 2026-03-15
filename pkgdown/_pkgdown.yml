@@ -33,7 +33,7 @@ reference:
     desc: Once setup, the project object can be used to run sync and define custom transformations and subset to be passed to spreadsheets.
     contents:
       - REDCapSyncProject
-      - config
+      - configuration
 
   - title: Multiple Projects
     desc: Once setup, the project object can be used to run sync and define custom transformations and subset to be passed to spreadsheets

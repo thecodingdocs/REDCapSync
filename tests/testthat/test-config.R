@@ -8,6 +8,7 @@ test_that("config_get works!", {
     redcapsync.config.allow.test.names = NULL,
     redcapsync.config.show.api.messages = NULL,
     redcapsync.config.verbose = NULL,
+    redcapsync.config.offline = NULL,
     redcapsync.config.cache.dir = NULL,
     redcapsync.config.header.style = NULL,
     redcapsync.config.body.style = NULL
@@ -17,6 +18,7 @@ test_that("config_get works!", {
     REDCAPSYNC_CONFIG_ALLOW_TEST_NAMES = NA,
     REDCAPSYNC_CONFIG_SHOW_API_MESSAGES = NA,
     REDCAPSYNC_CONFIG_VERBOSE = NA,
+    REDCAPSYNC_CONFIG_OFFLINE = NA,
     REDCAPSYNC_CONFIG_CACHE_DIR = NA,
     REDCAPSYNC_CONFIG_HEADER_STYLE = NA,
     REDCAPSYNC_CONFIG_BODY_STYLE = NA
@@ -35,6 +37,10 @@ test_that("config_get works!", {
                       type = "logical",
                       default = TRUE)
   expect_true(value)
+  value <- config_get(opt_name = "offline",
+                      type = "logical",
+                      default = FALSE)
+  expect_false(value)
   value <- config_get(opt_name = "cache.dir",
                       type = "filepath",
                       default = cache_path_default())
@@ -54,6 +60,7 @@ test_that("config_get works!", {
     REDCAPSYNC_CONFIG_ALLOW_TEST_NAMES = "True",
     REDCAPSYNC_CONFIG_SHOW_API_MESSAGES = "true",
     REDCAPSYNC_CONFIG_VERBOSE = "FALSE",
+    REDCAPSYNC_CONFIG_OFFLINE = TRUE,
     REDCAPSYNC_CONFIG_CACHE_DIR = tempdir_test,
     REDCAPSYNC_CONFIG_HEADER_STYLE = "ignored",
     REDCAPSYNC_CONFIG_BODY_STYLE = "ignored"
@@ -71,6 +78,10 @@ test_that("config_get works!", {
                       type = "logical",
                       default = TRUE)
   expect_false(value)
+  value <- config_get(opt_name = "offline",
+                      type = "logical",
+                      default = FALSE)
+  expect_true(value)
   value <- config_get(opt_name = "cache.dir",
                       type = "filepath",
                       default = cache_path_default())
@@ -89,6 +100,7 @@ test_that("config_get works!", {
     redcapsync.config.allow.test.names = FALSE,
     redcapsync.config.show.api.messages = "FALSe",
     redcapsync.config.verbose = TRUE,
+    redcapsync.config.offline = "false",
     redcapsync.config.cache.dir = tempdir_test2,
     redcapsync.config.header.style = .body_style, # flipped
     redcapsync.config.body.style = .header_style # flipped
@@ -106,6 +118,10 @@ test_that("config_get works!", {
                       type = "logical",
                       default = TRUE)
   expect_true(value)
+  value <- config_get(opt_name = "offline",
+                      type = "logical",
+                      default = FALSE)
+  expect_false(value)
   value <- config_get(opt_name = "cache.dir",
                       type = "filepath",
                       default = cache_path_default())

@@ -14,8 +14,11 @@ Everytime a project is synced, basic project information is saved to the
 package user cache so that \link{load_project} and \link{sync} work across R sessions.
 }
 \details{
-No direct project data is stored in the cache. Notably, tokens and data are
-not stored here. The key variables stored in the cache are...
+The default location of the cache location is defined by using
+R_USER_CACHE_DIR if set. Otherwise, it follows platform conventions via
+\link[hoardr:hoardr-package]{hoardr::hoardr}, saving a file "R/REDCapSync/projects.rds". No direct project data
+is stored in the cache. Notably, tokens and data are not stored here. The key
+variables stored in the cache are...
 \itemize{
 \item \code{project_name} - unique identifier for REDCapSync package
 \item \code{redcap_uri} - server location

@@ -343,7 +343,7 @@ add_project_summary <- function(project,
                                 file_name = NULL,
                                 hard_reset = FALSE) {
   # sync_frequency ... project$internals$sync_frequency
-  forbiden_summary_names <- c(project$metadata$id_col, .forbiden_summary_names)
+  forbiden_summary_names <- c(project$metadata$id_col, .forbidden_summary_names)
   if (summary_name %in% forbiden_summary_names) {
     stop(summary_name,
          " is a forbidden summary name. Used for REDCapSync.")
@@ -1096,9 +1096,7 @@ clean_column_for_table <- function(field,
   field
 }
 #' @noRd
-.forbiden_project_names <- c("CACHE_OVERRIDE", "REDCAP_URI")
-#' @noRd
-.forbiden_summary_names <- c("last_api_call", "all_records", "was_saved")
+.forbidden_summary_names <- c("last_api_call", "all_records", "was_saved")
 #' @noRd
 .not_important_summary_names <- c("n_records",
                                   "last_save_time",

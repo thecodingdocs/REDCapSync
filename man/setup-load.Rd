@@ -3,7 +3,6 @@
 \name{setup_project}
 \alias{setup_project}
 \alias{load_project}
-\alias{load_test_project}
 \title{Setup or Load REDCapSync Project}
 \usage{
 setup_project(
@@ -35,8 +34,6 @@ setup_project(
 )
 
 load_project(project_name)
-
-load_test_project(project_name, dir_path)
 }
 \arguments{
 \item{project_name}{A character string with no spaces or symbols representing

@@ -11,12 +11,10 @@ project object for the user
 \link[R6:R6Class]{R6} project object for \link{REDCapSync}
 This is the main class for managing REDCap data, metadata, and sync
 operations. Users should construct objects using \code{\link[=setup_project]{setup_project()}}. To reopen
-an existing project, use \code{\link[=load_project]{load_project()}} or explore offline toy examples
-using \code{\link[=load_test_project]{load_test_project()}}.
+an existing project, use \code{\link[=load_project]{load_project()}}.
 }
 \examples{
-# for real projects use load_project instead of load_test_project
-project <- load_test_project("TEST_CLASSIC")
+project <- load_project("TEST_CLASSIC")
 
 
 ## ------------------------------------------------

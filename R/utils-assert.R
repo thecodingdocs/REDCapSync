@@ -69,27 +69,6 @@ assert_env_name <- function(x, max.chars = 26L, all_caps = FALSE) {
   invisible(x)
 }
 #' @noRd
-test_env_name <- function(x, max.chars = 26L, all_caps = FALSE) {
-  x <- try_else_null({
-    suppressWarnings({
-      assert_env_name(x = x,
-                      max.chars = max.chars,
-                      all_caps = all_caps)
-    })
-  })
-  !is.null(x)
-}
-#' @noRd
-test_unique_character <- function(x) {
-  test_character(
-    x,
-    min.chars = 1L,
-    unique = TRUE,
-    min.len = 1L,
-    any.missing = FALSE
-  )
-}
-#' @noRd
 assert_blank_project <- function(project) {
   assert_list(project, names = "unique", len = length(.blank_project))
   assert_names(names(project),
@@ -207,6 +186,24 @@ assert_setup_project <- function(project) {
   invisible(project)
 }
 #' @noRd
+assert_project_name <- function(project_name,
+                                allow_test_names = config$allow.test.names()) {
+  if (grepl("[a-z]", project_name)) {
+    uppercase_project_name <- toupper(project_name)
+    end_message <- paste0("`project_name` must be all caps!",
+                          " For example, try '{uppercase_project_name}'")
+    cli_abort(end_message)
+  }
+  assert_env_name(project_name, max.chars = 31L, all_caps = TRUE)
+  if (startsWith(project_name, "CONFIG_")) {
+    cli_abort("`project_name` can't start with 'CONFIG_'! Please choose again.")
+  }
+  if (!allow_test_names && startsWith(project_name, "TEST_")) {
+    cli_abort("`project_name` can't start with 'TEST_'! Please choose again.")
+  }
+  project_name
+}
+#' @noRd
 test_setup_project <- function(project) {
   project <- tryCatch(
     expr = {
@@ -238,6 +235,13 @@ assert_project_details <- function(project_details, nrows = NULL) {
   project_details
 }
 #' @noRd
+assert_project_path <- function(project_path) {
+  assert_path_for_output(x = project_path,
+                         overwrite = TRUE,
+                         extension = "RData")
+  assert_true(endsWith(basename(project_path), .project_path_suffix))
+}
+#' @noRd
 test_project_details <- function(project_details, nrows = NULL) {
   project_details <- tryCatch(
     expr = {
@@ -252,9 +256,27 @@ test_project_details <- function(project_details, nrows = NULL) {
   !is.null(project_details)
 }
 #' @noRd
-assert_project_path <- function(project_path) {
-  assert_path_for_output(x = project_path,
-                         overwrite = TRUE,
-                         extension = "RData")
-  assert_true(endsWith(basename(project_path), .project_path_suffix))
+test_openxlsx_style <- function(x) {
+  test_class(x, "Style") && identical(attr(class(x), "package"), "openxlsx")
+}
+#' @noRd
+test_env_name <- function(x, max.chars = 26L, all_caps = FALSE) {
+  x <- try_else_null({
+    suppressWarnings({
+      assert_env_name(x = x,
+                      max.chars = max.chars,
+                      all_caps = all_caps)
+    })
+  })
+  !is.null(x)
+}
+#' @noRd
+test_unique_character <- function(x) {
+  test_character(
+    x,
+    min.chars = 1L,
+    unique = TRUE,
+    min.len = 1L,
+    any.missing = FALSE
+  )
 }

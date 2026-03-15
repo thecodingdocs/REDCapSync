@@ -26,11 +26,13 @@ cache_clear <- function(project_names = NULL) {
     }
     return(invisible())
   }
-  cache$delete_all()
-  cli_alert_warning("You must delete any files manually from the directory.")
+  if (cache$exists("projects.rds")$exists) {
+    cache$delete("projects.rds")
+  }
+  cli_alert_warning("You must delete files manually from the directory.")
   cli_alert_wrap(
     "REDCapSync cache cleared!",
-    file = cache$cache_path_get(),
+    file = cache_path(),
     bullet_type = "v"
   )
   invisible()
@@ -56,45 +58,13 @@ get_cache <- function() {
   cache <- hoardr::hoard()
   cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
   cache$mkdir()
-  default_cache_dir <- sanitize_path(cache$cache_path_get())
-  user_cache_dir <- config$cache.dir()
-  if (!identical(user_cache_dir, default_cache_dir)) {
-    user_dir_exists <- dir.exists(user_cache_dir)
-    if (!user_dir_exists) {
-      cli_alert_wrap("Cache directory does not exist!",
-                     bullet_type = "!",
-                     file = user_cache_dir)
-    }
-    if (user_dir_exists) {
-      cache$cache_path_set(full_path = user_cache_dir)
-      cache$mkdir()
-    }
-  }
   cache
 }
 #' @noRd
-cache_exists <- function() {
-  cache <- get_cache()
-  file.exists(cache$cache_path_get())
-}
-#' @noRd
-cache_projects_exists <- function() {
-  does_exist <- FALSE
-  if (cache_exists()) {
-    does_exist <- cache_path() |>file.path("projects.rds") |> file.exists()
-    if (!does_exist) {
-      cli_alert_warning("No cached projects... use `setup_project(...)`")
-    }
-  }
-  does_exist
-}
-#' @noRd
 cache_path <- function() {
-  cache <- hoardr::hoard()
-  cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
-  cache$mkdir()
-  default_cache_dir <- sanitize_path(cache$cache_path_get())
-  default_cache_dir
+  cache <- get_cache()
+  path <- sanitize_path(cache$cache_path_get())
+  path
 }
 #' @noRd
 sweep_dirs_for_cache <- function(project_names = NULL) {

@@ -3,8 +3,11 @@
 #' Everytime a project is synced, basic project information is saved to the
 #' package user cache so that [load_project] and [sync] work across R sessions.
 #' @details
-#' No direct project data is stored in the cache. Notably, tokens and data are
-#' not stored here. The key variables stored in the cache are...
+#' The default location of the cache location is defined by using
+#' R_USER_CACHE_DIR if set. Otherwise, it follows platform conventions via
+#' [hoardr], saving a file "R/REDCapSync/projects.rds". No direct project data
+#' is stored in the cache. Notably, tokens and data are not stored here. The key
+#' variables stored in the cache are...
 #' * `project_name` - unique identifier for REDCapSync package
 #' * `redcap_uri` - server location
 #' * `token_name` - where to find token environment with [Sys.getenv()]
@@ -19,12 +22,18 @@
 #' @returns data.frame of cached projects
 #' @export
 get_projects <- function() {
-  does_exist <- cache_projects_exists()
+  does_exist <- FALSE
+  if (file.exists(cache_path())) {
+    does_exist <- cache_path() |> file.path("projects.rds") |> file.exists()
+    if (!does_exist) {
+      cli_alert_warning("No cached projects... use `setup_project(...)`")
+    }
+  }
+  does_exist
   is_ok <- FALSE
   if (does_exist) {
-    projects <-  cache_path() |>
-      file.path("projects.rds") |>
-      readRDS() # add try catch?
+    projects <- cache_path() |> file.path("projects.rds") |> readRDS()
+    # add try catch?
     is_ok <- test_project_details(projects)
     if (!is_ok) {
       projects <- repair_projects(projects)
@@ -127,16 +136,6 @@ save_projects_to_cache <- function(projects, silent = TRUE) {
         " project locations to the cache...",
         toString(projects$project_name)
       ) # "   Token: ",projects$token_name,collapse = "\n"))
-    )
-    cli_alert_wrap(
-      text = paste0(
-        "Cache is stored in directory on your computer. It can be found with `",
-        pkg_name,
-        "::cache_path()`, and cleared with `",
-        pkg_name,
-        "::cache_clear()`."
-      ),
-      file = cache_path()
     )
   }
 }

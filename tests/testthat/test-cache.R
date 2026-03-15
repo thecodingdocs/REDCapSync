@@ -1,7 +1,7 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
-withr::local_envvar(REDCAPSYNC_CONFIG_CACHE_DIR = tempdir_file)
 test_that("local_envvar seen by tests, exists, but empty at first", {
+  withr::local_envvar(REDCAPSYNC_CONFIG_CACHE_DIR = tempdir_file)
   expect_true(nzchar(Sys.getenv("R_USER_CACHE_DIR")))
   expect_directory_exists(Sys.getenv("R_USER_CACHE_DIR"))
   expect_directory_exists(Sys.getenv("REDCAPSYNC_CONFIG_CACHE_DIR"))

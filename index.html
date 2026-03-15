@@ -156,13 +156,13 @@
 <ul>
 <li>Exported function names: <strong>snake_case</strong>
 <ul>
-<li>Examples: “setup_project”, “load_project”, “sync”</li>
+<li>Examples: setup_project, load_project, sync</li>
 </ul>
 </li>
 <li>Internal function names: <strong>snake_case</strong>
 <ul>
-<li>Examples: “get_project_token”, “get_redcap_data”</li>
-<li>Exceptions: “.onLoad” (R standard)
+<li>Examples: get_project_token, get_redcap_data</li>
+<li>Exceptions: .onLoad (R standard)
 <ul>
 <li>redcapAPI functions (<strong>dromedaryCase</strong>)</li>
 <li>utils functions: write.csv, object.size, browseURL</li>
@@ -172,13 +172,10 @@
 </li>
 <li>Function parameters: <strong>snake_case</strong>
 <ul>
-<li>examples: “project_name”, “dir_path”, “redcap_uri”, “sync_frequency”</li>
+<li>examples: project_name, dir_path, redcap_uri, sync_frequency</li>
 </ul>
 </li>
 <li>Function variables: <strong>snake_case</strong>
-<ul>
-<li>Exception: field_type_r</li>
-</ul>
 </li>
 </ul>
 </div>
@@ -214,12 +211,13 @@
 <ul>
 <li>R6ClassGenerator and R6 Classes: <strong>PascalCase</strong> with captilized “REDCap” acronym
 <ul>
-<li>Example: “REDCapSyncProject”</li>
+<li>Example: REDCapSyncProject</li>
 </ul>
 </li>
-<li>R6 public_methods: snake_case
+<li>R6 public_methods: snake_case</li>
+<li>R6 active_bindings: snake_case
 <ul>
-<li>Exception: .internal for</li>
+<li>Exception: .internal for custom functions</li>
 </ul>
 </li>
 </ul>
@@ -230,7 +228,11 @@
 <ul>
 <li>project_name: SCREAMING_SNAKE_CASE (numbers allowed if not first)</li>
 <li>REDCapSyncProject object environment name can be “project” or user-defined</li>
-<li>option names: REDCapSync.snake_case (tidyverse convention)</li>
+<li>Package options: <strong>snake.case</strong>
+<ul>
+<li>Examples: redcapsync.config.show.api.messages</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>

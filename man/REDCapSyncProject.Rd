@@ -16,6 +16,7 @@ an existing project, use \code{\link[=load_project]{load_project()}}.
 \examples{
 project <- load_project("TEST_CLASSIC")
 project$info()
+project$sync()
 
 }
 \seealso{

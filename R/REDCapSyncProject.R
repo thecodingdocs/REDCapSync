@@ -115,6 +115,7 @@
 #' @examples
 #' project <- load_project("TEST_CLASSIC")
 #' project$info()
+#' project$sync()
 #'
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.'

@@ -75,9 +75,10 @@
 #' the directory cache.
 #' @examples
 #' # Initialize the project object with the REDCap API token and URL
+#' save_folder <- tempdir() # replace with real folder
 #' project <- setup_project(
 #'   project_name = "TEST",
-#'   dir_path = "path/to/secure/file/storage",
+#'   dir_path = save_folder,
 #'   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 #' )
 #'
@@ -111,7 +112,6 @@ setup_project <- function(project_name,
                           add_default_summaries = TRUE) {
   missing_dir_path <- missing(dir_path)
   if (missing_dir_path) {
-    dir_path <- NULL
     missing_dir_message <- paste("If you don't supply a directory, REDCapSync",
                                   "will only run in R session. The package is",
                                   "meant to be used with a directory.")
@@ -197,74 +197,74 @@ setup_project <- function(project_name,
   # assert redcap_uri
   original_details <- NULL
   if (!hard_reset) {
+    projects <- get_projects()
+    in_proj_cache <- project_name %in% projects$project_name
+    was_loaded <- FALSE
     if (!config$allow.test.names()) {
       if(project_name %in% .test_project_names) {
         project <- load_test_project(project_name = project_name,
                                      dir_path = dir_path)
+        was_loaded <- TRUE
       }
-    } else {
+    }
+    if (!was_loaded && in_proj_cache) {
+      project <- try_else_null({
+        suppressWarnings({ # will ignore supplied dir_path ? add coompare
+          load_project(project_name = project_name)$.internal
+        })
+      })
+      was_loaded <- !is.null(project)
+    }
+    if (!was_loaded && !missing_dir_path) {
+      project <- try_else_null({
+        suppressWarnings({ # will ignore supplied dir_path ? add coompare
+          load_project_from_dir(project_name = project_name,
+                                dir_path = dir_path,
+                                validate = TRUE)
+        })
+      })
+      was_loaded <- !is.null(project)
+    }
+    # attempt to load existing project unless hard_reset
+    if (!was_loaded) {
+      project <- .blank_project
+      cli_alert_warning("Setup blank project. Unable to find, load, or repair.")
+    }
+    if (was_loaded) {
+      # compare current setting to previous settings...
+      original_details <- extract_project_details(project)
       projects <- get_projects()
-      in_proj_cache <- project_name %in% projects$project_name
-      was_loaded <- FALSE
-      if (in_proj_cache) {
-        project <- try_else_null({
-          suppressWarnings({ # will ignore supplied dir_path ? add coompare
-            load_project(project_name = project_name)$.internal
-          })
-        })
-        was_loaded <- !is.null(project)
+      project_row <- which(projects$project_name == project_name)
+      cache_details <- projects[project_row, ]
+      if (original_details$redcap_uri != redcap_uri) {
+        stop_message <- paste0("There is an existing project at your chosen",
+                               " directory with same `project_name` but a",
+                               " different `redcap_uri`. You can use",
+                               " setup_project(..., hard_reset = TRUE) to",
+                               " override.")
+        stop(stop_message)
       }
-      if (!was_loaded && !missing_dir_path) {
-        project <- try_else_null({
-          suppressWarnings({ # will ignore supplied dir_path ? add coompare
-            load_project_from_dir(project_name = project_name,
-                                  dir_path = dir_path,
-                                  validate = TRUE)
-          })
-        })
-        was_loaded <- !is.null(project)
+      if (original_details$project_id != cache_details$project_id) {
+        stop_message <- paste0("There is an existing project at your chosen",
+                               " directory with same `project_name` but a",
+                               " different `project_id`. You can use",
+                               " setup_project(..., hard_reset = TRUE) to",
+                               " override.")
+        stop(stop_message)
       }
-      # attempt to load existing project unless hard_reset
-      if (!was_loaded) {
-        project <- .blank_project
-        cli_alert_warning("Setup blank project. Unable to find, load, or repair.")
-      }
-      if (was_loaded) {
-        # compare current setting to previous settings...
-        original_details <- extract_project_details(project)
-        projects <- get_projects()
-        project_row <- which(projects$project_name == project_name)
-        cache_details <- projects[project_row, ]
-        if (original_details$redcap_uri != redcap_uri) {
-          stop_message <- paste0("There is an existing project at your chosen",
-                                 " directory with same `project_name` but a",
-                                 " different `redcap_uri`. You can use",
-                                 " setup_project(..., hard_reset = TRUE) to",
-                                 " override.")
-          stop(stop_message)
-        }
-        if (original_details$project_id != cache_details$project_id) {
-          stop_message <- paste0("There is an existing project at your chosen",
-                                 " directory with same `project_name` but a",
-                                 " different `project_id`. You can use",
-                                 " setup_project(..., hard_reset = TRUE) to",
-                                 " override.")
-          stop(stop_message)
-        }
-        if (!is.null(project$internals$labelled)) {
-          if (project$internals$labelled != labelled) {
-            load_type <- ifelse(project$internals$labelled, "labelled", "raw")
-            chosen_type <- ifelse(labelled, "labelled", "raw")
-            hard_reset <- TRUE
-            warning(
-              "The project that was loaded was ",
-              load_type,
-              " and you chose ",
-              chosen_type,
-              ". Therefore, a full update was triggered to avoid data conflicts",
-              immediate. = TRUE
-            )
-          }
+      if (!is.null(project$internals$labelled)) {
+        if (project$internals$labelled != labelled) {
+          load_type <- ifelse(project$internals$labelled, "labelled", "raw")
+          chosen_type <- ifelse(labelled, "labelled", "raw")
+          hard_reset <- TRUE
+          warning(
+            "The project that was loaded was ",
+            load_type,
+            " and you chose ",
+            chosen_type,
+            ". Therefore, a full update was triggered to avoid data conflicts",
+            immediate. = TRUE
+          )
         }
       }
     }

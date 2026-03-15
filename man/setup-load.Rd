@@ -147,9 +147,10 @@ is optional for this function but can be used if you relocated the directory.
 }
 \examples{
 # Initialize the project object with the REDCap API token and URL
+save_folder <- tempdir() # replace with real folder
 project <- setup_project(
   project_name = "TEST",
-  dir_path = "path/to/secure/file/storage",
+  dir_path = save_folder,
   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 )
 

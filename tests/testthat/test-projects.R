@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 # get_projects (Exported)
 test_that("get_projects works!", {
   df <- get_projects()
@@ -13,7 +13,7 @@ test_that("get_projects works!", {
 # add_project_details_to_cache (Internal)
 test_that("add_project_details_to_cache works!", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
-  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
   # start empty
   projects <- get_projects()
   expect_data_frame(projects, nrows = 0L)
@@ -43,8 +43,8 @@ test_that("extract_project_details works!", {
 # save_projects_to_cache (Internal)
 test_that("save_projects_to_cache works!", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
-  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
-  cache_location <- file.path(tempdir_test, ".cache")
+  withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
+  cache_location <- file.path(tempdir_test, "R", "REDCapSync")
   projects <- get_projects()
   expect_data_frame(projects, nrows = 0L)
   project <- mock_test_project()$.internal

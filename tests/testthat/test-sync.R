@@ -1,9 +1,9 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 # sync (Exported)
 test_that("sync works!", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
-  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
   local_mocked_bindings(
     sweep_dirs_for_cache = function(...) NULL,
     load_project = function(...) NULL,

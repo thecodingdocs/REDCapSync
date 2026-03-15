@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 # assert_blank_project (Internal)
 test_that("assert_blank_project works!", {
 })

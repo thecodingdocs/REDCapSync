@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 # add_default_summaries (Internal)
 test_that("add_default_summaries works!", {
   project <- mock_test_project()$.internal
@@ -464,7 +464,7 @@ test_that("summarize_project works!", {
 # summary_records_due (Internal)
 test_that("summary_records_due works!", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
-  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
   project <- mock_test_project()$.internal |> clear_project_summaries()
   expect_false(summary_records_due(project, "REDCapSync"))
   expect_error(save_project_summary(project, "REDCapSync"))

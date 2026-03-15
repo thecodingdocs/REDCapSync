@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 # is_consecutive_srt_1 (Internal)
 test_that("is_consecutive_srt_1 works!", {
   expect_true(is_consecutive_srt_1(1L))

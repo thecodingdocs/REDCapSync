@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 # excel_to_list (Internal)
 test_that("excel_to_list works!", {
   expect_directory_exists(tempdir_file)

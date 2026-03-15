@@ -21,7 +21,7 @@ generate_comments <- function(action_type = "Add",
 }
 real_test_project <- function(project_name = "TEST_REDCAPR_SIMPLE") {
   assert_choice(project_name, .test_redcapr_names)
-  cache_location <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") |>
+  cache_location <- Sys.getenv("R_USER_CACHE_DIR") |>
     sanitize_path() |>
     assert_directory()
   redcap_uri <- "https://redcap-dev-2.ouhsc.edu/redcap/api/"
@@ -33,7 +33,7 @@ real_test_project <- function(project_name = "TEST_REDCAPR_SIMPLE") {
 }
 mock_test_project <- function(project_name = "TEST_CLASSIC") {
   assert_choice(project_name, .test_project_names)
-  dir_path <- Sys.getenv("REDCAPSYNC_CACHE_OVERRIDE") |>
+  dir_path <- Sys.getenv("R_USER_CACHE_DIR") |>
     sanitize_path() |>
     assert_directory()
   project <- load_test_project(project_name = project_name,

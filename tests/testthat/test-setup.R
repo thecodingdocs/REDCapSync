@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 # load_project (Exported)
 test_that("load_project works!", {
 })
@@ -9,7 +9,8 @@ test_that("load_test_project works!", {
 # setup_project (Exported)
 test_that("setup_project creates a valid project object and valid directory", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
-  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
+  withr::local_options(c("redcapsync.config.allow.test.names" = TRUE))
   expect_error(assert_dir(dir_path = tempdir_test))
   project_name <- "TEST_CLASSIC"
   redcap_uri <- "https://redcap.miami.edu/api/"
@@ -61,7 +62,8 @@ test_that("setup_project creates a valid project object and valid directory", {
 })
 test_that("setup_project checks exisiting dir", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
-  withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_test)
+  withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
+  withr::local_options(c("redcapsync.config.allow.test.names" = TRUE))
   expect_error(assert_dir(dir_path = tempdir_test))
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal
@@ -110,17 +112,16 @@ test_that("load_project_from_dir works!", {
 })
 # save_project (Internal)
 test_that("save_project works!", {
+  tempdir_file <- sanitize_path(withr::local_tempdir())
+  withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
   project_name <- "TEST_CLASSIC"
+  project <- mock_test_project(project_name)$.internal
   redcap_uri <- "https://redcap.miami.edu/api/"
-  project <- setup_project(project_name = project_name,
-                           dir_path = tempdir_file,
-                           redcap_uri = redcap_uri)$.internal # change to R6
-  save_project(project)
-  expect_false(file.exists(file.path(
-    project$dir_path,
-    "R_objects",
-    paste0(project_name, "_REDCapSync.RData")
-  )))
+  project$links$redcap_uri <- redcap_uri
+  expected_save_location <- file.path(project$dir_path,
+                                      "R_objects",
+                                      paste0(project_name, "_REDCapSync.RData"))
+  expect_false(file.exists(expected_save_location))
   project$internals$ever_connected <- TRUE
   fake_time <- now_time()
   project$internals$last_sync <- fake_time
@@ -128,10 +129,9 @@ test_that("save_project works!", {
   project$internals$last_data_update <- fake_time
   project$internals$last_metadata_update <- fake_time
   project$internals$timezone <- Sys.timezone()
-  project <- save_project(project)
-  expected_save_location <- file.path(project$dir_path,
-                                      "R_objects",
-                                      paste0(project_name, "_REDCapSync.RData"))
+  expect_no_error({
+    project <- save_project(project)
+  })
   expect_file_exists(expected_save_location)
   # check cached proj
   projects <- get_projects()

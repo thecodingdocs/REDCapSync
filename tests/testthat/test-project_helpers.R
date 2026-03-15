@@ -1,5 +1,5 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
-withr::local_envvar(REDCAPSYNC_CACHE_OVERRIDE = tempdir_file)
+withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 # labelled_to_raw_data_list (Internal)
 test_that("labelled_to_raw_data_list and raw_to_labelled_data_list works!", {
   project <- mock_test_project()$.internal

@@ -191,7 +191,7 @@ transformations and subset to be passed to spreadsheets.
 - [`REDCapSyncProject`](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSyncProject.md)
   : REDCapSync Encapsulated Project Object
 - [`config`](https://thecodingdocs.github.io/REDCapSync/reference/config.md)
-  : Configuration
+  : Package configuration accessors
 
 ## Multiple Projects
 

@@ -1,23 +1,7 @@
-# Configuration
+# Package configuration accessors
 
-Configuration can be set with options as well as environment variables
-
-allow.test.names is a logical for if
-[setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-will allow projects that start with "TEST\_", which in general will be
-reserved for test fixture data. If the user wants to override this they
-can.
-
-show.api.messages is a logical for showing REDCapR messages
-
-verbose is logical for how many messages to see in general
-
-cache.dir is a character file path if user wants to override cache
-location.
-
-header.style is a openxlsx style for the xlsx headers
-
-header.style is a openxlsx style for the xlsx body
+Internal configuration helpers used to retrieve package configuration
+values from options or environment variables.
 
 ## Usage
 
@@ -28,3 +12,42 @@ config
 ## Format
 
 An object of class `list` of length 6.
+
+## Details
+
+Configuration is resolved in the following order:
+
+1.  `options("redcapsync.config.*")`
+
+2.  `REDCAPSYNC_CONFIG_*` for logical and filepath types
+
+3.  Function default
+
+The `config` object is a list of accessor functions that retrieve
+configuration values and validate them.
+
+- allow.test.names:
+
+  Logical. Whether
+  [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+  allows project names starting with `"TEST_"`.
+
+- show.api.messages:
+
+  Logical. Whether to display API messages returned by REDCapR.
+
+- verbose:
+
+  Logical. Controls verbosity of package messages.
+
+- cache.dir:
+
+  Character file path overriding the default cache directory.
+
+- header.style:
+
+  `openxlsx` style object used for Excel header formatting.
+
+- body.style:
+
+  `openxlsx` style object used for Excel body formatting.

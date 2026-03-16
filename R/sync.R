@@ -373,6 +373,7 @@ analyze_log <- function(interim_log, id_col) {
       log_changes$length_comment_records <- length(log_changes$comment_records)
       log_changes$refresh_data <- (log_changes$length_deleted_records > 0L) ||
         (log_changes$length_updated_records > 0L)
+      log_changes$hard_reset <- log_changes$length_renamed_records > 0L
     }
   }
   log_changes

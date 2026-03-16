@@ -177,7 +177,6 @@
 #' ```
 #'
 #' @seealso See \code{vignette("Tokens", package = "REDCapSync")}
-#' @rdname configuration
 #' @export
 config <- list(
   allow.test.names = function(cong) {

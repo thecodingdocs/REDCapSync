@@ -125,7 +125,7 @@ token <code>Sys.getenv("REDCAPSYNC_TEST")</code> will be blank.</p>
 would be blank again.</p>
 </div>
 <div class="section level3">
-<h3 id="setting-your-token-for-any-session">Setting Your Token for Any Session<a class="anchor" aria-label="anchor" href="#setting-your-token-for-any-session"></a>
+<h3 id="setting-your-token-using-user-environment-variables-preferred">Setting Your Token using User Environment Variables (preferred)<a class="anchor" aria-label="anchor" href="#setting-your-token-using-user-environment-variables-preferred"></a>
 </h3>
 <p>You may find want to reuse a token, and you may have several
 projects, so a convenient way to store the tokens in a separate
@@ -164,6 +164,10 @@ have the token name at <code>project$token_name</code>. In the future,
 we may set our token in a different way.</p>
 </div>
 <div class="section level3">
+<h3 id="setting-your-token-using-keyring-package">Setting Your Token using <code>keyring</code> package<a class="anchor" aria-label="anchor" href="#setting-your-token-using-keyring-package"></a>
+</h3>
+</div>
+<div class="section level3">
 <h3 id="testing-your-token-optional">Testing Your Token (optional)<a class="anchor" aria-label="anchor" href="#testing-your-token-optional"></a>
 </h3>
 <p>If you are ever having any issues with your token, you can test your
@@ -171,9 +175,9 @@ project object with <code>view_project_token(project)</code> and/or
 <code>test_project_token(project)</code></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="fu">view_project_token</span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span>
+<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">load_project</a></span><span class="op">(</span><span class="st">"TEST_CLASSIC"</span><span class="op">)</span> <span class="co"># replace project name with yours</span></span>
 <span></span>
-<span><span class="fu">test_project_token</span><span class="op">(</span><span class="va">project</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">test_token</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="additional-resources">Additional Resources<a class="anchor" aria-label="anchor" href="#additional-resources"></a>

@@ -81,6 +81,9 @@
 #' "designer", "dictionary", "data_quality", or "identifiers".
 #' @param open_browser Logical. If TRUE, launches the link in the default
 #'   browser.
+#' @param record character of record
+#' @param page character of page (instrument/form)
+#' @param instance character of instance
 #' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data in
 #' the project object to the directory at `dir_path`. Ignored when `dir_path` is
@@ -469,6 +472,25 @@ REDCapSyncProject <- R6Class(
       the_link <- get_project_url(private$project,
                                   link_type = link_type,
                                   open_browser = open_browser)
+      if (!open_browser) {
+        return(the_link)
+      }
+      invisible(self)
+    },
+    #' @description opens record links in browser
+    url_record_launch = function(record = NULL,
+                                 page = NULL,
+                                 instance = NULL,
+                                 open_browser = TRUE) {
+      if (private$project$internals$is_test && open_browser) {
+        cli_alert_info("TEST projects do not link to the web!")
+        return(invisible(self))
+      }
+      the_link <- get_record_url(private$project,
+                                 record = record,
+                                 page = page,
+                                 instance = instance,
+                                 open_browser = open_browser)
       if (!open_browser) {
         return(the_link)
       }

@@ -58,6 +58,7 @@ users and log.}
 \item \href{#method-REDCapSyncProject-save}{\code{REDCapSyncProject$save()}}
 \item \href{#method-REDCapSyncProject-test_token}{\code{REDCapSyncProject$test_token()}}
 \item \href{#method-REDCapSyncProject-url_launch}{\code{REDCapSyncProject$url_launch()}}
+\item \href{#method-REDCapSyncProject-url_record_launch}{\code{REDCapSyncProject$url_record_launch()}}
 \item \href{#method-REDCapSyncProject-upload}{\code{REDCapSyncProject$upload()}}
 }
 }
@@ -547,6 +548,35 @@ opens links in browser
 "base", "home", "record_home", "records_dashboard", "api",
 "api_playground", "codebook", "user_rights", "setup", "logging",
 "designer", "dictionary", "data_quality", or "identifiers".}
+
+\item{\code{open_browser}}{Logical. If TRUE, launches the link in the default
+browser.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSyncProject-url_record_launch"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-url_record_launch}{}}}
+\subsection{Method \code{url_record_launch()}}{
+opens record links in browser
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$url_record_launch(
+  record = NULL,
+  page = NULL,
+  instance = NULL,
+  open_browser = TRUE
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{record}}{character of record}
+
+\item{\code{page}}{character of page (instrument/form)}
+
+\item{\code{instance}}{character of instance}
 
 \item{\code{open_browser}}{Logical. If TRUE, launches the link in the default
 browser.}

@@ -78,6 +78,8 @@ for initializing the `project` object.'
 
 - [`REDCapSyncProject$url_launch()`](#method-REDCapSyncProject-url_launch)
 
+- [`REDCapSyncProject$url_record_launch()`](#method-REDCapSyncProject-url_record_launch)
+
 - [`REDCapSyncProject$upload()`](#method-REDCapSyncProject-upload)
 
 ------------------------------------------------------------------------
@@ -684,6 +686,39 @@ opens links in browser
   "home", "record_home", "records_dashboard", "api", "api_playground",
   "codebook", "user_rights", "setup", "logging", "designer",
   "dictionary", "data_quality", or "identifiers".
+
+- `open_browser`:
+
+  Logical. If TRUE, launches the link in the default browser.
+
+------------------------------------------------------------------------
+
+### Method `url_record_launch()`
+
+opens record links in browser
+
+#### Usage
+
+    REDCapSyncProject$url_record_launch(
+      record = NULL,
+      page = NULL,
+      instance = NULL,
+      open_browser = TRUE
+    )
+
+#### Arguments
+
+- `record`:
+
+  character of record
+
+- `page`:
+
+  character of page (instrument/form)
+
+- `instance`:
+
+  character of instance
 
 - `open_browser`:
 

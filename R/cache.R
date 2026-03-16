@@ -63,7 +63,7 @@ get_cache_default <- function() {
 #' @noRd
 get_cache <- function() {
   cache <- hoardr::hoard()
-  cache$cache_path_set(full_path = .config$cache.dir())
+  cache$cache_path_set(full_path = config$cache.dir())
   cache$mkdir()
   cache
 }

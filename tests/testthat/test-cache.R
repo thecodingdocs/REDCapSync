@@ -168,8 +168,7 @@ test_that("sweep_dirs_for_cache compares cached and disk project details", {
   expect_no_error(sweep_dirs_for_cache())
   # Cache should be updated with new version
   projects <- get_projects()
-  cached_project <- projects[
-    which(projects$project_name == project$project_name),
-  ]
+  project_row <- which(projects$project_name == project$project_name)
+  cached_project <- projects[project_row ,]
   expect_identical(cached_project$version, "13.0.0")
 })

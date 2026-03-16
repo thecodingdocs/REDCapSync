@@ -47,6 +47,7 @@ Imports:
     stringr,
     utils
 Suggests: 
+    keyring,
     knitr,
     listviewer,
     rmarkdown,

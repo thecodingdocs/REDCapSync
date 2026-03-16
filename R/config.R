@@ -93,7 +93,7 @@
 #' ```
 #'
 #' ## keyring
-#' Character keyring name (parameter from [keyring] package). Default is NULL,
+#' Character keyring name (parameter from \code{\link[keyring]{keyring}} package). Default is NULL,
 #' which is at the system level. For locking use a keyring like "REDCapSync"
 #'
 #' ```
@@ -109,7 +109,7 @@
 #' ```
 #'
 #' ## keyring.service
-#' Character keyring name (parameter from [keyring] package). Default is NULL,
+#' Character keyring name (parameter from \code{\link[keyring]{keyring}} package). Default is NULL,
 #' which is at the system level. For locking use a keyring like "REDCapSync"
 #'
 #' ```

@@ -109,7 +109,7 @@ Sys.setenv(REDCAPSYNC_CONFIG_CACHE_DIR = "file/path/to/keep/cache") # set
 
 \subsection{keyring}{
 
-Character keyring name (parameter from \link[keyring:keyring-package]{keyring::keyring} package). Default is NULL,
+Character keyring name (parameter from \code{\link[keyring]{keyring}} package). Default is NULL,
 which is at the system level. For locking use a keyring like "REDCapSync"
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{# check current value package is using...
@@ -126,7 +126,7 @@ Sys.setenv(REDCAPSYNC_CONFIG_KEYRING = "REDCapSync") # set in session
 
 \subsection{keyring.service}{
 
-Character keyring name (parameter from \link[keyring:keyring-package]{keyring::keyring} package). Default is NULL,
+Character keyring name (parameter from \code{\link[keyring]{keyring}} package). Default is NULL,
 which is at the system level. For locking use a keyring like "REDCapSync"
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{# check current value package is using...

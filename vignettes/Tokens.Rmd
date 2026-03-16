@@ -36,7 +36,7 @@ Sys.getenv("REDCAPSYNC_TEST")
 
 Now the token is set for this R session only. If you restarted R, it would be blank again.
 
-## Setting Your Token for Any Session
+## Setting Your Token using User Environment Variables (preferred)
 
 You may find want to reuse a token, and you may have several projects, so a convenient way to store the tokens in a separate location. One way to do this is your personal .Renviron file. Again, you should check always confirm the location of this file and make sure it's not a part of any cloud storage or git or GitHub. You can use `usethis::edit_r_environ()` to semi-permanently save your token. Each time you launch an R session this file will run and your token will be visible to you if specifically called with `Sys.getenv("REDCAPSYNC_TEST")`.
 
@@ -60,15 +60,21 @@ Sys.getenv("REDCAPSYNC_TEST") # now should contain your token
 
 The only reference to your token that is ever made or saved in REDCapSync is with its name. For example, any REDCap project object will have the token name at `project$token_name`. In the future, we may set our token in a different way. 
 
+## Setting Your Token using `keyring` package
+
+```{r, eval=FALSE}
+
+```
+
 ## Testing Your Token (optional)
 
 If you are ever having any issues with your token, you can test your project object with `view_project_token(project)` and/or `test_project_token(project)`
 
 ```{r, eval=FALSE}
 
-view_project_token(project)
+project <- load_project("TEST_CLASSIC") # replace project name with yours
 
-test_project_token(project)
+project$test_token()
 
 ```
 

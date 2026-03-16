@@ -198,4 +198,25 @@ is_hexadecimal <- function(string, length = NULL) {
   grepl(pattern, string)
 }
 #' @noRd
+get_project_keyring_token <- function(project) {
+  keyring <-  config$keyring()
+  username <- project$project_name
+  service <- config$keyring.service()
+  if (!has_keyring_pkg()) {
+    cli_alert_info("Package 'keyring' can be used to store tokens...")
+    cli_alert_info("{keyring}")
+    cli_alert_info("Package 'keyring' can be used to store tokens.")
+    return(NULL)
+  }
+  token <- try_else_null({
+    keyring::key_get(service = service,
+                     username = username,
+                     keyring = keyring)
+  })
+}
+#' @noRd
+has_keyring_pkg <- function() {
+  requireNamespace("keyring", quietly = TRUE)
+}
+#' @noRd
 .token_prefix <- "REDCAPSYNC_"

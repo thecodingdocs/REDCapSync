@@ -15,7 +15,7 @@ labelled_to_raw_form <- function(form, project) {
       if (length(no_match) > 0L) {
         bad_choices <- form[[field_name]][no_match] |> unique() |> toString()
         cli_alert_danger(form[[field_name]][no_match])
-        cli_abort("Mismatched REDCap! `{field_name}`: {bad_choices}")
+        cli_abort("Mismatched REDCap! `{field_name}` = {bad_choices}")
       }
       form[[field_name]] <- conversion_table$code[match_rows]
     } else {
@@ -49,8 +49,9 @@ raw_to_labelled_form <- function(form, project) {
       no_match <- which(is.na(match_rows) & !is.na(form[[field_name]]))
       if (length(no_match) > 0L) {
         bad_choices <- form[[field_name]][no_match] |> unique() |> toString()
-        cli_alert_danger(form[[field_name]][no_match])
-        warning(paste0("Mismatched REDCap! ", field_name, ": ", bad_choices))
+        cli_alert_warning("Mismatched REDCap! {field_name} = {bad_choices}")
+        affected <- form[[project$metadata$id_col]][no_match] |> toString()
+        cli_alert_danger("Affected records: {affected}")
       }
       form[[field_name]] <- conversion_table$name[match_rows]
     } else {
@@ -208,11 +209,11 @@ normalize_redcap <- function(denormalized, project, labelled) {
     }
     if (is_something(row_index)) {
       col_names <- unique(c(add_ons_x, form_field_names))
-      raw_subset <- denormalized[row_index, col_names]
+      subset <- denormalized[row_index, col_names]
       if (labelled) {
-        raw_subset <- raw_to_labelled_form(form = raw_subset, project = project)
+        subset <- raw_to_labelled_form(form = subset, project = project)
       }
-      form_list[[form_name]] <- raw_subset
+      form_list[[form_name]] <- subset
     }
   }
   form_list <- all_character_cols_list(form_list)
@@ -278,9 +279,9 @@ get_project_url <- function(project,
 }
 #' @noRd
 get_record_url <- function(project,
-                           record,
-                           page,
-                           instance,
+                           record = NULL,
+                           page = NULL,
+                           instance = NULL,
                            open_browser = TRUE) {
   # FIX
   link <- paste0(
@@ -291,7 +292,7 @@ get_record_url <- function(project,
     project$redcap$project_id
   )
   id_col <- project$metadata$id_col
-  if (!missing(record)) {
+  if (!is.null(record)) {
     if (!record %in% project$summary$all_records[[id_col]]) {
       stop(record, " is not one of the records inside project")
     }
@@ -303,7 +304,7 @@ get_record_url <- function(project,
     }
     link <- paste0(link, "&id=", record)
   }
-  if (!missing(page)) {
+  if (!is.null(page)) {
     link <- gsub("record_home", "index", link)
     if (!page %in% project$metadata$forms$form_name) {
       stop(
@@ -313,7 +314,7 @@ get_record_url <- function(project,
       )
     }
     link <- paste0(link, "&page=", page)
-    if (!missing(instance)) {
+    if (!is.null(instance)) {
       rep_rows <- which(project$metadata$forms$repeating)
       repeating_form_names <- project$metadata$forms$form_name[rep_rows]
       if (!page %in% repeating_form_names) {

@@ -127,3 +127,27 @@ test_that("update_project_links works!", {
     expect_true(grepl(version_pattern, project$links[[the_link]]))
   }
 })
+# has_keyring_token (Internal)
+test_that("has_keyring_token returns NULL when no projects exist", {
+  local_mocked_bindings(
+    get_projects = function(...) .blank_project_details
+  )
+  expect_null(has_keyring_token())
+})
+test_that("has_keyring_token returns NULL for missing project names", {
+  projects <- data.frame(project_name = "TEST_CLASSIC",
+                         stringsAsFactors = FALSE)
+  local_mocked_bindings(
+    get_projects = function(...) projects
+  )
+  expect_null(has_keyring_token("MISSING_PROJECT"))
+})
+test_that("has_keyring_token returns NULL when keyring is invalid", {
+  projects <- data.frame(project_name = "TEST_CLASSIC",
+                         stringsAsFactors = FALSE)
+  local_mocked_bindings(
+    get_projects = function(...) projects,
+    is_valid_keyring = function(...) FALSE
+  )
+  expect_null(has_keyring_token("TEST_CLASSIC"))
+})

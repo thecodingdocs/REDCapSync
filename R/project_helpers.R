@@ -14,7 +14,7 @@ labelled_to_raw_form <- function(form, project) {
       no_match <- which(is.na(match_rows) & !is.na(form[[field_name]]))
       if (length(no_match) > 0L) {
         bad_choices <- form[[field_name]][no_match] |> unique() |> toString()
-        cli_alert_danger(form[[field_name]][no_match])
+        cli_alert_danger(form[[field_name]][no_match]) # confirm with real
         cli_abort("Mismatched REDCap! `{field_name}` = {bad_choices}")
       }
       form[[field_name]] <- conversion_table$code[match_rows]

@@ -93,8 +93,8 @@
 #' ```
 #'
 #' ## keyring
-#' Character keyring name (parameter from \code{\link[keyring]{keyring}} package). Default is NULL,
-#' which is at the system level. For locking use a keyring like "REDCapSync"
+#' Character keyring name (parameter from \code{\link[keyring]{keyring}}
+#' package). Default is NULL, which is at the system level. For locking use a keyring like "REDCapSync"
 #'
 #' ```
 #' # check current value package is using...
@@ -109,8 +109,8 @@
 #' ```
 #'
 #' ## keyring.service
-#' Character keyring name (parameter from \code{\link[keyring]{keyring}} package). Default is NULL,
-#' which is at the system level. For locking use a keyring like "REDCapSync"
+#' Character keyring service name (parameter from \code{\link[keyring]{keyring}}
+#' package). Default is "R-REDCapSync".
 #'
 #' ```
 #' # check current value package is using...
@@ -270,7 +270,7 @@ config_validate <- function(opt_name, value, type, default) {
   }
   if (identical(type, "character")) {
     if (test_character(value, min.chars = 1L, any.missing = FALSE, len = 1L)) {
-      if(toupper(value) != "NULL") {
+      if (toupper(value) != "NULL") {
         return(value)
       }
     }

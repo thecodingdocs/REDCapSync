@@ -207,5 +207,5 @@ project <- setup_project(
 #> ! No cached projects... use `setup_project(...)`
 #> ! Setup blank project. Unable to find, load, or repair.
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
-#> Error in default_backend()$keyring_is_locked(keyring): attempt to apply non-function
+#> ! No valid token in session: Sys.getenv('REDCAPSYNC_TEST')
 ```

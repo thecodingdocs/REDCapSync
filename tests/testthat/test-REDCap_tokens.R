@@ -9,7 +9,7 @@ test_that("get_project_token works!", {
     expect_identical(get_project_token(project), token)
     expect_no_error(get_project_token(project))
     expect_message(get_project_token(project = project, silent = FALSE),
-                   "Valid token for TEST_CLASSIC is set")
+                   "Valid token for TEST_CLASSIC from envvar")
   })
   token <- generate_hex(2L)
   withr::with_envvar(c(REDCAPSYNC_TEST_CLASSIC = token), {
@@ -17,8 +17,8 @@ test_that("get_project_token works!", {
     expect_message(get_project_token(project = project, silent = FALSE),
                    "is not a valid 32-character hexadecimal value")
   })
-  withr::with_envvar(c(REDCAPSYNC_TEST_CLASSIC = ""), {
-    expect_identical(get_project_token(project), "")
+  withr::with_envvar(c(REDCAPSYNC_TEST_CLASSIC = "BAD"), {
+    expect_identical(get_project_token(project), "BAD")
     expect_message(get_project_token(project = project, silent = FALSE),
                    "is not a valid 32-character hexadecimal value")
   })

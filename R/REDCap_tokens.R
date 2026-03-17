@@ -1,56 +1,19 @@
 #' @noRd
 get_project_token <- function(project, silent = TRUE) {
   assert_setup_project(project)
-  token_name <- project$redcap$token_name
-  token <- Sys.getenv(token_name)
+  project_name <- project$project_name
+  token_source <- "envvar"
+  token <- get_project_envvar_token(project)
+  if(is.null(token)) {
+    token_source <- "keyring"
+    token <- get_project_keyring_token(project)
+  }
   valid <- is_valid_redcap_token(token = token, silent = silent)
-  fake_token <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
   if (!silent) {
-    user_renviron_path <- Sys.getenv("R_ENVIRON_USER", unset = NA_character_)
-    if (is.na(user_renviron_path) || !nzchar(user_renviron_path)) {
-      user_renviron_path <- file.path(Sys.getenv("HOME"), ".Renviron")
-    }
-    user_renviron_path <- normalizePath(path = user_renviron_path,
-                                        winslash = "/",
-                                        mustWork = FALSE)
-    cli_alert_wrap(
-      paste0(
-        "You can set REDCap tokens each session with `Sys.setenv(",
-        token_name,
-        "='",
-        fake_token,
-        "')`... or for higher security add `",
-        token_name,
-        " = '",
-        fake_token,
-        "'` to your user .Renviron file ",
-        "...(then restart R under session tab after saving ",
-        "file)... The way to tell it worked is to run the code, `Sys.getenv('",
-        token_name,
-        "')`"
-      )
-    )
-    cli_alert_info("User R environ file --> {.file {user_renviron_path}}")
-    cli_alert_info("Try `edit_r_environ()` from `usethis` package.")
-    cli_alert_info("See the {.vignette REDCapSync::Tokens} vignette.")
-    if (is_something(project$links$redcap_api)) {
-      cli_alert_wrap(
-        paste0(
-          "You can request, regenerate, or delete with ",
-          "`project$url_launch('api')` or go here: "
-        ),
-        url = project$links$redcap_api
-      )
-    }
+    token_help_message(project)
     if (valid) {
-      cli_alert_wrap(
-        paste0(
-          "Valid token for ",
-          project$project_name,
-          " is set in your R session (pending connection)!"
-        ),
-        bullet_type = "v"
-      )
+      cli_alert_success("Valid token for {project_name} from {token_source}!")
+      cli_alert_info("REDCap Home {.url {project$links$redcap_home}}")
     }
   }
   invisible(token)
@@ -139,7 +102,7 @@ is_valid_redcap_token <- function(token, silent = TRUE) {
   token_text <- NULL
   end_text <- " is not a valid 32-character hexadecimal value."
   trimmed_token <- trimws(token, whitespace = .whitespace)
-  if (is.null(token)) {
+  if (is.null(token)) { # obsolete
     token_text <- "is `NULL`,"
     cli_alert_wrap(
       paste0(start_text, token_text, end_text),
@@ -148,7 +111,7 @@ is_valid_redcap_token <- function(token, silent = TRUE) {
     )
     return(FALSE)
   }
-  if (is.na(token)) {
+  if (is.na(token)) { # obsolete
     token_text <- "is `NA`,"
     cli_alert_wrap(
       paste0(start_text, token_text, end_text),
@@ -157,7 +120,7 @@ is_valid_redcap_token <- function(token, silent = TRUE) {
     )
     return(FALSE)
   }
-  if (!nzchar(token)) {
+  if (!nzchar(token)) { # obsolete
     token_text <- "`` (empty),"
     cli_alert_wrap(
       paste0(start_text, token_text, end_text),
@@ -199,24 +162,187 @@ is_hexadecimal <- function(string, length = NULL) {
 }
 #' @noRd
 get_project_keyring_token <- function(project) {
+  project_name <- project$project_name
   keyring <-  config$keyring()
-  username <- project$project_name
   service <- config$keyring.service()
-  if (!has_keyring_pkg()) {
-    cli_alert_info("Package 'keyring' can be used to store tokens...")
-    cli_alert_info("{keyring}")
-    cli_alert_info("Package 'keyring' can be used to store tokens.")
+  if (!is_valid_keyring(service = service, keyring = keyring)) {
     return(NULL)
   }
   token <- try_else_null({
     keyring::key_get(service = service,
-                     username = username,
+                     username = project_name,
                      keyring = keyring)
   })
+  token
+}
+#' @noRd
+get_project_envvar_token <- function(project) {
+  token_name <- project$redcap$token_name
+  token <- Sys.getenv(token_name)
+  if (!is_something(token)) {
+    return(NULL)
+  }
+  token
+}
+#' @noRd
+set_project_keyring_token <- function(project) {
+  project_name <- project$project_name
+  keyring <-  config$keyring()
+  service <- config$keyring.service()
+  if (!is_valid_keyring(service = service, keyring = keyring)) {
+    return(NULL)
+  }
+  keyring::key_set(
+    service = service, # "R-REDCapSync" by default
+    username = project_name, # defined by setup_project
+    keyring = keyring # NULL by default
+  )
+}
+#' @noRd
+get_project_envvar_token <- function(project) {
+  token_name <- project$redcap$token_name
+  token <- Sys.getenv(token_name)
+  if (!is_something(token)) {
+    return(NULL)
+  }
+  token
+}
+#' @noRd
+has_keyring_token <- function(project_names = NULL,
+                              service = config$keyring.service(),
+                              keyring = config$keyring()) {
+  projects <- get_projects()
+  if (nrow(projects) == 0L) {
+    return(NULL)
+  }
+  if (is.null(project_names)) {
+    project_names <- projects$project_name
+  }
+  projects <- projects[which(projects$project_name %in% project_names), ]
+  if (nrow(projects) == 0L) {
+    return(NULL)
+  }
+  if (!is_valid_keyring(service = service, keyring = keyring)) {
+    return(NULL)
+  }
+  key_list <- keyring::key_list(service = service, keyring = keyring)
+  if (nrow(key_list) == 0L) {
+    return(NULL)
+  }
+  project_names %in% key_list$username
+}
+#' @noRd
+is_valid_keyring <- function (service = config$keyring.service(),
+                              keyring = config$keyring()) {
+  if (!has_keyring_pkg()) {
+    cli_alert_info("`keyring` package can be used to store tokens...")
+    cli_code("install.packages(\"keyring\")")
+    return(FALSE)
+  }
+  if (keyring::keyring_is_locked(keyring = keyring)) {
+    warning_message <- "keyring = NULL (the system keyring) is locked"
+    keyring_code_start <- paste0("keyring::keyring_unlock(")
+    keyring_code_end <- ") # enter system password"
+    if (!is.null(keyring)) {
+      warning_message <- "keyring = \"{keyring}\" is locked"
+      keyring_code_end <- paste0("keyring = \"", keyring, "\")")
+    }
+    cli_alert_warning(warning_message)
+    cli_alert_info("it can be unlocked with following code ...")
+    cli_code(paste0(keyring_code_start, keyring_code_end))
+    return(FALSE)
+  }
+  if (!is.null(keyring)) {
+    if (!keyring::has_keyring_support()) {
+      cli_alert_info("Your system does not support keyring. Set to NULL.")
+      cli_code("keyring::has_keyring_support()")
+      return(FALSE)
+    }
+    if (!keyring %in% keyring::keyring_list()$keyring) {
+      cli_alert_warning("keyring = \"{keyring}\" does not exist!")
+      cli_alert_info("it can be created with following code ...")
+      cli_code(paste0("keyring::keyring_create(\"", keyring, "\")"))
+      return(FALSE)
+    }
+  }
+  TRUE
 }
 #' @noRd
 has_keyring_pkg <- function() {
   requireNamespace("keyring", quietly = TRUE)
 }
 #' @noRd
+has_envvar_token <- function(project_names = NULL) {
+  projects <- get_projects()
+  if (nrow(projects) == 0L) {
+    return(NULL)
+  }
+  if (is.null(project_names)) {
+    project_names <- projects$project_name
+  }
+  projects <- projects[which(projects$project_name %in% project_names), ]
+  if (nrow(projects) == 0L) {
+    return(NULL)
+  }
+  if (!is_valid_keyring(service = service, keyring = keyring)) {
+    return(NULL)
+  }
+  t_names <- projects$token_name[match(project_names, projects$project_name)]
+  t_names %in% names(Sys.getenv())
+}
+#' @noRd
+token_check <- function() {
+  projects <- get_projects()
+  if (nrow(projects) == 0L) {
+    return(NULL)
+  }
+  projects$has_envvar_token <- FALSE
+  ennvar_check <- projects$project_name |> has_envvar_token()
+  if (!is.null(ennvar_check)) {
+    projects$has_envvar_token <- ennvar_check
+  }
+  projects$has_keyring_token <- FALSE
+  keyring_check <- projects$project_name |> has_keyring_token()
+  if (!is.null(keyring_check)) {
+    projects$has_keyring_token <- keyring_check
+  }
+  projects
+}
+#' @noRd
+token_help_message <- function(project) {
+  assert_setup_project(project)
+  token_name <- project$redcap$token_name
+  user_renviron_path <- Sys.getenv("R_ENVIRON_USER", unset = NA_character_)
+  if (is.na(user_renviron_path) || !nzchar(user_renviron_path)) {
+    user_renviron_path <- file.path(Sys.getenv("HOME"), ".Renviron")
+  }
+  user_renviron_path <- normalizePath(path = user_renviron_path,
+                                      winslash = "/",
+                                      mustWork = FALSE)
+  cli_alert_info("You can set REDCap tokens the following ways ...")
+  cli_alert_info("See the {.vignette REDCapSync::Tokens} vignette.")
+  cli_alert_info("1. environment variables (preferred)")
+  cli_li("User R environ file --> {.file {user_renviron_path}}") # windows?
+  cli_li("Try `edit_r_environ()` from `usethis` package.")
+  cli_li(paste0("Add `{token_name} = '",
+                .fake_token,
+                "'` to your user .Renviron file... then save the file ",
+                "and restart R under session tab ... The way to tell",
+                " it worked is to run `Sys.getenv('{token_name}')`"))
+  cli_alert_info("2. keyring") # add more text
+  cli_alert_info("3. console") # add more text
+  cli_alert_info("x. scripts (not recommended)")
+  if (is_something(project$links$redcap_api)) {
+    cli_alert_wrap(
+      paste0(
+        "You can request, regenerate, or delete with ",
+        "`project$url_launch('api')` or click link: "
+      ),
+      url = project$links$redcap_api
+    )
+  }
+}
+#' @noRd
 .token_prefix <- "REDCAPSYNC_"
+#' @noRd
+.fake_token <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"

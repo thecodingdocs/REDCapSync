@@ -56,6 +56,7 @@ users and log.}
 \item \href{#method-REDCapSyncProject-summarize}{\code{REDCapSyncProject$summarize()}}
 \item \href{#method-REDCapSyncProject-save_summary}{\code{REDCapSyncProject$save_summary()}}
 \item \href{#method-REDCapSyncProject-save}{\code{REDCapSyncProject$save()}}
+\item \href{#method-REDCapSyncProject-set_keyring_token}{\code{REDCapSyncProject$set_keyring_token()}}
 \item \href{#method-REDCapSyncProject-test_token}{\code{REDCapSyncProject$test_token()}}
 \item \href{#method-REDCapSyncProject-url_launch}{\code{REDCapSyncProject$url_launch()}}
 \item \href{#method-REDCapSyncProject-url_record_launch}{\code{REDCapSyncProject$url_record_launch()}}
@@ -519,6 +520,16 @@ are inherited according to what was set with \code{add_project_summary}.}
 Add a new summary entry
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$save()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSyncProject-set_keyring_token"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-set_keyring_token}{}}}
+\subsection{Method \code{set_keyring_token()}}{
+Set keyring token. See vignette and config for detail.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$set_keyring_token()}\if{html}{\out{</div>}}
 }
 
 }

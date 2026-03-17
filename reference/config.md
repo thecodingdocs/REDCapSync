@@ -119,10 +119,9 @@ a keyring like "REDCapSync"
 
 ### keyring.service
 
-Character keyring name (parameter from
+Character keyring service name (parameter from
 [`keyring`](https://keyring.r-lib.org/reference/keyring-package.html)
-package). Default is NULL, which is at the system level. For locking use
-a keyring like "REDCapSync"
+package). Default is "R-REDCapSync".
 
     # check current value package is using...
     config$keyring.service()

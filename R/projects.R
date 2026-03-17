@@ -87,8 +87,6 @@ get_projects <- function() {
   "entire_log",
   "metadata_only",
   "get_type"
-  # "batch_size_download",
-  # "batch_size_upload"
 )
 #' @noRd
 .blank_project_details <- data.frame(

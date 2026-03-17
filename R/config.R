@@ -179,61 +179,63 @@
 #' @seealso See \code{vignette("Tokens", package = "REDCapSync")}
 #' @export
 config <- list(
-  allow.test.names = function(cong) {
+  allow.test.names = function(default = FALSE) {
     config_get(opt_name = "allow.test.names",
                type = "logical",
-               default = FALSE)
+               default = default)
   },
-  show.api.messages = function() {
+  show.api.messages = function(default = FALSE) {
     config_get(opt_name = "show.api.messages",
                type = "logical",
-               default = FALSE)
+               default = default)
   },
-  verbose = function() {
+  verbose = function(default = FALSE) {
     config_get(opt_name = "verbose",
                type = "logical",
-               default = TRUE)
+               default = default)
   },
-  offline = function() {
+  offline = function(default = FALSE) {
     config_get(opt_name = "offline",
                type = "logical",
-               default = FALSE)
+               default = default)
   },
-  cache.dir = function() {
+  cache.dir = function(default = cache_path_default()) {
     config_get(opt_name = "cache.dir",
                type = "filepath",
-               default = cache_path_default())
+               default = default)
   },
-  keyring = function() {
+  keyring = function(default = NULL) {
     config_get(opt_name = "keyring",
                type = "character",
-               default = NULL)
+               default = default)
   },
-  keyring.service = function() {
+  keyring.service = function(default = "R-REDCapSync") {
     config_get(opt_name = "keyring.service",
                type = "character",
-               default = "R-REDCapSync")
+               default = default)
   },
-  openxlsx.header.style = function() {
+  openxlsx.header.style = function(default = .header_style) {
     config_get(opt_name = "openxlsx.header.style",
                type = "openxlsx_style",
-               default = .header_style)
+               default = default)
   },
-  openxlsx.body.style = function() {
+  openxlsx.body.style = function(default = .body_style) {
     config_get(opt_name = "openxlsx.body.style",
                type = "openxlsx_style",
-               default = .body_style)
+               default = default)
   }
 )
 #' @noRd
 config_get <- function(opt_name, type, default) {
   assert_choice(opt_name, names(config))
   assert_choice(type, .option_types)
+  # check options first
   opt_key <- paste("REDCapSync", "config", opt_name, sep = ".") |> tolower()
   opt_val <- getOption(opt_key)
   if (!is.null(opt_val)) {
     return(config_validate(opt_name, opt_val, type, default))
   }
+  # check envvar second
   env_name <- chartr(".", "_", opt_name)
   env_key <- paste("REDCapSync", "config", env_name, sep = "_") |> toupper()
   env_val <- Sys.getenv(env_key, unset = NA)

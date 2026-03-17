@@ -18,22 +18,23 @@ Several R packages exist for using the
 such as, [`redcapAPI`](https://github.com/vubiostat/redcapAPI),
 [`REDCapR`](https://ouhscbbmc.github.io/REDCapR), and
 [`tidyREDCap`](https://raymondbalise.github.io/tidyREDCap/). However,
-[`REDCapSync`](https://thecodingdocs.github.io/REDCapSync) is the first
+[`REDCapSync`](https://thecodingdocs.github.io/REDCapSync/) is the first
 “get-everything” REDCap R package that converts REDCap projects into a
 standardized, API-efficient, and project-agnostic
 [R6](https://r6.r-lib.org/) object.
 
 ## What is REDCapSync?
 
-[`REDCapSync`](https://thecodingdocs.github.io/REDCapSync) unleashes the
-full power of the REDCap API even for the basic R user. When a sync is
-performed, [`REDCapSync`](https://thecodingdocs.github.io/REDCapSync)
-uses a cache of previous saves, a user-defined directory, and the REDCap
-log to only update data that changed since the last API call. Project
-objects can be used for the best that R has to offer via statistics,
-visualization, functions, shiny apps, and more!
+[`REDCapSync`](https://thecodingdocs.github.io/REDCapSync/) unleashes
+the full power of the REDCap API even for the basic R user. When a sync
+is performed,
+[`REDCapSync`](https://thecodingdocs.github.io/REDCapSync/) uses a cache
+of previous saves, a user-defined directory, and the REDCap log to only
+update data that changed since the last API call. Project objects can be
+used for the best that R has to offer via statistics, visualization,
+functions, shiny apps, and more!
 
-The aims of [`REDCapSync`](https://thecodingdocs.github.io/REDCapSync)
+The aims of [`REDCapSync`](https://thecodingdocs.github.io/REDCapSync/)
 are to…
 
 1.  Encapsulate the REDCap API into one standardized object to

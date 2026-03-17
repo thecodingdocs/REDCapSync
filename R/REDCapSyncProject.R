@@ -452,6 +452,15 @@ REDCapSyncProject <- R6Class(
       private$project <- save_project(private$project)
       invisible(self)
     },
+    #' @description  Set keyring token. See vignette and config for detail.
+    set_keyring_token = function() {
+      if (private$project$internals$is_test) {
+        cli_alert_info("TEST projects do not save to directories!")
+        return(invisible(self))
+      }
+      set_project_keyring_token(private$project)
+      invisible(self)
+    },
     #' @description test connection via communication with API
     test_token = function() {
       if (private$project$internals$is_test) {

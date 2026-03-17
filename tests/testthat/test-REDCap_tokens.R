@@ -151,3 +151,6 @@ test_that("has_keyring_token returns NULL when keyring is invalid", {
   )
   expect_null(has_keyring_token("TEST_CLASSIC"))
 })
+# has_envvar_token (Internal)
+test_that("has_envvar_token works", {
+})

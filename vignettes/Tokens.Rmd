@@ -20,22 +20,6 @@ REDCap API tokens are equivalent to your username and password. They should neve
 
 Precisely because tokens are sensitive, REDCapSync is designed to only reference the name of your token, such as "REDCAPSYNC_TEST". If REDCapSync ever wants to use the token to make an API call to REDCap, it will check `Sys.getenv("REDCAPSYNC_TEST")`. By default are token names start with "REDCAPSYNC_", followed by the `project_name` you chose in `setup_project()`.Below demonstrates how to set and check your tokens...
 
-## Setting Your Token for One Session
-
-You can set manually with base R. Unless you specifically set the token `Sys.getenv("REDCAPSYNC_TEST")` will be blank.
-
-```{r, eval=FALSE}
-# Set your token manually
-# again having this in a script is not advised but possible
-Sys.setenv(REDCAPSYNC_TEST="a_FaKe_TOkEn") 
-
-# Get your token
-Sys.getenv("REDCAPSYNC_TEST")
-#>[1] "a_FaKe_TOkEn"
-```
-
-Now the token is set for this R session only. If you restarted R, it would be blank again.
-
 ## Setting Your Token using User Environment Variables (preferred)
 
 You may find want to reuse a token, and you may have several projects, so a convenient way to store the tokens in a separate location. One way to do this is your personal .Renviron file. Again, you should check always confirm the location of this file and make sure it's not a part of any cloud storage or git or GitHub. You can use `usethis::edit_r_environ()` to semi-permanently save your token. Each time you launch an R session this file will run and your token will be visible to you if specifically called with `Sys.getenv("REDCAPSYNC_TEST")`.
@@ -62,9 +46,35 @@ The only reference to your token that is ever made or saved in REDCapSync is wit
 
 ## Setting Your Token using `keyring` package
 
+By default REDCapSync will use keyring = NULL, which is your OS system default anf is typcially unlocked by default while you are logged in. 
+
 ```{r, eval=FALSE}
 
 ```
+
+You can change default configuration using configuration settings...
+
+```{r, eval=FALSE}
+options(redcapsync.config.keyring = "REDCapSync")
+
+
+```
+
+## Setting Your Token for One Session
+
+You can set manually with base R. Unless you specifically set the token `Sys.getenv("REDCAPSYNC_TEST")` will be blank.
+
+```{r, eval=FALSE}
+# Set your token manually
+# again having this in a script is not advised but possible
+Sys.setenv(REDCAPSYNC_TEST="a_FaKe_TOkEn") 
+
+# Get your token
+Sys.getenv("REDCAPSYNC_TEST")
+#>[1] "a_FaKe_TOkEn"
+```
+
+Now the token is set for this R session only. If you restarted R, it would be blank again.
 
 ## Testing Your Token (optional)
 

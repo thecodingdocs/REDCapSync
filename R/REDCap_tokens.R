@@ -290,12 +290,12 @@ token_check <- function() {
     return(NULL)
   }
   projects$has_envvar_token <- FALSE
-  ennvar_check <- projects$project_name |> has_envvar_token()
+  ennvar_check <- has_envvar_token(projects$project_name)
   if (!is.null(ennvar_check)) {
     projects$has_envvar_token <- ennvar_check
   }
   projects$has_keyring_token <- FALSE
-  keyring_check <- projects$project_name |> has_keyring_token()
+  keyring_check <- has_keyring_token(projects$project_name)
   if (!is.null(keyring_check)) {
     projects$has_keyring_token <- keyring_check
   }

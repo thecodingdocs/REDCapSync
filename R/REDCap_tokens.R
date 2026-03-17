@@ -239,23 +239,24 @@ is_valid_keyring <- function (service = config$keyring.service(),
     cli_code("install.packages(\"keyring\")")
     return(FALSE)
   }
-  if (keyring::keyring_is_locked(keyring = keyring)) {
-    warning_message <- "keyring = NULL (the system keyring) is locked"
-    keyring_code_start <- paste0("keyring::keyring_unlock(")
-    keyring_code_end <- ") # enter system password"
-    if (!is.null(keyring)) {
-      warning_message <- "keyring = \"{keyring}\" is locked"
-      keyring_code_end <- paste0("keyring = \"", keyring, "\")")
-    }
-    cli_alert_warning(warning_message)
-    cli_alert_info("it can be unlocked with following code ...")
-    cli_code(paste0(keyring_code_start, keyring_code_end))
-    return(FALSE)
-  }
   if (!is.null(keyring)) {
     if (!keyring::has_keyring_support()) {
       cli_alert_info("Your system does not support keyring. Set to NULL.")
       cli_code("keyring::has_keyring_support()")
+      return(FALSE)
+    }
+    # consider what will happen in ubuntu
+    if (keyring::keyring_is_locked(keyring = keyring)) {
+      warning_message <- "keyring = NULL (the system keyring) is locked"
+      keyring_code_start <- paste0("keyring::keyring_unlock(")
+      keyring_code_end <- ") # enter system password"
+      if (!is.null(keyring)) {
+        warning_message <- "keyring = \"{keyring}\" is locked"
+        keyring_code_end <- paste0("keyring = \"", keyring, "\")")
+      }
+      cli_alert_warning(warning_message)
+      cli_alert_info("it can be unlocked with following code ...")
+      cli_code(paste0(keyring_code_start, keyring_code_end))
       return(FALSE)
     }
     if (!keyring %in% keyring::keyring_list()$keyring) {

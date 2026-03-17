@@ -20,24 +20,6 @@ start with “REDCAPSYNC\_”, followed by the `project_name` you chose in
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).Below
 demonstrates how to set and check your tokens…
 
-### Setting Your Token for One Session
-
-You can set manually with base R. Unless you specifically set the token
-`Sys.getenv("REDCAPSYNC_TEST")` will be blank.
-
-``` r
-# Set your token manually
-# again having this in a script is not advised but possible
-Sys.setenv(REDCAPSYNC_TEST="a_FaKe_TOkEn") 
-
-# Get your token
-Sys.getenv("REDCAPSYNC_TEST")
-#>[1] "a_FaKe_TOkEn"
-```
-
-Now the token is set for this R session only. If you restarted R, it
-would be blank again.
-
 ### Setting Your Token using User Environment Variables (preferred)
 
 You may find want to reuse a token, and you may have several projects,
@@ -74,6 +56,33 @@ have the token name at `project$token_name`. In the future, we may set
 our token in a different way.
 
 ### Setting Your Token using `keyring` package
+
+By default REDCapSync will use keyring = NULL, which is your OS system
+default anf is typcially unlocked by default while you are logged in.
+
+You can change default configuration using configuration settings…
+
+``` r
+options(redcapsync.config.keyring = "REDCapSync")
+```
+
+### Setting Your Token for One Session
+
+You can set manually with base R. Unless you specifically set the token
+`Sys.getenv("REDCAPSYNC_TEST")` will be blank.
+
+``` r
+# Set your token manually
+# again having this in a script is not advised but possible
+Sys.setenv(REDCAPSYNC_TEST="a_FaKe_TOkEn") 
+
+# Get your token
+Sys.getenv("REDCAPSYNC_TEST")
+#>[1] "a_FaKe_TOkEn"
+```
+
+Now the token is set for this R session only. If you restarted R, it
+would be blank again.
 
 ### Testing Your Token (optional)
 

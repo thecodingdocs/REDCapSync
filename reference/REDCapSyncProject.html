@@ -125,6 +125,7 @@ users and log.</p></dd>
 <li><p><a href="#method-REDCapSyncProject-summarize"><code>REDCapSyncProject$summarize()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-save_summary"><code>REDCapSyncProject$save_summary()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-save"><code>REDCapSyncProject$save()</code></a></p></li>
+<li><p><a href="#method-REDCapSyncProject-set_keyring_token"><code>REDCapSyncProject$set_keyring_token()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-test_token"><code>REDCapSyncProject$test_token()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-url_launch"><code>REDCapSyncProject$url_launch()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-url_record_launch"><code>REDCapSyncProject$url_record_launch()</code></a></p></li>
@@ -697,10 +698,18 @@ are inherited according to what was set with <code>add_project_summary</code>.</
 </div>
 
 
+</div><p></p><hr><a id="method-REDCapSyncProject-set_keyring_token"></a><div class="section">
+<h3 id="method-set-keyring-token-">Method <code>set_keyring_token()</code><a class="anchor" aria-label="anchor" href="#method-set-keyring-token-"></a></h3>
+<p>Set keyring token. See vignette and config for detail.</p><div class="section">
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">set_keyring_token</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+
 </div><p></p><hr><a id="method-REDCapSyncProject-test_token"></a><div class="section">
 <h3 id="method-test-token-">Method <code>test_token()</code><a class="anchor" aria-label="anchor" href="#method-test-token-"></a></h3>
 <p>test connection via communication with API</p><div class="section">
-<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
+<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">test_token</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -708,7 +717,7 @@ are inherited according to what was set with <code>add_project_summary</code>.</
 </div><p></p><hr><a id="method-REDCapSyncProject-url_launch"></a><div class="section">
 <h3 id="method-url-launch-">Method <code>url_launch()</code><a class="anchor" aria-label="anchor" href="#method-url-launch-"></a></h3>
 <p>opens links in browser</p><div class="section">
-<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">url_launch</span><span class="op">(</span>link_type <span class="op">=</span> <span class="st">"home"</span>, open_browser <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -732,7 +741,7 @@ browser.</p></dd>
 </div><p></p><hr><a id="method-REDCapSyncProject-url_record_launch"></a><div class="section">
 <h3 id="method-url-record-launch-">Method <code>url_record_launch()</code><a class="anchor" aria-label="anchor" href="#method-url-record-launch-"></a></h3>
 <p>opens record links in browser</p><div class="section">
-<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
+<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">url_record_launch</span><span class="op">(</span></span>
 <span>  record <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  page <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -769,7 +778,7 @@ browser.</p></dd>
 data. Because this is a function that can mess up your data, use it
 very carefully. Remember all changes are saved in the REDCap log if
 there's an issue. Missing rows and columns are allowed!</p><div class="section">
-<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
+<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">upload</span><span class="op">(</span><span class="va">to_be_uploaded</span>, batch_size <span class="op">=</span> <span class="fl">500L</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 

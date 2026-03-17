@@ -74,6 +74,8 @@ for initializing the `project` object.'
 
 - [`REDCapSyncProject$save()`](#method-REDCapSyncProject-save)
 
+- [`REDCapSyncProject$set_keyring_token()`](#method-REDCapSyncProject-set_keyring_token)
+
 - [`REDCapSyncProject$test_token()`](#method-REDCapSyncProject-test_token)
 
 - [`REDCapSyncProject$url_launch()`](#method-REDCapSyncProject-url_launch)
@@ -657,6 +659,16 @@ Add a new summary entry
 #### Usage
 
     REDCapSyncProject$save()
+
+------------------------------------------------------------------------
+
+### Method `set_keyring_token()`
+
+Set keyring token. See vignette and config for detail.
+
+#### Usage
+
+    REDCapSyncProject$set_keyring_token()
 
 ------------------------------------------------------------------------
 

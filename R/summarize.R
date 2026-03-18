@@ -1273,9 +1273,13 @@ get_log <- function(data_list, records) {
 }
 #' @noRd
 annotate_users <- function(data_list,
-                           records,
+                           records = NULL,
                            summarize_data = TRUE,
                            drop_blanks = FALSE) {
+  if (is.null(records)) {
+    id_col <- data_list$metadata$id_col
+    records <- data_list$summary$all_records[[id_col]]
+  }
   redcap_log <- get_log(data_list, records)
   # role_label not inculded now
   summary_users <- data_list$redcap$users |>
@@ -1287,13 +1291,6 @@ annotate_users <- function(data_list,
   names_in_log <- names(user_groups)
   if (!is_something(user_groups) || length(names_in_log) == 0L) {
     return(summary_users)
-  }
-  # maybe dropping people at this step
-  if (drop_blanks) {
-    keep_rows <- which(summary_users$username %in% names_in_log)
-    summary_users <- summary_users[keep_rows, ]
-    keep_rows <- drop_nas(match(summary_users$username, names_in_log))
-    user_groups <- user_groups[keep_rows]
   }
   if (summarize_data) {
     only_in_log <- vec1_not_in_vec2(names_in_log, summary_users$username)
@@ -1311,6 +1308,12 @@ annotate_users <- function(data_list,
       summary_users$last_timestamp[the_row] <- group$timestamp[[1L]]
       summary_users$unique_records_n[the_row] <- length_unique(group$record)
     }
+  }
+  if (drop_blanks) {
+    keep_rows <- which(summary_users$username %in% names_in_log)
+    summary_users <- summary_users[keep_rows, ]
+    keep_rows <- drop_nas(match(summary_users$username, names_in_log))
+    user_groups <- user_groups[keep_rows]
   }
   summary_users
 }

@@ -75,6 +75,22 @@ test_that("annotate_records works!", {
 })
 # annotate_users (Internal)
 test_that("annotate_users works!", {
+  data_list <- mock_test_project()$.internal
+  data_list$redcap$users <- data_list$redcap$users |>
+    bind_rows(data.frame(username = "person_not_in_log"))
+  data_list$redcap$log <- data_list$redcap$log |>
+    bind_rows(
+      data.frame(username = "person_not_in_users",
+                 record = "40",
+                 timestamp = as.character(Sys.time())))
+  users_default <- annotate_users(data_list)
+  users_drop_blank <- annotate_users(data_list, drop_blanks = TRUE)
+  expect_data_frame(users_default, nrows = 3L)
+  expect_data_frame(users_drop_blank, nrows = 2L)
+  all_users <- c("u1230", "person_not_in_log", "person_not_in_users")
+  expect_in(users_default$username, all_users)
+  log_users <- c("u1230", "person_not_in_users")
+  expect_in(users_drop_blank$username, all_users)
 })
 # check_summaries (Internal)
 test_that("check_summaries works!", {
@@ -256,6 +272,15 @@ test_that("fields_to_choices works!", {
 })
 # filter_data_list (Internal)
 test_that("filter_data_list works!", {
+  project_name <- "TEST_CLASSIC"
+  project <- mock_test_project(project_name)$.internal
+  new_data <- filter_data_list(
+    data_list = project,
+    filter_field = "var_branching",
+    filter_choices = "Yes"
+  )
+  expect_true(nrow(project$data$other) > nrow(new_data$other))
+  expect_all_true(new_data$other$var_branching == "Yes")
 })
 # flatten_redcap (Internal)
 test_that("flatten_redcap works!", {

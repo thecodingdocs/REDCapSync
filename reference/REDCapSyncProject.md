@@ -747,18 +747,14 @@ an issue. Missing rows and columns are allowed!
 
 #### Usage
 
-    REDCapSyncProject$upload(to_be_uploaded, batch_size = 500L)
+    REDCapSyncProject$upload(to_be_uploaded)
 
 #### Arguments
 
 - `to_be_uploaded`:
 
-  data.frame in raw coded form to upload.
-
-- `batch_size`:
-
-  Integer. Maximum number of rows per API write batch when uploading to
-  REDCap. Default is 500L.
+  data.frame in raw coded form to upload. uploading to REDCap. Default
+  is 500L.
 
 ## Examples
 

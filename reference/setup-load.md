@@ -20,7 +20,7 @@ setup_project(
   events = NA,
   filter_logic = NA,
   metadata_only = FALSE,
-  batch_size_download = 2000L,
+  batch_size_download = 1000L,
   batch_size_upload = 500L,
   entire_log = FALSE,
   days_of_log = 10L,
@@ -28,8 +28,6 @@ setup_project(
   get_files = FALSE,
   get_file_repository = FALSE,
   original_file_names = FALSE,
-  add_default_fields = FALSE,
-  add_default_transformation = FALSE,
   add_default_summaries = TRUE
 )
 
@@ -109,13 +107,12 @@ load_project(project_name)
 
 - metadata_only:
 
-  Logical (TRUE/FALSE). If TRUE, updates only the metadata. Default is
-  `FALSE`.
+  Logical (TRUE/FALSE). If TRUE, updates only the
 
 - batch_size_download:
 
   Integer. Number of records to process in each batch. Default is
-  `2000`.
+  `1000`.
 
 - batch_size_upload:
 
@@ -151,14 +148,6 @@ load_project(project_name)
 
   Logical (TRUE/FALSE). If TRUE, uses original file names for retrieved
   files. Default is `FALSE`.
-
-- add_default_fields:
-
-  Logical (TRUE/FALSE). If TRUE, will add default fields
-
-- add_default_transformation:
-
-  Logical (TRUE/FALSE). If TRUE, will add default transformation
 
 - add_default_summaries:
 

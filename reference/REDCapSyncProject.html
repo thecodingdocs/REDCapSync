@@ -779,17 +779,13 @@ data. Because this is a function that can mess up your data, use it
 very carefully. Remember all changes are saved in the REDCap log if
 there's an issue. Missing rows and columns are allowed!</p><div class="section">
 <h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">upload</span><span class="op">(</span><span class="va">to_be_uploaded</span>, batch_size <span class="op">=</span> <span class="fl">500L</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">upload</span><span class="op">(</span><span class="va">to_be_uploaded</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>to_be_uploaded</code></dt>
-<dd><p>data.frame in raw coded form to upload.</p></dd>
-
-
-<dt><code>batch_size</code></dt>
-<dd><p>Integer. Maximum number of rows per API write batch when
+<dd><p>data.frame in raw coded form to upload.
 uploading to REDCap. Default is 500L.</p></dd>
 
 

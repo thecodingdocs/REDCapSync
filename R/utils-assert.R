@@ -169,14 +169,6 @@ assert_setup_project <- function(project) {
   assert_logical(project$internals$original_file_names,
                  len = 1L,
                  any.missing = FALSE)
-  assert_logical(project$internals$add_default_fields,
-                 len = 1L,
-                 any.missing = FALSE)
-  assert_logical(
-    project$internals$add_default_transformation,
-    len = 1L,
-    any.missing = FALSE
-  )
   assert_logical(project$internals$add_default_summaries,
                  len = 1L,
                  any.missing = FALSE)

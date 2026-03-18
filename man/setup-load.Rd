@@ -20,7 +20,7 @@ setup_project(
   events = NA,
   filter_logic = NA,
   metadata_only = FALSE,
-  batch_size_download = 2000L,
+  batch_size_download = 1000L,
   batch_size_upload = 500L,
   entire_log = FALSE,
   days_of_log = 10L,
@@ -28,8 +28,6 @@ setup_project(
   get_files = FALSE,
   get_file_repository = FALSE,
   original_file_names = FALSE,
-  add_default_fields = FALSE,
-  add_default_transformation = FALSE,
   add_default_summaries = TRUE
 )
 
@@ -81,11 +79,10 @@ filtering the data to be returned by this API method, in which the API
 will only return the records (or record-events, if a longitudinal project)
 where the logic evaluates as TRUE.   An blank/empty string returns all records.}
 
-\item{metadata_only}{Logical (TRUE/FALSE). If TRUE, updates only the
-metadata. Default is \code{FALSE}.}
+\item{metadata_only}{Logical (TRUE/FALSE). If TRUE, updates only the}
 
 \item{batch_size_download}{Integer. Number of records to process in each
-batch. Default is \code{2000}.}
+batch. Default is \code{1000}.}
 
 \item{batch_size_upload}{Integer. Number of records to process in each batch.
 Default is \code{500}.}
@@ -110,12 +107,6 @@ Default is \code{FALSE}.}
 
 \item{original_file_names}{Logical (TRUE/FALSE). If TRUE, uses original file
 names for retrieved files. Default is \code{FALSE}.}
-
-\item{add_default_fields}{Logical (TRUE/FALSE). If TRUE,
-will add default fields}
-
-\item{add_default_transformation}{Logical (TRUE/FALSE). If TRUE,
-will add default transformation}
 
 \item{add_default_summaries}{Logical (TRUE/FALSE). If TRUE, will add default
 summaries}

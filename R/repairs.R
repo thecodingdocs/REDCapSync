@@ -148,14 +148,6 @@ repair_setup_project <- function(project) {
       project$internals$original_file_names |>
       test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$internals$original_file_names, FALSE)
-    project$internals$add_default_fields <-
-      project$internals$add_default_fields |>
-      test_logical(len = 1L, any.missing = FALSE) |>
-      ifelse(project$internals$add_default_fields, FALSE)
-    project$internals$add_default_transformation <-
-      project$internals$add_default_transformation |>
-      test_logical(len = 1L, any.missing = FALSE) |>
-      ifelse(project$internals$add_default_transformation, FALSE)
     project$internals$add_default_summaries <-
       project$internals$add_default_summaries |>
       test_logical(len = 1L, any.missing = FALSE) |>

@@ -56,17 +56,12 @@
 #' @param entire_log Logical (TRUE/FALSE). If TRUE, retrieves the entire log.
 #' Default is `FALSE`.
 #' @param metadata_only Logical (TRUE/FALSE). If TRUE, updates only the
-#' metadata. Default is `FALSE`.
-#' @param add_default_fields Logical (TRUE/FALSE). If TRUE,
-#' will add default fields
-#' @param add_default_transformation Logical (TRUE/FALSE). If TRUE,
-#' will add default transformation
 #' @param add_default_summaries Logical (TRUE/FALSE). If TRUE, will add default
 #' summaries
 #' @param get_type optional character of REDCap API call type.
 #' data as if user ran `sync_project`. Default is `FALSE`.
 #' @param batch_size_download Integer. Number of records to process in each
-#' batch. Default is `2000`.
+#' batch. Default is `1000`.
 #' @param batch_size_upload Integer. Number of records to process in each batch.
 #' Default is `500`.
 #' @inheritParams REDCapR::redcap_read
@@ -99,7 +94,7 @@ setup_project <- function(project_name,
                           events = NA,
                           filter_logic = NA,
                           metadata_only = FALSE,
-                          batch_size_download = 2000L,
+                          batch_size_download = 1000L,
                           batch_size_upload = 500L,
                           entire_log = FALSE,
                           days_of_log = 10L,
@@ -107,8 +102,6 @@ setup_project <- function(project_name,
                           get_files = FALSE,
                           get_file_repository = FALSE,
                           original_file_names = FALSE,
-                          add_default_fields = FALSE,
-                          add_default_transformation = FALSE,
                           add_default_summaries = TRUE) {
   missing_dir_path <- missing(dir_path)
   if (missing_dir_path) {
@@ -191,8 +184,6 @@ setup_project <- function(project_name,
   assert_logical(get_files, len = 1L, any.missing = FALSE)
   assert_logical(get_file_repository, len = 1L, any.missing = FALSE)
   assert_logical(original_file_names, len = 1L, any.missing = FALSE)
-  assert_logical(add_default_fields, len = 1L, any.missing = FALSE)
-  assert_logical(add_default_transformation, len = 1L, any.missing = FALSE)
   assert_logical(add_default_summaries, len = 1L, any.missing = FALSE)
   # assert redcap_uri
   original_details <- NULL
@@ -309,8 +300,6 @@ setup_project <- function(project_name,
   project$internals$get_files <- get_files
   project$internals$get_file_repository <- get_file_repository
   project$internals$original_file_names <- original_file_names
-  project$internals$add_default_fields <- add_default_fields
-  project$internals$add_default_transformation <- add_default_transformation
   project$internals$add_default_summaries <- add_default_summaries
   #test these
   project$links$redcap_base <- redcap_uri |> dirname() |> paste0("/")

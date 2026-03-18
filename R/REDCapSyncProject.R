@@ -113,7 +113,6 @@
 #' validate the data in the field. Default is `NA`.
 #' @param summary_names One or more summary names. Default is `NULL`.
 #' @param to_be_uploaded data.frame in raw coded form to upload.
-#' @param batch_size Integer. Maximum number of rows per API write batch when
 #' uploading to REDCap. Default is 500L.
 #' @examples
 #' project <- load_project("TEST_CLASSIC")
@@ -510,7 +509,7 @@ REDCapSyncProject <- R6Class(
     #' data. Because this is a function that can mess up your data, use it
     #' very carefully. Remember all changes are saved in the REDCap log if
     #' there's an issue. Missing rows and columns are allowed!
-    upload = function(to_be_uploaded, batch_size = 500L) {
+    upload = function(to_be_uploaded) {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not communicate with the API")
         return(invisible(self))
@@ -540,7 +539,7 @@ REDCapSyncProject <- R6Class(
         upload_form_to_redcap(
           to_be_uploaded = upload_this,
           project = private$project,
-          batch_size = batch_size
+          batch_size = private$project$internals$batch_size_upload
         )
       }
       Sys.sleep(3L)

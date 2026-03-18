@@ -604,15 +604,13 @@ data. Because this is a function that can mess up your data, use it
 very carefully. Remember all changes are saved in the REDCap log if
 there's an issue. Missing rows and columns are allowed!
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$upload(to_be_uploaded, batch_size = 500L)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$upload(to_be_uploaded)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{to_be_uploaded}}{data.frame in raw coded form to upload.}
-
-\item{\code{batch_size}}{Integer. Maximum number of rows per API write batch when
+\item{\code{to_be_uploaded}}{data.frame in raw coded form to upload.
 uploading to REDCap. Default is 500L.}
 }
 \if{html}{\out{</div>}}

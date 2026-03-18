@@ -186,9 +186,11 @@ set_project_keyring_token <- function(project) {
   if (!is_valid_keyring()) {
     return(NULL)
   }
+  project_name <- project$project_name
   keyring::key_set(service = config$keyring.service(),
                    username = project$project_name,
-                   keyring = config$keyring())
+                   keyring = config$keyring(),
+                   prompt = paste0(project_name, " REDCap API token: "))
 }
 #' @noRd
 get_project_envvar_token <- function(project) {

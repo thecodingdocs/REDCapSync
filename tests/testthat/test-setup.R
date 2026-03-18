@@ -2,6 +2,16 @@ tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 # load_project (Exported)
 test_that("load_project works!", {
+  expect_error(load_project("NO_PROJECTS_YET"))
+  a <- mock_test_project("TEST_CLASSIC")$.internal |> extract_project_details()
+  b <- mock_test_project("TEST_DATA")$.internal |> extract_project_details()
+  c <- mock_test_project("TEST_LONGITUDINAL")$.internal |> extract_project_details()
+  projects <- a |> bind_rows(b) |> bind_rows(c)
+  local_mocked_bindings(
+    get_projects = function(...) projects
+  )
+  expect_error(load_project("NO_PROJECTS_NAMED_THIS")) # no cache
+  expect_error(load_project("TEST_CLASSIC")) # no file
 })
 # load_test_project (Exported)
 test_that("load_test_project works!", {

@@ -166,9 +166,9 @@ get_project_keyring_token <- function(project) {
     return(NULL)
   }
   token <- try_else_null({
-    keyring::key_get(service = config$keyring.service(),
-                     username = project$project_name,
-                     keyring = config$keyring())
+    key_get(service = config$keyring.service(),
+            username = project$project_name,
+            keyring = config$keyring())
   })
   token
 }
@@ -187,10 +187,10 @@ set_project_keyring_token <- function(project) {
     return(NULL)
   }
   project_name <- project$project_name
-  keyring::key_set(service = config$keyring.service(),
-                   username = project$project_name,
-                   keyring = config$keyring(),
-                   prompt = paste0(project_name, " REDCap API token: "))
+  key_set(service = config$keyring.service(),
+          username = project$project_name,
+          keyring = config$keyring(),
+          prompt = paste0(project_name, " REDCap API token: "))
 }
 #' @noRd
 get_project_envvar_token <- function(project) {
@@ -218,12 +218,12 @@ has_keyring_token <- function(project_names = NULL) {
   if (!is_valid_keyring()) {
     return(NULL)
   }
-  key_list <- keyring::key_list(service = config$keyring.service(),
-                                keyring = config$keyring())
-  if (nrow(key_list) == 0L) {
+  keys <- key_list(service = config$keyring.service(),
+                   keyring = config$keyring())
+  if (nrow(keys) == 0L) {
     return(NULL)
   }
-  project_names %in% key_list$username
+  project_names %in% keys$username
 }
 #' @noRd
 is_valid_keyring <- function (service = config$keyring.service(),
@@ -261,6 +261,30 @@ is_valid_keyring <- function (service = config$keyring.service(),
     }
   }
   TRUE
+}
+#' @noRd
+key_get <- function (service,
+                     username = NULL,
+                     keyring = NULL) {
+  keyring::key_get(service = service,
+                   username = username,
+                   keyring = keyring)
+}
+#' @noRd
+key_set <- function (service,
+                     username = NULL,
+                     keyring = NULL,
+                     prompt = "Password: ") {
+  keyring::key_set(service = service,
+                   username = username,
+                   keyring = keyring,
+                   prompt = prompt)
+}
+#' @noRd
+key_list <- function (service,
+                      keyring = NULL) {
+  keyring::key_list(service = service,
+                    keyring = keyring)
 }
 #' @noRd
 has_keyring_pkg <- function() {

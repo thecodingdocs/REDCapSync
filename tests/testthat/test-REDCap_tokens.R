@@ -46,6 +46,7 @@ test_that("is_valid_redcap_token works!", {
   expect_true(is_valid_redcap_token(generate_hex(32L)))
   expect_false(is_valid_redcap_token(NA))
   expect_false(is_valid_redcap_token(NULL))
+  expect_false(is_valid_redcap_token(""))
   expect_false(is_valid_redcap_token(generate_hex(31L)))
   expect_false(is_valid_redcap_token(generate_hex(33L)))
   expect_false(is_valid_redcap_token(paste0(" ", generate_hex(31L))))

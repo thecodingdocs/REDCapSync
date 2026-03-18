@@ -153,4 +153,30 @@ test_that("has_keyring_token returns NULL when keyring is invalid", {
 })
 # has_envvar_token (Internal)
 test_that("has_envvar_token works", {
+  withr::local_envvar(c(
+    REDCAPSYNC_TEST_CLASSIC = NA,
+    REDCAPSYNC_TEST_DATA = NA,
+    REDCAPSYNC_TEST_LONGITUDINAL = NA
+  ))
+  a <- mock_test_project("TEST_CLASSIC")$.internal |> extract_project_details()
+  b <- mock_test_project("TEST_DATA")$.internal |> extract_project_details()
+  c <- mock_test_project("TEST_LONGITUDINAL")$.internal |> extract_project_details()
+  projects <- a |> bind_rows(b) |> bind_rows(c)
+  local_mocked_bindings(
+    get_projects = function(...) projects
+  )
+  withr::local_envvar(c(
+    REDCAPSYNC_TEST_DATA = "ABC123"
+  ))
+  expect_identical(has_envvar_token(), c(FALSE, TRUE, FALSE))
+  local_mocked_bindings(
+    get_projects = function(...) a
+  )
+  #missing from projects
+  expect_null(has_envvar_token(project_names = "TEST_DATA"))
+  # empty projects
+  local_mocked_bindings(
+    get_projects = function(...) .blank_project_details
+  )
+  expect_null(has_envvar_token())
 })

@@ -180,3 +180,41 @@ test_that("has_envvar_token works", {
   )
   expect_null(has_envvar_token())
 })
+# is_valid_keyring (Internal)
+test_that("is_valid_keyring works!", {
+  # No keyring package
+  local_mocked_bindings(
+    has_keyring_pkg = function() FALSE
+  )
+  expect_false(is_valid_keyring())
+  # Keyring package available, but no system support
+  local_mocked_bindings(
+    has_keyring_pkg = function() TRUE,
+    has_keyring_support = function() FALSE
+  )
+  expect_false(is_valid_keyring(keyring = "keyring"))
+  expect_true(is_valid_keyring())
+  # Keyring specified, but locked
+  local_mocked_bindings(
+    has_keyring_pkg = function() TRUE,
+    has_keyring_support = function() TRUE,
+    keyring_is_locked = function(keyring) TRUE
+  )
+  expect_false(is_valid_keyring(keyring = "test_keyring"))
+  # Keyring not locked, but doesn't exist
+  local_mocked_bindings(
+    has_keyring_pkg = function() TRUE,
+    has_keyring_support = function() TRUE,
+    keyring_is_locked = function(keyring) FALSE,
+    keyring_list = function() data.frame(keyring = "existing_keyring")
+  )
+  expect_false(is_valid_keyring(keyring = "nonexistent_keyring"))
+  # All good
+  local_mocked_bindings(
+    has_keyring_pkg = function() TRUE,
+    has_keyring_support = function() TRUE,
+    keyring_is_locked = function(keyring) FALSE,
+    keyring_list = function() data.frame(keyring = "test_keyring")
+  )
+  expect_true(is_valid_keyring(keyring = "test_keyring"))
+})

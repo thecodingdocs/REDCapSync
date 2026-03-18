@@ -234,13 +234,13 @@ is_valid_keyring <- function (service = config$keyring.service(),
     return(FALSE)
   }
   if (!is.null(keyring)) {
-    if (!keyring::has_keyring_support()) {
+    if (!has_keyring_support()) {
       cli_alert_info("Your system does not support keyring. Set to NULL.")
       cli_code("keyring::has_keyring_support()")
       return(FALSE)
     }
     # consider what will happen in ubuntu
-    if (keyring::keyring_is_locked(keyring = keyring)) {
+    if (keyring_is_locked(keyring = keyring)) {
       warning_message <- "keyring = NULL (the system keyring) is locked"
       keyring_code_start <- paste0("keyring::keyring_unlock(")
       keyring_code_end <- ") # enter system password"
@@ -253,7 +253,7 @@ is_valid_keyring <- function (service = config$keyring.service(),
       cli_code(paste0(keyring_code_start, keyring_code_end))
       return(FALSE)
     }
-    if (!keyring %in% keyring::keyring_list()$keyring) {
+    if (!keyring %in% keyring_list()$keyring) {
       cli_alert_warning("keyring = \"{keyring}\" does not exist!")
       cli_alert_info("it can be created with following code ...")
       cli_code(paste0("keyring::keyring_create(\"", keyring, "\")"))
@@ -265,6 +265,18 @@ is_valid_keyring <- function (service = config$keyring.service(),
 #' @noRd
 has_keyring_pkg <- function() {
   requireNamespace("keyring", quietly = TRUE)
+}
+#' @noRd
+has_keyring_support <- function() {
+  keyring::has_keyring_support()
+}
+#' @noRd
+keyring_is_locked <- function(keyring = NULL){
+  keyring::keyring_is_locked(keyring = keyring)
+}
+#' @noRd
+keyring_list <- function(){
+  keyring::keyring_list()
 }
 #' @noRd
 has_envvar_token <- function(project_names = NULL) {

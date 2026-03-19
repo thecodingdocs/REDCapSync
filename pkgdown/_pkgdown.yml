@@ -27,7 +27,7 @@ template:
     contents:
       - setup_project
       - load_project
-      - REDCapSyncProject
+      - project
 
   - title: Multiple Projects
     desc: The projects object can act a single entry point for all of your projects! Sync is a hands-free function that will sync all projects based on previous settings.

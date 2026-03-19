@@ -122,6 +122,7 @@
 #' @returns
 #' An R6ClassGenerator which is used internally to create or load a
 #' project object for the user
+#' @name project
 #' @keywords internal
 REDCapSyncProject <- R6Class(
   "REDCapSyncProject",

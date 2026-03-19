@@ -52,9 +52,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="setup-and-load">Setup and Load<a class="anchor" aria-label="anchor" href="#setup-and-load"></a></h2>
+      <h2 id="setup-load-and-use-single-project">Setup/Load and Use Single Project<a class="anchor" aria-label="anchor" href="#setup-load-and-use-single-project"></a></h2>
 
-      <div class="section-desc"><p>For basic users use these core functions to maintain REDCap data pipelines. Setup or Load your project. Update from REDCap using what is already saved. Save the outputs to a directory.</p></div>
+      <div class="section-desc"><p>Setup or Load REDCap your project and update using what is already saved. Define custom transformations and subsets to be passed to refreshing spreadsheets.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -67,33 +67,17 @@
 
         </dt>
         <dd>Setup or Load REDCapSync Project</dd>
-      </dl></div><div class="section level2">
-      <h2 id="project-object">Project Object<a class="anchor" aria-label="anchor" href="#project-object"></a></h2>
-
-      <div class="section-desc"><p>Once setup, the project object can be used to run sync and define custom transformations and subset to be passed to spreadsheets.</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="REDCapSyncProject.html">REDCapSyncProject</a></code>
-
-        </dt>
-        <dd>REDCapSync Encapsulated Project Object</dd>
 
         <dt>
 
-          <code><a href="config.html">config</a></code>
+          <code><a href="project.html">project</a></code> <code><a href="project.html">REDCapSyncProject</a></code>
 
         </dt>
-        <dd>Configuration</dd>
+        <dd>REDCapSync Encapsulated Project Object</dd>
       </dl></div><div class="section level2">
       <h2 id="multiple-projects">Multiple Projects<a class="anchor" aria-label="anchor" href="#multiple-projects"></a></h2>
 
-      <div class="section-desc"><p>Once setup, the project object can be used to run sync and define custom transformations and subset to be passed to spreadsheets</p></div>
+      <div class="section-desc"><p>The projects object can act a single entry point for all of your projects! Sync is a hands-free function that will sync all projects based on previous settings.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -101,15 +85,22 @@
 
 
       <dl><dt>
+
+          <code><a href="projects.html">projects</a></code>
+
+        </dt>
+        <dd>REDCap projects used by REDCapSync</dd>
+
+        <dt>
 
           <code><a href="sync.html">sync()</a></code>
 
         </dt>
         <dd>Synchronize REDCap Data</dd>
       </dl></div><div class="section level2">
-      <h2 id="project-cache">Project Cache<a class="anchor" aria-label="anchor" href="#project-cache"></a></h2>
+      <h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a></h2>
 
-      <div class="section-desc"><p>REDCapSync cahces user-level project metadata (name, directory, links, last update and other details). Tokens and data are NOT stored here.</p></div>
+      <div class="section-desc"><p>Change user-level settings and clear cache</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -118,10 +109,10 @@
 
       <dl><dt>
 
-          <code><a href="get_projects.html">get_projects()</a></code>
+          <code><a href="config.html">config</a></code>
 
         </dt>
-        <dd>Get your REDCap projects used by REDCapSync</dd>
+        <dd>Configuration</dd>
 
         <dt>
 

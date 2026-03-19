@@ -19,8 +19,7 @@ sync(
 - project_names:
 
   character vector of project project_names previously setup. If NULL,
-  will get all from
-  [`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)
+  will get all from `get_projects()`
 
 - summarize:
 
@@ -38,7 +37,7 @@ sync(
 ## Value
 
 Invisibly returns last project object (R6
-[REDCapSyncProject](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSyncProject.md)
+[REDCapSyncProject](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
 class)
 
 ## Details

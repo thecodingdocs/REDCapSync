@@ -156,7 +156,7 @@ load_project(project_name)
 ## Value
 
 R6 project object with
-[REDCapSyncProject](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSyncProject.md)
+[REDCapSyncProject](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
 class.
 
 ## Details
@@ -180,8 +180,8 @@ you relocated the directory.
 
 ## See also
 
-[`get_projects`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)
-for retrieving a list of projects from the directory cache.
+[`projects`](https://thecodingdocs.github.io/REDCapSync/reference/projects.md)
+for accessing previously setup projects
 
 ## Examples
 

@@ -16,8 +16,7 @@ cache_clear(project_names = NULL)
 - project_names:
 
   character vector of project project_names previously setup. If NULL,
-  will get all from
-  [`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)
+  will get all from `get_projects()`
 
 ## Value
 
@@ -36,7 +35,7 @@ project directory you set up.
 [`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
 
 Other Cache Functions:
-[`get_projects()`](https://thecodingdocs.github.io/REDCapSync/reference/get_projects.md)
+[`projects`](https://thecodingdocs.github.io/REDCapSync/reference/projects.md)
 
 ## Examples
 

@@ -1,7 +1,9 @@
-#' @title Get your REDCap projects used by REDCapSync
+#' @title REDCap projects used by REDCapSync
 #' @description
 #' Everytime a project is synced, basic project information is saved to the
 #' package user cache so that [load_project] and [sync] work across R sessions.
+#'
+#' This object acts as a singleton access point for the entire package ...
 #' @details
 #' The default location of the cache location is defined by using
 #' R_USER_CACHE_DIR if set. Otherwise, it follows platform conventions via
@@ -19,8 +21,36 @@
 #' @family Cache Functions
 #' @keywords Cache
 #' @seealso \code{vignette("Cache", package = "REDCapSync")}
-#' @returns data.frame of cached projects
+#' @returns R6 object that can used be to access project objects
 #' @export
+projects <- R6::R6Class(
+  "REDCapSyncProjectManager",
+  active = list(
+    df = function() {
+      get_projects()
+    }
+  ),
+  public = list(
+    print = function () {
+      x <- get_projects()
+      number <- nrow(x)
+      cli_h1("REDCapSync")
+      cli_text("{number} REDCap Projects!")
+      # due for sync
+    },
+    load = function(project_name) {
+      load_project(project_name)
+    },
+    setup = function () {},
+    test_tokens = function () {},
+    remove = function () {},
+    sync = function () {
+      sync()
+    }
+  ),
+  cloneable = FALSE
+)$new()
+#' @noRd
 get_projects <- function() {
   does_exist <- FALSE
   if (file.exists(cache_path())) {

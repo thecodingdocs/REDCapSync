@@ -218,20 +218,21 @@ REDCapSyncProject <- R6Class(
       private$project <- project
       invisible(self)
     },
-    #' @description Print some key project info
-    info = function() {
-      project_name <- private$project$project_name
-      project_id <- private$project$redcap$project_id
-      token_name <- private$project$redcap$token_name
-      redcap_home <- private$project$links$redcap_home
-      dir_path <- private$project$dir_path
-      last_data_update <- private$project$internals$last_data_update
-      cli_alert_info("Project Name: {project_name}")
-      cli_alert_info("PID: {project_id}")
-      cli_alert_info("Token Name: {token_name}")
-      cli_alert_info("Last Update: {last_data_update}")
-      cli_alert_info("REDCap Link: {.url {redcap_home}}")
-      cli_alert_info("Directory: {.file {dir_path}}")
+    #' @description Print some key project information
+    print = function() {
+      cli_h1("REDCapSyncProject")
+      cli_text("Name: {private$project$project_name}")
+      cli_text("Title: {private$project$redcap$project_info$project_title}")
+      cli_text("PID: {private$project$redcap$project_id}")
+      cli_text("Token Name: {private$project$redcap$token_name}")
+      cli_text("Sync Frequency: {private$project$internals$sync_frequency}")
+      cli_text("Last Update: {private$project$internals$last_data_update}")
+      cli_text("REDCap: {.url {private$project$links$redcap_home}}")
+      cli_text("Directory: {.file {private$project$dir_path}}")
+      cli_h2("Help")
+      cli_text("pkgdown: {.url {private$project$links$pkgdown}}") # getting started
+      cli_text("tokens: {.vignette REDCapSync::Tokens}")
+      invisible(self)
     },
     #' @description
     #' Updates the REDCap data for (`project` object) by checking REDCap log for

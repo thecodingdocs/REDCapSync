@@ -46,7 +46,7 @@ users and log.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-REDCapSyncProject-new}{\code{REDCapSyncProject$new()}}
-\item \href{#method-REDCapSyncProject-info}{\code{REDCapSyncProject$info()}}
+\item \href{#method-REDCapSyncProject-print}{\code{REDCapSyncProject$print()}}
 \item \href{#method-REDCapSyncProject-sync}{\code{REDCapSyncProject$sync()}}
 \item \href{#method-REDCapSyncProject-add_summary}{\code{REDCapSyncProject$add_summary()}}
 \item \href{#method-REDCapSyncProject-remove_summaries}{\code{REDCapSyncProject$remove_summaries()}}
@@ -86,12 +86,12 @@ methods will be accessible to any user.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSyncProject-info"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSyncProject-info}{}}}
-\subsection{Method \code{info()}}{
-Print some key project info
+\if{html}{\out{<a id="method-REDCapSyncProject-print"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-print}{}}}
+\subsection{Method \code{print()}}{
+Print some key project information
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$info()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$print()}\if{html}{\out{</div>}}
 }
 
 }

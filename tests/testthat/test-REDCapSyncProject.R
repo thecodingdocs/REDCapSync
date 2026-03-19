@@ -108,11 +108,11 @@ test_that("REDCapSyncProject$add_summary and remove_summaries works!", {
 test_that("REDCapSyncProject$generate_summary works!", {
 })
 # REDCapSyncProject$info (Exported)
-test_that("REDCapSyncProject$info works!", {
+test_that("REDCapSyncProject$print works!", {
   project_r6 <- mock_test_project()
-  expect_message(project_r6$info(), "Project Name: TEST_CLASSIC")
-  expect_message(project_r6$info(), "Token Name: REDCAPSYNC_TEST_CLASSIC")
-  expect_message(project_r6$info(), "PID: 12341")
+  expect_message(project_r6$print(), "Name: TEST_CLASSIC")
+  expect_message(project_r6$print(), "Token Name: REDCAPSYNC_TEST_CLASSIC")
+  expect_message(project_r6$print(), "PID: 12341")
 })
 # REDCapSyncProject$initialize (Exported)
 test_that("REDCapSyncProject$initialize works!", {

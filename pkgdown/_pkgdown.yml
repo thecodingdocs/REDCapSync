@@ -27,7 +27,7 @@ template:
     contents:
       - setup_project
       - load_project
-      - project
+      - REDCapSyncProject
       - projects
       - sync
       - config

@@ -66,8 +66,7 @@
 #' Default is `500`.
 #' @inheritParams REDCapR::redcap_read
 #' @seealso
-#' \code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from
-#' the directory cache.
+#' \code{\link[REDCapSync]{projects}} for accessing previously setup projects
 #' @examples
 #' # Initialize the project object with the REDCap API token and URL
 #' save_folder <- tempdir() # replace with real folder

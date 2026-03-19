@@ -147,7 +147,6 @@ project <- setup_project(
 
 }
 \seealso{
-\code{\link[REDCapSync]{get_projects}} for retrieving a list of projects from
-the directory cache.
+\code{\link[REDCapSync]{projects}} for accessing previously setup projects
 }
 \concept{project object}

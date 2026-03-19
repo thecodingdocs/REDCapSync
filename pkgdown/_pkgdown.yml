@@ -22,6 +22,7 @@ template:
       site: "@thecodingdocs"
       card: summary_large_image
 
+reference:
   - title: Setup/Load and Use Single Project
     desc: Setup or Load REDCap your project and update using what is already saved. Define custom transformations and subsets to be passed to refreshing spreadsheets.
     contents:

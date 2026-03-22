@@ -11,6 +11,10 @@ dataset object for the user
 \description{
 \link[R6:R6Class]{R6} project object for \link{REDCapSync}
 }
+\examples{
+dataset <- load_project("TEST_CLASSIC")$generate_dataset("REDCapSync")
+
+}
 \seealso{
 \link{setup_project} for initializing the \code{project} object.'
 }

@@ -317,12 +317,12 @@ test_that("generate_project_dataset works!", {
   should_not_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1L]
   expect_scalar_na(should_not_be_missing)
 })
-# get_log (Internal)
-test_that("get_log works!", {
+# extract_log (Internal)
+test_that("extract_log works!", {
   project <- mock_test_project()$.internal
   log <- project$redcap$log
   records <- unique(log$record)[1L]
-  log_subset <- get_log(project, records)
+  log_subset <- extract_log(project, records)
   subset_record_id <- unique(log_subset$record)
   expect_in(subset_record_id, records)
 })

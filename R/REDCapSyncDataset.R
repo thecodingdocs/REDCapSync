@@ -4,7 +4,7 @@
 #' @param project a list object meant to be stored internally within R6
 #' @param dataset_name dataset name setup with `project$add_dataset`
 #' @examples
-#' dataset <- load_project("TEST_CLASSIC")$generate_dataset("REDCapSync)
+#' dataset <- load_project("TEST_CLASSIC")$generate_dataset("REDCapSync")
 #'
 #' @seealso
 #' \link{setup_project} for initializing the `project` object.'

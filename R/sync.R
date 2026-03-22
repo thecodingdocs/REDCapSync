@@ -155,11 +155,15 @@ sync_project_hard_reset <- function(project) {
       project$redcap$log <- get_redcap_log(project = project,
                                            log_begin_date = log_begin_date)
     }
-    project$record_summary <- extract_project_records(project)
-    project$record_summary$last_api_call <-
-      project$internals$last_full_update <-
+    right_now <- now_time()
+    project$internals$last_full_update <-
       project$internals$last_metadata_update <-
-      project$internals$last_data_update <- now_time()
+      project$internals$last_data_update <- right_now
+    record_summary <- extract_project_records(project)
+    if(is_something(record_summary)) {
+      project$record_summary <- record_summary
+      project$record_summary$last_api_call <- right_now
+    }
   }
   project$internals$hard_reset <- FALSE
   cli_alert_success("Full {project$project_name} update!")

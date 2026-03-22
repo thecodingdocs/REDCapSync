@@ -73,7 +73,7 @@ assert_blank_project <- function(project) {
   assert_list(project, names = "unique", len = length(.blank_project))
   assert_names(names(project),
                type = "unique",
-               identical.to = names(.blank_project))
+               must.include = names(.blank_project))
   invisible(project)
 }
 #' @noRd

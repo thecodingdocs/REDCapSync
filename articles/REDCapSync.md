@@ -7,9 +7,7 @@ This is how you get REDCap turned into an R database…
 ``` r
 library(REDCapSync)
 
-projects <- get_projects()                         # get list of cached projects
-
-View(projects)                             # show your previously saved projects
+View(projects$df)                             # show your previously saved projects
 ```
 
 You can set your REDCap token in two ways! If you need more help setting
@@ -54,7 +52,7 @@ Take note you are assigning variables above. So if you have a redcap
 form called “project”, “fields”, “choices”, etc. you will have to adjust
 what you choose to call them in your script to avoid any conflicts.
 
-## Go Further by Generating Summaries!
+## Go Further by Generating Datasets!
 
 This is the intended way to extract data from the project object. It has
 parameters that control what is exported. It is unique from simply
@@ -68,19 +66,19 @@ the right of any repeating forms. It also uses the REDCap log and REDCap
 data to add key information to metadata, users, and records.
 
 ``` r
-project$generate_summary(
+project$generate_dataset(
   summary_name = "REDCapSync",
   envir = globalenv()
   )
 ```
 
 This can be customized with `add_summary` for refreshing datasets or
-`generate_summary` for R-only use. This can give you filtered data (and
+`generate_dataset` for R-only use. This can give you filtered data (and
 corresponding annotations to metadata, etc), de-identified data, and
 more!
 
 ``` r
-project$generate_summary(
+project$generate_dataset(
     filter_field = "has_something"  # Raw REDCap variable name
     filter_choices = "Yes"          # REDCap labelled choice
     exclude_identifiers = TRUE,

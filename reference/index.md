@@ -20,7 +20,7 @@ projects! Sync is a hands-free function that will sync all projects
 based on previous settings.
 
 - [`projects`](https://thecodingdocs.github.io/REDCapSync/reference/projects.md)
-  : REDCap projects used by REDCapSync
+  : Manage REDCapSync projects
 - [`sync()`](https://thecodingdocs.github.io/REDCapSync/reference/sync.md)
   : Synchronize REDCap Data
 

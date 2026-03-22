@@ -42,16 +42,7 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../articles/REDCapSync.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/Basic.html">REDCapSync for the Basic R User</a></li>
-    <li><a class="dropdown-item" href="../articles/Intermediate.html">REDCapSync for the Intermediate R User</a></li>
-    <li><a class="dropdown-item" href="../articles/Advanced.html">REDCapSync for the Advanced R User</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
-  </ul>
-</li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -109,13 +100,15 @@ location might look like,
 <p>Your exact path can be found for any R package with
 <code>rappdirs::user_cache_dir("R")</code>. The only thing that
 REDCapSync stores in this cache is the projects data.frame, which can be
-loaded with <code>projects &lt;- get_projects()</code>.</p>
+loaded with <code>projects$load("PROJECT")</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">user_cache_location</span> <span class="op">&lt;-</span> <span class="fu">rappdirs</span><span class="fu">::</span><span class="fu"><a href="https://rappdirs.r-lib.org/reference/user_cache_dir.html" class="external-link">user_cache_dir</a></span><span class="op">(</span><span class="st">"R"</span><span class="op">)</span> </span>
 <span><span class="va">redcapsync_cache_location</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">user_cache_location</span>, <span class="st">"REDCapSync"</span><span class="op">)</span></span>
 <span><span class="va">redcapsync_cache_location</span></span>
 <span><span class="co"># launch the folder on your computer</span></span>
-<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="va">redcapsync_cache_location</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="va">redcapsync_cache_location</span><span class="op">)</span></span>
+<span><span class="co"># can modify with config options</span></span>
+<span><span class="va">config</span><span class="op">$</span><span class="fu">cache.dir</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="clearing">Clearing<a class="anchor" aria-label="anchor" href="#clearing"></a>
@@ -139,8 +132,7 @@ you want to delete files, please do so using your own methods.</p>
 using the code below. If you haven’t setup any projects, it will be an
 empty data.frame.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">projects</span> <span class="op">&lt;-</span> <span class="fu">get_projects</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.dataframe.html" class="external-link">print.data.frame</a></span><span class="op">(</span><span class="va">projects</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.dataframe.html" class="external-link">print.data.frame</a></span><span class="op">(</span><span class="va">projects</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

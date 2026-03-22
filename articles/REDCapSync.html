@@ -42,16 +42,7 @@
       <ul class="navbar-nav me-auto">
 <li class="active nav-item"><a class="nav-link" href="../articles/REDCapSync.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/Basic.html">REDCapSync for the Basic R User</a></li>
-    <li><a class="dropdown-item" href="../articles/Intermediate.html">REDCapSync for the Intermediate R User</a></li>
-    <li><a class="dropdown-item" href="../articles/Advanced.html">REDCapSync for the Advanced R User</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
-  </ul>
-</li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -95,9 +86,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">projects</span> <span class="op">&lt;-</span> <span class="fu">get_projects</span><span class="op">(</span><span class="op">)</span>                         <span class="co"># get list of cached projects</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">projects</span><span class="op">)</span>                             <span class="co"># show your previously saved projects</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">projects</span><span class="op">$</span><span class="va">df</span><span class="op">)</span>                             <span class="co"># show your previously saved projects</span></span></code></pre></div>
 <p>You can set your REDCap token in two ways! If you need more help
 setting your tokens see this article –&gt; placeholder</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co">#1. set each time in your session (not recommended in saved/shared scripts!)</span></span>
@@ -137,7 +126,7 @@ form called “project”, “fields”, “choices”, etc. you will have to ad
 what you choose to call them in your script to avoid any conflicts.</p>
 </div>
 <div class="section level2">
-<h2 id="go-further-by-generating-summaries">Go Further by Generating Summaries!<a class="anchor" aria-label="anchor" href="#go-further-by-generating-summaries"></a>
+<h2 id="go-further-by-generating-datasets">Go Further by Generating Datasets!<a class="anchor" aria-label="anchor" href="#go-further-by-generating-datasets"></a>
 </h2>
 <p>This is the intended way to extract data from the project object. It
 has parameters that control what is exported. It is unique from simply
@@ -148,15 +137,15 @@ be used for visualization functions from <a href="">RosyREDCap</a>.</p>
 the right of any repeating forms. It also uses the REDCap log and REDCap
 data to add key information to metadata, users, and records.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">project</span><span class="op">$</span><span class="fu">generate_summary</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">project</span><span class="op">$</span><span class="fu">generate_dataset</span><span class="op">(</span></span>
 <span>  summary_name <span class="op">=</span> <span class="st">"REDCapSync"</span>,</span>
 <span>  envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p>This can be customized with <code>add_summary</code> for refreshing
-datasets or <code>generate_summary</code> for R-only use. This can give
+datasets or <code>generate_dataset</code> for R-only use. This can give
 you filtered data (and corresponding annotations to metadata, etc),
 de-identified data, and more!</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>project<span class="sc">$</span><span class="fu">generate_summary</span>(</span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>project<span class="sc">$</span><span class="fu">generate_dataset</span>(</span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>    <span class="at">filter_field =</span> <span class="st">"has_something"</span>  <span class="co"># Raw REDCap variable name</span></span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="at">filter_choices =</span> <span class="st">"Yes"</span>          <span class="co"># REDCap labelled choice</span></span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="at">exclude_identifiers =</span> <span class="cn">TRUE</span>,</span>

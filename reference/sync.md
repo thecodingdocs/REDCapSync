@@ -8,7 +8,7 @@ Syncs with REDCap via `project` object that user defined with
 ``` r
 sync(
   project_names = NULL,
-  summarize = TRUE,
+  save_datasets = TRUE,
   hard_check = FALSE,
   hard_reset = FALSE
 )
@@ -21,9 +21,9 @@ sync(
   character vector of project project_names previously setup. If NULL,
   will get all from `get_projects()`
 
-- summarize:
+- save_datasets:
 
-  Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
+  Logical (TRUE/FALSE). If TRUE, saves datasets to directory.
 
 - hard_check:
 

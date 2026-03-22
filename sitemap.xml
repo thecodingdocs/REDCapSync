@@ -3,14 +3,9 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/CODE_OF_CONDUCT.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/LICENSE-text.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/LICENSE.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Advanced.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Basic.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Cache.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Download.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Intermediate.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/articles/REDCap.html</loc></url>
+<url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Datasets.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html</loc></url>
-<url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Security.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Tokens.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/Upload.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/articles/index.html</loc></url>
@@ -22,6 +17,7 @@
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync-package.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/cache_clear.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/config.html</loc></url>
+<url><loc>https://thecodingdocs.github.io/REDCapSync/reference/dataset.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/index.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/project.html</loc></url>
 <url><loc>https://thecodingdocs.github.io/REDCapSync/reference/projects.html</loc></url>

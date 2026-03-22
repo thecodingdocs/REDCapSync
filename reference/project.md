@@ -58,19 +58,19 @@ for initializing the `project` object.'
 
 - [`REDCapSyncProject$sync()`](#method-REDCapSyncProject-sync)
 
-- [`REDCapSyncProject$add_summary()`](#method-REDCapSyncProject-add_summary)
+- [`REDCapSyncProject$add_dataset()`](#method-REDCapSyncProject-add_dataset)
 
-- [`REDCapSyncProject$remove_summaries()`](#method-REDCapSyncProject-remove_summaries)
+- [`REDCapSyncProject$remove_datasets()`](#method-REDCapSyncProject-remove_datasets)
 
-- [`REDCapSyncProject$generate_summary()`](#method-REDCapSyncProject-generate_summary)
+- [`REDCapSyncProject$generate_dataset()`](#method-REDCapSyncProject-generate_dataset)
 
 - [`REDCapSyncProject$add_field()`](#method-REDCapSyncProject-add_field)
 
 - [`REDCapSyncProject$remove_fields()`](#method-REDCapSyncProject-remove_fields)
 
-- [`REDCapSyncProject$summarize()`](#method-REDCapSyncProject-summarize)
+- [`REDCapSyncProject$save_datasets()`](#method-REDCapSyncProject-save_datasets)
 
-- [`REDCapSyncProject$save_summary()`](#method-REDCapSyncProject-save_summary)
+- [`REDCapSyncProject$save_dataset()`](#method-REDCapSyncProject-save_dataset)
 
 - [`REDCapSyncProject$save()`](#method-REDCapSyncProject-save)
 
@@ -128,7 +128,7 @@ a complete refresh.
 #### Usage
 
     REDCapSyncProject$sync(
-      summarize = TRUE,
+      save_datasets = TRUE,
       save_to_dir = TRUE,
       hard_check = FALSE,
       hard_reset = FALSE
@@ -136,9 +136,9 @@ a complete refresh.
 
 #### Arguments
 
-- `summarize`:
+- `save_datasets`:
 
-  Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
+  Logical (TRUE/FALSE). If TRUE, saves datasets to directory.
 
 - `save_to_dir`:
 
@@ -153,19 +153,19 @@ a complete refresh.
 
 - `hard_reset`:
 
-  Logical. If `TRUE`, overwrite existing summary files with the same
+  Logical. If `TRUE`, overwrite existing dataset files with the same
   name. Default is `FALSE`.
 
 ------------------------------------------------------------------------
 
-### Method `add_summary()`
+### Method `add_dataset()`
 
-Add a new summary entry
+Add a new dataset entry
 
 #### Usage
 
-    REDCapSyncProject$add_summary(
-      summary_name,
+    REDCapSyncProject$add_dataset(
+      dataset_name,
       transformation_type = "default",
       merge_form_name = "merged",
       filter_field = NULL,
@@ -197,15 +197,15 @@ Add a new summary entry
 
 #### Arguments
 
-- `summary_name`:
+- `dataset_name`:
 
-  Character. The name of the configured summary from which to generate
-  the summary. \*If you provide `summary_name` all other parameters are
-  inherited according to what was set with `add_project_summary`.
+  Character. The name of the configured dataset from which to generate
+  the dataset. \*If you provide `dataset_name` all other parameters are
+  inherited according to what was set with `add_project_dataset`.
 
 - `transformation_type`:
 
-  Character scalar. How to transform data for the summary. Default is
+  Character scalar. How to transform data for the dataset. Default is
   "default". Other options are "none", "flat", "merge_non_repeating".
   "default" first merges non-repeating and if there are repeating forms,
   it merges non-repeating variables to the right of repeating
@@ -226,12 +226,12 @@ Add a new summary entry
 
 - `filter_choices`:
 
-  Vector. The values of `filter_field` used to define the summary. An
+  Vector. The values of `filter_field` used to define the dataset. An
   alternative to providing a full `filter_list`.
 
 - `filter_list`:
 
-  Vector. The values of `filter_field` used to define the summary. Names
+  Vector. The values of `filter_field` used to define the dataset. Names
   are field names; values are the allowed value set(s). Use either
   `filter_list` or `filter_field` with `filter_choices`.
 
@@ -243,17 +243,17 @@ Add a new summary entry
 
 - `field_names`:
 
-  Character vector. Names of specific fields to include in the summary.
+  Character vector. Names of specific fields to include in the dataset.
   Default is `NULL`, which includes all fields.
 
 - `form_names`:
 
-  Character vector. Names of forms to include in the summary. Default is
+  Character vector. Names of forms to include in the dataset. Default is
   `NULL`, which includes all forms.
 
 - `exclude_identifiers`:
 
-  Logical. Whether to exclude identifiers in the data in the summary.
+  Logical. Whether to exclude identifiers in the data in the dataset.
   Default is `TRUE`.
 
 - `exclude_free_text`:
@@ -296,23 +296,23 @@ Add a new summary entry
 
 - `include_metadata`:
 
-  Logical. If `TRUE`, metadata will be included in the summary. Default
+  Logical. If `TRUE`, metadata will be included in the dataset. Default
   is `TRUE`.
 
 - `include_records`:
 
-  Logical. If `TRUE`, a record summary will be included in the generated
-  summary. Default is `TRUE`.
+  Logical. If `TRUE`, a record dataset will be included in the generated
+  dataset. Default is `TRUE`.
 
 - `include_users`:
 
   Logical. If `TRUE`, user-related information will be included in the
-  summary. Default is `TRUE`.
+  dataset. Default is `TRUE`.
 
 - `include_log`:
 
   Logical. If `TRUE`, the log of changes will be included in the
-  summary. Default is `TRUE`.
+  dataset. Default is `TRUE`.
 
 - `annotate_from_log`:
 
@@ -336,45 +336,45 @@ Add a new summary entry
 
 - `dir_other`:
 
-  Character. The directory where the summary file will be saved. Default
+  Character. The directory where the dataset file will be saved. Default
   is the `output` folder within the database directory.
 
 - `file_name`:
 
-  Character. The base name of the file where the summary will be saved.
-  Default is `<project_name>_<summary_name>`.
+  Character. The base name of the file where the dataset will be saved.
+  Default is `<project_name>_<dataset_name>`.
 
 - `hard_reset`:
 
-  Logical. If `TRUE`, overwrite existing summary files with the same
+  Logical. If `TRUE`, overwrite existing dataset files with the same
   name. Default is `FALSE`.
 
 ------------------------------------------------------------------------
 
-### Method `remove_summaries()`
+### Method `remove_datasets()`
 
-Clear all project summaries
+Clear all project datasets
 
 #### Usage
 
-    REDCapSyncProject$remove_summaries(summary_names = NULL)
+    REDCapSyncProject$remove_datasets(dataset_names = NULL)
 
 #### Arguments
 
-- `summary_names`:
+- `dataset_names`:
 
-  One or more summary names. Default is `NULL`.
+  One or more dataset names. Default is `NULL`.
 
 ------------------------------------------------------------------------
 
-### Method `generate_summary()`
+### Method `generate_dataset()`
 
-Add a new summary entry
+Add a new dataset entry
 
 #### Usage
 
-    REDCapSyncProject$generate_summary(
-      summary_name,
+    REDCapSyncProject$generate_dataset(
+      dataset_name,
       envir = NULL,
       transformation_type = "default",
       merge_form_name = "merged",
@@ -401,11 +401,11 @@ Add a new summary entry
 
 #### Arguments
 
-- `summary_name`:
+- `dataset_name`:
 
-  Character. The name of the configured summary from which to generate
-  the summary. \*If you provide `summary_name` all other parameters are
-  inherited according to what was set with `add_project_summary`.
+  Character. The name of the configured dataset from which to generate
+  the dataset. \*If you provide `dataset_name` all other parameters are
+  inherited according to what was set with `add_project_dataset`.
 
 - `envir`:
 
@@ -413,7 +413,7 @@ Add a new summary entry
 
 - `transformation_type`:
 
-  Character scalar. How to transform data for the summary. Default is
+  Character scalar. How to transform data for the dataset. Default is
   "default". Other options are "none", "flat", "merge_non_repeating".
   "default" first merges non-repeating and if there are repeating forms,
   it merges non-repeating variables to the right of repeating
@@ -434,12 +434,12 @@ Add a new summary entry
 
 - `filter_choices`:
 
-  Vector. The values of `filter_field` used to define the summary. An
+  Vector. The values of `filter_field` used to define the dataset. An
   alternative to providing a full `filter_list`.
 
 - `filter_list`:
 
-  Vector. The values of `filter_field` used to define the summary. Names
+  Vector. The values of `filter_field` used to define the dataset. Names
   are field names; values are the allowed value set(s). Use either
   `filter_list` or `filter_field` with `filter_choices`.
 
@@ -451,17 +451,17 @@ Add a new summary entry
 
 - `field_names`:
 
-  Character vector. Names of specific fields to include in the summary.
+  Character vector. Names of specific fields to include in the dataset.
   Default is `NULL`, which includes all fields.
 
 - `form_names`:
 
-  Character vector. Names of forms to include in the summary. Default is
+  Character vector. Names of forms to include in the dataset. Default is
   `NULL`, which includes all forms.
 
 - `exclude_identifiers`:
 
-  Logical. Whether to exclude identifiers in the data in the summary.
+  Logical. Whether to exclude identifiers in the data in the dataset.
   Default is `TRUE`.
 
 - `exclude_free_text`:
@@ -504,23 +504,23 @@ Add a new summary entry
 
 - `include_metadata`:
 
-  Logical. If `TRUE`, metadata will be included in the summary. Default
+  Logical. If `TRUE`, metadata will be included in the dataset. Default
   is `TRUE`.
 
 - `include_records`:
 
-  Logical. If `TRUE`, a record summary will be included in the generated
-  summary. Default is `TRUE`.
+  Logical. If `TRUE`, a record dataset will be included in the generated
+  dataset. Default is `TRUE`.
 
 - `include_users`:
 
   Logical. If `TRUE`, user-related information will be included in the
-  summary. Default is `TRUE`.
+  dataset. Default is `TRUE`.
 
 - `include_log`:
 
   Logical. If `TRUE`, the log of changes will be included in the
-  summary. Default is `TRUE`.
+  dataset. Default is `TRUE`.
 
 - `annotate_from_log`:
 
@@ -531,7 +531,7 @@ Add a new summary entry
 
 ### Method `add_field()`
 
-Add a new summary entry
+Add a new dataset entry
 
 #### Usage
 
@@ -602,7 +602,7 @@ Add a new summary entry
 
 ### Method `remove_fields()`
 
-Removes summary entry
+Removes extra fields
 
 #### Usage
 
@@ -612,49 +612,49 @@ Removes summary entry
 
 - `field_names`:
 
-  Character vector. Names of specific fields to include in the summary.
+  Character vector. Names of specific fields to include in the dataset.
   Default is `NULL`, which includes all fields.
 
 ------------------------------------------------------------------------
 
-### Method `summarize()`
+### Method `save_datasets()`
 
-summarize project and save to Excel
+saves project datasets to Excel
 
 #### Usage
 
-    REDCapSyncProject$summarize(hard_reset = FALSE)
+    REDCapSyncProject$save_datasets(hard_reset = FALSE)
 
 #### Arguments
 
 - `hard_reset`:
 
-  Logical. If `TRUE`, overwrite existing summary files with the same
+  Logical. If `TRUE`, overwrite existing dataset files with the same
   name. Default is `FALSE`.
 
 ------------------------------------------------------------------------
 
-### Method `save_summary()`
+### Method `save_dataset()`
 
-save summary to Excel
+save dataset to Excel
 
 #### Usage
 
-    REDCapSyncProject$save_summary(summary_name)
+    REDCapSyncProject$save_dataset(dataset_name)
 
 #### Arguments
 
-- `summary_name`:
+- `dataset_name`:
 
-  Character. The name of the configured summary from which to generate
-  the summary. \*If you provide `summary_name` all other parameters are
-  inherited according to what was set with `add_project_summary`.
+  Character. The name of the configured dataset from which to generate
+  the dataset. \*If you provide `dataset_name` all other parameters are
+  inherited according to what was set with `add_project_dataset`.
 
 ------------------------------------------------------------------------
 
 ### Method [`save()`](https://rdrr.io/r/base/save.html)
 
-Add a new summary entry
+Add a new dataset entry
 
 #### Usage
 

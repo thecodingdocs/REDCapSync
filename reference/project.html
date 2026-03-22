@@ -29,14 +29,7 @@ an existing project, use load_project()."><meta property="og:image" content="htt
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/REDCapSync.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Basic.html">REDCapSync for the Basic R User</a></li>
-    <li><a class="dropdown-item" href="../articles/Intermediate.html">REDCapSync for the Intermediate R User</a></li>
-    <li><a class="dropdown-item" href="../articles/Advanced.html">REDCapSync for the Advanced R User</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
-  </ul></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -117,13 +110,13 @@ users and log.</p></dd>
 <ul><li><p><a href="#method-REDCapSyncProject-new"><code>REDCapSyncProject$new()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-print"><code>REDCapSyncProject$print()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-sync"><code>REDCapSyncProject$sync()</code></a></p></li>
-<li><p><a href="#method-REDCapSyncProject-add_summary"><code>REDCapSyncProject$add_summary()</code></a></p></li>
-<li><p><a href="#method-REDCapSyncProject-remove_summaries"><code>REDCapSyncProject$remove_summaries()</code></a></p></li>
-<li><p><a href="#method-REDCapSyncProject-generate_summary"><code>REDCapSyncProject$generate_summary()</code></a></p></li>
+<li><p><a href="#method-REDCapSyncProject-add_dataset"><code>REDCapSyncProject$add_dataset()</code></a></p></li>
+<li><p><a href="#method-REDCapSyncProject-remove_datasets"><code>REDCapSyncProject$remove_datasets()</code></a></p></li>
+<li><p><a href="#method-REDCapSyncProject-generate_dataset"><code>REDCapSyncProject$generate_dataset()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-add_field"><code>REDCapSyncProject$add_field()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-remove_fields"><code>REDCapSyncProject$remove_fields()</code></a></p></li>
-<li><p><a href="#method-REDCapSyncProject-summarize"><code>REDCapSyncProject$summarize()</code></a></p></li>
-<li><p><a href="#method-REDCapSyncProject-save_summary"><code>REDCapSyncProject$save_summary()</code></a></p></li>
+<li><p><a href="#method-REDCapSyncProject-save_datasets"><code>REDCapSyncProject$save_datasets()</code></a></p></li>
+<li><p><a href="#method-REDCapSyncProject-save_dataset"><code>REDCapSyncProject$save_dataset()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-save"><code>REDCapSyncProject$save()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-set_keyring_token"><code>REDCapSyncProject$set_keyring_token()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-test_token"><code>REDCapSyncProject$test_token()</code></a></p></li>
@@ -165,7 +158,7 @@ changes. Sync is performed according to the <code>sync_frequency</code> set in
 <code><a href="setup-load.html">setup_project()</a></code> by default. Use <code>hard_check</code> to force a check, or <code> hard_reset</code> to force a complete refresh.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span></span>
-<span>  summarize <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  save_datasets <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  save_to_dir <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  hard_check <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  hard_reset <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -174,8 +167,9 @@ changes. Sync is performed according to the <code>sync_frequency</code> set in
 
 <div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>summarize</code></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, summarizes data to directory.</p></dd>
+<p></p><div class="arguments"><dl><dt><code>save_datasets</code></dt>
+<dd><p>Logical (TRUE/FALSE). If TRUE, saves datasets to
+directory.</p></dd>
 
 
 <dt><code>save_to_dir</code></dt>
@@ -190,19 +184,19 @@ parameter from <code><a href="setup-load.html">setup_project()</a></code>)</p></
 
 
 <dt><code>hard_reset</code></dt>
-<dd><p>Logical. If <code>TRUE</code>, overwrite existing summary files
+<dd><p>Logical. If <code>TRUE</code>, overwrite existing dataset files
 with the same name. Default is <code>FALSE</code>.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-REDCapSyncProject-add_summary"></a><div class="section">
-<h3 id="method-add-summary-">Method <code>add_summary()</code><a class="anchor" aria-label="anchor" href="#method-add-summary-"></a></h3>
-<p>Add a new summary entry</p><div class="section">
+</div><p></p><hr><a id="method-REDCapSyncProject-add_dataset"></a><div class="section">
+<h3 id="method-add-dataset-">Method <code>add_dataset()</code><a class="anchor" aria-label="anchor" href="#method-add-dataset-"></a></h3>
+<p>Add a new dataset entry</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">add_summary</span><span class="op">(</span></span>
-<span>  <span class="va">summary_name</span>,</span>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">add_dataset</span><span class="op">(</span></span>
+<span>  <span class="va">dataset_name</span>,</span>
 <span>  transformation_type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  merge_form_name <span class="op">=</span> <span class="st">"merged"</span>,</span>
 <span>  filter_field <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -235,15 +229,15 @@ with the same name. Default is <code>FALSE</code>.</p></dd>
 
 <div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>summary_name</code></dt>
-<dd><p>Character. The name of the configured summary from which
-to generate the summary. *If you provide <code>summary_name</code> all other parameters
-are inherited according to what was set with <code>add_project_summary</code>.</p></dd>
+<p></p><div class="arguments"><dl><dt><code>dataset_name</code></dt>
+<dd><p>Character. The name of the configured dataset from which
+to generate the dataset. *If you provide <code>dataset_name</code> all other parameters
+are inherited according to what was set with <code>add_project_dataset</code>.</p></dd>
 
 
 <dt><code>transformation_type</code></dt>
 <dd><p>Character scalar. How to transform data for the
-summary. Default is "default". Other options are "none", "flat",
+dataset. Default is "default". Other options are "none", "flat",
 "merge_non_repeating". "default" first merges non-repeating and if there are
 repeating forms, it merges non-repeating variables to the right of repeating
 instruments. "flat" is one-record, one-row, even if there are repeating
@@ -264,12 +258,12 @@ filter on. Used with <code>filter_choices</code>.</p></dd>
 
 <dt><code>filter_choices</code></dt>
 <dd><p>Vector. The values of <code>filter_field</code> used to define the
-summary. An alternative to providing a full <code>filter_list</code>.</p></dd>
+dataset. An alternative to providing a full <code>filter_list</code>.</p></dd>
 
 
 <dt><code>filter_list</code></dt>
 <dd><p>Vector. The values of <code>filter_field</code> used to define the
-summary. Names are field names; values are the allowed value set(s). Use
+dataset. Names are field names; values are the allowed value set(s). Use
 either <code>filter_list</code> or <code>filter_field</code> with <code>filter_choices</code>.</p></dd>
 
 
@@ -281,17 +275,17 @@ all other forms by that record. Default is <code>TRUE</code>.</p></dd>
 
 <dt><code>field_names</code></dt>
 <dd><p>Character vector. Names of specific fields to include in
-the summary. Default is <code>NULL</code>, which includes all fields.</p></dd>
+the dataset. Default is <code>NULL</code>, which includes all fields.</p></dd>
 
 
 <dt><code>form_names</code></dt>
-<dd><p>Character vector. Names of forms to include in the summary.
+<dd><p>Character vector. Names of forms to include in the dataset.
 Default is <code>NULL</code>, which includes all forms.</p></dd>
 
 
 <dt><code>exclude_identifiers</code></dt>
 <dd><p>Logical. Whether to exclude identifiers in the
-data in the summary. Default is <code>TRUE</code>.</p></dd>
+data in the dataset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>exclude_free_text</code></dt>
@@ -333,22 +327,22 @@ to NA. Default is <code>FALSE</code>.</p></dd>
 
 <dt><code>include_metadata</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, metadata will be included in the
-summary. Default is <code>TRUE</code>.</p></dd>
+dataset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>include_records</code></dt>
-<dd><p>Logical. If <code>TRUE</code>, a record summary will be
-included in the generated summary. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, a record dataset will be
+included in the generated dataset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>include_users</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, user-related information will be
-included in the summary. Default is <code>TRUE</code>.</p></dd>
+included in the dataset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>include_log</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, the log of changes will be included in
-the summary. Default is <code>TRUE</code>.</p></dd>
+the dataset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>annotate_from_log</code></dt>
@@ -372,45 +366,45 @@ storage. Default is <code>FALSE</code></p></dd>
 
 
 <dt><code>dir_other</code></dt>
-<dd><p>Character. The directory where the summary file will be
+<dd><p>Character. The directory where the dataset file will be
 saved. Default is the <code>output</code> folder within the database directory.</p></dd>
 
 
 <dt><code>file_name</code></dt>
-<dd><p>Character. The base name of the file where the summary will
-be saved. Default is <code>&lt;project_name&gt;_&lt;summary_name&gt;</code>.</p></dd>
+<dd><p>Character. The base name of the file where the dataset will
+be saved. Default is <code>&lt;project_name&gt;_&lt;dataset_name&gt;</code>.</p></dd>
 
 
 <dt><code>hard_reset</code></dt>
-<dd><p>Logical. If <code>TRUE</code>, overwrite existing summary files
+<dd><p>Logical. If <code>TRUE</code>, overwrite existing dataset files
 with the same name. Default is <code>FALSE</code>.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-REDCapSyncProject-remove_summaries"></a><div class="section">
-<h3 id="method-remove-summaries-">Method <code>remove_summaries()</code><a class="anchor" aria-label="anchor" href="#method-remove-summaries-"></a></h3>
-<p>Clear all project summaries</p><div class="section">
+</div><p></p><hr><a id="method-REDCapSyncProject-remove_datasets"></a><div class="section">
+<h3 id="method-remove-datasets-">Method <code>remove_datasets()</code><a class="anchor" aria-label="anchor" href="#method-remove-datasets-"></a></h3>
+<p>Clear all project datasets</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">remove_summaries</span><span class="op">(</span>summary_names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">remove_datasets</span><span class="op">(</span>dataset_names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>summary_names</code></dt>
-<dd><p>One or more summary names. Default is <code>NULL</code>.</p></dd>
+<p></p><div class="arguments"><dl><dt><code>dataset_names</code></dt>
+<dd><p>One or more dataset names. Default is <code>NULL</code>.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-REDCapSyncProject-generate_summary"></a><div class="section">
-<h3 id="method-generate-summary-">Method <code>generate_summary()</code><a class="anchor" aria-label="anchor" href="#method-generate-summary-"></a></h3>
-<p>Add a new summary entry</p><div class="section">
+</div><p></p><hr><a id="method-REDCapSyncProject-generate_dataset"></a><div class="section">
+<h3 id="method-generate-dataset-">Method <code>generate_dataset()</code><a class="anchor" aria-label="anchor" href="#method-generate-dataset-"></a></h3>
+<p>Add a new dataset entry</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">generate_summary</span><span class="op">(</span></span>
-<span>  <span class="va">summary_name</span>,</span>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">generate_dataset</span><span class="op">(</span></span>
+<span>  <span class="va">dataset_name</span>,</span>
 <span>  envir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  transformation_type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  merge_form_name <span class="op">=</span> <span class="st">"merged"</span>,</span>
@@ -438,10 +432,10 @@ with the same name. Default is <code>FALSE</code>.</p></dd>
 
 <div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>summary_name</code></dt>
-<dd><p>Character. The name of the configured summary from which
-to generate the summary. *If you provide <code>summary_name</code> all other parameters
-are inherited according to what was set with <code>add_project_summary</code>.</p></dd>
+<p></p><div class="arguments"><dl><dt><code>dataset_name</code></dt>
+<dd><p>Character. The name of the configured dataset from which
+to generate the dataset. *If you provide <code>dataset_name</code> all other parameters
+are inherited according to what was set with <code>add_project_dataset</code>.</p></dd>
 
 
 <dt><code>envir</code></dt>
@@ -450,7 +444,7 @@ are inherited according to what was set with <code>add_project_summary</code>.</
 
 <dt><code>transformation_type</code></dt>
 <dd><p>Character scalar. How to transform data for the
-summary. Default is "default". Other options are "none", "flat",
+dataset. Default is "default". Other options are "none", "flat",
 "merge_non_repeating". "default" first merges non-repeating and if there are
 repeating forms, it merges non-repeating variables to the right of repeating
 instruments. "flat" is one-record, one-row, even if there are repeating
@@ -471,12 +465,12 @@ filter on. Used with <code>filter_choices</code>.</p></dd>
 
 <dt><code>filter_choices</code></dt>
 <dd><p>Vector. The values of <code>filter_field</code> used to define the
-summary. An alternative to providing a full <code>filter_list</code>.</p></dd>
+dataset. An alternative to providing a full <code>filter_list</code>.</p></dd>
 
 
 <dt><code>filter_list</code></dt>
 <dd><p>Vector. The values of <code>filter_field</code> used to define the
-summary. Names are field names; values are the allowed value set(s). Use
+dataset. Names are field names; values are the allowed value set(s). Use
 either <code>filter_list</code> or <code>filter_field</code> with <code>filter_choices</code>.</p></dd>
 
 
@@ -488,17 +482,17 @@ all other forms by that record. Default is <code>TRUE</code>.</p></dd>
 
 <dt><code>field_names</code></dt>
 <dd><p>Character vector. Names of specific fields to include in
-the summary. Default is <code>NULL</code>, which includes all fields.</p></dd>
+the dataset. Default is <code>NULL</code>, which includes all fields.</p></dd>
 
 
 <dt><code>form_names</code></dt>
-<dd><p>Character vector. Names of forms to include in the summary.
+<dd><p>Character vector. Names of forms to include in the dataset.
 Default is <code>NULL</code>, which includes all forms.</p></dd>
 
 
 <dt><code>exclude_identifiers</code></dt>
 <dd><p>Logical. Whether to exclude identifiers in the
-data in the summary. Default is <code>TRUE</code>.</p></dd>
+data in the dataset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>exclude_free_text</code></dt>
@@ -540,22 +534,22 @@ to NA. Default is <code>FALSE</code>.</p></dd>
 
 <dt><code>include_metadata</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, metadata will be included in the
-summary. Default is <code>TRUE</code>.</p></dd>
+dataset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>include_records</code></dt>
-<dd><p>Logical. If <code>TRUE</code>, a record summary will be
-included in the generated summary. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, a record dataset will be
+included in the generated dataset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>include_users</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, user-related information will be
-included in the summary. Default is <code>TRUE</code>.</p></dd>
+included in the dataset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>include_log</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, the log of changes will be included in
-the summary. Default is <code>TRUE</code>.</p></dd>
+the dataset. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt><code>annotate_from_log</code></dt>
@@ -568,7 +562,7 @@ will be annotated using the log. Default is <code>TRUE</code>.</p></dd>
 
 </div><p></p><hr><a id="method-REDCapSyncProject-add_field"></a><div class="section">
 <h3 id="method-add-field-">Method <code>add_field()</code><a class="anchor" aria-label="anchor" href="#method-add-field-"></a></h3>
-<p>Add a new summary entry</p><div class="section">
+<p>Add a new dataset entry</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">add_field</span><span class="op">(</span></span>
 <span>  <span class="va">field_name</span>,</span>
@@ -640,7 +634,7 @@ validate the data in the field. Default is <code>NA</code>.</p></dd>
 
 </div><p></p><hr><a id="method-REDCapSyncProject-remove_fields"></a><div class="section">
 <h3 id="method-remove-fields-">Method <code>remove_fields()</code><a class="anchor" aria-label="anchor" href="#method-remove-fields-"></a></h3>
-<p>Removes summary entry</p><div class="section">
+<p>Removes extra fields</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">remove_fields</span><span class="op">(</span>field_names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -649,42 +643,42 @@ validate the data in the field. Default is <code>NA</code>.</p></dd>
 <h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>field_names</code></dt>
 <dd><p>Character vector. Names of specific fields to include in
-the summary. Default is <code>NULL</code>, which includes all fields.</p></dd>
+the dataset. Default is <code>NULL</code>, which includes all fields.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-REDCapSyncProject-summarize"></a><div class="section">
-<h3 id="method-summarize-">Method <code>summarize()</code><a class="anchor" aria-label="anchor" href="#method-summarize-"></a></h3>
-<p>summarize project and save to Excel</p><div class="section">
+</div><p></p><hr><a id="method-REDCapSyncProject-save_datasets"></a><div class="section">
+<h3 id="method-save-datasets-">Method <code>save_datasets()</code><a class="anchor" aria-label="anchor" href="#method-save-datasets-"></a></h3>
+<p>saves project datasets to Excel</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">summarize</span><span class="op">(</span>hard_reset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">save_datasets</span><span class="op">(</span>hard_reset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>hard_reset</code></dt>
-<dd><p>Logical. If <code>TRUE</code>, overwrite existing summary files
+<dd><p>Logical. If <code>TRUE</code>, overwrite existing dataset files
 with the same name. Default is <code>FALSE</code>.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-REDCapSyncProject-save_summary"></a><div class="section">
-<h3 id="method-save-summary-">Method <code>save_summary()</code><a class="anchor" aria-label="anchor" href="#method-save-summary-"></a></h3>
-<p>save summary to Excel</p><div class="section">
+</div><p></p><hr><a id="method-REDCapSyncProject-save_dataset"></a><div class="section">
+<h3 id="method-save-dataset-">Method <code>save_dataset()</code><a class="anchor" aria-label="anchor" href="#method-save-dataset-"></a></h3>
+<p>save dataset to Excel</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">save_summary</span><span class="op">(</span><span class="va">summary_name</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">save_dataset</span><span class="op">(</span><span class="va">dataset_name</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>summary_name</code></dt>
-<dd><p>Character. The name of the configured summary from which
-to generate the summary. *If you provide <code>summary_name</code> all other parameters
-are inherited according to what was set with <code>add_project_summary</code>.</p></dd>
+<p></p><div class="arguments"><dl><dt><code>dataset_name</code></dt>
+<dd><p>Character. The name of the configured dataset from which
+to generate the dataset. *If you provide <code>dataset_name</code> all other parameters
+are inherited according to what was set with <code>add_project_dataset</code>.</p></dd>
 
 
 </dl><p></p></div>
@@ -692,7 +686,7 @@ are inherited according to what was set with <code>add_project_summary</code>.</
 
 </div><p></p><hr><a id="method-REDCapSyncProject-save"></a><div class="section">
 <h3 id="method-save-">Method <code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code><a class="anchor" aria-label="anchor" href="#method-save-"></a></h3>
-<p>Add a new summary entry</p><div class="section">
+<p>Add a new dataset entry</p><div class="section">
 <h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>

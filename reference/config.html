@@ -37,14 +37,7 @@ Default if unable to find and validate from above.
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/REDCapSync.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Basic.html">REDCapSync for the Basic R User</a></li>
-    <li><a class="dropdown-item" href="../articles/Intermediate.html">REDCapSync for the Intermediate R User</a></li>
-    <li><a class="dropdown-item" href="../articles/Advanced.html">REDCapSync for the Advanced R User</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
-  </ul></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -177,7 +170,8 @@ system standards via rappdir, hoardr, or R_USER_CACHE_DIR</p>
 
 
 <p>Character keyring name (parameter from <code><a href="https://keyring.r-lib.org/reference/keyring-package.html" class="external-link">keyring</a></code>
-package). Default is NULL, which is at the system level. For locking use a keyring like "REDCapSync"</p>
+package). Default is NULL, which is at the system level. For locking use a
+keyring like "REDCapSync"</p>
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># check current value package is using...</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>config<span class="sc">$</span><span class="fu">keyring</span>()</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># set with options (which will be prioritized over envvar)</span></span>

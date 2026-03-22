@@ -1,12 +1,12 @@
-# REDCap projects used by REDCapSync
+# Manage REDCapSync projects
 
-Everytime a project is synced, basic project information is saved to the
-package user cache so that
-[load_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-and [sync](https://thecodingdocs.github.io/REDCapSync/reference/sync.md)
-work across R sessions.
+`projects` is the central interface for managing REDCap projects in
+**REDCapSync**. It provides a convenient, persistent registry of
+projects that can be accessed across R sessions.
 
-This object acts as a singleton access point for the entire package ...
+Each time a project is set up or synced, basic metadata is stored
+locally so that projects can be reloaded and updated without
+reconfiguration.
 
 ## Usage
 
@@ -16,14 +16,25 @@ projects
 
 ## Format
 
-An object of class `REDCapSyncProjectManager` (inherits from `R6`) of
-length 8.
+An object of class `REDCapSyncProjects` (inherits from `R6`) of length
+11.
 
 ## Value
 
 R6 object that can used be to access project objects
 
 ## Details
+
+`projects` is implemented as a singleton R6 object and serves as the
+main entry point to the REDCapSync workflow. All project-level
+operations—such as setup, loading, syncing, and removal—are accessed
+through this object.
+
+A key advantage of this design is support for **method chaining**.
+Because project methods return project objects, you can write concise,
+readable workflows that operate in sequence:
+
+    projects$load("my_project")$sync()$save_datasets()
 
 The default location of the cache location is defined by using
 R_USER_CACHE_DIR if set. Otherwise, it follows platform conventions via

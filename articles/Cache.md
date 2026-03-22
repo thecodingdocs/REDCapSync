@@ -23,7 +23,7 @@ might look like, “/Users/yourmacname/Library/Caches/R/REDCapSync”.
 Your exact path can be found for any R package with
 `rappdirs::user_cache_dir("R")`. The only thing that REDCapSync stores
 in this cache is the projects data.frame, which can be loaded with
-`projects <- get_projects()`.
+`projects$load("PROJECT")`.
 
 ``` r
 user_cache_location <- rappdirs::user_cache_dir("R") 
@@ -31,6 +31,8 @@ redcapsync_cache_location <- file.path(user_cache_location, "REDCapSync")
 redcapsync_cache_location
 # launch the folder on your computer
 utils::browseURL(redcapsync_cache_location)
+# can modify with config options
+config$cache.dir()
 ```
 
 ## Clearing
@@ -56,6 +58,5 @@ the code below. If you haven’t setup any projects, it will be an empty
 data.frame.
 
 ``` r
-projects <- get_projects()
-print.data.frame(projects)
+print.data.frame(projects$df)
 ```

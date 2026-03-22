@@ -93,3 +93,12 @@ Print some key dataset information
 #### Usage
 
     REDCapSyncDataset$print()
+
+## Examples
+
+``` r
+dataset <- load_project("TEST_CLASSIC")$generate_dataset("REDCapSync")
+#> ! No cached projects... use `setup_project(...)`
+#> ✔ Loaded TEST project TEST_CLASSIC!
+#> ! Does not actually communicate with any REDCap API
+```

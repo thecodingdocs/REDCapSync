@@ -16,18 +16,17 @@ scrub_test_project <- function(project, pid) {
   )
   project$redcap$log <- unique(project$redcap$log[keep_rows, ]) |> head(10)
   # project$redcap$log$details <- NA
-
   project$redcap$users$username <- "u1230"
   project$redcap$users$email <- "thecodingdocs@gmail.com"
   project$links$redcap_uri <- "https://redcap.fake.edu/api/"
   project$links$redcap_base <-  project$links$redcap_uri |>
     dirname() |> paste0("/")
   project <- update_project_links(project)
-  project$summary$REDCapSync_raw$dir_other <- "fake/path"
-  project$summary$REDCapSync_raw$file_path <-
+  project$datasets$REDCapSync_raw$dir_other <- "fake/path"
+  project$datasets$REDCapSync_raw$file_path <-
     paste0("fake/path/", project$project_name, "_REDCapSync.xslx")
-  project$summary$REDCapSync$dir_other <- "fake/path"
-  project$summary$REDCapSync$file_path <-
+  project$datasets$REDCapSync$dir_other <- "fake/path"
+  project$datasets$REDCapSync$file_path <-
     paste0("fake/path/", project$project_name, ".xslx")
   invisible(project)
 }
@@ -54,16 +53,21 @@ scrub_test_rcon <- function(rcon_list, pid) {
   if (is_something(rcon_list$user_role_assignment)) {
     rcon_list$user_role_assignment$username <- "u1230"
   }
+  if (is_something(rcon_list$dag_assignment)) {
+    rcon_list$dag_assignment$username <- "u1230"
+  }
   rcon_list
 }
-entire_log <- TRUE
+get_entire_log <- TRUE
 hard_reset <- TRUE
+withr::local_options(redcapsync.config.allow.test.names = TRUE)
+projects$df
 # now -----
 project <- setup_project(
   project_name = "TEST_CLASSIC",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
   dir_path =  Sys.getenv("dir_path_UTTEST"),
-  entire_log = entire_log,
+  get_entire_log = get_entire_log,
   hard_reset = hard_reset
 )$sync()
 project <- setup_project(
@@ -94,7 +98,6 @@ project <- setup_project(
   project_name = "TEST_LONGITUDINAL",
   redcap_uri = Sys.getenv("UT_REDCAP_URI"),
   dir_path =  Sys.getenv("dir_path_UTTEST"),
-  entire_log = entire_log,
   hard_reset = hard_reset
 )$sync()
 project <- setup_project(
@@ -148,7 +151,7 @@ project_name <- "TEST_CLASSIC"
 for (project_name in project_names) {
   pid <- names(project_names)[which(project_names == project_name)]
   project <- load_project(project_name)$.internal
-  rcon_list <- rcon_result(project)
+  rcon_list <- get_redcap_rcon(project)
   rcon <- redcapConnection(url = project$links$redcap_uri,
                            token = get_project_token(project))
   rcon_list$redcap_version <- rcon$version()

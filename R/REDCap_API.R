@@ -1,7 +1,8 @@
 #' @noRd
-get_redcap_metadata <- function(project, include_users = TRUE) {
+get_redcap_metadata <- function(project) {
   assert_setup_project(project)
-  result <- rcon_result(project)
+  result <- get_redcap_rcon(project)
+  get_users <- project$settings$get_users
   project$metadata <- list()
   project$redcap$project_info <- result$project_info
   # info ----------
@@ -157,23 +158,23 @@ get_redcap_metadata <- function(project, include_users = TRUE) {
   # other-------
   project$redcap$users <- NA
   has_users <- is_something(result$users)
-  if (include_users && project$redcap$has_user_access && has_users) {
+  if (get_users && project$redcap$has_user_access && has_users) {
     keep_cols <- c("unique_role_name", "role_label")
     project$redcap$users <- result$user_roles[, keep_cols] |>
       merge(result$user_role_assignment, by = "unique_role_name") |>
       merge(result$users, by = "username", all.y = TRUE)
   }
   project$redcap$file_repository <- NA
-  get_file_repository <- project$internals$get_file_repository
+  get_file_repository <- project$settings$get_file_repository
   if (get_file_repository && project$redcap$has_file_repository_access) {
     project$redcap$file_repository <- result$file_repository
   }
   #dags
-  project$internals$last_metadata_update <- now_time()
+  project$settings$last_metadata_update <- now_time()
   invisible(project)
 }
 #' @noRd
-rcon_result <- function(project) {
+get_redcap_rcon <- function(project) {
   rcon <- redcapConnection(url = project$links$redcap_uri,
                            token = get_project_token(project))
   result <- list(

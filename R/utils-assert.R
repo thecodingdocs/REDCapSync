@@ -82,96 +82,102 @@ assert_setup_project <- function(project) {
   assert_env_name(project$project_name, max.chars = 31L, all_caps = TRUE)
   # dir_path
   # redcap_uri
-  assert_env_name(project$redcap$token_name, max.chars = 50L, all_caps = TRUE)
-  assert_choice(project$internals$sync_frequency, choices = .sync_frequency)
-  assert_logical(project$internals$labelled, len = 1L, any.missing = FALSE)
+  assert_env_name(project$token_name, max.chars = 50L, all_caps = TRUE)
+  #redcap --------------
+  assert_choice(project$redcap$timezone, OlsonNames())
+  #settings --------------
+  assert_choice(project$settings$sync_frequency, choices = .sync_frequency)
+  assert_logical(project$settings$labelled, len = 1L, any.missing = FALSE)
+  assert_choice(project$settings$get_type, choices = .get_type)
+  assert(
+    test_scalar_na(project$settings$records) ||
+      test_character(
+        project$settings$records, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert(
+    test_scalar_na(project$settings$fields) ||
+      test_character(
+        project$settings$fields, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert(
+    test_scalar_na(project$settings$forms) ||
+      test_character(
+        project$settings$forms, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert(
+    test_scalar_na(project$settings$events) ||
+      test_character(
+        project$settings$events, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert(
+    test_scalar_na(project$settings$filter_logic) ||
+      test_character(
+        project$settings$filter_logic, # add exist warning
+        min.chars = 1L,
+        unique = TRUE,
+        min.len = 1L,
+        any.missing = FALSE
+      )
+  )
+  assert_logical(project$settings$get_users, len = 1L, any.missing = FALSE)
+  assert_logical(project$settings$get_data, len = 1L, any.missing = FALSE)
+  assert_integerish(
+    project$settings$batch_size_download,
+    len = 1L,
+    lower = 1L,
+    any.missing = FALSE
+  )
+  assert_integerish(
+    project$settings$batch_size_upload,
+    len = 1L,
+    lower = 1L,
+    any.missing = FALSE
+  )
+  assert_logical(project$settings$get_entire_log, len = 1L, any.missing = FALSE)
+  assert_integerish(
+    project$settings$log_days,
+    len = 1L,
+    lower = 1L,
+    any.missing = FALSE
+  )
+  assert_logical(project$settings$log_drop_details,
+                 len = 1L,
+                 any.missing = FALSE)
+  assert_logical(project$settings$log_drop_exports,
+                 len = 1L,
+                 any.missing = FALSE)
+  assert_logical(project$settings$get_files, len = 1L, any.missing = FALSE)
+  assert_logical(project$settings$get_file_repository,
+                 len = 1L,
+                 any.missing = FALSE)
+  assert_logical(project$settings$original_file_names,
+                 len = 1L,
+                 any.missing = FALSE)
+  assert_logical(project$settings$add_default_datasets,
+                 len = 1L,
+                 any.missing = FALSE)
+  #internals --------------
   assert_logical(project$internals$hard_reset, len = 1L, any.missing = FALSE)
-  assert_choice(project$internals$get_type, choices = .get_type)
-  assert(
-    test_scalar_na(project$internals$records) ||
-      test_character(
-        project$internals$records, # add exist warning
-        min.chars = 1L,
-        unique = TRUE,
-        min.len = 1L,
-        any.missing = FALSE
-      )
-  )
-  assert(
-    test_scalar_na(project$internals$fields) ||
-      test_character(
-        project$internals$fields, # add exist warning
-        min.chars = 1L,
-        unique = TRUE,
-        min.len = 1L,
-        any.missing = FALSE
-      )
-  )
-  assert(
-    test_scalar_na(project$internals$forms) ||
-      test_character(
-        project$internals$forms, # add exist warning
-        min.chars = 1L,
-        unique = TRUE,
-        min.len = 1L,
-        any.missing = FALSE
-      )
-  )
-  assert(
-    test_scalar_na(project$internals$events) ||
-      test_character(
-        project$internals$events, # add exist warning
-        min.chars = 1L,
-        unique = TRUE,
-        min.len = 1L,
-        any.missing = FALSE
-      )
-  )
-  assert(
-    test_scalar_na(project$internals$filter_logic) ||
-      test_character(
-        project$internals$filter_logic, # add exist warning
-        min.chars = 1L,
-        unique = TRUE,
-        min.len = 1L,
-        any.missing = FALSE
-      )
-  )
-  assert_logical(project$internals$metadata_only, len = 1L, any.missing = FALSE)
-  assert_integerish(
-    project$internals$batch_size_download,
-    len = 1L,
-    lower = 1L,
-    any.missing = FALSE
-  )
-  assert_integerish(
-    project$internals$batch_size_upload,
-    len = 1L,
-    lower = 1L,
-    any.missing = FALSE
-  )
-  assert_logical(project$internals$entire_log,
-                 len = 1L,
-                 any.missing = FALSE)
-  assert_integerish(
-    project$internals$days_of_log,
-    len = 1L,
-    lower = 1L,
-    any.missing = FALSE
-  )
-  assert_choice(project$internals$timezone, OlsonNames())
-  assert_logical(project$internals$get_files,
-                 len = 1L,
-                 any.missing = FALSE)
-  assert_logical(project$internals$get_file_repository,
-                 len = 1L,
-                 any.missing = FALSE)
-  assert_logical(project$internals$original_file_names,
-                 len = 1L,
-                 any.missing = FALSE)
-  assert_logical(project$internals$add_default_summaries,
-                 len = 1L,
-                 any.missing = FALSE)
   assert_logical(project$internals$was_updated,
                  len = 1L,
                  any.missing = FALSE)
@@ -181,9 +187,9 @@ assert_setup_project <- function(project) {
 assert_project_name <- function(project_name,
                                 allow_test_names = config$allow.test.names()) {
   if (grepl("[a-z]", project_name)) {
-    uppercase_project_name <- toupper(project_name)
+    project_name <- toupper(project_name)
     end_message <- paste0("`project_name` must be all caps!",
-                          " For example, try '{uppercase_project_name}'")
+                          " For example, try '{project_name}'")
     cli_abort(end_message)
   }
   assert_env_name(project_name, max.chars = 31L, all_caps = TRUE)

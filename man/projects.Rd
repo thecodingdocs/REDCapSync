@@ -3,9 +3,9 @@
 \docType{data}
 \name{projects}
 \alias{projects}
-\title{REDCap projects used by REDCapSync}
+\title{Manage REDCapSync projects}
 \format{
-An object of class \code{REDCapSyncProjectManager} (inherits from \code{R6}) of length 8.
+An object of class \code{REDCapSyncProjects} (inherits from \code{R6}) of length 11.
 }
 \usage{
 projects
@@ -14,12 +14,26 @@ projects
 R6 object that can used be to access project objects
 }
 \description{
-Everytime a project is synced, basic project information is saved to the
-package user cache so that \link{load_project} and \link{sync} work across R sessions.
+\code{projects} is the central interface for managing REDCap projects in
+\strong{REDCapSync}. It provides a convenient, persistent registry of projects
+that can be accessed across R sessions.
 
-This object acts as a singleton access point for the entire package ...
+Each time a project is set up or synced, basic metadata is stored locally so
+that projects can be reloaded and updated without reconfiguration.
 }
 \details{
+\code{projects} is implemented as a singleton R6 object and serves as the main
+entry point to the REDCapSync workflow. All project-level operations—such as
+setup, loading, syncing, and removal—are accessed through this object.
+
+A key advantage of this design is support for \strong{method chaining}. Because
+project methods return project objects, you can write concise, readable
+workflows that operate in sequence:
+
+\preformatted{
+projects$load("my_project")$sync()$save_datasets()
+}
+
 The default location of the cache location is defined by using
 R_USER_CACHE_DIR if set. Otherwise, it follows platform conventions via
 \link[hoardr:hoardr-package]{hoardr::hoardr}, saving a file "R/REDCapSync/projects.rds". No direct project data

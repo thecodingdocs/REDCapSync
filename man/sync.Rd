@@ -6,7 +6,7 @@
 \usage{
 sync(
   project_names = NULL,
-  summarize = TRUE,
+  save_datasets = TRUE,
   hard_check = FALSE,
   hard_reset = FALSE
 )
@@ -15,7 +15,8 @@ sync(
 \item{project_names}{character vector of project project_names previously
 setup. If NULL, will get all from \code{get_projects()}}
 
-\item{summarize}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
+\item{save_datasets}{Logical (TRUE/FALSE). If TRUE, saves datasets to
+directory.}
 
 \item{hard_check}{Will check REDCap even if not due (see \code{sync_frequency}
 parameter from \code{setup_project()})}

@@ -363,19 +363,19 @@ excel_to_list <- function(path) {
   names(sheets) <- seq_along(sheets)
   clean_sheets <- clean_env_names(sheets)
   out <- list()
-  if ("summary_details" %in% sheets) {
-    summary_details <- readxl::read_xlsx(
+  if ("dataset_details" %in% sheets) {
+    dataset_details <- readxl::read_xlsx(
       path,
       col_types = "text",
-      sheet = which(sheets == "summary_details")
+      sheet = which(sheets == "dataset_details")
     )
-    if (all(c("paramater", "value") %in% colnames(summary_details))) {
-      the_row <- which(summary_details$paramater == "raw_form_names")
-      form_names <- summary_details$value[the_row] |>
+    if (all(c("paramater", "value") %in% colnames(dataset_details))) {
+      the_row <- which(dataset_details$paramater == "raw_form_names")
+      form_names <- dataset_details$value[the_row] |>
         strsplit(" [|] ") |>
         unlist()
-      the_row <- which(summary_details$paramater == "cols_start")
-      cols_start <- as.integer(summary_details$value[the_row])
+      the_row <- which(dataset_details$paramater == "cols_start")
+      cols_start <- as.integer(dataset_details$value[the_row])
       if (cols_start > 1L) {
         for (i in as.integer(names(sheets)[match(form_names, sheets)])) {
           suppressMessages({

@@ -195,7 +195,7 @@ test_that("sync_project will update if new", {
   project$internals$last_data_update <- now_time() - lubridate::ddays(100L)
   project$internals$was_updated <- FALSE
   interim_log <- head(project$redcap$log, n = 10L)
-  ordered_records <- project$summary$all_records$record_id
+  ordered_records <- project$record_summary$record_id
   row_for_one <- which(project$data$text$record_id == "1")
   row_for_two <- which(project$data$text$record_id == "2")
   var_text_integer_one <- project$data$text$var_text_integer[row_for_one]
@@ -229,7 +229,7 @@ test_that("sync_project will update if new", {
   # Call sync_project_check with hard_reset = FALSE
   result <- sync_project(
     project = project,
-    summarize = TRUE,
+    save_datasets = TRUE,
     save_to_dir = TRUE,
     hard_reset = FALSE
   )
@@ -248,7 +248,7 @@ test_that("sync_project will work if not due", {
   )
   expect_message(sync_project(
     project = project,
-    summarize = FALSE,
+    save_datasets = FALSE,
     save_to_dir = TRUE,
     hard_reset = FALSE
   ), "not due for sync")

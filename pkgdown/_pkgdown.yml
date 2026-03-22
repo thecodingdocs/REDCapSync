@@ -43,30 +43,16 @@ reference:
       - cache_clear
 
 articles:
-  - title: Feautures by R User Level
-    navbar: ~
-    contents:
-      - Basic
-      - Intermediate
-      - Advanced
-  - title: Using RosyREDCap
-    contents:
-      - REDCap
-  - title: API and Tokens
-    contents:
-      - Tokens
-  - title: Setup
+  - title: Basics
     contents:
       - Cache
+      - Tokens
       - project_object
+  - title: Going Further
+    contents:
       - multiple_projects
-  - title: File Management
-    contents:
-      - Download
+      - Datasets
       - Upload
-  - title: Security
-    contents:
-      - Security
 
 authors:
   Brandon Rose:

@@ -12,23 +12,26 @@ setup_project(
   token_name = paste0("REDCAPSYNC_", project_name),
   sync_frequency = "daily",
   labelled = TRUE,
-  hard_reset = FALSE,
   get_type = "identified",
   records = NA,
   fields = NA,
   forms = NA,
   events = NA,
   filter_logic = NA,
-  metadata_only = FALSE,
+  get_users = TRUE,
+  get_data = TRUE,
   batch_size_download = 1000L,
   batch_size_upload = 500L,
-  entire_log = FALSE,
-  days_of_log = 10L,
-  timezone = Sys.timezone(),
+  get_entire_log = FALSE,
+  log_days = 10L,
+  log_drop_details = FALSE,
+  log_drop_exports = FALSE,
   get_files = FALSE,
   get_file_repository = FALSE,
   original_file_names = FALSE,
-  add_default_summaries = TRUE
+  add_default_datasets = TRUE,
+  timezone = Sys.timezone(),
+  hard_reset = FALSE
 )
 
 load_project(project_name)
@@ -56,9 +59,6 @@ Default is \code{daily}}
 \item{labelled}{Logical. If \code{TRUE}, the data will be converted to labelled.
 Default is \code{TRUE}.}
 
-\item{hard_reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the
-\code{project} object already exists. Default is \code{FALSE}.}
-
 \item{get_type}{optional character of REDCap API call type.
 data as if user ran \code{sync_project}. Default is \code{FALSE}.}
 
@@ -79,7 +79,9 @@ filtering the data to be returned by this API method, in which the API
 will only return the records (or record-events, if a longitudinal project)
 where the logic evaluates as TRUE.   An blank/empty string returns all records.}
 
-\item{metadata_only}{Logical (TRUE/FALSE). If TRUE, updates only the}
+\item{get_users}{Logical (TRUE/FALSE). If TRUE, will get REDCap users}
+
+\item{get_data}{Logical (TRUE/FALSE). If TRUE, will get REDCap data.}
 
 \item{batch_size_download}{Integer. Number of records to process in each
 batch. Default is \code{1000}.}
@@ -87,15 +89,15 @@ batch. Default is \code{1000}.}
 \item{batch_size_upload}{Integer. Number of records to process in each batch.
 Default is \code{500}.}
 
-\item{entire_log}{Logical (TRUE/FALSE). If TRUE, retrieves the entire log.
-Default is \code{FALSE}.}
+\item{get_entire_log}{Logical (TRUE/FALSE). If TRUE, retrieves the entire
+log. Default is \code{FALSE}.}
 
-\item{days_of_log}{Integer. Number of days to be checked in the log if a
-hard_reset
-or new project is setup. Default is \code{10}.}
+\item{log_days}{Integer. Number of days to be checked in the log if a
+hard_reset or new project is setup. Default is \code{10}.}
 
-\item{timezone}{optional timezone set of the REDCap server. Otherwise, will
-assume Sys.timezone. Options from \code{OlsonNames()}.}
+\item{log_drop_details}{Logical (TRUE/FALSE). If TRUE, drops log details.}
+
+\item{log_drop_exports}{Logical (TRUE/FALSE). If TRUE, drops log exports.}
 
 \item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
 Default is \code{FALSE}.}
@@ -108,8 +110,14 @@ Default is \code{FALSE}.}
 \item{original_file_names}{Logical (TRUE/FALSE). If TRUE, uses original file
 names for retrieved files. Default is \code{FALSE}.}
 
-\item{add_default_summaries}{Logical (TRUE/FALSE). If TRUE, will add default
-summaries}
+\item{add_default_datasets}{Logical (TRUE/FALSE). If TRUE, will add default
+datasets}
+
+\item{timezone}{optional timezone set of the REDCap server. Otherwise, will
+assume Sys.timezone. Options from \code{OlsonNames()}.}
+
+\item{hard_reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the
+\code{project} object already exists. Default is \code{FALSE}.}
 }
 \value{
 R6 project object with \link{REDCapSyncProject} class.

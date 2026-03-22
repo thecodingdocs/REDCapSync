@@ -3,7 +3,7 @@ withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 # get_project_token (Internal)
 test_that("get_project_token works!", {
   project <- mock_test_project()$.internal
-  token_name <- project$redcap$token_name
+  token_name <- project$token_name
   token <- generate_hex(32L)
   withr::with_envvar(c(REDCAPSYNC_TEST_CLASSIC = token), {
     expect_identical(get_project_token(project), token)
@@ -161,7 +161,8 @@ test_that("has_envvar_token works", {
   ))
   a <- mock_test_project("TEST_CLASSIC")$.internal |> extract_project_details()
   b <- mock_test_project("TEST_DATA")$.internal |> extract_project_details()
-  c <- mock_test_project("TEST_LONGITUDINAL")$.internal |> extract_project_details()
+  c <- mock_test_project("TEST_LONGITUDINAL")$.internal |>
+    extract_project_details()
   projects <- a |> bind_rows(b) |> bind_rows(c)
   local_mocked_bindings(
     get_projects = function(...) projects

@@ -32,9 +32,9 @@ test_that("REDCapSyncProject with test projects!", {
   project_r6 <- REDCapSyncProject$new(project)
   expect_message(project_r6$test_token(), "TEST projects do not")
   expect_message(project_r6$url_launch(), "TEST projects do not")
-  expect_message(project_r6$summarize(), "TEST projects do not")
+  expect_message(project_r6$save_datasets(), "TEST projects do not")
   expect_message(project_r6$sync(), "TEST projects do not")
-  expect_message(project_r6$save_summary(), "TEST projects do not")
+  expect_message(project_r6$save_dataset(), "TEST projects do not")
   expect_message(project_r6$upload(), "TEST projects do not")
   expect_false(test_file_exists(proj_path))
   expect_message(project_r6$save(), "TEST projects do not save to directories")
@@ -44,20 +44,20 @@ test_that("REDCapSyncProject with test projects!", {
   project_r6 <- REDCapSyncProject$new(project)
   project_r6$save()
   expect_file_exists(proj_path)
-  project_r6$remove_summaries()
-  project_r6$add_summary(
-    summary_name = "fake"
+  project_r6$remove_datasets()
+  project_r6$add_dataset(
+    dataset_name = "fake"
   )
-  project_r6$summarize()
+  project_r6$save_datasets()
   expect_file_exists(file.path(dir_path, "output", "TEST_CLASSIC_fake.xlsx"))
-  project_r6$add_summary(
-    summary_name = "fake2"
+  project_r6$add_dataset(
+    dataset_name = "fake2"
   )
-  project_r6$save_summary(
-    summary_name = "fake2"
+  project_r6$save_dataset(
+    dataset_name = "fake2"
   )
   expect_file_exists(file.path(dir_path, "output", "TEST_CLASSIC_fake2.xlsx"))
-  expected_link <- "https://redcap.fake.edu/redcap_v16.1.1/index.php?pid=12341"
+  expected_link <- "https://redcap.fake.edu/redcap_v16.1.4/index.php?pid=12341"
   expect_identical(project_r6$url_launch(open_browser = FALSE), expected_link)
 })
 # REDCapSyncProject$add_field (Exported)
@@ -67,45 +67,37 @@ test_that("REDCapSyncProject$add_field and remove_fields works!", {
   expect_message(project_r6$add_field(), "placeholder")
   expect_message(project_r6$remove_fields(), "placeholder")
 })
-# REDCapSyncProject$add_summary (Exported)
-# REDCapSyncProject$remove_summaries (Exported)
-test_that("REDCapSyncProject$add_summary and remove_summaries works!", {
+# REDCapSyncProject$add_dataset (Exported)
+# REDCapSyncProject$remove_datasets (Exported)
+test_that("REDCapSyncProject$add_dataset and remove_datasets works!", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
   withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
   project_r6 <- mock_test_project()
-  summary_names <- project_r6$.internal$summary |>
-    names() |>
-    setdiff("all_records")
-  expect_false("new_summary" %in% summary_names)
-  project_r6$add_summary(
+  dataset_names <- names(project_r6$.internal$datasets)
+  expect_false("new_summary" %in% dataset_names)
+  project_r6$add_dataset(
     "new_summary",
     filter_field = "var_yesno",
     filter_choices = "Yes",
     dir_other = tempdir_test
   )
-  summary_names <- project_r6$.internal$summary |>
-    names() |>
-    setdiff("all_records")
-  expect_in("new_summary", summary_names)
-  x <- project_r6$generate_summary("new_summary")
+  dataset_names <- names(project_r6$.internal$datasets)
+  expect_in("new_summary", dataset_names)
+  x <- project_r6$generate_dataset("new_summary")
   expect_list(x)
-  project_r6$remove_summaries("REDCapSync")
-  summary_names <- project_r6$.internal$summary |>
-    names() |>
-    setdiff("all_records")
-  expect_false("REDCapSync" %in% summary_names)
-  expect_in("REDCapSync_raw", summary_names)
-  expect_message(project_r6$remove_summaries(), "Cleared project summaries")
-  summary_names <- project_r6$.internal$summary |>
-    names() |>
-    setdiff("all_records")
-  expect_length(summary_names, 0L)
-  x <- project_r6$generate_summary(filter_field = "var_branching",
+  project_r6$remove_datasets("REDCapSync")
+  dataset_names <- names(project_r6$.internal$datasets)
+  expect_false("REDCapSync" %in% dataset_names)
+  expect_in("REDCapSync_raw", dataset_names)
+  expect_message(project_r6$remove_datasets(), "Cleared project datasets")
+  dataset_names <- names(project_r6$.internal$datasets)
+  expect_length(dataset_names, 0L)
+  x <- project_r6$generate_dataset(filter_field = "var_branching",
                                    filter_choices = "Yes")
   expect_all_true(x$merged$var_branching == "Yes")
 })
-# REDCapSyncProject$generate_summary (Exported)
-test_that("REDCapSyncProject$generate_summary works!", {
+# REDCapSyncProject$generate_dataset (Exported)
+test_that("REDCapSyncProject$generate_dataset works!", {
 })
 # REDCapSyncProject$info (Exported)
 test_that("REDCapSyncProject$print works!", {
@@ -119,16 +111,16 @@ test_that("REDCapSyncProject$initialize works!", {
 })
 test_that("REDCapSyncProject$remove_fields works!", {
 })
-test_that("REDCapSyncProject$remove_summaries works!", {
+test_that("REDCapSyncProject$remove_datasets works!", {
 })
 # REDCapSyncProject$save (Exported)
 test_that("REDCapSyncProject$save works!", {
 })
-# REDCapSyncProject$save_summary (Exported)
-test_that("REDCapSyncProject$save_summary works!", {
+# REDCapSyncProject$save_dataset (Exported)
+test_that("REDCapSyncProject$save_dataset works!", {
 })
-# REDCapSyncProject$summarize (Exported)
-test_that("REDCapSyncProject$summarize works!", {
+# REDCapSyncProject$save_datasets (Exported)
+test_that("REDCapSyncProject$save_datasets works!", {
 })
 # REDCapSyncProject$sync (Exported)
 test_that("REDCapSyncProject$sync works!", {

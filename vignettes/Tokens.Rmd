@@ -14,6 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
+
 # REDCap API tokens
 
 REDCap API tokens are equivalent to your username and password. They should never be shared with anyone. Ideally, they should never be directly written in an R script, especially if you plan on sharing it in the future. **Never commit a file containing your token on git or GitHub because this will forever be in the history.** If there is ever any doubt in your mind you should quickly regenerate your token on the REDCap website. If you are working on a *real* REDCap project it's good practice to regenerate your token periodically, such as once a week, just to be safe.

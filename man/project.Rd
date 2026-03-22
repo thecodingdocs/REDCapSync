@@ -49,13 +49,13 @@ users and log.}
 \item \href{#method-REDCapSyncProject-new}{\code{REDCapSyncProject$new()}}
 \item \href{#method-REDCapSyncProject-print}{\code{REDCapSyncProject$print()}}
 \item \href{#method-REDCapSyncProject-sync}{\code{REDCapSyncProject$sync()}}
-\item \href{#method-REDCapSyncProject-add_summary}{\code{REDCapSyncProject$add_summary()}}
-\item \href{#method-REDCapSyncProject-remove_summaries}{\code{REDCapSyncProject$remove_summaries()}}
-\item \href{#method-REDCapSyncProject-generate_summary}{\code{REDCapSyncProject$generate_summary()}}
+\item \href{#method-REDCapSyncProject-add_dataset}{\code{REDCapSyncProject$add_dataset()}}
+\item \href{#method-REDCapSyncProject-remove_datasets}{\code{REDCapSyncProject$remove_datasets()}}
+\item \href{#method-REDCapSyncProject-generate_dataset}{\code{REDCapSyncProject$generate_dataset()}}
 \item \href{#method-REDCapSyncProject-add_field}{\code{REDCapSyncProject$add_field()}}
 \item \href{#method-REDCapSyncProject-remove_fields}{\code{REDCapSyncProject$remove_fields()}}
-\item \href{#method-REDCapSyncProject-summarize}{\code{REDCapSyncProject$summarize()}}
-\item \href{#method-REDCapSyncProject-save_summary}{\code{REDCapSyncProject$save_summary()}}
+\item \href{#method-REDCapSyncProject-save_datasets}{\code{REDCapSyncProject$save_datasets()}}
+\item \href{#method-REDCapSyncProject-save_dataset}{\code{REDCapSyncProject$save_dataset()}}
 \item \href{#method-REDCapSyncProject-save}{\code{REDCapSyncProject$save()}}
 \item \href{#method-REDCapSyncProject-set_keyring_token}{\code{REDCapSyncProject$set_keyring_token()}}
 \item \href{#method-REDCapSyncProject-test_token}{\code{REDCapSyncProject$test_token()}}
@@ -105,7 +105,7 @@ changes. Sync is performed according to the \code{sync_frequency} set in
 \code{\link[=setup_project]{setup_project()}} by default. Use \code{hard_check} to force a check, or \code{ hard_reset} to force a complete refresh.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$sync(
-  summarize = TRUE,
+  save_datasets = TRUE,
   save_to_dir = TRUE,
   hard_check = FALSE,
   hard_reset = FALSE
@@ -115,7 +115,8 @@ changes. Sync is performed according to the \code{sync_frequency} set in
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{summarize}}{Logical (TRUE/FALSE). If TRUE, summarizes data to directory.}
+\item{\code{save_datasets}}{Logical (TRUE/FALSE). If TRUE, saves datasets to
+directory.}
 
 \item{\code{save_to_dir}}{Logical (TRUE/FALSE). If TRUE, saves the updated data in
 the project object to the directory at \code{dir_path}. Ignored when \code{dir_path} is
@@ -124,20 +125,20 @@ the project object to the directory at \code{dir_path}. Ignored when \code{dir_p
 \item{\code{hard_check}}{Will check REDCap even if not due (see \code{sync_frequency}
 parameter from \code{setup_project()})}
 
-\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files
+\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing dataset files
 with the same name. Default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSyncProject-add_summary"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSyncProject-add_summary}{}}}
-\subsection{Method \code{add_summary()}}{
-Add a new summary entry
+\if{html}{\out{<a id="method-REDCapSyncProject-add_dataset"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-add_dataset}{}}}
+\subsection{Method \code{add_dataset()}}{
+Add a new dataset entry
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$add_summary(
-  summary_name,
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$add_dataset(
+  dataset_name,
   transformation_type = "default",
   merge_form_name = "merged",
   filter_field = NULL,
@@ -171,12 +172,12 @@ Add a new summary entry
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{summary_name}}{Character. The name of the configured summary from which
-to generate the summary. *If you provide \code{summary_name} all other parameters
-are inherited according to what was set with \code{add_project_summary}.}
+\item{\code{dataset_name}}{Character. The name of the configured dataset from which
+to generate the dataset. *If you provide \code{dataset_name} all other parameters
+are inherited according to what was set with \code{add_project_dataset}.}
 
 \item{\code{transformation_type}}{Character scalar. How to transform data for the
-summary. Default is "default". Other options are "none", "flat",
+dataset. Default is "default". Other options are "none", "flat",
 "merge_non_repeating". "default" first merges non-repeating and if there are
 repeating forms, it merges non-repeating variables to the right of repeating
 instruments. "flat" is one-record, one-row, even if there are repeating
@@ -191,10 +192,10 @@ form. Default is "merged".}
 filter on. Used with \code{filter_choices}.}
 
 \item{\code{filter_choices}}{Vector. The values of \code{filter_field} used to define the
-summary. An alternative to providing a full \code{filter_list}.}
+dataset. An alternative to providing a full \code{filter_list}.}
 
 \item{\code{filter_list}}{Vector. The values of \code{filter_field} used to define the
-summary. Names are field names; values are the allowed value set(s). Use
+dataset. Names are field names; values are the allowed value set(s). Use
 either \code{filter_list} or \code{filter_field} with \code{filter_choices}.}
 
 \item{\code{filter_strict}}{Logical. If \code{TRUE}, all forms will be filtered by
@@ -202,13 +203,13 @@ criteria. If \code{FALSE}, will convert original filter to ID column and filter
 all other forms by that record. Default is \code{TRUE}.}
 
 \item{\code{field_names}}{Character vector. Names of specific fields to include in
-the summary. Default is \code{NULL}, which includes all fields.}
+the dataset. Default is \code{NULL}, which includes all fields.}
 
-\item{\code{form_names}}{Character vector. Names of forms to include in the summary.
+\item{\code{form_names}}{Character vector. Names of forms to include in the dataset.
 Default is \code{NULL}, which includes all forms.}
 
 \item{\code{exclude_identifiers}}{Logical. Whether to exclude identifiers in the
-data in the summary. Default is \code{TRUE}.}
+data in the dataset. Default is \code{TRUE}.}
 
 \item{\code{exclude_free_text}}{Logical. If \code{TRUE}, exclude free text fields
 intended for de-identification workflows. Default is \code{FALSE}.}
@@ -234,16 +235,16 @@ to NA. Default is \code{FALSE}.}
 \item{\code{drop_others}}{Character vector of other values that should be dropped.}
 
 \item{\code{include_metadata}}{Logical. If \code{TRUE}, metadata will be included in the
-summary. Default is \code{TRUE}.}
+dataset. Default is \code{TRUE}.}
 
-\item{\code{include_records}}{Logical. If \code{TRUE}, a record summary will be
-included in the generated summary. Default is \code{TRUE}.}
+\item{\code{include_records}}{Logical. If \code{TRUE}, a record dataset will be
+included in the generated dataset. Default is \code{TRUE}.}
 
 \item{\code{include_users}}{Logical. If \code{TRUE}, user-related information will be
-included in the summary. Default is \code{TRUE}.}
+included in the dataset. Default is \code{TRUE}.}
 
 \item{\code{include_log}}{Logical. If \code{TRUE}, the log of changes will be included in
-the summary. Default is \code{TRUE}.}
+the dataset. Default is \code{TRUE}.}
 
 \item{\code{annotate_from_log}}{Logical. If \code{TRUE}, the metadata, users, and records
 will be annotated using the log. Default is \code{TRUE}.}
@@ -257,43 +258,43 @@ separate files as opposed to multi-tab Excel. Default is \code{FALSE}.}
 \item{\code{use_csv}}{Logical (TRUE/FALSE). If TRUE, uses CSV files for data
 storage. Default is \code{FALSE}}
 
-\item{\code{dir_other}}{Character. The directory where the summary file will be
+\item{\code{dir_other}}{Character. The directory where the dataset file will be
 saved. Default is the \code{output} folder within the database directory.}
 
-\item{\code{file_name}}{Character. The base name of the file where the summary will
-be saved. Default is \verb{<project_name>_<summary_name>}.}
+\item{\code{file_name}}{Character. The base name of the file where the dataset will
+be saved. Default is \verb{<project_name>_<dataset_name>}.}
 
-\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files
+\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing dataset files
 with the same name. Default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSyncProject-remove_summaries"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSyncProject-remove_summaries}{}}}
-\subsection{Method \code{remove_summaries()}}{
-Clear all project summaries
+\if{html}{\out{<a id="method-REDCapSyncProject-remove_datasets"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-remove_datasets}{}}}
+\subsection{Method \code{remove_datasets()}}{
+Clear all project datasets
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$remove_summaries(summary_names = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$remove_datasets(dataset_names = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{summary_names}}{One or more summary names. Default is \code{NULL}.}
+\item{\code{dataset_names}}{One or more dataset names. Default is \code{NULL}.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSyncProject-generate_summary"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSyncProject-generate_summary}{}}}
-\subsection{Method \code{generate_summary()}}{
-Add a new summary entry
+\if{html}{\out{<a id="method-REDCapSyncProject-generate_dataset"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-generate_dataset}{}}}
+\subsection{Method \code{generate_dataset()}}{
+Add a new dataset entry
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$generate_summary(
-  summary_name,
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$generate_dataset(
+  dataset_name,
   envir = NULL,
   transformation_type = "default",
   merge_form_name = "merged",
@@ -322,14 +323,14 @@ Add a new summary entry
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{summary_name}}{Character. The name of the configured summary from which
-to generate the summary. *If you provide \code{summary_name} all other parameters
-are inherited according to what was set with \code{add_project_summary}.}
+\item{\code{dataset_name}}{Character. The name of the configured dataset from which
+to generate the dataset. *If you provide \code{dataset_name} all other parameters
+are inherited according to what was set with \code{add_project_dataset}.}
 
 \item{\code{envir}}{environment variable}
 
 \item{\code{transformation_type}}{Character scalar. How to transform data for the
-summary. Default is "default". Other options are "none", "flat",
+dataset. Default is "default". Other options are "none", "flat",
 "merge_non_repeating". "default" first merges non-repeating and if there are
 repeating forms, it merges non-repeating variables to the right of repeating
 instruments. "flat" is one-record, one-row, even if there are repeating
@@ -344,10 +345,10 @@ form. Default is "merged".}
 filter on. Used with \code{filter_choices}.}
 
 \item{\code{filter_choices}}{Vector. The values of \code{filter_field} used to define the
-summary. An alternative to providing a full \code{filter_list}.}
+dataset. An alternative to providing a full \code{filter_list}.}
 
 \item{\code{filter_list}}{Vector. The values of \code{filter_field} used to define the
-summary. Names are field names; values are the allowed value set(s). Use
+dataset. Names are field names; values are the allowed value set(s). Use
 either \code{filter_list} or \code{filter_field} with \code{filter_choices}.}
 
 \item{\code{filter_strict}}{Logical. If \code{TRUE}, all forms will be filtered by
@@ -355,13 +356,13 @@ criteria. If \code{FALSE}, will convert original filter to ID column and filter
 all other forms by that record. Default is \code{TRUE}.}
 
 \item{\code{field_names}}{Character vector. Names of specific fields to include in
-the summary. Default is \code{NULL}, which includes all fields.}
+the dataset. Default is \code{NULL}, which includes all fields.}
 
-\item{\code{form_names}}{Character vector. Names of forms to include in the summary.
+\item{\code{form_names}}{Character vector. Names of forms to include in the dataset.
 Default is \code{NULL}, which includes all forms.}
 
 \item{\code{exclude_identifiers}}{Logical. Whether to exclude identifiers in the
-data in the summary. Default is \code{TRUE}.}
+data in the dataset. Default is \code{TRUE}.}
 
 \item{\code{exclude_free_text}}{Logical. If \code{TRUE}, exclude free text fields
 intended for de-identification workflows. Default is \code{FALSE}.}
@@ -387,16 +388,16 @@ to NA. Default is \code{FALSE}.}
 \item{\code{drop_others}}{Character vector of other values that should be dropped.}
 
 \item{\code{include_metadata}}{Logical. If \code{TRUE}, metadata will be included in the
-summary. Default is \code{TRUE}.}
+dataset. Default is \code{TRUE}.}
 
-\item{\code{include_records}}{Logical. If \code{TRUE}, a record summary will be
-included in the generated summary. Default is \code{TRUE}.}
+\item{\code{include_records}}{Logical. If \code{TRUE}, a record dataset will be
+included in the generated dataset. Default is \code{TRUE}.}
 
 \item{\code{include_users}}{Logical. If \code{TRUE}, user-related information will be
-included in the summary. Default is \code{TRUE}.}
+included in the dataset. Default is \code{TRUE}.}
 
 \item{\code{include_log}}{Logical. If \code{TRUE}, the log of changes will be included in
-the summary. Default is \code{TRUE}.}
+the dataset. Default is \code{TRUE}.}
 
 \item{\code{annotate_from_log}}{Logical. If \code{TRUE}, the metadata, users, and records
 will be annotated using the log. Default is \code{TRUE}.}
@@ -408,7 +409,7 @@ will be annotated using the log. Default is \code{TRUE}.}
 \if{html}{\out{<a id="method-REDCapSyncProject-add_field"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-add_field}{}}}
 \subsection{Method \code{add_field()}}{
-Add a new summary entry
+Add a new dataset entry
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$add_field(
   field_name,
@@ -463,7 +464,7 @@ validate the data in the field. Default is \code{NA}.}
 \if{html}{\out{<a id="method-REDCapSyncProject-remove_fields"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-remove_fields}{}}}
 \subsection{Method \code{remove_fields()}}{
-Removes summary entry
+Removes extra fields
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$remove_fields(field_names = NULL)}\if{html}{\out{</div>}}
 }
@@ -472,44 +473,44 @@ Removes summary entry
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{field_names}}{Character vector. Names of specific fields to include in
-the summary. Default is \code{NULL}, which includes all fields.}
+the dataset. Default is \code{NULL}, which includes all fields.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSyncProject-summarize"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSyncProject-summarize}{}}}
-\subsection{Method \code{summarize()}}{
-summarize project and save to Excel
+\if{html}{\out{<a id="method-REDCapSyncProject-save_datasets"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-save_datasets}{}}}
+\subsection{Method \code{save_datasets()}}{
+saves project datasets to Excel
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$summarize(hard_reset = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$save_datasets(hard_reset = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing summary files
+\item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing dataset files
 with the same name. Default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSyncProject-save_summary"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSyncProject-save_summary}{}}}
-\subsection{Method \code{save_summary()}}{
-save summary to Excel
+\if{html}{\out{<a id="method-REDCapSyncProject-save_dataset"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-save_dataset}{}}}
+\subsection{Method \code{save_dataset()}}{
+save dataset to Excel
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$save_summary(summary_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$save_dataset(dataset_name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{summary_name}}{Character. The name of the configured summary from which
-to generate the summary. *If you provide \code{summary_name} all other parameters
-are inherited according to what was set with \code{add_project_summary}.}
+\item{\code{dataset_name}}{Character. The name of the configured dataset from which
+to generate the dataset. *If you provide \code{dataset_name} all other parameters
+are inherited according to what was set with \code{add_project_dataset}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -518,7 +519,7 @@ are inherited according to what was set with \code{add_project_summary}.}
 \if{html}{\out{<a id="method-REDCapSyncProject-save"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-save}{}}}
 \subsection{Method \code{save()}}{
-Add a new summary entry
+Add a new dataset entry
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$save()}\if{html}{\out{</div>}}
 }

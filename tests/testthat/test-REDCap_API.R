@@ -90,7 +90,7 @@ test_that("get_redcap_metadata works with fixture data (classic)", {
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
   local_mocked_bindings(
-    rcon_result = function(...) call_list
+    get_redcap_rcon = function(...) call_list
   )
   result <- get_redcap_metadata(project)
   expect_identical(result$project_name, project$project_name)
@@ -124,7 +124,7 @@ test_that("get_redcap_metadata works with fixture data (longitudinal)", {
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
   local_mocked_bindings(
-    rcon_result = function(...) call_list
+    get_redcap_rcon = function(...) call_list
   )
   project$metadata <- .blank_project$metadata # clear exisiting data
   expect_null(project$metadata$fields)
@@ -141,7 +141,7 @@ test_that("get_redcap_metadata works with fixture data (repeating forms)", {
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
   local_mocked_bindings(
-    rcon_result = function(...) call_list
+    get_redcap_rcon = function(...) call_list
   )
   project$metadata <- .blank_project$metadata # clear exisiting data
   result <- get_redcap_metadata(project)
@@ -151,15 +151,15 @@ test_that("get_redcap_metadata works with fixture data (repeating forms)", {
 # get_redcap_records (Internal)
 test_that("get_redcap_records works!", {
 })
-# rcon_result (Internal)
-test_that("rcon_result works!", {
+# get_redcap_rcon (Internal)
+test_that("get_redcap_rcon works!", {
   skip_on_cran()
   skip_if_offline()
   # compare fixture colnames to real con colnames
 })
-test_that("rcon_result returns expected structure without real API calls", {
+test_that("get_redcap_rcon returns expected structure without real API calls", {
   project <- mock_test_project()$.internal
-  # Create a fake rcon with the methods used by rcon_result
+  # Create a fake rcon with the methods used by get_redcap_rcon
   fake_rcon <- list(
     projectInformation = function() {
       list(project_id = "9999",
@@ -189,12 +189,11 @@ test_that("rcon_result returns expected structure without real API calls", {
     dag_assignment = function() data.frame(),
     fileRepository = function() data.frame()
   )
-  # Stub redcapConnection and exportLogging inside rcon_result to avoid API call
   local_mocked_bindings(
     redcapConnection = function(...) fake_rcon,
     exportLogging = function(...) data.frame()
   )
-  out <- rcon_result(project)
+  out <- get_redcap_rcon(project)
   # replace with real data from fixtures
   expect_type(out, "list")
   # core elements present
@@ -240,7 +239,7 @@ test_that("get_redcap_data works with fixture data (longitudinal)", {
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
   local_mocked_bindings(
-    rcon_result = function(...) call_list
+    get_redcap_rcon = function(...) call_list
   )
   project$metadata <- .blank_project$metadata # clear exisiting data
   expect_null(project$metadata$fields)
@@ -257,7 +256,7 @@ test_that("get_redcap_data works with fixture data (repeating forms)", {
   project <- mock_test_project(project_name)$.internal
   call_list <- mock_test_calls(project_name)
   local_mocked_bindings(
-    rcon_result = function(...) call_list
+    get_redcap_rcon = function(...) call_list
   )
   project$metadata <- .blank_project$metadata # clear exisiting data
   result <- get_redcap_metadata(project)

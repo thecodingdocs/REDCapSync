@@ -23,7 +23,7 @@ library(REDCapSync) # don't forget to load the package
 Using the `hoadr` package, R finds the standard location where R typically stores cahced package data. For example, on Mac the location might look like, "/Users/yourmacname/Library/Caches/R/REDCapSync". 
 
 # Location
-Your exact path can be found for any R package with `rappdirs::user_cache_dir("R")`. The only thing that REDCapSync stores in this cache is the projects data.frame, which can be loaded with `projects <- get_projects()`.
+Your exact path can be found for any R package with `rappdirs::user_cache_dir("R")`. The only thing that REDCapSync stores in this cache is the projects data.frame, which can be loaded with `projects$load("PROJECT")`.
 
 ```{r, eval=F}
 user_cache_location <- rappdirs::user_cache_dir("R") 
@@ -31,6 +31,8 @@ redcapsync_cache_location <- file.path(user_cache_location, "REDCapSync")
 redcapsync_cache_location
 # launch the folder on your computer
 utils::browseURL(redcapsync_cache_location)
+# can modify with config options
+config$cache.dir()
 ```
 
 # Clearing
@@ -51,7 +53,6 @@ cache_clear(c("OLD_PROJECT2", "OLD_PROJECT3"))
 If you setup and subsequently sync/save a project, it will appear using the code below. If you haven't setup any projects, it will be an empty data.frame.
 
 ```{r, eval=F}
-projects <- get_projects()
-print.data.frame(projects)
+print.data.frame(projects$df)
 ```
 

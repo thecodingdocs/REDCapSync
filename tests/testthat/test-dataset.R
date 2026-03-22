@@ -1,29 +1,29 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
-# add_default_summaries (Internal)
-test_that("add_default_summaries works!", {
+# add_default_datasets (Internal)
+test_that("add_default_datasets works!", {
   project <- mock_test_project()$.internal
-  project <- clear_project_summaries(project)
-  summaries <- c("REDCapSync", "REDCapSync_raw")
-  expect_all_false(summaries %in% names(project$summary))
-  expect_all_false(summaries %in% names(project$summary$all_records))
+  project <- clear_project_datasets(project)
+  datasets <- c("REDCapSync", "REDCapSync_raw")
+  expect_all_false(datasets %in% names(project$datasets))
+  expect_all_false(datasets %in% names(project$record_summary))
   expect_no_error({
-    project <- add_default_summaries(
+    project <- add_default_datasets(
       project = project,
       exclude_identifiers = TRUE,
       exclude_free_text = TRUE,
       date_handling = "none"
     )
   })
-  expect_all_true(summaries %in% names(project$summary))
-  expect_all_true(summaries %in% names(project$summary$all_records))
-  raw <- project$summary$REDCapSync_raw
-  main <- project$summary$REDCapSync
-  # check expected settings for raw summary
+  expect_all_true(datasets %in% names(project$datasets))
+  expect_all_true(datasets %in% names(project$record_summary))
+  raw <- project$datasets$REDCapSync_raw
+  main <- project$datasets$REDCapSync
+  # check expected settings for raw datasets
   expect_identical(raw$transformation_type, "none")
   expect_false(raw$include_records)
   expect_true(raw$separate)
-  # check expected settings for main summary
+  # check expected settings for main datasets
   expect_identical(main$transformation_type, "default")
   expect_true(main$include_records)
   expect_false(main$separate)
@@ -31,13 +31,13 @@ test_that("add_default_summaries works!", {
 # add_labels_to_checkbox (Internal)
 test_that("add_labels_to_checkbox works!", {
 })
-# add_project_summary (Internal)
-test_that("add_project_summary works!", {
+# add_project_dataset (Internal)
+test_that("add_project_dataset works!", {
   project <- mock_test_project()$.internal
-  summary_name <- "MY_SUMMARY_TEST"
-  project <- add_project_summary(
+  dataset_name <- "MY_SUMMARY_TEST"
+  project <- add_project_dataset(
     project = project,
-    summary_name = summary_name,
+    dataset_name = dataset_name,
     transformation_type = "default",
     drop_blanks = FALSE,
     drop_missing_codes = TRUE,
@@ -50,16 +50,16 @@ test_that("add_project_summary works!", {
     separate = FALSE,
     use_csv = FALSE
   )
-  expect_true(summary_name %in% names(project$summary))
-  summary <- project$summary[[summary_name]]
-  expect_identical(summary$summary_name, summary_name)
-  expect_identical(summary$transformation_type, "default")
-  expect_true(summary$include_metadata)
-  expect_false(summary$include_records)
-  expect_true(summary$include_users)
-  expect_false(summary$with_links)
-  expect_false(summary$separate)
-  expect_type(summary$file_name, type = "character")
+  expect_true(dataset_name %in% names(project$datasets))
+  datasets <- project$datasets[[dataset_name]]
+  expect_identical(datasets$dataset_name, dataset_name)
+  expect_identical(datasets$transformation_type, "default")
+  expect_true(datasets$include_metadata)
+  expect_false(datasets$include_records)
+  expect_true(datasets$include_users)
+  expect_false(datasets$with_links)
+  expect_false(datasets$separate)
+  expect_type(datasets$file_name, type = "character")
 })
 # annotate_choices (Internal)
 test_that("annotate_choices works!", {
@@ -79,10 +79,9 @@ test_that("annotate_users works!", {
   data_list$redcap$users <- data_list$redcap$users |>
     bind_rows(data.frame(username = "person_not_in_log"))
   data_list$redcap$log <- data_list$redcap$log |>
-    bind_rows(
-      data.frame(username = "person_not_in_users",
-                 record = "40",
-                 timestamp = as.character(Sys.time())))
+    bind_rows(data.frame(username = "person_not_in_users",
+                         record = "40",
+                         timestamp = as.character(Sys.time())))
   users_default <- annotate_users(data_list)
   users_drop_blank <- annotate_users(data_list, drop_blanks = TRUE)
   expect_data_frame(users_default, nrows = 3L)
@@ -92,8 +91,8 @@ test_that("annotate_users works!", {
   log_users <- c("u1230", "person_not_in_users")
   expect_in(users_drop_blank$username, all_users)
 })
-# check_summaries (Internal)
-test_that("check_summaries works!", {
+# check_datasets (Internal)
+test_that("check_datasets works!", {
 })
 # clean_column_for_table (Internal)
 test_that("clean_column_for_table works!", {
@@ -116,15 +115,15 @@ test_that("clean_form works!", {
   form <- project$data$other
   expect_warning(clean_form(form = form, fields = fields), "dupplicate names")
 })
-# clear_project_summaries (Internal)
-test_that("clear_project_summaries works!", {
+# clear_project_datasets (Internal)
+test_that("clear_project_datasets works!", {
   project <- mock_test_project()$.internal
-  summaries <- c("REDCapSync", "REDCapSync_raw")
-  expect_all_true(summaries %in% names(project$summary))
-  expect_all_true(summaries %in% names(project$summary$all_records))
-  project <- clear_project_summaries(project)
-  expect_all_false(summaries %in% names(project$summary))
-  expect_all_false(summaries %in% names(project$summary$all_records))
+  datasets <- c("REDCapSync", "REDCapSync_raw")
+  expect_all_true(datasets %in% names(project$datasets))
+  expect_all_true(datasets %in% names(project$record_summary))
+  project <- clear_project_datasets(project)
+  expect_all_false(datasets %in% names(project$datasets))
+  expect_all_false(datasets %in% names(project$record_summary))
 })
 # data_list_to_save (Internal)
 test_that("data_list_to_save works!", {
@@ -285,35 +284,35 @@ test_that("filter_data_list works!", {
 # flatten_redcap (Internal)
 test_that("flatten_redcap works!", {
 })
-# generate_project_summary (Internal)
-test_that("generate_project_summary works!", {
+# generate_project_dataset (Internal)
+test_that("generate_project_dataset works!", {
   project <- mock_test_project()$.internal
-  expect_error(generate_project_summary(project = project,
-                                        summary_name = "non-existing"),
-               regexp = "not included in the current project summaries")
-  project_summary <- generate_project_summary(project = project,
-                                              summary_name = "REDCapSync")
+  expect_error(generate_project_dataset(project = project,
+                                        dataset_name = "non-existing"),
+               regexp = "not included in the current project datasets")
+  project_summary <- generate_project_dataset(project = project,
+                                              dataset_name = "REDCapSync")
   expect_true(is_df_list(project_summary))
-  project_summary <- generate_project_summary(project = project,
+  project_summary <- generate_project_dataset(project = project,
                                               include_metadata = TRUE,
                                               include_log = TRUE)
   expect_contains(names(project_summary), "forms")
   expect_contains(names(project_summary), "fields")
   expect_contains(names(project_summary), "choices")
-  project_summary <- generate_project_summary(project = project,
+  project_summary <- generate_project_dataset(project = project,
                                               include_metadata = FALSE)
   expect_false("forms" %in% names(project_summary))
   expect_false("fields" %in% names(project_summary))
   expect_false("choices" %in% names(project_summary))
-  project_summary <- generate_project_summary(project = project,
-                                              summary_name = "REDCapSync",
+  project_summary <- generate_project_dataset(project = project,
+                                              dataset_name = "REDCapSync",
                                               exclude_identifiers = FALSE)
   fields <- project$metadata$fields
   fields$field_name[which(fields$identifier == "y")]
   colnames(project_summary$merged)
   should_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1L]
   expect_identical(should_be_missing, "Unknown")
-  project_summary <- generate_project_summary(project = project,
+  project_summary <- generate_project_dataset(project = project,
                                               drop_missing_codes = TRUE)
   should_not_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1L]
   expect_scalar_na(should_not_be_missing)
@@ -327,32 +326,32 @@ test_that("get_log works!", {
   subset_record_id <- unique(log_subset$record)
   expect_in(subset_record_id, records)
 })
-# get_summary_records (Internal)
-test_that("get_summary_records works!", {
+# get_dataset_records (Internal)
+test_that("get_dataset_records works!", {
   project <- mock_test_project()$.internal
   project <- project |>
-    add_project_summary(
-      summary_name = "test_branching_yes",
+    add_project_dataset(
+      dataset_name = "test_branching_yes",
       filter_field = "var_branching",
       filter_choices = "Yes"
     ) |>
-    add_project_summary(
-      summary_name = "test_branching_no",
+    add_project_dataset(
+      dataset_name = "test_branching_no",
       filter_field = "var_branching",
       filter_choices = "No"
     )
   other <- project$data$other
-  expect_true("test_branching_yes" %in% names(project$summary))
-  expect_true("test_branching_no" %in% names(project$summary))
+  expect_true("test_branching_yes" %in% names(project$datasets))
+  expect_true("test_branching_no" %in% names(project$datasets))
   record_ids_yes <- other$record_id[which(other$var_branching == "Yes")] |>
     sort()
   record_ids_no <- other$record_id[which(other$var_branching == "No")] |>
     sort()
   get_sum_records_yes <- project |>
-    get_summary_records("test_branching_yes") |>
+    get_dataset_records("test_branching_yes") |>
     sort()
   get_sum_records_no <- project |>
-    get_summary_records("test_branching_no") |>
+    get_dataset_records("test_branching_no") |>
     sort()
   expect_identical(record_ids_yes, get_sum_records_yes)
   expect_identical(record_ids_no, get_sum_records_no)
@@ -398,13 +397,13 @@ test_that("merge_non_repeating works!", {
 # metadata_add_default_cols (Internal)
 test_that("metadata_add_default_cols works!", {
 })
-# save_project_summary (Internal)
-test_that("save_project_summary works!", {
+# save_project_dataset (Internal)
+test_that("save_project_dataset works!", {
   project <- mock_test_project()$.internal
-  summary_name <- "SAVE_SUMMARY_TEST"
-  project <- add_project_summary(
+  dataset_name <- "SAVE_SUMMARY_TEST"
+  project <- add_project_dataset(
     project = project,
-    summary_name = summary_name,
+    dataset_name = dataset_name,
     transformation_type = "default",
     include_metadata = TRUE,
     include_records = TRUE,
@@ -417,14 +416,14 @@ test_that("save_project_summary works!", {
   )
   # save and capture returned project
   expect_no_error({
-    project <- save_project_summary(project, summary_name)
+    project <- save_project_dataset(project, dataset_name)
   })
   # file created
-  file_path <- project$summary[[summary_name]]$file_path
+  file_path <- project$datasets[[dataset_name]]$file_path
   expect_file_exists(file_path)
-  # summary metadata updated
-  expect_false(is.null(project$summary[[summary_name]]$n_records))
-  expect_false(is.null(project$summary[[summary_name]]$last_save_time))
+  # datasets metadata updated
+  expect_false(is.null(project$datasets[[dataset_name]]$n_records))
+  expect_false(is.null(project$datasets[[dataset_name]]$last_save_time))
   what_was_saved <- excel_to_list(file_path)
   expect_all_true(
     c(
@@ -435,14 +434,14 @@ test_that("save_project_summary works!", {
       "missing_codes",
       "users",
       "records",
-      "summary_details"
+      "dataset_details"
     ) %in% names(what_was_saved)
   )
   # csv
-  summary_name <- "SAVE_SUMMARY_TEST_CSV"
-  project <- add_project_summary(
+  dataset_name <- "SAVE_SUMMARY_TEST_CSV"
+  project <- add_project_dataset(
     project = project,
-    summary_name = summary_name,
+    dataset_name = dataset_name,
     transformation_type = "default",
     include_metadata = TRUE,
     include_records = TRUE,
@@ -455,7 +454,7 @@ test_that("save_project_summary works!", {
   )
   # save and capture returned project
   expect_no_error({
-    project <- save_project_summary(project, summary_name)
+    project <- save_project_dataset(project, dataset_name)
   })
   # file created
   file_path <- file.path(project$dir_path,
@@ -463,43 +462,43 @@ test_that("save_project_summary works!", {
                          paste0("TEST_CLASSIC_SAVE_SUMMARY_TEST_CSV",
                                 c("_merged.csv",
                                   "_forms.csv",
-                                  "_summary_details.csv")))
+                                  "_dataset_details.csv")))
   expect_file_exists(file_path)
 })
-# summarize_project (Internal)
-test_that("summarize_project works!", {
+# save_project_datasets (Internal)
+test_that("save_project_datasets works!", {
   project <- mock_test_project()$.internal
   expect_directory_exists(project$dir_path)
-  # ensure default summaries present
-  project <- clear_project_summaries(project)
-  project <- add_default_summaries(
+  # ensure default datasets present
+  project <- clear_project_datasets(project)
+  project <- add_default_datasets(
     project = project,
     exclude_identifiers = TRUE,
     exclude_free_text = TRUE,
     date_handling = "none"
   )
   expect_no_error({
-    project_saved <- summarize_project(project, hard_reset = TRUE)
+    project_saved <- save_project_datasets(project, hard_reset = TRUE)
   })
-  expect_false(is.null(project_saved$internals$last_summary))
-  expect_s3_class(project_saved$internals$last_summary, "POSIXt")
-  expect_true("REDCapSync" %in% names(project_saved$summary))
-  expect_file_exists(project_saved$summary$REDCapSync$file_path)
+  expect_false(is.null(project_saved$internals$last_dataset_save))
+  expect_s3_class(project_saved$internals$last_dataset_save, "POSIXt")
+  expect_true("REDCapSync" %in% names(project_saved$datasets))
+  expect_file_exists(project_saved$datasets$REDCapSync$file_path)
 })
-# summary_records_due (Internal)
-test_that("summary_records_due works!", {
+# dataset_records_due (Internal)
+test_that("dataset_records_due works!", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
   withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
-  project <- mock_test_project()$.internal |> clear_project_summaries()
-  expect_false(summary_records_due(project, "REDCapSync"))
-  expect_error(save_project_summary(project, "REDCapSync"))
-  project <- add_default_summaries(project)
-  expect_contains(names(project$summary), "REDCapSync")
-  expect_true(summary_records_due(project, "REDCapSync"))
+  project <- mock_test_project()$.internal |> clear_project_datasets()
+  expect_false(dataset_records_due(project, "REDCapSync"))
+  expect_error(save_project_dataset(project, "REDCapSync"))
+  project <- add_default_datasets(project)
+  expect_contains(names(project$datasets), "REDCapSync")
+  expect_true(dataset_records_due(project, "REDCapSync"))
   expect_no_error({
-    project <- save_project_summary(project, "REDCapSync")
+    project <- save_project_dataset(project, "REDCapSync")
   })
-  expect_false(summary_records_due(project, "REDCapSync"))
-  project$summary$all_records$REDCapSync[3L] <- NA
-  expect_true(summary_records_due(project, "REDCapSync"))
+  expect_false(dataset_records_due(project, "REDCapSync"))
+  project$record_summary$REDCapSync[3L] <- NA
+  expect_true(dataset_records_due(project, "REDCapSync"))
 })

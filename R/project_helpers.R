@@ -79,7 +79,7 @@ generate_choices_table <- function(field_row, project) {
 #' @noRd
 labelled_to_raw_data_list <- function(project) {
   project <- assert_blank_project(project)
-  if (!project$internals$labelled) {
+  if (!project$settings$labelled) {
     stop("project is already raw or coded (not labelled values)")
   }
   for (form_name in names(project$data)) {
@@ -87,13 +87,13 @@ labelled_to_raw_data_list <- function(project) {
     project$data[[form_name]] <- labelled_to_raw_form(form = form,
                                                       project = project)
   }
-  project$internals$labelled <- FALSE
+  project$settings$labelled <- FALSE
   invisible(project)
 }
 #' @noRd
 raw_to_labelled_data_list <- function(project) {
   project <- assert_blank_project(project)
-  if (project$internals$labelled) {
+  if (project$settings$labelled) {
     stop("project is already labelled (not raw or coded values)")
   }
   if (project$metadata$has_coding_conflicts) {
@@ -104,7 +104,7 @@ raw_to_labelled_data_list <- function(project) {
     project$data[[form_name]] <- raw_to_labelled_form(form = form,
                                                       project = project)
   }
-  project$internals$labelled <- TRUE
+  project$settings$labelled <- TRUE
   invisible(project)
 }
 #' @noRd
@@ -293,14 +293,14 @@ get_record_url <- function(project,
   )
   id_col <- project$metadata$id_col
   if (!is.null(record)) {
-    if (!record %in% project$summary$all_records[[id_col]]) {
+    if (!record %in% project$record_summary[[id_col]]) {
       stop(record, " is not one of the records inside project")
     }
-    if ("arm_number" %in% colnames(project$summary$all_records)) {
-      arm_row <- which(project$summary$all_records[[id_col]] == record)
+    if ("arm_number" %in% colnames(project$record_summary)) {
+      arm_row <- which(project$record_summary[[id_col]] == record)
       link <- paste0(link,
                      "&arm=",
-                     project$summary$all_records$arm_number[arm_row])
+                     project$record_summary$arm_number[arm_row])
     }
     link <- paste0(link, "&id=", record)
   }

@@ -94,7 +94,8 @@
 #'
 #' ## keyring
 #' Character keyring name (parameter from \code{\link[keyring]{keyring}}
-#' package). Default is NULL, which is at the system level. For locking use a keyring like "REDCapSync"
+#' package). Default is NULL, which is at the system level. For locking use a
+#' keyring like "REDCapSync"
 #'
 #' ```
 #' # check current value package is using...

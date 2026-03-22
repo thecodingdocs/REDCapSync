@@ -7,7 +7,8 @@
 #' defined set projects. This is not intended to return project object. User
 #' should use `load_project("project_name")`. However, by default will invisibly
 #' return the last project in the set of project_names.
-#' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
+#' @param save_datasets Logical (TRUE/FALSE). If TRUE, saves datasets to
+#' directory.
 #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
 #' parameter from `setup_project()`)
 #' @param hard_reset Logical that forces a fresh update if TRUE. Default is
@@ -28,7 +29,7 @@
 #' \link{setup_project} for initializing the `project` object.
 #' @export
 sync <- function(project_names = NULL,
-                 summarize = TRUE,
+                 save_datasets = TRUE,
                  hard_check = FALSE,
                  hard_reset = FALSE) {
   sweep_dirs_for_cache(project_names = project_names)
@@ -48,7 +49,7 @@ sync <- function(project_names = NULL,
     } else {
       project$sync(
         save_to_dir = TRUE,
-        summarize = summarize,
+        save_datasets = save_datasets,
         hard_check = hard_check,
         hard_reset = hard_reset
       )
@@ -60,7 +61,7 @@ sync <- function(project_names = NULL,
 }
 #' @noRd
 sync_project <- function(project,
-                         summarize = TRUE,
+                         save_datasets = TRUE,
                          save_to_dir = TRUE,
                          hard_check = FALSE,
                          hard_reset = FALSE) {
@@ -84,32 +85,33 @@ sync_project <- function(project,
     project <- sync_project_check(project = project, hard_reset = hard_reset)
     was_updated <- project$internals$was_updated
   }
-  if (project$internals$add_default_summaries) {
-    missing_redcapsync <- !is_something(project$summary$REDCapSync)
-    missing_redcapsync_raw <- !is_something(project$summary$REDCapSync_raw)
+  if (project$settings$add_default_datasets) {
+    missing_redcapsync <- !is_something(project$datasets$REDCapSync)
+    missing_redcapsync_raw <- !is_something(project$datasets$REDCapSync_raw)
     if (missing_redcapsync || missing_redcapsync_raw) {
-      project <- add_default_summaries(project)
+      project <- add_default_datasets(project)
     }
   }
   # ?add_default_fields
   if (save_to_dir && !is.null(project$dir_path)) {
     if (is_something(project$data)) {
-      if (project$internals$get_files) {
+      if (project$settings$get_files) {
         get_redcap_files(
           # would want track internally?
           project,
-          original_file_names = project$internals$original_file_names,
+          original_file_names = project$settings$original_file_names,
           overwrite = TRUE
         ) # account for needed overwrites from new records
       }
     }
-    if (project$internals$get_file_repository) {
+    if (project$settings$get_file_repository) {
       # get redcap file repo
     }
-    if (summarize) {
-      first_stamp <- project$internals$last_summary
-      project <- summarize_project(project = project, hard_reset = hard_reset)
-      second_stamp <- project$internals$last_summary
+    if (save_datasets) {
+      first_stamp <- project$internals$last_dataset_save
+      project <- save_project_datasets(project = project,
+                                       hard_reset = hard_reset)
+      second_stamp <- project$internals$last_dataset_save
       was_updated <- was_updated ||
         !identical(first_stamp, second_stamp)
     }
@@ -130,34 +132,31 @@ sync_project <- function(project,
 #' @noRd
 sync_project_hard_reset <- function(project) {
   assert_setup_project(project)
-  include_users <- !project$internals$metadata_only
-  project <- get_redcap_metadata(project = project,
-                                 include_users = include_users)
+  project <- get_redcap_metadata(project = project)
   project <- update_project_links(project)
-  if (include_users) {
+  if (project$settings$get_data) {
     project$data <- list()
-    project$data_updates <- list()
-    project$summary <- list()
+    project$datasets <- list()
     project$data <- get_redcap_data(
       project = project,
-      labelled = project$internals$labelled,
-      batch_size = project$internals$batch_size_download
+      labelled = project$settings$labelled,
+      batch_size = project$settings$batch_size_download
     )
     # if error records comma
     if (project$redcap$has_log_access) {
-      if (project$internals$entire_log) {
+      if (project$settings$get_entire_log) {
         creation_time <- project$redcap$project_info$creation_time
         log_begin_date <- as.Date(as.POSIXct(creation_time))
         log_begin_date <- log_begin_date - 1L
       } else {
-        log_begin_date <- Sys.Date() - project$internals$days_of_log
+        log_begin_date <- Sys.Date() - project$settings$log_days
       }
       # don't need old log in this case
       project$redcap$log <- get_redcap_log(project = project,
                                            log_begin_date = log_begin_date)
     }
-    project$summary$all_records <- extract_project_records(project)
-    project$summary$all_records$last_api_call <-
+    project$record_summary <- extract_project_records(project)
+    project$record_summary$last_api_call <-
       project$internals$last_full_update <-
       project$internals$last_metadata_update <-
       project$internals$last_data_update <- now_time()
@@ -219,9 +218,9 @@ sync_project_refresh <- function(project, refresh_records) {
                                          records = refresh_records)
   form_list <- get_redcap_data(
     project = project,
-    labelled = project$internals$labelled,
+    labelled = project$settings$labelled,
     records = refresh_records, # still checking deletes
-    batch_size = project$internals$batch_size_download
+    batch_size = project$settings$batch_size_download
   )
   records_received <- extract_values_from_form_list(
     form_list = form_list,
@@ -244,30 +243,30 @@ sync_project_refresh <- function(project, refresh_records) {
     project$data[[form_name]] <- project$data[[form_name]][reorder_records, ]
     rownames(project$data[[form_name]]) <- NULL
   }
-  records_summary <- project$summary$all_records[[id_col]]
-  missing_records_i <- which(!records_received %in% records_summary)
-  missing_from_summary <- records_received[missing_records_i]
-  if (length(missing_from_summary) > 0L) {
+  records_dataset <- project$record_summary[[id_col]]
+  missing_records_i <- which(!records_received %in% records_dataset)
+  missing_from_dataset <- records_received[missing_records_i]
+  if (length(missing_from_dataset) > 0L) {
     x <- data.frame(
-      record = missing_from_summary,
+      record = missing_from_dataset,
       last_api_call = NA,
       was_saved = FALSE,
       stringsAsFactors = FALSE
     )
     colnames(x)[1L] <- id_col
-    project$summary$all_records <- bind_rows(project$summary$all_records, x)
-    new_order <- order(project$summary$all_records[[id_col]], decreasing = TRUE)
-    project$summary$all_records <- project$summary$all_records[new_order, ]
+    project$record_summary <- bind_rows(project$record_summary, x)
+    new_order <- order(project$record_summary[[id_col]], decreasing = TRUE)
+    project$record_summary <- project$record_summary[new_order, ]
   }
   project$internals$last_data_update <- now_time()
-  row_new <- which(project$summary$all_records[[id_col]] %in% records_received)
-  project$summary$all_records$last_api_call[row_new] <-
+  row_new <- which(project$record_summary[[id_col]] %in% records_received)
+  project$record_summary$last_api_call[row_new] <-
     project$internals$last_data_update
-  project$summary$all_records$was_saved[row_new] <- FALSE
-  project$summary$all_records
-  reorder_records <- match(all_records, project$summary$all_records[[id_col]])
-  project$summary$all_records <- project$summary$all_records[reorder_records, ]
-  rownames(project$summary$all_records) <- NULL
+  project$record_summary$was_saved[row_new] <- FALSE
+  project$record_summary
+  reorder_records <- match(all_records, project$record_summary[[id_col]])
+  project$record_summary <- project$record_summary[reorder_records, ]
+  rownames(project$record_summary) <- NULL
   invisible(project)
 }
 #' @noRd
@@ -559,7 +558,7 @@ remove_records_from_project <- function(project, records) {
     id_col = id_col,
     records = records
   )
-  keep_rows <- !project$summary$all_records[[id_col]] %in% records
-  project$summary$all_records <- project$summary$all_records[which(keep_rows), ]
+  keep_rows <- !project$record_summary[[id_col]] %in% records
+  project$record_summary <- project$record_summary[which(keep_rows), ]
   invisible(project)
 }

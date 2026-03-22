@@ -1,9 +1,25 @@
-#' @title REDCap projects used by REDCapSync
+#' @title Manage REDCapSync projects
 #' @description
-#' Everytime a project is synced, basic project information is saved to the
-#' package user cache so that [load_project] and [sync] work across R sessions.
+#' `projects` is the central interface for managing REDCap projects in
+#' **REDCapSync**. It provides a convenient, persistent registry of projects
+#' that can be accessed across R sessions.
 #'
-#' This object acts as a singleton access point for the entire package ...
+#' Each time a project is set up or synced, basic metadata is stored locally so
+#' that projects can be reloaded and updated without reconfiguration.
+#'
+#' @details
+#' `projects` is implemented as a singleton R6 object and serves as the main
+#' entry point to the REDCapSync workflow. All project-level operations—such as
+#' setup, loading, syncing, and removal—are accessed through this object.
+#'
+#' A key advantage of this design is support for **method chaining**. Because
+#' project methods return project objects, you can write concise, readable
+#' workflows that operate in sequence:
+#'
+#' \preformatted{
+#' projects$load("my_project")$sync()$save_datasets()
+#' }
+#'
 #' @details
 #' The default location of the cache location is defined by using
 #' R_USER_CACHE_DIR if set. Otherwise, it follows platform conventions via
@@ -24,28 +40,115 @@
 #' @returns R6 object that can used be to access project objects
 #' @export
 projects <- R6::R6Class(
-  "REDCapSyncProjectManager",
+  "REDCapSyncProjects",
   active = list(
     df = function() {
       get_projects()
+    },
+    n = function() {
+      nrow(get_projects())
+    },
+    test_project_names = function() {
+      .test_project_names
     }
   ),
   public = list(
-    print = function () {
+    print = function() {
       x <- get_projects()
       number <- nrow(x)
       cli_h1("REDCapSync")
       cli_text("{number} REDCap Projects!")
-      # due for sync
+      if (number > 0L) {
+        number_due <- x$project_name |> lapply(due_for_sync) |> unlist()
+        cli_text("{number} due for sync!")
+      }
+      invisible(self)
     },
     load = function(project_name) {
       load_project(project_name)
     },
-    setup = function () {},
-    test_tokens = function () {},
-    remove = function () {},
-    sync = function () {
-      sync()
+    setup = function(project_name,
+                     dir_path,
+                     redcap_uri,
+                     token_name = paste0("REDCAPSYNC_", project_name),
+                     sync_frequency = "daily",
+                     labelled = TRUE,
+                     hard_reset = FALSE,
+                     get_type = "identified",
+                     records = NA,
+                     fields = NA,
+                     forms = NA,
+                     events = NA,
+                     filter_logic = NA,
+                     get_users = TRUE,
+                     get_data = TRUE,
+                     batch_size_download = 1000L,
+                     batch_size_upload = 500L,
+                     get_entire_log = FALSE,
+                     log_days = 10L,
+                     log_drop_details = FALSE,
+                     log_drop_exports = FALSE,
+                     timezone = Sys.timezone(),
+                     get_files = FALSE,
+                     get_file_repository = FALSE,
+                     original_file_names = FALSE,
+                     add_default_datasets = TRUE) {
+      args <- list(
+        project_name = project_name,
+        token_name = token_name,
+        sync_frequency = sync_frequency,
+        labelled = labelled,
+        hard_reset = hard_reset,
+        get_type = get_type,
+        records = records,
+        fields = fields,
+        forms = forms,
+        events = events,
+        filter_logic = filter_logic,
+        get_users = get_users,
+        get_data = get_data,
+        batch_size_download = batch_size_download,
+        batch_size_upload = batch_size_upload,
+        get_entire_log = get_entire_log,
+        log_days = log_days,
+        log_drop_details = log_drop_details,
+        log_drop_exports = log_drop_exports,
+        timezone = timezone,
+        get_files = get_files,
+        get_file_repository = get_file_repository,
+        original_file_names = original_file_names,
+        add_default_datasets = add_default_datasets
+      )
+      if (!missing(dir_path)) {
+        args$dir_path <- dir_path
+      }
+      if (!missing(redcap_uri)) {
+        args$redcap_uri <- redcap_uri
+      }
+      do.call(setup_project, args)
+    },
+    test_tokens = function(offline = config$offline()) {
+      if (offline) {
+        token_check()
+      }
+      # loop now
+    },
+    remove = function(project_names) {
+      cache_clear(project_names = project_names)
+      invisible(self)
+    },
+    remove_all = function() {
+      cache_clear()
+      invisible(self)
+    },
+    sync = function(project_names = NULL,
+                    save_datasets = TRUE,
+                    hard_check = FALSE,
+                    hard_reset = FALSE) {
+      sync(project_names = project_names,
+           save_datasets = save_datasets,
+           hard_check = hard_check,
+           hard_reset = hard_reset)
     }
   ),
   cloneable = FALSE
@@ -103,19 +206,19 @@ get_projects <- function() {
   "is_longitudinal",
   "has_repeating_forms_or_events",
   "has_multiple_arms",
-  "R_object_size",
+  "object_size",
   # "file_size",
   "n_records",
   "redcap_uri",
   # "redcap_base",
   "redcap_home",
   # "redcap_api_playground",
-  # "days_of_log",
+  # "log_days",
   "get_files",
   "get_file_repository",
   # "original_file_names",
-  "entire_log",
-  "metadata_only",
+  "get_entire_log",
+  "get_data",
   "get_type"
 )
 #' @noRd
@@ -137,14 +240,14 @@ get_projects <- function() {
   is_longitudinal = logical(0L),
   has_repeating_forms_or_events = logical(0L),
   has_multiple_arms = logical(0L),
-  R_object_size = character(0L),
+  object_size = character(0L),
   n_records = integer(0L),
   redcap_uri = character(0L),
   redcap_home = character(0L),
   get_files = logical(0L),
   get_file_repository = logical(0L),
-  entire_log = logical(0L),
-  metadata_only = logical(0L),
+  get_entire_log = logical(0L),
+  get_data = logical(0L),
   get_type = character(0L),
   stringsAsFactors = FALSE
 )
@@ -180,19 +283,16 @@ extract_project_details <- function(project) {
   project_details$project_name <- project$project_name
   project_details$dir_path <- na_if_null(project$dir_path)
   # settings -------
-  project_details$sync_frequency <- project$internals$sync_frequency
-  project_details$get_files <- project$internals$get_files
-  project_details$get_file_repository <- project$internals$get_file_repository
-  project_details$entire_log <- project$internals$entire_log
-  project_details$metadata_only <- project$internals$metadata_only
-  project_details$labelled <- project$internals$labelled
-  project_details$get_type <- project$internals$get_type
-  project_details$timezone <- project$internals$timezone |>
-    na_if_null() |>
-    as.character()
+  project_details$sync_frequency <- project$settings$sync_frequency
+  project_details$get_files <- project$settings$get_files
+  project_details$get_file_repository <- project$settings$get_file_repository
+  project_details$get_entire_log <- project$settings$get_entire_log
+  project_details$get_data <- project$settings$get_data
+  project_details$labelled <- project$settings$labelled
+  project_details$get_type <- project$settings$get_type
   # redcap --------
   project_details$version <- na_if_null(project$redcap$version)
-  project_details$token_name <- na_if_null(project$redcap$token_name)
+  project_details$token_name <- na_if_null(project$token_name)
   project_details$project_id <- na_if_null(project$redcap$project_id)
   project_details$project_title <- na_if_null(project$redcap$project_title)
   project_details$id_col <- na_if_null(project$metadata$id_col)
@@ -202,12 +302,15 @@ extract_project_details <- function(project) {
     na_if_null(project$metadata$has_repeating_forms_or_events)
   project_details$has_multiple_arms <-
     na_if_null(project$metadata$has_multiple_arms)
-  project_details$n_records <- project$summary$all_records |>
+  project_details$n_records <- project$record_summary |>
     nrow() |>
     na_if_null() |>
     as.integer()
   project_details$redcap_uri <- project$links$redcap_uri
   project_details$redcap_home <- project$links$redcap_home |>
+    na_if_null() |>
+    as.character()
+  project_details$timezone <- project$redcap$timezone |>
     na_if_null() |>
     as.character()
   # saving ----
@@ -225,7 +328,7 @@ extract_project_details <- function(project) {
   project_details$last_data_update <- project$internals$last_data_update |>
     na_if_null() |>
     as.POSIXct(tz = Sys.timezone())
-  project_details$R_object_size <- object_size(project) |> as.character()
+  project_details$object_size <- object_size(project) |> as.character()
   project_details
 }
 #' @noRd

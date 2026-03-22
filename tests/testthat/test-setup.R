@@ -5,7 +5,8 @@ test_that("load_project works!", {
   expect_error(load_project("NO_PROJECTS_YET"))
   a <- mock_test_project("TEST_CLASSIC")$.internal |> extract_project_details()
   b <- mock_test_project("TEST_DATA")$.internal |> extract_project_details()
-  c <- mock_test_project("TEST_LONGITUDINAL")$.internal |> extract_project_details()
+  c <- mock_test_project("TEST_LONGITUDINAL")$.internal |>
+    extract_project_details()
   projects <- a |> bind_rows(b) |> bind_rows(c)
   local_mocked_bindings(
     get_projects = function(...) projects
@@ -138,7 +139,7 @@ test_that("save_project works!", {
   project$internals$last_directory_save <- fake_time
   project$internals$last_data_update <- fake_time
   project$internals$last_metadata_update <- fake_time
-  project$internals$timezone <- Sys.timezone()
+  project$redcap$timezone <- Sys.timezone()
   expect_no_error({
     project <- save_project(project)
   })

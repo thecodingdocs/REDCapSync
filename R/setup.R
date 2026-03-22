@@ -40,9 +40,10 @@
 #' Default is `TRUE`.
 #' @param hard_reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the
 #' `project` object already exists. Default is `FALSE`.
-#' @param days_of_log Integer. Number of days to be checked in the log if a
-#' hard_reset
-#' or new project is setup. Default is `10`.
+#' @param log_days Integer. Number of days to be checked in the log if a
+#' hard_reset or new project is setup. Default is `10`.
+#' @param log_drop_details Logical (TRUE/FALSE). If TRUE, drops log details.
+#' @param log_drop_exports Logical (TRUE/FALSE). If TRUE, drops log exports.
 #' @param timezone optional timezone set of the REDCap server. Otherwise, will
 #' assume Sys.timezone. Options from `OlsonNames()`.
 #' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
@@ -53,11 +54,12 @@
 #' Default is `FALSE`.
 #' @param original_file_names Logical (TRUE/FALSE). If TRUE, uses original file
 #' names for retrieved files. Default is `FALSE`.
-#' @param entire_log Logical (TRUE/FALSE). If TRUE, retrieves the entire log.
-#' Default is `FALSE`.
-#' @param metadata_only Logical (TRUE/FALSE). If TRUE, updates only the
-#' @param add_default_summaries Logical (TRUE/FALSE). If TRUE, will add default
-#' summaries
+#' @param get_entire_log Logical (TRUE/FALSE). If TRUE, retrieves the entire
+#' log. Default is `FALSE`.
+#' @param get_users Logical (TRUE/FALSE). If TRUE, will get REDCap users
+#' @param get_data Logical (TRUE/FALSE). If TRUE, will get REDCap data.
+#' @param add_default_datasets Logical (TRUE/FALSE). If TRUE, will add default
+#' datasets
 #' @param get_type optional character of REDCap API call type.
 #' data as if user ran `sync_project`. Default is `FALSE`.
 #' @param batch_size_download Integer. Number of records to process in each
@@ -85,30 +87,33 @@ setup_project <- function(project_name,
                           token_name = paste0("REDCAPSYNC_", project_name),
                           sync_frequency = "daily",
                           labelled = TRUE,
-                          hard_reset = FALSE,
                           get_type = "identified",
                           records = NA,
                           fields = NA,
                           forms = NA,
                           events = NA,
                           filter_logic = NA,
-                          metadata_only = FALSE,
+                          get_users = TRUE,
+                          get_data = TRUE,
                           batch_size_download = 1000L,
                           batch_size_upload = 500L,
-                          entire_log = FALSE,
-                          days_of_log = 10L,
-                          timezone = Sys.timezone(),
+                          get_entire_log = FALSE,
+                          log_days = 10L,
+                          log_drop_details = FALSE,
+                          log_drop_exports = FALSE,
                           get_files = FALSE,
                           get_file_repository = FALSE,
                           original_file_names = FALSE,
-                          add_default_summaries = TRUE) {
+                          add_default_datasets = TRUE,
+                          timezone = Sys.timezone(),
+                          hard_reset = FALSE) {
   missing_dir_path <- missing(dir_path)
   if (missing_dir_path) {
     missing_dir_message <- paste("If you don't supply a directory, REDCapSync",
                                  "will only run in R session. The package is",
                                  "meant to be used with a directory.")
   }
-  assert_project_name(project_name)
+  assert_project_name(project_name, allow_test_names = TRUE)
   assert_env_name(token_name, max.chars = 50L, all_caps = TRUE)
   assert_choice(sync_frequency, choices = .sync_frequency)
   assert_logical(labelled, len = 1L, any.missing = FALSE)
@@ -164,7 +169,7 @@ setup_project <- function(project_name,
         any.missing = FALSE
       )
   )
-  assert_logical(metadata_only, len = 1L, any.missing = FALSE)
+  assert_logical(get_data, len = 1L, any.missing = FALSE)
   assert_integerish(
     batch_size_download,
     len = 1L,
@@ -177,13 +182,13 @@ setup_project <- function(project_name,
     lower = 1L,
     any.missing = FALSE
   )
-  assert_logical(entire_log, len = 1L, any.missing = FALSE)
-  assert_integerish(days_of_log, len = 1L, lower = 1L, any.missing = FALSE)
+  assert_logical(get_entire_log, len = 1L, any.missing = FALSE)
+  assert_integerish(log_days, len = 1L, lower = 1L, any.missing = FALSE)
   assert_choice(timezone, OlsonNames())
   assert_logical(get_files, len = 1L, any.missing = FALSE)
   assert_logical(get_file_repository, len = 1L, any.missing = FALSE)
   assert_logical(original_file_names, len = 1L, any.missing = FALSE)
-  assert_logical(add_default_summaries, len = 1L, any.missing = FALSE)
+  assert_logical(add_default_datasets, len = 1L, any.missing = FALSE)
   # assert redcap_uri
   original_details <- NULL
   if (!hard_reset) {
@@ -193,13 +198,13 @@ setup_project <- function(project_name,
     if (!config$allow.test.names()) {
       if (project_name %in% .test_project_names) {
         project <- load_test_project(project_name = project_name,
-                                     dir_path = dir_path)
+                                     dir_path = dir_path)$.internal
         was_loaded <- TRUE
       }
     }
     if (!was_loaded && in_proj_cache) {
       project <- try_else_null({
-        suppressWarnings({ # will ignore supplied dir_path ? add coompare
+        suppressWarnings({ # will ignore supplied dir_path ? add compare
           load_project(project_name = project_name)$.internal
         })
       })
@@ -207,7 +212,7 @@ setup_project <- function(project_name,
     }
     if (!was_loaded && !missing_dir_path) {
       project <- try_else_null({
-        suppressWarnings({ # will ignore supplied dir_path ? add coompare
+        suppressWarnings({ # will ignore supplied dir_path ? add compare
           load_project_from_dir(project_name = project_name,
                                 dir_path = dir_path,
                                 validate = TRUE)
@@ -223,9 +228,9 @@ setup_project <- function(project_name,
     if (was_loaded) {
       # compare current setting to previous settings...
       original_details <- extract_project_details(project)
-      projects <- get_projects()
-      project_row <- which(projects$project_name == project_name)
-      cache_details <- projects[project_row, ]
+      if (missing(redcap_uri)) {
+        redcap_uri <- original_details$redcap_uri
+      }
       if (original_details$redcap_uri != redcap_uri) {
         stop_message <- paste0("There is an existing project at your chosen",
                                " directory with same `project_name` but a",
@@ -234,17 +239,21 @@ setup_project <- function(project_name,
                                " override.")
         stop(stop_message)
       }
-      if (original_details$project_id != cache_details$project_id) {
-        stop_message <- paste0("There is an existing project at your chosen",
-                               " directory with same `project_name` but a",
-                               " different `project_id`. You can use",
-                               " setup_project(..., hard_reset = TRUE) to",
-                               " override.")
-        stop(stop_message)
+      if (in_proj_cache) {
+        project_row <- which(projects$project_name == project_name)
+        cache_details <- projects[project_row, ]
+        if (original_details$project_id != cache_details$project_id) {
+          stop_message <- paste0("There is an existing project at your chosen",
+                                 " directory with same `project_name` but a",
+                                 " different `project_id`. You can use",
+                                 " setup_project(..., hard_reset = TRUE) to",
+                                 " override.")
+          stop(stop_message)
+        }
       }
-      if (!is.null(project$internals$labelled)) {
-        if (project$internals$labelled != labelled) {
-          load_type <- ifelse(project$internals$labelled, "labelled", "raw")
+      if (!is.null(project$settings$labelled)) {
+        if (project$settings$labelled != labelled) {
+          load_type <- ifelse(project$settings$labelled, "labelled", "raw")
           chosen_type <- ifelse(labelled, "labelled", "raw")
           hard_reset <- TRUE
           warning(
@@ -261,6 +270,7 @@ setup_project <- function(project_name,
   }
   if (hard_reset) {
     # load blank if hard_reset = TRUE
+    assert_project_name(project_name)
     project <- .blank_project
     cli_alert_wrap("Setup blank project because `hard_reset = TRUE`")
   }
@@ -279,30 +289,30 @@ setup_project <- function(project_name,
       showWarnings = FALSE
     )
   }
-  project$links$redcap_uri <- redcap_uri # add test, should end in / or add it
-  project$redcap$token_name <- token_name
-  project$internals$sync_frequency <- sync_frequency
-  project$internals$labelled <- labelled
-  project$internals$hard_reset <- hard_reset
-  project$internals$get_type <- get_type
-  project$internals$records <- records
-  project$internals$fields <- fields
-  project$internals$forms <- forms
-  project$internals$events <- events
-  project$internals$filter_logic <- filter_logic
-  project$internals$metadata_only <- metadata_only
-  project$internals$batch_size_download <- batch_size_download
-  project$internals$batch_size_upload <- batch_size_upload
-  project$internals$entire_log <- entire_log
-  project$internals$days_of_log <- days_of_log
-  project$internals$timezone <- timezone
-  project$internals$get_files <- get_files
-  project$internals$get_file_repository <- get_file_repository
-  project$internals$original_file_names <- original_file_names
-  project$internals$add_default_summaries <- add_default_summaries
+  project$token_name <- token_name
+  project$redcap$timezone <- timezone
+  project$settings$sync_frequency <- sync_frequency
+  project$settings$labelled <- labelled
+  project$settings$get_type <- get_type
+  project$settings$records <- records
+  project$settings$fields <- fields
+  project$settings$forms <- forms
+  project$settings$events <- events
+  project$settings$filter_logic <- filter_logic
+  project$settings$get_data <- get_data
+  project$settings$batch_size_download <- batch_size_download
+  project$settings$batch_size_upload <- batch_size_upload
+  project$settings$get_entire_log <- get_entire_log
+  project$settings$log_days <- log_days
+  project$settings$get_files <- get_files
+  project$settings$get_file_repository <- get_file_repository
+  project$settings$original_file_names <- original_file_names
+  project$settings$add_default_datasets <- add_default_datasets
   #test these
+  project$links$redcap_uri <- redcap_uri # add test, should end in / or add it
   project$links$redcap_base <- redcap_uri |> dirname() |> paste0("/")
   project$internals$is_blank <- FALSE
+  project$internals$hard_reset <- hard_reset
   project$data <- all_character_cols_list(project$data)
   if (!is_valid_redcap_token(get_project_token(project))) {
     cli_alert_warning("No valid token in session: Sys.getenv('{token_name}')")
@@ -494,7 +504,7 @@ load_test_project <- function(project_name, dir_path = NULL) {
       path = file.path(project$dir_path, "REDCap", project_name),
       showWarnings = FALSE
     )
-    project <- add_default_summaries(project)
+    project <- add_default_datasets(project)
   } else {
     project$dir_path <- NA
   }
@@ -555,15 +565,21 @@ save_project <- function(project, silent = FALSE) {
 .blank_project <- list(
   project_name = NULL,
   dir_path = NULL,
+  token_name = NULL,
   redcap = list(
-    token_name = NULL,
     project_id = NULL,
     project_title = NULL,
     version = NULL,
     project_info = NULL,
     log = NULL,
+    comments = NULL,
     users = NULL,
-    current_user = NULL
+    current_user = NULL,
+    timezone = NULL,
+    has_log_access = NULL,
+    has_dag_access = NULL,
+    has_user_access = NULL,
+    has_file_repository_access = NULL
   ),
   metadata = list(
     forms = NULL,
@@ -585,51 +601,21 @@ save_project <- function(project, silent = FALSE) {
     has_repeating_events = NULL
   ),
   data = NULL,
-  data_updates = NULL,
-  quality_checks = NULL,
+  record_summary = NULL,
   transformation = list(
     forms = NULL,
     fields = NULL,
     field_functions = NULL,
     data_updates = NULL
   ),
-  summary = list(),
-  internals = list(
-    last_test_connection_attempt = NULL,
-    last_test_connection_timezone = NULL,
-    last_test_connection_outcome = NULL,
-    last_metadata_update = NULL,
-    last_metadata_dir_save = NULL,
-    last_full_update = NULL,
-    last_data_update = NULL,
-    last_data_dir_save = NULL,
-    last_data_transformation = NULL,
-    last_summary = NULL,
-    last_quality_check = NULL,
-    last_clean = NULL,
-    last_directory_save = NULL,
-    last_sync = NULL,
-    labelled = NULL,
-    timezone = NULL,
-    get_files = NULL,
-    get_file_repository = NULL,
-    original_file_names = NULL,
-    days_of_log = NULL,
-    entire_log = NULL,
-    project_type = "redcap",
-    is_blank = TRUE,
-    is_test = FALSE,
-    ever_connected = FALSE,
-    is_clean = FALSE,
-    hard_reset = FALSE,
-    was_updated = FALSE
-  ),
+  datasets = list(),
+  jobs = list(),
   links = list(
     redcap_uri = NULL,
     redcap_base = NULL,
     redcap_home = NULL,
     redcap_record_home = NULL,
-    # redcap_record_subpage ?
+    redcap_record_subpage = NULL,
     redcap_records_dashboard = NULL,
     redcap_api = NULL,
     redcap_api_playground = NULL,
@@ -641,9 +627,56 @@ save_project <- function(project, silent = FALSE) {
     redcap_dictionary = NULL,
     redcap_data_quality = NULL,
     redcap_identifiers = NULL,
-    pkgdown = "https://thecodingdocs.github.io/REDCapSync/",
+    cran = "",
+    help = "https://thecodingdocs.github.io/REDCapSync/",
     github = "https://github.com/thecodingdocs/REDCapSync/",
     thecodingdocs = "https://www.thecodingdocs.com/"
+  ),
+  settings = list(
+    sync_frequency = "daily",
+    labelled = TRUE,
+    get_type = "identified",
+    records = NA,
+    fields = NA,
+    forms = NA,
+    events = NA,
+    filter_logic = NA,
+    get_users = TRUE,
+    get_data = TRUE,
+    batch_size_download = 1000L,
+    batch_size_upload = 500L,
+    get_entire_log = FALSE,
+    log_days = 10L,
+    log_drop_details = FALSE,
+    log_drop_exports = FALSE,
+    get_files = FALSE,
+    get_file_repository = FALSE,
+    original_file_names = FALSE,
+    add_default_datasets = TRUE
+  ),
+  internals = list(
+    version = "0.1.0",
+    last_test_connection_attempt = NULL,
+    last_test_connection_timezone = NULL,
+    last_test_connection_outcome = NULL,
+    last_metadata_update = NULL,
+    last_metadata_dir_save = NULL,
+    last_full_update = NULL,
+    last_data_update = NULL,
+    last_data_dir_save = NULL,
+    last_data_transformation = NULL,
+    last_dataset_save = NULL,
+    last_quality_check = NULL,
+    last_clean = NULL,
+    last_directory_save = NULL,
+    last_sync = NULL,
+    project_type = "redcap",
+    is_blank = TRUE,
+    is_test = FALSE,
+    ever_connected = FALSE,
+    is_clean = FALSE,
+    hard_reset = FALSE,
+    was_updated = FALSE
   )
 )
 #' @noRd
@@ -670,4 +703,5 @@ clean_dir_path <- function(dir_path) {
     sanitize_path()
   dir_path
 }
+#' @noRd
 .whitespace <- "[\\h\\v]"

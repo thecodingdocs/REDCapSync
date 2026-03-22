@@ -4,11 +4,11 @@
 #' This is the main class for managing REDCap data, metadata, and sync
 #' operations. Users should construct objects using [setup_project()]. To reopen
 #' an existing project, use [load_project()].
-#' @param summary_name Character. The name of the configured summary from which
-#' to generate the summary. *If you provide `summary_name` all other parameters
-#' are inherited according to what was set with `add_project_summary`.
+#' @param dataset_name Character. The name of the configured dataset from which
+#' to generate the dataset. *If you provide `dataset_name` all other parameters
+#' are inherited according to what was set with `add_project_dataset`.
 #' @param transformation_type Character scalar. How to transform data for the
-#' summary. Default is "default". Other options are "none", "flat",
+#' dataset. Default is "default". Other options are "none", "flat",
 #' "merge_non_repeating". "default" first merges non-repeating and if there are
 #' repeating forms, it merges non-repeating variables to the right of repeating
 #' instruments. "flat" is one-record, one-row, even if there are repeating
@@ -20,19 +20,19 @@
 #' @param filter_field Character. The name of the field in the database to
 #' filter on. Used with `filter_choices`.
 #' @param filter_choices Vector. The values of `filter_field` used to define the
-#' summary. An alternative to providing a full `filter_list`.
+#' dataset. An alternative to providing a full `filter_list`.
 #' @param filter_list Vector. The values of `filter_field` used to define the
-#' summary. Names are field names; values are the allowed value set(s). Use
+#' dataset. Names are field names; values are the allowed value set(s). Use
 #' either `filter_list` or `filter_field` with `filter_choices`.
 #' @param filter_strict Logical. If `TRUE`, all forms will be filtered by
 #' criteria. If `FALSE`, will convert original filter to ID column and filter
 #' all other forms by that record. Default is `TRUE`.
-#' @param form_names Character vector. Names of forms to include in the summary.
+#' @param form_names Character vector. Names of forms to include in the dataset.
 #' Default is `NULL`, which includes all forms.
 #' @param field_names Character vector. Names of specific fields to include in
-#' the summary. Default is `NULL`, which includes all fields.
+#' the dataset. Default is `NULL`, which includes all fields.
 #' @param exclude_identifiers Logical. Whether to exclude identifiers in the
-#' data in the summary. Default is `TRUE`.
+#' data in the dataset. Default is `TRUE`.
 #' @param exclude_free_text Logical. If `TRUE`, exclude free text fields
 #' intended for de-identification workflows. Default is `FALSE`.
 #' @param date_handling character string. One of `none`,`exclude_dates`,
@@ -50,18 +50,18 @@
 #' to NA. Default is `FALSE`.
 #' @param drop_others Character vector of other values that should be dropped.
 #' @param include_metadata Logical. If `TRUE`, metadata will be included in the
-#' summary. Default is `TRUE`.
+#' dataset. Default is `TRUE`.
 #' @param include_users Logical. If `TRUE`, user-related information will be
-#' included in the summary. Default is `TRUE`.
-#' @param include_records Logical. If `TRUE`, a record summary will be
-#' included in the generated summary. Default is `TRUE`.
+#' included in the dataset. Default is `TRUE`.
+#' @param include_records Logical. If `TRUE`, a record dataset will be
+#' included in the generated dataset. Default is `TRUE`.
 #' @param include_log Logical. If `TRUE`, the log of changes will be included in
-#' the summary. Default is `TRUE`.
+#' the dataset. Default is `TRUE`.
 #' @param annotate_from_log Logical. If `TRUE`, the metadata, users, and records
 #' will be annotated using the log. Default is `TRUE`.
 #' @param internal_use A logical flag (`TRUE` or `FALSE`). If `TRUE`, then will
 #' return data_list meant for internal use. Defaults to `FALSE`.
-#' @param hard_reset Logical. If `TRUE`, overwrite existing summary files
+#' @param hard_reset Logical. If `TRUE`, overwrite existing dataset files
 #' with the same name. Default is `FALSE`.
 #' @param with_links Optional logical (TRUE/FALSE) for including links in Excel
 #' sheets. Default is `FALSE`.
@@ -69,10 +69,10 @@
 #' separate files as opposed to multi-tab Excel. Default is `FALSE`.
 #' @param use_csv Logical (TRUE/FALSE). If TRUE, uses CSV files for data
 #' storage. Default is `FALSE`
-#' @param dir_other Character. The directory where the summary file will be
+#' @param dir_other Character. The directory where the dataset file will be
 #' saved. Default is the `output` folder within the database directory.
-#' @param file_name Character. The base name of the file where the summary will
-#' be saved. Default is `<project_name>_<summary_name>`.
+#' @param file_name Character. The base name of the file where the dataset will
+#' be saved. Default is `<project_name>_<dataset_name>`.
 #' @param envir environment variable
 #' @param form string of raw REDCap form name, such as "survey_one".
 #' @param link_type Character. Type of REDCap URL to retrieve. Choose one of
@@ -84,7 +84,8 @@
 #' @param record character of record
 #' @param page character of page (instrument/form)
 #' @param instance character of instance
-#' @param summarize Logical (TRUE/FALSE). If TRUE, summarizes data to directory.
+#' @param save_datasets Logical (TRUE/FALSE). If TRUE, saves datasets to
+#' directory.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data in
 #' the project object to the directory at `dir_path`. Ignored when `dir_path` is
 #'  `NULL`. Default is `TRUE`.
@@ -111,7 +112,7 @@
 #' applicable. Default is `NA`.
 #' @param data_func Function or NA. An optional function to transform or
 #' validate the data in the field. Default is `NA`.
-#' @param summary_names One or more summary names. Default is `NULL`.
+#' @param dataset_names One or more dataset names. Default is `NULL`.
 #' @param to_be_uploaded data.frame in raw coded form to upload.
 #' uploading to REDCap. Default is 500L.
 #' @examples
@@ -158,7 +159,7 @@ REDCapSyncProject <- R6Class(
             "`data` is read only. To change REDCap data either use",
             "`project$upload()` or work with an output by assigning the data",
             "with `form_to_edit <-project$data$<form_name>`. Alternatively",
-            "use the output from `project$generate_summary()`"
+            "use the output from `project$generate_dataset()`"
           )
         )
       }
@@ -174,7 +175,7 @@ REDCapSyncProject <- R6Class(
             "REDCap website, or use the REDCap API. If you just want to work",
             "with the object more in R, reassign the object like,",
             "`fields <- project$metadata$fields`. Alternatively use the output",
-            "from `project$generate_summary()`"
+            "from `project$generate_dataset()`"
           ),
           bullet_type = "x",
           url = private$project$links$redcap_designer
@@ -191,7 +192,7 @@ REDCapSyncProject <- R6Class(
             "`redcap` is read only. It is generated from communication with",
             "REDCap. If you just want to work with the object more in R,",
             "reassign the object like, `redcap_log <- project$redcap$log`.",
-            "Alternatively use the output from `project$generate_summary()`"
+            "Alternatively use the output from `project$generate_dataset()`"
           ),
           bullet_type = "x",
           url = private$project$links$redcap_designer
@@ -226,13 +227,13 @@ REDCapSyncProject <- R6Class(
       cli_text("Name: {private$project$project_name}")
       cli_text("Title: {private$project$redcap$project_info$project_title}")
       cli_text("PID: {private$project$redcap$project_id}")
-      cli_text("Token Name: {private$project$redcap$token_name}")
-      cli_text("Sync Frequency: {private$project$internals$sync_frequency}")
+      cli_text("Token Name: {private$project$token_name}")
+      cli_text("Sync Frequency: {private$project$settings$sync_frequency}")
       cli_text("Last Update: {private$project$internals$last_data_update}")
       cli_text("REDCap: {.url {private$project$links$redcap_home}}")
       cli_text("Directory: {.file {private$project$dir_path}}")
       cli_h2("Help")
-      cli_text("pkgdown: {.url {private$project$links$pkgdown}}") # getting started
+      cli_text("help: {.url {private$project$links$help}}") # getting started
       cli_text("tokens: {.vignette REDCapSync::Tokens}")
       invisible(self)
     },
@@ -241,7 +242,7 @@ REDCapSyncProject <- R6Class(
     #' changes. Sync is performed according to the `sync_frequency` set in
     #' [setup_project()] by default. Use `hard_check` to force a check, or `
     #' hard_reset` to force a complete refresh.
-    sync = function(summarize = TRUE,
+    sync = function(save_datasets = TRUE,
                     save_to_dir = TRUE,
                     hard_check = FALSE,
                     hard_reset = FALSE) {
@@ -250,14 +251,14 @@ REDCapSyncProject <- R6Class(
         return(invisible(self))
       }
       private$project <- sync_project(project = private$project,
-                                      summarize = summarize,
+                                      save_datasets = save_datasets,
                                       save_to_dir = save_to_dir,
                                       hard_check = hard_check,
                                       hard_reset = hard_reset)
       invisible(self)
     },
-    #' @description  Add a new summary entry
-    add_summary = function(summary_name,
+    #' @description  Add a new dataset entry
+    add_dataset = function(dataset_name,
                            transformation_type = "default",
                            merge_form_name = "merged",
                            filter_field = NULL,
@@ -285,9 +286,9 @@ REDCapSyncProject <- R6Class(
                            dir_other = NULL,
                            file_name = NULL,
                            hard_reset = FALSE) {
-      private$project <- add_project_summary(
+      private$project <- add_project_dataset(
         project = private$project,
-        summary_name = summary_name,
+        dataset_name = dataset_name,
         transformation_type = transformation_type,
         merge_form_name = merge_form_name,
         filter_field = filter_field,
@@ -318,16 +319,16 @@ REDCapSyncProject <- R6Class(
       )
       invisible(self)
     },
-    #' @description  Clear all project summaries
-    remove_summaries = function(summary_names = NULL) {
-      private$project <- clear_project_summaries(
+    #' @description  Clear all project datasets
+    remove_datasets = function(dataset_names = NULL) {
+      private$project <- clear_project_datasets(
         project = private$project,
-        summary_names = summary_names
+        dataset_names = dataset_names
       )
       invisible(self)
     },
-    #' @description  Add a new summary entry
-    generate_summary = function(summary_name,
+    #' @description  Add a new dataset entry
+    generate_dataset = function(dataset_name,
                                 envir = NULL,
                                 transformation_type = "default",
                                 merge_form_name = "merged",
@@ -351,20 +352,18 @@ REDCapSyncProject <- R6Class(
                                 include_log = FALSE,
                                 annotate_from_log = TRUE) {
       assert_environment(envir, null.ok = TRUE)
-      provided_summary_name <- !missing(summary_name)
-      if (provided_summary_name) {
-        summary_names <- private$project$summary |>
-          names() |>
-          setdiff("all_records")
-        assert_choice(summary_name, summary_names, null.ok = FALSE)
-        if (!summary_name %in% names(private$project$summary)) {
-          stop(summary_name,
-               " is not included in the current project summaries")
+      provided_dataset_name <- !missing(dataset_name)
+      if (provided_dataset_name) {
+        dataset_names <- names(private$project$datasets)
+        assert_choice(dataset_name, dataset_names, null.ok = FALSE)
+        if (!dataset_name %in% names(private$project$datasets)) {
+          stop(dataset_name,
+               " is not included in the current project datasets")
         }
-        project_summary <- generate_project_summary(project = private$project,
-                                                    summary_name = summary_name)
+        project_dataset <- generate_project_dataset(project = private$project,
+                                                    dataset_name = dataset_name)
       } else {
-        project_summary <- generate_project_summary(
+        project_dataset <- generate_project_dataset(
           project = private$project,
           transformation_type = transformation_type,
           merge_form_name = merge_form_name,
@@ -391,11 +390,11 @@ REDCapSyncProject <- R6Class(
         )
       }
       if (!is.null(envir)) {
-        list2env(project_summary, envir = envir)
+        list2env(project_dataset, envir = envir)
       }
-      invisible(project_summary)
+      invisible(project_dataset)
     },
-    #' @description  Add a new summary entry
+    #' @description  Add a new dataset entry
     add_field = function(field_name,
                          form_name,
                          field_type,
@@ -409,21 +408,21 @@ REDCapSyncProject <- R6Class(
       message("Added field! (placeholder)")
       invisible(self)
     },
-    #' @description  Removes summary entry
+    #' @description  Removes extra fields
     remove_fields = function(field_names = NULL) {
       message("Removed field! (placeholder)")
       invisible(self)
     },
-    #' @description summarize project and save to Excel
-    summarize = function(hard_reset = FALSE) {
+    #' @description saves project datasets to Excel
+    save_datasets = function(hard_reset = FALSE) {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not save to directories!")
         return(invisible(self))
       }
-      first_stamp <- private$project$internals$last_summary
-      private$project <- summarize_project(project = private$project,
-                                           hard_reset = hard_reset)
-      second_stamp <- private$project$internals$last_summary
+      first_stamp <- private$project$internals$last_dataset_save
+      private$project <- save_project_datasets(project = private$project,
+                                               hard_reset = hard_reset)
+      second_stamp <- private$project$internals$last_dataset_save
       was_updated <- !identical(first_stamp, second_stamp)
       if (was_updated) {
         #consider separating just saving last in details
@@ -431,21 +430,19 @@ REDCapSyncProject <- R6Class(
       }
       invisible(self)
     },
-    #' @description save summary to Excel
-    save_summary = function(summary_name) {
+    #' @description save dataset to Excel
+    save_dataset = function(dataset_name) {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not save to directories!")
         return(invisible(self))
       }
-      summary_names <- private$project$summary |>
-        names() |>
-        setdiff("all_records")
-      assert_choice(summary_name, summary_names, null.ok = FALSE)
-      private$project <- save_project_summary(project = private$project,
-                                              summary_name = summary_name)
+      dataset_names <- names(private$project$datasets)
+      assert_choice(dataset_name, dataset_names, null.ok = FALSE)
+      private$project <- save_project_dataset(project = private$project,
+                                              dataset_name = dataset_name)
       invisible(self)
     },
-    #' @description  Add a new summary entry
+    #' @description  Add a new dataset entry
     save = function() {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not save to directories!")
@@ -531,7 +528,7 @@ REDCapSyncProject <- R6Class(
       }
       id_col <- private$project$metadata$id_col
       refresh_records <- extract_values_from_form_list(to_be_uploaded, id_col)
-      is_labelled <- private$project$internals$labelled
+      is_labelled <- private$project$settings$labelled
       for (upload_name in names(to_be_uploaded)) {
         upload_this <- to_be_uploaded[[upload_name]]
         # add comparison check but need to test...
@@ -542,7 +539,7 @@ REDCapSyncProject <- R6Class(
         upload_form_to_redcap(
           to_be_uploaded = upload_this,
           project = private$project,
-          batch_size = private$project$internals$batch_size_upload
+          batch_size = private$project$settings$batch_size_upload
         )
       }
       Sys.sleep(3L)

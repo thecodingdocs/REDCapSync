@@ -4,7 +4,7 @@ withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 test_that("labelled_to_raw_data_list and raw_to_labelled_data_list works!", {
   project <- mock_test_project()$.internal
   # ensure project is marked as labelled and has labelled values
-  expect_true(project$internals$labelled)
+  expect_true(project$settings$labelled)
   # sanity check: labelled value present in example form
   expect_all_true(project$data$other$var_yesno %in% c("Yes", "No"))
   # convert and capture returned project
@@ -12,7 +12,7 @@ test_that("labelled_to_raw_data_list and raw_to_labelled_data_list works!", {
     project_converted <- labelled_to_raw_data_list(project)
   })
   # internals updated
-  expect_false(project_converted$internals$labelled)
+  expect_false(project_converted$settings$labelled)
   # values converted from labelled ("Yes"/"No") to raw codes ("1"/"0")
   expect_all_true(project_converted$data$other$var_yesno %in% c("0", "1"))
   expect_no_error({
@@ -23,7 +23,7 @@ test_that("labelled_to_raw_data_list and raw_to_labelled_data_list works!", {
 # labelled_to_raw_form (Internal)
 test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
   project <- mock_test_project()$.internal
-  project_summary <- generate_project_summary(project)
+  project_summary <- generate_project_dataset(project)
   merged <- all_character_cols(project_summary$merged)
   var_yesno_labelled <- merged$var_yesno
   values <- unique(merged$var_yesno)
@@ -62,7 +62,7 @@ test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
   raw_mismatch$var_branching[3L] <- "Random Thing"
   expect_message(raw_to_labelled_form(raw_mismatch, project), error_message)
   project$metadata$has_coding_conflicts <- TRUE
-  error_text <- "you have a coding conflic"
+  error_text <- "you have a coding conflict"
   expect_error(raw_to_labelled_form(raw_mismatch, project), error_text)
 })
 # normalize_redcap (Internal)

@@ -72,7 +72,7 @@ test_that("repair_project_details extracts correct project details", {
   # Verify extracted details match original project
   expect_identical(result$project_name, project$project_name)
   expect_identical(result$project_id, project$redcap$project_id)
-  expect_identical(result$token_name, project$redcap$token_name)
+  expect_identical(result$token_name, project$token_name)
   expect_identical(result$redcap_uri, project$links$redcap_uri)
 })
 # repair_projects (Internal)
@@ -155,76 +155,76 @@ test_that("repair_setup_project returns NULL for invalid project_name", {
 test_that("repair_setup_project repairs invalid internals", {
   project <- mock_test_project()$.internal
   # Set invalid internals
-  project$internals$sync_frequency <- "invalid"
-  project$internals$labelled <- NA
-  project$internals$timezone <- "Invalid_Zone"
+  project$settings$sync_frequency <- "invalid"
+  project$settings$labelled <- NA
+  project$redcap$timezone <- "Invalid_Zone"
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))
   # Check that defaults were applied
-  expect_identical(result$internals$sync_frequency, "daily")
-  expect_true(result$internals$labelled)
-  expect_identical(result$internals$timezone, Sys.timezone())
+  expect_identical(result$settings$sync_frequency, "daily")
+  expect_true(result$settings$labelled)
+  expect_identical(result$redcap$timezone, Sys.timezone())
 })
 test_that("repair_setup_project repairs invalid batch sizes", {
   project <- mock_test_project()$.internal
   # Set invalid batch sizes
-  project$internals$batch_size_download <- 0L
-  project$internals$batch_size_upload <- NA
+  project$settings$batch_size_download <- 0L
+  project$settings$batch_size_upload <- NA
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))
   # Check that defaults were applied
-  expect_identical(result$internals$batch_size_download, 2000L)
-  expect_identical(result$internals$batch_size_upload, 500L)
+  expect_identical(result$settings$batch_size_download, 2000L)
+  expect_identical(result$settings$batch_size_upload, 500L)
 })
 test_that("repair_setup_project repairs invalid logical fields", {
   project <- mock_test_project()$.internal
   # Set invalid logical fields
-  project$internals$get_files <- NA
-  project$internals$get_file_repository <- "yes"
-  project$internals$entire_log <- 1L
+  project$settings$get_files <- NA
+  project$settings$get_file_repository <- "yes"
+  project$settings$get_entire_log <- 1L
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))
   # Check that defaults were applied
-  expect_false(result$internals$get_files)
-  expect_false(result$internals$get_file_repository)
-  expect_false(result$internals$entire_log)
+  expect_false(result$settings$get_files)
+  expect_false(result$settings$get_file_repository)
+  expect_false(result$settings$get_entire_log)
 })
 test_that("repair_setup_project repairs invalid get_type", {
   project <- mock_test_project()$.internal
-  project$internals$get_type <- "invalid_type"
+  project$settings$get_type <- "invalid_type"
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))
-  expect_identical(result$internals$get_type, "identified")
+  expect_identical(result$settings$get_type, "identified")
 })
 test_that("repair_setup_project handles character vector fields", {
   project <- mock_test_project()$.internal
   # Set valid character vectors
-  project$internals$records <- c("1", "2", "3")
-  project$internals$fields <- c("field1", "field2")
-  project$internals$forms <- c("form1", "form2")
+  project$settings$records <- c("1", "2", "3")
+  project$settings$fields <- c("field1", "field2")
+  project$settings$forms <- c("form1", "form2")
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))
-  expect_identical(result$internals$records, c("1", "2", "3"))
-  expect_identical(result$internals$fields, c("field1", "field2"))
-  expect_identical(result$internals$forms, c("form1", "form2"))
+  expect_identical(result$settings$records, c("1", "2", "3"))
+  expect_identical(result$settings$fields, c("field1", "field2"))
+  expect_identical(result$settings$forms, c("form1", "form2"))
 })
 test_that("repair_setup_project repairs invalid character vectors", {
   project <- mock_test_project()$.internal
   # Set invalid character vectors (wrong type or length)
-  project$internals$records <- 123L
-  project$internals$fields <- TRUE
-  project$internals$forms <- NA
+  project$settings$records <- 123L
+  project$settings$fields <- TRUE
+  project$settings$forms <- NA
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))
   # Check that defaults (NA) were applied
-  expect_true(is.na(result$internals$records))
-  expect_true(is.na(result$internals$fields))
-  expect_true(is.na(result$internals$forms))
+  expect_true(is.na(result$settings$records))
+  expect_true(is.na(result$settings$fields))
+  expect_true(is.na(result$settings$forms))
 })
-test_that("repair_setup_project repairs invalid days_of_log", {
+test_that("repair_setup_project repairs invalid log_days", {
   project <- mock_test_project()$.internal
-  project$internals$days_of_log <- 0L
+  project$settings$log_days <- 0L
   result <- repair_setup_project(project)
   expect_true(test_setup_project(result))
-  expect_identical(result$internals$days_of_log, 10L)
+  expect_identical(result$settings$log_days, 10L)
 })

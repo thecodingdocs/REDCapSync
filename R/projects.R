@@ -43,24 +43,36 @@ projects <- R6::R6Class(
   "REDCapSyncProjects",
   active = list(
     df = function() {
-      get_projects()
+      private$project_df <- get_projects()
+      private$n_projects <- nrow(private$project_df)
+      private$project_df
     },
     n = function() {
-      nrow(get_projects())
+      private$project_df <- get_projects()
+      private$n_projects <- nrow(private$project_df)
+      private$n_projects
     },
     test_project_names = function() {
       .test_project_names
     }
   ),
   public = list(
+    initialize = function() {
+      # private$project_df <- get_projects()
+      # private$n_projects <- nrow(private$project_df)
+      invisible(self)
+    },
     print = function() {
-      x <- get_projects()
-      number <- nrow(x)
+      private$project_df <- get_projects()
+      private$n_projects <- nrow(private$project_df)
+      private$project_df
       cli_h1("REDCapSync")
-      cli_text("{number} REDCap Projects!")
+      cli_text("{private$n_projects} REDCap Projects!")
       if (number > 0L) {
-        number_due <- x$project_name |> lapply(due_for_sync) |> unlist()
-        cli_text("{number} due for sync!")
+        number_due <- private$project_df$project_name |>
+          lapply(due_for_sync) |>
+          unlist()
+        cli_text("{number_due} due for sync!")
       }
       invisible(self)
     },
@@ -150,6 +162,10 @@ projects <- R6::R6Class(
            hard_check = hard_check,
            hard_reset = hard_reset)
     }
+  ),
+  private = list(
+    project_df = NULL,
+    n_projects = NULL
   ),
   cloneable = FALSE
 )$new()

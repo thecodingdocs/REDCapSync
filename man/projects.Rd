@@ -5,7 +5,7 @@
 \alias{projects}
 \title{Manage REDCapSync projects}
 \format{
-An object of class \code{REDCapSyncProjects} (inherits from \code{R6}) of length 13.
+An object of class \code{REDCapSyncProjects} (inherits from \code{R6}) of length 12.
 }
 \usage{
 projects

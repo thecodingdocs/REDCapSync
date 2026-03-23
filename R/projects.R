@@ -41,25 +41,13 @@
 #' @export
 projects <- R6::R6Class(
   "REDCapSyncProjects",
-  active = list(
-    df = function() {
-      self$refresh()
-      private$project_df
-    },
-    n = function() {
-      self$refresh()
-      private$n_projects
-    },
-    test_project_names = function() {
-      .test_project_names
-    }
-  ),
   public = list(
     initialize = function() {
       invisible(self)
     },
     print = function() {
-      self$refresh()
+      private$project_df <- get_projects()
+      private$n_projects <- nrow(private$project_df)
       cli_h1("REDCapSync")
       cli_text("{private$n_projects} REDCap Projects!")
       if (private$n_projects > 0L) {
@@ -69,6 +57,19 @@ projects <- R6::R6Class(
         cli_text("{number_due} due for sync!")
       }
       invisible(self)
+    },
+    df = function() {
+      private$project_df <- get_projects()
+      private$n_projects <- nrow(private$project_df)
+      private$project_df
+    },
+    n = function() {
+      private$project_df <- get_projects()
+      private$n_projects <- nrow(private$project_df)
+      private$n_projects
+    },
+    test_project_names = function() {
+      .test_project_names
     },
     load = function(project_name) {
       load_project(project_name)
@@ -155,10 +156,6 @@ projects <- R6::R6Class(
            save_datasets = save_datasets,
            hard_check = hard_check,
            hard_reset = hard_reset)
-    },
-    refresh = function() {
-      private$project_df <- get_projects()
-      private$n_projects <- nrow(private$project_df)
     }
   ),
   private = list(

@@ -17,7 +17,7 @@ projects
 ## Format
 
 An object of class `REDCapSyncProjects` (inherits from `R6`) of length
-11.
+12.
 
 ## Value
 

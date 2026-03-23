@@ -43,13 +43,11 @@ projects <- R6::R6Class(
   "REDCapSyncProjects",
   active = list(
     df = function() {
-      private$project_df <- get_projects()
-      private$n_projects <- nrow(private$project_df)
+      self$refresh()
       private$project_df
     },
     n = function() {
-      private$project_df <- get_projects()
-      private$n_projects <- nrow(private$project_df)
+      self$refresh()
       private$n_projects
     },
     test_project_names = function() {
@@ -61,9 +59,7 @@ projects <- R6::R6Class(
       invisible(self)
     },
     print = function() {
-      private$project_df <- get_projects()
-      private$n_projects <- nrow(private$project_df)
-      private$project_df
+      self$refresh()
       cli_h1("REDCapSync")
       cli_text("{private$n_projects} REDCap Projects!")
       if (private$n_projects > 0L) {
@@ -163,7 +159,11 @@ projects <- R6::R6Class(
   ),
   private = list(
     project_df = NULL,
-    n_projects = NULL
+    n_projects = NULL,
+    refresh = function() {
+      private$project_df <- get_projects()
+      private$n_projects <- nrow(private$project_df)
+    }
   ),
   cloneable = FALSE
 )$new()

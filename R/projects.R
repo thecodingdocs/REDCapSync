@@ -58,8 +58,6 @@ projects <- R6::R6Class(
   ),
   public = list(
     initialize = function() {
-      # private$project_df <- get_projects()
-      # private$n_projects <- nrow(private$project_df)
       invisible(self)
     },
     print = function() {
@@ -68,7 +66,7 @@ projects <- R6::R6Class(
       private$project_df
       cli_h1("REDCapSync")
       cli_text("{private$n_projects} REDCap Projects!")
-      if (number > 0L) {
+      if (private$n_projects > 0L) {
         number_due <- private$project_df$project_name |>
           lapply(due_for_sync) |>
           unlist()

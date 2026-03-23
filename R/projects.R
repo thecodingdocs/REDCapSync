@@ -155,15 +155,15 @@ projects <- R6::R6Class(
            save_datasets = save_datasets,
            hard_check = hard_check,
            hard_reset = hard_reset)
-    }
-  ),
-  private = list(
-    project_df = NULL,
-    n_projects = NULL,
+    },
     refresh = function() {
       private$project_df <- get_projects()
       private$n_projects <- nrow(private$project_df)
     }
+  ),
+  private = list(
+    project_df = NULL,
+    n_projects = NULL
   ),
   cloneable = FALSE
 )$new()

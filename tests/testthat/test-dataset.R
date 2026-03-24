@@ -77,11 +77,13 @@ test_that("annotate_records works!", {
 test_that("annotate_users works!", {
   data_list <- mock_test_project()$.internal
   data_list$redcap$users <- data_list$redcap$users |>
-    bind_rows(data.frame(username = "person_not_in_log"))
+    bind_rows(data.frame(username = "person_not_in_log",
+                         stringsAsFactors = FALSE))
   data_list$redcap$log <- data_list$redcap$log |>
     bind_rows(data.frame(username = "person_not_in_users",
                          record = "40",
-                         timestamp = as.character(Sys.time())))
+                         timestamp = as.character(Sys.time()),
+                         stringsAsFactors = FALSE))
   users_default <- annotate_users(data_list)
   users_drop_blank <- annotate_users(data_list, drop_blanks = TRUE)
   expect_data_frame(users_default, nrows = 3L)
@@ -278,7 +280,7 @@ test_that("filter_data_list works!", {
     filter_field = "var_branching",
     filter_choices = "Yes"
   )
-  expect_true(nrow(project$data$other) > nrow(new_data$other))
+  expect_gt(nrow(project$data$other), nrow(new_data$other))
   expect_all_true(new_data$other$var_branching == "Yes")
 })
 # flatten_redcap (Internal)

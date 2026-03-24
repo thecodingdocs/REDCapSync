@@ -179,9 +179,7 @@ is_named_df_list <- function(x, strict = FALSE) {
   is_named_list(x) && is_df_list(x, strict = strict)
 }
 #' @noRd
-is_named_list <- function(x,
-                          silent = TRUE,
-                          recursive = FALSE) {
+is_named_list <- function(x, recursive = FALSE) {
   if (!is.list(x)) {
     return(FALSE)
   }
@@ -194,8 +192,6 @@ is_named_list <- function(x,
       element <- x[[n]]
       if (is.list(element)) {
         named_all <- named_all && is_named_list(element)
-        if (!silent && !named_all)
-          message("'", n, "' is not named")
       }
     }
   }

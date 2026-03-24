@@ -94,15 +94,13 @@ sync_project <- function(project,
   }
   # ?add_default_fields
   if (save_to_dir && !is.null(project$dir_path)) {
-    if (is_something(project$data)) {
-      if (project$settings$get_files) {
-        get_redcap_files(
-          # would want track internally?
-          project,
-          original_file_names = project$settings$original_file_names,
-          overwrite = TRUE
-        ) # account for needed overwrites from new records
-      }
+    if (is_something(project$data) && project$settings$get_files) {
+      get_redcap_files(
+        # would want track internally?
+        project,
+        original_file_names = project$settings$original_file_names,
+        overwrite = TRUE
+      ) # account for needed overwrites from new records
     }
     if (project$settings$get_file_repository) {
       # get redcap file repo

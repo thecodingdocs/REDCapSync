@@ -208,7 +208,9 @@ test_that("is_valid_keyring works!", {
     has_keyring_pkg = function() TRUE,
     has_keyring_support = function() TRUE,
     keyring_is_locked = function(keyring) FALSE,
-    keyring_list = function() data.frame(keyring = "existing_keyring")
+    keyring_list = function() {
+      data.frame(keyring = "existing_keyring", stringsAsFactors = FALSE)
+    }
   )
   expect_false(is_valid_keyring(keyring = "nonexistent_keyring"))
   # All good
@@ -216,7 +218,9 @@ test_that("is_valid_keyring works!", {
     has_keyring_pkg = function() TRUE,
     has_keyring_support = function() TRUE,
     keyring_is_locked = function(keyring) FALSE,
-    keyring_list = function() data.frame(keyring = "test_keyring")
+    keyring_list = function() {
+      data.frame(keyring = "test_keyring", stringsAsFactors = FALSE)
+    }
   )
   expect_true(is_valid_keyring(keyring = "test_keyring"))
 })

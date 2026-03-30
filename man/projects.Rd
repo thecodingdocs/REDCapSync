@@ -5,13 +5,13 @@
 \alias{projects}
 \title{Manage REDCapSync projects}
 \format{
-An object of class \code{REDCapSyncProjects} (inherits from \code{R6}) of length 12.
+An object of class \code{list} of length 10.
 }
 \usage{
 projects
 }
 \value{
-R6 object that can used be to access project objects
+list of functions used as single entry into REDCapSync package
 }
 \description{
 \code{projects} is the central interface for managing REDCap projects in

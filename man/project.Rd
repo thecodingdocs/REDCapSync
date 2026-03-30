@@ -21,7 +21,6 @@ project <- load_project("TEST_CLASSIC")
 \seealso{
 \link{setup_project} for initializing the \code{project} object.'
 }
-\keyword{internal}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{

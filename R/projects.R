@@ -37,127 +37,118 @@
 #' @family Cache Functions
 #' @keywords Cache
 #' @seealso \code{vignette("Cache", package = "REDCapSync")}
-#' @returns R6 object that can used be to access project objects
+#' @returns list of functions used as single entry into REDCapSync package
 #' @export
-projects <- R6::R6Class(
-  "REDCapSyncProjects",
-  public = list(
-    initialize = function() {
-      invisible(self)
-    },
-    print = function() {
-      project_df <- get_projects()
-      n_projects <- nrow(project_df)
-      cli_h1("REDCapSync")
-      cli_text("{n_projects} REDCap Projects!")
-      if (n_projects > 0L) {
-        number_due <- project_df$project_name |>
-          lapply(due_for_sync) |>
-          unlist() |>
-          which() |>
-          length()
-        cli_text("{number_due} due for sync!")
-      }
-      invisible(self)
-    },
-    df = function() {
-      get_projects()
-    },
-    n = function() {
-      nrow(get_projects())
-    },
-    test_project_names = function() {
-      .test_project_names
-    },
-    load = function(project_name) {
-      load_project(project_name)
-    },
-    setup = function(project_name,
-                     dir_path,
-                     redcap_uri,
-                     token_name = paste0("REDCAPSYNC_", project_name),
-                     sync_frequency = "daily",
-                     labelled = TRUE,
-                     hard_reset = FALSE,
-                     get_type = "identified",
-                     records = NA,
-                     fields = NA,
-                     forms = NA,
-                     events = NA,
-                     filter_logic = NA,
-                     get_users = TRUE,
-                     get_data = TRUE,
-                     batch_size_download = 1000L,
-                     batch_size_upload = 500L,
-                     get_entire_log = FALSE,
-                     log_days = 10L,
-                     log_drop_details = FALSE,
-                     log_drop_exports = FALSE,
-                     timezone = Sys.timezone(),
-                     get_files = FALSE,
-                     get_file_repository = FALSE,
-                     original_file_names = FALSE,
-                     add_default_datasets = TRUE) {
-      args <- list(
-        project_name = project_name,
-        token_name = token_name,
-        sync_frequency = sync_frequency,
-        labelled = labelled,
-        hard_reset = hard_reset,
-        get_type = get_type,
-        records = records,
-        fields = fields,
-        forms = forms,
-        events = events,
-        filter_logic = filter_logic,
-        get_users = get_users,
-        get_data = get_data,
-        batch_size_download = batch_size_download,
-        batch_size_upload = batch_size_upload,
-        get_entire_log = get_entire_log,
-        log_days = log_days,
-        log_drop_details = log_drop_details,
-        log_drop_exports = log_drop_exports,
-        timezone = timezone,
-        get_files = get_files,
-        get_file_repository = get_file_repository,
-        original_file_names = original_file_names,
-        add_default_datasets = add_default_datasets
-      )
-      if (!missing(dir_path)) {
-        args$dir_path <- dir_path
-      }
-      if (!missing(redcap_uri)) {
-        args$redcap_uri <- redcap_uri
-      }
-      do.call(setup_project, args)
-    },
-    test_tokens = function(offline = config$offline()) {
-      if (offline) {
-        token_check()
-      }
-      # loop now
-    },
-    remove = function(project_names) {
-      cache_clear(project_names = project_names)
-      invisible(self)
-    },
-    remove_all = function() {
-      cache_clear()
-      invisible(self)
-    },
-    sync = function(project_names = NULL,
-                    save_datasets = TRUE,
-                    hard_check = FALSE,
-                    hard_reset = FALSE) {
-      sync(project_names = project_names,
-           save_datasets = save_datasets,
-           hard_check = hard_check,
-           hard_reset = hard_reset)
+projects <- list(
+  print = function() {
+    project_df <- get_projects()
+    n_projects <- nrow(project_df)
+    cli_h1("REDCapSync")
+    cli_text("{n_projects} REDCap Projects!")
+    if (n_projects > 0L) {
+      number_due <- project_df$project_name |>
+        lapply(due_for_sync) |>
+        unlist() |>
+        which() |>
+        length()
+      cli_text("{number_due} due for sync!")
     }
-  ),
-  cloneable = FALSE
-)$new()
+    invisible()
+  },
+  df = function() {
+    get_projects()
+  },
+  n = function() {
+    nrow(get_projects())
+  },
+  test_project_names = function() {
+    .test_project_names
+  },
+  load = function(project_name) {
+    load_project(project_name)
+  },
+  setup = function(project_name,
+                   dir_path,
+                   redcap_uri,
+                   token_name = paste0("REDCAPSYNC_", project_name),
+                   sync_frequency = "daily",
+                   labelled = TRUE,
+                   hard_reset = FALSE,
+                   get_type = "identified",
+                   records = NA,
+                   fields = NA,
+                   forms = NA,
+                   events = NA,
+                   filter_logic = NA,
+                   get_users = TRUE,
+                   get_data = TRUE,
+                   batch_size_download = 1000L,
+                   batch_size_upload = 500L,
+                   get_entire_log = FALSE,
+                   log_days = 10L,
+                   log_drop_details = FALSE,
+                   log_drop_exports = FALSE,
+                   timezone = Sys.timezone(),
+                   get_files = FALSE,
+                   get_file_repository = FALSE,
+                   original_file_names = FALSE,
+                   add_default_datasets = TRUE) {
+    args <- list(
+      project_name = project_name,
+      token_name = token_name,
+      sync_frequency = sync_frequency,
+      labelled = labelled,
+      hard_reset = hard_reset,
+      get_type = get_type,
+      records = records,
+      fields = fields,
+      forms = forms,
+      events = events,
+      filter_logic = filter_logic,
+      get_users = get_users,
+      get_data = get_data,
+      batch_size_download = batch_size_download,
+      batch_size_upload = batch_size_upload,
+      get_entire_log = get_entire_log,
+      log_days = log_days,
+      log_drop_details = log_drop_details,
+      log_drop_exports = log_drop_exports,
+      timezone = timezone,
+      get_files = get_files,
+      get_file_repository = get_file_repository,
+      original_file_names = original_file_names,
+      add_default_datasets = add_default_datasets
+    )
+    if (!missing(dir_path)) {
+      args$dir_path <- dir_path
+    }
+    if (!missing(redcap_uri)) {
+      args$redcap_uri <- redcap_uri
+    }
+    do.call(setup_project, args)
+  },
+  test_tokens = function(offline = config$offline()) {
+    if (offline) {
+      token_check()
+    }
+    # loop now
+  },
+  remove = function(project_names) {
+    cache_clear(project_names = project_names)
+  },
+  remove_all = function() {
+    cache_clear()
+  },
+  sync = function(project_names = NULL,
+                  save_datasets = TRUE,
+                  hard_check = FALSE,
+                  hard_reset = FALSE) {
+    sync(project_names = project_names,
+         save_datasets = save_datasets,
+         hard_check = hard_check,
+         hard_reset = hard_reset)
+  }
+)
 #' @noRd
 get_projects <- function() {
   does_exist <- FALSE

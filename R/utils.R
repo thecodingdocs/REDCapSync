@@ -108,38 +108,26 @@ process_df_list <- function(list,
 }
 #' @noRd
 is_something <- function(thing, row_length = 0L) {
-  out <- FALSE
-  if (is.function(thing)) {
+  if(is.null(thing)) {
+    return(FALSE)
+  }
+  if (is.data.frame(thing)) {
+    return(nrow(thing) > row_length)
+  }
+  the_length <- length(thing)
+  if (the_length == 0L) {
+    return(FALSE)
+  }
+  if (the_length > 1L || is.list(thing)) {
     return(TRUE)
   }
-  if (!is.null(thing)) {
-    if (is.data.frame(thing)) {
-      if (nrow(thing) > row_length) {
-        out <- TRUE
-      }
-    } else {
-      if (length(thing) > 0L) {
-        if (is.list(thing)) {
-          out <- TRUE
-        } else {
-          if (length(thing) == 1L) {
-            if (!is.na(thing)) {
-              if (is.character(thing)) {
-                if (thing != "") {
-                  out <- TRUE
-                }
-              } else {
-                out <- TRUE
-              }
-            }
-          } else {
-            out <- TRUE
-          }
-        }
-      }
-    }
+  if (is.na(thing)) {
+    return(FALSE)
   }
-  out
+  if (is.character(thing)) {
+    return(nzchar(thing))
+  }
+  TRUE
 }
 #' @noRd
 sanitize_path <- function(path) {

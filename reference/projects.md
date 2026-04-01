@@ -16,12 +16,11 @@ projects
 
 ## Format
 
-An object of class `REDCapSyncProjects` (inherits from `R6`) of length
-12.
+An object of class `list` of length 10.
 
 ## Value
 
-R6 object that can used be to access project objects
+list of functions used as single entry into REDCapSync package
 
 ## Details
 

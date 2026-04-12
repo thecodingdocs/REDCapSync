@@ -6,7 +6,7 @@
 #' an existing project, use [load_project()].
 #' @param dataset_name Character. The name of the configured dataset from which
 #' to generate the dataset. *If you provide `dataset_name` all other parameters
-#' are inherited according to what was set with `add_project_dataset`.
+#' are inherited according to what was set with `add_dataset`.
 #' @param transformation_type Character scalar. How to transform data for the
 #' dataset. Default is "default". Other options are "none", "flat",
 #' "merge_non_repeating". "default" first merges non-repeating and if there are
@@ -59,8 +59,8 @@
 #' the dataset. Default is `TRUE`.
 #' @param annotate_from_log Logical. If `TRUE`, the metadata, users, and records
 #' will be annotated using the log. Default is `TRUE`.
-#' @param internal_use A logical flag (`TRUE` or `FALSE`). If `TRUE`, then will
-#' return data_list meant for internal use. Defaults to `FALSE`.
+#' @param include_comments Logical. If `TRUE`, the comments will be included.
+#' Default is `TRUE`.
 #' @param hard_reset Logical. If `TRUE`, overwrite existing dataset files
 #' with the same name. Default is `FALSE`.
 #' @param with_links Optional logical (TRUE/FALSE) for including links in Excel
@@ -73,7 +73,7 @@
 #' saved. Default is the `output` folder within the database directory.
 #' @param file_name Character. The base name of the file where the dataset will
 #' be saved. Default is `<project_name>_<dataset_name>`.
-#' @param envir environment variable
+#' @param envir environment variable such as [globalenv()]
 #' @param form string of raw REDCap form name, such as "survey_one".
 #' @param link_type Character. Type of REDCap URL to retrieve. Choose one of
 #' "base", "home", "record_home", "records_dashboard", "api",
@@ -84,11 +84,11 @@
 #' @param record character of record
 #' @param page character of page (instrument/form)
 #' @param instance character of instance
-#' @param save_datasets Logical (TRUE/FALSE). If TRUE, saves datasets to
-#' directory.
 #' @param save_to_dir Logical (TRUE/FALSE). If TRUE, saves the updated data in
 #' the project object to the directory at `dir_path`. Ignored when `dir_path` is
 #'  `NULL`. Default is `TRUE`.
+#' @param save_datasets Logical (TRUE/FALSE). If TRUE, saves the datasets
+#' that were previously added during a sync. Default is `TRUE`.
 #' @param hard_check Will check REDCap even if not due (see `sync_frequency`
 #' parameter from `setup_project()`)
 #' @param type Character. The metadata component to request. One of "fields",
@@ -125,7 +125,7 @@
 #' project object for the user
 #' @name project
 #' @rdname project
-#' @keywords internal
+#' @export
 REDCapSyncProject <- R6Class(
   "REDCapSyncProject",
   #' @description
@@ -280,6 +280,7 @@ REDCapSyncProject <- R6Class(
                            include_users = TRUE,
                            include_log = FALSE,
                            annotate_from_log = TRUE,
+                           include_comments = TRUE,
                            with_links = TRUE,
                            separate = FALSE,
                            use_csv = FALSE,
@@ -310,6 +311,7 @@ REDCapSyncProject <- R6Class(
         include_users = include_users,
         include_log = include_log,
         annotate_from_log = annotate_from_log,
+        include_comments = include_comments,
         with_links = with_links,
         separate = separate,
         use_csv = use_csv,
@@ -317,6 +319,15 @@ REDCapSyncProject <- R6Class(
         file_name = file_name,
         hard_reset = hard_reset
       )
+      invisible(self)
+    },
+    #' @description  Clear all project datasets
+    load_dataset = function(dataset_name,
+                            envir = NULL) {
+      dataset_names <- names(private$project$datasets)
+      assert_choice(dataset_name, dataset_names, null.ok = FALSE)
+      dataset <- REDCapSyncDataset$new(project = private$project,
+                                       dataset_name = dataset_name)
       invisible(self)
     },
     #' @description  Clear all project datasets
@@ -350,49 +361,57 @@ REDCapSyncProject <- R6Class(
                                 include_records = TRUE,
                                 include_users = TRUE,
                                 include_log = FALSE,
-                                annotate_from_log = TRUE) {
+                                annotate_from_log = TRUE,
+                                include_comments = FALSE) {
       assert_environment(envir, null.ok = TRUE)
       provided_dataset_name <- !missing(dataset_name)
+      # if(dataset_name %in% names(project$datasets)){
+      #   cli_abort("You already have a dataset named {dataset_name}")
+      # }
       if (provided_dataset_name) {
-        dataset_names <- names(private$project$datasets)
-        assert_choice(dataset_name, dataset_names, null.ok = FALSE)
-        if (!dataset_name %in% names(private$project$datasets)) {
-          stop(dataset_name,
-               " is not included in the current project datasets")
+        if(dataset_name %in% names(private$project$datasets)) {
+          cli_alert_warning("{dataset_name} is already a defined dataset")
+          cli_alert_info("It will be loaded... other paramers ignored")
         }
-        project_dataset <- generate_project_dataset(project = private$project,
-                                                    dataset_name = dataset_name)
-      } else {
-        project_dataset <- generate_project_dataset(
-          project = private$project,
-          transformation_type = transformation_type,
-          merge_form_name = merge_form_name,
-          filter_field = filter_field,
-          filter_choices = filter_choices,
-          filter_list = filter_list,
-          filter_strict = filter_strict,
-          field_names = field_names,
-          form_names = form_names,
-          exclude_identifiers = exclude_identifiers,
-          exclude_free_text = exclude_free_text,
-          date_handling = date_handling,
-          labelled = labelled,
-          clean = clean,
-          drop_blanks = drop_blanks,
-          drop_missing_codes = drop_missing_codes,
-          drop_others = drop_others,
-          include_metadata = include_metadata,
-          include_users = include_users,
-          include_records = include_records,
-          include_log = include_log,
-          annotate_from_log = annotate_from_log,
-          internal_use = FALSE
-        )
+      } else{
+        dataset_name <- "custom"
+        i <- 0
+        while (dataset_name %in% names(private$project$datasets)) {
+          i <- i + 1
+          dataset_name <- paste0("custom", i)
+        }
+        cli_alert_warning("`dataset_name` not provided: Using '{dataset_name}'")
       }
+      dataset <- REDCapSyncDataset$new(
+        project = private$project,
+        dataset_name = dataset_name,
+        transformation_type = transformation_type,
+        merge_form_name = merge_form_name,
+        filter_field = filter_field,
+        filter_choices = filter_choices,
+        filter_list = filter_list,
+        filter_strict = filter_strict,
+        field_names = field_names,
+        form_names = form_names,
+        exclude_identifiers = exclude_identifiers,
+        exclude_free_text = exclude_free_text,
+        date_handling = date_handling,
+        labelled = labelled,
+        clean = clean,
+        drop_blanks = drop_blanks,
+        drop_missing_codes = drop_missing_codes,
+        drop_others = drop_others,
+        include_metadata = include_metadata,
+        include_users = include_users,
+        include_records = include_records,
+        include_log = include_log,
+        annotate_from_log = annotate_from_log,
+        include_comments = include_comments
+      )
       if (!is.null(envir)) {
-        list2env(project_dataset, envir = envir)
+        list2env(dataset, envir = envir)
       }
-      invisible(project_dataset)
+      invisible(dataset)
     },
     #' @description  Add a new dataset entry
     add_field = function(field_name,

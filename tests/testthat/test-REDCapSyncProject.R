@@ -83,8 +83,15 @@ test_that("REDCapSyncProject$add_dataset and remove_datasets works!", {
   )
   dataset_names <- names(project_r6$.internal$datasets)
   expect_in("new_summary", dataset_names)
-  x <- project_r6$generate_dataset("new_summary")
-  expect_list(x)
+  dataset <- project_r6$generate_dataset("new_summary")
+  expect_r6_class(dataset, "REDCapSyncDataset")
+  expect_r6(
+    dataset,
+    classes = "REDCapSyncDataset",
+    private = names(REDCapSyncDataset$private_fields),
+    public = c(names(REDCapSyncDataset$public_methods)),
+    cloneable = FALSE
+  )
   project_r6$remove_datasets("REDCapSync")
   dataset_names <- names(project_r6$.internal$datasets)
   expect_false("REDCapSync" %in% dataset_names)
@@ -92,9 +99,9 @@ test_that("REDCapSyncProject$add_dataset and remove_datasets works!", {
   expect_message(project_r6$remove_datasets(), "Cleared project datasets")
   dataset_names <- names(project_r6$.internal$datasets)
   expect_length(dataset_names, 0L)
-  x <- project_r6$generate_dataset(filter_field = "var_branching",
-                                   filter_choices = "Yes")
-  expect_all_true(x$merged$var_branching == "Yes")
+  dataset <- project_r6$generate_dataset(filter_field = "var_branching",
+                                         filter_choices = "Yes")
+  expect_all_true(dataset$data$merged$var_branching == "Yes")
 })
 # REDCapSyncProject$generate_dataset (Exported)
 test_that("REDCapSyncProject$generate_dataset works!", {

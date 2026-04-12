@@ -49,6 +49,7 @@ users and log.}
 \item \href{#method-REDCapSyncProject-print}{\code{REDCapSyncProject$print()}}
 \item \href{#method-REDCapSyncProject-sync}{\code{REDCapSyncProject$sync()}}
 \item \href{#method-REDCapSyncProject-add_dataset}{\code{REDCapSyncProject$add_dataset()}}
+\item \href{#method-REDCapSyncProject-load_dataset}{\code{REDCapSyncProject$load_dataset()}}
 \item \href{#method-REDCapSyncProject-remove_datasets}{\code{REDCapSyncProject$remove_datasets()}}
 \item \href{#method-REDCapSyncProject-generate_dataset}{\code{REDCapSyncProject$generate_dataset()}}
 \item \href{#method-REDCapSyncProject-add_field}{\code{REDCapSyncProject$add_field()}}
@@ -114,8 +115,8 @@ changes. Sync is performed according to the \code{sync_frequency} set in
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{save_datasets}}{Logical (TRUE/FALSE). If TRUE, saves datasets to
-directory.}
+\item{\code{save_datasets}}{Logical (TRUE/FALSE). If TRUE, saves the datasets
+that were previously added during a sync. Default is \code{TRUE}.}
 
 \item{\code{save_to_dir}}{Logical (TRUE/FALSE). If TRUE, saves the updated data in
 the project object to the directory at \code{dir_path}. Ignored when \code{dir_path} is
@@ -159,6 +160,7 @@ Add a new dataset entry
   include_users = TRUE,
   include_log = FALSE,
   annotate_from_log = TRUE,
+  include_comments = TRUE,
   with_links = TRUE,
   separate = FALSE,
   use_csv = FALSE,
@@ -173,7 +175,7 @@ Add a new dataset entry
 \describe{
 \item{\code{dataset_name}}{Character. The name of the configured dataset from which
 to generate the dataset. *If you provide \code{dataset_name} all other parameters
-are inherited according to what was set with \code{add_project_dataset}.}
+are inherited according to what was set with \code{add_dataset}.}
 
 \item{\code{transformation_type}}{Character scalar. How to transform data for the
 dataset. Default is "default". Other options are "none", "flat",
@@ -248,6 +250,9 @@ the dataset. Default is \code{TRUE}.}
 \item{\code{annotate_from_log}}{Logical. If \code{TRUE}, the metadata, users, and records
 will be annotated using the log. Default is \code{TRUE}.}
 
+\item{\code{include_comments}}{Logical. If \code{TRUE}, the comments will be included.
+Default is \code{TRUE}.}
+
 \item{\code{with_links}}{Optional logical (TRUE/FALSE) for including links in Excel
 sheets. Default is \code{FALSE}.}
 
@@ -265,6 +270,27 @@ be saved. Default is \verb{<project_name>_<dataset_name>}.}
 
 \item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing dataset files
 with the same name. Default is \code{FALSE}.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSyncProject-load_dataset"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-load_dataset}{}}}
+\subsection{Method \code{load_dataset()}}{
+Clear all project datasets
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$load_dataset(dataset_name, envir = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{dataset_name}}{Character. The name of the configured dataset from which
+to generate the dataset. *If you provide \code{dataset_name} all other parameters
+are inherited according to what was set with \code{add_dataset}.}
+
+\item{\code{envir}}{environment variable such as \code{\link[=globalenv]{globalenv()}}}
 }
 \if{html}{\out{</div>}}
 }
@@ -315,7 +341,8 @@ Add a new dataset entry
   include_records = TRUE,
   include_users = TRUE,
   include_log = FALSE,
-  annotate_from_log = TRUE
+  annotate_from_log = TRUE,
+  include_comments = FALSE
 )}\if{html}{\out{</div>}}
 }
 
@@ -324,9 +351,9 @@ Add a new dataset entry
 \describe{
 \item{\code{dataset_name}}{Character. The name of the configured dataset from which
 to generate the dataset. *If you provide \code{dataset_name} all other parameters
-are inherited according to what was set with \code{add_project_dataset}.}
+are inherited according to what was set with \code{add_dataset}.}
 
-\item{\code{envir}}{environment variable}
+\item{\code{envir}}{environment variable such as \code{\link[=globalenv]{globalenv()}}}
 
 \item{\code{transformation_type}}{Character scalar. How to transform data for the
 dataset. Default is "default". Other options are "none", "flat",
@@ -400,6 +427,9 @@ the dataset. Default is \code{TRUE}.}
 
 \item{\code{annotate_from_log}}{Logical. If \code{TRUE}, the metadata, users, and records
 will be annotated using the log. Default is \code{TRUE}.}
+
+\item{\code{include_comments}}{Logical. If \code{TRUE}, the comments will be included.
+Default is \code{TRUE}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -509,7 +539,7 @@ save dataset to Excel
 \describe{
 \item{\code{dataset_name}}{Character. The name of the configured dataset from which
 to generate the dataset. *If you provide \code{dataset_name} all other parameters
-are inherited according to what was set with \code{add_project_dataset}.}
+are inherited according to what was set with \code{add_dataset}.}
 }
 \if{html}{\out{</div>}}
 }

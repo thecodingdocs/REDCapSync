@@ -1,10 +1,55 @@
 #' @noRd
 save_project_dataset <- function(project, dataset_name) {
   id_col <- project$metadata$id_col
-  dataset_list <- project$datasets[[dataset_name]]
-  data_list <- generate_project_dataset(project = project,
-                                        dataset_name = dataset_name,
-                                        internal_use = TRUE)
+  dataset_details <- project$datasets[[dataset_name]]
+  data_list <- load_project_dataset(project = project,
+                                    dataset_name = dataset_name)
+  records <- extract_project_records(data_list)[[id_col]]
+  # consider also saving as Rdata to lazy load
+  data_list <- save_project_data_list(data_list,
+                                      with_links = dataset_details$with_links,
+                                      separate = dataset_details$separate,
+                                      use_csv = dataset_details$use_csv,
+                                      dir_other = dataset_details$dir_other,
+                                      file_name = dataset_details$file_name)
+  dataset_details <- data_list$dataset_details # account potential for conflicts
+  last_save_time <- dataset_details$last_save_time
+  final_form_tab_names <- dataset_details$final_form_tab_names
+  project$datasets[[dataset_name]]$n_records <- dataset_details$n_records
+  project$datasets[[dataset_name]]$last_save_time <- last_save_time
+  project$datasets[[dataset_name]]$final_form_tab_names <- final_form_tab_names
+  row_new <- which(project$record_summary[[id_col]] %in% records)
+  project$record_summary[[dataset_name]][row_new] <- TRUE
+  project$record_summary$was_saved[row_new] <- TRUE
+  project$internals$last_dataset_save <- now_time()
+  invisible(project)
+}
+#' @noRd
+save_project_data_list <- function(data_list,
+                                   with_links = TRUE,
+                                   separate = FALSE,
+                                   use_csv = FALSE,
+                                   dir_other = NULL,
+                                   file_name = NULL) {
+  id_col <- data_list$metadata$id_col
+  dataset_details <- data_list$dataset_details
+  dataset_name <- dataset_details$dataset_name
+  file_extension <- ifelse(use_csv, ".csv", ".xlsx")
+  if (is.null(dir_other)) {
+    dir_path <- data_list$project_details$dir_path
+    dir_other <- file.path(dir_path, "output")
+  }
+  if (is.null(file_name)) {
+    project_name <- data_list$project_details$project_name
+    file_name <- paste0(project_name, "_", dataset_name)
+  }
+  file_path <- file.path(dir_other, paste0(file_name, file_extension))
+  dataset_details$with_links <- with_links
+  dataset_details$separate <- separate
+  dataset_details$use_csv <- use_csv
+  dataset_details$dir_other <- dir_other
+  dataset_details$file_name <- file_name
+  dataset_details$file_path <- file_path
   # add headers-------
   form_names <- names(data_list$data)
   header_df_list <- construct_header_list(data_list)
@@ -14,53 +59,38 @@ save_project_dataset <- function(project, dataset_name) {
     cols_start <- 1L
     header_df_list <- NULL
   }
-  records <- data_list$data[form_names] |>
-    lapply(function(form) {
-      form[[id_col]]
-    }) |>
-    unlist() |>
-    sort() |>
-    unique()
-  n_records <- length(records)
+  project <- NULL
+  project$metadata <- data_list$metadata
+  project$links <- data_list$links
   # track form names
-  data_list <- data_list_to_save(
-    data_list = data_list,
-    include_metadata = dataset_list$include_metadata,
-    include_users = dataset_list$include_users,
-    include_records = dataset_list$include_records,
-    include_log = dataset_list$include_log
-  )
+  data_list <- data_list_to_save(data_list)
   link_col_list <- list()
-  if (dataset_list$with_links) {
-    if (project$internals$project_type == "redcap") {
-      add_links <- which(names(data_list) %in% form_names)
-      if (length(add_links) > 0L) {
-        data_list[add_links] <- data_list[add_links] |>
-          lapply(function(form) {
-            add_redcap_links(form, project)
-          })
-        if (dataset_list$include_records) {
-          if ("records" %in% names(data_list)) {
-            data_list$records <- add_redcap_links(form = data_list$records,
-                                                  project = project)
-          }
+  if (dataset_details$with_links) {
+    add_links <- which(names(data_list) %in% form_names)
+    if (length(add_links) > 0L) {
+      data_list[add_links] <- data_list[add_links] |>
+        lapply(function(form) {
+          add_redcap_links(form, project)
+        })
+      if (dataset_details$include_records) {
+        if ("records" %in% names(data_list)) {
+          data_list$records <- add_redcap_links(form = data_list$records,
+                                                project = project)
         }
-        #check for conflicting name
-        link_col_list <- list("redcap_link")
-        names(link_col_list) <- id_col
       }
+      #check for conflicting name
+      link_col_list <- list("redcap_link")
+      names(link_col_list) <- id_col
     }
   }
   # save -----
   last_save_time <- now_time()
   final_form_tab_names <- rename_list_names_excel(list_names = names(data_list))
   names(final_form_tab_names) <- names(data_list)
-  last_dataset_save <- now_time()
-  dataset_details <- project$datasets[[dataset_name]]
-  dataset_details$n_records <- n_records
   dataset_details$last_save_time <- last_save_time
   dataset_details$final_form_tab_names <- final_form_tab_names
   dataset_details$raw_form_names <- form_names
+  retained_details <- dataset_details
   dataset_details$cols_start <- cols_start
   value <- dataset_details |>
     lapply(function(x_row) {
@@ -72,33 +102,27 @@ save_project_dataset <- function(project, dataset_name) {
     paramater = names(dataset_details),
     value = value
   )
-  if (dataset_list$use_csv) {
+  if (dataset_details$use_csv) {
     list_to_csv(
       input_list = data_list,
-      dir = dataset_list$dir_other,
-      file_name = dataset_list$file_name,
+      dir = dataset_details$dir_other,
+      file_name = dataset_details$file_name,
       overwrite = TRUE
     ) # account for links with CSV like new column
   } else {
     list_to_excel(
       input_list = data_list,
-      dir = dataset_list$dir_other,
-      separate = dataset_list$separate,
+      dir = dataset_details$dir_other,
+      separate = dataset_details$separate,
       link_col_list = link_col_list,
       key_cols_list = key_cols_list,
-      file_name = dataset_list$file_name,
+      file_name = dataset_details$file_name,
       header_df_list = header_df_list,
       overwrite = TRUE
     )
   }
-  project$datasets[[dataset_name]]$n_records <- n_records
-  project$datasets[[dataset_name]]$last_save_time <- last_save_time
-  project$datasets[[dataset_name]]$final_form_tab_names <- final_form_tab_names
-  row_new <- which(project$record_summary[[id_col]] %in% records)
-  project$record_summary[[dataset_name]][row_new] <- TRUE
-  project$record_summary$was_saved[row_new] <- TRUE
-  project$internals$last_dataset_save <- last_dataset_save
-  invisible(project)
+  data_list$dataset_details <- retained_details
+  invisible(data_list)
 }
 #' @noRd
 save_project_datasets <- function(project, hard_reset = FALSE) {
@@ -145,40 +169,20 @@ generate_project_dataset <- function(project,
                                      include_records = TRUE,
                                      include_log = FALSE,
                                      annotate_from_log = TRUE,
-                                     include_comments = FALSE,
-                                     internal_use = FALSE) {
-  assert_env_name(merge_form_name, max.chars = 31L)
-  #add more asserts
-  provided_dataset_name <- !missing(dataset_name)
-  if (provided_dataset_name) {
-    if (!dataset_name %in% names(project$datasets)) {
-      stop(dataset_name,
-           " is not included in the current project datasets")
-    }
-    dataset_list <- project$datasets[[dataset_name]]#warning about other params?
-    transformation_type <- dataset_list$transformation_type
-    merge_form_name <- dataset_list$merge_form_name
-    filter_list <- dataset_list$filter_list
-    filter_strict <- dataset_list$filter_strict
-    field_names <- dataset_list$field_names
-    form_names <- dataset_list$form_names
-    exclude_identifiers <- dataset_list$exclude_identifiers
-    exclude_free_text <- dataset_list$exclude_free_text
-    date_handling <- dataset_list$date_handling
-    labelled <- dataset_list$labelled
-    clean <- dataset_list$clean
-    drop_blanks <- dataset_list$drop_blanks
-    drop_missing_codes <- dataset_list$drop_missing_codes
-    drop_others <- dataset_list$drop_others
-    include_metadata <- dataset_list$include_metadata
-    include_records <- dataset_list$include_records
-    include_users <- dataset_list$include_users
-    include_log <- dataset_list$include_log
-    annotate_from_log <- dataset_list$annotate_from_log
+                                     include_comments = FALSE) {
+  assert_setup_project(project)
+  id_col <- project$metadata$id_col
+  if (missing(dataset_name)) {
+    cli_abort("You must name generated datasets with 'dataset_name'")
   }
+  assert_env_name(dataset_name, max.chars = 31L)
+  assert_env_name(merge_form_name, max.chars = 31L)
+  assert_choice(date_handling, choices = .date_handling_choices)
+  # add more asserts
   # function to do asserts here
   assert_choice(transformation_type, .tranformation_types)
   data_list <- NULL
+  # add new fields
   data_list$metadata <- project$metadata
   if (labelled != project$settings$labelled) {
     if (project$settings$labelled) {
@@ -265,7 +269,10 @@ generate_project_dataset <- function(project,
   }
   records <- extract_project_records(data_list)[[1L]]
   data_list$redcap <- project$redcap
-  data_list$records <- project$record_summary
+  record_sum <- project$record_summary
+  record_sum <- record_sum[which(record_sum[[id_col]] %in% records), ]
+  rownames(record_sum) <- NULL
+  data_list$records <- record_sum
   if (include_log) {
     if (data_list$redcap$has_log_access) {
       data_list$log <- extract_log(data_list = data_list, records = records)
@@ -299,19 +306,95 @@ generate_project_dataset <- function(project,
       include_users <- FALSE
     }
   }
+  # if (include_comments) {
+  #   data_list$comments
+  # }
   data_list$redcap <- NULL
-  data_list$datasets <- NULL
-  if (internal_use) {
-    return(invisible(data_list))
+  if (is.null(filter_list)) {
+    if (!is.null(filter_choices) && !is.null(filter_field)) {
+      filter_list <- list(filter_choices)
+      names(filter_list) <- filter_field
+    } else {
+      # warning
+    }
   }
-  to_save_list <- data_list_to_save(
-    data_list = data_list,
+  id_col <- project$metadata$id_col
+  # add headers-------
+  form_names <- names(data_list$data)
+  n_records <- length(records)
+  data_list$dataset_details <- list(
+    dataset_name = dataset_name,
+    transformation_type = transformation_type,
+    merge_form_name = merge_form_name,
+    filter_list = filter_list,
+    filter_strict = filter_strict,
+    field_names = field_names,
+    form_names = form_names,
+    exclude_identifiers = exclude_identifiers,
+    exclude_free_text = exclude_free_text,
+    date_handling = date_handling,
+    labelled = labelled,
+    clean = clean,
+    drop_blanks = drop_blanks,
+    drop_missing_codes = drop_missing_codes,
+    drop_others = drop_others,
     include_metadata = include_metadata,
-    include_users = include_users,
     include_records = include_records,
-    include_log = include_log
+    include_users = include_users,
+    include_log = include_log,
+    annotate_from_log = annotate_from_log,
+    include_comments = include_comments,
+    with_links = NULL,
+    separate = NULL,
+    use_csv = NULL,
+    dir_other = NULL,
+    file_name = NULL,
+    file_path = NULL,
+    n_records = n_records,
+    last_save_time = NULL,
+    final_form_tab_names = NULL
   )
-  invisible(to_save_list) # change to R6 and add save as method?
+  data_list$project_details <- list(
+    project_name = project$project_name,
+    dir_path = project$dir_path,
+    n_records = nrow(project$record_summary),
+    help = project$links$help
+  )
+  invisible(data_list)
+}
+#' @noRd
+load_project_dataset <- function(project, dataset_name) {
+  assert_setup_project(project)
+  assert_env_name(dataset_name, max.chars = 31L)
+  if (!dataset_name %in% names(project$datasets)) {
+    cli_abort("{dataset_name} is not included in the current project datasets")
+  } # can save to R_objects for faster retrieval
+  dataset_details <- project$datasets[[dataset_name]]#warning for other params?
+  data_list <- generate_project_dataset( # filter for adding new params
+    project = project,
+    dataset_name = dataset_name,
+    transformation_type = dataset_details$transformation_type, # verificaiton?
+    merge_form_name = dataset_details$merge_form_name,
+    filter_list = dataset_details$filter_list,
+    filter_strict = dataset_details$filter_strict,
+    field_names = dataset_details$field_names,
+    form_names = dataset_details$form_names,
+    exclude_identifiers = dataset_details$exclude_identifiers,
+    exclude_free_text = dataset_details$exclude_free_text,
+    date_handling = dataset_details$date_handling,
+    labelled = dataset_details$labelled,
+    clean = dataset_details$clean,
+    drop_blanks = dataset_details$drop_blanks,
+    drop_missing_codes = dataset_details$drop_missing_codes,
+    drop_others = dataset_details$drop_others,
+    include_metadata = dataset_details$include_metadata,
+    include_records = dataset_details$include_records,
+    include_users = dataset_details$include_users,
+    include_log = dataset_details$include_log,
+    annotate_from_log = dataset_details$annotate_from_log,
+    include_comments = dataset_details$include_comments
+  )
+  invisible(data_list)
 }
 #' @noRd
 add_project_dataset <- function(project,
@@ -337,6 +420,7 @@ add_project_dataset <- function(project,
                                 include_users = TRUE,
                                 include_log = FALSE,
                                 annotate_from_log = TRUE,
+                                include_comments = TRUE,
                                 with_links = TRUE,
                                 separate = FALSE,
                                 use_csv = FALSE,
@@ -347,7 +431,7 @@ add_project_dataset <- function(project,
   assert_env_name(dataset_name, max.chars = 31L)
   if (is.null(dir_other)) {
     dir_other <- file.path(project$dir_path, "output")
-  }
+  }# else warn will not work on different computer
   if (is.null(file_name)) {
     file_name <- paste0(project$project_name, "_", dataset_name)
   }
@@ -381,6 +465,7 @@ add_project_dataset <- function(project,
     include_users = include_users,
     include_log = include_log,
     annotate_from_log = annotate_from_log,
+    include_comments = include_comments,
     with_links = with_links,
     separate = separate,
     use_csv = use_csv,
@@ -1097,16 +1182,12 @@ clean_column_for_table <- function(field,
                                   "last_save_time",
                                   "final_form_tab_names")
 #' @noRd
-data_list_to_save <- function(data_list,
-                              include_metadata,
-                              include_users,
-                              include_records,
-                              include_log) {
+data_list_to_save <- function(data_list) {
   to_save_list <- NULL
   for (form_name in names(data_list$data)) {
     to_save_list[[form_name]] <- data_list$data[[form_name]]
   }
-  if (include_metadata) {
+  if (data_list$dataset_details$include_metadata) {
     metadata_form_names <- c("forms", "fields", "choices", "missing_codes")
     metadata_names <- data_list$metadata[metadata_form_names] |>
       process_df_list(silent = TRUE) |>
@@ -1121,7 +1202,7 @@ data_list_to_save <- function(data_list,
         data_list$metadata[[metadata_names[i]]]
     }
   }
-  if (include_users) {
+  if (data_list$dataset_details$include_users) {
     users_name <- "users"
     users_name_alt <- users_name
     if (any(users_name %in% names(data_list$data))) {
@@ -1132,7 +1213,7 @@ data_list_to_save <- function(data_list,
       to_save_list[[users_name_alt]] <- data_list$users
     }
   }
-  if (include_records) {
+  if (data_list$dataset_details$include_records) {
     records_name <- "records"
     records_name_alt <- records_name
     if (any(records_name %in% names(data_list$data))) {
@@ -1143,7 +1224,7 @@ data_list_to_save <- function(data_list,
       to_save_list[[records_name_alt]] <- data_list$records
     }
   }
-  if (include_log) {
+  if (data_list$dataset_details$include_log) {
     log_name <- "log"
     log_name_alt <- log_name
     if (any(log_name %in% names(data_list$data))) {
@@ -1152,6 +1233,17 @@ data_list_to_save <- function(data_list,
     }
     if ("log" %in% names(data_list)) {
       to_save_list[[log_name_alt]] <- data_list$log
+    }
+  }
+  if (data_list$dataset_details$include_comments) {
+    comments_name <- "comments"
+    comments_name_alt <- comments_name
+    if (any(comments_name %in% names(data_list$data))) {
+      comments_name_alt <- paste0("redcap_", comments_name)
+      #check for conflicts
+    }
+    if ("comments" %in% names(data_list)) {
+      to_save_list[[comments_name_alt]] <- data_list$comments
     }
   }
   to_save_list
@@ -1316,13 +1408,14 @@ get_dataset_records <- function(project, dataset_name) {
   if (missing(dataset_name)) {
     return(project$record_summary[[id_col]])
   }
-  dataset_list <- project$datasets[[dataset_name]]
+  dataset_details <- project$datasets[[dataset_name]]
   data_list <- generate_project_dataset(
     project = project,
-    transformation_type = dataset_list$transformation_type,
-    filter_list = dataset_list$filter_list,
+    dataset_name = dataset_name,
+    transformation_type = dataset_details$transformation_type,
+    filter_list = dataset_details$filter_list,
     filter_strict = FALSE,
-    form_names = dataset_list$form_names,
+    form_names = dataset_details$form_names,
     field_names = project$metadata$id_col,
     exclude_identifiers = FALSE,
     exclude_free_text = FALSE,
@@ -1332,20 +1425,9 @@ get_dataset_records <- function(project, dataset_name) {
     include_users = FALSE,
     include_log = FALSE,
     annotate_from_log = FALSE,
-    internal_use = TRUE
+    include_comments = FALSE
   )
-  records <- data_list$data |>
-    lapply(function(form) {
-      form[[id_col]]
-    }) |>
-    unlist() |>
-    sort() |>
-    unique()
-  record_rows <- which(project$record_summary[[id_col]] %in% records)
-  dataset_records <- project$record_summary[[id_col]][record_rows] |>
-    sort() |>
-    unique()
-  dataset_records
+  data_list$records[[id_col]]
 }
 #' @noRd
 dataset_records_due <- function(project, dataset_name) {
@@ -1354,19 +1436,18 @@ dataset_records_due <- function(project, dataset_name) {
     cli_alert_danger("{dataset_name} not included in current dataset_names!")
     return(FALSE)
   }
-  dataset_list <- project$datasets[[dataset_name]]
+  dataset_details <- project$datasets[[dataset_name]]
   id_col <- project$metadata$id_col
-  if (is.null(dataset_list$last_save_time)) {
+  if (is.null(dataset_details$last_save_time)) {
     return(TRUE)
   }
-  if (!file.exists(dataset_list$file_path) && !dataset_list$separate) {
+  if (!file.exists(dataset_details$file_path) && !dataset_details$separate) {
     # can't do this for separate = TRUE unless more code is written
     return(TRUE)
   }
   old_rec_rows <- which(project$record_summary[[dataset_name]])
-  old_records <- sort(project$record_summary[[id_col]][old_rec_rows])
-  records <- get_dataset_records(project = project,
-                                 dataset_name = dataset_name) |> sort()
+  old_records <- project$record_summary[[id_col]][old_rec_rows]
+  records <- get_dataset_records(project = project, dataset_name = dataset_name)
   if (!identical(records, old_records)) {
     return(TRUE)
   }
@@ -1376,7 +1457,7 @@ dataset_records_due <- function(project, dataset_name) {
   if (!all(relevant_records$was_saved)) {
     return(TRUE)
   }
-  if (any(relevant_records$last_api_call > dataset_list$last_save_time)) {
+  if (any(relevant_records$last_api_call > dataset_details$last_save_time)) {
     return(TRUE)
   }
   FALSE
@@ -1391,7 +1472,7 @@ check_datasets <- function(project, dataset_names) {
     cli_alert_wrap("No datasets. Use `add_project_dataset()`!")
   }
   # need_to_check <- any(project$record_summary$last_api_call >
-  # dataset_list$last_save_time)
+  # dataset_details$last_save_time)
   for (dataset_name in dataset_names) {
     test_dataset <- dataset_records_due(project = project,
                                         dataset_name = dataset_name)
@@ -1434,6 +1515,7 @@ add_default_datasets <- function(project,
     include_users = TRUE,
     include_log = FALSE,
     annotate_from_log = FALSE,
+    include_comments = TRUE,
     with_links = with_links,
     separate = TRUE,
     use_csv = use_csv,
@@ -1458,6 +1540,7 @@ add_default_datasets <- function(project,
     include_users = TRUE,
     include_log = FALSE,
     annotate_from_log = TRUE,
+    include_comments = TRUE,
     with_links = with_links,
     separate = FALSE,
     use_csv = use_csv,

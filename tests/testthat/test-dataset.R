@@ -287,35 +287,42 @@ test_that("filter_data_list works!", {
 test_that("flatten_redcap works!", {
 })
 # generate_project_dataset (Internal)
+# load_project_dataset (Internal)
 test_that("generate_project_dataset works!", {
   project <- mock_test_project()$.internal
-  expect_error(generate_project_dataset(project = project,
-                                        dataset_name = "non-existing"),
+  expect_error(load_project_dataset(project = project,
+                                    dataset_name = "non_existing"),
                regexp = "not included in the current project datasets")
-  project_summary <- generate_project_dataset(project = project,
-                                              dataset_name = "REDCapSync")
+  project_summary <- load_project_dataset(project = project,
+                                          dataset_name = "REDCapSync")
   expect_true(is_df_list(project_summary))
   project_summary <- generate_project_dataset(project = project,
+                                              dataset_name = "custom",
                                               include_metadata = TRUE,
                                               include_log = TRUE)
-  expect_contains(names(project_summary), "forms")
-  expect_contains(names(project_summary), "fields")
-  expect_contains(names(project_summary), "choices")
+  expect_contains(names(project_summary), "metadata")
+  expect_contains(names(project_summary$metadata), "forms")
+  expect_contains(names(project_summary$metadata), "fields")
+  expect_contains(names(project_summary$metadata), "choices")
   project_summary <- generate_project_dataset(project = project,
-                                              include_metadata = FALSE)
-  expect_false("forms" %in% names(project_summary))
-  expect_false("fields" %in% names(project_summary))
-  expect_false("choices" %in% names(project_summary))
+                                              dataset_name = "custom",
+                                              include_metadata = FALSE,
+                                              include_log = TRUE)
+  project_summary <- data_list_to_save(project_summary)
+  expect_false("metadata" %in% names(project_summary))
   project_summary <- generate_project_dataset(project = project,
-                                              dataset_name = "REDCapSync",
+                                              dataset_name = "custom",
                                               exclude_identifiers = FALSE)
+  project_summary <- data_list_to_save(project_summary)
   fields <- project$metadata$fields
   fields$field_name[which(fields$identifier == "y")]
   colnames(project_summary$merged)
   should_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1L]
   expect_identical(should_be_missing, "Unknown")
   project_summary <- generate_project_dataset(project = project,
+                                              dataset_name = "custom",
                                               drop_missing_codes = TRUE)
+  project_summary <- data_list_to_save(project_summary)
   should_not_be_missing <- project_summary$merged$var_text_datetime_ymd_hm[1L]
   expect_scalar_na(should_not_be_missing)
 })
@@ -345,16 +352,10 @@ test_that("get_dataset_records works!", {
   other <- project$data$other
   expect_true("test_branching_yes" %in% names(project$datasets))
   expect_true("test_branching_no" %in% names(project$datasets))
-  record_ids_yes <- other$record_id[which(other$var_branching == "Yes")] |>
-    sort()
-  record_ids_no <- other$record_id[which(other$var_branching == "No")] |>
-    sort()
-  get_sum_records_yes <- project |>
-    get_dataset_records("test_branching_yes") |>
-    sort()
-  get_sum_records_no <- project |>
-    get_dataset_records("test_branching_no") |>
-    sort()
+  record_ids_yes <- other$record_id[which(other$var_branching == "Yes")]
+  record_ids_no <- other$record_id[which(other$var_branching == "No")]
+  get_sum_records_yes <- project |> get_dataset_records("test_branching_yes")
+  get_sum_records_no <- project |> get_dataset_records("test_branching_no")
   expect_identical(record_ids_yes, get_sum_records_yes)
   expect_identical(record_ids_no, get_sum_records_no)
 })

@@ -23,7 +23,8 @@ test_that("labelled_to_raw_data_list and raw_to_labelled_data_list works!", {
 # labelled_to_raw_form (Internal)
 test_that("labelled_to_raw_form and raw_to_labelled_form works!", {
   project <- mock_test_project()$.internal
-  project_summary <- generate_project_dataset(project)
+  project_summary <- load_project_dataset(project, "REDCapSync") |>
+    data_list_to_save()
   merged <- all_character_cols(project_summary$merged)
   var_yesno_labelled <- merged$var_yesno
   values <- unique(merged$var_yesno)

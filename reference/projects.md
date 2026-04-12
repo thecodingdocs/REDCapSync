@@ -16,7 +16,7 @@ projects
 
 ## Format
 
-An object of class `list` of length 10.
+An object of class `list` of length 4.
 
 ## Value
 
@@ -24,41 +24,21 @@ list of functions used as single entry into REDCapSync package
 
 ## Details
 
-`projects` is implemented as a singleton R6 object and serves as the
-main entry point to the REDCapSync workflow. All project-level
+`projects` is implemented as a singleton list object and serves as a
+single entry point to the REDCapSync workflow. All project-level
 operations—such as setup, loading, syncing, and removal—are accessed
 through this object.
 
 A key advantage of this design is support for **method chaining**.
-Because project methods return project objects, you can write concise,
-readable workflows that operate in sequence:
+Because many project methods return project objects, you can write
+concise, readable workflows that operate in sequence:
 
-    projects$load("my_project")$sync()$save_datasets()
-
-The default location of the cache location is defined by using
-R_USER_CACHE_DIR if set. Otherwise, it follows platform conventions via
-[hoardr::hoardr](https://docs.ropensci.org/hoardr/reference/hoardr-package.html),
-saving a file "R/REDCapSync/projects.rds". No direct project data is
-stored in the cache. Notably, tokens and data are not stored here. The
-key variables stored in the cache are...
-
-- `project_name` - unique identifier for REDCapSync package
-
-- `redcap_uri` - server location
-
-- `token_name` - where to find token environment with
-  [`Sys.getenv()`](https://rdrr.io/r/base/Sys.getenv.html)
-
-- `dir_path` - where to saved project and associated files locally
-
-- `project_id` - obtained from API call and "locks-in" the connection
-
-- `redcap_version` - obtained from API call and affects links
-
-- `last_sync` and `sync_frequency` - informs REDCap sync of when to
-  update
-
-- other variables from project info and some internal package mechanics
+    # load previous project and sync with API
+    project <- REDCapSync::projects$load("TEST_CLASSIC")$sync()
+    # load dataset to global envir based on custom filters
+    dataset <- project$generate_dataset(envir = globalenv(),
+                                        filter_field = "var_branching",
+                                        filter_choices = "Yes")
 
 ## See also
 

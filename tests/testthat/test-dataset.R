@@ -354,8 +354,8 @@ test_that("get_dataset_records works!", {
   expect_true("test_branching_no" %in% names(project$datasets))
   record_ids_yes <- other$record_id[which(other$var_branching == "Yes")]
   record_ids_no <- other$record_id[which(other$var_branching == "No")]
-  get_sum_records_yes <- project |> get_dataset_records("test_branching_yes")
-  get_sum_records_no <- project |> get_dataset_records("test_branching_no")
+  get_sum_records_yes <- get_dataset_records(project, "test_branching_yes")
+  get_sum_records_no <- get_dataset_records(project, "test_branching_no")
   expect_identical(record_ids_yes, get_sum_records_yes)
   expect_identical(record_ids_no, get_sum_records_no)
 })

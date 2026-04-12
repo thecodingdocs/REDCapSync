@@ -158,7 +158,7 @@ sync_project_hard_reset <- function(project) {
       project$internals$last_metadata_update <-
       project$internals$last_data_update <- right_now
     record_summary <- extract_project_records(project)
-    if(is_something(record_summary)) {
+    if (is_something(record_summary)) {
       project$record_summary <- record_summary
       project$record_summary$last_api_call <- right_now
     }

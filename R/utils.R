@@ -108,7 +108,7 @@ process_df_list <- function(list,
 }
 #' @noRd
 is_something <- function(thing, row_length = 0L) {
-  if(is.null(thing)) {
+  if (is.null(thing)) {
     return(FALSE)
   }
   if (is.data.frame(thing)) {

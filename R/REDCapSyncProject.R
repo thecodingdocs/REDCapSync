@@ -232,9 +232,7 @@ REDCapSyncProject <- R6Class(
       cli_text("Last Update: {private$project$internals$last_data_update}")
       cli_text("REDCap: {.url {private$project$links$redcap_home}}")
       cli_text("Directory: {.file {private$project$dir_path}}")
-      cli_h2("Help")
-      cli_text("help: {.url {private$project$links$help}}") # getting started
-      cli_text("tokens: {.vignette REDCapSync::Tokens}")
+      help_cli_text()
       invisible(self)
     },
     #' @description
@@ -326,9 +324,11 @@ REDCapSyncProject <- R6Class(
                             envir = NULL) {
       dataset_names <- names(private$project$datasets)
       assert_choice(dataset_name, dataset_names, null.ok = FALSE)
+      assert_environment(envir, null.ok = TRUE)
       dataset <- REDCapSyncDataset$new(project = private$project,
                                        dataset_name = dataset_name)
-      invisible(self)
+      dataset$to_envir(envir = envir)
+      invisible(dataset)
     },
     #' @description  Clear all project datasets
     remove_datasets = function(dataset_names = NULL) {
@@ -365,19 +365,16 @@ REDCapSyncProject <- R6Class(
                                 include_comments = FALSE) {
       assert_environment(envir, null.ok = TRUE)
       provided_dataset_name <- !missing(dataset_name)
-      # if(dataset_name %in% names(project$datasets)){
-      #   cli_abort("You already have a dataset named {dataset_name}")
-      # }
       if (provided_dataset_name) {
-        if(dataset_name %in% names(private$project$datasets)) {
+        if (dataset_name %in% names(private$project$datasets)) {
           cli_alert_warning("{dataset_name} is already a defined dataset")
           cli_alert_info("It will be loaded... other paramers ignored")
         }
-      } else{
+      } else {
         dataset_name <- "custom"
-        i <- 0
+        i <- 0L
         while (dataset_name %in% names(private$project$datasets)) {
-          i <- i + 1
+          i <- i + 1L
           dataset_name <- paste0("custom", i)
         }
         cli_alert_warning("`dataset_name` not provided: Using '{dataset_name}'")
@@ -408,9 +405,7 @@ REDCapSyncProject <- R6Class(
         annotate_from_log = annotate_from_log,
         include_comments = include_comments
       )
-      if (!is.null(envir)) {
-        list2env(dataset, envir = envir)
-      }
+      dataset$to_envir(envir = envir)
       invisible(dataset)
     },
     #' @description  Add a new dataset entry

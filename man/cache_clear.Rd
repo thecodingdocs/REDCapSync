@@ -16,12 +16,28 @@ Message of outcome and invisible NULL.
 \description{
 Finds the location of the cache established by \code{\link[hoardr]{hoard}}
 and deletes stored project information (not data)! If you provide
-\code{project_names}, it will remove only those projects from the cache.
+\code{project_names}, it will remove only those projects from the cache. If you
+want to truly delete the project files, you must do so at the project
+directory you set up.
 }
 \details{
 The cache only stores information like project_name, token_name, directory
-location, and other details from \code{\link[=setup_project]{setup_project()}}. If you want to truly
-delete the project files, you must do so at the project directory you set up.
+location, and other details from \code{\link[=setup_project]{setup_project()}}.The default location of
+the cache location is defined by using R_USER_CACHE_DIR if set. Otherwise,
+it follows platform conventions via \link[hoardr:hoardr-package]{hoardr::hoardr}, saving a file
+"R/REDCapSync/projects.rds". No direct project data is stored in the cache.
+Notably, tokens and data are not stored here. The key variables stored in
+the cache are...
+\itemize{
+\item \code{project_name} - unique identifier for REDCapSync package
+\item \code{redcap_uri} - server location
+\item \code{token_name} - where to find token environment with \code{\link[=Sys.getenv]{Sys.getenv()}}
+\item \code{dir_path} - where to saved project and associated files locally
+\item \code{project_id} - obtained from API call and "locks-in" the connection
+\item \code{redcap_version} - obtained from API call and affects links
+\item \code{last_sync} and \code{sync_frequency} - informs REDCap sync of when to update
+\item other variables from project info and some internal package mechanics
+}
 }
 \examples{
 \dontrun{

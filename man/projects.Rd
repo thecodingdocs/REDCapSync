@@ -5,7 +5,7 @@
 \alias{projects}
 \title{Manage REDCapSync projects}
 \format{
-An object of class \code{list} of length 10.
+An object of class \code{list} of length 4.
 }
 \usage{
 projects
@@ -22,32 +22,21 @@ Each time a project is set up or synced, basic metadata is stored locally so
 that projects can be reloaded and updated without reconfiguration.
 }
 \details{
-\code{projects} is implemented as a singleton R6 object and serves as the main
+\code{projects} is implemented as a singleton list object and serves as a single
 entry point to the REDCapSync workflow. All project-level operations—such as
 setup, loading, syncing, and removal—are accessed through this object.
 
 A key advantage of this design is support for \strong{method chaining}. Because
-project methods return project objects, you can write concise, readable
+many project methods return project objects, you can write concise, readable
 workflows that operate in sequence:
 
 \preformatted{
-projects$load("my_project")$sync()$save_datasets()
-}
-
-The default location of the cache location is defined by using
-R_USER_CACHE_DIR if set. Otherwise, it follows platform conventions via
-\link[hoardr:hoardr-package]{hoardr::hoardr}, saving a file "R/REDCapSync/projects.rds". No direct project data
-is stored in the cache. Notably, tokens and data are not stored here. The key
-variables stored in the cache are...
-\itemize{
-\item \code{project_name} - unique identifier for REDCapSync package
-\item \code{redcap_uri} - server location
-\item \code{token_name} - where to find token environment with \code{\link[=Sys.getenv]{Sys.getenv()}}
-\item \code{dir_path} - where to saved project and associated files locally
-\item \code{project_id} - obtained from API call and "locks-in" the connection
-\item \code{redcap_version} - obtained from API call and affects links
-\item \code{last_sync} and \code{sync_frequency} - informs REDCap sync of when to update
-\item other variables from project info and some internal package mechanics
+# load previous project and sync with API
+project <- REDCapSync::projects$load("TEST_CLASSIC")$sync()
+# load dataset to global envir based on custom filters
+dataset <- project$generate_dataset(envir = globalenv(),
+                                    filter_field = "var_branching",
+                                    filter_choices = "Yes")
 }
 }
 \seealso{

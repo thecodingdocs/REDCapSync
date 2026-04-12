@@ -204,11 +204,7 @@ REDCapSyncDataset <- R6Class(
       cli_h1("REDCapSyncDataset")
       cli_text("Project: {private$details$project_details$project_name}")
       cli_text("Dataset: {private$details$dataset_details$dataset_name}")
-      cli_h2("Help")
-      cli_text("Help: {.url {private$details$project_details$help}}")
-      # getting started
-      cli_text("Datasets: {.vignette REDCapSync::Datasets}")
-      cli_text("Tokens: {.vignette REDCapSync::Tokens}")
+      help_cli_text()
       invisible(self)
     },
     #' @field data list of data where names are forms
@@ -224,11 +220,11 @@ REDCapSyncDataset <- R6Class(
     #' @field comments data.frame of comments
     comments = NULL,
     #' @description Return flat list
-    save = function (with_links = TRUE,
-                     separate = FALSE,
-                     use_csv = FALSE,
-                     dir_other = NULL,
-                     file_name = NULL) {
+    save = function(with_links = TRUE,
+                    separate = FALSE,
+                    use_csv = FALSE,
+                    dir_other = NULL,
+                    file_name = NULL) {
       data_list <- save_project_data_list(self,
                                           with_links = with_links,
                                           separate = separate,
@@ -240,9 +236,11 @@ REDCapSyncDataset <- R6Class(
     },
     #' @description export dataset to envir of your choosing. Keep in mind
     #' potential name conflicts
-    to_envir = function (envir = NULL) {
+    to_envir = function(envir = NULL) {
       data_list <- data_list_to_save(self)
-      list2env(data_list, envir = envir)
+      if (!is.null(envir)) {
+        list2env(data_list, envir = envir)
+      }
       invisible(data_list)
     }
   ),

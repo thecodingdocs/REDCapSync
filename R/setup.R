@@ -628,8 +628,8 @@ save_project <- function(project, silent = FALSE) {
     redcap_data_quality = NULL,
     redcap_identifiers = NULL,
     cran = "",
-    help = "https://thecodingdocs.github.io/REDCapSync/",
-    github = "https://github.com/thecodingdocs/REDCapSync/",
+    help = .pkgdown_link,
+    github = .github_link,
     thecodingdocs = "https://www.thecodingdocs.com/"
   ),
   settings = list(

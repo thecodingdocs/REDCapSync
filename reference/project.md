@@ -1,4 +1,4 @@
-# REDCapSync Encapsulated Project Object
+# Syncronizing REDCap Project
 
 [R6](https://r6.r-lib.org/reference/R6Class.html) project object for
 [REDCapSync](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync-package.md)
@@ -59,6 +59,8 @@ for initializing the `project` object.'
 - [`REDCapSyncProject$sync()`](#method-REDCapSyncProject-sync)
 
 - [`REDCapSyncProject$add_dataset()`](#method-REDCapSyncProject-add_dataset)
+
+- [`REDCapSyncProject$load_dataset()`](#method-REDCapSyncProject-load_dataset)
 
 - [`REDCapSyncProject$remove_datasets()`](#method-REDCapSyncProject-remove_datasets)
 
@@ -138,7 +140,8 @@ a complete refresh.
 
 - `save_datasets`:
 
-  Logical (TRUE/FALSE). If TRUE, saves datasets to directory.
+  Logical (TRUE/FALSE). If TRUE, saves the datasets that were previously
+  added during a sync. Default is `TRUE`.
 
 - `save_to_dir`:
 
@@ -187,6 +190,7 @@ Add a new dataset entry
       include_users = TRUE,
       include_log = FALSE,
       annotate_from_log = TRUE,
+      include_comments = TRUE,
       with_links = TRUE,
       separate = FALSE,
       use_csv = FALSE,
@@ -201,7 +205,7 @@ Add a new dataset entry
 
   Character. The name of the configured dataset from which to generate
   the dataset. \*If you provide `dataset_name` all other parameters are
-  inherited according to what was set with `add_project_dataset`.
+  inherited according to what was set with `add_dataset`.
 
 - `transformation_type`:
 
@@ -319,6 +323,10 @@ Add a new dataset entry
   Logical. If `TRUE`, the metadata, users, and records will be annotated
   using the log. Default is `TRUE`.
 
+- `include_comments`:
+
+  Logical. If `TRUE`, the comments will be included. Default is `TRUE`.
+
 - `with_links`:
 
   Optional logical (TRUE/FALSE) for including links in Excel sheets.
@@ -348,6 +356,29 @@ Add a new dataset entry
 
   Logical. If `TRUE`, overwrite existing dataset files with the same
   name. Default is `FALSE`.
+
+------------------------------------------------------------------------
+
+### Method `load_dataset()`
+
+Clear all project datasets
+
+#### Usage
+
+    REDCapSyncProject$load_dataset(dataset_name, envir = NULL)
+
+#### Arguments
+
+- `dataset_name`:
+
+  Character. The name of the configured dataset from which to generate
+  the dataset. \*If you provide `dataset_name` all other parameters are
+  inherited according to what was set with `add_dataset`.
+
+- `envir`:
+
+  environment variable such as
+  [`globalenv()`](https://rdrr.io/r/base/environment.html)
 
 ------------------------------------------------------------------------
 
@@ -396,7 +427,8 @@ Add a new dataset entry
       include_records = TRUE,
       include_users = TRUE,
       include_log = FALSE,
-      annotate_from_log = TRUE
+      annotate_from_log = TRUE,
+      include_comments = FALSE
     )
 
 #### Arguments
@@ -405,11 +437,12 @@ Add a new dataset entry
 
   Character. The name of the configured dataset from which to generate
   the dataset. \*If you provide `dataset_name` all other parameters are
-  inherited according to what was set with `add_project_dataset`.
+  inherited according to what was set with `add_dataset`.
 
 - `envir`:
 
-  environment variable
+  environment variable such as
+  [`globalenv()`](https://rdrr.io/r/base/environment.html)
 
 - `transformation_type`:
 
@@ -526,6 +559,10 @@ Add a new dataset entry
 
   Logical. If `TRUE`, the metadata, users, and records will be annotated
   using the log. Default is `TRUE`.
+
+- `include_comments`:
+
+  Logical. If `TRUE`, the comments will be included. Default is `TRUE`.
 
 ------------------------------------------------------------------------
 
@@ -648,7 +685,7 @@ save dataset to Excel
 
   Character. The name of the configured dataset from which to generate
   the dataset. \*If you provide `dataset_name` all other parameters are
-  inherited according to what was set with `add_project_dataset`.
+  inherited according to what was set with `add_dataset`.
 
 ------------------------------------------------------------------------
 

@@ -1,5 +1,6 @@
-#' @title REDCapSync Encapsulated Datsaset Object
+#' @title Standardized Dataset from REDCap Project
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' [R6][R6::R6Class] project object for [REDCapSync]
 #' @param project object from [setup_project()] or [load_project()].
 #' @param dataset_name Character. The name of the configured dataset from which

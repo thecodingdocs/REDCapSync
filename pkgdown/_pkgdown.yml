@@ -23,15 +23,16 @@ template:
       card: summary_large_image
 
 reference:
-  - title: Setup/Load and Use Single Project
-    desc: Setup or Load REDCap your project and update using what is already saved. Define custom transformations and subsets to be passed to refreshing spreadsheets.
+  - title: Setup/Load and Project
+    desc: Setup or Load REDCap your project and update using what is already saved. Define custom datasets to be passed to refreshing spreadsheets.
     contents:
       - setup_project
       - load_project
       - project
+      - dataset
 
   - title: Multiple Projects
-    desc: The projects object can act a single entry point for all of your projects! Sync is a hands-free function that will sync all projects based on previous settings.
+    desc: The projects object can act a single entry point for all of your projects and sync is a hands-free function that will sync all projects based on previous activity.
     contents:
       - projects
       - sync

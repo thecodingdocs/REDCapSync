@@ -3,12 +3,13 @@
 \name{dataset}
 \alias{dataset}
 \alias{REDCapSyncDataset}
-\title{REDCapSync Encapsulated Datsaset Object}
+\title{Standardized Dataset from REDCap Project}
 \value{
 An R6ClassGenerator which is used internally to create or load a
 dataset object for the user
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 \link[R6:R6Class]{R6} project object for \link{REDCapSync}
 }
 \examples{

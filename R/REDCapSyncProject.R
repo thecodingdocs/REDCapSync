@@ -1,4 +1,4 @@
-#' @title REDCapSync Encapsulated Project Object
+#' @title Syncronizing REDCap Project
 #' @description
 #' [R6][R6::R6Class] project object for [REDCapSync]
 #' This is the main class for managing REDCap data, metadata, and sync

@@ -4,12 +4,12 @@ pkgdown_sha: ~
 articles:
   Cache: Cache.html
   Datasets: Datasets.html
-  multiple_projects: multiple_projects.html
-  project_object: project_object.html
+  Projects: Projects.html
   REDCapSync: REDCapSync.html
+  RosyREDCap: RosyREDCap.html
   Tokens: Tokens.html
-  Upload: Upload.html
-last_built: 2026-04-13T01:18Z
+  Uploads: Uploads.html
+last_built: 2026-04-13T03:30Z
 urls:
   reference: https://thecodingdocs.github.io/REDCapSync/reference
   article: https://thecodingdocs.github.io/REDCapSync/articles

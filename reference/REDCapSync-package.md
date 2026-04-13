@@ -9,7 +9,7 @@ to retrieve all metadata, data, and log details for a project. To
 minimize unneccesary server calls, the interim REDCap log is analyzed
 and used to only update necessary records. Furthermore, the user can
 define custom datasets that save to a directory. Those datasets continue
-to refresh when project is synced. Having a secure, standarized,
+to refresh when projects are synced. Having a secure, standarized,
 API-effecient, project-agnostic R object for REDCap projects,
 streamlines downstream use in scripts, functions, and shiny
 applications.

@@ -84,9 +84,117 @@
 <p>Start by loading an exisiting or test project. There are two named
 datasets by default: REDCapSync and REDCapSync_raw.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">load_project</a></span><span class="op">(</span>project_name <span class="op">=</span> <span class="st">"TEST_CLASSIC"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">save_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># replace with your intended folder</span></span>
 <span></span>
-<span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="fu">load_dataset</span><span class="op">(</span><span class="st">"REDCapSync"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">load_project</a></span><span class="op">(</span><span class="st">"TEST_CLASSIC"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span> <span class="co">#optional sync</span></span>
+<span></span>
+<span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="fu">load_dataset</span><span class="op">(</span><span class="st">"REDCapSync"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># add quick custom variable</span></span>
+<span><span class="co"># in future version you can use project$add_field for this</span></span>
+<span><span class="va">dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">merged</span><span class="op">$</span><span class="va">letter_b</span> <span class="op">&lt;-</span> <span class="va">dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">merged</span><span class="op">$</span><span class="va">var_text_letters</span> <span class="op">==</span> <span class="st">"b"</span></span>
+<span></span>
+<span><span class="co"># send data in global environment</span></span>
+<span><span class="va">dataset</span><span class="op">$</span><span class="fu">to_envir</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span> </span>
+<span><span class="co"># save data in custom location</span></span>
+<span><span class="va">dataset</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span>dir_other <span class="op">=</span> <span class="va">save_dir</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># open folder where file was saved</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="va">save_dir</span><span class="op">)</span></span></code></pre></div>
+<p>You can also chain together certain functions… So this is the same as
+above.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">save_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># replace with your intended folder</span></span>
+<span></span>
+<span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="va">projects</span><span class="op">$</span><span class="fu">load</span><span class="op">(</span><span class="st">"TEST_CLASSIC"</span><span class="op">)</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">load_dataset</span><span class="op">(</span><span class="st">"REDCapSync"</span><span class="op">)</span></span>
+<span><span class="co"># add quick custom variable</span></span>
+<span><span class="co"># in future version you can use project$add_field for this</span></span>
+<span><span class="va">dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">merged</span><span class="op">$</span><span class="va">letter_b</span> <span class="op">&lt;-</span> <span class="va">dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">merged</span><span class="op">$</span><span class="va">var_text_letters</span> <span class="op">==</span> <span class="st">"b"</span></span>
+<span></span>
+<span><span class="co"># send data in global environment</span></span>
+<span><span class="va">dataset</span><span class="op">$</span><span class="fu">to_envir</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span> </span>
+<span><span class="co"># save data in custom location</span></span>
+<span><span class="va">dataset</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span>dir_other <span class="op">=</span> <span class="va">save_dir</span><span class="op">)</span> <span class="co"># dir_other not needed for non-test-projects</span></span>
+<span></span>
+<span><span class="co"># open folder where file was saved</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="va">save_dir</span><span class="op">)</span></span></code></pre></div>
+<p>This single line will load, sync, generate dataset, and send to your
+global environment!</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">projects</span><span class="op">$</span><span class="fu">load</span><span class="op">(</span><span class="st">"TEST_CLASSIC"</span><span class="op">)</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">load_dataset</span><span class="op">(</span><span class="st">"REDCapSync"</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>You can also generate ad-hoc custom datasets. But if you plan to keep
+it refreshing to the directory you can add it to your project. The next
+time you run sync it will be passed to you directory as defined.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">save_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># replace with your intended folder</span></span>
+<span></span>
+<span><span class="co">#load and sync (load_project(...) is the same as projects$load(...))</span></span>
+<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">load_project</a></span><span class="op">(</span><span class="st">"TEST_LONGITUDINAL"</span><span class="op">)</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># see field_names</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="va">metadata</span><span class="op">$</span><span class="va">fields</span><span class="op">$</span><span class="va">field_name</span></span>
+<span></span>
+<span><span class="va">males_dataset</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="fu">generate_dataset</span><span class="op">(</span>dataset_name <span class="op">=</span> <span class="st">"males"</span>, </span>
+<span>                                          envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span>, <span class="co"># global environ</span></span>
+<span>                                          filter_field <span class="op">=</span> <span class="st">"birth_sex"</span>, </span>
+<span>                                          filter_choices <span class="op">=</span> <span class="st">"Male"</span><span class="op">)</span></span>
+<span><span class="co"># if you check merged and survey it will only contain males</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">males_dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">merged</span><span class="op">$</span><span class="va">birth_sex</span><span class="op">)</span> <span class="co"># Male</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">males_dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">survey</span><span class="op">$</span><span class="va">birth_sex</span><span class="op">)</span> <span class="co"># Male</span></span>
+<span></span>
+<span><span class="va">females_dataset</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="fu">generate_dataset</span><span class="op">(</span>dataset_name <span class="op">=</span> <span class="st">"females"</span>, </span>
+<span>                                            envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span>, <span class="co"># global environ</span></span>
+<span>                                            filter_field <span class="op">=</span> <span class="st">"birth_sex"</span>, </span>
+<span>                                            filter_choices <span class="op">=</span> <span class="st">"Female"</span><span class="op">)</span></span>
+<span><span class="co"># if you check merged and survey it will only contain males</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">females_dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">merged</span><span class="op">$</span><span class="va">birth_sex</span><span class="op">)</span> <span class="co"># Female</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">females_dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">survey</span><span class="op">$</span><span class="va">birth_sex</span><span class="op">)</span> <span class="co"># Female</span></span>
+<span></span>
+<span><span class="co"># if you want this saved to excel one time you can do</span></span>
+<span><span class="va">females_dataset</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span>dir_other <span class="op">=</span> <span class="va">save_dir</span><span class="op">)</span> <span class="co"># dir_other not needed for non-test-projects</span></span>
+<span></span>
+<span><span class="co"># To keep this analysis refreshing with each sync use project$add_dataset(..,)</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">add_dataset</span><span class="op">(</span>dataset_name <span class="op">=</span> <span class="st">"males"</span>, </span>
+<span>                    filter_field <span class="op">=</span> <span class="st">"birth_sex"</span>, </span>
+<span>                    filter_choices <span class="op">=</span> <span class="st">"Male"</span><span class="op">)</span></span>
+<span><span class="co"># not it can be loaded by name!</span></span>
+<span><span class="va">males_dataset</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="fu">load_dataset</span><span class="op">(</span><span class="st">"males"</span><span class="op">)</span> <span class="co"># will not send to global</span></span>
+<span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">load_dataset</span><span class="op">(</span><span class="st">"males"</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="co"># will send to global</span></span>
+<span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">save_dataset</span><span class="op">(</span><span class="st">"males"</span><span class="op">)</span> <span class="co"># will save AND keep track in project object</span></span>
+<span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span> <span class="co"># once defined will save datasets with sync</span></span></code></pre></div>
+<p>Putting it all together, you should think of meaningful datasets, add
+them to project with <code>project$add_dataset</code>, load them for use
+in R with <code>project$load_dataset</code>, and/or save as excel sheets
+with <code>project$save_dataset</code> or <code>project$sync</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#load and sync add datasets and save</span></span>
+<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">load_project</a></span><span class="op">(</span><span class="st">"TEST_LONGITUDINAL"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">sync</span><span class="op">(</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">add_dataset</span><span class="op">(</span>dataset_name <span class="op">=</span> <span class="st">"males"</span>, </span>
+<span>              filter_field <span class="op">=</span> <span class="st">"birth_sex"</span>, </span>
+<span>              filter_choices <span class="op">=</span> <span class="st">"Male"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">add_dataset</span><span class="op">(</span>dataset_name <span class="op">=</span> <span class="st">"females"</span>, </span>
+<span>              filter_field <span class="op">=</span> <span class="st">"birth_sex"</span>, </span>
+<span>              filter_choices <span class="op">=</span> <span class="st">"Female"</span><span class="op">)</span></span>
+<span><span class="co"># load males</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">load_dataset</span><span class="op">(</span><span class="st">"males"</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="co"># will send to global</span></span>
+<span></span>
+<span><span class="co"># load females</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">load_dataset</span><span class="op">(</span><span class="st">"females"</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="co"># will send to global</span></span>
+<span></span>
+<span><span class="co"># load all default</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">load_dataset</span><span class="op">(</span><span class="st">"REDCapSync"</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="co"># will send to global</span></span>
+<span></span>
+<span><span class="co"># can trigger saves with `project$save_datasets()` or default `project$sync()`</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">save_datasets</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
   </main>
 </div>
 

@@ -142,19 +142,44 @@ we may set our token in a different way.</p>
 <h3 id="setting-your-token-using-keyring-package">Setting Your Token using <code>keyring</code> package<a class="anchor" aria-label="anchor" href="#setting-your-token-using-keyring-package"></a>
 </h3>
 <p>By default REDCapSync will use keyring = NULL, which is your OS
-system default anf is typcially unlocked by default while you are logged
+system default and is typcially unlocked by default while you are logged
 in.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">load_project</a></span><span class="op">(</span><span class="st">"TEST_CLASSIC"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">set_keyring_token</span><span class="op">(</span><span class="op">)</span> <span class="co"># now enter token in pop-up</span></span>
+<span><span class="co"># internally the package checks ...</span></span>
+<span><span class="co">#1. Sys.getenv()</span></span>
+<span><span class="va">token</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="va">project</span><span class="op">$</span><span class="va">.internal</span><span class="op">$</span><span class="va">token_name</span><span class="op">)</span></span>
+<span><span class="co">#2. followed by keyring</span></span>
+<span><span class="va">token</span> <span class="op">&lt;-</span> <span class="fu">keyring</span><span class="fu">::</span><span class="fu"><a href="https://keyring.r-lib.org/reference/key_get.html" class="external-link">key_get</a></span><span class="op">(</span>service <span class="op">=</span> <span class="va">config</span><span class="op">$</span><span class="fu">keyring.service</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                          username <span class="op">=</span> <span class="va">project</span><span class="op">$</span><span class="va">project_name</span>,</span>
+<span>                          keyring <span class="op">=</span> <span class="va">config</span><span class="op">$</span><span class="fu">keyring</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># you could set with the following; not preferred because token in script</span></span>
+<span><span class="co"># if you do this set in securely in file that no one can ever see; never github!</span></span>
+<span><span class="fu">keyring</span><span class="fu">::</span><span class="fu"><a href="https://keyring.r-lib.org/reference/key_get.html" class="external-link">key_set_with_value</a></span><span class="op">(</span>service <span class="op">=</span> <span class="va">config</span><span class="op">$</span><span class="fu">keyring.service</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                            username <span class="op">=</span> <span class="va">project</span><span class="op">$</span><span class="va">project_name</span>,</span>
+<span>                            password <span class="op">=</span> <span class="st">"VeryNOTsecureWayToSetYourTOKEN"</span>,</span>
+<span>                            keyring <span class="op">=</span> <span class="va">config</span><span class="op">$</span><span class="fu">keyring</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># again, internally this will be searched for like this</span></span>
+<span><span class="va">token</span> <span class="op">&lt;-</span> <span class="fu">keyring</span><span class="fu">::</span><span class="fu"><a href="https://keyring.r-lib.org/reference/key_get.html" class="external-link">key_get</a></span><span class="op">(</span>service <span class="op">=</span> <span class="va">config</span><span class="op">$</span><span class="fu">keyring.service</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                          username <span class="op">=</span> <span class="va">project</span><span class="op">$</span><span class="va">project_name</span>,</span>
+<span>                          keyring <span class="op">=</span> <span class="va">config</span><span class="op">$</span><span class="fu">keyring</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>You can change default configuration using configuration
 settings…</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>redcapsync.config.keyring <span class="op">=</span> <span class="st">"REDCapSync"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>redcapsync.config.keyring <span class="op">=</span> <span class="st">"REDCapSync"</span><span class="op">)</span></span>
+<span><span class="co"># with this kind of method you could define multiple tokens in a private/secret</span></span>
+<span><span class="co"># .R file which can be sourced to set all tokens in akeyring. Can also be </span></span>
+<span><span class="co"># locked and unlocked (see keyring webstite)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="setting-your-token-for-one-session">Setting Your Token for One Session<a class="anchor" aria-label="anchor" href="#setting-your-token-for-one-session"></a>
 </h3>
 <p>You can set manually with base R. Unless you specifically set the
 token <code>Sys.getenv("REDCAPSYNC_TEST")</code> will be blank.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set your token manually</span></span>
 <span><span class="co"># again having this in a script is not advised but possible</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>REDCAPSYNC_TEST<span class="op">=</span><span class="st">"a_FaKe_TOkEn"</span><span class="op">)</span> </span>
@@ -171,9 +196,8 @@ would be blank again.</p>
 <p>If you are ever having any issues with your token, you can test your
 project object with <code>view_project_token(project)</code> and/or
 <code>test_project_token(project)</code></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">load_project</a></span><span class="op">(</span><span class="st">"TEST_CLASSIC"</span><span class="op">)</span> <span class="co"># replace project name with yours</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">load_project</a></span><span class="op">(</span><span class="st">"TEST_CLASSIC"</span><span class="op">)</span> <span class="co"># replace project name with yours</span></span>
 <span></span>
 <span><span class="va">project</span><span class="op">$</span><span class="fu">test_token</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>

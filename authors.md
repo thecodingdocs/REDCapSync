@@ -7,16 +7,6 @@
 
 - **[Natalie Goulett](https://github.com/Goulett)**. Contributor.
 
-- **[Chris Hilsinger-Pate](https://github.com/chrishilsingerpate)**.
-  Contributor.
-
-- **[Nikola Susic](https://github.com/nsusic)**. Contributor.
-
-- **[Mason Thornton](https://github.com/mthornton1724)**. Contributor.
-
-- **Sydney Stern**. Contributor.
-  [](https://orcid.org/0000-0002-1479-605X)
-
 ## Citation
 
 Source:

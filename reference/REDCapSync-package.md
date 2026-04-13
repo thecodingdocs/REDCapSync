@@ -7,12 +7,12 @@ robust application programming interface (API) utilized by several R
 packages. 'REDCapSync' uses 'redcapAPI' and 'REDCapR' behind-the-scenes
 to retrieve all metadata, data, and log details for a project. To
 minimize unneccesary server calls, the interim REDCap log is analyzed
-and used to update necessary records. Furthermore, the user can define
-subsets and transformations, such as merges and deidentification, that
-save to a user-defined directory. Those subsets, called summaries by the
-package, also continue to refresh when data is updated. Having a
-standarized, API-effecient, project-agnostic R object streamlines
-downstream use in scripts, functions, and shiny applications.
+and used to only update necessary records. Furthermore, the user can
+define custom datasets that save to a directory. Those datasets continue
+to refresh when project is synced. Having a secure, standarized,
+API-effecient, project-agnostic R object for REDCap projects,
+streamlines downstream use in scripts, functions, and shiny
+applications.
 
 ## See also
 
@@ -32,12 +32,3 @@ Useful links:
 Other contributors:
 
 - Natalie Goulett \[contributor\]
-
-- Chris Hilsinger-Pate \[contributor\]
-
-- Nikola Susic \[contributor\]
-
-- Mason Thornton \[contributor\]
-
-- Sydney Stern ([ORCID](https://orcid.org/0000-0002-1479-605X))
-  \[contributor\]

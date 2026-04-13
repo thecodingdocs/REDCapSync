@@ -56,6 +56,9 @@ projects <- list(
   n = function() {
     nrow(get_projects())
   },
+  any = function() {
+    nrow(get_projects()) > 0L
+  },
   load = function(project_name) {
     load_project(project_name)
   }

@@ -120,6 +120,8 @@ projects$any()
 projects$n()
 #> ! No cached projects... use `setup_project(...)`
 #> [1] 0
-project <- project$load("TEST_CLASSIC")
-#> Error: object 'project' not found
+project <- projects$load("TEST_CLASSIC")
+#> ! No cached projects... use `setup_project(...)`
+#> ✔ Loaded TEST project TEST_CLASSIC!
+#> ! Does not actually communicate with any REDCap API
 ```

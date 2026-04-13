@@ -159,17 +159,14 @@ requests.
   See instructions above.
 - The RosyREDCap package is at
   [github.com/thecodingdocs/RosyREDCap](https://github.com/thecodingdocs/RosyREDCap "RosyREDCap R package").
-  See instructions above.
-- Donate if I helped you out and want more development (anything helps)!
-  [account.venmo.com/u/brandonerose](https://account.venmo.com/u/brandonerose "Venmo Donation")
 - For more R coding visit
   [TheCodingDocs.com](https://www.thecodingdocs.com/ "TheCodingDocs.com")
 - For correspondence/feedback/issues, please email
   <TheCodingDocs@gmail.com>!
 - Follow us on Twitter/X
-  [x.com/TheCodingDocs](https://x.com/TheCodingDocs "TheCodingDocs Twitter")
+  [x.com/TheCodingDocs](https://x.com/TheCodingDocs/ "TheCodingDocs Twitter")
 - Follow me on Twitter/X
-  [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH "BRoseMDMPH Twitter")
+  [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH/ "BRoseMDMPH Twitter")
 
 [![TheCodingDocs.com](reference/figures/TCD.png)](https://www.thecodingdocs.com)
 

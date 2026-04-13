@@ -13,10 +13,16 @@ dataset object for the user
 \link[R6:R6Class]{R6} project object for \link{REDCapSync}
 }
 \examples{
+save_dir <- tempdir()
 dataset <- load_project("TEST_CLASSIC")$generate_dataset("REDCapSync")
+# add quick custom variable
+dataset$data$merged$letter_b <- dataset$data$merged$var_text_letters == "b"
+# save data in custom location
+dataset$save(dir_other = save_dir)
 
 }
 \seealso{
+\code{vignette("Datasets", package = "REDCapSync")}
 \link{setup_project} for initializing the \code{project} object.'
 }
 \section{Public fields}{

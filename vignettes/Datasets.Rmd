@@ -14,3 +14,17 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r, eval=FALSE}
+library(REDCapSync)
+```
+
+Start by loading an exisiting or test project. There are two named datasets by default: REDCapSync and REDCapSync_raw.
+
+```{r, eval=FALSE}
+project <- load_project(project_name = "TEST_CLASSIC")
+
+dataset <- project$load_dataset("REDCapSync")
+```
+
+
+

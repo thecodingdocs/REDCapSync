@@ -72,9 +72,15 @@
 #' be saved. Default is `<project_name>_<dataset_name>`.
 #' @param envir environment variable such as [globalenv()]
 #' @examples
+#' save_dir <- tempdir()
 #' dataset <- load_project("TEST_CLASSIC")$generate_dataset("REDCapSync")
+#' # add quick custom variable
+#' dataset$data$merged$letter_b <- dataset$data$merged$var_text_letters == "b"
+#' # save data in custom location
+#' dataset$save(dir_other = save_dir)
 #'
 #' @seealso
+#' \code{vignette("Datasets", package = "REDCapSync")}
 #' \link{setup_project} for initializing the `project` object.'
 #' @returns
 #' An R6ClassGenerator which is used internally to create or load a

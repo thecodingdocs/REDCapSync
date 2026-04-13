@@ -11,6 +11,7 @@ object for the user
 
 ## See also
 
+[`vignette("Datasets", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Datasets.md)
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
 for initializing the `project` object.'
 
@@ -319,10 +320,17 @@ conflicts
 ## Examples
 
 ``` r
+save_dir <- tempdir()
 dataset <- load_project("TEST_CLASSIC")$generate_dataset("REDCapSync")
 #> ! No cached projects... use `setup_project(...)`
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
 #> ! REDCapSync is already a defined dataset
 #> ℹ It will be loaded... other paramers ignored
+# add quick custom variable
+dataset$data$merged$letter_b <- dataset$data$merged$var_text_letters == "b"
+# save data in custom location
+dataset$save(dir_other = save_dir)
+#> ℹ Saved 'TEST_CLASSIC_REDCapSync.xlsx'!
+#>   /tmp/Rtmpgd8pv7/TEST_CLASSIC_REDCapSync.xlsx
 ```

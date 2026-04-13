@@ -1,4 +1,4 @@
-# Syncronizing REDCap Project
+# Synchronizing REDCap Project
 
 [R6](https://r6.r-lib.org/reference/R6Class.html) project object for
 [REDCapSync](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync-package.md)

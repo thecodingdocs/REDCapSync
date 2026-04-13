@@ -1,4 +1,4 @@
-# Uploading REDCap Data
+# Uploads
 
 ``` r
 library(REDCapSync)

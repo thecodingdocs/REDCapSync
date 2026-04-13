@@ -39,6 +39,14 @@ dataset <- project$generate_dataset(envir = globalenv(),
                                     filter_choices = "Yes")
 }
 }
+\examples{
+project_df <- projects$df
+project$print()
+project$any()
+project$n()
+TEST_CLASSIC <- project$load("TEST_CLASSIC")
+
+}
 \seealso{
 \code{vignette("Cache", package = "REDCapSync")}
 

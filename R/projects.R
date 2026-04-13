@@ -33,7 +33,7 @@
 #' project$print()
 #' project$any()
 #' project$n()
-#' TEST_CLASSIC <- project$load("TEST_CLASSIC)
+#' TEST_CLASSIC <- project$load("TEST_CLASSIC")
 #'
 #' @returns list of functions used as single entry into REDCapSync package
 #' @export

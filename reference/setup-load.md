@@ -185,13 +185,8 @@ with REDCap.
 `setup_project` is used the first time you initialize/link a REDCap
 project. Mainly, it sets your unique `project_name` and your intended
 directory. Unless you run `hard_reset = TRUE` the default will first try
-load_project. dir_path is technically optional but without it the user
+load_project. `dir_path` is technically optional but without it the user
 cannot save/load/update projects. Must be all capital letters!
-
-`load_project` can be used with just the `project_name` parameter after
-you have already run `setup_project` in the past with an established
-directory. `dir_path` is optional for this function but can be used if
-you relocated the directory.
 
 ## See also
 

@@ -13,6 +13,17 @@ To reopen an existing project, use
 An R6ClassGenerator which is used internally to create or load a project
 object for the user
 
+## Details
+
+The methods documented below are functions that work without having to
+use "\<-". For example, if you load a project with
+`project <- load_project("TEST_CLASSIC")`, and then then run
+`project$sync()`, then the project object will contain the updated data.
+That function actually invisibily retruns itself which allows for
+"chaining", such as `load_project("TEST_CLASSIC")$sync()`. More features
+are being developed that will allow for the addition of fields (outside
+of REDCap).
+
 ## See also
 
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
@@ -125,7 +136,8 @@ Updates the REDCap data for (`project` object) by checking REDCap log
 for changes. Sync is performed according to the `sync_frequency` set in
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
 by default. Use `hard_check` to force a check, or ` hard_reset` to force
-a complete refresh.
+a complete refresh. As a default, this object will be saved to your
+directory when necessary.
 
 #### Usage
 
@@ -361,7 +373,7 @@ Add a new dataset entry
 
 ### Method `load_dataset()`
 
-Clear all project datasets
+Load dataset if previously defined with `add_dataset`.
 
 #### Usage
 
@@ -384,7 +396,7 @@ Clear all project datasets
 
 ### Method `remove_datasets()`
 
-Clear all project datasets
+Clear all or specified datasets from the `project` object.
 
 #### Usage
 
@@ -400,7 +412,10 @@ Clear all project datasets
 
 ### Method `generate_dataset()`
 
-Add a new dataset entry
+Generate
+[dataset](https://thecodingdocs.github.io/REDCapSync/reference/dataset.md)
+object. This is usually handled internally for some default behavior but
+is provided here for ad-hoc custom datasets.
 
 #### Usage
 
@@ -568,7 +583,7 @@ Add a new dataset entry
 
 ### Method `add_field()`
 
-Add a new dataset entry
+Add a new field. Placeholder for future feature.
 
 #### Usage
 
@@ -639,7 +654,7 @@ Add a new dataset entry
 
 ### Method `remove_fields()`
 
-Removes extra fields
+Removes added field(s). Placeholder for future feature.
 
 #### Usage
 
@@ -656,7 +671,7 @@ Removes extra fields
 
 ### Method `save_datasets()`
 
-saves project datasets to Excel
+saves datasets to Excel via setting provided to `add_dataset`.
 
 #### Usage
 
@@ -673,7 +688,7 @@ saves project datasets to Excel
 
 ### Method `save_dataset()`
 
-save dataset to Excel
+saves dataset to Excel via setting provided to `add_dataset`.
 
 #### Usage
 
@@ -691,7 +706,8 @@ save dataset to Excel
 
 ### Method [`save()`](https://rdrr.io/r/base/save.html)
 
-Add a new dataset entry
+Save project object to directory chosen with
+[setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 
 #### Usage
 
@@ -711,7 +727,7 @@ Set keyring token. See vignette and config for detail.
 
 ### Method `test_token()`
 
-test connection via communication with API
+test connection via communication with API.
 
 #### Usage
 
@@ -721,7 +737,7 @@ test connection via communication with API
 
 ### Method `url_launch()`
 
-opens links in browser
+opens links in browser.
 
 #### Usage
 
@@ -744,7 +760,7 @@ opens links in browser
 
 ### Method `url_record_launch()`
 
-opens record links in browser
+opens record links in browser.
 
 #### Usage
 

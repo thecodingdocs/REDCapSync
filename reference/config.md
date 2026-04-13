@@ -205,5 +205,4 @@ options(redcapsync.config.offline = TRUE)
 
 config$offline()
 #> [1] TRUE
-
 ```

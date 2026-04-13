@@ -1,5 +1,5 @@
 ---
-title: "Uploading REDCap Data"
+title: "Uploads"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Uploads}

@@ -19,11 +19,22 @@ several to build an environment. This allows `TEST$sync()` to update
 `TEST <- TEST |> sync_something() |> another_function()`
 
 ``` r
-library(REDCapSync)
-TEST <- load_project()
-# Update From REDCap 
+project <- load_project("TEST_CLASSIC")
+#> ! No cached projects... use `setup_project(...)`
+#> ✔ Loaded TEST project TEST_CLASSIC!
+#> ! Does not actually communicate with any REDCap API
 
-# Explore Whats Inside
+# projects have read-only active bindings
+names(REDCapSyncProject$active)
+#> [1] "project_name" "dir_path"     "data"         "metadata"     "redcap"      
+#> [6] ".internal"
 
-# Generate Outputs
+# projects have public methods
+names(REDCapSyncProject$public_methods) |> setdiff("initialize")
+#>  [1] "print"             "sync"              "add_dataset"      
+#>  [4] "load_dataset"      "remove_datasets"   "generate_dataset" 
+#>  [7] "add_field"         "remove_fields"     "save_datasets"    
+#> [10] "save_dataset"      "save"              "set_keyring_token"
+#> [13] "test_token"        "url_launch"        "url_record_launch"
+#> [16] "upload"
 ```

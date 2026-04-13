@@ -325,5 +325,4 @@ dataset <- load_project("TEST_CLASSIC")$generate_dataset("REDCapSync")
 #> ! Does not actually communicate with any REDCap API
 #> ! REDCapSync is already a defined dataset
 #> ℹ It will be loaded... other paramers ignored
-#> Error in if (data_list$dataset_details$include_comments) {    comments_name <- "comments"    comments_name_alt <- comments_name    if (any(comments_name %in% names(data_list$data))) {        comments_name_alt <- paste0("redcap_", comments_name)    }    if ("comments" %in% names(data_list)) {        to_save_list[[comments_name_alt]] <- data_list$comments    }}: argument is of length zero
 ```

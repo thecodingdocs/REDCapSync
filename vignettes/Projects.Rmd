@@ -24,14 +24,13 @@ listviewer::jsonedit(TEST_CLASSIC$.internal)
 
 The R6 object contains those things behind-the-scenes but then uses several to build an environment. This allows `TEST$sync()` to update `TEST` without having to do `TEST <- TEST |> sync_something() |> another_function()`
 
-```{r setup, eval=FALSE}
-library(REDCapSync)
-TEST <- load_project()
-# Update From REDCap 
+```{r setup, eval=TRUE}
+project <- load_project("TEST_CLASSIC")
 
-# Explore Whats Inside
+# projects have read-only active bindings
+names(REDCapSyncProject$active)
 
-# Generate Outputs
-
+# projects have public methods
+names(REDCapSyncProject$public_methods) |> setdiff("initialize")
 ```
 

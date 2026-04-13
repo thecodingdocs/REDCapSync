@@ -3,7 +3,7 @@
 Several R packages exist for using the
 [REDCap](https://projectredcap.org/) Application Program Interface (API)
 such as, [`redcapAPI`](https://github.com/vubiostat/redcapAPI),
-[`REDCapR`](https://ouhscbbmc.github.io/REDCapR), and
+[`REDCapR`](https://ouhscbbmc.github.io/REDCapR/), and
 [`tidyREDCap`](https://raymondbalise.github.io/tidyREDCap/). However,
 [`REDCapSync`](https://thecodingdocs.github.io/REDCapSync/) is the first
 “get-everything” REDCap R package that converts REDCap projects into a

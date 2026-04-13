@@ -800,4 +800,8 @@ project <- load_project("TEST_CLASSIC")
 #> ! No cached projects... use `setup_project(...)`
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
+project$sync()
+#> ℹ TEST projects do not communicate with the API
+project$save()
+#> ℹ TEST projects do not save to directories!
 ```

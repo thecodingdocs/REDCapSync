@@ -12,29 +12,71 @@
 #' entry point to the REDCapSync workflow. All project-level operations—such as
 #' setup, loading, syncing, and removal—are accessed through this object.
 #'
-#' A key advantage of this design is support for **method chaining**. Because
-#' many project methods return project objects, you can write concise, readable
-#' workflows that operate in sequence:
+#' A key advantage of this design is support for **method chaining**, even
+#' without loading the namespace. Because many project methods return project
+#' objects, you can write concise, readable workflows that operate in sequence:
 #'
 #' \preformatted{
-#' # load previous project and sync with API
-#' project <- REDCapSync::projects$load("TEST_CLASSIC")$sync()
-#' # load dataset to global envir based on custom filters
-#' dataset <- project$generate_dataset(envir = globalenv(),
-#'                                     filter_field = "var_branching",
-#'                                     filter_choices = "Yes")
+#' # load, sync, and generate dataset to global
+#' REDCapSync::projects$load("TEST_CLASSIC")$
+#'   sync()$
+#'   generate_dataset(envir = globalenv(),
+#'                    filter_field = "var_branching",
+#'                    filter_choices = "Yes")
+#' }
+#' @section Methods:
+#'
+#' \describe{
+#'
+#' \item{`print()`}{
+#' Display a summary of all registered projects.
+#'
+#' - Shows total number of projects
+#' - Lists project names
+#' - Indicates how many are due for sync
+#'
+#' Returns the project data frame invisibly.
 #' }
 #'
+#' \item{`df()`}{
+#' Retrieve the project registry as a data frame.
+#'
+#' Returns a data frame containing stored project metadata.
+#' }
+#'
+#' \item{`n()`}{
+#' Return the number of registered projects.
+#'
+#' Returns an integer.
+#' }
+#'
+#' \item{`any()`}{
+#' Check whether any projects are registered.
+#'
+#' Returns a logical scalar.
+#' }
+#'
+#' \item{`load(project_name)`}{
+#' Load a project by name. This is a wrapper for [load_project].
+#'
+#' \strong{Arguments}
+#' \itemize{
+#'   \item `project_name`: Character. Name of the project.
+#' }
+#'
+#' Returns a `REDCapSyncProject` object.
+#' }
+#'
+#' }
 #' @family Cache Functions
 #' @keywords Cache
 #' @seealso \code{vignette("Cache", package = "REDCapSync")}
 #' @examples
 #' project_df <- projects$df
-#' project$print()
-#' project$any()
-#' project$n()
-#' TEST_CLASSIC <- project$load("TEST_CLASSIC")
-#'
+#' projects$print()
+#' projects$any()
+#' projects$n()
+#' project <- project$load("TEST_CLASSIC")
 #' @returns list of functions used as single entry into REDCapSync package
 #' @export
 projects <- list(

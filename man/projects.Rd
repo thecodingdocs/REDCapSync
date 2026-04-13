@@ -26,26 +26,73 @@ that projects can be reloaded and updated without reconfiguration.
 entry point to the REDCapSync workflow. All project-level operations—such as
 setup, loading, syncing, and removal—are accessed through this object.
 
-A key advantage of this design is support for \strong{method chaining}. Because
-many project methods return project objects, you can write concise, readable
-workflows that operate in sequence:
+A key advantage of this design is support for \strong{method chaining}, even
+without loading the namespace. Because many project methods return project
+objects, you can write concise, readable workflows that operate in sequence:
 
 \preformatted{
-# load previous project and sync with API
-project <- REDCapSync::projects$load("TEST_CLASSIC")$sync()
-# load dataset to global envir based on custom filters
-dataset <- project$generate_dataset(envir = globalenv(),
-                                    filter_field = "var_branching",
-                                    filter_choices = "Yes")
+# load, sync, and generate dataset to global
+REDCapSync::projects$load("TEST_CLASSIC")$
+  sync()$
+  generate_dataset(envir = globalenv(),
+                   filter_field = "var_branching",
+                   filter_choices = "Yes")
 }
 }
+\section{Methods}{
+
+
+\describe{
+
+\item{\code{print()}}{
+Display a summary of all registered projects.
+\itemize{
+\item Shows total number of projects
+\item Lists project names
+\item Indicates how many are due for sync
+}
+
+Returns the project data frame invisibly.
+}
+
+\item{\code{df()}}{
+Retrieve the project registry as a data frame.
+
+Returns a data frame containing stored project metadata.
+}
+
+\item{\code{n()}}{
+Return the number of registered projects.
+
+Returns an integer.
+}
+
+\item{\code{any()}}{
+Check whether any projects are registered.
+
+Returns a logical scalar.
+}
+
+\item{\code{load(project_name)}}{
+Load a project by name. This is a wrapper for \link{load_project}.
+
+\strong{Arguments}
+\itemize{
+\item \code{project_name}: Character. Name of the project.
+}
+
+Returns a \code{REDCapSyncProject} object.
+}
+
+}
+}
+
 \examples{
 project_df <- projects$df
-project$print()
-project$any()
-project$n()
-TEST_CLASSIC <- project$load("TEST_CLASSIC")
-
+projects$print()
+projects$any()
+projects$n()
+project <- project$load("TEST_CLASSIC")
 }
 \seealso{
 \code{vignette("Cache", package = "REDCapSync")}

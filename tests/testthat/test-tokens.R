@@ -144,6 +144,7 @@ test_that("has_keyring_token returns NULL for missing project names", {
   expect_null(has_keyring_token("MISSING_PROJECT"))
 })
 test_that("has_keyring_token returns NULL when keyring is invalid", {
+  skip_if_not_installed("keyring")
   projects <- data.frame(project_name = "TEST_CLASSIC",
                          stringsAsFactors = FALSE)
   local_mocked_bindings(
@@ -184,6 +185,7 @@ test_that("has_envvar_token works", {
 })
 # is_valid_keyring (Internal)
 test_that("is_valid_keyring works!", {
+  skip_if_not_installed("keyring")
   # No keyring package
   local_mocked_bindings(
     has_keyring_pkg = function() FALSE

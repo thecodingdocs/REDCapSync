@@ -305,8 +305,10 @@ has_envvar_token <- function(project_names = NULL) {
   if (nrow(projects) == 0L) {
     return(NULL)
   }
-  if (!is_valid_keyring()) {
-    return(NULL)
+  if(has_keyring_pkg()){
+    if (!is_valid_keyring()) {
+      return(NULL)
+    }
   }
   t_names <- projects$token_name[match(project_names, projects$project_name)]
   t_names %in% names(Sys.getenv())

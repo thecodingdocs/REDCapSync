@@ -92,7 +92,7 @@ project_df <- projects$df
 projects$print()
 projects$any()
 projects$n()
-project <- project$load("TEST_CLASSIC")
+project <- projects$load("TEST_CLASSIC")
 }
 \seealso{
 \code{vignette("Cache", package = "REDCapSync")}

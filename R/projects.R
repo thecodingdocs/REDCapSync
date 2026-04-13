@@ -76,7 +76,7 @@
 #' projects$print()
 #' projects$any()
 #' projects$n()
-#' project <- project$load("TEST_CLASSIC")
+#' project <- projects$load("TEST_CLASSIC")
 #' @returns list of functions used as single entry into REDCapSync package
 #' @export
 projects <- list(

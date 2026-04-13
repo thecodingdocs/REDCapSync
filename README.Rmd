@@ -140,11 +140,10 @@ If you wish to contribute to this software, use github issues and pull requests.
 ## Links
 
 -   The REDCapSync package is at [github.com/thecodingdocs/REDCapSync](https://github.com/thecodingdocs/REDCapSync "REDCapSync R package"). See instructions above.
--   The RosyREDCap package is at [github.com/thecodingdocs/RosyREDCap](https://github.com/thecodingdocs/RosyREDCap "RosyREDCap R package"). See instructions above.
--   Donate if I helped you out and want more development (anything helps)! [account.venmo.com/u/brandonerose](https://account.venmo.com/u/brandonerose "Venmo Donation")
+-   The RosyREDCap package is at [github.com/thecodingdocs/RosyREDCap](https://github.com/thecodingdocs/RosyREDCap "RosyREDCap R package").
 -   For more R coding visit [TheCodingDocs.com](https://www.thecodingdocs.com/ "TheCodingDocs.com")
 -   For correspondence/feedback/issues, please email [TheCodingDocs\@gmail.com](mailto:TheCodingDocs@gmail.com)!
--   Follow us on Twitter/X [x.com/TheCodingDocs](https://x.com/TheCodingDocs "TheCodingDocs Twitter")
--   Follow me on Twitter/X [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH "BRoseMDMPH Twitter")
+-   Follow us on Twitter/X [x.com/TheCodingDocs](https://x.com/TheCodingDocs/ "TheCodingDocs Twitter")
+-   Follow me on Twitter/X [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH/ "BRoseMDMPH Twitter")
 
 [![TheCodingDocs.com](man/figures/TCD.png)](https://www.thecodingdocs.com)

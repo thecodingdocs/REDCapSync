@@ -3,7 +3,7 @@
 \name{project}
 \alias{project}
 \alias{REDCapSyncProject}
-\title{Syncronizing REDCap Project}
+\title{Synchronizing REDCap Project}
 \value{
 An R6ClassGenerator which is used internally to create or load a
 project object for the user

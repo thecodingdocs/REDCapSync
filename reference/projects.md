@@ -16,7 +16,7 @@ projects
 
 ## Format
 
-An object of class `list` of length 4.
+An object of class `list` of length 5.
 
 ## Value
 

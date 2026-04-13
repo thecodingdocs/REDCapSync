@@ -1,7 +1,7 @@
 #' @title Configuration
 #'
 #' @description
-#'
+#' `r lifecycle::badge("experimental")`
 #' Internal configuration helpers used to retrieve package configuration
 #' values from options or environment variables.
 #'
@@ -11,11 +11,17 @@
 #' 3. Default if unable to find and validate from above.
 #'
 #' @details
+#' The config function is operational but only some methods presently
+#' affect internal code. Most users will not ever need to modify default config.
+#' This is included to improve future versions of the package.
+#' * Working configs: `allow.test.names`, `cache.dir`, `keyring`,
+#' `keyring.service`, `openxlsx.header.style`, `openxlsx.body.style`.
+#' * Partial coverage: `offline`.
+#' * Placeholder: `verbose`, `show.api.messages`
 #'
 #' ## allow.test.names
 #' Logical for [setup_project()] allowing `project_name` starting with TEST_.
-#' Default is `FALSE`.
-#'
+#' Default is `FALSE`. This is provided for developers and testing environments.
 #' ```
 #' # check current value package is using...
 #' config$allow.test.names()

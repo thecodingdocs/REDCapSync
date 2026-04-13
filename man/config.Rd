@@ -14,6 +14,7 @@ config
 list of functions that returns config values
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Internal configuration helpers used to retrieve package configuration
 values from options or environment variables.
 
@@ -25,10 +26,19 @@ Configuration is resolved in the following order:
 }
 }
 \details{
+The config function is operational but only some methods presently
+affect internal code. Most users will not ever need to modify default config.
+This is included to improve future versions of the package.
+\itemize{
+\item Working configs: \code{allow.test.names}, \code{cache.dir}, \code{keyring},
+\code{keyring.service}, \code{openxlsx.header.style}, \code{openxlsx.body.style}.
+\item Partial coverage: \code{offline}.
+\item Placeholder: \code{verbose}, \code{show.api.messages}
+}
 \subsection{allow.test.names}{
 
 Logical for \code{\link[=setup_project]{setup_project()}} allowing \code{project_name} starting with TEST_.
-Default is \code{FALSE}.
+Default is \code{FALSE}. This is provided for developers and testing environments.
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{# check current value package is using...
 config$allow.test.names()

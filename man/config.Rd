@@ -10,6 +10,9 @@ An object of class \code{list} of length 9.
 \usage{
 config
 }
+\value{
+list of functions that returns config values
+}
 \description{
 Internal configuration helpers used to retrieve package configuration
 values from options or environment variables.
@@ -195,6 +198,20 @@ options(redcapsync.config.openxlsx.body.style = new_style)
 }\if{html}{\out{</div>}}
 }
 
+\examples{
+
+# disable with environment variable
+Sys.setenv(REDCAPSYNC_CONFIG_OFFLINE = FALSE)
+
+config$offline()
+
+# change to offline
+options(redcapsync.config.offline = TRUE)
+
+config$offline()
+
+
+}
 \seealso{
 See \code{vignette("Tokens", package = "REDCapSync")}
 }

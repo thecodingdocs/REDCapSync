@@ -178,6 +178,21 @@
 #' ```
 #'
 #' @seealso See \code{vignette("Tokens", package = "REDCapSync")}
+#' @returns list of functions that returns config values
+#' @examples
+#'
+#' # disable with environment variable
+#' Sys.setenv(REDCAPSYNC_CONFIG_OFFLINE = FALSE)
+#'
+#' config$offline()
+#'
+#' # change to offline
+#' options(redcapsync.config.offline = TRUE)
+#'
+#' config$offline()
+#'
+
+#'
 #' @export
 config <- list(
   allow.test.names = function(default = FALSE) {

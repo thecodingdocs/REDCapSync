@@ -29,7 +29,7 @@
 #' @keywords Cache
 #' @seealso \code{vignette("Cache", package = "REDCapSync")}
 #' @examples
-#' project_df <_ projects$df
+#' project_df <- projects$df
 #' project$print()
 #' project$any()
 #' project$n()

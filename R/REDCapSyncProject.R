@@ -1,9 +1,18 @@
 #' @title Synchronizing REDCap Project
 #' @description
-#' [R6][R6::R6Class] project object for [REDCapSync]
-#' This is the main class for managing REDCap data, metadata, and sync
-#' operations. Users should construct objects using [setup_project()]. To reopen
-#' an existing project, use [load_project()].
+#' [R6][R6::R6Class] project object for [REDCapSync] This is the main class for
+#' managing REDCap data, metadata, and sync operations. Users should construct
+#' objects using [setup_project()]. To reopen an existing project,
+#' use [load_project()].
+#' @details
+#' The methods documented below are functions that work without having to use
+#' "<-". For example, if you load a project with
+#' \code{project <- load_project("TEST_CLASSIC")}, and then then run
+#' \code{project$sync()}, then the project object will contain the updated data.
+#' That function actually invisibily retruns itself which allows for "chaining",
+#' such as \code{load_project("TEST_CLASSIC")$sync()}. More features are being
+#' developed that will allow for the addition of fields (outside of REDCap).
+#'
 #' @param dataset_name Character. The name of the configured dataset from which
 #' to generate the dataset. *If you provide `dataset_name` all other parameters
 #' are inherited according to what was set with `add_dataset`.
@@ -241,7 +250,8 @@ REDCapSyncProject <- R6Class(
     #' Updates the REDCap data for (`project` object) by checking REDCap log for
     #' changes. Sync is performed according to the `sync_frequency` set in
     #' [setup_project()] by default. Use `hard_check` to force a check, or `
-    #' hard_reset` to force a complete refresh.
+    #' hard_reset` to force a complete refresh. As a default, this object will
+    #' be saved to your directory when necessary.
     sync = function(save_datasets = TRUE,
                     save_to_dir = TRUE,
                     hard_check = FALSE,
@@ -321,7 +331,7 @@ REDCapSyncProject <- R6Class(
       )
       invisible(self)
     },
-    #' @description  Clear all project datasets
+    #' @description  Load dataset if previously defined with `add_dataset`.
     load_dataset = function(dataset_name,
                             envir = NULL) {
       dataset_names <- names(private$project$datasets)
@@ -332,7 +342,7 @@ REDCapSyncProject <- R6Class(
       dataset$to_envir(envir = envir)
       invisible(dataset)
     },
-    #' @description  Clear all project datasets
+    #' @description  Clear all or specified datasets from the `project` object.
     remove_datasets = function(dataset_names = NULL) {
       private$project <- clear_project_datasets(
         project = private$project,
@@ -340,7 +350,9 @@ REDCapSyncProject <- R6Class(
       )
       invisible(self)
     },
-    #' @description  Add a new dataset entry
+    #' @description  Generate [dataset] object. This is usually handled
+    #' internally for some default behavior but is provided here for ad-hoc
+    #' custom datasets.
     generate_dataset = function(dataset_name,
                                 envir = NULL,
                                 transformation_type = "default",
@@ -410,7 +422,7 @@ REDCapSyncProject <- R6Class(
       dataset$to_envir(envir = envir)
       invisible(dataset)
     },
-    #' @description  Add a new dataset entry
+    #' @description  Add a new field. Placeholder for future feature.
     add_field = function(field_name,
                          form_name,
                          field_type,
@@ -424,12 +436,13 @@ REDCapSyncProject <- R6Class(
       message("Added field! (placeholder)")
       invisible(self)
     },
-    #' @description  Removes extra fields
+    #' @description  Removes added field(s). Placeholder for future feature.
     remove_fields = function(field_names = NULL) {
       message("Removed field! (placeholder)")
       invisible(self)
     },
-    #' @description saves project datasets to Excel
+    #' @description saves datasets to Excel via setting provided to
+    #' `add_dataset`.
     save_datasets = function(hard_reset = FALSE) {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not save to directories!")
@@ -446,7 +459,8 @@ REDCapSyncProject <- R6Class(
       }
       invisible(self)
     },
-    #' @description save dataset to Excel
+    #' @description saves dataset to Excel via setting provided to
+    #' `add_dataset`.
     save_dataset = function(dataset_name) {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not save to directories!")
@@ -458,7 +472,8 @@ REDCapSyncProject <- R6Class(
                                               dataset_name = dataset_name)
       invisible(self)
     },
-    #' @description  Add a new dataset entry
+    #' @description  Save project object to directory chosen with
+    #' [setup_project].
     save = function() {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not save to directories!")
@@ -476,7 +491,7 @@ REDCapSyncProject <- R6Class(
       set_project_keyring_token(private$project)
       invisible(self)
     },
-    #' @description test connection via communication with API
+    #' @description test connection via communication with API.
     test_token = function() {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not communicate with the API")
@@ -486,7 +501,7 @@ REDCapSyncProject <- R6Class(
                                             silent = FALSE)
       invisible(self)
     },
-    #' @description opens links in browser
+    #' @description opens links in browser.
     url_launch = function(link_type = "home",
                           open_browser = TRUE) {
       if (private$project$internals$is_test && open_browser) {
@@ -501,7 +516,7 @@ REDCapSyncProject <- R6Class(
       }
       invisible(self)
     },
-    #' @description opens record links in browser
+    #' @description opens record links in browser.
     url_record_launch = function(record = NULL,
                                  page = NULL,
                                  instance = NULL,

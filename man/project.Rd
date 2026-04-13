@@ -9,10 +9,19 @@ An R6ClassGenerator which is used internally to create or load a
 project object for the user
 }
 \description{
-\link[R6:R6Class]{R6} project object for \link{REDCapSync}
-This is the main class for managing REDCap data, metadata, and sync
-operations. Users should construct objects using \code{\link[=setup_project]{setup_project()}}. To reopen
-an existing project, use \code{\link[=load_project]{load_project()}}.
+\link[R6:R6Class]{R6} project object for \link{REDCapSync} This is the main class for
+managing REDCap data, metadata, and sync operations. Users should construct
+objects using \code{\link[=setup_project]{setup_project()}}. To reopen an existing project,
+use \code{\link[=load_project]{load_project()}}.
+}
+\details{
+The methods documented below are functions that work without having to use
+"<-". For example, if you load a project with
+\code{project <- load_project("TEST_CLASSIC")}, and then then run
+\code{project$sync()}, then the project object will contain the updated data.
+That function actually invisibily retruns itself which allows for "chaining",
+such as \code{load_project("TEST_CLASSIC")$sync()}. More features are being
+developed that will allow for the addition of fields (outside of REDCap).
 }
 \examples{
 project <- load_project("TEST_CLASSIC")
@@ -104,7 +113,8 @@ Print some key project information
 \subsection{Method \code{sync()}}{
 Updates the REDCap data for (\code{project} object) by checking REDCap log for
 changes. Sync is performed according to the \code{sync_frequency} set in
-\code{\link[=setup_project]{setup_project()}} by default. Use \code{hard_check} to force a check, or \code{ hard_reset} to force a complete refresh.
+\code{\link[=setup_project]{setup_project()}} by default. Use \code{hard_check} to force a check, or \code{ hard_reset} to force a complete refresh. As a default, this object will
+be saved to your directory when necessary.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$sync(
   save_datasets = TRUE,
@@ -280,7 +290,7 @@ with the same name. Default is \code{FALSE}.}
 \if{html}{\out{<a id="method-REDCapSyncProject-load_dataset"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-load_dataset}{}}}
 \subsection{Method \code{load_dataset()}}{
-Clear all project datasets
+Load dataset if previously defined with \code{add_dataset}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$load_dataset(dataset_name, envir = NULL)}\if{html}{\out{</div>}}
 }
@@ -301,7 +311,7 @@ are inherited according to what was set with \code{add_dataset}.}
 \if{html}{\out{<a id="method-REDCapSyncProject-remove_datasets"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-remove_datasets}{}}}
 \subsection{Method \code{remove_datasets()}}{
-Clear all project datasets
+Clear all or specified datasets from the \code{project} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$remove_datasets(dataset_names = NULL)}\if{html}{\out{</div>}}
 }
@@ -318,7 +328,9 @@ Clear all project datasets
 \if{html}{\out{<a id="method-REDCapSyncProject-generate_dataset"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-generate_dataset}{}}}
 \subsection{Method \code{generate_dataset()}}{
-Add a new dataset entry
+Generate \link{dataset} object. This is usually handled
+internally for some default behavior but is provided here for ad-hoc
+custom datasets.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$generate_dataset(
   dataset_name,
@@ -440,7 +452,7 @@ Default is \code{TRUE}.}
 \if{html}{\out{<a id="method-REDCapSyncProject-add_field"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-add_field}{}}}
 \subsection{Method \code{add_field()}}{
-Add a new dataset entry
+Add a new field. Placeholder for future feature.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$add_field(
   field_name,
@@ -495,7 +507,7 @@ validate the data in the field. Default is \code{NA}.}
 \if{html}{\out{<a id="method-REDCapSyncProject-remove_fields"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-remove_fields}{}}}
 \subsection{Method \code{remove_fields()}}{
-Removes extra fields
+Removes added field(s). Placeholder for future feature.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$remove_fields(field_names = NULL)}\if{html}{\out{</div>}}
 }
@@ -513,7 +525,8 @@ the dataset. Default is \code{NULL}, which includes all fields.}
 \if{html}{\out{<a id="method-REDCapSyncProject-save_datasets"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-save_datasets}{}}}
 \subsection{Method \code{save_datasets()}}{
-saves project datasets to Excel
+saves datasets to Excel via setting provided to
+\code{add_dataset}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$save_datasets(hard_reset = FALSE)}\if{html}{\out{</div>}}
 }
@@ -531,7 +544,8 @@ with the same name. Default is \code{FALSE}.}
 \if{html}{\out{<a id="method-REDCapSyncProject-save_dataset"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-save_dataset}{}}}
 \subsection{Method \code{save_dataset()}}{
-save dataset to Excel
+saves dataset to Excel via setting provided to
+\code{add_dataset}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$save_dataset(dataset_name)}\if{html}{\out{</div>}}
 }
@@ -550,7 +564,8 @@ are inherited according to what was set with \code{add_dataset}.}
 \if{html}{\out{<a id="method-REDCapSyncProject-save"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-save}{}}}
 \subsection{Method \code{save()}}{
-Add a new dataset entry
+Save project object to directory chosen with
+\link{setup_project}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$save()}\if{html}{\out{</div>}}
 }
@@ -570,7 +585,7 @@ Set keyring token. See vignette and config for detail.
 \if{html}{\out{<a id="method-REDCapSyncProject-test_token"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-test_token}{}}}
 \subsection{Method \code{test_token()}}{
-test connection via communication with API
+test connection via communication with API.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$test_token()}\if{html}{\out{</div>}}
 }
@@ -580,7 +595,7 @@ test connection via communication with API
 \if{html}{\out{<a id="method-REDCapSyncProject-url_launch"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-url_launch}{}}}
 \subsection{Method \code{url_launch()}}{
-opens links in browser
+opens links in browser.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$url_launch(link_type = "home", open_browser = TRUE)}\if{html}{\out{</div>}}
 }
@@ -603,7 +618,7 @@ browser.}
 \if{html}{\out{<a id="method-REDCapSyncProject-url_record_launch"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-url_record_launch}{}}}
 \subsection{Method \code{url_record_launch()}}{
-opens record links in browser
+opens record links in browser.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$url_record_launch(
   record = NULL,

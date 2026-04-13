@@ -127,22 +127,15 @@ Setup or Load the \code{project} object for pipeline.
 }
 \details{
 This function sets up the \code{project} object by storing the REDCap API token
-and
-other configurations required for interacting with the REDCap server.
+and other configurations required for interacting with the REDCap server.
 It ensures that the token is valid and ready for use in subsequent API calls.
 Neither function directly attempts communication with REDCap.
 
 \code{setup_project} is used the first time you initialize/link a REDCap project.
 Mainly, it sets your unique \code{project_name} and your intended directory.
 Unless you run \code{hard_reset = TRUE} the default will first try
-load_project. dir_path is technically optional but without it the user cannot
+load_project. \code{dir_path} is technically optional but without it the user cannot
 save/load/update projects. Must be all capital letters!
-
-\code{load_project} can be used with just the \code{project_name} parameter after you
-have
-already run \code{setup_project} in the past with an established directory.
-\code{dir_path}
-is optional for this function but can be used if you relocated the directory.
 }
 \examples{
 # Initialize the project object with the REDCap API token and URL

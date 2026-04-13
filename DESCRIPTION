@@ -4,12 +4,7 @@ Version: 0.1.0
 Authors@R: c(
     person("Brandon", "Rose", , "thecodingdocs@gmail.com", role = c("cre", "aut", "cph"),
            comment = c(ORCID = "0009-0009-7813-1960")),
-    person("Natalie", "Goulett", role = "ctb"),
-    person("Chris", "Hilsinger-Pate", role = "ctb"),
-    person("Nikola", "Susic", role = "ctb"),
-    person("Mason", "Thornton", role = "ctb"),
-    person("Sydney", "Stern", role = "ctb",
-           comment = c(ORCID = "0000-0002-1479-605X"))
+    person("Natalie", "Goulett", role = "ctb")
   )
 Description: Wraps dozens of REDCap API endpoints into a standardized R6
     object.  Research Electronic Data Capture (REDCap) is a survey and
@@ -18,13 +13,12 @@ Description: Wraps dozens of REDCap API endpoints into a standardized R6
     several R packages. 'REDCapSync' uses 'redcapAPI' and 'REDCapR'
     behind-the-scenes to retrieve all metadata, data, and log details for
     a project. To minimize unneccesary server calls, the interim REDCap
-    log is analyzed and used to update necessary records. Furthermore, the
-    user can define subsets and transformations, such as merges and
-    deidentification, that save to a user-defined directory. Those
-    subsets, called summaries by the package, also continue to refresh
-    when data is updated. Having a standarized, API-effecient,
-    project-agnostic R object streamlines downstream use in scripts,
-    functions, and shiny applications.
+    log is analyzed and used to only update necessary records.
+    Furthermore, the user can define custom datasets that save to a
+    directory. Those datasets continue to refresh when project is synced.
+    Having a secure, standarized, API-effecient, project-agnostic R object
+    for REDCap projects, streamlines downstream use in scripts, functions,
+    and shiny applications.
 License: GPL (>= 3) + file LICENSE
 URL: https://github.com/thecodingdocs/REDCapSync,
     https://thecodingdocs.github.io/REDCapSync/

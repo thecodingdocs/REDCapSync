@@ -22,6 +22,10 @@ config
 
 An object of class `list` of length 9.
 
+## Value
+
+list of functions that returns config values
+
 ## Details
 
 ### allow.test.names
@@ -186,3 +190,20 @@ Excel sheet body using
 
 See
 [`vignette("Tokens", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Tokens.md)
+
+## Examples
+
+``` r
+# disable with environment variable
+Sys.setenv(REDCAPSYNC_CONFIG_OFFLINE = FALSE)
+
+config$offline()
+#> [1] FALSE
+
+# change to offline
+options(redcapsync.config.offline = TRUE)
+
+config$offline()
+#> [1] TRUE
+
+```

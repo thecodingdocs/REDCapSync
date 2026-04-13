@@ -2,7 +2,7 @@
 title: "Uploading REDCap Data"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Uploading REDCap Data}
+  %\VignetteIndexEntry{Uploads}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,3 +17,4 @@ knitr::opts_chunk$set(
 ```{r setup, eval=FALSE}
 library(REDCapSync)
 ```
+

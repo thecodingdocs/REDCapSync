@@ -1,8 +1,8 @@
 ---
-title: "The REDCapSyncProject Object"
+title: "Projects"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{The project Object}
+  %\VignetteIndexEntry{Projects}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

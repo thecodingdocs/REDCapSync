@@ -1,0 +1,19 @@
+---
+title: "RosyREDCap Shiny App and Plots"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{RosyREDCap}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+RosyREDCap is not on CRAN yet. You can find it on github --> [`RosyREDCap`](https://thecodingdocs.github.io/RosyREDCap/ "RosyREDCap R package")
+
+

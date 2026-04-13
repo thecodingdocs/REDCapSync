@@ -15,10 +15,10 @@ Description: Wraps dozens of REDCap API endpoints into a standardized R6
     a project. To minimize unneccesary server calls, the interim REDCap
     log is analyzed and used to only update necessary records.
     Furthermore, the user can define custom datasets that save to a
-    directory. Those datasets continue to refresh when project is synced.
-    Having a secure, standarized, API-effecient, project-agnostic R object
-    for REDCap projects, streamlines downstream use in scripts, functions,
-    and shiny applications.
+    directory. Those datasets continue to refresh when projects are
+    synced.  Having a secure, standarized, API-effecient, project-agnostic
+    R object for REDCap projects, streamlines downstream use in scripts,
+    functions, and shiny applications.
 License: GPL (>= 3) + file LICENSE
 URL: https://github.com/thecodingdocs/REDCapSync,
     https://thecodingdocs.github.io/REDCapSync/

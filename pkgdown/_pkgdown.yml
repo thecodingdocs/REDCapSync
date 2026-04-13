@@ -48,12 +48,12 @@ articles:
     contents:
       - Cache
       - Tokens
-      - project_object
+      - Projects
   - title: Going Further
     contents:
-      - multiple_projects
       - Datasets
-      - Upload
+      - Uploads
+      - RosyREDCap
 
 authors:
   Brandon Rose:

@@ -358,7 +358,8 @@ generate_project_dataset <- function(project,
     project_name = project$project_name,
     dir_path = project$dir_path,
     n_records = nrow(project$record_summary),
-    help = project$links$help
+    help = project$links$help,
+    is_test = project$internals$is_test
   )
   invisible(data_list)
 }

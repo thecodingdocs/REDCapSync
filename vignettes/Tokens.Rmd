@@ -47,18 +47,39 @@ The only reference to your token that is ever made or saved in REDCapSync is wit
 
 ## Setting Your Token using `keyring` package
 
-By default REDCapSync will use keyring = NULL, which is your OS system default anf is typcially unlocked by default while you are logged in. 
+By default REDCapSync will use keyring = NULL, which is your OS system default and is typcially unlocked by default while you are logged in. 
 
 ```{r, eval=FALSE}
+project <- load_project("TEST_CLASSIC")
 
+project$set_keyring_token() # now enter token in pop-up
+# internally the package checks ...
+#1. Sys.getenv()
+token <- Sys.getenv(project$.internal$token_name)
+#2. followed by keyring
+token <- keyring::key_get(service = config$keyring.service(),
+                          username = project$project_name,
+                          keyring = config$keyring())
+# you could set with the following; not preferred because token in script
+# if you do this set in securely in file that no one can ever see; never github!
+keyring::key_set_with_value(service = config$keyring.service(),
+                            username = project$project_name,
+                            password = "VeryNOTsecureWayToSetYourTOKEN",
+                            keyring = config$keyring())
+
+# again, internally this will be searched for like this
+token <- keyring::key_get(service = config$keyring.service(),
+                          username = project$project_name,
+                          keyring = config$keyring())
 ```
 
 You can change default configuration using configuration settings...
 
 ```{r, eval=FALSE}
 options(redcapsync.config.keyring = "REDCapSync")
-
-
+# with this kind of method you could define multiple tokens in a private/secret
+# .R file which can be sourced to set all tokens in akeyring. Can also be 
+# locked and unlocked (see keyring webstite)
 ```
 
 ## Setting Your Token for One Session
@@ -82,11 +103,9 @@ Now the token is set for this R session only. If you restarted R, it would be bl
 If you are ever having any issues with your token, you can test your project object with `view_project_token(project)` and/or `test_project_token(project)`
 
 ```{r, eval=FALSE}
-
 project <- load_project("TEST_CLASSIC") # replace project name with yours
 
 project$test_token()
-
 ```
 
 ## Additional Resources

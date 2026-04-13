@@ -209,8 +209,6 @@ config$offline()
 options(redcapsync.config.offline = TRUE)
 
 config$offline()
-
-
 }
 \seealso{
 See \code{vignette("Tokens", package = "REDCapSync")}

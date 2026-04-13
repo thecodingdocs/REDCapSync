@@ -28,6 +28,13 @@
 #' @family Cache Functions
 #' @keywords Cache
 #' @seealso \code{vignette("Cache", package = "REDCapSync")}
+#' @examples
+#' project_df <_ projects$df
+#' project$print()
+#' project$any()
+#' project$n()
+#' TEST_CLASSIC <- project$load("TEST_CLASSIC)
+#'
 #' @returns list of functions used as single entry into REDCapSync package
 #' @export
 projects <- list(

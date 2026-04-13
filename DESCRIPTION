@@ -1,25 +1,25 @@
 Package: REDCapSync
-Title: Encapsulated REDCap Project Objects for Synchronized Data Pipelines
+Title: Encapsulated 'REDCap' Project Objects for Synchronized Data Pipelines
 Version: 0.1.0
 Authors@R: c(
     person("Brandon", "Rose", , "thecodingdocs@gmail.com", role = c("cre", "aut", "cph"),
            comment = c(ORCID = "0009-0009-7813-1960")),
     person("Natalie", "Goulett", role = "ctb")
   )
-Description: Wraps dozens of REDCap API endpoints into a standardized R6
-    object.  Research Electronic Data Capture (REDCap) is a survey and
+Description: Wraps dozens of 'REDCap' API endpoints into a standardized R6
+    object.  Research Electronic Data Capture ('REDCap') is a survey and
     database web application software maintained by Vanderbilt University.
     It has a robust application programming interface (API) utilized by
     several R packages. 'REDCapSync' uses 'redcapAPI' and 'REDCapR'
     behind-the-scenes to retrieve all metadata, data, and log details for
-    a project. To minimize unnecessary server calls, the interim REDCap
+    a project. To minimize unnecessary server calls, the interim 'REDCap'
     log is analyzed and used to only update necessary records.
     Furthermore, the user can define custom datasets that save to a
     directory. Those datasets continue to refresh when projects are
     synced.  Having a secure, standardized, API-efficient,
-    project-agnostic R object for REDCap projects, streamlines downstream
+    project-agnostic R object for 'REDCap' projects, streamlines downstream
     use in scripts, functions, and shiny applications.
-License: GPL (>= 3) + file LICENSE
+License: GPL (>= 3)
 URL: https://github.com/thecodingdocs/REDCapSync,
     https://thecodingdocs.github.io/REDCapSync/
 BugReports: https://github.com/thecodingdocs/REDCapSync/issues

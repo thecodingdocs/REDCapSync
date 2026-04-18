@@ -58,7 +58,7 @@ our token in a different way.
 ### Setting Your Token using `keyring` package
 
 By default REDCapSync will use keyring = NULL, which is your OS system
-default and is typcially unlocked by default while you are logged in.
+default and is typically unlocked by default while you are logged in.
 
 ``` r
 project <- load_project("TEST_CLASSIC")

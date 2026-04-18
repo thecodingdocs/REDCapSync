@@ -70,7 +70,7 @@ project$load_dataset(summary_name = "REDCapSync", envir = globalenv())
 
 This can be customized with `add_dataset` for refreshing datasets or
 `generate_dataset` for R-only use. This can give you filtered data (and
-corresponding annotations to metadata, etc), de-identified data, and
+corresponding annotations to metadata, etc), deidentified data, and
 more!
 
 ``` r

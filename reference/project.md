@@ -19,7 +19,7 @@ The methods documented below are functions that work without having to
 use "\<-". For example, if you load a project with
 `project <- load_project("TEST_CLASSIC")`, and then then run
 `project$sync()`, then the project object will contain the updated data.
-That function actually invisibily retruns itself which allows for
+That function actually invisibly returns itself which allows for
 "chaining", such as `load_project("TEST_CLASSIC")$sync()`. More features
 are being developed that will allow for the addition of fields (outside
 of REDCap).
@@ -275,7 +275,7 @@ Add a new dataset entry
 - `exclude_free_text`:
 
   Logical. If `TRUE`, exclude free text fields intended for
-  de-identification workflows. Default is `FALSE`.
+  deidentification workflows. Default is `FALSE`.
 
 - `date_handling`:
 
@@ -515,7 +515,7 @@ is provided here for ad-hoc custom datasets.
 - `exclude_free_text`:
 
   Logical. If `TRUE`, exclude free text fields intended for
-  de-identification workflows. Default is `FALSE`.
+  deidentification workflows. Default is `FALSE`.
 
 - `date_handling`:
 

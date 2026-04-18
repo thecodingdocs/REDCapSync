@@ -12,12 +12,12 @@
 Source:
 [`DESCRIPTION`](https://github.com/thecodingdocs/REDCapSync/blob/main/DESCRIPTION)
 
-Rose B (2026). *REDCapSync: Encapsulated 'REDCap' Project Objects for
+Rose B (2026). *REDCapSync: Encapsulated 'REDCap' Projects for
 Synchronized Data Pipelines*. R package version 0.1.0,
 <https://github.com/thecodingdocs/REDCapSync>.
 
     @Manual{,
-      title = {REDCapSync: Encapsulated 'REDCap' Project Objects for Synchronized Data Pipelines},
+      title = {REDCapSync: Encapsulated 'REDCap' Projects for Synchronized Data Pipelines},
       author = {Brandon Rose},
       year = {2026},
       note = {R package version 0.1.0},

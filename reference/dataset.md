@@ -182,7 +182,7 @@ Users should construct objects using
 - `exclude_free_text`:
 
   Logical. If `TRUE`, exclude free text fields intended for
-  de-identification workflows. Default is `FALSE`.
+  deidentification workflows. Default is `FALSE`.
 
 - `date_handling`:
 
@@ -332,5 +332,5 @@ dataset$data$merged$letter_b <- dataset$data$merged$var_text_letters == "b"
 # save data in custom location
 dataset$save(dir_other = save_dir)
 #> ℹ Saved 'TEST_CLASSIC_REDCapSync.xlsx'!
-#>   /tmp/RtmpgeEcLk/TEST_CLASSIC_REDCapSync.xlsx
+#>   /tmp/RtmpQ2zyVv/TEST_CLASSIC_REDCapSync.xlsx
 ```

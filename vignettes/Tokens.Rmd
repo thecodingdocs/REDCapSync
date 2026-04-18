@@ -47,7 +47,7 @@ The only reference to your token that is ever made or saved in REDCapSync is wit
 
 ## Setting Your Token using `keyring` package
 
-By default REDCapSync will use keyring = NULL, which is your OS system default and is typcially unlocked by default while you are logged in. 
+By default REDCapSync will use keyring = NULL, which is your OS system default and is typically unlocked by default while you are logged in. 
 
 ```{r, eval=FALSE}
 project <- load_project("TEST_CLASSIC")

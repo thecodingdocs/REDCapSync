@@ -19,7 +19,7 @@ The methods documented below are functions that work without having to use
 "<-". For example, if you load a project with
 \code{project <- load_project("TEST_CLASSIC")}, and then then run
 \code{project$sync()}, then the project object will contain the updated data.
-That function actually invisibily retruns itself which allows for "chaining",
+That function actually invisibly returns itself which allows for "chaining",
 such as \code{load_project("TEST_CLASSIC")$sync()}. More features are being
 developed that will allow for the addition of fields (outside of REDCap).
 }
@@ -225,7 +225,7 @@ Default is \code{NULL}, which includes all forms.}
 data in the dataset. Default is \code{TRUE}.}
 
 \item{\code{exclude_free_text}}{Logical. If \code{TRUE}, exclude free text fields
-intended for de-identification workflows. Default is \code{FALSE}.}
+intended for deidentification workflows. Default is \code{FALSE}.}
 
 \item{\code{date_handling}}{character string. One of \code{none},\code{exclude_dates},
 \code{random_shift_by_record}, \code{random_shift_by_project}, \code{zero_by_record}, or
@@ -405,7 +405,7 @@ Default is \code{NULL}, which includes all forms.}
 data in the dataset. Default is \code{TRUE}.}
 
 \item{\code{exclude_free_text}}{Logical. If \code{TRUE}, exclude free text fields
-intended for de-identification workflows. Default is \code{FALSE}.}
+intended for deidentification workflows. Default is \code{FALSE}.}
 
 \item{\code{date_handling}}{character string. One of \code{none},\code{exclude_dates},
 \code{random_shift_by_record}, \code{random_shift_by_project}, \code{zero_by_record}, or

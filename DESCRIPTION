@@ -1,5 +1,5 @@
 Package: REDCapSync
-Title: Encapsulated 'REDCap' Project Objects for Synchronized Data Pipelines
+Title: Encapsulated 'REDCap' Projects for Synchronized Data Pipelines
 Version: 0.1.0
 Authors@R: c(
     person("Brandon", "Rose", , "thecodingdocs@gmail.com", role = c("cre", "aut", "cph"),
@@ -17,8 +17,8 @@ Description: Wraps dozens of 'REDCap' API endpoints into a standardized R6
     Furthermore, the user can define custom datasets that save to a
     directory. Those datasets continue to refresh when projects are
     synced.  Having a secure, standardized, API-efficient,
-    project-agnostic R object for 'REDCap' projects, streamlines downstream
-    use in scripts, functions, and shiny applications.
+    project-agnostic R object for 'REDCap' projects, streamlines
+    downstream use in scripts, functions, and shiny applications.
 License: GPL (>= 3)
 URL: https://github.com/thecodingdocs/REDCapSync,
     https://thecodingdocs.github.io/REDCapSync/
@@ -45,12 +45,14 @@ Suggests:
     knitr,
     listviewer,
     rmarkdown,
+    spelling,
     testthat (>= 3.3.0),
     withr
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3
 Encoding: UTF-8
+Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE, r6 = TRUE)
 RoxygenNote: 7.3.3

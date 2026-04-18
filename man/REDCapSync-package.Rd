@@ -4,11 +4,11 @@
 \name{REDCapSync-package}
 \alias{REDCapSync}
 \alias{REDCapSync-package}
-\title{REDCapSync: Encapsulated REDCap Project Objects for Synchronized Data Pipelines}
+\title{REDCapSync: Encapsulated 'REDCap' Project Objects for Synchronized Data Pipelines}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Wraps dozens of REDCap API endpoints into a standardized R6 object. Research Electronic Data Capture (REDCap) is a survey and database web application software maintained by Vanderbilt University. It has a robust application programming interface (API) utilized by several R packages. 'REDCapSync' uses 'redcapAPI' and 'REDCapR' behind-the-scenes to retrieve all metadata, data, and log details for a project. To minimize unnecessary server calls, the interim REDCap log is analyzed and used to only update necessary records. Furthermore, the user can define custom datasets that save to a directory. Those datasets continue to refresh when projects are synced. Having a secure, standardized, API-efficient, project-agnostic R object for REDCap projects, streamlines downstream use in scripts, functions, and shiny applications.
+Wraps dozens of 'REDCap' API endpoints into a standardized R6 object. Research Electronic Data Capture ('REDCap') is a survey and database web application software maintained by Vanderbilt University. It has a robust application programming interface (API) utilized by several R packages. 'REDCapSync' uses 'redcapAPI' and 'REDCapR' behind-the-scenes to retrieve all metadata, data, and log details for a project. To minimize unnecessary server calls, the interim 'REDCap' log is analyzed and used to only update necessary records. Furthermore, the user can define custom datasets that save to a directory. Those datasets continue to refresh when projects are synced. Having a secure, standardized, API-efficient, project-agnostic R object for 'REDCap' projects, streamlines downstream use in scripts, functions, and shiny applications.
 }
 \seealso{
 Useful links:

@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 library(REDCapSync)
 ```
 
-Start by loading an exisiting or test project. There are two named datasets by default: REDCapSync and REDCapSync_raw.
+Start by loading an existing or test project. There are two named datasets by default: REDCapSync and REDCapSync_raw.
 
 ```{r, eval=FALSE}
 save_dir <- tempdir() # replace with your intended folder

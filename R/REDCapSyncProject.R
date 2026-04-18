@@ -9,7 +9,7 @@
 #' "<-". For example, if you load a project with
 #' \code{project <- load_project("TEST_CLASSIC")}, and then then run
 #' \code{project$sync()}, then the project object will contain the updated data.
-#' That function actually invisibily retruns itself which allows for "chaining",
+#' That function actually invisibly returns itself which allows for "chaining",
 #' such as \code{load_project("TEST_CLASSIC")$sync()}. More features are being
 #' developed that will allow for the addition of fields (outside of REDCap).
 #'
@@ -43,7 +43,7 @@
 #' @param exclude_identifiers Logical. Whether to exclude identifiers in the
 #' data in the dataset. Default is `TRUE`.
 #' @param exclude_free_text Logical. If `TRUE`, exclude free text fields
-#' intended for de-identification workflows. Default is `FALSE`.
+#' intended for deidentification workflows. Default is `FALSE`.
 #' @param date_handling character string. One of `none`,`exclude_dates`,
 #' `random_shift_by_record`, `random_shift_by_project`, `zero_by_record`, or
 #' `zero_by_project`. Random shift is +/- 90 unless changed with options.

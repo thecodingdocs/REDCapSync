@@ -71,7 +71,7 @@ test_that("setup_project creates a valid project object and valid directory", {
     sanitize_path()
   expect_error(assert_dir(project$dir_path))
 })
-test_that("setup_project checks exisiting dir", {
+test_that("setup_project checks existing dir", {
   tempdir_test <- sanitize_path(withr::local_tempdir())
   withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
   withr::local_options(c(redcapsync.config.allow.test.names = TRUE))

@@ -20,7 +20,7 @@ The REDCapSync package benefits from storing/caching information about your diff
 library(REDCapSync) # don't forget to load the package
 ```
 
-Using the `hoadr` package, R finds the standard location where R typically stores cahced package data. For example, on Mac the location might look like, "/Users/yourmacname/Library/Caches/R/REDCapSync". 
+Using the `hoadr` package, R finds the standard location where R typically stores cached package data. For example, on Mac the location might look like, "/Users/yourmacname/Library/Caches/R/REDCapSync". 
 
 # Location
 Your exact path can be found for any R package with `rappdirs::user_cache_dir("R")`. The only thing that REDCapSync stores in this cache is the projects data.frame, which can be loaded with `projects$load("PROJECT")`.

@@ -145,7 +145,7 @@ Default is \code{NULL}, which includes all forms.}
 data in the dataset. Default is \code{TRUE}.}
 
 \item{\code{exclude_free_text}}{Logical. If \code{TRUE}, exclude free text fields
-intended for de-identification workflows. Default is \code{FALSE}.}
+intended for deidentification workflows. Default is \code{FALSE}.}
 
 \item{\code{date_handling}}{character string. One of \code{none},\code{exclude_dates},
 \code{random_shift_by_record}, \code{random_shift_by_project}, \code{zero_by_record}, or

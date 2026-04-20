@@ -320,10 +320,8 @@ add_project_details_to_cache <- function(project_details) {
 #' @noRd
 help_cli_text <- function() {
   cli_h2("Help")
-  pkgdown_link <- PKGDOWN_LINK
-  github_link <- GITHUB_LINK
-  cli_text("Pkgdown: {.url {pkgdown_link}}")
-  cli_text("Github: {.url {github_link}}")
+  cli_text("Pkgdown: {.url {PKGDOWN_LINK}}")
+  cli_text("Github: {.url {GITHUB_LINK}}")
   cli_text("Datasets: {.vignette REDCapSync::Datasets}")
   cli_text("Tokens: {.vignette REDCapSync::Tokens}")
 }

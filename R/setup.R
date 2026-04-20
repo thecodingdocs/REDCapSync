@@ -12,8 +12,8 @@
 #' `setup_project` is used the first time you initialize/link a REDCap project.
 #' Mainly, it sets your unique `project_name` and your intended directory.
 #' Unless you run \code{hard_reset = TRUE} the default will first try
-#' load_project. `dir_path` is technically optional but without it the user cannot
-#' save/load/update projects. Must be all capital letters!
+#' load_project. `dir_path` is technically optional but without it the user
+#' cannot save/load/update projects. Must be all capital letters!
 #'
 #' @param project_name A character string with no spaces or symbols representing
 #' the unique short name for the REDCap project.

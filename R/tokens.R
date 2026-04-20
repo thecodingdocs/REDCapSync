@@ -307,7 +307,7 @@ has_envvar_token <- function(project_names = NULL) {
   if (nrow(projects) == 0L) {
     return(NULL)
   }
-  if(has_keyring_pkg()){
+  if (has_keyring_pkg()) {
     if (!is_valid_keyring()) {
       return(NULL)
     }

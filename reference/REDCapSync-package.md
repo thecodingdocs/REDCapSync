@@ -1,4 +1,4 @@
-# REDCapSync: Encapsulated 'REDCap' Project Objects for Synchronized Data Pipelines
+# REDCapSync: Encapsulated 'REDCap' Projects for Synchronized Data Pipelines
 
 Wraps dozens of 'REDCap' API endpoints into a standardized R6 object.
 Research Electronic Data Capture ('REDCap') is a survey and database web

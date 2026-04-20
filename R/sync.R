@@ -78,7 +78,7 @@ sync_project <- function(project,
   was_updated <- FALSE
   if (!do_sync) {
     info_message <- paste0("{project$project_name} not due for sync ",
-                           "({project$internals$sync_frequency})")
+                           "({project$settings$sync_frequency})")
     cli_alert_info(info_message)
   }
   if (do_sync) {

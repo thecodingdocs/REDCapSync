@@ -59,7 +59,7 @@ test_that("test_project_token works!", {
 })
 test_that("test_project_token works when exportVersion returns version", {
   project <- mock_test_project()$.internal
-  # Stub rcon to avoid creating a real connection and stub
+  withr::local_envvar(REDCAPSYNC_TEST_CLASSIC = generate_hex(length = 32L))
   # exportVersion to simulate success
   local_mocked_bindings(
     redcapConnection = function(...) {
@@ -90,6 +90,7 @@ test_that("test_project_token works when exportVersion returns version", {
 })
 test_that("test_project_token marks failure when exportVersion returns NULL", {
   project <- mock_test_project()$.internal
+  withr::local_envvar(REDCAPSYNC_TEST_CLASSIC = generate_hex(length = 32L))
   local_mocked_bindings(
     redcapConnection = function(...) list(),
     exportVersion = function(...) NULL

@@ -106,9 +106,8 @@ If you wish to contribute to this software, use github issues and pull requests.
 
 #### Constants/Data
 
--   Internal constants: **.snake_case**
-    -   Exceptions:
-        -   redcapAPI constants: **SCREAMING_SNAKE_CASE**
+-   Internal constants: **SCREAMING_SNAKE_CASE**
+    -   Examples: FAKE_TOKEN, BLANK_PROJECT_COLS, SYNC_FREQUENCY
 -   Internal datasets: **SCREAMING_SNAKE_CASE**
     -   Examples: TEST_CLASSIC, TEST_REPEATING, TEST_CANCER
 -   Environment variable names: **SCREAMING_SNAKE_CASE**

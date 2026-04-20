@@ -6,7 +6,7 @@ assert_dir <- function(dir_path, silent = FALSE) {
     stop("dir_path does not exist")
   }
   stop_mes <- "Did you use `setup_project()`?"
-  for (folder in .dir_folders) {
+  for (folder in DIR_FOLDERS) {
     if (!file.exists(file.path(dir_path, folder))) {
       stop("'", dir_path, "/", folder, "' missing! ", stop_mes)
     }
@@ -70,10 +70,10 @@ assert_env_name <- function(x, max.chars = 26L, all_caps = FALSE) {
 }
 #' @noRd
 assert_blank_project <- function(project) {
-  assert_list(project, names = "unique", len = length(.blank_project))
+  assert_list(project, names = "unique", len = length(BLANK_PROJECT))
   assert_names(names(project),
                type = "unique",
-               must.include = names(.blank_project))
+               must.include = names(BLANK_PROJECT))
   invisible(project)
 }
 #' @noRd
@@ -86,9 +86,9 @@ assert_setup_project <- function(project) {
   #redcap --------------
   assert_choice(project$redcap$timezone, OlsonNames())
   #settings --------------
-  assert_choice(project$settings$sync_frequency, choices = .sync_frequency)
+  assert_choice(project$settings$sync_frequency, choices = SYNC_FREQUENCY)
   assert_logical(project$settings$labelled, len = 1L, any.missing = FALSE)
-  assert_choice(project$settings$get_type, choices = .get_type)
+  assert_choice(project$settings$get_type, choices = GET_TYPE)
   assert(
     test_scalar_na(project$settings$records) ||
       test_character(
@@ -220,9 +220,9 @@ assert_project_details <- function(project_details, nrows = NULL) {
   assert_data_frame(
     x = project_details,
     nrows = nrows,
-    ncols = length(.blank_project_cols)
+    ncols = length(BLANK_PROJECT_COLS)
   )
-  assert_names(colnames(project_details), must.include = .blank_project_cols)
+  assert_names(colnames(project_details), must.include = BLANK_PROJECT_COLS)
   if (nrow(project_details) > 0L) {
     project_details$project_name |>
       lapply(function(project_name) {
@@ -237,7 +237,7 @@ assert_project_path <- function(project_path) {
   assert_path_for_output(x = project_path,
                          overwrite = TRUE,
                          extension = "RData")
-  assert_true(endsWith(basename(project_path), .project_path_suffix))
+  assert_true(endsWith(basename(project_path), PROJECT_PATH_SUFFIX))
 }
 #' @noRd
 test_project_details <- function(project_details, nrows = NULL) {

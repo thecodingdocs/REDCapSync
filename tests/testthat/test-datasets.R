@@ -142,7 +142,7 @@ test_that("deidentify_data_list works!", {
   fields <- data_list$metadata$fields
   is_identifier <- fields$identifier == "y"
   fields$validation_type <- fields$text_validation_type_or_show_slider_number
-  is_likely_identifier <- fields$validation_type %in% .redcap_maybe_ids_strict
+  is_likely_identifier <- fields$validation_type %in% REDCAP_MAYBE_IDS_STRICT
   identifier_rows <- which(is_identifier | is_likely_identifier)
   initial_identifiers <- fields$field_name[identifier_rows]
   is_notes <- fields$field_type == "notes"

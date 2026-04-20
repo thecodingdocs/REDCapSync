@@ -7,7 +7,7 @@ test_that("sync works!", {
   local_mocked_bindings(
     sweep_dirs_for_cache = function(...) NULL,
     load_project = function(...) NULL,
-    get_projects = function(...) .blank_project_details
+    get_projects = function(...) BLANK_PROJECT_DETAILS
   )
   expect_message(sync(), "No projects in cache")
   local_mocked_bindings(
@@ -295,7 +295,7 @@ test_that("sync_project_hard_reset works!", {
     get_redcap_log = function(...) project$redcap$log
   )
   result <- project
-  result$metadata <- .blank_project$metadata
+  result$metadata <- BLANK_PROJECT$metadata
   result["data"] <- list(NULL)
   result <- sync_project_hard_reset(result)
   expect_identical(result$metadata, project$metadata)

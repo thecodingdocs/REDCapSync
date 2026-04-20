@@ -445,7 +445,7 @@ upload_form_to_redcap <- function(to_be_uploaded, project, batch_size = 500L) {
   )
 }
 #' @noRd
-.log_colnames <- c(
+LOG_COLNAMES <- c(
   "timestamp",
   "username",
   "action",
@@ -454,7 +454,7 @@ upload_form_to_redcap <- function(to_be_uploaded, project, batch_size = 500L) {
   "action_type"
 )
 #' @noRd
-.users_colnames <- c(
+USERS_COLNAMES <- c(
   "username",
   "email",
   "firstname",
@@ -490,7 +490,7 @@ upload_form_to_redcap <- function(to_be_uploaded, project, batch_size = 500L) {
   "forms_export"
 )
 #' @noRd
-.field_colnames <- c(
+FIELD_COLNAMES <- c(
   "field_name",
   "form_name",
   "section_header",
@@ -511,12 +511,12 @@ upload_form_to_redcap <- function(to_be_uploaded, project, batch_size = 500L) {
   "field_annotation"
 )
 #' @noRd
-.arms_colnames <- c(
+ARMS_COLNAMES <- c(
   "arm_number",
   "arm_name"
 )
 #' @noRd
-.events_colnames <- c(
+EVENTS_COLNAMES <- c(
   "event_name",
   "arm_number",
   "unique_event_name",
@@ -524,23 +524,23 @@ upload_form_to_redcap <- function(to_be_uploaded, project, batch_size = 500L) {
   "event_id"
 )
 #' @noRd
-.event_mapping_colnames <- c(
+EVENT_MAPPING_COLNAMES <- c(
   "arm_num",
   "unique_event_name",
   "form"
 )
 #' @noRd
-.forms_colnames <- c(
+FORMS_COLNAMES <- c(
   "form_name",
   "form_label"
 )
-.choices_colnames <- c(
+CHOICES_COLNAMES <- c(
   "field_name",
   "code",
   "name"
 )
 #' @noRd
-.project_info_colnames <- c(
+PROJECT_INFO_COLNAMES <- c(
   "project_id",
   "project_title",
   "creation_time",
@@ -569,7 +569,7 @@ upload_form_to_redcap <- function(to_be_uploaded, project, batch_size = 500L) {
   "bypass_branching_erase_field_prompt"
 )
 #' @noRd
-.all_missing_codes <- data.frame(
+MISSING_CODES <- data.frame(
   code = c(
     "NI",
     "INV",

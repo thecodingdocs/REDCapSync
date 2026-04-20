@@ -95,7 +95,7 @@ test_that("get_redcap_metadata works with fixture data (classic)", {
   result <- get_redcap_metadata(project)
   expect_identical(result$project_name, project$project_name)
   expect_identical(call_list$project_info, project$redcap$project_info)
-  project$metadata <- .blank_project$metadata # clear existing data
+  project$metadata <- BLANK_PROJECT$metadata # clear existing data
   expect_null(project$metadata$fields)
   expect_null(project$metadata$forms)
   expect_list(result)
@@ -126,7 +126,7 @@ test_that("get_redcap_metadata works with fixture data (longitudinal)", {
   local_mocked_bindings(
     get_redcap_rcon = function(...) call_list
   )
-  project$metadata <- .blank_project$metadata # clear existing data
+  project$metadata <- BLANK_PROJECT$metadata # clear existing data
   expect_null(project$metadata$fields)
   expect_null(project$metadata$forms)
   result <- get_redcap_metadata(project)
@@ -143,7 +143,7 @@ test_that("get_redcap_metadata works with fixture data (repeating forms)", {
   local_mocked_bindings(
     get_redcap_rcon = function(...) call_list
   )
-  project$metadata <- .blank_project$metadata # clear existing data
+  project$metadata <- BLANK_PROJECT$metadata # clear existing data
   result <- get_redcap_metadata(project)
   expect_list(result)
   expect_true(result$metadata$has_repeating_forms_or_events)
@@ -241,7 +241,7 @@ test_that("get_redcap_data works with fixture data (longitudinal)", {
   local_mocked_bindings(
     get_redcap_rcon = function(...) call_list
   )
-  project$metadata <- .blank_project$metadata # clear existing data
+  project$metadata <- BLANK_PROJECT$metadata # clear existing data
   expect_null(project$metadata$fields)
   expect_null(project$metadata$forms)
   result <- get_redcap_metadata(project)
@@ -258,7 +258,7 @@ test_that("get_redcap_data works with fixture data (repeating forms)", {
   local_mocked_bindings(
     get_redcap_rcon = function(...) call_list
   )
-  project$metadata <- .blank_project$metadata # clear existing data
+  project$metadata <- BLANK_PROJECT$metadata # clear existing data
   result <- get_redcap_metadata(project)
   expect_list(result)
   expect_true(result$metadata$has_repeating_forms_or_events)

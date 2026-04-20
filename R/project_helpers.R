@@ -123,7 +123,7 @@ normalize_redcap <- function(denormalized, project, labelled) {
                "arm_number",
                "event_name",
                "redcap_event_name",
-               .redcap_repeat_cols)
+               REDCAP_REPEAT_COLS)
   if (is_longitudinal) {
     denormalized$id_temp <- seq_len(nrow(denormalized))
     denormalized <- merge(
@@ -189,7 +189,7 @@ normalize_redcap <- function(denormalized, project, labelled) {
         }
       }
       if (!is_repeating_form) {
-        add_ons_x <- add_ons_x[which(!add_ons_x %in% .redcap_repeat_cols)]
+        add_ons_x <- add_ons_x[which(!add_ons_x %in% REDCAP_REPEAT_COLS)]
       }
       if (!is_repeating_form && is_longitudinal && has_repeating_forms) {
         form_event_rows <- which(event_mapping$form == form_name)
@@ -270,7 +270,7 @@ get_min_dates <- function(data_list) {
 get_project_url <- function(project,
                             link_type = "home",
                             open_browser = TRUE) {
-  assert_choice(link_type, .link_types)
+  assert_choice(link_type, LINK_TYPES)
   the_link <- project$links[[paste0("redcap_", link_type)]]
   if (open_browser) {
     browseURL(the_link)
@@ -362,7 +362,7 @@ get_all_field_names <- function(data_list) {
 get_identifier_fields <- function(data_list,
                                   get_type = "deidentified",
                                   invert = FALSE) {
-  assert_choice(get_type, choices = setdiff(.get_type, "identified"))
+  assert_choice(get_type, choices = setdiff(GET_TYPE, "identified"))
   # assert data list
   # what to do when record_id is marked as identifier? add psuedo
   # handle dates seprately if shifted
@@ -371,7 +371,7 @@ get_identifier_fields <- function(data_list,
   fields$validation_type <- fields$text_validation_type_or_show_slider_number
   not_id <- !fields$field_name %in% id_cols
   is_identifier <- fields$identifier == "y"
-  is_likely_identifier <- fields$validation_type %in% .redcap_maybe_ids_strict
+  is_likely_identifier <- fields$validation_type %in% REDCAP_MAYBE_IDS_STRICT
   if (get_type == "deidentified") {
     keep_rows <- which(is_identifier)
   }
@@ -540,7 +540,7 @@ extract_project_records <- function(data_list) {
   all_records
 }
 #' @noRd
-.link_types <- c(
+LINK_TYPES <- c(
   "base",
   "home",
   "record_home",
@@ -556,4 +556,4 @@ extract_project_records <- function(data_list) {
   "data_quality",
   "identifiers"
 )
-.redcap_repeat_cols <- c("redcap_repeat_instrument", "redcap_repeat_instance")
+REDCAP_REPEAT_COLS <- c("redcap_repeat_instrument", "redcap_repeat_instance")

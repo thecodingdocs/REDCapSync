@@ -177,10 +177,10 @@ generate_project_dataset <- function(project,
   }
   assert_env_name(dataset_name, max.chars = 31L)
   assert_env_name(merge_form_name, max.chars = 31L)
-  assert_choice(date_handling, choices = .date_handling_choices)
+  assert_choice(date_handling, choices = DATE_HANDLING_CHOICES)
   # add more asserts
   # function to do asserts here
-  assert_choice(transformation_type, .tranformation_types)
+  assert_choice(transformation_type, TRANFORMATION_TYPES)
   data_list <- NULL
   # add new fields
   data_list$metadata <- project$metadata
@@ -480,7 +480,7 @@ add_project_dataset <- function(project,
   dataset_list_old <- project$datasets[[dataset_name]]
   if (!is.null(dataset_list_old) && !hard_reset) {
     important_vars <- names(dataset_list_new) |>
-      vec1_not_in_vec2(.not_important_dataset_names)
+      vec1_not_in_vec2(NOT_IMPORTANT_DATASET_NAMES)
     are_identical <- identical(dataset_list_new[important_vars],
                                dataset_list_old[important_vars])
     if (are_identical) {
@@ -499,7 +499,7 @@ deidentify_data_list <- function(data_list,
                                  exclude_additional = NULL,
                                  date_handling = "none") {
   # assert_data_list contains data and metadata with forms and fields
-  assert_choice(date_handling, choices = .date_handling_choices)
+  assert_choice(date_handling, choices = DATE_HANDLING_CHOICES)
   assert_logical(exclude_identifiers)
   assert_logical(exclude_free_text)
   data_forms <- data_list$data
@@ -509,7 +509,7 @@ deidentify_data_list <- function(data_list,
   if (exclude_identifiers) {
     is_marked_id <- fields$identifier == "y"
     validation_type <- fields$text_validation_type_or_show_slider_number
-    is_likely_id <- validation_type %in% .redcap_maybe_ids_strict
+    is_likely_id <- validation_type %in% REDCAP_MAYBE_IDS_STRICT
     initial_identifiers <- fields$field_name[which(is_marked_id | is_likely_id)]
     if (length(initial_identifiers) == 0L) {
       warning(
@@ -869,7 +869,7 @@ flatten_redcap <- function(data_list) {
 }
 #' @noRd
 fields_to_choices <- function(fields) {
-  fields <- fields[which(fields$field_type %in% .redcap_factor_fields), ]
+  fields <- fields[which(fields$field_type %in% REDCAP_FACTOR_FIELDS), ]
   fields <- fields[which(!is.na(fields$select_choices_or_calculations)), ]
   choices <- NULL
   for (i in seq_len(nrow(fields))) {
@@ -1179,9 +1179,9 @@ clean_column_for_table <- function(field,
   field
 }
 #' @noRd
-.not_important_dataset_names <- c("n_records",
-                                  "last_save_time",
-                                  "final_form_tab_names")
+NOT_IMPORTANT_DATASET_NAMES <- c("n_records",
+                                 "last_save_time",
+                                 "final_form_tab_names")
 #' @noRd
 data_list_to_save <- function(data_list) {
   to_save_list <- NULL
@@ -1250,7 +1250,7 @@ data_list_to_save <- function(data_list) {
   to_save_list
 }
 #' @noRd
-.tranformation_types <- c("default", "none", "flat", "merge_non_repeating")
+TRANFORMATION_TYPES <- c("default", "none", "flat", "merge_non_repeating")
 #' @noRd
 metadata_add_default_cols <- function(data_list) {
   fields <- data_list$metadata$fields
@@ -1281,12 +1281,12 @@ field_types_to_r <- function(fields) {
   field_types_r <- rep("character", nrow(fields))
   field_types <- fields$field_type
   field_validations <- fields$text_validation_type_or_show_slider_number
-  field_types_r[which(field_types %in% .redcap_factor_fields)] <- "factor"
+  field_types_r[which(field_types %in% REDCAP_FACTOR_FIELDS)] <- "factor"
   is_text <- field_types == "text"
-  is_date <- is_text & field_validations %in% .redcap_text_date_fields
-  is_datetime <- is_text & field_validations %in% .redcap_text_datetime_fields
-  is_int <- is_text & field_validations %in% .redcap_integer_fields
-  is_num <- is_text & field_validations %in% .redcap_numeric_fields
+  is_date <- is_text & field_validations %in% REDCAP_TEXT_DATE_FIELDS
+  is_datetime <- is_text & field_validations %in% REDCAP_TEXT_DATETIME_FIELDS
+  is_int <- is_text & field_validations %in% REDCAP_INTEGER_FIELDS
+  is_num <- is_text & field_validations %in% REDCAP_NUMERIC_FIELDS
   field_types_r[which(is_date)] <- "date"
   field_types_r[which(is_datetime)] <- "datetime"
   field_types_r[which(is_int)] <- "integer"
@@ -1294,39 +1294,39 @@ field_types_to_r <- function(fields) {
   field_types_r
 }
 #' @noRd
-.redcap_factor_fields <- c("radio",
-                           "yesno",
-                           "dropdown",
-                           "checkbox_choice",
-                           "truefalse")
+REDCAP_FACTOR_FIELDS <- c("radio",
+                          "yesno",
+                          "dropdown",
+                          "checkbox_choice",
+                          "truefalse")
 #' @noRd
-.redcap_logical_fields <- c("yesno", "checkbox_choice", "truefalse") # tbd
+REDCAP_LOGICAL_FIELDS <- c("yesno", "checkbox_choice", "truefalse") # tbd
 #' @noRd
-.redcap_text_date_fields <- c("date_mdy", "date_ymd", "date_dmy")
+REDCAP_TEXT_DATE_FIELDS <- c("date_mdy", "date_ymd", "date_dmy")
 #' @noRd
-.redcap_text_datetime_fields <- c("datetime_dmy", "datetime_seconds_ymd")
+REDCAP_TEXT_DATETIME_FIELDS <- c("datetime_dmy", "datetime_seconds_ymd")
 #' @noRd
-.redcap_integer_fields <- "integer"
+REDCAP_INTEGER_FIELDS <- "integer"
 #' @noRd
-.redcap_numeric_fields <- "number"
+REDCAP_NUMERIC_FIELDS <- "number"
 #' @noRd
-.redcap_maybe_ids_strict <- c("email", "phone", "vmrn", "zipcode")
+REDCAP_MAYBE_IDS_STRICT <- c("email", "phone", "vmrn", "zipcode")
 #' @noRd
-.redcap_maybe_ids_super_strict <- c("date_dmy",
-                                    "date_mdy",
-                                    "date_ymd",
-                                    "datetime_dmy",
-                                    "datetime_mdy",
-                                    "datetime_seconds_dmy",
-                                    "datetime_seconds_mdy",
-                                    "datetime_seconds_ymd",
-                                    "datetime_ymd",
-                                    "email",
-                                    "phone",
-                                    "vmrn",
-                                    "zipcode")
+REDCAP_MAYBE_IDS_SUPER_STRICT <- c("date_dmy",
+                                   "date_mdy",
+                                   "date_ymd",
+                                   "datetime_dmy",
+                                   "datetime_mdy",
+                                   "datetime_seconds_dmy",
+                                   "datetime_seconds_mdy",
+                                   "datetime_seconds_ymd",
+                                   "datetime_ymd",
+                                   "email",
+                                   "phone",
+                                   "vmrn",
+                                   "zipcode")
 #' @noRd
-.field_types_not_in_data <- c("descriptive", "checkbox")
+FIELD_TYPES_NOT_IN_DATA <- c("descriptive", "checkbox")
 #' @noRd
 clear_project_datasets <- function(project, dataset_names = NULL) {
   assert_setup_project(project)
@@ -1551,7 +1551,7 @@ add_default_datasets <- function(project,
   invisible(project)
 }
 #' @noRd
-.date_handling_choices <- c(
+DATE_HANDLING_CHOICES <- c(
   "none",
   "exclude_dates",
   "random_shift_by_record",

@@ -94,8 +94,8 @@ projects <- list(
       cli_text("{toString(project_df$project_name)}")
       cli_alert_info("{number_due} due for sync!")
     }
-    cli_h2("Test Projects (n = {length(.test_project_names)})")
-    cli_text("{toString(.test_project_names)}")
+    cli_h2("Test Projects (n = {length(TEST_PROJECT_NAMES)})")
+    cli_text("{toString(TEST_PROJECT_NAMES)}")
     help_cli_text()
     invisible(project_df)
   },
@@ -141,13 +141,13 @@ get_projects <- function() {
   }
   if (!is_ok) {
     # message here?
-    return(.blank_project_details)
+    return(BLANK_PROJECT_DETAILS)
   }
   # message here? would have to silence internally
   projects # invisible?
 }
 #' @noRd
-.blank_project_cols <- c(
+BLANK_PROJECT_COLS <- c(
   "project_name",
   "dir_path",
   "sync_frequency",
@@ -181,7 +181,7 @@ get_projects <- function() {
   "get_type"
 )
 #' @noRd
-.blank_project_details <- data.frame(
+BLANK_PROJECT_DETAILS <- data.frame(
   project_name = character(0L),
   dir_path = character(0L),
   sync_frequency = character(0L),
@@ -234,9 +234,9 @@ extract_project_details <- function(project) {
   assert_setup_project(project)
   project_details <- matrix(
     data = NA,
-    ncol = length(.blank_project_cols),
+    ncol = length(BLANK_PROJECT_COLS),
     nrow = 1L,
-    dimnames = list(NULL, .blank_project_cols)
+    dimnames = list(NULL, BLANK_PROJECT_COLS)
   ) |> as.data.frame()
   # top -----
   project_details$project_name <- project$project_name
@@ -320,14 +320,14 @@ add_project_details_to_cache <- function(project_details) {
 #' @noRd
 help_cli_text <- function() {
   cli_h2("Help")
-  pkgdown_link <- .pkgdown_link
-  github_link <- .github_link
+  pkgdown_link <- PKGDOWN_LINK
+  github_link <- GITHUB_LINK
   cli_text("Pkgdown: {.url {pkgdown_link}}")
   cli_text("Github: {.url {github_link}}")
   cli_text("Datasets: {.vignette REDCapSync::Datasets}")
   cli_text("Tokens: {.vignette REDCapSync::Tokens}")
 }
 #' @noRd
-.pkgdown_link <- "https://thecodingdocs.github.io/REDCapSync/"
+PKGDOWN_LINK <- "https://thecodingdocs.github.io/REDCapSync/"
 #' @noRd
-.github_link <- "https://github.com/thecodingdocs/REDCapSync/"
+GITHUB_LINK <- "https://github.com/thecodingdocs/REDCapSync/"

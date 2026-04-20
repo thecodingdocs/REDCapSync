@@ -7,7 +7,7 @@ repair_projects <- function(projects) {
     return(NULL)
   }
   if (nrow(projects) == 0L) {
-    return(.blank_project_details)
+    return(BLANK_PROJECT_DETAILS)
   }
   must_have <- c("project_name",
                  "redcap_uri",
@@ -84,7 +84,7 @@ repair_setup_project <- function(project) {
     # settings
     project$settings$sync_frequency <-
       project$settings$sync_frequency |>
-      test_choice(choices = .sync_frequency) |>
+      test_choice(choices = SYNC_FREQUENCY) |>
       ifelse(project$settings$sync_frequency, "daily")
     project$settings$labelled <-
       project$settings$labelled |>
@@ -96,7 +96,7 @@ repair_setup_project <- function(project) {
       ifelse(project$settings$hard_reset, FALSE)
     project$settings$get_type <-
       project$settings$get_type |>
-      test_choice(choices = .get_type) |>
+      test_choice(choices = GET_TYPE) |>
       ifelse(project$settings$get_type, "identified")
     records_na <- test_scalar_na(project$settings$records)
     records_char <- test_unique_character(project$settings$records)

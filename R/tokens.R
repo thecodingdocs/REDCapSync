@@ -19,11 +19,13 @@ get_project_token <- function(project, silent = TRUE) {
   invisible(token)
 }
 #' @noRd
-test_project_token <- function(project, silent = TRUE) {
+test_project_token <- function(project) {
   assert_setup_project(project)
-  rcon <- redcapConnection(url = project$links$redcap_uri,
-                           token = get_project_token(project = project,
-                                                     silent = silent))
+  token <- get_project_token(project = project, silent = FALSE)
+  if (!is_valid_redcap_token(token)) {
+    return(invisible(project))
+  }
+  rcon <- redcapConnection(url = project$links$redcap_uri, token = token)
   redcap_version <- tryCatch(
     expr = exportVersion(rcon = rcon),
     error = function(e) {
@@ -101,7 +103,7 @@ is_valid_redcap_token <- function(token, silent = TRUE) {
   start_text <- "The token "
   token_text <- NULL
   end_text <- " is not a valid 32-character hexadecimal value."
-  trimmed_token <- trimws(token, whitespace = .whitespace)
+  trimmed_token <- trimws(token, whitespace = WHITESPACE)
   if (is.null(token)) { # obsolete
     token_text <- "is `NULL`,"
     cli_alert_wrap(
@@ -347,12 +349,13 @@ token_help_message <- function(project) {
   cli_li("User R environ file --> {.file {user_renviron_path}}") # windows?
   cli_li("Try `edit_r_environ()` from `usethis` package.")
   cli_li(paste0("Add `{project$token_name} = '",
-                .fake_token,
+                FAKE_TOKEN,
                 "'` to your user .Renviron file... then save the file ",
                 "and restart R under session tab ... The way to tell it worked",
                 " is to run `Sys.getenv('{project$token_name}')`"))
-  cli_alert_info("2. keyring") # add more text
-  cli_alert_info("3. console") # add more text
+  cli_alert_info("2. keyring with `project$set_keyring_token()`")
+  cli_alert_info(paste0("3. console with `Sys.setenv('{project$token_name}' ",
+                        "= '{FAKE_TOKEN}')`"))
   cli_alert_info("x. scripts (not recommended)")
   if (is_something(project$links$redcap_api)) {
     cli_alert_wrap(
@@ -365,6 +368,6 @@ token_help_message <- function(project) {
   }
 }
 #' @noRd
-.token_prefix <- "REDCAPSYNC_"
+TOKEN_PREFIX <- "REDCAPSYNC_"
 #' @noRd
-.fake_token <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"
+FAKE_TOKEN <- "YoUrNevErShaReToKeNfRoMREDCapWebsiTe"

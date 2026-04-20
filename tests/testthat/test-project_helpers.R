@@ -84,7 +84,7 @@ test_that("normalize_redcap works with classic project", {
   expect_true(id_col %in% colnames(result$text))
   expect_all_true(text_fields %in% colnames(result$text))
   rows_x <- which(fields$form_name == "other" &
-                    (!fields$field_type %in% .field_types_not_in_data))
+                    (!fields$field_type %in% FIELD_TYPES_NOT_IN_DATA))
   other_fields <- fields$field_name[rows_x]
   expect_all_true(other_fields %in% colnames(result$other))
   expect_all_false(text_fields %in% colnames(result$other))
@@ -106,12 +106,12 @@ test_that("normalize_redcap works with longitudinal project", {
   fields <- project$metadata$fields
   expect_true(id_col %in% colnames(result$demographics))
   field_rows <- which(fields$form_name == "demographics" &
-                        (!fields$field_type %in% .field_types_not_in_data))
+                        (!fields$field_type %in% FIELD_TYPES_NOT_IN_DATA))
   fields_to_check <- fields$field_name[field_rows]
   expect_all_true(fields_to_check %in% colnames(result$demographics))
   fields <- fields[which(fields$field_name != id_col), ]
   field_rows <-  which(fields$form_name == "demographics" &
-                         (!fields$field_type %in% .field_types_not_in_data))
+                         (!fields$field_type %in% FIELD_TYPES_NOT_IN_DATA))
   fields_to_check <- fields$field_name[field_rows]
   expect_all_true(fields_to_check %in% colnames(result$demographics))
   expect_all_false(fields_to_check %in% colnames(result$other))
@@ -133,18 +133,18 @@ test_that("normalize_redcap works with repeating project", {
   fields <- project$metadata$fields
   expect_true(id_col %in% colnames(result$form_1))
   field_rows <- which(fields$form_name == "form_1" &
-                        (!fields$field_type %in% .field_types_not_in_data))
+                        (!fields$field_type %in% FIELD_TYPES_NOT_IN_DATA))
   fields_to_check <- fields$field_name[field_rows]
   expect_all_true(fields_to_check %in% colnames(result$form_1))
   extra_cols <- c("record_id",
                   "redcap_repeat_instrument",
                   "redcap_repeat_instance")
   field_rows <-  which(fields$form_name == "repeating" &
-                         (!fields$field_type %in% .field_types_not_in_data))
+                         (!fields$field_type %in% FIELD_TYPES_NOT_IN_DATA))
   fields_to_check <- unique(append(extra_cols, fields$field_name[field_rows]))
   expect_all_true(fields_to_check %in% colnames(result$repeating))
   field_rows <-  which(fields$form_name == "repeating_2" &
-                         (!fields$field_type %in% .field_types_not_in_data))
+                         (!fields$field_type %in% FIELD_TYPES_NOT_IN_DATA))
   fields_to_check <- unique(append(extra_cols, fields$field_name[field_rows]))
   expect_all_true(fields_to_check %in% colnames(result$repeating_2))
 })
@@ -273,7 +273,7 @@ test_that("get_project_url works!", {
       e$url <- url
     }
   )
-  for (link_type in .link_types) {
+  for (link_type in LINK_TYPES) {
     e$url <- NULL
     get_project_url(project, link_type = link_type, open_browser = TRUE)
     expect_identical(e$url, project$links[[paste0("redcap_", link_type)]])

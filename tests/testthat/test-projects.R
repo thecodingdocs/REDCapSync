@@ -4,10 +4,10 @@ withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 test_that("get_projects works!", {
   df <- get_projects()
   expect_s3_class(df, "data.frame")
-  expect_true(all(colnames(df) %in% .blank_project_cols))
-  df <- .blank_project_details
+  expect_true(all(colnames(df) %in% BLANK_PROJECT_COLS))
+  df <- BLANK_PROJECT_DETAILS
   expect_s3_class(df, "data.frame")
-  expect_true(all(colnames(df) %in% .blank_project_cols))
+  expect_true(all(colnames(df) %in% BLANK_PROJECT_COLS))
   # can test after adding project
 })
 # add_project_details_to_cache (Internal)
@@ -35,10 +35,10 @@ test_that("extract_project_details works!", {
   project <- mock_test_project()$.internal
   project_details <- extract_project_details(project)
   expect_data_frame(project_details,
-                    ncols = ncol(.blank_project_details),
+                    ncols = ncol(BLANK_PROJECT_DETAILS),
                     nrows = 1L)
   expect_identical(colnames(project_details),
-                   colnames(.blank_project_details))
+                   colnames(BLANK_PROJECT_DETAILS))
 })
 # save_projects_to_cache (Internal)
 test_that("save_projects_to_cache works!", {

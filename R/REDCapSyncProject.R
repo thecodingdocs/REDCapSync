@@ -497,8 +497,7 @@ REDCapSyncProject <- R6Class(
         cli_alert_info("TEST projects do not communicate with the API")
         return(invisible(self))
       }
-      private$project <- test_project_token(project = private$project,
-                                            silent = FALSE)
+      private$project <- test_project_token(project = private$project)
       invisible(self)
     },
     #' @description opens links in browser.

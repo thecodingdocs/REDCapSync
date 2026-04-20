@@ -233,12 +233,12 @@ config <- list(
                type = "character",
                default = default)
   },
-  openxlsx.header.style = function(default = .header_style) {
+  openxlsx.header.style = function(default = HEADER_STYLE) {
     config_get(opt_name = "openxlsx.header.style",
                type = "openxlsx_style",
                default = default)
   },
-  openxlsx.body.style = function(default = .body_style) {
+  openxlsx.body.style = function(default = BODY_STYLE) {
     config_get(opt_name = "openxlsx.body.style",
                type = "openxlsx_style",
                default = default)
@@ -247,7 +247,7 @@ config <- list(
 #' @noRd
 config_get <- function(opt_name, type, default) {
   assert_choice(opt_name, names(config))
-  assert_choice(type, .option_types)
+  assert_choice(type, OPTION_TYPES)
   # check options first
   opt_key <- paste("REDCapSync", "config", opt_name, sep = ".") |> tolower()
   opt_val <- getOption(opt_key)
@@ -266,7 +266,7 @@ config_get <- function(opt_name, type, default) {
 #' @noRd
 config_validate <- function(opt_name, value, type, default) {
   assert_choice(opt_name, names(config))
-  assert_choice(type, .option_types)
+  assert_choice(type, OPTION_TYPES)
   # add warning messages
   if (identical(type, "logical")) {
     if (test_character(value, len = 1L)) {
@@ -298,4 +298,4 @@ config_validate <- function(opt_name, value, type, default) {
   }
   default
 }
-.option_types <- c("logical", "filepath", "character", "openxlsx_style")
+OPTION_TYPES <- c("logical", "filepath", "character", "openxlsx_style")

@@ -19,7 +19,7 @@ test_that("cache_clear works!", {
   withr::local_envvar(R_USER_CACHE_DIR = tempdir_test)
   fake_cache <- get_cache()
   test_file <- file.path(fake_cache$cache_path_get(), "projects.rds")
-  fake_project_details <- .blank_project_details  |>
+  fake_project_details <- BLANK_PROJECT_DETAILS  |>
     bind_rows(data.frame(project_name = "FAKE1", stringsAsFactors = FALSE)) |>
     bind_rows(data.frame(project_name = "FAKE2", stringsAsFactors = FALSE)) |>
     bind_rows(data.frame(project_name = "FAKE3", stringsAsFactors = FALSE)) |>

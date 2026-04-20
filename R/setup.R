@@ -108,10 +108,10 @@ setup_project <- function(project_name,
   }
   assert_project_name(project_name, allow_test_names = TRUE)
   assert_env_name(token_name, max.chars = 50L, all_caps = TRUE)
-  assert_choice(sync_frequency, choices = .sync_frequency)
+  assert_choice(sync_frequency, choices = SYNC_FREQUENCY)
   assert_logical(labelled, len = 1L, any.missing = FALSE)
   assert_logical(hard_reset, len = 1L, any.missing = FALSE)
-  assert_choice(get_type, choices = .get_type)
+  assert_choice(get_type, choices = GET_TYPE)
   assert(
     test_scalar_na(records) ||
       test_character(
@@ -189,7 +189,7 @@ setup_project <- function(project_name,
     in_proj_cache <- project_name %in% projects$project_name
     was_loaded <- FALSE
     if (!config$allow.test.names()) {
-      if (project_name %in% .test_project_names) {
+      if (project_name %in% TEST_PROJECT_NAMES) {
         project <- load_test_project(project_name = project_name,
                                      dir_path = dir_path)$.internal
         was_loaded <- TRUE
@@ -215,7 +215,7 @@ setup_project <- function(project_name,
     }
     # attempt to load existing project unless hard_reset
     if (!was_loaded) {
-      project <- .blank_project
+      project <- BLANK_PROJECT
       cli_alert_warning("Setup blank project. Unable to find, load, or repair.")
     }
     if (was_loaded) {
@@ -264,7 +264,7 @@ setup_project <- function(project_name,
   if (hard_reset) {
     # load blank if hard_reset = TRUE
     assert_project_name(project_name)
-    project <- .blank_project
+    project <- BLANK_PROJECT
     cli_alert_wrap("Setup blank project because `hard_reset = TRUE`")
   }
   if (missing_dir_path) {
@@ -315,18 +315,18 @@ setup_project <- function(project_name,
   invisible(REDCapSyncProject$new(project))
 }
 #' @noRd
-.sync_frequency <- c("always",
-                     "hourly",
-                     "daily",
-                     "weekly",
-                     "monthly",
-                     "once",
-                     "never")
+SYNC_FREQUENCY <- c("always",
+                    "hourly",
+                    "daily",
+                    "weekly",
+                    "monthly",
+                    "once",
+                    "never")
 #' @noRd
-.get_type <- c("identified",
-               "deidentified",
-               "deidentified_strict",
-               "deidentified_super_strict")
+GET_TYPE <- c("identified",
+              "deidentified",
+              "deidentified_strict",
+              "deidentified_super_strict")
 #' @noRd
 get_project_path <- function(project_name,
                              dir_path,
@@ -336,7 +336,7 @@ get_project_path <- function(project_name,
   if (check_dir) {
     assert_dir(dir_path)
   }
-  assert_choice(type, .project_file_types)
+  assert_choice(type, PROJECT_FILE_TYPES)
   file_name <- paste0(project_name, "_REDCapSync")
   if (type != "") {
     file_name <- paste0(file_name, "_", type)
@@ -360,15 +360,15 @@ get_project_path2 <- function(project,
   )
 }
 #' @noRd
-.project_file_types <- c("",
-                         "details",
-                         "metadata",
-                         "data",
-                         "data_default",
-                         "data_flat",
-                         "data_merge_non_repeating")
+PROJECT_FILE_TYPES <- c("",
+                        "details",
+                        "metadata",
+                        "data",
+                        "data_default",
+                        "data_flat",
+                        "data_merge_non_repeating")
 #' @noRd
-.project_path_suffix <- "_REDCapSync.RData"
+PROJECT_PATH_SUFFIX <- "_REDCapSync.RData"
 #' @rdname setup-load
 #' @export
 load_project <- function(project_name) {
@@ -376,12 +376,12 @@ load_project <- function(project_name) {
   projects <- get_projects()
   has_projects <- nrow(projects) > 0L
   project_in_cache <- project_name %in% projects$project_name
-  project_is_test_project <- project_name %in% .test_project_names
+  project_is_test_project <- project_name %in% TEST_PROJECT_NAMES
   if (!has_projects && !project_is_test_project) {
     end_message <- paste0("No projects in cache. Use `setup_project(...) ",
                           " and `project$sync()` or try an offline test",
                           " project. \n\nTEST projects: ",
-                          toString(.test_project_names))
+                          toString(TEST_PROJECT_NAMES))
     cli_abort(end_message)
   }
   project <- NULL
@@ -398,7 +398,7 @@ load_project <- function(project_name) {
                           " or try an offline test. \n\nYour projects: ",
                           toString(projects$project_name),
                           "; \n\nTEST projects: ",
-                          toString(.test_project_names))
+                          toString(TEST_PROJECT_NAMES))
     cli_abort(end_message)
   }
   if (is.null(project) && project_is_test_project) {
@@ -470,12 +470,12 @@ load_test_project <- function(project_name, dir_path = NULL) {
   if (missing(project_name)) {
     cli_alert_info(paste(
       "TEST project choices:",
-      toString(.test_project_names)
+      toString(TEST_PROJECT_NAMES)
     ))
     project_name <- "TEST_CLASSIC"
     cli_alert_info("Defaulting to {project_name}")
   }
-  assert_choice(project_name, .test_project_names)
+  assert_choice(project_name, TEST_PROJECT_NAMES)
   .test_projects <- list(
     TEST_CLASSIC = TEST_CLASSIC,
     TEST_REPEATING = TEST_REPEATING,
@@ -538,13 +538,13 @@ save_project <- function(project, silent = FALSE) {
   invisible(project)
 }
 #' @noRd
-.test_redcapr_names <- c(
+TEST_REDCAPR_NAMES <- c(
   "TEST_REDCAPR_SIMPLE",
   "TEST_REDCAPR_LONGITUDINAL",
   "TEST_REDCAPR_CLIN_TRIAL"
 )
 #' @noRd
-.test_project_names <- c(
+TEST_PROJECT_NAMES <- c(
   "TEST_CLASSIC",
   "TEST_REPEATING",
   "TEST_LONGITUDINAL",
@@ -552,10 +552,10 @@ save_project <- function(project, silent = FALSE) {
   "TEST_EDGE",
   "TEST_DATA",
   "TEST_CANCER",
-  .test_redcapr_names
+  TEST_REDCAPR_NAMES
 )
 #' @noRd
-.blank_project <- list(
+BLANK_PROJECT <- list(
   project_name = NULL,
   dir_path = NULL,
   token_name = NULL,
@@ -621,8 +621,8 @@ save_project <- function(project, silent = FALSE) {
     redcap_data_quality = NULL,
     redcap_identifiers = NULL,
     cran = "",
-    help = .pkgdown_link,
-    github = .github_link,
+    help = PKGDOWN_LINK,
+    github = GITHUB_LINK,
     thecodingdocs = "https://www.thecodingdocs.com/"
   ),
   settings = list(
@@ -678,7 +678,7 @@ set_dir <- function(dir_path, silent = FALSE) {
   if (!file.exists(dir_path)) {
     stop("Path not found. Use absolute path or choose an existing directory.")
   }
-  for (folder in .dir_folders) {
+  for (folder in DIR_FOLDERS) {
     if (!file.exists(file.path(dir_path, folder))) {
       dir.create(file.path(dir_path, folder), showWarnings = FALSE)
     }
@@ -686,15 +686,15 @@ set_dir <- function(dir_path, silent = FALSE) {
   assert_dir(dir_path, silent = silent)
 }
 #' @noRd
-.dir_folders <- c("R_objects", "output", "scripts", "input", "REDCap")
+DIR_FOLDERS <- c("R_objects", "output", "scripts", "input", "REDCap")
 #' @noRd
 clean_dir_path <- function(dir_path) {
   if (!is.character(dir_path))
     stop("dir must be a character string")
   dir_path <- dir_path |>
-    trimws(whitespace = .whitespace) |>
+    trimws(whitespace = WHITESPACE) |>
     sanitize_path()
   dir_path
 }
 #' @noRd
-.whitespace <- "[\\h\\v]"
+WHITESPACE <- "[\\h\\v]"

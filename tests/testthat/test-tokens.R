@@ -103,7 +103,7 @@ test_that("update_project_links works!", {
   project <- mock_test_project()$.internal
   expect_false(is.null(project$links$redcap_uri))
   expect_false(is.null(project$links$redcap_base))
-  link_vector <- paste0("redcap_", .link_types)
+  link_vector <- paste0("redcap_", LINK_TYPES)
   link_vector <- setdiff(link_vector, "redcap_base")
   #do it!
   project <- update_project_links(project)
@@ -131,7 +131,7 @@ test_that("update_project_links works!", {
 # has_keyring_token (Internal)
 test_that("has_keyring_token returns NULL when no projects exist", {
   local_mocked_bindings(
-    get_projects = function(...) .blank_project_details
+    get_projects = function(...) BLANK_PROJECT_DETAILS
   )
   expect_null(has_keyring_token())
 })
@@ -179,7 +179,7 @@ test_that("has_envvar_token works", {
   expect_null(has_envvar_token(project_names = "TEST_DATA"))
   # empty projects
   local_mocked_bindings(
-    get_projects = function(...) .blank_project_details
+    get_projects = function(...) BLANK_PROJECT_DETAILS
   )
   expect_null(has_envvar_token())
 })

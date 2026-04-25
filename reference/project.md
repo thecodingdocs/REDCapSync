@@ -77,10 +77,6 @@ for initializing the `project` object.'
 
 - [`REDCapSyncProject$generate_dataset()`](#method-REDCapSyncProject-generate_dataset)
 
-- [`REDCapSyncProject$add_field()`](#method-REDCapSyncProject-add_field)
-
-- [`REDCapSyncProject$remove_fields()`](#method-REDCapSyncProject-remove_fields)
-
 - [`REDCapSyncProject$save_datasets()`](#method-REDCapSyncProject-save_datasets)
 
 - [`REDCapSyncProject$save_dataset()`](#method-REDCapSyncProject-save_dataset)
@@ -222,13 +218,12 @@ Add a new dataset entry
 - `transformation_type`:
 
   Character scalar. How to transform data for the dataset. Default is
-  "default". Other options are "none", "flat", "merge_non_repeating".
+  "default". Other options are "none" and "merge_non_repeating".
   "default" first merges non-repeating and if there are repeating forms,
-  it merges non-repeating variables to the right of repeating
-  instruments. "flat" is one-record, one-row, even if there are
-  repeating forms. "none" does not transform anything.
-  "merge_non_repeating" still merges all non-repeating instruments but
-  does not merge them to repeating instruments.
+  it also merges non-repeating variables to the right. "none" does not
+  transform anything. "merge_non_repeating" still merges all
+  non-repeating instruments but does not merge them to repeating
+  instruments.
 
 - `merge_form_name`:
 
@@ -462,13 +457,12 @@ is provided here for ad-hoc custom datasets.
 - `transformation_type`:
 
   Character scalar. How to transform data for the dataset. Default is
-  "default". Other options are "none", "flat", "merge_non_repeating".
+  "default". Other options are "none" and "merge_non_repeating".
   "default" first merges non-repeating and if there are repeating forms,
-  it merges non-repeating variables to the right of repeating
-  instruments. "flat" is one-record, one-row, even if there are
-  repeating forms. "none" does not transform anything.
-  "merge_non_repeating" still merges all non-repeating instruments but
-  does not merge them to repeating instruments.
+  it also merges non-repeating variables to the right. "none" does not
+  transform anything. "merge_non_repeating" still merges all
+  non-repeating instruments but does not merge them to repeating
+  instruments.
 
 - `merge_form_name`:
 
@@ -578,94 +572,6 @@ is provided here for ad-hoc custom datasets.
 - `include_comments`:
 
   Logical. If `TRUE`, the comments will be included. Default is `TRUE`.
-
-------------------------------------------------------------------------
-
-### Method `add_field()`
-
-Add a new field. Placeholder for future feature.
-
-#### Usage
-
-    REDCapSyncProject$add_field(
-      field_name,
-      form_name,
-      field_type,
-      field_type_r = NA,
-      field_label = NA,
-      select_choices_or_calculations = NA,
-      field_note = NA,
-      identifier = "",
-      units = NA,
-      data_func = NA
-    )
-
-#### Arguments
-
-- `field_name`:
-
-  Character. The name of the field to which the transformation will be
-  applied.
-
-- `form_name`:
-
-  Character. The name of the form containing `field_name`.
-
-- `field_type`:
-
-  Character. The type of the field in REDCap (e.g., "text", "checkbox",
-  "dropdown").
-
-- `field_type_r`:
-
-  Character. The corresponding R data type for the field. Default is
-  `NA`.
-
-- `field_label`:
-
-  Character. The label for the field. Default is `NA`.
-
-- `select_choices_or_calculations`:
-
-  Character. A string specifying the choices (for dropdown, radio, or
-  checkbox fields) or calculations (for calculated fields). Default is
-  `NA`.
-
-- `field_note`:
-
-  Character. An optional note or comment for the field. Default is `NA`.
-
-- `identifier`:
-
-  Character. A string indicating whether the field is an identifier
-  (e.g., "Y" for yes). Default is an empty string (`""`).
-
-- `units`:
-
-  Character. The units of measurement for the field, if applicable.
-  Default is `NA`.
-
-- `data_func`:
-
-  Function or NA. An optional function to transform or validate the data
-  in the field. Default is `NA`.
-
-------------------------------------------------------------------------
-
-### Method `remove_fields()`
-
-Removes added field(s). Placeholder for future feature.
-
-#### Usage
-
-    REDCapSyncProject$remove_fields(field_names = NULL)
-
-#### Arguments
-
-- `field_names`:
-
-  Character vector. Names of specific fields to include in the dataset.
-  Default is `NULL`, which includes all fields.
 
 ------------------------------------------------------------------------
 

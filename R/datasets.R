@@ -209,9 +209,6 @@ generate_project_dataset <- function(project,
       merge_to_rep = FALSE
     )
   }
-  if (transformation_type == "flat") {
-    data_list <- flatten_redcap(data_list = data_list)
-  }
   data_list$data <- filter_data_list(
     data_list = data_list,
     field_names = field_names,
@@ -864,10 +861,6 @@ merge_non_repeating <- function(data_list,
   data_list
 }
 #' @noRd
-flatten_redcap <- function(data_list) {
-  cli_alert_info("placeholder")
-}
-#' @noRd
 fields_to_choices <- function(fields) {
   fields <- fields[which(fields$field_type %in% REDCAP_FACTOR_FIELDS), ]
   fields <- fields[which(!is.na(fields$select_choices_or_calculations)), ]
@@ -1250,7 +1243,7 @@ data_list_to_save <- function(data_list) {
   to_save_list
 }
 #' @noRd
-TRANFORMATION_TYPES <- c("default", "none", "flat", "merge_non_repeating")
+TRANFORMATION_TYPES <- c("default", "none", "merge_non_repeating")
 #' @noRd
 metadata_add_default_cols <- function(data_list) {
   fields <- data_list$metadata$fields

@@ -283,9 +283,6 @@ test_that("filter_data_list works!", {
   expect_gt(nrow(project$data$other), nrow(new_data$other))
   expect_all_true(new_data$other$var_branching == "Yes")
 })
-# flatten_redcap (Internal)
-test_that("flatten_redcap works!", {
-})
 # generate_project_dataset (Internal)
 # load_project_dataset (Internal)
 test_that("generate_project_dataset works!", {

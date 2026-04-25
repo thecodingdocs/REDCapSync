@@ -17,11 +17,10 @@
 #' to generate the dataset. *If you provide `dataset_name` all other parameters
 #' are inherited according to what was set with `add_dataset`.
 #' @param transformation_type Character scalar. How to transform data for the
-#' dataset. Default is "default". Other options are "none", "flat",
+#' dataset. Default is "default". Other options are "none" and
 #' "merge_non_repeating". "default" first merges non-repeating and if there are
-#' repeating forms, it merges non-repeating variables to the right of repeating
-#' instruments. "flat" is one-record, one-row, even if there are repeating
-#' forms. "none" does not transform anything. "merge_non_repeating" still merges
+#' repeating forms, it also merges non-repeating variables to the right.
+#' "none" does not transform anything. "merge_non_repeating" still merges
 #' all non-repeating instruments but does not merge them to repeating
 #' instruments.
 #' @param merge_form_name A character string representing the name of the merged
@@ -102,25 +101,6 @@
 #' parameter from `setup_project()`)
 #' @param type Character. The metadata component to request. One of "fields",
 #' "forms", or "choices".
-#' @param field_name Character. The name of the field to which the
-#' transformation will be applied.
-#' @param form_name Character. The name of the form containing `field_name`.
-#' @param field_type Character. The type of the field in REDCap (e.g., "text",
-#' "checkbox", "dropdown").
-#' @param field_type_r Character. The corresponding R data type for the field.
-#' Default is `NA`.
-#' @param field_label Character. The label for the field. Default is `NA`.
-#' @param select_choices_or_calculations Character. A string specifying the
-#' choices (for dropdown, radio, or checkbox fields) or calculations (for
-#' calculated fields). Default is `NA`.
-#' @param field_note Character. An optional note or comment for the field.
-#' Default is `NA`.
-#' @param identifier Character. A string indicating whether the field is an
-#' identifier (e.g., "Y" for yes). Default is an empty string (`""`).
-#' @param units Character. The units of measurement for the field, if
-#' applicable. Default is `NA`.
-#' @param data_func Function or NA. An optional function to transform or
-#' validate the data in the field. Default is `NA`.
 #' @param dataset_names One or more dataset names. Default is `NULL`.
 #' @param to_be_uploaded data.frame in raw coded form to upload.
 #' uploading to REDCap. Default is 500L.
@@ -421,25 +401,6 @@ REDCapSyncProject <- R6Class(
       )
       dataset$to_envir(envir = envir)
       invisible(dataset)
-    },
-    #' @description  Add a new field. Placeholder for future feature.
-    add_field = function(field_name,
-                         form_name,
-                         field_type,
-                         field_type_r = NA,
-                         field_label = NA,
-                         select_choices_or_calculations = NA,
-                         field_note = NA,
-                         identifier = "",
-                         units = NA,
-                         data_func = NA) {
-      message("Added field! (placeholder)")
-      invisible(self)
-    },
-    #' @description  Removes added field(s). Placeholder for future feature.
-    remove_fields = function(field_names = NULL) {
-      message("Removed field! (placeholder)")
-      invisible(self)
     },
     #' @description saves datasets to Excel via setting provided to
     #' `add_dataset`.

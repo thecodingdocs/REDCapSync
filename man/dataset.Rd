@@ -110,11 +110,10 @@ to generate the dataset. *If you provide \code{dataset_name} all other parameter
 are inherited according to what was set with \code{add_dataset}.}
 
 \item{\code{transformation_type}}{Character scalar. How to transform data for the
-dataset. Default is "default". Other options are "none", "flat",
+dataset. Default is "default". Other options are "none" and
 "merge_non_repeating". "default" first merges non-repeating and if there are
-repeating forms, it merges non-repeating variables to the right of repeating
-instruments. "flat" is one-record, one-row, even if there are repeating
-forms. "none" does not transform anything. "merge_non_repeating" still merges
+repeating forms, it also merges non-repeating variables to the right.
+"none" does not transform anything. "merge_non_repeating" still merges
 all non-repeating instruments but does not merge them to repeating
 instruments.}
 

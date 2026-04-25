@@ -63,8 +63,6 @@ users and log.}
 \item \href{#method-REDCapSyncProject-load_dataset}{\code{REDCapSyncProject$load_dataset()}}
 \item \href{#method-REDCapSyncProject-remove_datasets}{\code{REDCapSyncProject$remove_datasets()}}
 \item \href{#method-REDCapSyncProject-generate_dataset}{\code{REDCapSyncProject$generate_dataset()}}
-\item \href{#method-REDCapSyncProject-add_field}{\code{REDCapSyncProject$add_field()}}
-\item \href{#method-REDCapSyncProject-remove_fields}{\code{REDCapSyncProject$remove_fields()}}
 \item \href{#method-REDCapSyncProject-save_datasets}{\code{REDCapSyncProject$save_datasets()}}
 \item \href{#method-REDCapSyncProject-save_dataset}{\code{REDCapSyncProject$save_dataset()}}
 \item \href{#method-REDCapSyncProject-save}{\code{REDCapSyncProject$save()}}
@@ -190,11 +188,10 @@ to generate the dataset. *If you provide \code{dataset_name} all other parameter
 are inherited according to what was set with \code{add_dataset}.}
 
 \item{\code{transformation_type}}{Character scalar. How to transform data for the
-dataset. Default is "default". Other options are "none", "flat",
+dataset. Default is "default". Other options are "none" and
 "merge_non_repeating". "default" first merges non-repeating and if there are
-repeating forms, it merges non-repeating variables to the right of repeating
-instruments. "flat" is one-record, one-row, even if there are repeating
-forms. "none" does not transform anything. "merge_non_repeating" still merges
+repeating forms, it also merges non-repeating variables to the right.
+"none" does not transform anything. "merge_non_repeating" still merges
 all non-repeating instruments but does not merge them to repeating
 instruments.}
 
@@ -370,11 +367,10 @@ are inherited according to what was set with \code{add_dataset}.}
 \item{\code{envir}}{environment variable such as \code{\link[=globalenv]{globalenv()}}}
 
 \item{\code{transformation_type}}{Character scalar. How to transform data for the
-dataset. Default is "default". Other options are "none", "flat",
+dataset. Default is "default". Other options are "none" and
 "merge_non_repeating". "default" first merges non-repeating and if there are
-repeating forms, it merges non-repeating variables to the right of repeating
-instruments. "flat" is one-record, one-row, even if there are repeating
-forms. "none" does not transform anything. "merge_non_repeating" still merges
+repeating forms, it also merges non-repeating variables to the right.
+"none" does not transform anything. "merge_non_repeating" still merges
 all non-repeating instruments but does not merge them to repeating
 instruments.}
 
@@ -444,79 +440,6 @@ will be annotated using the log. Default is \code{TRUE}.}
 
 \item{\code{include_comments}}{Logical. If \code{TRUE}, the comments will be included.
 Default is \code{TRUE}.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSyncProject-add_field"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSyncProject-add_field}{}}}
-\subsection{Method \code{add_field()}}{
-Add a new field. Placeholder for future feature.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$add_field(
-  field_name,
-  form_name,
-  field_type,
-  field_type_r = NA,
-  field_label = NA,
-  select_choices_or_calculations = NA,
-  field_note = NA,
-  identifier = "",
-  units = NA,
-  data_func = NA
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{field_name}}{Character. The name of the field to which the
-transformation will be applied.}
-
-\item{\code{form_name}}{Character. The name of the form containing \code{field_name}.}
-
-\item{\code{field_type}}{Character. The type of the field in REDCap (e.g., "text",
-"checkbox", "dropdown").}
-
-\item{\code{field_type_r}}{Character. The corresponding R data type for the field.
-Default is \code{NA}.}
-
-\item{\code{field_label}}{Character. The label for the field. Default is \code{NA}.}
-
-\item{\code{select_choices_or_calculations}}{Character. A string specifying the
-choices (for dropdown, radio, or checkbox fields) or calculations (for
-calculated fields). Default is \code{NA}.}
-
-\item{\code{field_note}}{Character. An optional note or comment for the field.
-Default is \code{NA}.}
-
-\item{\code{identifier}}{Character. A string indicating whether the field is an
-identifier (e.g., "Y" for yes). Default is an empty string (\code{""}).}
-
-\item{\code{units}}{Character. The units of measurement for the field, if
-applicable. Default is \code{NA}.}
-
-\item{\code{data_func}}{Function or NA. An optional function to transform or
-validate the data in the field. Default is \code{NA}.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSyncProject-remove_fields"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSyncProject-remove_fields}{}}}
-\subsection{Method \code{remove_fields()}}{
-Removes added field(s). Placeholder for future feature.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncProject$remove_fields(field_names = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{field_names}}{Character vector. Names of specific fields to include in
-the dataset. Default is \code{NULL}, which includes all fields.}
 }
 \if{html}{\out{</div>}}
 }

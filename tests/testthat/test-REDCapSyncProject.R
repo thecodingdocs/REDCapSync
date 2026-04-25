@@ -60,13 +60,6 @@ test_that("REDCapSyncProject with test projects!", {
   expected_link <- "https://redcap.fake.edu/redcap_v16.1.4/index.php?pid=12341"
   expect_identical(project_r6$url_launch(open_browser = FALSE), expected_link)
 })
-# REDCapSyncProject$add_field (Exported)
-# REDCapSyncProject$remove_fields (Exported)
-test_that("REDCapSyncProject$add_field and remove_fields works!", {
-  project_r6 <- mock_test_project()
-  expect_message(project_r6$add_field(), "placeholder")
-  expect_message(project_r6$remove_fields(), "placeholder")
-})
 # REDCapSyncProject$add_dataset (Exported)
 # REDCapSyncProject$remove_datasets (Exported)
 test_that("REDCapSyncProject$add_dataset and remove_datasets works!", {

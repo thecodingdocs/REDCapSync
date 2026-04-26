@@ -22,22 +22,22 @@ View(projects$df)                             # show your previously saved proje
 You can set your REDCap token in two ways! If you need more help setting your tokens see this article --> placeholder
 ```{r example2, eval=FALSE}
 #1. set each time in your session (not recommended in saved/shared scripts!)
-Sys.setenv(REDCAPSYNC_TEST1 = "YoUrNevErShaReToken")
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")
 #2. set to your private R sessions!
 usethis::edit_r_environ()                                       #finds your file
-# or
+# another way to find same file
 rstudioapi::navigateToFile(file.path(Sys.getenv("HOME")), ".Renviron"))
-# Then you add --> REDCAPSYNC_TEST1 = 'YoUrNevErShaReToken'
+# Then you add --> REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'
 # then save file and restart R
 # If it worked you will see your token when you run...
-Sys.getenv("REDCAPSYNC_TEST1")
+Sys.getenv("REDCAPSYNC_FIRST_PROJECT")
 ```
 
 ## Run Core Functions
 The following functions represent the core functions of the package.
 ```{r , eval=FALSE}
 project <- setup_project(
-  project_name = "TEST1",          # must match token pattern REDCAPSYNC_*******
+  project_name = "FIRST_PROJECT", # default token name REDCAPSYNC_<project_name>
   redcap_uri = "https://redcap.fakei.edu/api/",        # your institution's link
   dir_path = getwd()     # your project file path, real data will be stored here
 )

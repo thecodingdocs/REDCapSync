@@ -459,7 +459,7 @@ generate_comment_table <- function(redcap_log, only_most_recent = FALSE) {
       bind_rows()
     keep_rows <- which(redcap_log$comment_type != "Delete")
     redcap_log <- redcap_log[keep_rows, ]
-    inner <- inner[keep_rows]
+    inner <- sub("^.*?\\((.*)\\)$", "\\1", redcap_log$details)
   }
   if (nrow(redcap_log) == 0L) {
     return(NULL)

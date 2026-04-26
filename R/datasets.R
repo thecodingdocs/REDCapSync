@@ -270,18 +270,16 @@ generate_project_dataset <- function(project,
   record_sum <- record_sum[which(record_sum[[id_col]] %in% records), ]
   rownames(record_sum) <- NULL
   data_list$records <- record_sum
-  if (include_log) {
-    if (data_list$redcap$has_log_access) {
-      data_list$log <- extract_log(data_list = data_list, records = records)
-    } else {
-      cli_alert_warning("You don't have log access so that can't be included.")
-      include_log <- FALSE
-    }
-  }
-  if (annotate_from_log && (include_users || include_records)) {
-    if (!data_list$redcap$has_log_access) {
-      cli_alert_warning("You don't have log access so that data can't be used.")
-      annotate_from_log <- FALSE
+  if (!data_list$redcap$has_log_access) {
+    cli_alert_warning("You don't have log access so that data can't be used.")
+    include_log <- FALSE
+    include_comments <- FALSE
+    annotate_from_log <- FALSE
+  } else{
+    data_list$log <- extract_log(data_list = data_list, records = records)
+    if (include_comments) {
+      data_list$comments <- generate_comment_table(redcap_log = data_list$log,
+                                                   only_most_recent = TRUE)
     }
   }
   if (include_records) {
@@ -303,9 +301,6 @@ generate_project_dataset <- function(project,
       include_users <- FALSE
     }
   }
-  # if (include_comments) {
-  #   data_list$comments
-  # }
   data_list$redcap <- NULL
   if (is.null(filter_list)) {
     if (!is.null(filter_choices) && !is.null(filter_field)) {

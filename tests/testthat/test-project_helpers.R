@@ -1,7 +1,7 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
-# labelled_to_raw_data_list (Internal)
-test_that("labelled_to_raw_data_list and raw_to_labelled_data_list works!", {
+# labelled_to_raw_project (Internal)
+test_that("labelled_to_raw_project and raw_to_labelled_project works!", {
   project <- mock_test_project()$.internal
   # ensure project is marked as labelled and has labelled values
   expect_true(project$settings$labelled)
@@ -9,14 +9,14 @@ test_that("labelled_to_raw_data_list and raw_to_labelled_data_list works!", {
   expect_all_true(project$data$other$var_yesno %in% c("Yes", "No"))
   # convert and capture returned project
   expect_no_error({
-    project_converted <- labelled_to_raw_data_list(project)
+    project_converted <- labelled_to_raw_project(project)
   })
   # internals updated
   expect_false(project_converted$settings$labelled)
   # values converted from labelled ("Yes"/"No") to raw codes ("1"/"0")
   expect_all_true(project_converted$data$other$var_yesno %in% c("0", "1"))
   expect_no_error({
-    project_again <- raw_to_labelled_data_list(project_converted)
+    project_again <- raw_to_labelled_project(project_converted)
   })
   expect_all_true(project_again$data$other$var_yesno %in% c("Yes", "No"))
 })
@@ -148,8 +148,8 @@ test_that("normalize_redcap works with repeating project", {
   fields_to_check <- unique(append(extra_cols, fields$field_name[field_rows]))
   expect_all_true(fields_to_check %in% colnames(result$repeating_2))
 })
-# raw_to_labelled_data_list (Internal)
-test_that("raw_to_labelled_data_list works!", {
+# raw_to_labelled_project (Internal)
+test_that("raw_to_labelled_project works!", {
 })
 # raw_to_labelled_form (Internal)
 test_that("raw_to_labelled_form works!", {

@@ -77,7 +77,7 @@ generate_choices_table <- function(field_row, project) {
   conversion_table
 }
 #' @noRd
-labelled_to_raw_data_list <- function(project) {
+labelled_to_raw_project <- function(project) {
   project <- assert_blank_project(project)
   if (!project$settings$labelled) {
     stop("project is already raw or coded (not labelled values)")
@@ -91,7 +91,7 @@ labelled_to_raw_data_list <- function(project) {
   invisible(project)
 }
 #' @noRd
-raw_to_labelled_data_list <- function(project) {
+raw_to_labelled_project <- function(project) {
   project <- assert_blank_project(project)
   if (project$settings$labelled) {
     stop("project is already labelled (not raw or coded values)")

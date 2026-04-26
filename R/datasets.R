@@ -183,16 +183,17 @@ generate_project_dataset <- function(project,
   assert_choice(transformation_type, TRANFORMATION_TYPES)
   data_list <- NULL
   # add new fields
-  data_list$metadata <- project$metadata
   if (labelled != project$settings$labelled) {
     if (project$settings$labelled) {
-      project <- labelled_to_raw_data_list(project)
-    }
-    if (!project$settings$labelled) {
-      project <- raw_to_labelled_data_list(project)
+      project <- labelled_to_raw_project(project)
+    } else {
+      project <- raw_to_labelled_project(project)
     }
   }
+  data_list$metadata <- project$metadata
   data_list$data <- project$data
+  data_list$redcap <- project$redcap
+  record_sum <- project$record_summary
   data_list <- metadata_add_default_cols(data_list)
   #cache or store these to make it faster?
   if (transformation_type == "default") {
@@ -230,7 +231,7 @@ generate_project_dataset <- function(project,
       if (drop_missing_codes) {
         if (labelled) {
           exclude_these <- data_list$metadata$missing_codes$name
-        }else {
+        } else {
           exclude_these <- data_list$metadata$missing_codes$code
         }
         drop_others <- drop_others |>
@@ -241,6 +242,7 @@ generate_project_dataset <- function(project,
     }
     data_list$data <- clean_data_list(
       data_list = data_list,
+      labelled = labelled,
       drop_blanks = drop_blanks,
       drop_others = drop_others
     )
@@ -249,24 +251,22 @@ generate_project_dataset <- function(project,
     if (is_something(data_list$metadata)) {
       data_list$metadata$forms <- annotate_forms(
         data_list = data_list,
-        use_log = TRUE,
+        annotate = TRUE,
         drop_blanks = drop_blanks
       )
       data_list$metadata$fields <- annotate_fields(
         data_list = data_list,
-        use_log = TRUE,
+        annotate = TRUE,
         drop_blanks = drop_blanks
       )
       data_list$metadata$choices <- annotate_choices(
         data_list = data_list,
-        use_log = TRUE,
+        annotate = TRUE,
         drop_blanks = drop_blanks
       )
     }
   }
   records <- extract_project_records(data_list)[[1L]]
-  data_list$redcap <- project$redcap
-  record_sum <- project$record_summary
   record_sum <- record_sum[which(record_sum[[id_col]] %in% records), ]
   rownames(record_sum) <- NULL
   data_list$records <- record_sum
@@ -285,7 +285,7 @@ generate_project_dataset <- function(project,
   if (include_records) {
     if (!is.null(records)) {
       data_list$records <- annotate_records(data_list = data_list,
-                                            use_log = annotate_from_log)
+                                            annotate = annotate_from_log)
     }
   }
   if (include_users) {
@@ -293,7 +293,7 @@ generate_project_dataset <- function(project,
       data_list$users <- annotate_users(
         data_list = data_list,
         records = records,
-        use_log = annotate_from_log,
+        annotate = annotate_from_log,
         drop_blanks = drop_blanks
       )
     } else {
@@ -310,7 +310,6 @@ generate_project_dataset <- function(project,
       # warning
     }
   }
-  id_col <- project$metadata$id_col
   # add headers-------
   form_names <- names(data_list$data)
   n_records <- length(records)
@@ -727,6 +726,7 @@ filter_data_list <- function(data_list,
 }
 #' @noRd
 clean_data_list <- function(data_list,
+                            labelled,
                             drop_blanks = TRUE,
                             drop_others = NULL) {
   # assert data list
@@ -736,6 +736,7 @@ clean_data_list <- function(data_list,
     data_forms[[form_name]] <- clean_form(
       form = data_forms[[form_name]],
       fields = metadata$fields,
+      labelled = labelled,
       drop_blanks = drop_blanks,
       drop_others = drop_others
     )
@@ -901,7 +902,7 @@ add_labels_to_checkbox <- function(fields) {
 }
 #' @noRd
 annotate_fields <- function(data_list,
-                            use_log = TRUE,
+                            annotate = TRUE,
                             drop_blanks = FALSE) {
   fields <- data_list$metadata$fields # [,colnames(data_list$metadata$fields)]
   if (drop_blanks) {
@@ -910,7 +911,7 @@ annotate_fields <- function(data_list,
     #fix transform dropping missing fields
   }
   if (nrow(fields) > 0L && is_something(data_list$data)) {
-    if (use_log) {
+    if (annotate) {
       skimmed <- NULL
       for (form_name in drop_nas(unique(fields$form_name))) {
         col_names <- fields$field_name[which(fields$form_name == form_name)]
@@ -935,7 +936,7 @@ annotate_fields <- function(data_list,
 }
 #' @noRd
 annotate_forms <- function(data_list,
-                           use_log = TRUE,
+                           annotate = TRUE,
                            drop_blanks = FALSE) {
   forms <- data_list$metadata$forms
   if (drop_blanks) {
@@ -943,7 +944,7 @@ annotate_forms <- function(data_list,
   }
   if (nrow(forms) > 0L) {
     # add metadata info like n fields
-    if (use_log) {
+    if (annotate) {
       var_list <- forms$form_name |> lapply(function(form_name) {
         paste0(form_name, "_complete")
       })
@@ -975,7 +976,7 @@ annotate_forms <- function(data_list,
 }
 #' @noRd
 annotate_choices <- function(data_list,
-                             use_log = TRUE,
+                             annotate = TRUE,
                              drop_blanks = FALSE) {
   choices <- data_list$metadata$choices
   if (drop_blanks) {
@@ -983,7 +984,7 @@ annotate_choices <- function(data_list,
     choices <- choices[keep_rows, ]
   }
   #used to have more code
-  if (use_log) {
+  if (annotate) {
     choices$n <- seq_len(nrow(choices)) |>
       lapply(function(i) {
         form <- data_list$data[[choices$form_name[i]]]
@@ -1024,7 +1025,7 @@ annotate_choices <- function(data_list,
   choices
 }
 #' @noRd
-annotate_records <- function(data_list, use_log = TRUE) {
+annotate_records <- function(data_list, annotate = TRUE) {
   id_col <- data_list$metadata$id_col
   records <- extract_project_records(data_list)[[1L]]
   the_rows <- which(data_list$records[[id_col]] %in% records)
@@ -1034,7 +1035,7 @@ annotate_records <- function(data_list, use_log = TRUE) {
   if (!is_something(all_records) || !is_something(redcap_log)) {
     return(all_records)
   }
-  if (use_log) {
+  if (annotate) {
     if (is_something(redcap_log)) {
       redcap_log <- redcap_log[, c("timestamp", "username", "record")]
       has_users <- is_something(data_list$redcap$users)
@@ -1072,8 +1073,10 @@ annotate_records <- function(data_list, use_log = TRUE) {
 #' @noRd
 clean_form <- function(form,
                        fields,
+                       labelled,
                        drop_blanks = TRUE,
                        drop_others = NULL) {
+  name_code <- ifelse(labelled, 2L, 1L)
   for (field_name in colnames(form)) {
     if (field_name %in% fields$field_name) {
       x_row <- which(fields$field_name == field_name)
@@ -1094,7 +1097,7 @@ clean_form <- function(form,
         if (x_class == "factor") {
           select_choices <- fields$select_choices_or_calculations[x_row]
           if (!is.na(select_choices)) {
-            x_levels <- split_choices(select_choices)[[2L]]
+            x_levels <- split_choices(select_choices)[[name_code]]
           } else {
             x_levels <- unique(form[[field_name]]) |> drop_nas()
           }
@@ -1348,7 +1351,7 @@ extract_log <- function(data_list, records) {
 #' @noRd
 annotate_users <- function(data_list,
                            records = NULL,
-                           use_log = TRUE,
+                           annotate = TRUE,
                            drop_blanks = FALSE) {
   if (is.null(records)) {
     id_col <- data_list$metadata$id_col
@@ -1366,7 +1369,7 @@ annotate_users <- function(data_list,
   if (!is_something(user_groups) || length(names_in_log) == 0L) {
     return(users_df)
   }
-  if (use_log) {
+  if (annotate) {
     only_in_log <- vec1_not_in_vec2(names_in_log, users_df$username)
     if (length(only_in_log) > 0L) {
       users_df <- users_df |>

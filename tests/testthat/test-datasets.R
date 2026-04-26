@@ -108,14 +108,19 @@ test_that("clean_form works!", {
   form <- project$data$text
   project <- metadata_add_default_cols(project)
   fields <- project$metadata$fields
-  form <- clean_form(form = form, fields = fields)
+  form <- clean_form(form = form, labelled = TRUE, fields = fields)
   expect_identical(attr(form$var_text_only, "label"), "Text Only")
   expect_identical(attr(form$var_birth_date, "label"), "Birth Date")
   row_to_change <- which(fields$field_name == "var_multi_radio")
   new_var <- "1, 1 | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, 5"
   fields$select_choices_or_calculations[row_to_change] <- new_var
   form <- project$data$other
-  expect_warning(clean_form(form = form, fields = fields), "dupplicate names")
+  expect_warning(clean_form(
+    form = form,
+    labelled = TRUE,
+    fields = fields
+  ),
+  "dupplicate names")
 })
 # clear_project_datasets (Internal)
 test_that("clear_project_datasets works!", {

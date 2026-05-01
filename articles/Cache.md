@@ -11,11 +11,12 @@ pipeline tasks. Importantly, no direct project data or tokens are stored
 in the cache!
 
 ``` r
+
 library(REDCapSync) # don't forget to load the package
 ```
 
 Using the `hoadr` package, R finds the standard location where R
-typically stores cached package data. For example, on Mac the location
+typically stores cahced package data. For example, on Mac the location
 might look like, “/Users/yourmacname/Library/Caches/R/REDCapSync”.
 
 ## Location
@@ -26,6 +27,7 @@ in this cache is the projects data.frame, which can be loaded with
 `projects$load("PROJECT")`.
 
 ``` r
+
 user_cache_location <- rappdirs::user_cache_dir("R") 
 redcapsync_cache_location <- file.path(user_cache_location, "REDCapSync")
 redcapsync_cache_location
@@ -43,6 +45,7 @@ location; it will not delete any files from any project directories. If
 you want to delete files, please do so using your own methods.
 
 ``` r
+
 # clear entire cache (all projects)
 cache_clear()
 # clear specific project
@@ -58,5 +61,6 @@ the code below. If you haven’t setup any projects, it will be an empty
 data.frame.
 
 ``` r
+
 print.data.frame(projects$df)
 ```

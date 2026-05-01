@@ -5,6 +5,7 @@
 This is how you get REDCap turned into an R database…
 
 ``` r
+
 library(REDCapSync)
 
 View(projects$df)                             # show your previously saved projects
@@ -15,15 +16,15 @@ your tokens see this article –\> placeholder
 
 ``` r
 #1. set each time in your session (not recommended in saved/shared scripts!)
-Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")
+Sys.setenv(REDCAPSYNC_TEST1 = "YoUrNevErShaReToken")
 #2. set to your private R sessions!
 usethis::edit_r_environ()                                       #finds your file
-# another way to find same file
+# or
 rstudioapi::navigateToFile(file.path(Sys.getenv("HOME")), ".Renviron"))
-# Then you add --> REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'
+# Then you add --> REDCAPSYNC_TEST1 = 'YoUrNevErShaReToken'
 # then save file and restart R
 # If it worked you will see your token when you run...
-Sys.getenv("REDCAPSYNC_FIRST_PROJECT")
+Sys.getenv("REDCAPSYNC_TEST1")
 ```
 
 ## Run Core Functions
@@ -31,8 +32,9 @@ Sys.getenv("REDCAPSYNC_FIRST_PROJECT")
 The following functions represent the core functions of the package.
 
 ``` r
+
 project <- setup_project(
-  project_name = "FIRST_PROJECT", # default token name REDCAPSYNC_<project_name>
+  project_name = "TEST1",          # must match token pattern REDCAPSYNC_*******
   redcap_uri = "https://redcap.fakei.edu/api/",        # your institution's link
   dir_path = getwd()     # your project file path, real data will be stored here
 )
@@ -42,6 +44,7 @@ project$sync() # gets all data from REDCap
 ## Explore Outputs!
 
 ``` r
+
 fields <- project$metadata$fields            # adds fields in global environment
 choices <- project$metadata$choices         # adds choices in global environment
 project$data |> list2env(envir = globalenv())  # adds data forms in global envir
@@ -65,12 +68,13 @@ the right of any repeating forms. It also uses the REDCap log and REDCap
 data to add key information to metadata, users, and records.
 
 ``` r
+
 project$load_dataset(summary_name = "REDCapSync", envir = globalenv())
 ```
 
 This can be customized with `add_dataset` for refreshing datasets or
 `generate_dataset` for R-only use. This can give you filtered data (and
-corresponding annotations to metadata, etc), deidentified data, and
+corresponding annotations to metadata, etc), de-identified data, and
 more!
 
 ``` r

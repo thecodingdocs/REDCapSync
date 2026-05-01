@@ -44,32 +44,34 @@ The stable *release* version can be installed from
 [CRAN](https://cran.r-project.org/package=REDCapSync).
 
 ``` r
+
 install.packages("REDCapSync")
 ```
 
-### Development Version
+### Devopment Version
 
 You can install the development version from GitHub with the
-[`pak`](https://pak.r-lib.org). Windows users may need to install
-[RTools version
-4.5](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html "R Getting Started")
-to use pak.
+[`pak`](https://pak.r-lib.org)
 
 ``` r
+
 # install.packages("pak")
 pak::pak("thecodingdocs/REDCapSync")
 ```
 
-Alternatively, you can install the development version from GitHub with
+Alterntatively, you can install the development version from GitHub with
 the [`remotes`](https://remotes.r-lib.org) package.
 
 ``` r
+
 # install.packages("remotes")
 remotes::install_github("thecodingdocs/REDCapSync")
 ```
 
-If you have any issues, try downloading the most recent version of R at
-RStudio and update all packages in RStudio. See
+Windows users may need to install [RTools version
+4.5](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html "R Getting Started")
+to use pak. If you have any issues, try downloading the most recent
+version of R at RStudio and update all packages in RStudio. See
 [thecodingdocs.com/r/getting-started](https://www.thecodingdocs.com/r/getting-started "R Getting Started").
 
 ## Getting Started!
@@ -87,7 +89,7 @@ page for the basics!
 - Access to at least one REDCap project (real or test) with API Token
   privileges according to user rights.
 - Ideally, you should have User Permissions to logging in order to use
-  the package efficiently
+  the package effeciently
 - Appropriate permission to export and analyze data for projects for
   which you have a token.
 - Basic R knowledge such as installing a package and running code.
@@ -116,16 +118,17 @@ requests.
 
 #### Constants/Data
 
-- Internal constants: **SCREAMING_SNAKE_CASE**
-  - Examples: FAKE_TOKEN, BLANK_PROJECT_COLS, SYNC_FREQUENCY
+- Internal constants: **.snake_case**
+  - Exceptions:
+    - redcapAPI constants: **SCREAMING_SNAKE_CASE**
 - Internal datasets: **SCREAMING_SNAKE_CASE**
   - Examples: TEST_CLASSIC, TEST_REPEATING, TEST_CANCER
-- Environment variable names: **SCREAMING_SNAKE_CASE**
+- Environment varriable names: **SCREAMING_SNAKE_CASE**
   - Examples: REDCAPSYNC_TEST_CLASSIC
 
 #### R6 Class
 
-- R6ClassGenerator and R6 Classes: **PascalCase** with capitalized
+- R6ClassGenerator and R6 Classes: **PascalCase** with captilized
   “REDCap” acronym
   - Example: REDCapSyncProject
 - R6 public_methods: snake_case

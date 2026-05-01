@@ -13,17 +13,6 @@ To reopen an existing project, use
 An R6ClassGenerator which is used internally to create or load a project
 object for the user
 
-## Details
-
-The methods documented below are functions that work without having to
-use "\<-". For example, if you load a project with
-`project <- load_project("TEST_CLASSIC")`, and then then run
-`project$sync()`, then the project object will contain the updated data.
-That function actually invisibly returns itself which allows for
-"chaining", such as `load_project("TEST_CLASSIC")$sync()`. More features
-are being developed that will allow for the addition of fields (outside
-of REDCap).
-
 ## See also
 
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
@@ -76,6 +65,10 @@ for initializing the `project` object.'
 - [`REDCapSyncProject$remove_datasets()`](#method-REDCapSyncProject-remove_datasets)
 
 - [`REDCapSyncProject$generate_dataset()`](#method-REDCapSyncProject-generate_dataset)
+
+- [`REDCapSyncProject$add_field()`](#method-REDCapSyncProject-add_field)
+
+- [`REDCapSyncProject$remove_fields()`](#method-REDCapSyncProject-remove_fields)
 
 - [`REDCapSyncProject$save_datasets()`](#method-REDCapSyncProject-save_datasets)
 
@@ -132,8 +125,7 @@ Updates the REDCap data for (`project` object) by checking REDCap log
 for changes. Sync is performed according to the `sync_frequency` set in
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
 by default. Use `hard_check` to force a check, or ` hard_reset` to force
-a complete refresh. As a default, this object will be saved to your
-directory when necessary.
+a complete refresh.
 
 #### Usage
 
@@ -218,12 +210,13 @@ Add a new dataset entry
 - `transformation_type`:
 
   Character scalar. How to transform data for the dataset. Default is
-  "default". Other options are "none" and "merge_non_repeating".
+  "default". Other options are "none", "flat", "merge_non_repeating".
   "default" first merges non-repeating and if there are repeating forms,
-  it also merges non-repeating variables to the right. "none" does not
-  transform anything. "merge_non_repeating" still merges all
-  non-repeating instruments but does not merge them to repeating
-  instruments.
+  it merges non-repeating variables to the right of repeating
+  instruments. "flat" is one-record, one-row, even if there are
+  repeating forms. "none" does not transform anything.
+  "merge_non_repeating" still merges all non-repeating instruments but
+  does not merge them to repeating instruments.
 
 - `merge_form_name`:
 
@@ -270,7 +263,7 @@ Add a new dataset entry
 - `exclude_free_text`:
 
   Logical. If `TRUE`, exclude free text fields intended for
-  deidentification workflows. Default is `FALSE`.
+  de-identification workflows. Default is `FALSE`.
 
 - `date_handling`:
 
@@ -368,7 +361,7 @@ Add a new dataset entry
 
 ### Method `load_dataset()`
 
-Load dataset if previously defined with `add_dataset`.
+Clear all project datasets
 
 #### Usage
 
@@ -391,7 +384,7 @@ Load dataset if previously defined with `add_dataset`.
 
 ### Method `remove_datasets()`
 
-Clear all or specified datasets from the `project` object.
+Clear all project datasets
 
 #### Usage
 
@@ -407,10 +400,7 @@ Clear all or specified datasets from the `project` object.
 
 ### Method `generate_dataset()`
 
-Generate
-[dataset](https://thecodingdocs.github.io/REDCapSync/reference/dataset.md)
-object. This is usually handled internally for some default behavior but
-is provided here for ad-hoc custom datasets.
+Add a new dataset entry
 
 #### Usage
 
@@ -457,12 +447,13 @@ is provided here for ad-hoc custom datasets.
 - `transformation_type`:
 
   Character scalar. How to transform data for the dataset. Default is
-  "default". Other options are "none" and "merge_non_repeating".
+  "default". Other options are "none", "flat", "merge_non_repeating".
   "default" first merges non-repeating and if there are repeating forms,
-  it also merges non-repeating variables to the right. "none" does not
-  transform anything. "merge_non_repeating" still merges all
-  non-repeating instruments but does not merge them to repeating
-  instruments.
+  it merges non-repeating variables to the right of repeating
+  instruments. "flat" is one-record, one-row, even if there are
+  repeating forms. "none" does not transform anything.
+  "merge_non_repeating" still merges all non-repeating instruments but
+  does not merge them to repeating instruments.
 
 - `merge_form_name`:
 
@@ -509,7 +500,7 @@ is provided here for ad-hoc custom datasets.
 - `exclude_free_text`:
 
   Logical. If `TRUE`, exclude free text fields intended for
-  deidentification workflows. Default is `FALSE`.
+  de-identification workflows. Default is `FALSE`.
 
 - `date_handling`:
 
@@ -575,9 +566,97 @@ is provided here for ad-hoc custom datasets.
 
 ------------------------------------------------------------------------
 
+### Method `add_field()`
+
+Add a new dataset entry
+
+#### Usage
+
+    REDCapSyncProject$add_field(
+      field_name,
+      form_name,
+      field_type,
+      field_type_r = NA,
+      field_label = NA,
+      select_choices_or_calculations = NA,
+      field_note = NA,
+      identifier = "",
+      units = NA,
+      data_func = NA
+    )
+
+#### Arguments
+
+- `field_name`:
+
+  Character. The name of the field to which the transformation will be
+  applied.
+
+- `form_name`:
+
+  Character. The name of the form containing `field_name`.
+
+- `field_type`:
+
+  Character. The type of the field in REDCap (e.g., "text", "checkbox",
+  "dropdown").
+
+- `field_type_r`:
+
+  Character. The corresponding R data type for the field. Default is
+  `NA`.
+
+- `field_label`:
+
+  Character. The label for the field. Default is `NA`.
+
+- `select_choices_or_calculations`:
+
+  Character. A string specifying the choices (for dropdown, radio, or
+  checkbox fields) or calculations (for calculated fields). Default is
+  `NA`.
+
+- `field_note`:
+
+  Character. An optional note or comment for the field. Default is `NA`.
+
+- `identifier`:
+
+  Character. A string indicating whether the field is an identifier
+  (e.g., "Y" for yes). Default is an empty string (`""`).
+
+- `units`:
+
+  Character. The units of measurement for the field, if applicable.
+  Default is `NA`.
+
+- `data_func`:
+
+  Function or NA. An optional function to transform or validate the data
+  in the field. Default is `NA`.
+
+------------------------------------------------------------------------
+
+### Method `remove_fields()`
+
+Removes extra fields
+
+#### Usage
+
+    REDCapSyncProject$remove_fields(field_names = NULL)
+
+#### Arguments
+
+- `field_names`:
+
+  Character vector. Names of specific fields to include in the dataset.
+  Default is `NULL`, which includes all fields.
+
+------------------------------------------------------------------------
+
 ### Method `save_datasets()`
 
-saves datasets to Excel via setting provided to `add_dataset`.
+saves project datasets to Excel
 
 #### Usage
 
@@ -594,7 +673,7 @@ saves datasets to Excel via setting provided to `add_dataset`.
 
 ### Method `save_dataset()`
 
-saves dataset to Excel via setting provided to `add_dataset`.
+save dataset to Excel
 
 #### Usage
 
@@ -612,8 +691,7 @@ saves dataset to Excel via setting provided to `add_dataset`.
 
 ### Method [`save()`](https://rdrr.io/r/base/save.html)
 
-Save project object to directory chosen with
-[setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
+Add a new dataset entry
 
 #### Usage
 
@@ -633,7 +711,7 @@ Set keyring token. See vignette and config for detail.
 
 ### Method `test_token()`
 
-test connection via communication with API.
+test connection via communication with API
 
 #### Usage
 
@@ -643,7 +721,7 @@ test connection via communication with API.
 
 ### Method `url_launch()`
 
-opens links in browser.
+opens links in browser
 
 #### Usage
 
@@ -666,7 +744,7 @@ opens links in browser.
 
 ### Method `url_record_launch()`
 
-opens record links in browser.
+opens record links in browser
 
 #### Usage
 

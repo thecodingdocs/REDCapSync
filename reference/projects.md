@@ -34,6 +34,7 @@ without loading the namespace. Because many project methods return
 project objects, you can write concise, readable workflows that operate
 in sequence:
 
+
     # load, sync, and generate dataset to global
     REDCapSync::projects$load("TEST_CLASSIC")$
       sync()$

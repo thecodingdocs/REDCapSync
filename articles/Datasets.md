@@ -1,13 +1,15 @@
 # Datasets
 
 ``` r
+
 library(REDCapSync)
 ```
 
-Start by loading an existing or test project. There are two named
+Start by loading an exisiting or test project. There are two named
 datasets by default: REDCapSync and REDCapSync_raw.
 
 ``` r
+
 save_dir <- tempdir() # replace with your intended folder
 
 project <- load_project("TEST_CLASSIC")
@@ -34,6 +36,7 @@ You can also chain together certain functions… So this is the same as
 above.
 
 ``` r
+
 save_dir <- tempdir() # replace with your intended folder
 
 dataset <- projects$load("TEST_CLASSIC")$sync()$load_dataset("REDCapSync")
@@ -55,6 +58,7 @@ This single line will load, sync, generate dataset, and send to your
 global environment!
 
 ``` r
+
 projects$load("TEST_CLASSIC")$sync()$load_dataset("REDCapSync", envir = globalenv())
 ```
 
@@ -63,6 +67,7 @@ refreshing to the directory you can add it to your project. The next
 time you run sync it will be passed to you directory as defined.
 
 ``` r
+
 save_dir <- tempdir() # replace with your intended folder
 
 #load and sync (load_project(...) is the same as projects$load(...))
@@ -110,6 +115,7 @@ them to project with `project$add_dataset`, load them for use in R with
 `project$save_dataset` or `project$sync`.
 
 ``` r
+
 #load and sync add datasets and save
 project <- load_project("TEST_LONGITUDINAL")$
   sync()$

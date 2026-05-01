@@ -1,7 +1,7 @@
 # Configuration
 
-**\[experimental\]** Internal configuration helpers used to retrieve
-package configuration values from options or environment variables.
+Internal configuration helpers used to retrieve package configuration
+values from options or environment variables.
 
 Configuration is resolved in the following order:
 
@@ -28,23 +28,11 @@ list of functions that returns config values
 
 ## Details
 
-The config function is operational but only some methods presently
-affect internal code. Most users will not ever need to modify default
-config. This is included to improve future versions of the package.
-
-- Working configs: `allow.test.names`, `cache.dir`, `keyring`,
-  `keyring.service`, `openxlsx.header.style`, `openxlsx.body.style`.
-
-- Partial coverage: `offline`.
-
-- Placeholder: `verbose`, `show.api.messages`
-
 ### allow.test.names
 
 Logical for
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-allowing `project_name` starting with TEST\_. Default is `FALSE`. This
-is provided for developers and testing environments.
+allowing `project_name` starting with TEST\_. Default is `FALSE`.
 
     # check current value package is using...
     config$allow.test.names()
@@ -206,6 +194,7 @@ See
 ## Examples
 
 ``` r
+
 # disable with environment variable
 Sys.setenv(REDCAPSYNC_CONFIG_OFFLINE = FALSE)
 

@@ -31,6 +31,6 @@ based on previous activity.
 Change user-level settings and clear cache
 
 - [`config`](https://thecodingdocs.github.io/REDCapSync/reference/config.md)
-  : Configuration
+  **\[experimental\]** : Configuration
 - [`cache_clear()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_clear.md)
   : Clear your cached projects

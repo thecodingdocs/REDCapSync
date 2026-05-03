@@ -13,12 +13,13 @@ practice to regenerate your token periodically, such as once a week,
 just to be safe.
 
 Precisely because tokens are sensitive, REDCapSync is designed to only
-reference the name of your token, such as “REDCAPSYNC_TEST”. If
+reference the name of your token, such as “REDCAPSYNC_FIRST_PROJECT”. If
 REDCapSync ever wants to use the token to make an API call to REDCap, it
-will check `Sys.getenv("REDCAPSYNC_TEST")`. By default are token names
-start with “REDCAPSYNC\_”, followed by the `project_name` you chose in
-[`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).Below
-demonstrates how to set and check your tokens…
+will check `Sys.getenv("REDCAPSYNC_FIRST_PROJECT")`. By default are
+token names start with “REDCAPSYNC\_”, followed by the `project_name`
+you chose in
+[`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
+Below demonstrates how to set and check your tokens…
 
 ### Setting Your Token using User Environment Variables (preferred)
 
@@ -30,13 +31,13 @@ of any cloud storage or git or GitHub. You can use
 `usethis::edit_r_environ()` to semi-permanently save your token. Each
 time you launch an R session this file will run and your token will be
 visible to you if specifically called with
-`Sys.getenv("REDCAPSYNC_TEST")`.
+`Sys.getenv("REDCAPSYNC_FIRST_PROJECT")`.
 
 1.  Open the .Renviron file with `usethis::edit_r_environ()`
-2.  Add the token like this… `REDCAPSYNC_TEST = "faKeTokeN"`
+2.  Add the token like this… `REDCAPSYNC_FIRST_PROJECT = "faKeTokeN"`
 3.  Save the file and Close
 4.  Restart R Session (Session tab or `.rs.restartR()`).
-5.  Confirm with `Sys.getenv("REDCAPSYNC_TEST")`
+5.  Confirm with `Sys.getenv("REDCAPSYNC_FIRST_PROJECT")`
 
 ``` r
 
@@ -44,11 +45,11 @@ visible to you if specifically called with
 #install.packages("usethis") 
 usethis::edit_r_environ()
 # Now save your token.... (without the comment symbol '#')
-# REDCAPSYNC_TEST = "faKeTokeN"
+# REDCAPSYNC_FIRST_PROJECT = "faKeTokeN"
 # Save the file and Close
 # Restart R Session (session tab)
 # .rs.restartR() # this will also restart R session for you.
-Sys.getenv("REDCAPSYNC_TEST") # now should contain your token
+Sys.getenv("REDCAPSYNC_FIRST_PROJECT") # now should contain your token
 ```
 
 The only reference to your token that is ever made or saved in
@@ -59,7 +60,7 @@ our token in a different way.
 ### Setting Your Token using `keyring` package
 
 By default REDCapSync will use keyring = NULL, which is your OS system
-default and is typcially unlocked by default while you are logged in.
+default and is typically unlocked by default while you are logged in.
 
 ``` r
 
@@ -79,36 +80,32 @@ keyring::key_set_with_value(service = config$keyring.service(),
                             username = project$project_name,
                             password = "VeryNOTsecureWayToSetYourTOKEN",
                             keyring = config$keyring())
-
-# again, internally this will be searched for like this
-token <- keyring::key_get(service = config$keyring.service(),
-                          username = project$project_name,
-                          keyring = config$keyring())
 ```
 
-You can change default configuration using configuration settings…
+You can change default configuration to give you more fine-tuning of
+keyrings using configuration settings…
 
 ``` r
 
 options(redcapsync.config.keyring = "REDCapSync")
 # with this kind of method you could define multiple tokens in a private/secret
 # .R file which can be sourced to set all tokens in akeyring. Can also be 
-# locked and unlocked (see keyring webstite)
+# locked and unlocked (see keyring webstite for details)
 ```
 
 ### Setting Your Token for One Session
 
 You can set manually with base R. Unless you specifically set the token
-`Sys.getenv("REDCAPSYNC_TEST")` will be blank.
+`Sys.getenv("REDCAPSYNC_FIRST_PROJECT")` will be blank.
 
 ``` r
 
 # Set your token manually
 # again having this in a script is not advised but possible
-Sys.setenv(REDCAPSYNC_TEST="a_FaKe_TOkEn") 
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT="a_FaKe_TOkEn") 
 
 # Get your token
-Sys.getenv("REDCAPSYNC_TEST")
+Sys.getenv("REDCAPSYNC_FIRST_PROJECT")
 #>[1] "a_FaKe_TOkEn"
 ```
 

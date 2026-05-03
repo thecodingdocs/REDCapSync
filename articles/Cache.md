@@ -16,7 +16,7 @@ library(REDCapSync) # don't forget to load the package
 ```
 
 Using the `hoadr` package, R finds the standard location where R
-typically stores cahced package data. For example, on Mac the location
+typically stores cached package data. For example, on Mac the location
 might look like, “/Users/yourmacname/Library/Caches/R/REDCapSync”.
 
 ## Location

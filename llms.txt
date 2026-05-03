@@ -48,10 +48,13 @@ The stable *release* version can be installed from
 install.packages("REDCapSync")
 ```
 
-### Devopment Version
+### Development Version
 
 You can install the development version from GitHub with the
-[`pak`](https://pak.r-lib.org)
+[`pak`](https://pak.r-lib.org). Windows users may need to install
+[RTools version
+4.5](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html "R Getting Started")
+to use pak.
 
 ``` r
 
@@ -59,7 +62,7 @@ You can install the development version from GitHub with the
 pak::pak("thecodingdocs/REDCapSync")
 ```
 
-Alterntatively, you can install the development version from GitHub with
+Alternatively, you can install the development version from GitHub with
 the [`remotes`](https://remotes.r-lib.org) package.
 
 ``` r
@@ -68,10 +71,8 @@ the [`remotes`](https://remotes.r-lib.org) package.
 remotes::install_github("thecodingdocs/REDCapSync")
 ```
 
-Windows users may need to install [RTools version
-4.5](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html "R Getting Started")
-to use pak. If you have any issues, try downloading the most recent
-version of R at RStudio and update all packages in RStudio. See
+If you have any issues, try downloading the most recent version of R at
+RStudio and update all packages in RStudio. See
 [thecodingdocs.com/r/getting-started](https://www.thecodingdocs.com/r/getting-started "R Getting Started").
 
 ## Getting Started!
@@ -89,7 +90,7 @@ page for the basics!
 - Access to at least one REDCap project (real or test) with API Token
   privileges according to user rights.
 - Ideally, you should have User Permissions to logging in order to use
-  the package effeciently
+  the package efficiently
 - Appropriate permission to export and analyze data for projects for
   which you have a token.
 - Basic R knowledge such as installing a package and running code.
@@ -118,17 +119,16 @@ requests.
 
 #### Constants/Data
 
-- Internal constants: **.snake_case**
-  - Exceptions:
-    - redcapAPI constants: **SCREAMING_SNAKE_CASE**
+- Internal constants: **SCREAMING_SNAKE_CASE**
+  - Examples: FAKE_TOKEN, BLANK_PROJECT_COLS, SYNC_FREQUENCY
 - Internal datasets: **SCREAMING_SNAKE_CASE**
   - Examples: TEST_CLASSIC, TEST_REPEATING, TEST_CANCER
-- Environment varriable names: **SCREAMING_SNAKE_CASE**
+- Environment variable names: **SCREAMING_SNAKE_CASE**
   - Examples: REDCAPSYNC_TEST_CLASSIC
 
 #### R6 Class
 
-- R6ClassGenerator and R6 Classes: **PascalCase** with captilized
+- R6ClassGenerator and R6 Classes: **PascalCase** with capitalized
   “REDCap” acronym
   - Example: REDCapSyncProject
 - R6 public_methods: snake_case
@@ -206,7 +206,7 @@ based on previous activity.
 Change user-level settings and clear cache
 
 - [`config`](https://thecodingdocs.github.io/REDCapSync/reference/config.md)
-  : Configuration
+  **\[experimental\]** : Configuration
 - [`cache_clear()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_clear.md)
   : Clear your cached projects
 

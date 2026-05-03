@@ -30,6 +30,7 @@ Imports:
     cli,
     dplyr,
     hoardr,
+    lifecycle,
     lubridate,
     openxlsx,
     R6,
@@ -55,4 +56,4 @@ Encoding: UTF-8
 Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE, r6 = TRUE)
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.0.0

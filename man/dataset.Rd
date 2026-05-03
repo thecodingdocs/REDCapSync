@@ -26,53 +26,54 @@ dataset$save(dir_other = save_dir)
 \link{setup_project} for initializing the \code{project} object.'
 }
 \section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{data}}{list of data where names are forms}
+  \if{html}{\out{<div class="r6-fields">}}
+  \describe{
+    \item{\code{data}}{list of data where names are forms}
 
-\item{\code{metadata}}{list of metadata}
+    \item{\code{metadata}}{list of metadata}
 
-\item{\code{records}}{data.frame of records with timestamps}
+    \item{\code{records}}{data.frame of records with timestamps}
 
-\item{\code{users}}{data.frame of users with timestamps}
+    \item{\code{users}}{data.frame of users with timestamps}
 
-\item{\code{log}}{data.frame of log}
+    \item{\code{log}}{data.frame of log}
 
-\item{\code{comments}}{data.frame of comments}
-}
-\if{html}{\out{</div>}}
+    \item{\code{comments}}{data.frame of comments}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{project_details}}{Read-only list of dataset details from
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{project_details}}{Read-only list of dataset details from
 \code{\link[=setup_project]{setup_project()}}.}
 
-\item{\code{dataset_details}}{Read-only list of dataset details}
+    \item{\code{dataset_details}}{Read-only list of dataset details}
 
-\item{\code{redcap}}{Read-only list of dataset details from \link{project}}
+    \item{\code{redcap}}{Read-only list of dataset details from \link{project}}
 
-\item{\code{links}}{Read-only list of dataset details from \link{project}}
-}
-\if{html}{\out{</div>}}
+    \item{\code{links}}{Read-only list of dataset details from \link{project}}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-REDCapSyncDataset-new}{\code{REDCapSyncDataset$new()}}
-\item \href{#method-REDCapSyncDataset-print}{\code{REDCapSyncDataset$print()}}
-\item \href{#method-REDCapSyncDataset-save}{\code{REDCapSyncDataset$save()}}
-\item \href{#method-REDCapSyncDataset-to_envir}{\code{REDCapSyncDataset$to_envir()}}
-}
+  \itemize{
+    \item \href{#method-REDCapSyncDataset-initialize}{\code{REDCapSyncDataset$new()}}
+    \item \href{#method-REDCapSyncDataset-print}{\code{REDCapSyncDataset$print()}}
+    \item \href{#method-REDCapSyncDataset-save}{\code{REDCapSyncDataset$save()}}
+    \item \href{#method-REDCapSyncDataset-to_envir}{\code{REDCapSyncDataset$to_envir()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-REDCapSyncDataset-new"></a>}}
-\if{latex}{\out{\hypertarget{method-REDCapSyncDataset-new}{}}}
-\subsection{Method \code{new()}}{
-The end user will not see \code{dataset$new()}. This is handled internally.
+\if{html}{\out{<a id="method-REDCapSyncDataset-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncDataset-initialize}{}}}
+\subsection{\code{REDCapSyncDataset$new()}}{
+  The end user will not see \code{dataset$new()}. This is handled internally.
 Users should construct objects using \link{REDCapSyncProject}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncDataset$new(
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{REDCapSyncDataset$new(
   project,
   dataset_name,
   transformation_type = "default",
@@ -97,158 +98,138 @@ Users should construct objects using \link{REDCapSyncProject}.
   include_log = FALSE,
   annotate_from_log = TRUE,
   include_comments = FALSE
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{project}}{object from \code{\link[=setup_project]{setup_project()}} or \code{\link[=load_project]{load_project()}}.}
-
-\item{\code{dataset_name}}{Character. The name of the configured dataset from which
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{project}}{object from \code{\link[=setup_project]{setup_project()}} or \code{\link[=load_project]{load_project()}}.}
+      \item{\code{dataset_name}}{Character. The name of the configured dataset from which
 to generate the dataset. *If you provide \code{dataset_name} all other parameters
 are inherited according to what was set with \code{add_dataset}.}
-
-\item{\code{transformation_type}}{Character scalar. How to transform data for the
+      \item{\code{transformation_type}}{Character scalar. How to transform data for the
 dataset. Default is "default". Other options are "none" and
 "merge_non_repeating". "default" first merges non-repeating and if there are
 repeating forms, it also merges non-repeating variables to the right.
 "none" does not transform anything. "merge_non_repeating" still merges
 all non-repeating instruments but does not merge them to repeating
 instruments.}
-
-\item{\code{merge_form_name}}{A character string representing the name of the merged
+      \item{\code{merge_form_name}}{A character string representing the name of the merged
 form. Default is "merged".}
-
-\item{\code{filter_field}}{Character. The name of the field in the database to
+      \item{\code{filter_field}}{Character. The name of the field in the database to
 filter on. Used with \code{filter_choices}.}
-
-\item{\code{filter_choices}}{Vector. The values of \code{filter_field} used to define the
+      \item{\code{filter_choices}}{Vector. The values of \code{filter_field} used to define the
 dataset. An alternative to providing a full \code{filter_list}.}
-
-\item{\code{filter_list}}{Vector. The values of \code{filter_field} used to define the
+      \item{\code{filter_list}}{Vector. The values of \code{filter_field} used to define the
 dataset. Names are field names; values are the allowed value set(s). Use
 either \code{filter_list} or \code{filter_field} with \code{filter_choices}.}
-
-\item{\code{filter_strict}}{Logical. If \code{TRUE}, all forms will be filtered by
+      \item{\code{filter_strict}}{Logical. If \code{TRUE}, all forms will be filtered by
 criteria. If \code{FALSE}, will convert original filter to ID column and filter
 all other forms by that record. Default is \code{TRUE}.}
-
-\item{\code{field_names}}{Character vector. Names of specific fields to include in
+      \item{\code{field_names}}{Character vector. Names of specific fields to include in
 the dataset. Default is \code{NULL}, which includes all fields.}
-
-\item{\code{form_names}}{Character vector. Names of forms to include in the dataset.
+      \item{\code{form_names}}{Character vector. Names of forms to include in the dataset.
 Default is \code{NULL}, which includes all forms.}
-
-\item{\code{exclude_identifiers}}{Logical. Whether to exclude identifiers in the
+      \item{\code{exclude_identifiers}}{Logical. Whether to exclude identifiers in the
 data in the dataset. Default is \code{TRUE}.}
-
-\item{\code{exclude_free_text}}{Logical. If \code{TRUE}, exclude free text fields
+      \item{\code{exclude_free_text}}{Logical. If \code{TRUE}, exclude free text fields
 intended for deidentification workflows. Default is \code{FALSE}.}
-
-\item{\code{date_handling}}{character string. One of \code{none},\code{exclude_dates},
+      \item{\code{date_handling}}{character string. One of \code{none},\code{exclude_dates},
 \code{random_shift_by_record}, \code{random_shift_by_project}, \code{zero_by_record}, or
 \code{zero_by_project}. Random shift is +/- 90 unless changed with options.}
-
-\item{\code{labelled}}{Logical. If \code{TRUE}, the data will be converted to labelled.
+      \item{\code{labelled}}{Logical. If \code{TRUE}, the data will be converted to labelled.
 If \code{FALSE}, returns raw coded values. Default is \code{TRUE}.}
-
-\item{\code{clean}}{Logical. If \code{TRUE}, the data will be cleaned (e.g.,
+      \item{\code{clean}}{Logical. If \code{TRUE}, the data will be cleaned (e.g.,
 standardizing missing/blank values) before summarizing. Default is \code{TRUE}. If
 missing codes are present in a number or date variable, R will convert
 missing codes to NA and will make that variable not upload compatible.}
-
-\item{\code{drop_blanks}}{Logical. If \code{TRUE}, records with blank fields will be
+      \item{\code{drop_blanks}}{Logical. If \code{TRUE}, records with blank fields will be
 dropped during cleaning. Default is \code{TRUE}.}
-
-\item{\code{drop_missing_codes}}{Logical. If \code{TRUE}, will convert missing codes
+      \item{\code{drop_missing_codes}}{Logical. If \code{TRUE}, will convert missing codes
 to NA. Default is \code{FALSE}.}
-
-\item{\code{drop_others}}{Character vector of other values that should be dropped.}
-
-\item{\code{include_metadata}}{Logical. If \code{TRUE}, metadata will be included in the
+      \item{\code{drop_others}}{Character vector of other values that should be dropped.}
+      \item{\code{include_metadata}}{Logical. If \code{TRUE}, metadata will be included in the
 dataset. Default is \code{TRUE}.}
-
-\item{\code{include_users}}{Logical. If \code{TRUE}, user-related information will be
+      \item{\code{include_users}}{Logical. If \code{TRUE}, user-related information will be
 included in the dataset. Default is \code{TRUE}.}
-
-\item{\code{include_records}}{Logical. If \code{TRUE}, a record dataset will be
+      \item{\code{include_records}}{Logical. If \code{TRUE}, a record dataset will be
 included in the generated dataset. Default is \code{TRUE}.}
-
-\item{\code{include_log}}{Logical. If \code{TRUE}, the log of changes will be included in
+      \item{\code{include_log}}{Logical. If \code{TRUE}, the log of changes will be included in
 the dataset. Default is \code{TRUE}.}
-
-\item{\code{annotate_from_log}}{Logical. If \code{TRUE}, the metadata, users, and records
+      \item{\code{annotate_from_log}}{Logical. If \code{TRUE}, the metadata, users, and records
 will be annotated using the log. Default is \code{TRUE}.}
-
-\item{\code{include_comments}}{Logical. If \code{TRUE}, the comments will be included.
+      \item{\code{include_comments}}{Logical. If \code{TRUE}, the comments will be included.
 Default is \code{TRUE}.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSyncDataset-print"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncDataset-print}{}}}
-\subsection{Method \code{print()}}{
-Print some key dataset information
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncDataset$print()}\if{html}{\out{</div>}}
+\subsection{\code{REDCapSyncDataset$print()}}{
+  Print some key dataset information
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{REDCapSyncDataset$print()}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSyncDataset-save"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncDataset-save}{}}}
-\subsection{Method \code{save()}}{
-Return flat list
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncDataset$save(
+\subsection{\code{REDCapSyncDataset$save()}}{
+  Return flat list
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{REDCapSyncDataset$save(
   with_links = TRUE,
   separate = FALSE,
   use_csv = FALSE,
   dir_other = NULL,
   file_name = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{with_links}}{Optional logical (TRUE/FALSE) for including links in Excel
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{with_links}}{Optional logical (TRUE/FALSE) for including links in Excel
 sheets. Default is \code{FALSE}.}
-
-\item{\code{separate}}{Optional logical (TRUE/FALSE) separating each form into
+      \item{\code{separate}}{Optional logical (TRUE/FALSE) separating each form into
 separate files as opposed to multi-tab Excel. Default is \code{FALSE}.}
-
-\item{\code{use_csv}}{Logical (TRUE/FALSE). If TRUE, uses CSV files for data
+      \item{\code{use_csv}}{Logical (TRUE/FALSE). If TRUE, uses CSV files for data
 storage. Default is \code{FALSE}}
-
-\item{\code{dir_other}}{Character. The directory where the dataset file will be
+      \item{\code{dir_other}}{Character. The directory where the dataset file will be
 saved. Default is the \code{output} folder within the database directory.}
-
-\item{\code{file_name}}{Character. The base name of the file where the dataset will
+      \item{\code{file_name}}{Character. The base name of the file where the dataset will
 be saved. Default is \verb{<project_name>_<dataset_name>}.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSyncDataset-to_envir"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncDataset-to_envir}{}}}
-\subsection{Method \code{to_envir()}}{
-export dataset to envir of your choosing. Keep in mind
+\subsection{\code{REDCapSyncDataset$to_envir()}}{
+  export dataset to envir of your choosing. Keep in mind
 potential name conflicts
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REDCapSyncDataset$to_envir(envir = NULL)}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{REDCapSyncDataset$to_envir(envir = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{envir}}{environment variable such as \code{\link[=globalenv]{globalenv()}}}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{envir}}{environment variable such as \code{\link[=globalenv]{globalenv()}}}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

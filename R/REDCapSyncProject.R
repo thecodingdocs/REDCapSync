@@ -238,6 +238,10 @@ REDCapSyncProject <- R6Class(
                     hard_reset = FALSE) {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not communicate with the API")
+        if (save_datasets && save_to_dir) {
+          private$project <- save_project_datasets(project = private$project,
+                                                   hard_reset = hard_reset)
+        }
         return(invisible(self))
       }
       private$project <- sync_project(project = private$project,
@@ -405,10 +409,6 @@ REDCapSyncProject <- R6Class(
     #' @description saves datasets to Excel via setting provided to
     #' `add_dataset`.
     save_datasets = function(hard_reset = FALSE) {
-      if (private$project$internals$is_test) {
-        cli_alert_info("TEST projects do not save to directories!")
-        return(invisible(self))
-      }
       first_stamp <- private$project$internals$last_dataset_save
       private$project <- save_project_datasets(project = private$project,
                                                hard_reset = hard_reset)

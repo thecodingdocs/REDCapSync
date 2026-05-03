@@ -24,7 +24,7 @@ directory you set up.
 The cache only stores information like project_name, token_name, directory
 location, and other details from \code{\link[=setup_project]{setup_project()}}.The default location of
 the cache location is defined by using R_USER_CACHE_DIR if set. Otherwise,
-it follows platform conventions via \link[hoardr:hoardr-package]{hoardr::hoardr}, saving a file
+it follows platform conventions via \link[hoardr:hoardr]{hoardr}, saving a file
 "R/REDCapSync/projects.rds". No direct project data is stored in the cache.
 Notably, tokens and data are not stored here. The key variables stored in
 the cache are...
@@ -48,7 +48,7 @@ cache_clear() # every project
 \seealso{
 \code{vignette("Cache", package = "REDCapSync")}
 
-Other Cache Functions: 
+Other Cache Functions:
 \code{\link{projects}}
 }
 \concept{Cache Functions}

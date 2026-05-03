@@ -70,23 +70,23 @@ dataset object for the user</p>
 <dd><p>list of data where names are forms</p></dd>
 
 
-<dt><code>metadata</code></dt>
+    <dt><code>metadata</code></dt>
 <dd><p>list of metadata</p></dd>
 
 
-<dt><code>records</code></dt>
+    <dt><code>records</code></dt>
 <dd><p>data.frame of records with timestamps</p></dd>
 
 
-<dt><code>users</code></dt>
+    <dt><code>users</code></dt>
 <dd><p>data.frame of users with timestamps</p></dd>
 
 
-<dt><code>log</code></dt>
+    <dt><code>log</code></dt>
 <dd><p>data.frame of log</p></dd>
 
 
-<dt><code>comments</code></dt>
+    <dt><code>comments</code></dt>
 <dd><p>data.frame of comments</p></dd>
 
 
@@ -99,15 +99,15 @@ dataset object for the user</p>
 <code><a href="setup-load.html">setup_project()</a></code>.</p></dd>
 
 
-<dt><code>dataset_details</code></dt>
+    <dt><code>dataset_details</code></dt>
 <dd><p>Read-only list of dataset details</p></dd>
 
 
-<dt><code>redcap</code></dt>
+    <dt><code>redcap</code></dt>
 <dd><p>Read-only list of dataset details from <a href="project.html">project</a></p></dd>
 
 
-<dt><code>links</code></dt>
+    <dt><code>links</code></dt>
 <dd><p>Read-only list of dataset details from <a href="project.html">project</a></p></dd>
 
 
@@ -118,13 +118,12 @@ dataset object for the user</p>
 
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
-
-<ul><li><p><a href="#method-REDCapSyncDataset-new"><code>REDCapSyncDataset$new()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-REDCapSyncDataset-initialize"><code>REDCapSyncDataset$new()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncDataset-print"><code>REDCapSyncDataset$print()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncDataset-save"><code>REDCapSyncDataset$save()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncDataset-to_envir"><code>REDCapSyncDataset$to_envir()</code></a></p></li>
-</ul></div><p></p><hr><a id="method-REDCapSyncDataset-new"></a><div class="section">
-<h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
+</ul></div><p></p><hr><a id="method-REDCapSyncDataset-initialize"></a><div class="section">
+<h3 id="redcapsyncdataset-new-"><code>REDCapSyncDataset$new()</code><a class="anchor" aria-label="anchor" href="#redcapsyncdataset-new-"></a></h3>
 <p>The end user will not see <code>dataset$new()</code>. This is handled internally.
 Users should construct objects using <a href="project.html">REDCapSyncProject</a>.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
@@ -154,21 +153,17 @@ Users should construct objects using <a href="project.html">REDCapSyncProject</a
 <span>  annotate_from_log <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_comments <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>project</code></dt>
 <dd><p>object from <code><a href="setup-load.html">setup_project()</a></code> or <code><a href="setup-load.html">load_project()</a></code>.</p></dd>
 
-
-<dt><code>dataset_name</code></dt>
+      <dt><code>dataset_name</code></dt>
 <dd><p>Character. The name of the configured dataset from which
 to generate the dataset. *If you provide <code>dataset_name</code> all other parameters
 are inherited according to what was set with <code>add_dataset</code>.</p></dd>
 
-
-<dt><code>transformation_type</code></dt>
+      <dt><code>transformation_type</code></dt>
 <dd><p>Character scalar. How to transform data for the
 dataset. Default is "default". Other options are "none" and
 "merge_non_repeating". "default" first merges non-repeating and if there are
@@ -177,112 +172,91 @@ repeating forms, it also merges non-repeating variables to the right.
 all non-repeating instruments but does not merge them to repeating
 instruments.</p></dd>
 
-
-<dt><code>merge_form_name</code></dt>
+      <dt><code>merge_form_name</code></dt>
 <dd><p>A character string representing the name of the merged
 form. Default is "merged".</p></dd>
 
-
-<dt><code>filter_field</code></dt>
+      <dt><code>filter_field</code></dt>
 <dd><p>Character. The name of the field in the database to
 filter on. Used with <code>filter_choices</code>.</p></dd>
 
-
-<dt><code>filter_choices</code></dt>
+      <dt><code>filter_choices</code></dt>
 <dd><p>Vector. The values of <code>filter_field</code> used to define the
 dataset. An alternative to providing a full <code>filter_list</code>.</p></dd>
 
-
-<dt><code>filter_list</code></dt>
+      <dt><code>filter_list</code></dt>
 <dd><p>Vector. The values of <code>filter_field</code> used to define the
 dataset. Names are field names; values are the allowed value set(s). Use
 either <code>filter_list</code> or <code>filter_field</code> with <code>filter_choices</code>.</p></dd>
 
-
-<dt><code>filter_strict</code></dt>
+      <dt><code>filter_strict</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, all forms will be filtered by
 criteria. If <code>FALSE</code>, will convert original filter to ID column and filter
 all other forms by that record. Default is <code>TRUE</code>.</p></dd>
 
-
-<dt><code>field_names</code></dt>
+      <dt><code>field_names</code></dt>
 <dd><p>Character vector. Names of specific fields to include in
 the dataset. Default is <code>NULL</code>, which includes all fields.</p></dd>
 
-
-<dt><code>form_names</code></dt>
+      <dt><code>form_names</code></dt>
 <dd><p>Character vector. Names of forms to include in the dataset.
 Default is <code>NULL</code>, which includes all forms.</p></dd>
 
-
-<dt><code>exclude_identifiers</code></dt>
+      <dt><code>exclude_identifiers</code></dt>
 <dd><p>Logical. Whether to exclude identifiers in the
 data in the dataset. Default is <code>TRUE</code>.</p></dd>
 
-
-<dt><code>exclude_free_text</code></dt>
+      <dt><code>exclude_free_text</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, exclude free text fields
 intended for deidentification workflows. Default is <code>FALSE</code>.</p></dd>
 
-
-<dt><code>date_handling</code></dt>
+      <dt><code>date_handling</code></dt>
 <dd><p>character string. One of <code>none</code>,<code>exclude_dates</code>,
 <code>random_shift_by_record</code>, <code>random_shift_by_project</code>, <code>zero_by_record</code>, or
 <code>zero_by_project</code>. Random shift is +/- 90 unless changed with options.</p></dd>
 
-
-<dt><code>labelled</code></dt>
+      <dt><code>labelled</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, the data will be converted to labelled.
 If <code>FALSE</code>, returns raw coded values. Default is <code>TRUE</code>.</p></dd>
 
-
-<dt><code>clean</code></dt>
+      <dt><code>clean</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, the data will be cleaned (e.g.,
 standardizing missing/blank values) before summarizing. Default is <code>TRUE</code>. If
 missing codes are present in a number or date variable, R will convert
 missing codes to NA and will make that variable not upload compatible.</p></dd>
 
-
-<dt><code>drop_blanks</code></dt>
+      <dt><code>drop_blanks</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, records with blank fields will be
 dropped during cleaning. Default is <code>TRUE</code>.</p></dd>
 
-
-<dt><code>drop_missing_codes</code></dt>
+      <dt><code>drop_missing_codes</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, will convert missing codes
 to NA. Default is <code>FALSE</code>.</p></dd>
 
-
-<dt><code>drop_others</code></dt>
+      <dt><code>drop_others</code></dt>
 <dd><p>Character vector of other values that should be dropped.</p></dd>
 
-
-<dt><code>include_metadata</code></dt>
+      <dt><code>include_metadata</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, metadata will be included in the
 dataset. Default is <code>TRUE</code>.</p></dd>
 
-
-<dt><code>include_users</code></dt>
+      <dt><code>include_users</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, user-related information will be
 included in the dataset. Default is <code>TRUE</code>.</p></dd>
 
-
-<dt><code>include_records</code></dt>
+      <dt><code>include_records</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, a record dataset will be
 included in the generated dataset. Default is <code>TRUE</code>.</p></dd>
 
-
-<dt><code>include_log</code></dt>
+      <dt><code>include_log</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, the log of changes will be included in
 the dataset. Default is <code>TRUE</code>.</p></dd>
 
-
-<dt><code>annotate_from_log</code></dt>
+      <dt><code>annotate_from_log</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, the metadata, users, and records
 will be annotated using the log. Default is <code>TRUE</code>.</p></dd>
 
-
-<dt><code>include_comments</code></dt>
+      <dt><code>include_comments</code></dt>
 <dd><p>Logical. If <code>TRUE</code>, the comments will be included.
 Default is <code>TRUE</code>.</p></dd>
 
@@ -290,16 +264,19 @@ Default is <code>TRUE</code>.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-REDCapSyncDataset-print"></a><div class="section">
-<h3 id="method-print-">Method <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code><a class="anchor" aria-label="anchor" href="#method-print-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-REDCapSyncDataset-print"></a><div class="section">
+<h3 id="redcapsyncdataset-print-"><code>REDCapSyncDataset$print()</code><a class="anchor" aria-label="anchor" href="#redcapsyncdataset-print-"></a></h3>
 <p>Print some key dataset information</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncDataset</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-REDCapSyncDataset-save"></a><div class="section">
-<h3 id="method-save-">Method <code><a href="https://rdrr.io/r/base/save.html" class="external-link">save()</a></code><a class="anchor" aria-label="anchor" href="#method-save-"></a></h3>
+<p></p><hr><a id="method-REDCapSyncDataset-save"></a><div class="section">
+<h3 id="redcapsyncdataset-save-"><code>REDCapSyncDataset$save()</code><a class="anchor" aria-label="anchor" href="#redcapsyncdataset-save-"></a></h3>
 <p>Return flat list</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncDataset</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span></span>
@@ -309,31 +286,25 @@ Default is <code>TRUE</code>.</p></dd>
 <span>  dir_other <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  file_name <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>with_links</code></dt>
 <dd><p>Optional logical (TRUE/FALSE) for including links in Excel
 sheets. Default is <code>FALSE</code>.</p></dd>
 
-
-<dt><code>separate</code></dt>
+      <dt><code>separate</code></dt>
 <dd><p>Optional logical (TRUE/FALSE) separating each form into
 separate files as opposed to multi-tab Excel. Default is <code>FALSE</code>.</p></dd>
 
-
-<dt><code>use_csv</code></dt>
+      <dt><code>use_csv</code></dt>
 <dd><p>Logical (TRUE/FALSE). If TRUE, uses CSV files for data
 storage. Default is <code>FALSE</code></p></dd>
 
-
-<dt><code>dir_other</code></dt>
+      <dt><code>dir_other</code></dt>
 <dd><p>Character. The directory where the dataset file will be
 saved. Default is the <code>output</code> folder within the database directory.</p></dd>
 
-
-<dt><code>file_name</code></dt>
+      <dt><code>file_name</code></dt>
 <dd><p>Character. The base name of the file where the dataset will
 be saved. Default is <code>&lt;project_name&gt;_&lt;dataset_name&gt;</code>.</p></dd>
 
@@ -341,15 +312,15 @@ be saved. Default is <code>&lt;project_name&gt;_&lt;dataset_name&gt;</code>.</p>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-REDCapSyncDataset-to_envir"></a><div class="section">
-<h3 id="method-to-envir-">Method <code>to_envir()</code><a class="anchor" aria-label="anchor" href="#method-to-envir-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-REDCapSyncDataset-to_envir"></a><div class="section">
+<h3 id="redcapsyncdataset-to-envir-"><code>REDCapSyncDataset$to_envir()</code><a class="anchor" aria-label="anchor" href="#redcapsyncdataset-to-envir-"></a></h3>
 <p>export dataset to envir of your choosing. Keep in mind
 potential name conflicts</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncDataset</span><span class="op">$</span><span class="fu">to_envir</span><span class="op">(</span>envir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>envir</code></dt>
 <dd><p>environment variable such as <code><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv()</a></code></p></dd>
@@ -359,6 +330,7 @@ potential name conflicts</p><div class="section">
 </div>
 
 </div>
+
 
     </div>
 
@@ -376,7 +348,7 @@ potential name conflicts</p><div class="section">
 <span class="r-in"><span><span class="co"># save data in custom location</span></span></span>
 <span class="r-in"><span><span class="va">dataset</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span>dir_other <span class="op">=</span> <span class="va">save_dir</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Saved 'TEST_CLASSIC_REDCapSync.xlsx'!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   <span style="color: #0000BB;">/tmp/RtmpFsTBip/TEST_CLASSIC_REDCapSync.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   <span style="color: #0000BB;">/tmp/RtmpEvyQBj/TEST_CLASSIC_REDCapSync.xlsx</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

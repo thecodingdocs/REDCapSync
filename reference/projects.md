@@ -14,10 +14,6 @@ reconfiguration.
 projects
 ```
 
-## Format
-
-An object of class `list` of length 5.
-
 ## Value
 
 list of functions used as single entry into REDCapSync package

@@ -63,7 +63,7 @@ for initializing the `project` object.'
 
 ### Public methods
 
-- [`REDCapSyncProject$new()`](#method-REDCapSyncProject-new)
+- [`REDCapSyncProject$new()`](#method-REDCapSyncProject-initialize)
 
 - [`REDCapSyncProject$print()`](#method-REDCapSyncProject-print)
 
@@ -95,7 +95,7 @@ for initializing the `project` object.'
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `REDCapSyncProject$new()`
 
 Active binding are read-only
 
@@ -116,7 +116,7 @@ The remain methods will be accessible to any user.
 
 ------------------------------------------------------------------------
 
-### Method [`print()`](https://rdrr.io/r/base/print.html)
+### `REDCapSyncProject$print()`
 
 Print some key project information
 
@@ -126,7 +126,7 @@ Print some key project information
 
 ------------------------------------------------------------------------
 
-### Method [`sync()`](https://thecodingdocs.github.io/REDCapSync/reference/sync.md)
+### `REDCapSyncProject$sync()`
 
 Updates the REDCap data for (`project` object) by checking REDCap log
 for changes. Sync is performed according to the `sync_frequency` set in
@@ -169,7 +169,7 @@ directory when necessary.
 
 ------------------------------------------------------------------------
 
-### Method `add_dataset()`
+### `REDCapSyncProject$add_dataset()`
 
 Add a new dataset entry
 
@@ -366,7 +366,7 @@ Add a new dataset entry
 
 ------------------------------------------------------------------------
 
-### Method `load_dataset()`
+### `REDCapSyncProject$load_dataset()`
 
 Load dataset if previously defined with `add_dataset`.
 
@@ -389,7 +389,7 @@ Load dataset if previously defined with `add_dataset`.
 
 ------------------------------------------------------------------------
 
-### Method `remove_datasets()`
+### `REDCapSyncProject$remove_datasets()`
 
 Clear all or specified datasets from the `project` object.
 
@@ -405,7 +405,7 @@ Clear all or specified datasets from the `project` object.
 
 ------------------------------------------------------------------------
 
-### Method `generate_dataset()`
+### `REDCapSyncProject$generate_dataset()`
 
 Generate
 [dataset](https://thecodingdocs.github.io/REDCapSync/reference/dataset.md)
@@ -575,7 +575,7 @@ is provided here for ad-hoc custom datasets.
 
 ------------------------------------------------------------------------
 
-### Method `save_datasets()`
+### `REDCapSyncProject$save_datasets()`
 
 saves datasets to Excel via setting provided to `add_dataset`.
 
@@ -592,7 +592,7 @@ saves datasets to Excel via setting provided to `add_dataset`.
 
 ------------------------------------------------------------------------
 
-### Method `save_dataset()`
+### `REDCapSyncProject$save_dataset()`
 
 saves dataset to Excel via setting provided to `add_dataset`.
 
@@ -610,7 +610,7 @@ saves dataset to Excel via setting provided to `add_dataset`.
 
 ------------------------------------------------------------------------
 
-### Method [`save()`](https://rdrr.io/r/base/save.html)
+### `REDCapSyncProject$save()`
 
 Save project object to directory chosen with
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
@@ -621,7 +621,7 @@ Save project object to directory chosen with
 
 ------------------------------------------------------------------------
 
-### Method `set_keyring_token()`
+### `REDCapSyncProject$set_keyring_token()`
 
 Set keyring token. See vignette and config for detail.
 
@@ -631,7 +631,7 @@ Set keyring token. See vignette and config for detail.
 
 ------------------------------------------------------------------------
 
-### Method `test_token()`
+### `REDCapSyncProject$test_token()`
 
 test connection via communication with API.
 
@@ -641,7 +641,7 @@ test connection via communication with API.
 
 ------------------------------------------------------------------------
 
-### Method `url_launch()`
+### `REDCapSyncProject$url_launch()`
 
 opens links in browser.
 
@@ -664,7 +664,7 @@ opens links in browser.
 
 ------------------------------------------------------------------------
 
-### Method `url_record_launch()`
+### `REDCapSyncProject$url_record_launch()`
 
 opens record links in browser.
 
@@ -697,7 +697,7 @@ opens record links in browser.
 
 ------------------------------------------------------------------------
 
-### Method `upload()`
+### `REDCapSyncProject$upload()`
 
 This will only overwrite and new data. It will not directly delete any
 data. Because this is a function that can mess up your data, use it very
@@ -724,6 +724,7 @@ project <- load_project("TEST_CLASSIC")
 #> ! Does not actually communicate with any REDCap API
 project$sync()
 #> ℹ TEST projects do not communicate with the API
+#> ! Failed to save dataset `REDCapSync`.
 project$save()
 #> ℹ TEST projects do not save to directories!
 ```

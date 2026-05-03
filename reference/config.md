@@ -18,10 +18,6 @@ Configuration is resolved in the following order:
 config
 ```
 
-## Format
-
-An object of class `list` of length 9.
-
 ## Value
 
 list of functions that returns config values

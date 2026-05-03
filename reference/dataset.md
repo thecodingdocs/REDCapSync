@@ -66,7 +66,7 @@ for initializing the `project` object.'
 
 ### Public methods
 
-- [`REDCapSyncDataset$new()`](#method-REDCapSyncDataset-new)
+- [`REDCapSyncDataset$new()`](#method-REDCapSyncDataset-initialize)
 
 - [`REDCapSyncDataset$print()`](#method-REDCapSyncDataset-print)
 
@@ -76,7 +76,7 @@ for initializing the `project` object.'
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `REDCapSyncDataset$new()`
 
 The end user will not see `dataset$new()`. This is handled internally.
 Users should construct objects using
@@ -247,7 +247,7 @@ Users should construct objects using
 
 ------------------------------------------------------------------------
 
-### Method [`print()`](https://rdrr.io/r/base/print.html)
+### `REDCapSyncDataset$print()`
 
 Print some key dataset information
 
@@ -257,7 +257,7 @@ Print some key dataset information
 
 ------------------------------------------------------------------------
 
-### Method [`save()`](https://rdrr.io/r/base/save.html)
+### `REDCapSyncDataset$save()`
 
 Return flat list
 
@@ -300,7 +300,7 @@ Return flat list
 
 ------------------------------------------------------------------------
 
-### Method `to_envir()`
+### `REDCapSyncDataset$to_envir()`
 
 export dataset to envir of your choosing. Keep in mind potential name
 conflicts
@@ -331,5 +331,5 @@ dataset$data$merged$letter_b <- dataset$data$merged$var_text_letters == "b"
 # save data in custom location
 dataset$save(dir_other = save_dir)
 #> ℹ Saved 'TEST_CLASSIC_REDCapSync.xlsx'!
-#>   /tmp/RtmpFsTBip/TEST_CLASSIC_REDCapSync.xlsx
+#>   /tmp/RtmpEvyQBj/TEST_CLASSIC_REDCapSync.xlsx
 ```

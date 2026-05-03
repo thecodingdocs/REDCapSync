@@ -31,7 +31,7 @@ directory location, and other details from
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).The
 default location of the cache location is defined by using
 R_USER_CACHE_DIR if set. Otherwise, it follows platform conventions via
-[hoardr::hoardr](https://docs.ropensci.org/hoardr/reference/hoardr-package.html),
+[hoardr](https://docs.ropensci.org/hoardr/reference/hoardr-package.html),
 saving a file "R/REDCapSync/projects.rds". No direct project data is
 stored in the cache. Notably, tokens and data are not stored here. The
 key variables stored in the cache are...

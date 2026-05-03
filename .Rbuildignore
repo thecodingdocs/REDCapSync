@@ -17,3 +17,5 @@ $run_dev.*
 ^codecov\.yml$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+^\.positai$
+^\.claude$

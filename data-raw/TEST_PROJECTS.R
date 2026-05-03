@@ -61,7 +61,8 @@ scrub_test_rcon <- function(rcon_list, pid) {
 get_entire_log <- TRUE
 hard_reset <- TRUE
 withr::local_options(redcapsync.config.allow.test.names = TRUE)
-projects$df
+withr::local_envvar(REAL_DEV_TOKENS)
+projects$df()
 # now -----
 project <- setup_project(
   project_name = "TEST_CLASSIC",
@@ -132,7 +133,7 @@ project <- setup_project(
   hard_reset = hard_reset
 )$sync()
 # save ------
-.test_project_names |> paste0(",\n") |> cat()
+TEST_PROJECT_NAMES |> paste0(",\n") |> cat()
 project_names <- c(
   "TEST_CLASSIC",
   "TEST_REPEATING",
@@ -144,9 +145,11 @@ project_names <- c(
   "TEST_REDCAPR_LONGITUDINAL",
   "TEST_REDCAPR_CLIN_TRIAL"
 )
+
 names(project_names) <- paste0("1234", seq_len(length(project_names)))
 project_name <- project_names |> sample(1)
-projects <- get_projects()
+
+project_name <- "TEST_REDCAPR_CLIN_TRIAL"
 project_name <- "TEST_CLASSIC"
 for (project_name in project_names) {
   pid <- names(project_names)[which(project_names == project_name)]
@@ -210,3 +213,4 @@ usethis::use_data(
   internal = TRUE
 )
 # end -------
+# withr::local_options(redcapsync.config.allow.test.names = NULL)

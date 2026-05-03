@@ -185,25 +185,27 @@ test_that("deidentify_data_list works2", {
   data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
   data_list <- metadata_add_default_cols(data_list)
   fields <- data_list$metadata$fields
+  identifiers <- fields$field_name[which(fields$identifier == "y")]
   merged <- data_list$data$merged
-  expected_cols <- c("var_birth_date",
-                     "var_text_date_dmy",
+  expected_cols <- c("var_text_date_dmy",
                      "var_text_date_mdy",
                      "var_text_date_ymd")
-  expect_all_true(expected_cols %in% colnames(merged))
+  expect_in(colnames(merged), fields$field_name)
   expect_error(deidentify_data_list(data_list = data_list, date_handling = "1"))
   # 'none'
   merged_none <- deidentify_data_list(
     data_list = data_list,
+    exclude_identifiers = TRUE,
     date_handling = "none"
   )$merged
-  expect_all_true(expected_cols %in% colnames(merged_none))
+  expect_all_false(identifiers %in% colnames(merged_none))
   # 'exclude_dates'
   excluded_dates <- deidentify_data_list(data_list = data_list,
                                          date_handling = "exclude_dates")$merged
   expect_all_false(expected_cols %in% colnames(excluded_dates))
   # 'random_shift_by_record'
   random_shift <- deidentify_data_list(data_list = data_list,
+                                       exclude_identifiers = FALSE,
                                        date_handling = "random_shift_by_record")
   random_shift <- random_shift$merged
   expect_all_true(expected_cols %in% colnames(random_shift))
@@ -368,6 +370,7 @@ test_that("merge_non_repeating works!", {
   id_col <- project$metadata$id_col
   text_field_names <- colnames(project$data$text) |> setdiff(id_col)
   other_field_names <- colnames(project$data$other) |> setdiff(id_col)
+  data_field_names <- colnames(project$data$data) |> setdiff(id_col)
   text_field_names2 <- project$metadata$fields |>
     get_match(
       match_field = "form_name",
@@ -382,6 +385,13 @@ test_that("merge_non_repeating works!", {
       return_field = "field_name"
     ) |>
     setdiff(id_col)
+  data_field_names2 <- project$metadata$fields |>
+    get_match(
+      match_field = "form_name",
+      match_text = "data",
+      return_field = "field_name"
+    ) |>
+    setdiff(id_col)
   merge_form_name <- "merged_form"
   merged <- merge_non_repeating(
     data_list = project,
@@ -392,9 +402,12 @@ test_that("merge_non_repeating works!", {
   a <- nrow(merged$data[[merge_form_name]])
   b <- nrow(project$data$text)
   c <- nrow(project$data$other)
+  d <- nrow(project$data$data)
   expect_identical(a, b)
   expect_identical(a, c)
-  expected_col_names <-  c(id_col, text_field_names, other_field_names)
+  expect_identical(a, d)
+  all_cols <- c(id_col, text_field_names, other_field_names, data_field_names)
+  expected_col_names <- unique(all_cols)
   expected_col_length <- length_unique(expected_col_names)
   expect_identical(ncol(merged$data[[merge_form_name]]), expected_col_length)
   expect_named(merged$data[[merge_form_name]], expected_col_names)

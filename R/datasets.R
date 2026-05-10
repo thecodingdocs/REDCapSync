@@ -59,9 +59,6 @@ save_project_data_list <- function(data_list,
     cols_start <- 1L
     header_df_list <- NULL
   }
-  project <- NULL
-  project$metadata <- data_list$metadata
-  project$links <- data_list$links
   # track form names
   data_list <- data_list_to_save(data_list)
   link_col_list <- list()
@@ -618,10 +615,13 @@ filter_data_list <- function(data_list,
                              filter_choices = NULL,
                              filter_list = NULL,
                              filter_strict = TRUE) {
-  if (is.null(field_names))
+  if (is.null(field_names)) {
     field_names <- get_all_field_names(data_list)
-  if (is.null(form_names))
+  }
+  # add assert/warning for accurate field_names
+  if (is.null(form_names)) {
     form_names <- data_list$metadata$forms$form_name
+  }
   the_rows <- which(!field_names %in% data_list$metadata$raw_structure_cols)
   field_names_minus <- field_names[the_rows]
   if (length(field_names_minus) > 0L) {

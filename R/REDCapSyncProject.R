@@ -423,10 +423,6 @@ REDCapSyncProject <- R6Class(
     #' @description saves dataset to Excel via setting provided to
     #' `add_dataset`.
     save_dataset = function(dataset_name) {
-      if (private$project$internals$is_test) {
-        cli_alert_info("TEST projects do not save to directories!")
-        return(invisible(self))
-      }
       dataset_names <- names(private$project$datasets)
       assert_choice(dataset_name, dataset_names, null.ok = FALSE)
       private$project <- save_project_dataset(project = private$project,

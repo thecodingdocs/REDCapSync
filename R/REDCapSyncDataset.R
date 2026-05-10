@@ -230,13 +230,14 @@ REDCapSyncDataset <- R6Class(
                     use_csv = FALSE,
                     dir_other = NULL,
                     file_name = NULL) {
-      data_list <- save_project_data_list(self,
-                                          project = private$project,
-                                          with_links = with_links,
-                                          separate = separate,
-                                          use_csv = use_csv,
-                                          dir_other = dir_other,
-                                          file_name = file_name)
+      data_list <- save_project_data_list(
+        data_list = self,
+        with_links = with_links,
+        separate = separate,
+        use_csv = use_csv,
+        dir_other = dir_other,
+        file_name = file_name
+      )
       # would be nice if updated supclass project in future version
       invisible(data_list)
     },

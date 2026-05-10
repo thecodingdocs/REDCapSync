@@ -7,7 +7,6 @@ save_project_dataset <- function(project, dataset_name) {
   records <- extract_project_records(data_list)[[id_col]]
   # consider also saving as Rdata to lazy load
   data_list <- save_project_data_list(data_list,
-                                      project = project,
                                       with_links = dataset_details$with_links,
                                       separate = dataset_details$separate,
                                       use_csv = dataset_details$use_csv,
@@ -27,7 +26,6 @@ save_project_dataset <- function(project, dataset_name) {
 }
 #' @noRd
 save_project_data_list <- function(data_list,
-                                   project,
                                    with_links = TRUE,
                                    separate = FALSE,
                                    use_csv = FALSE,
@@ -62,26 +60,23 @@ save_project_data_list <- function(data_list,
     header_df_list <- NULL
   }
   # track form names
-  data_list <- data_list_to_save(data_list)
   link_col_list <- list()
   if (dataset_details$with_links) {
-    add_links <- which(names(data_list) %in% form_names)
-    if (length(add_links) > 0L) {
-      data_list[add_links] <- data_list[add_links] |>
+    if (length(data_list$data) > 0L) {
+      data_list$data <- data_list$data |>
         lapply(function(form) {
-          add_redcap_links(form, project)
+          add_redcap_links(form, data_list)
         })
       if (dataset_details$include_records) {
-        if ("records" %in% names(data_list)) {
           data_list$records <- add_redcap_links(form = data_list$records,
-                                                project = project)
-        }
+                                                project = data_list)
       }
       #check for conflicting name
       link_col_list <- list("redcap_link")
       names(link_col_list) <- id_col
     }
   }
+  data_list <- data_list_to_save(data_list)
   # save -----
   last_save_time <- now_time()
   final_form_tab_names <- rename_list_names_excel(list_names = names(data_list))
@@ -192,6 +187,7 @@ generate_project_dataset <- function(project,
   data_list$metadata <- project$metadata
   data_list$data <- project$data
   data_list$redcap <- project$redcap
+  data_list$links <- project$links
   record_sum <- project$record_summary
   data_list <- metadata_add_default_cols(data_list)
   #cache or store these to make it faster?

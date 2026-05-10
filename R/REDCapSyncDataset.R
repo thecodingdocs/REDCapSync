@@ -231,6 +231,7 @@ REDCapSyncDataset <- R6Class(
                     dir_other = NULL,
                     file_name = NULL) {
       data_list <- save_project_data_list(self,
+                                          project = private$project,
                                           with_links = with_links,
                                           separate = separate,
                                           use_csv = use_csv,

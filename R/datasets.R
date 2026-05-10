@@ -7,6 +7,7 @@ save_project_dataset <- function(project, dataset_name) {
   records <- extract_project_records(data_list)[[id_col]]
   # consider also saving as Rdata to lazy load
   data_list <- save_project_data_list(data_list,
+                                      project = project,
                                       with_links = dataset_details$with_links,
                                       separate = dataset_details$separate,
                                       use_csv = dataset_details$use_csv,
@@ -26,6 +27,7 @@ save_project_dataset <- function(project, dataset_name) {
 }
 #' @noRd
 save_project_data_list <- function(data_list,
+                                   project,
                                    with_links = TRUE,
                                    separate = FALSE,
                                    use_csv = FALSE,

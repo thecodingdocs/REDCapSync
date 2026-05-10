@@ -30,7 +30,6 @@ Imports:
     cli,
     dplyr,
     hoardr,
-    keyring,
     lubridate,
     openxlsx,
     R6,
@@ -42,6 +41,7 @@ Imports:
     stringr,
     utils
 Suggests: 
+    keyring,
     knitr,
     listviewer,
     rmarkdown,

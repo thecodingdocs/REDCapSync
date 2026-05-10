@@ -330,5 +330,6 @@ dataset <- load_project("TEST_CLASSIC")$generate_dataset("REDCapSync")
 dataset$data$merged$letter_b <- dataset$data$merged$var_text_letters == "b"
 # save data in custom location
 dataset$save(dir_other = save_dir)
-#> Error in if (project$metadata$id_col %in% colnames(form)) {    rows_x <- which(project$metadata$raw_structure_cols %in%         colnames(form) & project$metadata$raw_structure_cols !=         project$metadata$id_col)    form_structure_cols <- project$metadata$raw_structure_cols[rows_x]    link_head <- project$links$redcap_record_home    link_tail <- paste0("&id=", form[[project$metadata$id_col]])    if ("redcap_repeat_instrument" %in% form_structure_cols) {        link_head <- project$links$redcap_record_subpage        link_tail <- paste0(link_tail, "&page=", form[["redcap_repeat_instrument"]])    }    if ("redcap_repeat_instance" %in% form_structure_cols) {        link_head <- project$links$redcap_record_subpage        link_tail <- paste0(link_tail, "&instance=", form[["redcap_repeat_instance"]])    }    form$redcap_link <- paste0(link_head, link_tail)    if ("arm_number" %in% colnames(form)) {        form$redcap_link <- paste0(form$redcap_link, "&arm=",             form[["arm_number"]])    }}: argument is of length zero
+#> ℹ Saved 'TEST_CLASSIC_REDCapSync.xlsx'!
+#>   /tmp/RtmpotS4cp/TEST_CLASSIC_REDCapSync.xlsx
 ```

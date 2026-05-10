@@ -330,6 +330,5 @@ dataset <- load_project("TEST_CLASSIC")$generate_dataset("REDCapSync")
 dataset$data$merged$letter_b <- dataset$data$merged$var_text_letters == "b"
 # save data in custom location
 dataset$save(dir_other = save_dir)
-#> ℹ Saved 'TEST_CLASSIC_REDCapSync.xlsx'!
-#>   /tmp/RtmpYMeehV/TEST_CLASSIC_REDCapSync.xlsx
+#> Error in FUN(X[[i]], ...): object 'project' not found
 ```

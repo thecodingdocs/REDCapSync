@@ -132,7 +132,7 @@ test_that("REDCapSyncProject$upload works!", {
   project_r6 <- REDCapSyncProject$new(project)
   local_mocked_bindings(
     upload_form_to_redcap = function(...) message("Would have uploaded!"),
-    sync_project_refresh = function(...) {
+    sync_project_check = function(...) {
       message("Would have synced!")
       project
     }

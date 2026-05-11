@@ -530,9 +530,10 @@ REDCapSyncProject <- R6Class(
         )
       }
       Sys.sleep(3L)
-      private$project <- sync_project_refresh(
+      private$project <- sync_project_check(
         project = private$project,
-        refresh_records = refresh_records
+        hard_reset = FALSE,
+        records = refresh_records
       )
       invisible(invisible(self))
     }

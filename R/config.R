@@ -233,12 +233,12 @@ config <- list(
                type = "character",
                default = default)
   },
-  openxlsx.header.style = function(default = HEADER_STYLE) {
+  openxlsx.header.style = function(default = openxlsx_header_style()) {
     config_get(opt_name = "openxlsx.header.style",
                type = "openxlsx_style",
                default = default)
   },
-  openxlsx.body.style = function(default = BODY_STYLE) {
+  openxlsx.body.style = function(default = openxlsx_body_style()) {
     config_get(opt_name = "openxlsx.body.style",
                type = "openxlsx_style",
                default = default)

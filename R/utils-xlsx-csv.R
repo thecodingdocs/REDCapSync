@@ -402,14 +402,18 @@ excel_to_list <- function(path) {
   out
 }
 #' @noRd
-HEADER_STYLE <- openxlsx::createStyle(fgFill = "#74DFFF",
-                                      halign = "center",
-                                      valign = "center",
-                                      textDecoration = "Bold",
-                                      fontSize = 14L,
-                                      fontColour = "black",
-                                      border = "TopBottomLeftRight")
+openxlsx_header_style <- function() {
+  openxlsx::createStyle(fgFill = "#74DFFF",
+                        halign = "center",
+                        valign = "center",
+                        textDecoration = "Bold",
+                        fontSize = 14L,
+                        fontColour = "black",
+                        border = "TopBottomLeftRight")
+}
 #' @noRd
-BODY_STYLE <- openxlsx::createStyle(halign = "left",
-                                    valign = "center",
-                                    fontSize = 12L)
+openxlsx_body_style <- function() {
+  openxlsx::createStyle(halign = "left",
+                        valign = "center",
+                        fontSize = 12L)
+}

@@ -68,8 +68,8 @@ save_project_data_list <- function(data_list,
           add_redcap_links(form, data_list)
         })
       if (dataset_details$include_records) {
-          data_list$records <- add_redcap_links(form = data_list$records,
-                                                project = data_list)
+        data_list$records <- add_redcap_links(form = data_list$records,
+                                              project = data_list)
       }
       #check for conflicting name
       link_col_list <- list("redcap_link")
@@ -270,7 +270,7 @@ generate_project_dataset <- function(project,
     include_log <- FALSE
     include_comments <- FALSE
     annotate_from_log <- FALSE
-  } else{
+  } else {
     data_list$log <- extract_log(data_list = data_list, records = records)
     if (include_comments) {
       data_list$comments <- generate_comment_table(redcap_log = data_list$log,

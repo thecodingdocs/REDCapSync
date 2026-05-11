@@ -59,12 +59,12 @@ test_that("config_get works!", {
   expect_identical(value, cache_path_default())
   value <- config_get(opt_name = "openxlsx.header.style",
                       type = "openxlsx_style",
-                      default = HEADER_STYLE)
-  expect_identical(value, HEADER_STYLE)
+                      default = openxlsx_header_style())
+  expect_identical(value, openxlsx_header_style())
   value <- config_get(opt_name = "openxlsx.body.style",
                       type = "openxlsx_style",
-                      default = BODY_STYLE)
-  expect_identical(value, BODY_STYLE)
+                      default = openxlsx_body_style())
+  expect_identical(value, openxlsx_body_style())
   # envvar
   tempdir_test <- sanitize_path(withr::local_tempdir())
   envvar_list <- list(
@@ -110,12 +110,12 @@ test_that("config_get works!", {
   expect_identical(value, "R-REDCapSync-new")
   value <- config_get(opt_name = "openxlsx.header.style",
                       type = "openxlsx_style",
-                      default = HEADER_STYLE)
-  expect_identical(value, HEADER_STYLE)
+                      default = openxlsx_header_style())
+  expect_identical(value, openxlsx_header_style())
   value <- config_get(opt_name = "openxlsx.body.style",
                       type = "openxlsx_style",
-                      default = BODY_STYLE)
-  expect_identical(value, BODY_STYLE)
+                      default = openxlsx_body_style())
+  expect_identical(value, openxlsx_body_style())
   #options override envvar
   tempdir_test2 <- sanitize_path(withr::local_tempdir())
   option_list <- list(
@@ -126,8 +126,8 @@ test_that("config_get works!", {
     redcapsync.config.cache.dir = tempdir_test2,
     redcapsync.config.keyring = "new-keyring",
     redcapsync.config.keyring.service = "R-REDCapSync",
-    redcapsync.config.openxlsx.header.style = BODY_STYLE, # flipped
-    redcapsync.config.openxlsx.body.style = HEADER_STYLE # flipped
+    redcapsync.config.openxlsx.header.style = openxlsx_body_style(), # flipped
+    redcapsync.config.openxlsx.body.style = openxlsx_header_style() # flipped
   )
   withr::local_options(option_list)
   value <- config_get(opt_name = "allow.test.names",
@@ -160,12 +160,12 @@ test_that("config_get works!", {
   expect_identical(value, "R-REDCapSync")
   value <- config_get(opt_name = "openxlsx.header.style",
                       type = "openxlsx_style",
-                      default = HEADER_STYLE)
-  expect_identical(value, BODY_STYLE) # flipped
+                      default = openxlsx_header_style())
+  expect_identical(value, openxlsx_body_style()) # flipped
   value <- config_get(opt_name = "openxlsx.body.style",
                       type = "openxlsx_style",
-                      default = BODY_STYLE)
-  expect_identical(value, HEADER_STYLE) # flipped
+                      default = openxlsx_body_style())
+  expect_identical(value, openxlsx_header_style()) # flipped
 })
 # config_validate (Internal)
 test_that("config_validate works!", {

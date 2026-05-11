@@ -193,6 +193,9 @@ assert_project_name <- function(project_name,
     cli_abort(end_message)
   }
   assert_env_name(project_name, max.chars = 31L, all_caps = TRUE)
+  if (project_name %in% c("CONFIG", "TEST")) {
+    cli_abort("`project_name` can't be '{project_name}'! Please choose again.")
+  }
   if (startsWith(project_name, "CONFIG_")) {
     cli_abort("`project_name` can't start with 'CONFIG_'! Please choose again.")
   }

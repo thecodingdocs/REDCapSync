@@ -196,10 +196,10 @@ test_that("sync_project will update if new", {
   project$internals$was_updated <- FALSE
   interim_log <- head(project$redcap$log, n = 10L)
   ordered_records <- project$record_summary$record_id
-  row_for_update <- which(project$data$text$record_id == "50")
-  row_for_existing <- which(project$data$text$record_id == "2")
-  var_text_integer_update <- project$data$text$var_text_integer[row_for_update]
-  var_text_integer_existing <- project$data$text$var_text_integer[row_for_existing]
+  row_update <- which(project$data$text$record_id == "50")
+  row_existing <- which(project$data$text$record_id == "2")
+  var_text_integer_update <- project$data$text$var_text_integer[row_update]
+  var_text_integer_existing <- project$data$text$var_text_integer[row_existing]
   log_changes <-  analyze_log(interim_log, id_col = project$metadata$id_col)
   updated_records <- log_changes$updated_records
   expect_contains(updated_records, "50")
@@ -209,14 +209,14 @@ test_that("sync_project will update if new", {
     filter_field = "record_id",
     filter_choices = updated_records
   )
-  row_for_update <- which(new_data$text$record_id == "50")
-  row_for_existing <- which(new_data$text$record_id == "2")
-  expect_length(row_for_update, 1L)
-  expect_length(row_for_existing, 0L)
-  new_var_text_integer <- new_data$text$var_text_integer[row_for_update]
+  row_update <- which(new_data$text$record_id == "50")
+  row_existing <- which(new_data$text$record_id == "2")
+  expect_length(row_update, 1L)
+  expect_length(row_existing, 0L)
+  new_var_text_integer <- new_data$text$var_text_integer[row_update]
   expect_identical(new_var_text_integer, var_text_integer_update)
-  new_data$text$var_text_integer[row_for_update] <- "99"
-  new_var_text_integer <- new_data$text$var_text_integer[row_for_update]
+  new_data$text$var_text_integer[row_update] <- "99"
+  new_var_text_integer <- new_data$text$var_text_integer[row_update]
   expect_true(new_var_text_integer != var_text_integer_update)
   # Mock the test_project_token to simulate successful connection
   local_mocked_bindings(
@@ -233,10 +233,10 @@ test_that("sync_project will update if new", {
     save_to_dir = TRUE,
     hard_reset = FALSE
   )
-  row_for_update <- which(result$data$text$record_id == "50")
-  row_for_existing <- which(result$data$text$record_id == "2")
-  var_text_integer_update <- result$data$text$var_text_integer[row_for_update]
-  var_text_integer_existing <- result$data$text$var_text_integer[row_for_existing]
+  row_update <- which(result$data$text$record_id == "50")
+  row_existing <- which(result$data$text$record_id == "2")
+  var_text_integer_update <- result$data$text$var_text_integer[row_update]
+  var_text_integer_existing <- result$data$text$var_text_integer[row_existing]
   expect_identical(new_var_text_integer, var_text_integer_update)
   expect_identical(var_text_integer_existing, var_text_integer_existing)
 })

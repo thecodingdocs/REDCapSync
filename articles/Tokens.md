@@ -21,7 +21,7 @@ you chose in
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 Below demonstrates how to set and check your tokens…
 
-### Setting Your Token using User Environment Variables (preferred)
+### 1. Setting Your Token using User Environment Variables (preferred)
 
 You may find want to reuse a token, and you may have several projects,
 so a convenient way to store the tokens in a separate location. One way
@@ -57,7 +57,7 @@ REDCapSync is with its name. For example, any REDCap project object will
 have the token name at `project$token_name`. In the future, we may set
 our token in a different way.
 
-### Setting Your Token using `keyring` package
+### 2. Setting Your Token using `keyring` package
 
 By default REDCapSync will use keyring = NULL, which is your OS system
 default and is typically unlocked by default while you are logged in.
@@ -93,7 +93,7 @@ options(redcapsync.config.keyring = "REDCapSync")
 # locked and unlocked (see keyring webstite for details)
 ```
 
-### Setting Your Token for One Session
+### 3. Setting Your Token for One Session
 
 You can set manually with base R. Unless you specifically set the token
 `Sys.getenv("REDCAPSYNC_FIRST_PROJECT")` will be blank.
@@ -112,11 +112,10 @@ Sys.getenv("REDCAPSYNC_FIRST_PROJECT")
 Now the token is set for this R session only. If you restarted R, it
 would be blank again.
 
-### Testing Your Token (optional)
+## Testing Your Token (optional)
 
 If you are ever having any issues with your token, you can test your
-project object with `view_project_token(project)` and/or
-`test_project_token(project)`
+project object with `project$test_token()`.
 
 ``` r
 
@@ -125,6 +124,6 @@ project <- load_project("TEST_CLASSIC") # replace project name with yours
 project$test_token()
 ```
 
-### Additional Resources
+## Additional Resources
 
 - <https://www.dartistics.com/renviron.html>

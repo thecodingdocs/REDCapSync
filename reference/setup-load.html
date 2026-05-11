@@ -248,14 +248,14 @@ cannot save/load/update projects. Must be all capital letters!</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Initialize the project object with the REDCap API token and URL</span></span></span>
 <span class="r-in"><span><span class="va">save_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># replace with real folder</span></span></span>
 <span class="r-in"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu">setup_project</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  project_name <span class="op">=</span> <span class="st">"TEST"</span>,</span></span>
+<span class="r-in"><span>  project_name <span class="op">=</span> <span class="st">"FIRST_PROJECT"</span>,</span></span>
 <span class="r-in"><span>  dir_path <span class="op">=</span> <span class="va">save_folder</span>,</span></span>
 <span class="r-in"><span>  redcap_uri <span class="op">=</span> <span class="st">"https://redcap.yourinstitution.edu/api/"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> No cached projects... use `setup_project(...)`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Setup blank project. Unable to find, load, or repair.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Selecting ‘env’ backend. Secrets are stored in environment variables</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> No valid token in session: Sys.getenv('REDCAPSYNC_TEST')</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> No valid token in session: Sys.getenv('REDCAPSYNC_FIRST_PROJECT')</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

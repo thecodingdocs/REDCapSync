@@ -15,9 +15,9 @@ listviewer::jsonedit(TEST_CLASSIC$.internal)
 ```
 
 The R6 object contains those things behind-the-scenes but then uses
-several to build an environment. This allows `TEST$sync()` to update
-`TEST` without having to do
-`TEST <- TEST |> sync_something() |> another_function()`
+several to build an environment. This allows `project$sync()` to update
+`project` without having to do
+`project <- project |> sync_something() |> another_function()`
 
 ``` r
 

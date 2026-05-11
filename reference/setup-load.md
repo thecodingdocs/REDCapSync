@@ -199,12 +199,12 @@ for accessing previously setup projects
 # Initialize the project object with the REDCap API token and URL
 save_folder <- tempdir() # replace with real folder
 project <- setup_project(
-  project_name = "TEST",
+  project_name = "FIRST_PROJECT",
   dir_path = save_folder,
   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 )
 #> ! No cached projects... use `setup_project(...)`
 #> ! Setup blank project. Unable to find, load, or repair.
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
-#> ! No valid token in session: Sys.getenv('REDCAPSYNC_TEST')
+#> ! No valid token in session: Sys.getenv('REDCAPSYNC_FIRST_PROJECT')
 ```

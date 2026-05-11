@@ -265,17 +265,17 @@ generate_project_dataset <- function(project,
   record_sum <- record_sum[which(record_sum[[id_col]] %in% records), ]
   rownames(record_sum) <- NULL
   data_list$records <- record_sum
-  if (!data_list$redcap$has_log_access) {
-    cli_alert_warning("You don't have log access so that data can't be used.")
-    include_log <- FALSE
-    include_comments <- FALSE
-    annotate_from_log <- FALSE
-  } else {
+  if (data_list$redcap$has_log_access) {
     data_list$log <- extract_log(data_list = data_list, records = records)
     if (include_comments) {
       data_list$comments <- generate_comment_table(redcap_log = data_list$log,
                                                    only_most_recent = TRUE)
     }
+  } else {
+    cli_alert_warning("You don't have log access so that data can't be used.")
+    include_log <- FALSE
+    include_comments <- FALSE
+    annotate_from_log <- FALSE
   }
   if (include_records) {
     if (!is.null(records)) {

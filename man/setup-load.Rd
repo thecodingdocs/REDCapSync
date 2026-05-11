@@ -141,7 +141,7 @@ cannot save/load/update projects. Must be all capital letters!
 # Initialize the project object with the REDCap API token and URL
 save_folder <- tempdir() # replace with real folder
 project <- setup_project(
-  project_name = "TEST",
+  project_name = "FIRST_PROJECT",
   dir_path = save_folder,
   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 )

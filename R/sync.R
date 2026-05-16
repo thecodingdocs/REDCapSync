@@ -189,17 +189,17 @@ sync_project_check <- function(project, hard_reset = FALSE, records = NULL) {
         bind_rows(project$redcap$log) |>
         unique()
       project$internals$was_updated <- TRUE
-    }
-    if (!hard_reset) {
-      if (log_changes$refresh_data || !is.null(records)) {
-        deleted_records <- log_changes$deleted_records
-        updated_records <- log_changes$updated_records
-        refresh_records <- unique(c(deleted_records, updated_records, records))
-        project <- sync_project_refresh(project = project,
-                                        refresh_records = refresh_records)
-        if (is.null(project)) {
-          # anything wrong with refresh should force hard_reset
-          hard_reset <- TRUE
+      if (!hard_reset) {
+        if (log_changes$refresh_data || !is.null(records)) {
+          deleted_records <- log_changes$deleted_records
+          updated_records <- log_changes$updated_records
+          refresh_records <- unique(c(deleted_records, updated_records, records))
+          project <- sync_project_refresh(project = project,
+                                          refresh_records = refresh_records)
+          if (is.null(project)) {
+            # anything wrong with refresh should force hard_reset
+            hard_reset <- TRUE
+          }
         }
       }
     }

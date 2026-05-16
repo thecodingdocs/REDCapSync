@@ -369,7 +369,7 @@ get_all_field_names <- function(data_list) {
 get_identifier_fields <- function(data_list,
                                   get_type = "deidentified",
                                   invert = FALSE) {
-  assert_choice(get_type, choices = setdiff(GET_TYPE, "identified"))
+  assert_choice(get_type, choices = GET_TYPE)
   # assert data list
   # what to do when record_id is marked as identifier? add psuedo
   # handle dates seprately if shifted
@@ -379,6 +379,11 @@ get_identifier_fields <- function(data_list,
   not_id <- !fields$field_name %in% id_cols
   is_identifier <- fields$identifier == "y"
   is_likely_identifier <- fields$validation_type %in% REDCAP_MAYBE_IDS_STRICT
+  more_strict <- fields$validation_type %in% REDCAP_MAYBE_IDS_SUPER_STRICT
+  is_date <- fields$validation_type
+  if (get_type == "identified") {
+    keep_rows <- NULL
+  }
   if (get_type == "deidentified") {
     keep_rows <- which(is_identifier)
   }
@@ -390,7 +395,10 @@ get_identifier_fields <- function(data_list,
     is_text <- fields$field_type == "text"
     has_validation <- !is.na(fields$validation_type)
     is_free_text <- is_notes | (is_text & !has_validation) & not_id
-    keep_rows <- which(is_identifier | is_likely_identifier | is_free_text)
+    keep_rows <- which(is_identifier |
+                         is_likely_identifier |
+                         is_free_text |
+                         more_strict)
     #account for drops
   }
   id_fields <- fields$field_name[keep_rows]

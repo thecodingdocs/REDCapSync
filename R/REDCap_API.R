@@ -285,6 +285,17 @@ get_redcap_data <- function(project,
 #' @noRd
 get_redcap_denormalized <- function(project,
                                     records = NULL) {
+  fields <- null_if_na(project$settings$fields)
+  if (project$settings$get_type != "identified") {
+    fields <- fields |> append(
+      get_identifier_fields(
+        data_list = project,
+        get_type = project$settings$get_type,
+        invert = TRUE
+      ) |>
+        unique()
+    )# message if fields clash with get_type
+  }
   denormalized <- redcap_read(
     batch_size = project$settings$batch_size_download,
     interbatch_delay = 0.2,
@@ -292,7 +303,7 @@ get_redcap_denormalized <- function(project,
     redcap_uri = project$links$redcap_uri,
     token = get_project_token(project),
     records = records,
-    fields = null_if_na(project$settings$fields),
+    fields = fields,
     forms = null_if_na(project$settings$forms),
     events = null_if_na(project$settings$events),
     raw_or_label = "raw",

@@ -10,10 +10,11 @@ get_project_token <- function(project, silent = TRUE) {
   }
   valid <- is_valid_redcap_token(token = token, silent = silent)
   if (!silent) {
-    token_help_message(project)
     if (valid) {
       cli_alert_success("Valid token for {project_name} from {token_source}!")
       cli_alert_info("REDCap Home {.url {project$links$redcap_home}}")
+    } else {
+      token_help_message(project)
     }
   }
   invisible(token)

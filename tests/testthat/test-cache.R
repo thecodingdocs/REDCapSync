@@ -39,7 +39,7 @@ test_that("cache_clear works!", {
   expect_data_frame(projects, nrows = 1L)
   expect_identical(projects$project_name, "FAKE3")
   expect_file_exists(test_file)
-  expect_message(cache_clear(), "cache cleared!")
+  expect_message(cache_clear(), "REDCapSync cache cleared")
   expect_message({
     projects <- get_projects()
   }, "No cached projects")

@@ -28,11 +28,13 @@ labelled_to_raw_form <- function(form, project) {
 #' @noRd
 raw_to_labelled_form <- function(form, project) {
   if (project$metadata$has_coding_conflicts) {
-    stop(
-      "You cannot use labelled = 'TRUE' because you have a coding conflict ",
-      "in your data dictionary... Try `setup_project` with labelled = 'FALSE'.",
-      "The conflicts are from: ",
-      toString(project$metadata$coding_conflict_field_names)
+    cli_abort(
+      paste0(
+        "You cannot use labelled = 'TRUE' because you have a coding conflict ",
+        "in your data dictionary... Try {.topic REDCapSync::setup_project} ",
+        "with labelled = 'FALSE'. The conflicts are from: ",
+        "{toString(project$metadata$coding_conflict_field_names)}"
+      )
     )
   }
   form <- all_character_cols(form)
@@ -80,7 +82,7 @@ generate_choices_table <- function(field_row, project) {
 labelled_to_raw_project <- function(project) {
   project <- assert_blank_project(project)
   if (!project$settings$labelled) {
-    stop("project is already raw or coded (not labelled values)")
+    cli_abort("project is already raw or coded (not labelled values)")
   }
   for (form_name in names(project$data)) {
     form <- project$data[[form_name]]
@@ -94,10 +96,10 @@ labelled_to_raw_project <- function(project) {
 raw_to_labelled_project <- function(project) {
   project <- assert_blank_project(project)
   if (project$settings$labelled) {
-    stop("project is already labelled (not raw or coded values)")
+    cli_abort("project is already labelled (not raw or coded values)")
   }
   if (project$metadata$has_coding_conflicts) {
-    stop("project has codebook conflict(s), so will not convert to labelled!")
+    cli_abort("project has codebook conflict(s) and cannot be labelled!")
   }
   for (form_name in names(project$data)) {
     form <- project$data[[form_name]]
@@ -148,9 +150,11 @@ normalize_redcap <- function(denormalized, project, labelled) {
   }
   add_ons <- add_ons[which(add_ons %in% colnames(denormalized))]
   if (!all(project$metadata$raw_structure_cols %in% colnames(denormalized))) {
-    stop(
-      "denormalized is missing one of the following... and that's weird: ",
-      toString(project$metadata$raw_structure_cols)
+    cli_abort(
+      paste0(
+        "denormalized is missing one of the following... and that's weird: ",
+        toString(project$metadata$raw_structure_cols)
+      )
     )
   }
   form_rows <- which(forms$form_name %in% unique(fields$form_name))
@@ -174,7 +178,7 @@ normalize_redcap <- function(denormalized, project, labelled) {
       row_index <- seq_len(nrow(denormalized))
       if (is_repeating_form) {
         if (!"redcap_repeat_instrument" %in% colnames(denormalized)) {
-          stop("redcap_repeat_instrument not in colnames(denormalized)")
+          cli_abort("redcap_repeat_instrument not in colnames(denormalized)")
         }
         if (is_longitudinal) {
           has_form_event <- event_mapping$form == form_name
@@ -294,7 +298,7 @@ get_record_url <- function(project,
   id_col <- project$metadata$id_col
   if (!is.null(record)) {
     if (!record %in% project$record_summary[[id_col]]) {
-      stop(record, " is not one of the records inside project")
+      cli_abort("`{record}` is not one of the records inside project")
     }
     if ("arm_number" %in% colnames(project$record_summary)) {
       arm_row <- which(project$record_summary[[id_col]] == record)
@@ -307,10 +311,11 @@ get_record_url <- function(project,
   if (!is.null(page)) {
     link <- gsub("record_home", "index", link)
     if (!page %in% project$metadata$forms$form_name) {
-      stop(
-        page,
-        " has to be one of the instrument names: ",
-        toString(project$metadata$forms$form_name)
+      cli_abort(
+        paste0(
+          "{.arg page} has to be one of the instrument names: ",
+          toString(project$metadata$forms$form_name)
+        )
       )
     }
     link <- paste0(link, "&page=", page)
@@ -318,9 +323,11 @@ get_record_url <- function(project,
       rep_rows <- which(project$metadata$forms$repeating)
       repeating_form_names <- project$metadata$forms$form_name[rep_rows]
       if (!page %in% repeating_form_names) {
-        stop(
-          "If you provide an instance, it has to be a repeating instrument: ",
-          toString(repeating_form_names)
+        cli_abort(
+          paste0(
+            "If you provide an instance, it has to be a repeating instrument: ",
+            toString(repeating_form_names)
+          )
         )
       }
       link <- paste0(link, "&instance=", instance)
@@ -335,7 +342,7 @@ get_record_url <- function(project,
 get_key_col_list <- function(data_list) {
   forms <- data_list$metadata$forms
   if (!is_something(forms)) {
-    stop("Empty --> `project$metadata$forms`")
+    cli_abort("Empty --> `project$metadata$forms`")
   }
   out_list <- seq_len(nrow(forms)) |> lapply(function(i) {
     out <- data_list$metadata$id_col
@@ -442,7 +449,7 @@ construct_header_list <- function(data_list,
                                                   "field_label")) {
   fields <- data_list$metadata$fields
   if (anyDuplicated(fields$field_name) > 0L)
-    stop("duplicate names not allowed in fields")
+    cli_abort("duplicate names not allowed in fields")
   data_field_list <- lapply(data_list$data, colnames)
   header_df_list <- data_field_list |> lapply(function(field_names) {
     x <- field_names |>
@@ -475,10 +482,12 @@ field_names_metadata <- function(project, field_names, col_names) {
     )
   )]
   if (length(bad_field_names) > 0L)
-    stop(
-      "All column names in your form must match items in your metadata, ",
-      "`project$metadata$fields$field_name`... ",
-      toString(bad_field_names)
+    cli_abort(
+      paste0(
+        "All column names in your form must match items in your metadata, ",
+        "`project$metadata$fields$field_name`... ",
+        toString(bad_field_names)
+      )
     )
   fields <- fields[which(fields$field_name %in% field_names), ]
   if (!missing(col_names)) {
@@ -495,10 +504,12 @@ filter_fields_from_form <- function(form, project) {
   repeating_form_rows <- which(project$metadata$forms$repeating)
   repeating_forms <- project$metadata$forms$form_name[repeating_form_rows]
   if (any(forms %in% repeating_forms) && length(forms) > 1L) {
-    stop(
-      "All column names in your form must match only one form in your",
-      "metadata, `project$metadata$forms$form_name`, unless they are",
-      " all non-repeating"
+    cli_abort(
+      paste0(
+        "All column names in your form must match only one form in your",
+        "metadata, `project$metadata$forms$form_name`, unless they are",
+        " all non-repeating"
+      )
     )
   }
   fields <- project |> field_names_metadata(field_names = colnames(form))

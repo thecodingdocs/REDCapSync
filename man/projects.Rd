@@ -3,11 +3,11 @@
 \name{projects}
 \alias{projects}
 \title{Manage REDCapSync projects}
+\format{
+A named list of functions for managing REDCapSync projects.
+}
 \usage{
 projects
-}
-\value{
-list of functions used as single entry into REDCapSync package
 }
 \description{
 \code{projects} is the central interface for managing REDCap projects in
@@ -51,10 +51,10 @@ Display a summary of all registered projects.
 Returns the project data frame invisibly.
 }
 
-\item{\code{df()}}{
-Retrieve the project registry as a data frame.
+\item{\code{any()}}{
+Check whether any projects are registered.
 
-Returns a data frame containing stored project metadata.
+Returns a logical scalar.
 }
 
 \item{\code{n()}}{
@@ -63,10 +63,22 @@ Return the number of registered projects.
 Returns an integer.
 }
 
-\item{\code{any()}}{
-Check whether any projects are registered.
+\item{\code{names()}}{
+Return the names of registered projects.
 
-Returns a logical scalar.
+Returns a character vector.
+}
+
+\item{\code{test_names()}}{
+Return the names of test projects.
+
+Returns a character vector.
+}
+
+\item{\code{df()}}{
+Retrieve the project registry as a data frame.
+
+Returns a data frame containing stored project metadata.
 }
 
 \item{\code{load(project_name)}}{
@@ -84,10 +96,11 @@ Returns a \code{REDCapSyncProject} object.
 }
 
 \examples{
-project_df <- projects$df
+project_df <- projects$df()
 projects$print()
 projects$any()
 projects$n()
+projects$names()
 project <- projects$load("TEST_CLASSIC")
 }
 \seealso{

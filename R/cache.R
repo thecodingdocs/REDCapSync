@@ -44,11 +44,7 @@ cache_clear <- function(project_names = NULL) {
     cache$delete("projects.rds")
   }
   cli_alert_warning("You must delete files manually from the directory.")
-  cli_alert_wrap(
-    "REDCapSync cache cleared!",
-    file = cache_path(),
-    bullet_type = "v"
-  )
+  cli_alert_success("REDCapSync cache cleared: {.path {cache_path()}}")
   invisible()
 }
 #' @noRd

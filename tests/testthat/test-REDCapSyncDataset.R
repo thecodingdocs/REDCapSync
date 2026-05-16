@@ -6,6 +6,6 @@ test_that("REDCapSyncDataset object works!", {
   expect_message(dataset$print(), "Dataset: custom")
   expected_dataset_dir <- file.path(dataset$project_details$dir_path, "output")
   file_name <- "TEST_CLASSIC_custom.xlsx"
-  expect_message(dataset$save(), "Saved 'TEST_CLASSIC_custom.xlsx'")
+  expect_message(dataset$save(), "Saved TEST_CLASSIC_custom.xlsx")
   expect_file_exists(file.path(expected_dataset_dir, file_name))
 })

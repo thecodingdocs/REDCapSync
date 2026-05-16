@@ -20,7 +20,7 @@ metadata, and provides methods to sync, transform, and export your data.
 \strong{Initialize} a project with \code{\link[=setup_project]{setup_project()}}:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{project <- setup_project(
-  project_name = "MY_PROJECT",
+  project_name = "FIRST_PROJECT",
   redcap_uri = "https://redcap.yourinstitution.edu/api/",
   dir_path = "~/redcap_projects"
 )
@@ -32,17 +32,26 @@ and log-based change detection:
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{project$sync()
 }\if{html}{\out{</div>}}
 
+\strong{Loading} After the first successful REDCap connection, your project can
+be accessed with \link{load_project} because it's location is stored in cache.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{project <- load_project("FIRST_PROJECT)
+projects$names() # should see "FIRST_PROJECT"
+}\if{html}{\out{</div>}}
+
 \strong{Access} REDCap data, metadata, and users via read-only fields:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{project$data           # Named list of REDCap forms/instruments
 project$metadata       # REDCap field definitions, forms, and choices
 project$redcap$users   # REDCap user information
+project$redcap$log     # REDCap log information
 }\if{html}{\out{</div>}}
 
-\strong{Transform and export} your data into clean, analysis-ready datasets:
+\strong{Transform and export} your data into clean, analysis-ready datasets to be
+used in R and/or Excel:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{project$add_dataset("analysis_data", ...)
-project$save_datasets()
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{project$add_dataset("analysis_data", ...) # adds to project for re-use
+project$save_datasets() # can save to Excel but is also part of future syncs
 }\if{html}{\out{</div>}}
 
 \strong{Upload} corrected or new data back to REDCap:
@@ -61,14 +70,14 @@ performance for large projects.
 All methods use \strong{method chaining}: Methods invisibly return the project
 object (self), allowing fluent code:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{load_project("MY_PROJECT")$sync()$save_datasets()$print()
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{dataset <- load_project("TEST_CLASSIC")$sync()$load_dataset("REDCapSync")
 }\if{html}{\out{</div>}}
 }
 
 \subsection{Read-Only Fields}{
 \itemize{
-\item \code{project$project_name}: Project identifier (set via \link{setup_project})
-\item \code{project$dir_path}: Persistent storage directory (set via \link{setup_project})
+\item \code{project$project_name}: Project identifier (set with \link{setup_project})
+\item \code{project$dir_path}: Persistent storage directory (set with \link{setup_project})
 \item \code{project$data}: Named list of synchronized REDCap forms
 \item \code{project$metadata}: REDCap field metadata (forms, fields, choices)
 \item \code{project$redcap}: REDCap project info, users, and activity log
@@ -97,7 +106,7 @@ dataset <- project$add_dataset(
 # generate dataset for R environment
 dataset <- project$generate_dataset("analysis_set")
 # Optional modify
-dataset$data$merged$is_stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
+dataset$data$merged$stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
 # save to directory
 dataset$save()
 

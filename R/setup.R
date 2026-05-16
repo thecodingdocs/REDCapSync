@@ -235,7 +235,7 @@ setup_project <- function(project_name,
                                " different `redcap_uri`. You can use",
                                " setup_project(..., hard_reset = TRUE) to",
                                " override.")
-        stop(stop_message)
+        cli_abort(stop_message)
       }
       if (in_proj_cache) {
         project_row <- which(projects$project_name == project_name)
@@ -246,7 +246,7 @@ setup_project <- function(project_name,
                                  " different `project_id`. You can use",
                                  " setup_project(..., hard_reset = TRUE) to",
                                  " override.")
-          stop(stop_message)
+          cli_abort(stop_message)
         }
       }
       if (!is.null(project$settings$labelled)) {
@@ -270,7 +270,7 @@ setup_project <- function(project_name,
     # load blank if hard_reset = TRUE
     assert_project_name(project_name)
     project <- BLANK_PROJECT
-    cli_alert_wrap("Setup blank project because `hard_reset = TRUE`")
+    cli_alert_info("Setup blank project because `hard_reset = TRUE`")
   }
   if (missing_dir_path) {
     if (!is_something(project$dir_path)) {
@@ -415,15 +415,16 @@ load_project <- function(project_name) {
 #' @noRd
 load_project_from_dir <- function(project_name, dir_path, validate = TRUE) {
   assert_env_name(project_name, max.chars = 31L, all_caps = TRUE)
-  assert_dir(dir_path)
+  assert_dir(dir_path, silent = TRUE)
   project_path <- get_project_path(project_name = project_name,
                                    dir_path = dir_path)
   assert_project_path(project_path)
   if (!file.exists(project_path)) {
-    stop(
-      "No file at path '",
-      project_path,
-      "'. Did you use `setup_project()` and `project$sync()`?"
+    cli_abort(
+      paste0(
+        "No file at path {.file {project_path}}'",
+        "'. Did you use {.fn REDCapSync::setup_project} and `project$sync()`?"
+      )
     )
   }
   project <- readRDS(file = project_path)
@@ -463,10 +464,10 @@ load_project_from_dir <- function(project_name, dir_path, validate = TRUE) {
     }
   }
   project |> extract_project_details() |> add_project_details_to_cache()
-  the_message <- paste0("Loaded {project$project_name}!")
+  the_message <- paste0("Loaded {project$project_name}: {.path {dir_path}}")
   if (due_for_sync(project$project_name)) {
     the_message <- paste0(the_message,
-                          " Due for sync. Run `project$sync()` to update.")
+                          "\n... Due for sync. Run `project$sync()` to update.")
   }
   cli_alert_success(the_message)
   project
@@ -527,20 +528,17 @@ save_project <- function(project, silent = FALSE) {
     return(invisible(project))
   }
   project$internals$last_directory_save <- now_time()
-  save_project_path <- get_project_path2(project = project)
-  saveRDS(object = project, file = save_project_path) # add error check
+  save_path <- get_project_path2(project = project)
+  saveRDS(object = project, file = save_path) # add error check
   project_details <- extract_project_details(project)
   add_project_details_to_cache(project_details)
   saveRDS(
     object = project_details,
     file = get_project_path2(project, type = "details")
   ) # add error check
-  cli_alert_wrap(
-    paste0("Saved ", project$project_name, "!"),
-    url = save_project_path,
-    bullet_type = "v",
-    silent = silent
-  )
+  if (!silent) {
+    cli_alert_success("Saved {project$project_name}! {.file {save_path}}")
+  }
   invisible(project)
 }
 #' @noRd
@@ -682,7 +680,7 @@ BLANK_PROJECT <- list(
 set_dir <- function(dir_path, silent = FALSE) {
   dir_path <- clean_dir_path(dir_path)
   if (!file.exists(dir_path)) {
-    stop("Path not found. Use absolute path or choose an existing directory.")
+    cli_abort("Path not found. Use absolute path or choose existing directory.")
   }
   for (folder in DIR_FOLDERS) {
     if (!file.exists(file.path(dir_path, folder))) {
@@ -696,7 +694,7 @@ DIR_FOLDERS <- c("R_objects", "output", "scripts", "input", "REDCap")
 #' @noRd
 clean_dir_path <- function(dir_path) {
   if (!is.character(dir_path))
-    stop("dir must be a character string")
+    cli_abort("dir must be a character string")
   dir_path <- dir_path |>
     trimws(whitespace = WHITESPACE) |>
     sanitize_path()

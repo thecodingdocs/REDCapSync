@@ -1,72 +1,4 @@
 #' @noRd
-clean_for_cli <- function(path) {
-  gsub("'", "\\\\'", path)
-}
-#' @noRd
-cli_alert_wrap <- function(text = "",
-                           url = NULL,
-                           bullet_type = "i",
-                           collapse = TRUE,
-                           file = NULL,
-                           silent = FALSE) {
-  if (silent) {
-    return(invisible())
-  }
-  url_if <- ""
-  file_if <- ""
-  if (length(url) > 0L) {
-    # assert?
-    url_names <- names(url)
-    if (is.list(url)) {
-      url_names <- unlist(url)
-      if (is_named_list(url)) {
-        url_names <- names(url)
-      }
-      url <- unlist(url)
-    }
-    if (is.null(url_names))
-      url_names <- url
-    if (collapse) {
-      url_if <- paste0(url_if, collapse = " and ")
-    }
-    url_if <- paste0(
-      " {cli::col_blue(cli::style_hyperlink('",
-      clean_for_cli(url_names),
-      "', '",
-      clean_for_cli(url),
-      "'))}"
-    )
-  }
-  if (length(file) > 0L) {
-    file_names <- names(file)
-    if (is.list(file)) {
-      file_names <- unlist(file)
-      if (is_named_list(file)) {
-        file_names <- names(file)
-      }
-      file <- unlist(file)
-    }
-    if (is.null(file_names))
-      file_names <- file
-    if (collapse) {
-      file_if <- paste0(file_if, collapse = " and ")
-    }
-    file_if <- paste0(
-      " {cli::col_blue(cli::style_hyperlink('",
-      sanitize_path(file_names) |> clean_for_cli(),
-      "', '",
-      sanitize_path(paste0("file://", file)) |> clean_for_cli(),
-      "'))}"
-    )
-  }
-  for (i in seq_along(url_if))
-    text[i] <- paste0(text[i], url_if[i])
-  for (i in seq_along(file_if))
-    text[i] <- paste0(text[i], file_if[i])
-  names(text)[seq_along(text)] <- bullet_type
-  cli_bullets(text)
-}
-#' @noRd
 now_time <- function() {
   as.POSIXct(Sys.time(), tz = Sys.timezone())
 }
@@ -76,7 +8,7 @@ process_df_list <- function(list,
                             silent = FALSE) {
   if (is_something(list)) {
     if (!is_df_list(list))
-      stop("list must be ...... a list :)")
+      cli_abort("list must be ...... a list :)")
     if (drop_empty) {
       is_a_df_with_rows <- list |>
         lapply(function(x) {
@@ -92,8 +24,8 @@ process_df_list <- function(list,
       drops <- which(!is_a_df_with_rows)
       if (length(drops) > 0L) {
         if (!silent) {
-          cli_alert_wrap("Dropping non-data.frames and empties... ",
-                         toString(names(drops)))
+          msg <- "Dropping non-data.frames and empties: {toString(names(drops)}"
+          cli_alert_info(msg)
         }
       }
       list <- list[keeps]
@@ -312,19 +244,19 @@ check_match <- function(vec_list) {
 is_env_name <- function(env_name, silent = FALSE) {
   result <- tryCatch({
     if (is.null(env_name)) {
-      stop("env_name is NULL")
+      cli_abort("env_name is NULL")
     }
     if (is.na(env_name)) {
-      stop("env_name is NA")
+      cli_abort("env_name is NA")
     }
     if (!nzchar(env_name)) {
-      stop("Short name cannot be empty.")
+      cli_abort("Short name cannot be empty.")
     }
     if (grepl("^\\d", env_name)) {
-      stop("Short name cannot start with a number.")
+      cli_abort("Short name cannot start with a number.")
     }
     if (grepl("[^A-Za-z0-9_]", env_name)) {
-      stop("Short name can only contain letters, numbers, and underscores.")
+      cli_abort("Short name can only have letters, numbers, and underscores.")
     }
     return(TRUE)
   }, error = function(e) {
@@ -395,16 +327,16 @@ split_choices <- function(x) {
   )
   rownames(choices_data) <- NULL
   if (anyNA(choices_data$code)) {
-    stop("split choice error: ", x)
+    cli_abort("split choice error: {x}")
   }
   if (anyNA(choices_data$name)) {
-    stop("split choice error: ", x)
+    cli_abort("split choice error: {x}")
   }
   if (nrow(choices_data) != check_length) {
-    stop("split choice error: ", x)
+    cli_abort("split choice error: {x}")
   }
   if (!all(nzchar(choices_data$name))) {
-    stop("split choice error: ", x)
+    cli_abort("split choice error: {x}")
   }
   choices_data
 }

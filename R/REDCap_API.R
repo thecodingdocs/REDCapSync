@@ -376,19 +376,15 @@ get_redcap_files <- function(project,
           )
           succeeded <- file.exists(out_file_path)
           if (succeeded) {
-            cli_alert_wrap(text = paste0("`", file_name, "` saved."),
-                           bullet_type = ">")
+            cli_bullets(c(">" = "{.code {file_name}} saved."))
           } else {
-            cli_alert_wrap(text = paste0("`", file_name, "` failed to save!"),
-                           bullet_type = "x")
+            cli_alert_danger("{.code {file_name}} failed to save!")
           }
         }
       }
     }
   }
-  cli_alert_wrap("Checked for files! Stored at ...",
-                 file = out_dir,
-                 bullet_type = "v")
+  cli_alert_success("Checked for files! Stored at ... {.path {out_dir}}")
 }
 #' @noRd
 get_redcap_log <- function(project,

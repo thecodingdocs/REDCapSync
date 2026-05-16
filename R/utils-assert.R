@@ -3,35 +3,32 @@ assert_dir <- function(dir_path, silent = FALSE) {
   # param check
   dir_path <- clean_dir_path(dir_path)
   if (!file.exists(dir_path)) {
-    stop("dir_path does not exist")
+    cli_abort("dir_path does not exist")
   }
-  stop_mes <- "Did you use `setup_project()`?"
   for (folder in DIR_FOLDERS) {
     if (!file.exists(file.path(dir_path, folder))) {
-      stop("'", dir_path, "/", folder, "' missing! ", stop_mes)
+      cli_abort("'{dir_path}/{folder}' missing! Use `setup_project()`")
     }
   }
-  cli_alert_wrap("Directory is Valid!",
-                 url = dir_path,
-                 bullet_type = "v",
-                 silent = silent)
+  if (!silent) {
+    cli_alert_success("Directory is Valid! {.file {dir_path}}")
+  }
   dir_path
 }
 #' @noRd
 assert_web_link <- function(link) {
   #change to validate api endpoint
   if (is.null(link))
-    stop("link is NULL")
+    cli_abort("link is NULL")
   # Check if the link starts with "https://" or "http://"
   if (!grepl("^https?://", link)) {
-    stop("Invalid web link. It must start with 'http://' or 'https://'.")
+    cli_abort("Invalid web link. It must start with 'http://' or 'https://'.")
   }
   # Remove trailing slash if present
   link <- gsub("/$", "", link)
   # Check if the link ends with one of the specified web endings
   if (!grepl("\\.(edu|com|org|net|gov|io|xyz|info|co|uk)$", link)) {
-    stop("Invalid web link. It must end with a valid web ending",
-         "(.edu, .com, etc.).")
+    cli_abort("Invalid web link. It must end with '.edu', '.com', etc.")
   }
   # Add a trailing slash
   link <- paste0(link, "/")

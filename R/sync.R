@@ -41,6 +41,7 @@ sync <- function(project_names = NULL,
       return(invisible())
     }
   }
+  cli_progress_bar("Syncing REDCap Projects", total = length(project_names))
   for (project_name in project_names) {
     project <- try_else_null(load_project(project_name))
     if (is.null(project)) {
@@ -54,6 +55,7 @@ sync <- function(project_names = NULL,
         hard_reset = hard_reset
       )
     }
+    cli_progress_update()
   }
   # consider adding message/df
   cli_alert_success("All projects are synced!")
@@ -193,7 +195,8 @@ sync_project_check <- function(project, hard_reset = FALSE, records = NULL) {
         if (log_changes$refresh_data || !is.null(records)) {
           deleted_records <- log_changes$deleted_records
           updated_records <- log_changes$updated_records
-          refresh_records <- unique(c(deleted_records, updated_records, records))
+          refresh_records <- c(deleted_records, updated_records, records)
+          refresh_records <- unique(refresh_records)
           project <- sync_project_refresh(project = project,
                                           refresh_records = refresh_records)
           if (is.null(project)) {
@@ -528,7 +531,7 @@ remove_from_form_list <- function(form_list, id_col, records = NULL) {
     return(form_list)
   }
   if (!is_df_list(form_list)) {
-    stop("form_list is not a list of data.frames as expected.")
+    cli_abort("form_list is not a list of data.frames as expected.")
   }
   if (is.null(records)) {
     return(form_list)
@@ -547,9 +550,11 @@ remove_from_form_list <- function(form_list, id_col, records = NULL) {
 remove_records_from_project <- function(project, records) {
   id_col <- project$metadata$id_col
   if (length(records) == 0L) {
-    stop(
-      "no records supplied to remove_records_from_project, but it's used in",
-      "update which depends on records."
+    cli_abort(
+      paste0(
+        "no records supplied to remove_records_from_project.",
+        "Try {.code project$sync(hard_reset = TRUE)}"
+      )
     )
   }
   project$data <- remove_from_form_list(form_list = project$data,

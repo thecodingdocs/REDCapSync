@@ -11,7 +11,7 @@
 #' **Initialize** a project with [setup_project()]:
 #' ```r
 #' project <- setup_project(
-#'   project_name = "MY_PROJECT",
+#'   project_name = "FIRST_PROJECT",
 #'   redcap_uri = "https://redcap.yourinstitution.edu/api/",
 #'   dir_path = "~/redcap_projects"
 #' )
@@ -23,17 +23,26 @@
 #' project$sync()
 #' ```
 #'
+#' **Loading** After the first successful REDCap connection, your project can
+#' be accessed with [load_project] because it's location is stored in cache.
+#' ```r
+#' project <- load_project("FIRST_PROJECT)
+#' projects$names() # should see "FIRST_PROJECT"
+#' ```
+#'
 #' **Access** REDCap data, metadata, and users via read-only fields:
 #' ```r
 #' project$data           # Named list of REDCap forms/instruments
 #' project$metadata       # REDCap field definitions, forms, and choices
 #' project$redcap$users   # REDCap user information
+#' project$redcap$log     # REDCap log information
 #' ```
 #'
-#' **Transform and export** your data into clean, analysis-ready datasets:
+#' **Transform and export** your data into clean, analysis-ready datasets to be
+#' used in R and/or Excel:
 #' ```r
-#' project$add_dataset("analysis_data", ...)
-#' project$save_datasets()
+#' project$add_dataset("analysis_data", ...) # adds to project for re-use
+#' project$save_datasets() # can save to Excel but is also part of future syncs
 #' ```
 #'
 #' **Upload** corrected or new data back to REDCap:
@@ -51,13 +60,13 @@
 #' All methods use **method chaining**: Methods invisibly return the project
 #' object (self), allowing fluent code:
 #' ```r
-#' load_project("MY_PROJECT")$sync()$save_datasets()$print()
+#' dataset <- load_project("TEST_CLASSIC")$sync()$load_dataset("REDCapSync")
 #' ```
 #'
 #' ## Read-Only Fields
 #'
-#' - `project$project_name`: Project identifier (set via [setup_project])
-#' - `project$dir_path`: Persistent storage directory (set via [setup_project])
+#' - `project$project_name`: Project identifier (set with [setup_project])
+#' - `project$dir_path`: Persistent storage directory (set with [setup_project])
 #' - `project$data`: Named list of synchronized REDCap forms
 #' - `project$metadata`: REDCap field metadata (forms, fields, choices)
 #' - `project$redcap`: REDCap project info, users, and activity log
@@ -160,7 +169,7 @@
 #' # generate dataset for R environment
 #' dataset <- project$generate_dataset("analysis_set")
 #' # Optional modify
-#' dataset$data$merged$is_stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
+#' dataset$data$merged$stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
 #' # save to directory
 #' dataset$save()
 #'
@@ -217,16 +226,15 @@ REDCapSyncProject <- R6Class(
     #' public methods for [REDCapSyncProject].
     metadata = function(value) {
       if (!missing(value)) {
-        cli_alert_wrap(
+        cli_alert_danger(
           paste(
-            "`metadata` is read only. To change, do so on the ",
+            "`metadata` is read only. To change, do so on the",
             "REDCap website, or use the REDCap API. If you just want to work",
             "with the object more in R, reassign the object like,",
             "`fields <- project$metadata$fields`. Alternatively use the output",
-            "from `project$generate_dataset()`"
-          ),
-          bullet_type = "x",
-          url = private$project$links$redcap_designer
+            "from `project$generate_dataset()`. See REDCap Designer",
+            "{.url {private$project$links$redcap_designer}}."
+          )
         )
       }
       private$project$metadata
@@ -235,15 +243,14 @@ REDCapSyncProject <- R6Class(
     #' users and log.
     redcap = function(value) {
       if (!missing(value)) {
-        cli_alert_wrap(
+        cli_alert_danger(
           paste(
             "`redcap` is read only. It is generated from communication with",
             "REDCap. If you just want to work with the object more in R,",
             "reassign the object like, `redcap_log <- project$redcap$log`.",
-            "Alternatively use the output from `project$generate_dataset()`"
-          ),
-          bullet_type = "x",
-          url = private$project$links$redcap_designer
+            "Alternatively, use output from `project$generate_dataset()` See",
+            "REDCap Designer {.url {private$project$links$redcap_designer}}."
+          )
         )
       }
       private$project$redcap
@@ -561,8 +568,12 @@ REDCapSyncProject <- R6Class(
       # add detect labelled vs raw?
       if (!is_named_df_list(to_be_uploaded, strict = TRUE)) {
         if (!is.data.frame(to_be_uploaded)) {
-          stop("`to_be_uploaded` must be a date.frame or named list of ",
-               "data.frames!")
+          cli_abort(
+            paste0(
+              "`to_be_uploaded` must be a date.frame or named list of ",
+              "data.frames!"
+            )
+          )
         }
         if (!is_something(to_be_uploaded)) {
           cli_alert_warning("Nothing to upload...")

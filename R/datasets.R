@@ -514,16 +514,16 @@ deidentify_data_list <- function(data_list,
   }
   bad_identifiers <- exclusions[which(!exclusions %in% fields$field_name)]
   if (length(bad_identifiers) > 0L) {
-    stop(
-      "There is a bad identifier. see `fields$field_name`: ",
-      toString(bad_identifiers)
+    cli_abort(
+      paste0(
+        "There is a bad identifier. See {.code ",
+        "project$metadata$fields$field_name}: {toString(bad_identifiers)}"
+      )
     )
   }
   id_cols <- metadata$form_key_cols |> unlist() |> unique()
   if (is_something(id_cols) && any(id_cols %in% exclusions)) {
-    stop("ID cols not allowed... ",
-         toString(id_cols),
-         " <-- use hashing (in dev)")
+    cli_abort("ID cols not allowed to be excluded for now... ")
   }
   if (exclude_free_text) {
     # get_identifier_fields here
@@ -655,7 +655,7 @@ filter_data_list <- function(data_list,
     }
     # should be length 1
     if (length(filter_form) > 1L) {
-      stop("You can only filter_list by multiple columns part of one form")
+      cli_abort("You can only filter_list by multiple columns part of one form")
     }
     form_key_cols <- data_list$metadata$form_key_cols |>
       unlist() |>
@@ -1459,7 +1459,7 @@ check_datasets <- function(project, dataset_names) {
   }
   needs_refresh <- NULL
   if (is.null(dataset_names)) {
-    cli_alert_wrap("No datasets. Use `add_project_dataset()`!")
+    cli_alert_info("No datasets. Use `project$add_dataset()`!")
   }
   # need_to_check <- any(project$record_summary$last_api_call >
   # dataset_details$last_save_time)
@@ -1471,7 +1471,7 @@ check_datasets <- function(project, dataset_names) {
     }
   }
   if (is.null(needs_refresh)) {
-    cli_alert_wrap("Refresh of datasets not needed!", bullet_type = "v")
+    cli_alert_success("Refresh of datasets not needed!")
   }
   needs_refresh
 }
@@ -1556,16 +1556,16 @@ read_dataset_from_file <- function(project, dataset_name, file_path) {
       cli_alert_info("Using `file_path` from `dataset_name`...")
     }
     if (!dataset_name %in% names(project$dataset)) {
-      stop("`dataset_name` is not one of `project$dataset`")
+      cli_abort("`dataset_name` is not one of `project$dataset`")
     }
     file_path <- project$dataset[[dataset_name]]$file_path
   } else {
     # add data_updates check
     if (!endsWith(file_path, ".xlsx")) {
-      stop("File type must be '.xlsx' --> ", file_path)
+      cli_abort("File type must be '.xlsx' --> {.file {file_path}}")
     }
     if (!file.exists(file_path)) {
-      stop("Path does not exist --> ", file_path)
+      cli_abort("Path does not exist --> {.file {file_path}}")
     }
   }
   data_list <- excel_to_list(file_path)

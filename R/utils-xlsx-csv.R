@@ -88,13 +88,13 @@ list_to_excel <- function(input_list,
 #' @noRd
 save_wb <- function(wb, dir, file_name, overwrite = TRUE) {
   if (!dir.exists(dir)) {
-    stop("dir doesn't exist")
+    cli_abort("dir doesn't exist: {.file {dir}}")
   }
   path <- file.path(dir, paste0(file_name, ".xlsx")) |> sanitize_path()
   openxlsx::saveWorkbook(wb = wb,
                          file = path,
                          overwrite = overwrite)
-  cli_alert_wrap(paste0("Saved '", basename(path), "'!"), file = path)
+  cli_alert_success("Saved {basename(path)}: {.file {path}}")
 }
 #' @noRd
 list_to_csv <- function(input_list,
@@ -119,17 +119,18 @@ list_to_csv <- function(input_list,
 }
 #' @noRd
 save_csv <- function(form, dir, file_name, overwrite = TRUE) {
-  if (!dir.exists(dir))
-    stop("dir doesn't exist")
+  if (!dir.exists(dir)) {
+    cli_abort("dir doesn't exist: {.file {dir}}")
+  }
   path <- file.path(dir, paste0(file_name, ".csv")) |> sanitize_path()
   write_it <- TRUE
   if (!overwrite && file.exists(path)) {
     write_it <- FALSE
-    cli_alert_wrap(paste0("Already a file!"), file = path)
+    cli_alert_info("Already a file! {.file {path}}")
   }
   if (write_it) {
     write.csv(x = form, file = path, row.names = FALSE)
-    cli_alert_wrap(paste0("Saved '", basename(path), "'!"), file = path)
+    cli_alert_success("Saved {basename(path)}: {.file {path}}")
   }
 }
 #' @noRd
@@ -205,7 +206,7 @@ form_to_wb <- function(form,
                        pad_cols = 0L,
                        freeze_keys = TRUE) {
   if (nchar(form_name) > 31L) {
-    stop(form_name, " is longer than 31 char")
+    cli_abort("{.arg form_name} is longer than 31 char")
   }
   form[] <- lapply(form, function(col) {
     out <- col
@@ -228,7 +229,7 @@ form_to_wb <- function(form,
   if (freeze_keys) {
     all_cols <- colnames(form)
     if (!all(key_cols %in% all_cols)) {
-      stop("all key_cols must be in the forms")
+      cli_abort("all key_cols must be in the forms")
     }
     freeze_key_cols <- which(all_cols %in% key_cols)
     if (length(freeze_key_cols) > 0L) {

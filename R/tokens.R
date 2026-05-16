@@ -23,7 +23,9 @@ get_project_token <- function(project, silent = TRUE) {
 test_project_token <- function(project) {
   assert_setup_project(project)
   token <- get_project_token(project = project, silent = FALSE)
+  project$internals$last_test_connection_attempt <- now_time()
   if (!is_valid_redcap_token(token)) {
+    project$internals$last_test_connection_outcome <- FALSE
     return(invisible(project))
   }
   rcon <- redcapConnection(url = project$links$redcap_uri, token = token)
@@ -34,16 +36,13 @@ test_project_token <- function(project) {
     }
   )
   # add timezone
-  project$internals$last_test_connection_attempt <- now_time()
   version_error <- is.null(redcap_version)
   project$internals$last_test_connection_outcome <- !version_error
   if (version_error) {
     cli_alert_danger("Your REDCap API token check failed. Check privileges.")
     return(invisible(project))
   }
-  cli_alert_wrap("Connected to REDCap!",
-                 url = project$links$redcap_home,
-                 bullet_type = "v")
+  cli_alert_success("Connected to REDCap! {.url {project$links$redcap_home}}")
   version_changed <- FALSE
   if (!is.null(project$redcap$version)) {
     version_changed <- !identical(project$redcap$version, redcap_version)
@@ -107,46 +106,36 @@ is_valid_redcap_token <- function(token, silent = TRUE) {
   trimmed_token <- trimws(token, whitespace = WHITESPACE)
   if (is.null(token)) { # obsolete
     token_text <- "is `NULL`,"
-    cli_alert_wrap(
-      paste0(start_text, token_text, end_text),
-      bullet_type = "!",
-      silent = silent
-    )
+    if (!silent) {
+      cli_alert_danger(paste0(start_text, token_text, end_text))
+    }
     return(FALSE)
   }
   if (is.na(token)) { # obsolete
     token_text <- "is `NA`,"
-    cli_alert_wrap(
-      paste0(start_text, token_text, end_text),
-      bullet_type = "!",
-      silent = silent
-    )
+    if (!silent) {
+      cli_alert_danger(paste0(start_text, token_text, end_text))
+    }
     return(FALSE)
   }
   if (!nzchar(token)) { # obsolete
     token_text <- "`` (empty),"
-    cli_alert_wrap(
-      paste0(start_text, token_text, end_text),
-      bullet_type = "!",
-      silent = silent
-    )
+    if (!silent) {
+      cli_alert_danger(paste0(start_text, token_text, end_text))
+    }
     return(FALSE)
   }
   if (token != trimmed_token) {
     token_text <- "contains whitespace (extra lines) and is therefore"
-    cli_alert_wrap(
-      paste0(start_text, token_text, end_text),
-      bullet_type = "!",
-      silent = silent
-    )
+    if (!silent) {
+      cli_alert_danger(paste0(start_text, token_text, end_text))
+    }
     return(FALSE)
   }
   if (!is_hexadecimal(token, length = 32L)) {
-    cli_alert_wrap(
-      paste0(start_text, token_text, end_text),
-      bullet_type = "!",
-      silent = silent
-    )
+    if (!silent) {
+      cli_alert_danger(paste0(start_text, token_text, end_text))
+    }
     return(FALSE)
   }
   TRUE
@@ -359,13 +348,8 @@ token_help_message <- function(project) {
                         "= '{FAKE_TOKEN}')`"))
   cli_alert_info("x. scripts (not recommended)")
   if (is_something(project$links$redcap_api)) {
-    cli_alert_wrap(
-      paste0(
-        "You can request, regenerate, or delete with ",
-        "`project$url_launch('api')` or click link: "
-      ),
-      url = project$links$redcap_api
-    )
+    # wont work if version changed
+    cli_alert_info("Check {.url {project$links$redcap_api}}")
   }
 }
 #' @noRd

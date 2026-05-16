@@ -38,10 +38,10 @@
 #' Returns the project data frame invisibly.
 #' }
 #'
-#' \item{`df()`}{
-#' Retrieve the project registry as a data frame.
+#' \item{`any()`}{
+#' Check whether any projects are registered.
 #'
-#' Returns a data frame containing stored project metadata.
+#' Returns a logical scalar.
 #' }
 #'
 #' \item{`n()`}{
@@ -50,10 +50,22 @@
 #' Returns an integer.
 #' }
 #'
-#' \item{`any()`}{
-#' Check whether any projects are registered.
+#' \item{`names()`}{
+#' Return the names of registered projects.
 #'
-#' Returns a logical scalar.
+#' Returns a character vector.
+#' }
+#'
+#' \item{`test_names()`}{
+#' Return the names of test projects.
+#'
+#' Returns a character vector.
+#' }
+#'
+#' \item{`df()`}{
+#' Retrieve the project registry as a data frame.
+#'
+#' Returns a data frame containing stored project metadata.
 #' }
 #'
 #' \item{`load(project_name)`}{
@@ -72,13 +84,14 @@
 #' @keywords Cache
 #' @seealso \code{vignette("Cache", package = "REDCapSync")}
 #' @examples
-#' project_df <- projects$df
+#' project_df <- projects$df()
 #' projects$print()
 #' projects$any()
 #' projects$n()
+#' projects$names()
 #' project <- projects$load("TEST_CLASSIC")
-#' @returns list of functions used as single entry into REDCapSync package
 #' @export
+#' @format A named list of functions for managing REDCapSync projects.
 projects <- list(
   print = function() {
     project_df <- get_projects()
@@ -99,14 +112,20 @@ projects <- list(
     help_cli_text()
     invisible(project_df)
   },
-  df = function() {
-    get_projects()
+  any = function() {
+    nrow(get_projects()) > 0L
   },
   n = function() {
     nrow(get_projects())
   },
-  any = function() {
-    nrow(get_projects()) > 0L
+  names = function() {
+    get_projects()$project_name
+  },
+  test_names = function() {
+    TEST_PROJECT_NAMES
+  },
+  df = function() {
+    get_projects()
   },
   load = function(project_name) {
     load_project(project_name)

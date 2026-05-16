@@ -5,7 +5,11 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Setup or Load REDCapSync Project — setup_project"><meta name="description" content="Setup or Load the project object for pipeline."><meta property="og:description" content="Setup or Load the project object for pipeline."><meta property="og:image" content="https://thecodingdocs.github.io/REDCapSync/reference/figures/logo.png"><meta property="og:image:alt" content="Brandon Rose"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@brosemdmph"><meta name="twitter:site" content="@thecodingdocs"></head><body>
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Setup or Load REDCapSync Project — setup_project"><meta name="description" content="Setup or load a REDCapSync project object.
+Prepares a new REDCapSync project by recording the REDCap URI,
+token name, sync settings, and optional data selection preferences."><meta property="og:description" content="Setup or load a REDCapSync project object.
+Prepares a new REDCapSync project by recording the REDCap URI,
+token name, sync settings, and optional data selection preferences."><meta property="og:image" content="https://thecodingdocs.github.io/REDCapSync/reference/figures/logo.png"><meta property="og:image:alt" content="Brandon Rose"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@brosemdmph"><meta name="twitter:site" content="@thecodingdocs"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -47,7 +51,9 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Setup or Load the <code>project</code> object for pipeline.</p>
+    <p>Setup or load a REDCapSync project object.
+Prepares a new REDCapSync project by recording the REDCap URI,
+token name, sync settings, and optional data selection preferences.</p>
     </div>
 
     <div class="section level2">
@@ -89,137 +95,132 @@
 
 
 <dl><dt id="arg-project-name">project_name<a class="anchor" aria-label="anchor" href="#arg-project-name"></a></dt>
-<dd><p>A character string with no spaces or symbols representing
-the unique short name for the REDCap project.</p></dd>
+<dd><p>Character scalar. Unique uppercase project name with no
+spaces or symbols.</p></dd>
 
 
 <dt id="arg-dir-path">dir_path<a class="anchor" aria-label="anchor" href="#arg-dir-path"></a></dt>
-<dd><p>Optional character string representing the directory path
-where you want the REDCap project data to be stored. If missing, project
-object
-will only be in current R session.</p></dd>
+<dd><p>Optional character scalar. Directory where REDCap project
+files are stored. If omitted, the project is only available in the current R
+session and cannot be persisted to disk.</p></dd>
 
 
 <dt id="arg-redcap-uri">redcap_uri<a class="anchor" aria-label="anchor" href="#arg-redcap-uri"></a></dt>
-<dd><p>A character string representing the base URL of the REDCap
-server.</p></dd>
+<dd><p>Character scalar. Base URL of the REDCap API endpoint.</p></dd>
 
 
 <dt id="arg-token-name">token_name<a class="anchor" aria-label="anchor" href="#arg-token-name"></a></dt>
-<dd><p>An optional character string for setting your token name.
-Default is <code>REDCAPSYNC_&lt;project_name&gt;</code></p></dd>
+<dd><p>Optional character scalar. Environment variable name used
+to store the REDCap token. Defaults to <code>REDCAPSYNC_&lt;project_name&gt;</code>.</p></dd>
 
 
 <dt id="arg-sync-frequency">sync_frequency<a class="anchor" aria-label="anchor" href="#arg-sync-frequency"></a></dt>
-<dd><p>Frequency of sync. Options are "always", "hourly",
-'daily', 'weekly', "monthly",and "never". The check is only triggered by
-calling the function, but can be automated with other packages.
-Default is <code>daily</code></p></dd>
+<dd><p>Character scalar. Allowed values are "always",
+"hourly", "daily", "weekly", "monthly", "once", and "never". This
+setting controls how often future syncs are considered due.</p></dd>
 
 
 <dt id="arg-labelled">labelled<a class="anchor" aria-label="anchor" href="#arg-labelled"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, the data will be converted to labelled.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Logical scalar. If <code>TRUE</code>, data will be preserved as labelled
+values. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-get-type">get_type<a class="anchor" aria-label="anchor" href="#arg-get-type"></a></dt>
-<dd><p>optional character of REDCap API call type.
-data as if user ran <code>sync_project</code>. Default is <code>FALSE</code>.</p></dd>
+<dd><p>Character scalar. REDCap API export type. One of
+"identified", "deidentified", "deidentified_strict", or
+"deidentified_super_strict". Default is "identified".</p></dd>
 
 
 <dt id="arg-records">records<a class="anchor" aria-label="anchor" href="#arg-records"></a></dt>
-<dd><p>An array, where each element corresponds to the ID of a
-desired record.  Optional.</p></dd>
+<dd><p>Optional character vector of record IDs to request.</p></dd>
 
 
 <dt id="arg-fields">fields<a class="anchor" aria-label="anchor" href="#arg-fields"></a></dt>
-<dd><p>An array, where each element corresponds to a desired project
-field.  Optional.</p></dd>
+<dd><p>Optional character vector of field names to request.</p></dd>
 
 
 <dt id="arg-forms">forms<a class="anchor" aria-label="anchor" href="#arg-forms"></a></dt>
-<dd><p>An array, where each element corresponds to a desired project
-form.  Optional.</p></dd>
+<dd><p>Optional character vector of form names to request.</p></dd>
 
 
 <dt id="arg-events">events<a class="anchor" aria-label="anchor" href="#arg-events"></a></dt>
-<dd><p>An array, where each element corresponds to a desired project
-event.  Optional.</p></dd>
+<dd><p>Optional character vector of event names to request.</p></dd>
 
 
 <dt id="arg-filter-logic">filter_logic<a class="anchor" aria-label="anchor" href="#arg-filter-logic"></a></dt>
-<dd><p>String of logic text (e.g., <code>[gender] = 'male'</code>) for
-filtering the data to be returned by this API method, in which the API
-will only return the records (or record-events, if a longitudinal project)
-where the logic evaluates as TRUE.   An blank/empty string returns all records.</p></dd>
+<dd><p>Optional character scalar. REDCap filter logic used to
+limit returned records or record-events.</p></dd>
 
 
 <dt id="arg-get-users">get_users<a class="anchor" aria-label="anchor" href="#arg-get-users"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, will get REDCap users</p></dd>
+<dd><p>Logical scalar. If <code>TRUE</code>, the project will be configured to
+retrieve REDCap users during sync.</p></dd>
 
 
 <dt id="arg-get-data">get_data<a class="anchor" aria-label="anchor" href="#arg-get-data"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, will get REDCap data.</p></dd>
+<dd><p>Logical scalar. If <code>TRUE</code>, the project will be configured to
+retrieve REDCap data during sync.</p></dd>
 
 
 <dt id="arg-batch-size-download">batch_size_download<a class="anchor" aria-label="anchor" href="#arg-batch-size-download"></a></dt>
-<dd><p>Integer. Number of records to process in each
-batch. Default is <code>1000</code>.</p></dd>
+<dd><p>Integer scalar. Number of records to request per
+download batch. Default is <code>1000</code>.</p></dd>
 
 
 <dt id="arg-batch-size-upload">batch_size_upload<a class="anchor" aria-label="anchor" href="#arg-batch-size-upload"></a></dt>
-<dd><p>Integer. Number of records to process in each batch.
-Default is <code>500</code>.</p></dd>
+<dd><p>Integer scalar. Number of records to process per
+upload batch. Default is <code>500</code>.</p></dd>
 
 
 <dt id="arg-get-entire-log">get_entire_log<a class="anchor" aria-label="anchor" href="#arg-get-entire-log"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, retrieves the entire
-log. Default is <code>FALSE</code>.</p></dd>
+<dd><p>Logical scalar. If <code>TRUE</code>, REDCap activity logs are
+retrieved in full. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-log-days">log_days<a class="anchor" aria-label="anchor" href="#arg-log-days"></a></dt>
-<dd><p>Integer. Number of days to be checked in the log if a
-hard_reset or new project is setup. Default is <code>10</code>.</p></dd>
+<dd><p>Integer scalar. Number of days of log history to consider
+when a new project is being set up or a hard reset occurs. Default is <code>10</code>.</p></dd>
 
 
 <dt id="arg-log-drop-details">log_drop_details<a class="anchor" aria-label="anchor" href="#arg-log-drop-details"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, drops log details.</p></dd>
+<dd><p>Logical scalar. If <code>TRUE</code>, the detailed log export
+records are excluded.</p></dd>
 
 
 <dt id="arg-log-drop-exports">log_drop_exports<a class="anchor" aria-label="anchor" href="#arg-log-drop-exports"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, drops log exports.</p></dd>
+<dd><p>Logical scalar. If <code>TRUE</code>, the log export records are
+excluded.</p></dd>
 
 
 <dt id="arg-get-files">get_files<a class="anchor" aria-label="anchor" href="#arg-get-files"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Logical scalar. If <code>TRUE</code>, file attachments are configured
+to be retrieved from REDCap. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-get-file-repository">get_file_repository<a class="anchor" aria-label="anchor" href="#arg-get-file-repository"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, retrieves file
-repository
-from REDCap.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Logical scalar. If <code>TRUE</code>, the file repository is
+configured to be retrieved from REDCap. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-original-file-names">original_file_names<a class="anchor" aria-label="anchor" href="#arg-original-file-names"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, uses original file
-names for retrieved files. Default is <code>FALSE</code>.</p></dd>
+<dd><p>Logical scalar. If <code>TRUE</code>, retrieved files keep
+their original names. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-add-default-datasets">add_default_datasets<a class="anchor" aria-label="anchor" href="#arg-add-default-datasets"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, will add default
-datasets</p></dd>
+<dd><p>Logical scalar. If <code>TRUE</code>, dataset templates are
+added to a new project. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-timezone">timezone<a class="anchor" aria-label="anchor" href="#arg-timezone"></a></dt>
-<dd><p>optional timezone set of the REDCap server. Otherwise, will
-assume Sys.timezone. Options from <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">OlsonNames()</a></code>.</p></dd>
+<dd><p>Optional character scalar. Time zone used for REDCap data
+timestamps. Defaults to <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">Sys.timezone()</a></code>.</p></dd>
 
 
 <dt id="arg-hard-reset">hard_reset<a class="anchor" aria-label="anchor" href="#arg-hard-reset"></a></dt>
-<dd><p>Logical (TRUE/FALSE). If TRUE, forces the setup even if the
-<code>project</code> object already exists. Default is <code>FALSE</code>.</p></dd>
+<dd><p>Logical scalar. If <code>TRUE</code>, any existing project with the
+same <code>project_name</code> is ignored and a fresh project object is initialized.
+Default is <code>FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -228,15 +229,14 @@ assume Sys.timezone. Options from <code><a href="https://rdrr.io/r/base/timezone
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function sets up the <code>project</code> object by storing the REDCap API token
-and other configurations required for interacting with the REDCap server.
-It ensures that the token is valid and ready for use in subsequent API calls.
-Neither function directly attempts communication with REDCap.</p>
-<p><code>setup_project</code> is used the first time you initialize/link a REDCap project.
-Mainly, it sets your unique <code>project_name</code> and your intended directory.
-Unless you run <code>hard_reset = TRUE</code> the default will first try
-load_project. <code>dir_path</code> is technically optional but without it the user
-cannot save/load/update projects. Must be all capital letters!</p>
+    <p>Unless <code>hard_reset = TRUE</code>, it will first attempt to load an
+existing project from cache or the supplied <code>dir_path</code> before creating a
+new project object.
+If settings differ from the loaded project, they will be used or it will
+trigger a hard reset with a warning. <code>setup_project()</code> itself does not
+perform a full REDCap sync. It configures the project so that subsequent sync
+actions may retrieve data, users, files, and logs according to the project
+settings.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

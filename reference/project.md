@@ -716,15 +716,37 @@ an issue. Missing rows and columns are allowed!
 
 ``` r
 # Load a test project
-project <- load_project("TEST_CLASSIC")
+project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #> ! No cached projects... use `setup_project(...)`
+#> ✔ Directory is Valid! /tmp/RtmpFra7SL
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
+#> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
+#> ! No valid token in session: Sys.getenv('REDCAPSYNC_TEST_CLASSIC')
 
 # Sync data from REDCap
 project$sync()
 #> ℹ TEST projects do not communicate with the API
-#> ! Failed to save dataset `REDCapSync`.
+#> ℹ Saved 'TEST_CLASSIC_text.xlsx'!
+#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
+#> ℹ Saved 'TEST_CLASSIC_other.xlsx'!
+#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
+#> ℹ Saved 'TEST_CLASSIC_data.xlsx'!
+#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_data.xlsx
+#> ℹ Saved 'TEST_CLASSIC_forms.xlsx'!
+#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
+#> ℹ Saved 'TEST_CLASSIC_fields.xlsx'!
+#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
+#> ℹ Saved 'TEST_CLASSIC_choices.xlsx'!
+#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
+#> ℹ Saved 'TEST_CLASSIC_missing_codes.xlsx'!
+#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
+#> ℹ Saved 'TEST_CLASSIC_users.xlsx'!
+#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
+#> ℹ Saved 'TEST_CLASSIC_dataset_details.xlsx'!
+#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
+#> ℹ Saved 'TEST_CLASSIC_REDCapSync.xlsx'!
+#>   /tmp/RtmpFra7SL/output/TEST_CLASSIC_REDCapSync.xlsx
 
 # Access data and metadata
 head(project$data$text)
@@ -830,5 +852,6 @@ dataset <- project$generate_dataset("analysis_set")
 dataset$data$merged$is_stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
 # save to directory
 dataset$save()
-#> Error in save_wb(wb = list_to_wb(input_list = input_list, key_cols_list = key_cols_list,     derived_cols_list = derived_cols_list, link_col_list = link_col_list,     str_trunc_length = str_trunc_length, header_df_list = header_df_list,     header_style = header_style, body_style = body_style, freeze_header = freeze_header,     pad_rows = pad_rows, pad_cols = pad_cols, freeze_keys = freeze_keys,     drop_empty = drop_empty), dir = dir, file_name = file_name,     overwrite = overwrite): dir doesn't exist
+#> ℹ Saved 'TEST_CLASSIC_analysis_set.xlsx'!
+#>   /tmp/RtmpFra7SL/output/TEST_CLASSIC_analysis_set.xlsx
 ```

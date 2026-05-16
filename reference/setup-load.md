@@ -20,6 +20,7 @@ setup_project(
   forms = NA,
   events = NA,
   filter_logic = NA,
+  id_position = 1L,
   get_users = TRUE,
   get_data = TRUE,
   batch_size_download = 1000L,
@@ -99,6 +100,12 @@ load_project(project_name)
   Optional character scalar. REDCap filter logic used to limit returned
   records or record-events.
 
+- id_position:
+
+  Integer scalar of the variable that uniquely identifies the subject
+  (typically record_id). This defaults to the first variable in the data
+  dictionary.
+
 - get_users:
 
   Logical scalar. If `TRUE`, the project will be configured to retrieve
@@ -131,12 +138,11 @@ load_project(project_name)
 
 - log_drop_details:
 
-  Logical scalar. If `TRUE`, the detailed log export records are
-  excluded.
+  Logical scalar. If `TRUE`, the log details are excluded.
 
 - log_drop_exports:
 
-  Logical scalar. If `TRUE`, the log export records are excluded.
+  Logical scalar. If `TRUE`, the log export events are excluded.
 
 - get_files:
 

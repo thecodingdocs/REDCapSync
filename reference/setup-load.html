@@ -71,6 +71,7 @@ token name, sync settings, and optional data selection preferences.</p>
 <span>  forms <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  events <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  filter_logic <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  id_position <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  get_users <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  get_data <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  batch_size_download <span class="op">=</span> <span class="fl">1000L</span>,</span>
@@ -152,6 +153,12 @@ values. Default is <code>TRUE</code>.</p></dd>
 limit returned records or record-events.</p></dd>
 
 
+<dt id="arg-id-position">id_position<a class="anchor" aria-label="anchor" href="#arg-id-position"></a></dt>
+<dd><p>Integer scalar of the variable that uniquely identifies
+the subject (typically record_id). This defaults to the first variable in the
+data dictionary.</p></dd>
+
+
 <dt id="arg-get-users">get_users<a class="anchor" aria-label="anchor" href="#arg-get-users"></a></dt>
 <dd><p>Logical scalar. If <code>TRUE</code>, the project will be configured to
 retrieve REDCap users during sync.</p></dd>
@@ -183,12 +190,12 @@ when a new project is being set up or a hard reset occurs. Default is <code>10</
 
 
 <dt id="arg-log-drop-details">log_drop_details<a class="anchor" aria-label="anchor" href="#arg-log-drop-details"></a></dt>
-<dd><p>Logical scalar. If <code>TRUE</code>, the detailed log export
-records are excluded.</p></dd>
+<dd><p>Logical scalar. If <code>TRUE</code>, the log details are
+excluded.</p></dd>
 
 
 <dt id="arg-log-drop-exports">log_drop_exports<a class="anchor" aria-label="anchor" href="#arg-log-drop-exports"></a></dt>
-<dd><p>Logical scalar. If <code>TRUE</code>, the log export records are
+<dd><p>Logical scalar. If <code>TRUE</code>, the log export events are
 excluded.</p></dd>
 
 

@@ -181,10 +181,10 @@ sync_project_check <- function(project, hard_reset = FALSE, records = NULL) {
     !is_something(project$internals$last_full_update)
   if (!hard_reset) {
     interim_log <- get_interim_log(project)
-    log_changes <- analyze_log(interim_log, id_col = project$metadata$id_col)
-    log_change_messages(log_changes)
-    hard_reset <- log_changes$hard_reset
     if (is_something(interim_log)) {
+      log_changes <- analyze_log(interim_log, id_col = project$metadata$id_col)
+      log_change_messages(log_changes)
+      hard_reset <- log_changes$hard_reset
       project$redcap$log <- interim_log |>
         bind_rows(project$redcap$log) |>
         unique()

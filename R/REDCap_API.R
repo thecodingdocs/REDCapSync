@@ -271,14 +271,11 @@ add_field_elements <- function(fields) {
 #' @noRd
 get_redcap_data <- function(project,
                             labelled = TRUE,
-                            records = NULL,
-                            batch_size = 2000L) {
+                            records = NULL) {
   form_list <- list()
   denormalized <- get_redcap_denormalized(
     project = project,
-    labelled = FALSE,
-    records = records,
-    batch_size = batch_size
+    records = records
   ) # add check for dag and api
   form_list <- normalize_redcap(denormalized = denormalized,
                                 project = project,
@@ -287,16 +284,21 @@ get_redcap_data <- function(project,
 }
 #' @noRd
 get_redcap_denormalized <- function(project,
-                                    labelled = FALSE,
-                                    records = NULL,
-                                    batch_size = 1000L) {
+                                    records = NULL) {
   denormalized <- redcap_read(
+    batch_size = project$settings$batch_size_download,
+    interbatch_delay = 0.2,
+    continue_on_error = FALSE,
     redcap_uri = project$links$redcap_uri,
     token = get_project_token(project),
-    batch_size = batch_size,
-    interbatch_delay = 0.1,
     records = records,
-    raw_or_label = ifelse(labelled, "label", "raw")
+    fields = null_if_na(project$settings$fields),
+    forms = null_if_na(project$settings$forms),
+    events = null_if_na(project$settings$events),
+    raw_or_label = "raw",
+    filter_logic = quotes_if_na(project$settings$filter_logic),
+    verbose = config$verbose(),
+    id_position = 1L
   )$data
   denormalized <- all_character_cols(denormalized)
   denormalized

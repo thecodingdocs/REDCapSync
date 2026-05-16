@@ -304,6 +304,7 @@ setup_project <- function(project_name,
   #test these
   project$links$redcap_uri <- redcap_uri # add test, should end in / or add it
   project$links$redcap_base <- redcap_uri |> dirname() |> paste0("/")
+  project$internals$version <- utils::packageVersion("REDCapSync")
   project$internals$is_blank <- FALSE
   project$internals$hard_reset <- hard_reset
   project$data <- all_character_cols_list(project$data)
@@ -648,7 +649,7 @@ BLANK_PROJECT <- list(
     add_default_datasets = TRUE
   ),
   internals = list(
-    version = "0.1.0",
+    version = NULL,
     last_test_connection_attempt = NULL,
     last_test_connection_timezone = NULL,
     last_test_connection_outcome = NULL,

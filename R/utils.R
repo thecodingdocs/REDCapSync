@@ -430,3 +430,14 @@ try_else_null <- function(expr) {
 na_if_null <- function(x) {
   ifelse(is.null(x), NA, x)
 }
+#' @noRd
+null_if_na <- function(x) {
+  if (is.na(x)) {
+    return(NULL)
+  }
+  x
+}
+#' @noRd
+quotes_if_na <- function(x) {
+  ifelse(is.na(x), "", x)
+}

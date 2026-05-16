@@ -137,8 +137,7 @@ sync_project_hard_reset <- function(project) {
     project$datasets <- list()
     project$data <- get_redcap_data(
       project = project,
-      labelled = project$settings$labelled,
-      batch_size = project$settings$batch_size_download
+      labelled = project$settings$labelled
     )
     # if error records comma
     if (project$redcap$has_log_access) {
@@ -223,8 +222,7 @@ sync_project_refresh <- function(project, refresh_records) {
   form_list <- get_redcap_data(
     project = project,
     labelled = project$settings$labelled,
-    records = refresh_records, # still checking deletes
-    batch_size = project$settings$batch_size_download
+    records = refresh_records # still checking deletes
   )
   records_received <- extract_values_from_form_list(
     form_list = form_list,

@@ -10,7 +10,7 @@ saved. Define custom datasets to be passed to refreshing spreadsheets.
   : Setup or Load REDCapSync Project
 - [`project`](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
   [`REDCapSyncProject`](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
-  : Synchronizing REDCap Project
+  : REDCapSync Project Object
 - [`dataset`](https://thecodingdocs.github.io/REDCapSync/reference/dataset.md)
   [`REDCapSyncDataset`](https://thecodingdocs.github.io/REDCapSync/reference/dataset.md)
   **\[experimental\]** : Standardized Dataset from REDCap Project

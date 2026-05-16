@@ -1,33 +1,87 @@
-# Synchronizing REDCap Project
+# REDCapSync Project Object
 
 [R6](https://r6.r-lib.org/reference/R6Class.html) project object for
+managing REDCap data access and synchronization. The project object is
+your main interface to REDCap data through the
 [REDCapSync](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync-package.md)
-This is the main class for managing REDCap data, metadata, and sync
-operations. Users should construct objects using
-[`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
-To reopen an existing project, use
-[`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
+package. It stores your REDCap configuration, data, metadata, and
+provides methods to sync, transform, and export your data.
 
 ## Value
 
-An R6ClassGenerator which is used internally to create or load a project
-object for the user
+An R6 `REDCapSyncProject` class generator for internal use. Users
+interact with instances created by
+[setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+or
+[load_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 
 ## Details
 
-The methods documented below are functions that work without having to
-use "\<-". For example, if you load a project with
-`project <- load_project("TEST_CLASSIC")`, and then then run
-`project$sync()`, then the project object will contain the updated data.
-That function actually invisibly returns itself which allows for
-"chaining", such as `load_project("TEST_CLASSIC")$sync()`. More features
-are being developed that will allow for the addition of fields (outside
-of REDCap).
+### Workflow
+
+**Initialize** a project with
+[`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md):
+
+    project <- setup_project(
+      project_name = "MY_PROJECT",
+      redcap_uri = "https://redcap.yourinstitution.edu/api/",
+      dir_path = "~/redcap_projects"
+    )
+
+**Synchronize** REDCap data into your project object using the REDCap
+API and log-based change detection:
+
+    project$sync()
+
+**Access** REDCap data, metadata, and users via read-only fields:
+
+    project$data           # Named list of REDCap forms/instruments
+    project$metadata       # REDCap field definitions, forms, and choices
+    project$redcap$users   # REDCap user information
+
+**Transform and export** your data into clean, analysis-ready datasets:
+
+    project$add_dataset("analysis_data", ...)
+    project$save_datasets()
+
+**Upload** corrected or new data back to REDCap:
+
+    project$upload(updated_data)
+
+### Design Features
+
+The project object uses **log-based sync**: Since REDCap maintains a
+detailed change log, `project$sync()` only retrieves and updates records
+that have changed since the last sync. This dramatically reduces API
+calls and improves performance for large projects.
+
+All methods use **method chaining**: Methods invisibly return the
+project object (self), allowing fluent code:
+
+    load_project("MY_PROJECT")$sync()$save_datasets()$print()
+
+### Read-Only Fields
+
+- `project$project_name`: Project identifier (set via
+  [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md))
+
+- `project$dir_path`: Persistent storage directory (set via
+  [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md))
+
+- `project$data`: Named list of synchronized REDCap forms
+
+- `project$metadata`: REDCap field metadata (forms, fields, choices)
+
+- `project$redcap`: REDCap project info, users, and activity log
+
+- `project$.internal`: Internal project object (for advanced use)
 
 ## See also
 
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-for initializing the `project` object.'
+for initializing a new project
+[load_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+for loading an existing project
 
 ## Active bindings
 
@@ -148,24 +202,20 @@ directory when necessary.
 
 - `save_datasets`:
 
-  Logical (TRUE/FALSE). If TRUE, saves the datasets that were previously
-  added during a sync. Default is `TRUE`.
+  Logical. Save dataset outputs during sync. Default is `TRUE`.
 
 - `save_to_dir`:
 
-  Logical (TRUE/FALSE). If TRUE, saves the updated data in the project
-  object to the directory at `dir_path`. Ignored when `dir_path` is
-  `NULL`. Default is `TRUE`.
+  Logical. Save updated project object to directory. Default is `TRUE`.
 
 - `hard_check`:
 
-  Will check REDCap even if not due (see `sync_frequency` parameter from
-  [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md))
+  Logical. Force REDCap API check regardless of `sync_frequency`.
+  Default is `FALSE`.
 
 - `hard_reset`:
 
-  Logical. If `TRUE`, overwrite existing dataset files with the same
-  name. Default is `FALSE`.
+  Logical. Overwrite existing dataset files. Default is `FALSE`.
 
 ------------------------------------------------------------------------
 
@@ -211,158 +261,132 @@ Add a new dataset entry
 
 - `dataset_name`:
 
-  Character. The name of the configured dataset from which to generate
-  the dataset. \*If you provide `dataset_name` all other parameters are
-  inherited according to what was set with `add_dataset`.
+  Character. Name of the dataset configuration to create, load, or
+  reference.
 
 - `transformation_type`:
 
-  Character scalar. How to transform data for the dataset. Default is
-  "default". Other options are "none" and "merge_non_repeating".
-  "default" first merges non-repeating and if there are repeating forms,
-  it also merges non-repeating variables to the right. "none" does not
-  transform anything. "merge_non_repeating" still merges all
-  non-repeating instruments but does not merge them to repeating
-  instruments.
+  Character. How to transform data: "default" (merge non-repeating then
+  add to repeating), "none" (no transformation), or
+  "merge_non_repeating" (merge non-repeating only). Default is
+  "default".
 
 - `merge_form_name`:
 
-  A character string representing the name of the merged form. Default
-  is "merged".
+  Character. Name for the merged non-repeating form. Default is
+  "merged".
 
 - `filter_field`:
 
-  Character. The name of the field in the database to filter on. Used
-  with `filter_choices`.
+  Character. Field name to filter dataset on.
 
 - `filter_choices`:
 
-  Vector. The values of `filter_field` used to define the dataset. An
-  alternative to providing a full `filter_list`.
+  Vector. Allowed values for `filter_field`.
 
 - `filter_list`:
 
-  Vector. The values of `filter_field` used to define the dataset. Names
-  are field names; values are the allowed value set(s). Use either
-  `filter_list` or `filter_field` with `filter_choices`.
+  List. Named list where names are field names and values are allowed
+  value sets. Alternative to `filter_field`/`filter_choices`.
 
 - `filter_strict`:
 
-  Logical. If `TRUE`, all forms will be filtered by criteria. If
-  `FALSE`, will convert original filter to ID column and filter all
-  other forms by that record. Default is `TRUE`.
+  Logical. If `TRUE`, filter all forms. If `FALSE`, apply filter only to
+  records (ID column). Default is `TRUE`.
 
 - `field_names`:
 
-  Character vector. Names of specific fields to include in the dataset.
-  Default is `NULL`, which includes all fields.
+  Character vector. Fields to include. Default `NULL` includes all
+  fields.
 
 - `form_names`:
 
-  Character vector. Names of forms to include in the dataset. Default is
-  `NULL`, which includes all forms.
+  Character vector. Forms to include. Default `NULL` includes all forms.
 
 - `exclude_identifiers`:
 
-  Logical. Whether to exclude identifiers in the data in the dataset.
-  Default is `TRUE`.
+  Logical. Exclude identifier fields. Default is `TRUE`.
 
 - `exclude_free_text`:
 
-  Logical. If `TRUE`, exclude free text fields intended for
-  deidentification workflows. Default is `FALSE`.
+  Logical. Exclude free-text fields (for deidentification). Default is
+  `FALSE`.
 
 - `date_handling`:
 
-  character string. One of `none`,`exclude_dates`,
-  `random_shift_by_record`, `random_shift_by_project`, `zero_by_record`,
-  or `zero_by_project`. Random shift is +/- 90 unless changed with
-  options.
+  Character. Date handling strategy: "none", "exclude_dates",
+  "random_shift_by_record", "random_shift_by_project", "zero_by_record",
+  or "zero_by_project". Default is "none".
 
 - `labelled`:
 
-  Logical. If `TRUE`, the data will be converted to labelled. If
-  `FALSE`, returns raw coded values. Default is `TRUE`.
+  Logical. Convert to labelled data if `TRUE`. Default is `TRUE`.
 
 - `clean`:
 
-  Logical. If `TRUE`, the data will be cleaned (e.g., standardizing
-  missing/blank values) before summarizing. Default is `TRUE`. If
-  missing codes are present in a number or date variable, R will convert
-  missing codes to NA and will make that variable not upload compatible.
+  Logical. Clean data (standardize missing values). Default is `TRUE`.
 
 - `drop_blanks`:
 
-  Logical. If `TRUE`, records with blank fields will be dropped during
-  cleaning. Default is `TRUE`.
+  Logical. Drop records with blank fields. Default is `TRUE`.
 
 - `drop_missing_codes`:
 
-  Logical. If `TRUE`, will convert missing codes to NA. Default is
-  `FALSE`.
+  Logical. Convert REDCap missing codes to `NA`. Default is `FALSE`.
 
 - `drop_others`:
 
-  Character vector of other values that should be dropped.
+  Character vector of additional values to drop.
 
 - `include_metadata`:
 
-  Logical. If `TRUE`, metadata will be included in the dataset. Default
-  is `TRUE`.
+  Logical. Include field metadata in dataset. Default is `TRUE`.
 
 - `include_records`:
 
-  Logical. If `TRUE`, a record dataset will be included in the generated
-  dataset. Default is `TRUE`.
+  Logical. Include record-level information. Default is `TRUE`.
 
 - `include_users`:
 
-  Logical. If `TRUE`, user-related information will be included in the
-  dataset. Default is `TRUE`.
+  Logical. Include user information. Default is `TRUE`.
 
 - `include_log`:
 
-  Logical. If `TRUE`, the log of changes will be included in the
-  dataset. Default is `TRUE`.
+  Logical. Include REDCap activity log. Default is `FALSE`.
 
 - `annotate_from_log`:
 
-  Logical. If `TRUE`, the metadata, users, and records will be annotated
-  using the log. Default is `TRUE`.
+  Logical. Annotate data using the REDCap log. Default is `TRUE`.
 
 - `include_comments`:
 
-  Logical. If `TRUE`, the comments will be included. Default is `TRUE`.
+  Logical. Include field comments. Default is `TRUE`.
 
 - `with_links`:
 
-  Optional logical (TRUE/FALSE) for including links in Excel sheets.
-  Default is `FALSE`.
+  Logical. Include hyperlinks in Excel exports. Default is `FALSE`.
 
 - `separate`:
 
-  Optional logical (TRUE/FALSE) separating each form into separate files
-  as opposed to multi-tab Excel. Default is `FALSE`.
+  Logical. Separate each form into distinct files (vs. multi-tab Excel).
+  Default is `FALSE`.
 
 - `use_csv`:
 
-  Logical (TRUE/FALSE). If TRUE, uses CSV files for data storage.
-  Default is `FALSE`
+  Logical. Use CSV format instead of Excel. Default is `FALSE`.
 
 - `dir_other`:
 
-  Character. The directory where the dataset file will be saved. Default
-  is the `output` folder within the database directory.
+  Character. Output directory (default is project's `output` folder).
 
 - `file_name`:
 
-  Character. The base name of the file where the dataset will be saved.
-  Default is `<project_name>_<dataset_name>`.
+  Character. Dataset file name (default is
+  `<project_name>_<dataset_name>`).
 
 - `hard_reset`:
 
-  Logical. If `TRUE`, overwrite existing dataset files with the same
-  name. Default is `FALSE`.
+  Logical. Overwrite existing dataset files. Default is `FALSE`.
 
 ------------------------------------------------------------------------
 
@@ -378,14 +402,12 @@ Load dataset if previously defined with `add_dataset`.
 
 - `dataset_name`:
 
-  Character. The name of the configured dataset from which to generate
-  the dataset. \*If you provide `dataset_name` all other parameters are
-  inherited according to what was set with `add_dataset`.
+  Character. Name of the dataset configuration to create, load, or
+  reference.
 
 - `envir`:
 
-  environment variable such as
-  [`globalenv()`](https://rdrr.io/r/base/environment.html)
+  Environment to assign dataset objects. Default is `NULL`.
 
 ------------------------------------------------------------------------
 
@@ -401,7 +423,8 @@ Clear all or specified datasets from the `project` object.
 
 - `dataset_names`:
 
-  One or more dataset names. Default is `NULL`.
+  Character vector. Dataset names to remove/operate on. Default is
+  `NULL`.
 
 ------------------------------------------------------------------------
 
@@ -445,133 +468,110 @@ is provided here for ad-hoc custom datasets.
 
 - `dataset_name`:
 
-  Character. The name of the configured dataset from which to generate
-  the dataset. \*If you provide `dataset_name` all other parameters are
-  inherited according to what was set with `add_dataset`.
+  Character. Name of the dataset configuration to create, load, or
+  reference.
 
 - `envir`:
 
-  environment variable such as
-  [`globalenv()`](https://rdrr.io/r/base/environment.html)
+  Environment to assign dataset objects. Default is `NULL`.
 
 - `transformation_type`:
 
-  Character scalar. How to transform data for the dataset. Default is
-  "default". Other options are "none" and "merge_non_repeating".
-  "default" first merges non-repeating and if there are repeating forms,
-  it also merges non-repeating variables to the right. "none" does not
-  transform anything. "merge_non_repeating" still merges all
-  non-repeating instruments but does not merge them to repeating
-  instruments.
+  Character. How to transform data: "default" (merge non-repeating then
+  add to repeating), "none" (no transformation), or
+  "merge_non_repeating" (merge non-repeating only). Default is
+  "default".
 
 - `merge_form_name`:
 
-  A character string representing the name of the merged form. Default
-  is "merged".
+  Character. Name for the merged non-repeating form. Default is
+  "merged".
 
 - `filter_field`:
 
-  Character. The name of the field in the database to filter on. Used
-  with `filter_choices`.
+  Character. Field name to filter dataset on.
 
 - `filter_choices`:
 
-  Vector. The values of `filter_field` used to define the dataset. An
-  alternative to providing a full `filter_list`.
+  Vector. Allowed values for `filter_field`.
 
 - `filter_list`:
 
-  Vector. The values of `filter_field` used to define the dataset. Names
-  are field names; values are the allowed value set(s). Use either
-  `filter_list` or `filter_field` with `filter_choices`.
+  List. Named list where names are field names and values are allowed
+  value sets. Alternative to `filter_field`/`filter_choices`.
 
 - `filter_strict`:
 
-  Logical. If `TRUE`, all forms will be filtered by criteria. If
-  `FALSE`, will convert original filter to ID column and filter all
-  other forms by that record. Default is `TRUE`.
+  Logical. If `TRUE`, filter all forms. If `FALSE`, apply filter only to
+  records (ID column). Default is `TRUE`.
 
 - `field_names`:
 
-  Character vector. Names of specific fields to include in the dataset.
-  Default is `NULL`, which includes all fields.
+  Character vector. Fields to include. Default `NULL` includes all
+  fields.
 
 - `form_names`:
 
-  Character vector. Names of forms to include in the dataset. Default is
-  `NULL`, which includes all forms.
+  Character vector. Forms to include. Default `NULL` includes all forms.
 
 - `exclude_identifiers`:
 
-  Logical. Whether to exclude identifiers in the data in the dataset.
-  Default is `TRUE`.
+  Logical. Exclude identifier fields. Default is `TRUE`.
 
 - `exclude_free_text`:
 
-  Logical. If `TRUE`, exclude free text fields intended for
-  deidentification workflows. Default is `FALSE`.
+  Logical. Exclude free-text fields (for deidentification). Default is
+  `FALSE`.
 
 - `date_handling`:
 
-  character string. One of `none`,`exclude_dates`,
-  `random_shift_by_record`, `random_shift_by_project`, `zero_by_record`,
-  or `zero_by_project`. Random shift is +/- 90 unless changed with
-  options.
+  Character. Date handling strategy: "none", "exclude_dates",
+  "random_shift_by_record", "random_shift_by_project", "zero_by_record",
+  or "zero_by_project". Default is "none".
 
 - `labelled`:
 
-  Logical. If `TRUE`, the data will be converted to labelled. If
-  `FALSE`, returns raw coded values. Default is `TRUE`.
+  Logical. Convert to labelled data if `TRUE`. Default is `TRUE`.
 
 - `clean`:
 
-  Logical. If `TRUE`, the data will be cleaned (e.g., standardizing
-  missing/blank values) before summarizing. Default is `TRUE`. If
-  missing codes are present in a number or date variable, R will convert
-  missing codes to NA and will make that variable not upload compatible.
+  Logical. Clean data (standardize missing values). Default is `TRUE`.
 
 - `drop_blanks`:
 
-  Logical. If `TRUE`, records with blank fields will be dropped during
-  cleaning. Default is `TRUE`.
+  Logical. Drop records with blank fields. Default is `TRUE`.
 
 - `drop_missing_codes`:
 
-  Logical. If `TRUE`, will convert missing codes to NA. Default is
-  `FALSE`.
+  Logical. Convert REDCap missing codes to `NA`. Default is `FALSE`.
 
 - `drop_others`:
 
-  Character vector of other values that should be dropped.
+  Character vector of additional values to drop.
 
 - `include_metadata`:
 
-  Logical. If `TRUE`, metadata will be included in the dataset. Default
-  is `TRUE`.
+  Logical. Include field metadata in dataset. Default is `TRUE`.
 
 - `include_records`:
 
-  Logical. If `TRUE`, a record dataset will be included in the generated
-  dataset. Default is `TRUE`.
+  Logical. Include record-level information. Default is `TRUE`.
 
 - `include_users`:
 
-  Logical. If `TRUE`, user-related information will be included in the
-  dataset. Default is `TRUE`.
+  Logical. Include user information. Default is `TRUE`.
 
 - `include_log`:
 
-  Logical. If `TRUE`, the log of changes will be included in the
-  dataset. Default is `TRUE`.
+  Logical. Include REDCap activity log. Default is `FALSE`.
 
 - `annotate_from_log`:
 
-  Logical. If `TRUE`, the metadata, users, and records will be annotated
-  using the log. Default is `TRUE`.
+  Logical. Annotate data using the REDCap log. Default is `TRUE`.
 
 - `include_comments`:
 
-  Logical. If `TRUE`, the comments will be included. Default is `TRUE`.
+  Logical. Include field comments. Default is `TRUE`.
 
 ------------------------------------------------------------------------
 
@@ -587,8 +587,7 @@ saves datasets to Excel via setting provided to `add_dataset`.
 
 - `hard_reset`:
 
-  Logical. If `TRUE`, overwrite existing dataset files with the same
-  name. Default is `FALSE`.
+  Logical. Overwrite existing dataset files. Default is `FALSE`.
 
 ------------------------------------------------------------------------
 
@@ -604,9 +603,8 @@ saves dataset to Excel via setting provided to `add_dataset`.
 
 - `dataset_name`:
 
-  Character. The name of the configured dataset from which to generate
-  the dataset. \*If you provide `dataset_name` all other parameters are
-  inherited according to what was set with `add_dataset`.
+  Character. Name of the dataset configuration to create, load, or
+  reference.
 
 ------------------------------------------------------------------------
 
@@ -653,14 +651,14 @@ opens links in browser.
 
 - `link_type`:
 
-  Character. Type of REDCap URL to retrieve. Choose one of "base",
-  "home", "record_home", "records_dashboard", "api", "api_playground",
-  "codebook", "user_rights", "setup", "logging", "designer",
-  "dictionary", "data_quality", or "identifiers".
+  Character. REDCap link type: "base", "home", "record_home",
+  "records_dashboard", "api", "api_playground", "codebook",
+  "user_rights", "setup", "logging", "designer", "dictionary",
+  "data_quality", or "identifiers".
 
 - `open_browser`:
 
-  Logical. If TRUE, launches the link in the default browser.
+  Logical. Open link in browser. Default is `TRUE`.
 
 ------------------------------------------------------------------------
 
@@ -681,19 +679,19 @@ opens record links in browser.
 
 - `record`:
 
-  character of record
+  Character. Record ID.
 
 - `page`:
 
-  character of page (instrument/form)
+  Character. REDCap form/instrument name.
 
 - `instance`:
 
-  character of instance
+  Character. Repeating instance number.
 
 - `open_browser`:
 
-  Logical. If TRUE, launches the link in the default browser.
+  Logical. Open link in browser. Default is `TRUE`.
 
 ------------------------------------------------------------------------
 
@@ -712,19 +710,125 @@ an issue. Missing rows and columns are allowed!
 
 - `to_be_uploaded`:
 
-  data.frame in raw coded form to upload. uploading to REDCap. Default
-  is 500L.
+  Data frame in raw coded format ready to upload to REDCap.
 
 ## Examples
 
 ``` r
+# Load a test project
 project <- load_project("TEST_CLASSIC")
 #> ! No cached projects... use `setup_project(...)`
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
+
+# Sync data from REDCap
 project$sync()
 #> ℹ TEST projects do not communicate with the API
 #> ! Failed to save dataset `REDCapSync`.
-project$save()
-#> ℹ TEST projects do not save to directories!
+
+# Access data and metadata
+head(project$data$text)
+#>   record_id  var_text_only    var_last_name var_birth_date var_text_ontology
+#> 1         1 Just some text             Rose     1995-12-01     ctcae5:C57293
+#> 2         2           <NA>           Gorthy     1971-11-21              <NA>
+#> 3         3           <NA>           Parker     1968-10-04              <NA>
+#> 4         4           <NA>           Thomas     1946-02-19              <NA>
+#> 5         5           <NA> Oversole-Lutters     1951-04-01              <NA>
+#> 6         6           <NA>           Fisher     1997-09-26              <NA>
+#>   var_text_date_dmy var_text_date_mdy var_text_date_ymd
+#> 1        2025-11-19        2025-11-19        2025-11-19
+#> 2        2024-04-23        2024-06-22        2024-05-11
+#> 3        2024-03-28        2024-04-14        2024-10-26
+#> 4        2024-11-21        2024-05-23        2024-12-31
+#> 5        2024-10-08        2024-04-17        2024-09-09
+#> 6        2024-11-08        2024-01-31        2024-03-16
+#>   var_text_datetime_dmy_hm var_text_datetime_mdy_hm var_text_datetime_ymd_hm
+#> 1      2025-11-19 19:55:00      2025-11-19 19:55:00                  Unknown
+#> 2      2024-08-30 15:30:00      2024-06-18 09:20:00         2024-10-20 14:45
+#> 3      2024-08-28 18:49:00      2024-12-15 18:55:00         2024-08-06 11:24
+#> 4      2024-10-06 16:49:00      2024-01-26 12:03:00         2024-03-24 01:23
+#> 5      2024-06-07 09:43:00      2024-06-13 01:07:00         2024-12-05 14:51
+#> 6      2024-11-15 17:58:00      2024-07-17 00:09:00         2024-04-01 08:17
+#>   var_text_datetime_mdy_hms var_text_datetime_ymd_hms      var_text_email
+#> 1       2025-11-19 19:55:20       2025-11-19 19:55:20   brandon@gmail.com
+#> 2       2024-04-16 08:36:17       2024-07-11 07:58:51  olsen@fakemail.com
+#> 3       2024-02-28 03:36:58       2024-11-16 14:36:39  knott@fakemail.com
+#> 4       2024-06-06 14:42:10       2024-05-31 02:53:51 garcia@fakemail.com
+#> 5       2024-12-25 13:38:05       2024-10-13 19:33:21   cain@fakemail.com
+#> 6       2024-08-23 18:04:22       2024-05-09 09:25:04   zusi@fakemail.com
+#>   var_text_integer var_text_letters var_text_number var_text_number_1dec
+#> 1                5              ABC         123.565                  1.1
+#> 2               82                c              34                   74
+#> 3               32                u              18                 97.7
+#> 4               49                j              61                 43.2
+#> 5               29                m              12                 71.7
+#> 6               53                d              51                   34
+#>   var_text_number_2dec var_text_phone_nam var_text_time_hms var_text_time_hm
+#> 1                 <NA>     (215) 900-6000          19:56:08         19:56:00
+#> 2                 53.3               <NA>          11:14:28         05:11:00
+#> 3                80.91               <NA>          14:42:43         00:50:00
+#> 4                85.45               <NA>          04:30:38         05:31:00
+#> 5                65.79               <NA>          19:55:00         01:58:00
+#> 6                83.68               <NA>          07:28:19         14:34:00
+#>   var_text_zipcode text_complete
+#> 1            19116    Unverified
+#> 2             <NA>      Complete
+#> 3             <NA>      Complete
+#> 4             <NA>    Unverified
+#> 5             <NA>    Incomplete
+#> 6             <NA>    Incomplete
+project$metadata$fields[1:5, ]
+#>          field_name form_name section_header field_type field_label
+#> 1         record_id      text           <NA>       text   Record ID
+#> 2     var_text_only      text           <NA>       text   Text Only
+#> 3     var_last_name      text           <NA>       text   Last Name
+#> 4    var_birth_date      text           <NA>       text  Birth Date
+#> 5 var_text_ontology      text           <NA>       text    Ontology
+#>   select_choices_or_calculations       field_note
+#> 1                           <NA> Note about field
+#> 2                           <NA> Note about field
+#> 3                           <NA> Note about field
+#> 4                           <NA> Note about field
+#> 5                BIOPORTAL:CTCAE Note about field
+#>   text_validation_type_or_show_slider_number text_validation_min
+#> 1                                       <NA>                <NA>
+#> 2                                       <NA>                <NA>
+#> 3                                       <NA>                <NA>
+#> 4                                   date_dmy                <NA>
+#> 5                                       <NA>                <NA>
+#>   text_validation_max identifier branching_logic required_field
+#> 1                <NA>       <NA>            <NA>           <NA>
+#> 2                <NA>       <NA>            <NA>           <NA>
+#> 3                <NA>          y            <NA>           <NA>
+#> 4                <NA>          y            <NA>           <NA>
+#> 5                <NA>       <NA>            <NA>           <NA>
+#>   custom_alignment question_number matrix_group_name matrix_ranking
+#> 1             <NA>            <NA>              <NA>           <NA>
+#> 2             <NA>            <NA>              <NA>           <NA>
+#> 3             <NA>            <NA>              <NA>           <NA>
+#> 4             <NA>            <NA>              <NA>           <NA>
+#> 5             <NA>            <NA>              <NA>           <NA>
+#>   field_annotation
+#> 1             <NA>
+#> 2             <NA>
+#> 3             <NA>
+#> 4             <NA>
+#> 5             <NA>
+
+# Create and save a filtered dataset
+dataset <- project$add_dataset(
+  dataset_name = "analysis_set",
+  filter_field = "var_yesno",
+  filter_choices = "Yes",
+  field_names = c("record_id", "ecog_at_diagnosis", "stage_at_diagnosis")
+ )
+# generate dataset for R environment
+dataset <- project$generate_dataset("analysis_set")
+#> ! analysis_set is already a defined dataset
+#> ℹ It will be loaded... other paramers ignored
+# Optional modify
+dataset$data$merged$is_stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
+# save to directory
+dataset$save()
+#> Error in save_wb(wb = list_to_wb(input_list = input_list, key_cols_list = key_cols_list,     derived_cols_list = derived_cols_list, link_col_list = link_col_list,     str_trunc_length = str_trunc_length, header_df_list = header_df_list,     header_style = header_style, body_style = body_style, freeze_header = freeze_header,     pad_rows = pad_rows, pad_cols = pad_cols, freeze_keys = freeze_keys,     drop_empty = drop_empty), dir = dir, file_name = file_name,     overwrite = overwrite): dir doesn't exist
 ```

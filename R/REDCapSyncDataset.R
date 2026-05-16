@@ -7,7 +7,7 @@
 #' environment.
 #'
 #' @details
-#' A `REDCapSyncDataset` can be created ad-hoc from a project with 
+#' A `REDCapSyncDataset` can be created ad-hoc from a project with
 #' `project$generate_dataset()`. For resusability, you can also define with
 #' `project$add_dataset()` and then load with `project$load_dataset()`.
 #'
@@ -30,14 +30,14 @@
 #' # optional send to global environment
 #' dataset$to_envir(globalenv()) # keep in mind potential name conflicts
 #' # Optional modify (final save depends on what is in the dataset object)
-#' dataset$data$merged$is_stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
+#' dataset$data$merged$stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
 #' # save to directory
 #' dataset$save() # can specify `dir_other`, by default saves to output folder
 #' ```
 #'
-#' This object is designed for users who want a stable dataset output from REDCap
-#' without modifying the underlying project state. This is also used 
-#' behind-the-scenes for RosyREDCap shiny app.
+#' This object is designed for users who want a stable dataset output from
+#' REDCap without modifying the underlying project. This is also used
+#' behind-the-scenes in the RosyREDCap shiny app.
 #'
 #' ## Key features
 #' - Stores a project-specific dataset definition and resulting data
@@ -59,7 +59,7 @@
 #' @param filter_choices Vector. Allowed values for `filter_field`.
 #' @param filter_list List. Named list mapping field names to allowed values.
 #'   Use instead of `filter_field`/`filter_choices` for more complex filters.
-'" @param filter_strict Logical. If `TRUE`, filters are applied to every form.
+#' @param filter_strict Logical. If `TRUE`, filters are applied to every form.
 #'   If `FALSE`, filters apply only to the record identifier. Default is
 #'   `TRUE`.
 #' @param form_names Character vector. Forms to include in the dataset.

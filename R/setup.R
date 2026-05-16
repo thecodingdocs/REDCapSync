@@ -2,16 +2,16 @@
 #' @title Setup or Load REDCapSync Project
 #' @description
 #' Setup or load a REDCapSync project object.
-#' Prepares a new REDCapSync project by recording the REDCap URI, 
-#' token name, sync settings, and optional data selection preferences. 
+#' Prepares a new REDCapSync project by recording the REDCap URI,
+#' token name, sync settings, and optional data selection preferences.
 #' @details
 #' Unless `hard_reset = TRUE`, it will first attempt to load an
 #' existing project from cache or the supplied `dir_path` before creating a
 #' new project object.
-#' If settings differ from the loaded project, they will be used or it will 
-#' trigger a hard reset with a warning. `setup_project()` itself does not 
+#' If settings differ from the loaded project, they will be used or it will
+#' trigger a hard reset with a warning. `setup_project()` itself does not
 #' perform a full REDCap sync. It configures the project so that subsequent sync
-#' actions may retrieve data, users, files, and logs according to the project 
+#' actions may retrieve data, users, files, and logs according to the project
 #' settings.
 #'
 #' @param project_name Character scalar. Unique uppercase project name with no
@@ -52,7 +52,7 @@
 #' records are excluded.
 #' @param log_drop_exports Logical scalar. If `TRUE`, the log export records are
 #' excluded.
-#' @param get_files Logical scalar. If `TRUE`, file attachments are configured 
+#' @param get_files Logical scalar. If `TRUE`, file attachments are configured
 #' to be retrieved from REDCap. Default is `FALSE`.
 #' @param get_file_repository Logical scalar. If `TRUE`, the file repository is
 #' configured to be retrieved from REDCap. Default is `FALSE`.

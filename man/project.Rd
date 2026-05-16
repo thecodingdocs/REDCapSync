@@ -3,34 +3,108 @@
 \name{project}
 \alias{project}
 \alias{REDCapSyncProject}
-\title{Synchronizing REDCap Project}
+\title{REDCapSync Project Object}
 \value{
-An R6ClassGenerator which is used internally to create or load a
-project object for the user
+An R6 \code{REDCapSyncProject} class generator for internal use. Users interact
+with instances created by \link{setup_project} or \link{load_project}.
 }
 \description{
-\link[R6:R6Class]{R6} project object for \link{REDCapSync} This is the main class for
-managing REDCap data, metadata, and sync operations. Users should construct
-objects using \code{\link[=setup_project]{setup_project()}}. To reopen an existing project,
-use \code{\link[=load_project]{load_project()}}.
+\link[R6:R6Class]{R6} project object for managing REDCap data access and
+synchronization. The project object is your main interface to REDCap data
+through the \link{REDCapSync} package. It stores your REDCap configuration, data,
+metadata, and provides methods to sync, transform, and export your data.
 }
 \details{
-The methods documented below are functions that work without having to use
-"<-". For example, if you load a project with
-\code{project <- load_project("TEST_CLASSIC")}, and then then run
-\code{project$sync()}, then the project object will contain the updated data.
-That function actually invisibly returns itself which allows for "chaining",
-such as \code{load_project("TEST_CLASSIC")$sync()}. More features are being
-developed that will allow for the addition of fields (outside of REDCap).
+\subsection{Workflow}{
+
+\strong{Initialize} a project with \code{\link[=setup_project]{setup_project()}}:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{project <- setup_project(
+  project_name = "MY_PROJECT",
+  redcap_uri = "https://redcap.yourinstitution.edu/api/",
+  dir_path = "~/redcap_projects"
+)
+}\if{html}{\out{</div>}}
+
+\strong{Synchronize} REDCap data into your project object using the REDCap API
+and log-based change detection:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{project$sync()
+}\if{html}{\out{</div>}}
+
+\strong{Access} REDCap data, metadata, and users via read-only fields:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{project$data           # Named list of REDCap forms/instruments
+project$metadata       # REDCap field definitions, forms, and choices
+project$redcap$users   # REDCap user information
+}\if{html}{\out{</div>}}
+
+\strong{Transform and export} your data into clean, analysis-ready datasets:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{project$add_dataset("analysis_data", ...)
+project$save_datasets()
+}\if{html}{\out{</div>}}
+
+\strong{Upload} corrected or new data back to REDCap:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{project$upload(updated_data)
+}\if{html}{\out{</div>}}
+}
+
+\subsection{Design Features}{
+
+The project object uses \strong{log-based sync}: Since REDCap maintains a detailed
+change log, \code{project$sync()} only retrieves and updates records that have
+changed since the last sync. This dramatically reduces API calls and improves
+performance for large projects.
+
+All methods use \strong{method chaining}: Methods invisibly return the project
+object (self), allowing fluent code:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{load_project("MY_PROJECT")$sync()$save_datasets()$print()
+}\if{html}{\out{</div>}}
+}
+
+\subsection{Read-Only Fields}{
+\itemize{
+\item \code{project$project_name}: Project identifier (set via \link{setup_project})
+\item \code{project$dir_path}: Persistent storage directory (set via \link{setup_project})
+\item \code{project$data}: Named list of synchronized REDCap forms
+\item \code{project$metadata}: REDCap field metadata (forms, fields, choices)
+\item \code{project$redcap}: REDCap project info, users, and activity log
+\item \code{project$.internal}: Internal project object (for advanced use)
+}
+}
 }
 \examples{
+# Load a test project
 project <- load_project("TEST_CLASSIC")
+
+# Sync data from REDCap
 project$sync()
-project$save()
+
+# Access data and metadata
+head(project$data$text)
+project$metadata$fields[1:5, ]
+
+# Create and save a filtered dataset
+dataset <- project$add_dataset(
+  dataset_name = "analysis_set",
+  filter_field = "var_yesno",
+  filter_choices = "Yes",
+  field_names = c("record_id", "ecog_at_diagnosis", "stage_at_diagnosis")
+ )
+# generate dataset for R environment
+dataset <- project$generate_dataset("analysis_set")
+# Optional modify
+dataset$data$merged$is_stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
+# save to directory
+dataset$save()
 
 }
 \seealso{
-\link{setup_project} for initializing the \code{project} object.'
+\link{setup_project} for initializing a new project
+\link{load_project} for loading an existing project
 }
 \section{Active bindings}{
   \if{html}{\out{<div class="r6-active-bindings">}}
@@ -130,15 +204,14 @@ be saved to your directory when necessary.
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{save_datasets}}{Logical (TRUE/FALSE). If TRUE, saves the datasets
-that were previously added during a sync. Default is \code{TRUE}.}
-      \item{\code{save_to_dir}}{Logical (TRUE/FALSE). If TRUE, saves the updated data in
-the project object to the directory at \code{dir_path}. Ignored when \code{dir_path} is
-\code{NULL}. Default is \code{TRUE}.}
-      \item{\code{hard_check}}{Will check REDCap even if not due (see \code{sync_frequency}
-parameter from \code{setup_project()})}
-      \item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing dataset files
-with the same name. Default is \code{FALSE}.}
+      \item{\code{save_datasets}}{Logical. Save dataset outputs during sync. Default is
+\code{TRUE}.}
+      \item{\code{save_to_dir}}{Logical. Save updated project object to directory. Default
+is \code{TRUE}.}
+      \item{\code{hard_check}}{Logical. Force REDCap API check regardless of
+\code{sync_frequency}. Default is \code{FALSE}.}
+      \item{\code{hard_reset}}{Logical. Overwrite existing dataset files. Default is
+\code{FALSE}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -187,74 +260,59 @@ with the same name. Default is \code{FALSE}.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{dataset_name}}{Character. The name of the configured dataset from which
-to generate the dataset. *If you provide \code{dataset_name} all other parameters
-are inherited according to what was set with \code{add_dataset}.}
-      \item{\code{transformation_type}}{Character scalar. How to transform data for the
-dataset. Default is "default". Other options are "none" and
-"merge_non_repeating". "default" first merges non-repeating and if there are
-repeating forms, it also merges non-repeating variables to the right.
-"none" does not transform anything. "merge_non_repeating" still merges
-all non-repeating instruments but does not merge them to repeating
-instruments.}
-      \item{\code{merge_form_name}}{A character string representing the name of the merged
-form. Default is "merged".}
-      \item{\code{filter_field}}{Character. The name of the field in the database to
-filter on. Used with \code{filter_choices}.}
-      \item{\code{filter_choices}}{Vector. The values of \code{filter_field} used to define the
-dataset. An alternative to providing a full \code{filter_list}.}
-      \item{\code{filter_list}}{Vector. The values of \code{filter_field} used to define the
-dataset. Names are field names; values are the allowed value set(s). Use
-either \code{filter_list} or \code{filter_field} with \code{filter_choices}.}
-      \item{\code{filter_strict}}{Logical. If \code{TRUE}, all forms will be filtered by
-criteria. If \code{FALSE}, will convert original filter to ID column and filter
-all other forms by that record. Default is \code{TRUE}.}
-      \item{\code{field_names}}{Character vector. Names of specific fields to include in
-the dataset. Default is \code{NULL}, which includes all fields.}
-      \item{\code{form_names}}{Character vector. Names of forms to include in the dataset.
-Default is \code{NULL}, which includes all forms.}
-      \item{\code{exclude_identifiers}}{Logical. Whether to exclude identifiers in the
-data in the dataset. Default is \code{TRUE}.}
-      \item{\code{exclude_free_text}}{Logical. If \code{TRUE}, exclude free text fields
-intended for deidentification workflows. Default is \code{FALSE}.}
-      \item{\code{date_handling}}{character string. One of \code{none},\code{exclude_dates},
-\code{random_shift_by_record}, \code{random_shift_by_project}, \code{zero_by_record}, or
-\code{zero_by_project}. Random shift is +/- 90 unless changed with options.}
-      \item{\code{labelled}}{Logical. If \code{TRUE}, the data will be converted to labelled.
-If \code{FALSE}, returns raw coded values. Default is \code{TRUE}.}
-      \item{\code{clean}}{Logical. If \code{TRUE}, the data will be cleaned (e.g.,
-standardizing missing/blank values) before summarizing. Default is \code{TRUE}. If
-missing codes are present in a number or date variable, R will convert
-missing codes to NA and will make that variable not upload compatible.}
-      \item{\code{drop_blanks}}{Logical. If \code{TRUE}, records with blank fields will be
-dropped during cleaning. Default is \code{TRUE}.}
-      \item{\code{drop_missing_codes}}{Logical. If \code{TRUE}, will convert missing codes
-to NA. Default is \code{FALSE}.}
-      \item{\code{drop_others}}{Character vector of other values that should be dropped.}
-      \item{\code{include_metadata}}{Logical. If \code{TRUE}, metadata will be included in the
-dataset. Default is \code{TRUE}.}
-      \item{\code{include_records}}{Logical. If \code{TRUE}, a record dataset will be
-included in the generated dataset. Default is \code{TRUE}.}
-      \item{\code{include_users}}{Logical. If \code{TRUE}, user-related information will be
-included in the dataset. Default is \code{TRUE}.}
-      \item{\code{include_log}}{Logical. If \code{TRUE}, the log of changes will be included in
-the dataset. Default is \code{TRUE}.}
-      \item{\code{annotate_from_log}}{Logical. If \code{TRUE}, the metadata, users, and records
-will be annotated using the log. Default is \code{TRUE}.}
-      \item{\code{include_comments}}{Logical. If \code{TRUE}, the comments will be included.
-Default is \code{TRUE}.}
-      \item{\code{with_links}}{Optional logical (TRUE/FALSE) for including links in Excel
-sheets. Default is \code{FALSE}.}
-      \item{\code{separate}}{Optional logical (TRUE/FALSE) separating each form into
-separate files as opposed to multi-tab Excel. Default is \code{FALSE}.}
-      \item{\code{use_csv}}{Logical (TRUE/FALSE). If TRUE, uses CSV files for data
-storage. Default is \code{FALSE}}
-      \item{\code{dir_other}}{Character. The directory where the dataset file will be
-saved. Default is the \code{output} folder within the database directory.}
-      \item{\code{file_name}}{Character. The base name of the file where the dataset will
-be saved. Default is \verb{<project_name>_<dataset_name>}.}
-      \item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing dataset files
-with the same name. Default is \code{FALSE}.}
+      \item{\code{dataset_name}}{Character. Name of the dataset configuration to create,
+load, or reference.}
+      \item{\code{transformation_type}}{Character. How to transform data: "default"
+(merge non-repeating then add to repeating), "none" (no transformation), or
+"merge_non_repeating" (merge non-repeating only). Default is "default".}
+      \item{\code{merge_form_name}}{Character. Name for the merged non-repeating form.
+Default is "merged".}
+      \item{\code{filter_field}}{Character. Field name to filter dataset on.}
+      \item{\code{filter_choices}}{Vector. Allowed values for \code{filter_field}.}
+      \item{\code{filter_list}}{List. Named list where names are field names and values
+are allowed value sets. Alternative to \code{filter_field}/\code{filter_choices}.}
+      \item{\code{filter_strict}}{Logical. If \code{TRUE}, filter all forms. If \code{FALSE}, apply
+filter only to records (ID column). Default is \code{TRUE}.}
+      \item{\code{field_names}}{Character vector. Fields to include. Default \code{NULL}
+includes all fields.}
+      \item{\code{form_names}}{Character vector. Forms to include. Default \code{NULL} includes
+all forms.}
+      \item{\code{exclude_identifiers}}{Logical. Exclude identifier fields. Default is
+\code{TRUE}.}
+      \item{\code{exclude_free_text}}{Logical. Exclude free-text fields (for
+deidentification). Default is \code{FALSE}.}
+      \item{\code{date_handling}}{Character. Date handling strategy: "none",
+"exclude_dates", "random_shift_by_record", "random_shift_by_project",
+"zero_by_record", or "zero_by_project". Default is "none".}
+      \item{\code{labelled}}{Logical. Convert to labelled data if \code{TRUE}. Default is
+\code{TRUE}.}
+      \item{\code{clean}}{Logical. Clean data (standardize missing values). Default is
+\code{TRUE}.}
+      \item{\code{drop_blanks}}{Logical. Drop records with blank fields. Default is
+\code{TRUE}.}
+      \item{\code{drop_missing_codes}}{Logical. Convert REDCap missing codes to \code{NA}.
+Default is \code{FALSE}.}
+      \item{\code{drop_others}}{Character vector of additional values to drop.}
+      \item{\code{include_metadata}}{Logical. Include field metadata in dataset. Default
+is \code{TRUE}.}
+      \item{\code{include_records}}{Logical. Include record-level information. Default is
+\code{TRUE}.}
+      \item{\code{include_users}}{Logical. Include user information. Default is \code{TRUE}.}
+      \item{\code{include_log}}{Logical. Include REDCap activity log. Default is \code{FALSE}.}
+      \item{\code{annotate_from_log}}{Logical. Annotate data using the REDCap log. Default
+is \code{TRUE}.}
+      \item{\code{include_comments}}{Logical. Include field comments. Default is \code{TRUE}.}
+      \item{\code{with_links}}{Logical. Include hyperlinks in Excel exports. Default is
+\code{FALSE}.}
+      \item{\code{separate}}{Logical. Separate each form into distinct files (vs.
+multi-tab Excel). Default is \code{FALSE}.}
+      \item{\code{use_csv}}{Logical. Use CSV format instead of Excel. Default is \code{FALSE}.}
+      \item{\code{dir_other}}{Character. Output directory (default is project's \code{output}
+folder).}
+      \item{\code{file_name}}{Character. Dataset file name (default is
+\verb{<project_name>_<dataset_name>}).}
+      \item{\code{hard_reset}}{Logical. Overwrite existing dataset files. Default is
+\code{FALSE}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -273,10 +331,9 @@ with the same name. Default is \code{FALSE}.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{dataset_name}}{Character. The name of the configured dataset from which
-to generate the dataset. *If you provide \code{dataset_name} all other parameters
-are inherited according to what was set with \code{add_dataset}.}
-      \item{\code{envir}}{environment variable such as \code{\link[=globalenv]{globalenv()}}}
+      \item{\code{dataset_name}}{Character. Name of the dataset configuration to create,
+load, or reference.}
+      \item{\code{envir}}{Environment to assign dataset objects. Default is \code{NULL}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -295,7 +352,8 @@ are inherited according to what was set with \code{add_dataset}.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{dataset_names}}{One or more dataset names. Default is \code{NULL}.}
+      \item{\code{dataset_names}}{Character vector. Dataset names to remove/operate on.
+Default is \code{NULL}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -341,63 +399,49 @@ custom datasets.
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{dataset_name}}{Character. The name of the configured dataset from which
-to generate the dataset. *If you provide \code{dataset_name} all other parameters
-are inherited according to what was set with \code{add_dataset}.}
-      \item{\code{envir}}{environment variable such as \code{\link[=globalenv]{globalenv()}}}
-      \item{\code{transformation_type}}{Character scalar. How to transform data for the
-dataset. Default is "default". Other options are "none" and
-"merge_non_repeating". "default" first merges non-repeating and if there are
-repeating forms, it also merges non-repeating variables to the right.
-"none" does not transform anything. "merge_non_repeating" still merges
-all non-repeating instruments but does not merge them to repeating
-instruments.}
-      \item{\code{merge_form_name}}{A character string representing the name of the merged
-form. Default is "merged".}
-      \item{\code{filter_field}}{Character. The name of the field in the database to
-filter on. Used with \code{filter_choices}.}
-      \item{\code{filter_choices}}{Vector. The values of \code{filter_field} used to define the
-dataset. An alternative to providing a full \code{filter_list}.}
-      \item{\code{filter_list}}{Vector. The values of \code{filter_field} used to define the
-dataset. Names are field names; values are the allowed value set(s). Use
-either \code{filter_list} or \code{filter_field} with \code{filter_choices}.}
-      \item{\code{filter_strict}}{Logical. If \code{TRUE}, all forms will be filtered by
-criteria. If \code{FALSE}, will convert original filter to ID column and filter
-all other forms by that record. Default is \code{TRUE}.}
-      \item{\code{field_names}}{Character vector. Names of specific fields to include in
-the dataset. Default is \code{NULL}, which includes all fields.}
-      \item{\code{form_names}}{Character vector. Names of forms to include in the dataset.
-Default is \code{NULL}, which includes all forms.}
-      \item{\code{exclude_identifiers}}{Logical. Whether to exclude identifiers in the
-data in the dataset. Default is \code{TRUE}.}
-      \item{\code{exclude_free_text}}{Logical. If \code{TRUE}, exclude free text fields
-intended for deidentification workflows. Default is \code{FALSE}.}
-      \item{\code{date_handling}}{character string. One of \code{none},\code{exclude_dates},
-\code{random_shift_by_record}, \code{random_shift_by_project}, \code{zero_by_record}, or
-\code{zero_by_project}. Random shift is +/- 90 unless changed with options.}
-      \item{\code{labelled}}{Logical. If \code{TRUE}, the data will be converted to labelled.
-If \code{FALSE}, returns raw coded values. Default is \code{TRUE}.}
-      \item{\code{clean}}{Logical. If \code{TRUE}, the data will be cleaned (e.g.,
-standardizing missing/blank values) before summarizing. Default is \code{TRUE}. If
-missing codes are present in a number or date variable, R will convert
-missing codes to NA and will make that variable not upload compatible.}
-      \item{\code{drop_blanks}}{Logical. If \code{TRUE}, records with blank fields will be
-dropped during cleaning. Default is \code{TRUE}.}
-      \item{\code{drop_missing_codes}}{Logical. If \code{TRUE}, will convert missing codes
-to NA. Default is \code{FALSE}.}
-      \item{\code{drop_others}}{Character vector of other values that should be dropped.}
-      \item{\code{include_metadata}}{Logical. If \code{TRUE}, metadata will be included in the
-dataset. Default is \code{TRUE}.}
-      \item{\code{include_records}}{Logical. If \code{TRUE}, a record dataset will be
-included in the generated dataset. Default is \code{TRUE}.}
-      \item{\code{include_users}}{Logical. If \code{TRUE}, user-related information will be
-included in the dataset. Default is \code{TRUE}.}
-      \item{\code{include_log}}{Logical. If \code{TRUE}, the log of changes will be included in
-the dataset. Default is \code{TRUE}.}
-      \item{\code{annotate_from_log}}{Logical. If \code{TRUE}, the metadata, users, and records
-will be annotated using the log. Default is \code{TRUE}.}
-      \item{\code{include_comments}}{Logical. If \code{TRUE}, the comments will be included.
-Default is \code{TRUE}.}
+      \item{\code{dataset_name}}{Character. Name of the dataset configuration to create,
+load, or reference.}
+      \item{\code{envir}}{Environment to assign dataset objects. Default is \code{NULL}.}
+      \item{\code{transformation_type}}{Character. How to transform data: "default"
+(merge non-repeating then add to repeating), "none" (no transformation), or
+"merge_non_repeating" (merge non-repeating only). Default is "default".}
+      \item{\code{merge_form_name}}{Character. Name for the merged non-repeating form.
+Default is "merged".}
+      \item{\code{filter_field}}{Character. Field name to filter dataset on.}
+      \item{\code{filter_choices}}{Vector. Allowed values for \code{filter_field}.}
+      \item{\code{filter_list}}{List. Named list where names are field names and values
+are allowed value sets. Alternative to \code{filter_field}/\code{filter_choices}.}
+      \item{\code{filter_strict}}{Logical. If \code{TRUE}, filter all forms. If \code{FALSE}, apply
+filter only to records (ID column). Default is \code{TRUE}.}
+      \item{\code{field_names}}{Character vector. Fields to include. Default \code{NULL}
+includes all fields.}
+      \item{\code{form_names}}{Character vector. Forms to include. Default \code{NULL} includes
+all forms.}
+      \item{\code{exclude_identifiers}}{Logical. Exclude identifier fields. Default is
+\code{TRUE}.}
+      \item{\code{exclude_free_text}}{Logical. Exclude free-text fields (for
+deidentification). Default is \code{FALSE}.}
+      \item{\code{date_handling}}{Character. Date handling strategy: "none",
+"exclude_dates", "random_shift_by_record", "random_shift_by_project",
+"zero_by_record", or "zero_by_project". Default is "none".}
+      \item{\code{labelled}}{Logical. Convert to labelled data if \code{TRUE}. Default is
+\code{TRUE}.}
+      \item{\code{clean}}{Logical. Clean data (standardize missing values). Default is
+\code{TRUE}.}
+      \item{\code{drop_blanks}}{Logical. Drop records with blank fields. Default is
+\code{TRUE}.}
+      \item{\code{drop_missing_codes}}{Logical. Convert REDCap missing codes to \code{NA}.
+Default is \code{FALSE}.}
+      \item{\code{drop_others}}{Character vector of additional values to drop.}
+      \item{\code{include_metadata}}{Logical. Include field metadata in dataset. Default
+is \code{TRUE}.}
+      \item{\code{include_records}}{Logical. Include record-level information. Default is
+\code{TRUE}.}
+      \item{\code{include_users}}{Logical. Include user information. Default is \code{TRUE}.}
+      \item{\code{include_log}}{Logical. Include REDCap activity log. Default is \code{FALSE}.}
+      \item{\code{annotate_from_log}}{Logical. Annotate data using the REDCap log. Default
+is \code{TRUE}.}
+      \item{\code{include_comments}}{Logical. Include field comments. Default is \code{TRUE}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -417,8 +461,8 @@ Default is \code{TRUE}.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{hard_reset}}{Logical. If \code{TRUE}, overwrite existing dataset files
-with the same name. Default is \code{FALSE}.}
+      \item{\code{hard_reset}}{Logical. Overwrite existing dataset files. Default is
+\code{FALSE}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -438,9 +482,8 @@ with the same name. Default is \code{FALSE}.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{dataset_name}}{Character. The name of the configured dataset from which
-to generate the dataset. *If you provide \code{dataset_name} all other parameters
-are inherited according to what was set with \code{add_dataset}.}
+      \item{\code{dataset_name}}{Character. Name of the dataset configuration to create,
+load, or reference.}
     }
     \if{html}{\out{</div>}}
   }
@@ -496,12 +539,11 @@ are inherited according to what was set with \code{add_dataset}.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{link_type}}{Character. Type of REDCap URL to retrieve. Choose one of
-"base", "home", "record_home", "records_dashboard", "api",
-"api_playground", "codebook", "user_rights", "setup", "logging",
-"designer", "dictionary", "data_quality", or "identifiers".}
-      \item{\code{open_browser}}{Logical. If TRUE, launches the link in the default
-browser.}
+      \item{\code{link_type}}{Character. REDCap link type: "base", "home", "record_home",
+"records_dashboard", "api", "api_playground", "codebook", "user_rights",
+"setup", "logging", "designer", "dictionary", "data_quality", or
+"identifiers".}
+      \item{\code{open_browser}}{Logical. Open link in browser. Default is \code{TRUE}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -525,11 +567,10 @@ browser.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{record}}{character of record}
-      \item{\code{page}}{character of page (instrument/form)}
-      \item{\code{instance}}{character of instance}
-      \item{\code{open_browser}}{Logical. If TRUE, launches the link in the default
-browser.}
+      \item{\code{record}}{Character. Record ID.}
+      \item{\code{page}}{Character. REDCap form/instrument name.}
+      \item{\code{instance}}{Character. Repeating instance number.}
+      \item{\code{open_browser}}{Logical. Open link in browser. Default is \code{TRUE}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -551,8 +592,8 @@ there's an issue. Missing rows and columns are allowed!
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{to_be_uploaded}}{data.frame in raw coded form to upload.
-uploading to REDCap. Default is 500L.}
+      \item{\code{to_be_uploaded}}{Data frame in raw coded format ready to upload to
+REDCap.}
     }
     \if{html}{\out{</div>}}
   }

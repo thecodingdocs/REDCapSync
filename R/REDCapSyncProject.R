@@ -84,13 +84,15 @@
 #' `TRUE`.
 #' @param exclude_free_text Logical. Exclude free-text fields (for
 #' deidentification). Default is `FALSE`.
-#' @param date_handling Character. Date handling strategy: "none", "exclude_dates",
-#' "random_shift_by_record", "random_shift_by_project", "zero_by_record", or
-#' "zero_by_project". Default is "none".
-#' @param labelled Logical. Convert to labelled data if `TRUE`. Default is `TRUE`.
+#' @param date_handling Character. Date handling strategy: "none",
+#' "exclude_dates", "random_shift_by_record", "random_shift_by_project",
+#' "zero_by_record", or "zero_by_project". Default is "none".
+#' @param labelled Logical. Convert to labelled data if `TRUE`. Default is
+#' `TRUE`.
 #' @param clean Logical. Clean data (standardize missing values). Default is
 #' `TRUE`.
-#' @param drop_blanks Logical. Drop records with blank fields. Default is `TRUE`.
+#' @param drop_blanks Logical. Drop records with blank fields. Default is
+#' `TRUE`.
 #' @param drop_missing_codes Logical. Convert REDCap missing codes to `NA`.
 #' Default is `FALSE`.
 #' @param drop_others Character vector of additional values to drop.
@@ -145,19 +147,22 @@
 #' project$sync()
 #'
 #' # Access data and metadata
-#' head(project$data$survey_one)
+#' head(project$data$text)
 #' project$metadata$fields[1:5, ]
 #'
 #' # Create and save a filtered dataset
-#' project$add_dataset(
-#'   "analysis_set",
-#'   field_names = c("record_id", "age", "gender"),
-#'   exclude_identifiers = FALSE
-#' )
-#' project$save_datasets()
-#'
-#' # Print project information
-#' project$print()
+#' dataset <- project$add_dataset(
+#'   dataset_name = "analysis_set",
+#'   filter_field = "var_yesno",
+#'   filter_choices = "Yes",
+#'   field_names = c("record_id", "ecog_at_diagnosis", "stage_at_diagnosis")
+#'  )
+#' # generate dataset for R environment
+#' dataset <- project$generate_dataset("analysis_set")
+#' # Optional modify
+#' dataset$data$merged$is_stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
+#' # save to directory
+#' dataset$save()
 #'
 #' @seealso
 #' [setup_project] for initializing a new project

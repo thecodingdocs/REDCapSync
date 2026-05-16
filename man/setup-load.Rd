@@ -18,6 +18,7 @@ setup_project(
   forms = NA,
   events = NA,
   filter_logic = NA,
+  id_position = 1L,
   get_users = TRUE,
   get_data = TRUE,
   batch_size_download = 1000L,
@@ -71,6 +72,10 @@ values. Default is \code{TRUE}.}
 \item{filter_logic}{Optional character scalar. REDCap filter logic used to
 limit returned records or record-events.}
 
+\item{id_position}{Integer scalar of the variable that uniquely identifies
+the subject (typically record_id). This defaults to the first variable in the
+data dictionary.}
+
 \item{get_users}{Logical scalar. If \code{TRUE}, the project will be configured to
 retrieve REDCap users during sync.}
 
@@ -89,10 +94,10 @@ retrieved in full. Default is \code{FALSE}.}
 \item{log_days}{Integer scalar. Number of days of log history to consider
 when a new project is being set up or a hard reset occurs. Default is \code{10}.}
 
-\item{log_drop_details}{Logical scalar. If \code{TRUE}, the detailed log export
-records are excluded.}
+\item{log_drop_details}{Logical scalar. If \code{TRUE}, the log details are
+excluded.}
 
-\item{log_drop_exports}{Logical scalar. If \code{TRUE}, the log export records are
+\item{log_drop_exports}{Logical scalar. If \code{TRUE}, the log export events are
 excluded.}
 
 \item{get_files}{Logical scalar. If \code{TRUE}, file attachments are configured

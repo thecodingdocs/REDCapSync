@@ -136,6 +136,12 @@ assert_setup_project <- function(project) {
         any.missing = FALSE
       )
   )
+  assert_integerish(
+    project$settings$id_position,
+    len = 1L,
+    lower = 1L,
+    any.missing = FALSE
+  )
   assert_logical(project$settings$get_users, len = 1L, any.missing = FALSE)
   assert_logical(project$settings$get_data, len = 1L, any.missing = FALSE)
   assert_integerish(

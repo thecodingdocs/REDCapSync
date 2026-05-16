@@ -56,8 +56,9 @@ get_redcap_metadata <- function(project) {
   project$metadata$fields$section_header <- remove_html_tags(section_header)
   field_label <- project$metadata$fields$field_label
   project$metadata$fields$field_label <- remove_html_tags(field_label)
-  # RISKY? add to setup project and simple test of unique
-  project$metadata$id_col <- as.character(project$metadata$fields[1L, 1L])
+  id_position <- project$settings$id_position
+  id_col <- as.character(project$metadata$fields[id_position, 1L])
+  project$metadata$id_col <- id_col
   project$metadata$form_key_cols <- get_key_col_list(data_list = project)
   form_key_cols <- project$metadata$form_key_cols
   project$metadata$raw_structure_cols <- form_key_cols |> unlist() |> unique()
@@ -309,7 +310,7 @@ get_redcap_denormalized <- function(project,
     raw_or_label = "raw",
     filter_logic = quotes_if_na(project$settings$filter_logic),
     verbose = config$verbose(),
-    id_position = 1L
+    id_position = project$settings$id_position
   )$data
   denormalized <- all_character_cols(denormalized)
   denormalized
@@ -420,7 +421,10 @@ get_redcap_log <- function(project,
   }
   if (is.data.frame(redcap_log)) {
     if (nrow(redcap_log) > 0L) {
-      redcap_log <- clean_redcap_log(redcap_log)
+      redcap_log <- clean_redcap_log(
+        redcap_log = redcap_log,
+        drop_exports = project$settings$log_drop_exports
+      )
     }
   }
   redcap_log # deal with if NA if user does not have log privileges.

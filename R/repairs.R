@@ -118,6 +118,10 @@ repair_setup_project <- function(project) {
     filter_logic_char <- test_unique_character(project$settings$filter_logic)
     project$settings$filter_logic <- (filter_logic_na || filter_logic_char) |>
       ifelse(project$settings$filter_logic, NA)
+    project$settings$id_position <-
+      project$settings$id_position |>
+      test_integerish(len = 1L, lower = 1L, any.missing = FALSE) |>
+      ifelse(project$settings$id_position, 1L)
     project$settings$get_users <-
       project$settings$get_users |>
       test_logical(len = 1L, any.missing = FALSE) |>

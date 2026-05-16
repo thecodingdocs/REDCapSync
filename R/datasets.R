@@ -266,7 +266,11 @@ generate_project_dataset <- function(project,
   rownames(record_sum) <- NULL
   data_list$records <- record_sum
   if (data_list$redcap$has_log_access) {
-    data_list$log <- extract_log(data_list = data_list, records = records)
+    data_list$log <- extract_log(
+      data_list = data_list,
+      records = records,
+      drop_details = project$settings$log_drop_details
+    )
     if (include_comments) {
       data_list$comments <- generate_comment_table(redcap_log = data_list$log,
                                                    only_most_recent = TRUE)
@@ -1028,7 +1032,9 @@ annotate_records <- function(data_list, annotate = TRUE) {
   records <- extract_project_records(data_list)[[1L]]
   the_rows <- which(data_list$records[[id_col]] %in% records)
   all_records <- data_list$records[the_rows, ]
-  redcap_log <- extract_log(data_list = data_list, records = records)
+  redcap_log <- extract_log(data_list = data_list,
+                            records = records,
+                            drop_details = TRUE)
   # convert to date level?
   if (!is_something(all_records) || !is_something(redcap_log)) {
     return(all_records)
@@ -1331,18 +1337,17 @@ clear_project_datasets <- function(project, dataset_names = NULL) {
   invisible(project)
 }
 #' @noRd
-extract_log <- function(data_list, records) {
+extract_log <- function(data_list, records, drop_details = FALSE) {
   redcap_log <- data_list$redcap$log
   redcap_log <- redcap_log[which(!is.na(redcap_log$username)), ]
   redcap_log <- redcap_log[which(!is.na(redcap_log$record)), ]
-  # if(drop_exports){
-  #   redcap_log <- redcap_log[which(redcap_log$action_type != "Exports" |
-  #is.na(redcap_log$action_type)), ]
-  # }
   if (!missing(records)) {
     if (!is.null(records)) {
       redcap_log <- redcap_log[which(redcap_log$record %in% records), ]
     }
+  }
+  if (drop_details) {
+    redcap_log$details <- NULL
   }
   redcap_log
 }
@@ -1355,7 +1360,7 @@ annotate_users <- function(data_list,
     id_col <- data_list$metadata$id_col
     records <- data_list$records[[id_col]]
   }
-  redcap_log <- extract_log(data_list, records)
+  redcap_log <- extract_log(data_list, records, drop_details = TRUE)
   # role_label not inculded now
   users_df <- data_list$redcap$users |>
     select(c("username", "email", "firstname", "lastname"))

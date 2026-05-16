@@ -98,7 +98,7 @@ test_that("setup_project checks existing dir", {
   )$.internal # change to R6 later
   expect_identical(project_loaded$project_name, project$project_name)
   expect_identical(project_loaded$redcap$project_id, project$redcap$project_id)
-  expect_warning({
+  expect_message({
     project_loaded <- setup_project(
       project_name = project_name,
       dir_path = tempdir_test,
@@ -106,7 +106,7 @@ test_that("setup_project checks existing dir", {
       labelled = FALSE,
       hard_reset = FALSE
     )$.internal
-  }, "The project that was loaded was labelled and you chose raw")
+  }, "The loaded project was")
   expect_null(project_loaded$internals$last_data_update)
 })
 # clean_dir_path (Internal)

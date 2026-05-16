@@ -36,6 +36,9 @@
 #' @param events Optional character vector of event names to request.
 #' @param filter_logic Optional character scalar. REDCap filter logic used to
 #' limit returned records or record-events.
+#' @param id_position Integer scalar of the variable that uniquely identifies
+#' the subject (typically record_id). This defaults to the first variable in the
+#' data dictionary.
 #' @param get_users Logical scalar. If `TRUE`, the project will be configured to
 #' retrieve REDCap users during sync.
 #' @param get_data Logical scalar. If `TRUE`, the project will be configured to
@@ -48,9 +51,9 @@
 #' retrieved in full. Default is `FALSE`.
 #' @param log_days Integer scalar. Number of days of log history to consider
 #' when a new project is being set up or a hard reset occurs. Default is `10`.
-#' @param log_drop_details Logical scalar. If `TRUE`, the detailed log export
-#' records are excluded.
-#' @param log_drop_exports Logical scalar. If `TRUE`, the log export records are
+#' @param log_drop_details Logical scalar. If `TRUE`, the log details are
+#' excluded.
+#' @param log_drop_exports Logical scalar. If `TRUE`, the log export events are
 #' excluded.
 #' @param get_files Logical scalar. If `TRUE`, file attachments are configured
 #' to be retrieved from REDCap. Default is `FALSE`.
@@ -91,6 +94,7 @@ setup_project <- function(project_name,
                           forms = NA,
                           events = NA,
                           filter_logic = NA,
+                          id_position = 1L,
                           get_users = TRUE,
                           get_data = TRUE,
                           batch_size_download = 1000L,
@@ -167,6 +171,7 @@ setup_project <- function(project_name,
         any.missing = FALSE
       )
   )
+  assert_integerish(id_position, len = 1L, lower = 1L, any.missing = FALSE)
   assert_logical(get_data, len = 1L, any.missing = FALSE)
   assert_integerish(
     batch_size_download,
@@ -249,19 +254,32 @@ setup_project <- function(project_name,
           cli_abort(stop_message)
         }
       }
-      if (!is.null(project$settings$labelled)) {
-        if (project$settings$labelled != labelled) {
-          load_type <- ifelse(project$settings$labelled, "labelled", "raw")
-          chosen_type <- ifelse(labelled, "labelled", "raw")
-          hard_reset <- TRUE
-          warning(
-            "The project that was loaded was ",
-            load_type,
-            " and you chose ",
-            chosen_type,
-            ". Therefore, a full update was triggered to avoid data conflicts",
-            immediate. = TRUE
-          )
+      params <- list(
+        id_position = id_position,
+        labelled = labelled,
+        get_type = get_type,
+        records = records,
+        fields = fields,
+        forms = forms,
+        events = events,
+        filter_logic = filter_logic
+      )
+      for (setting_name in names(params)) {
+        if (!hard_reset) {
+          if (!is.null(project$settings[[setting_name]])) {
+            original <- project$settings[[setting_name]]
+            value <- params[[setting_name]]
+            if (!identical(original, value)) {
+              hard_reset <- TRUE
+              cli_alert_warning(
+                paste(
+                  "The loaded project was `{setting_name} = {original}` and you",
+                  "chose `{setting_name} = {toString(value)}`. Therefore, a full update",
+                  "was triggered."
+                )
+              )
+            }
+          }
         }
       }
     }
@@ -297,6 +315,7 @@ setup_project <- function(project_name,
   project$settings$forms <- forms
   project$settings$events <- events
   project$settings$filter_logic <- filter_logic
+  project$settings$id_position <- id_position
   project$settings$get_data <- get_data
   project$settings$batch_size_download <- batch_size_download
   project$settings$batch_size_upload <- batch_size_upload
@@ -638,6 +657,7 @@ BLANK_PROJECT <- list(
     forms = NA,
     events = NA,
     filter_logic = NA,
+    id_position = NULL,
     get_users = TRUE,
     get_data = TRUE,
     batch_size_download = 1000L,

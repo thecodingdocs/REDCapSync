@@ -370,7 +370,7 @@ test_that("merge_non_repeating works!", {
   id_col <- project$metadata$id_col
   text_field_names <- colnames(project$data$text) |> setdiff(id_col)
   other_field_names <- colnames(project$data$other) |> setdiff(id_col)
-  data_field_names <- colnames(project$data$data) |> setdiff(id_col)
+  data_field_names <- colnames(project$data$cancer) |> setdiff(id_col)
   text_field_names2 <- project$metadata$fields |>
     get_match(
       match_field = "form_name",
@@ -402,7 +402,7 @@ test_that("merge_non_repeating works!", {
   a <- nrow(merged$data[[merge_form_name]])
   b <- nrow(project$data$text)
   c <- nrow(project$data$other)
-  d <- nrow(project$data$data)
+  d <- nrow(project$data$cancer)
   expect_identical(a, b)
   expect_identical(a, c)
   expect_identical(a, d)

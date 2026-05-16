@@ -141,7 +141,7 @@
 #'
 #' @examples
 #' # Load a test project
-#' project <- load_project("TEST_CLASSIC")
+#' project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #'
 #' # Sync data from REDCap
 #' project$sync()

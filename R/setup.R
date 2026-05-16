@@ -1,65 +1,70 @@
 #' @rdname setup-load
 #' @title Setup or Load REDCapSync Project
 #' @description
-#' Setup or Load the `project` object for pipeline.
-#'
+#' Setup or load a REDCapSync project object.
+#' Prepares a new REDCapSync project by recording the REDCap URI, 
+#' token name, sync settings, and optional data selection preferences. 
 #' @details
-#' This function sets up the `project` object by storing the REDCap API token
-#' and other configurations required for interacting with the REDCap server.
-#' It ensures that the token is valid and ready for use in subsequent API calls.
-#' Neither function directly attempts communication with REDCap.
+#' Unless `hard_reset = TRUE`, it will first attempt to load an
+#' existing project from cache or the supplied `dir_path` before creating a
+#' new project object.
+#' If settings differ from the loaded project, they will be used or it will 
+#' trigger a hard reset with a warning. `setup_project()` itself does not 
+#' perform a full REDCap sync. It configures the project so that subsequent sync
+#' actions may retrieve data, users, files, and logs according to the project 
+#' settings.
 #'
-#' `setup_project` is used the first time you initialize/link a REDCap project.
-#' Mainly, it sets your unique `project_name` and your intended directory.
-#' Unless you run \code{hard_reset = TRUE} the default will first try
-#' load_project. `dir_path` is technically optional but without it the user
-#' cannot save/load/update projects. Must be all capital letters!
-#'
-#' @param project_name A character string with no spaces or symbols representing
-#' the unique short name for the REDCap project.
-#' @param dir_path Optional character string representing the directory path
-#' where you want the REDCap project data to be stored. If missing, project
-#' object
-#' will only be in current R session.
-#' @param redcap_uri A character string representing the base URL of the REDCap
-#' server.
-#' @param token_name An optional character string for setting your token name.
-#' Default is `REDCAPSYNC_<project_name>`
-#' @param sync_frequency Frequency of sync. Options are "always", "hourly",
-#' 'daily', 'weekly', "monthly",and "never". The check is only triggered by
-#' calling the function, but can be automated with other packages.
-#' Default is `daily`
-#' @param labelled Logical. If `TRUE`, the data will be converted to labelled.
-#' Default is `TRUE`.
-#' @param hard_reset Logical (TRUE/FALSE). If TRUE, forces the setup even if the
-#' `project` object already exists. Default is `FALSE`.
-#' @param log_days Integer. Number of days to be checked in the log if a
-#' hard_reset or new project is setup. Default is `10`.
-#' @param log_drop_details Logical (TRUE/FALSE). If TRUE, drops log details.
-#' @param log_drop_exports Logical (TRUE/FALSE). If TRUE, drops log exports.
-#' @param timezone optional timezone set of the REDCap server. Otherwise, will
-#' assume Sys.timezone. Options from `OlsonNames()`.
-#' @param get_files Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
+#' @param project_name Character scalar. Unique uppercase project name with no
+#' spaces or symbols.
+#' @param dir_path Optional character scalar. Directory where REDCap project
+#' files are stored. If omitted, the project is only available in the current R
+#' session and cannot be persisted to disk.
+#' @param redcap_uri Character scalar. Base URL of the REDCap API endpoint.
+#' @param token_name Optional character scalar. Environment variable name used
+#' to store the REDCap token. Defaults to `REDCAPSYNC_<project_name>`.
+#' @param sync_frequency Character scalar. Allowed values are "always",
+#' "hourly", "daily", "weekly", "monthly", "once", and "never". This
+#' setting controls how often future syncs are considered due.
+#' @param labelled Logical scalar. If `TRUE`, data will be preserved as labelled
+#' values. Default is `TRUE`.
+#' @param get_type Character scalar. REDCap API export type. One of
+#' "identified", "deidentified", "deidentified_strict", or
+#' "deidentified_super_strict". Default is "identified".
+#' @param records Optional character vector of record IDs to request.
+#' @param fields Optional character vector of field names to request.
+#' @param forms Optional character vector of form names to request.
+#' @param events Optional character vector of event names to request.
+#' @param filter_logic Optional character scalar. REDCap filter logic used to
+#' limit returned records or record-events.
+#' @param get_users Logical scalar. If `TRUE`, the project will be configured to
+#' retrieve REDCap users during sync.
+#' @param get_data Logical scalar. If `TRUE`, the project will be configured to
+#' retrieve REDCap data during sync.
+#' @param batch_size_download Integer scalar. Number of records to request per
+#' download batch. Default is `1000`.
+#' @param batch_size_upload Integer scalar. Number of records to process per
+#' upload batch. Default is `500`.
+#' @param get_entire_log Logical scalar. If `TRUE`, REDCap activity logs are
+#' retrieved in full. Default is `FALSE`.
+#' @param log_days Integer scalar. Number of days of log history to consider
+#' when a new project is being set up or a hard reset occurs. Default is `10`.
+#' @param log_drop_details Logical scalar. If `TRUE`, the detailed log export
+#' records are excluded.
+#' @param log_drop_exports Logical scalar. If `TRUE`, the log export records are
+#' excluded.
+#' @param get_files Logical scalar. If `TRUE`, file attachments are configured 
+#' to be retrieved from REDCap. Default is `FALSE`.
+#' @param get_file_repository Logical scalar. If `TRUE`, the file repository is
+#' configured to be retrieved from REDCap. Default is `FALSE`.
+#' @param original_file_names Logical scalar. If `TRUE`, retrieved files keep
+#' their original names. Default is `FALSE`.
+#' @param add_default_datasets Logical scalar. If `TRUE`, dataset templates are
+#' added to a new project. Default is `TRUE`.
+#' @param timezone Optional character scalar. Time zone used for REDCap data
+#' timestamps. Defaults to `Sys.timezone()`.
+#' @param hard_reset Logical scalar. If `TRUE`, any existing project with the
+#' same `project_name` is ignored and a fresh project object is initialized.
 #' Default is `FALSE`.
-#' @param get_file_repository Logical (TRUE/FALSE). If TRUE, retrieves file
-#' repository
-#' from REDCap.
-#' Default is `FALSE`.
-#' @param original_file_names Logical (TRUE/FALSE). If TRUE, uses original file
-#' names for retrieved files. Default is `FALSE`.
-#' @param get_entire_log Logical (TRUE/FALSE). If TRUE, retrieves the entire
-#' log. Default is `FALSE`.
-#' @param get_users Logical (TRUE/FALSE). If TRUE, will get REDCap users
-#' @param get_data Logical (TRUE/FALSE). If TRUE, will get REDCap data.
-#' @param add_default_datasets Logical (TRUE/FALSE). If TRUE, will add default
-#' datasets
-#' @param get_type optional character of REDCap API call type.
-#' data as if user ran `sync_project`. Default is `FALSE`.
-#' @param batch_size_download Integer. Number of records to process in each
-#' batch. Default is `1000`.
-#' @param batch_size_upload Integer. Number of records to process in each batch.
-#' Default is `500`.
-#' @inheritParams REDCapR::redcap_read
 #' @seealso
 #' \code{\link[REDCapSync]{projects}} for accessing previously setup projects
 #' @examples
@@ -72,7 +77,7 @@
 #' )
 #'
 #' @family project object
-#' @returns R6 project object with [REDCapSyncProject] class.
+#' @return R6 project object with [REDCapSyncProject] class.
 #' @export
 setup_project <- function(project_name,
                           dir_path,

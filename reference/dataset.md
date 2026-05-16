@@ -1,19 +1,67 @@
-# Standardized Dataset from REDCap Project
+# REDCapSync Dataset Object
 
 **\[experimental\]** [R6](https://r6.r-lib.org/reference/R6Class.html)
-project object for
+object representing a standardized dataset generated from a
 [REDCapSync](https://thecodingdocs.github.io/REDCapSync/reference/REDCapSync-package.md)
+project. Use this object to inspect transformed REDCap data, export
+datasets, and assign prepared analysis tables into the calling
+environment.
 
 ## Value
 
-An R6ClassGenerator which is used internally to create or load a dataset
-object for the user
+An R6 `REDCapSyncDataset` object containing dataset output, metadata,
+records, user information, and optional REDCap log data.
+
+## Details
+
+A `REDCapSyncDataset` can be created ad-hoc from a project with
+`project$generate_dataset()`. For resusability, you can also define with
+`project$add_dataset()` and then load with `project$load_dataset()`.
+
+### Typical workflow
+
+    setup project from test object
+    project <- setup_project(
+      project_name = "TEST_CLASSIC",
+      dir_path = tempdir()
+    )
+    # Create and save a filtered dataset
+    dataset <- project$add_dataset(
+      dataset_name = "analysis_set",
+      filter_field = "var_yesno",
+      filter_choices = "Yes",
+      field_names = c("record_id", "ecog_at_diagnosis", "stage_at_diagnosis")
+     )
+    # generate dataset for R environment
+    dataset <- project$load_dataset("analysis_set")
+    # optional send to global environment
+    dataset$to_envir(globalenv()) # keep in mind potential name conflicts
+    # Optional modify (final save depends on what is in the dataset object)
+    dataset$data$merged$stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
+    # save to directory
+    dataset$save() # can specify `dir_other`, by default saves to output folder
+
+This object is designed for users who want a stable dataset output from
+REDCap without modifying the underlying project. This is also used
+behind-the-scenes in the RosyREDCap shiny app.
+
+### Key features
+
+- Stores a project-specific dataset definition and resulting data
+
+- Keeps metadata, record details, user information, and comments in sync
+
+- Saves datasets in Excel or CSV formats with optional hyperlinks
+
+- Exports dataset components to a user-specified environment
 
 ## See also
 
-[`vignette("Datasets", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Datasets.md)
+vignette("Datasets", package = "REDCapSync")
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-for initializing the `project` object.'
+for initializing projects
+[load_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+for loading existing projects
 
 ## Public fields
 
@@ -115,135 +163,115 @@ Users should construct objects using
 
 - `project`:
 
-  object from
+  Project object from
   [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
   or
   [`load_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md).
 
 - `dataset_name`:
 
-  Character. The name of the configured dataset from which to generate
-  the dataset. \*If you provide `dataset_name` all other parameters are
-  inherited according to what was set with `add_dataset`.
+  Character. Name of the dataset to generate or load. If the dataset
+  already exists in the project, the existing definition is reused.
 
 - `transformation_type`:
 
-  Character scalar. How to transform data for the dataset. Default is
-  "default". Other options are "none" and "merge_non_repeating".
-  "default" first merges non-repeating and if there are repeating forms,
-  it also merges non-repeating variables to the right. "none" does not
-  transform anything. "merge_non_repeating" still merges all
-  non-repeating instruments but does not merge them to repeating
-  instruments.
+  Character. Data transformation strategy: "default" (preferred merged
+  output), "none" (raw data structure), or "merge_non_repeating" (merge
+  only non-repeating forms). Default is "default".
 
 - `merge_form_name`:
 
-  A character string representing the name of the merged form. Default
-  is "merged".
+  Character. Name used for merged non-repeating records. Default is
+  "merged".
 
 - `filter_field`:
 
-  Character. The name of the field in the database to filter on. Used
-  with `filter_choices`.
+  Character. Field used for filtering the dataset.
 
 - `filter_choices`:
 
-  Vector. The values of `filter_field` used to define the dataset. An
-  alternative to providing a full `filter_list`.
+  Vector. Allowed values for `filter_field`.
 
 - `filter_list`:
 
-  Vector. The values of `filter_field` used to define the dataset. Names
-  are field names; values are the allowed value set(s). Use either
-  `filter_list` or `filter_field` with `filter_choices`.
+  List. Named list mapping field names to allowed values. Use instead of
+  `filter_field`/`filter_choices` for more complex filters.
 
 - `filter_strict`:
 
-  Logical. If `TRUE`, all forms will be filtered by criteria. If
-  `FALSE`, will convert original filter to ID column and filter all
-  other forms by that record. Default is `TRUE`.
+  Logical. If `TRUE`, filters are applied to every form. If `FALSE`,
+  filters apply only to the record identifier. Default is `TRUE`.
 
 - `field_names`:
 
-  Character vector. Names of specific fields to include in the dataset.
-  Default is `NULL`, which includes all fields.
+  Character vector. Variables to include in the dataset. Default is
+  `NULL` (all fields).
 
 - `form_names`:
 
-  Character vector. Names of forms to include in the dataset. Default is
-  `NULL`, which includes all forms.
+  Character vector. Forms to include in the dataset. Default is `NULL`
+  (all forms).
 
 - `exclude_identifiers`:
 
-  Logical. Whether to exclude identifiers in the data in the dataset.
-  Default is `TRUE`.
+  Logical. Remove identifier fields. Default is `TRUE`.
 
 - `exclude_free_text`:
 
-  Logical. If `TRUE`, exclude free text fields intended for
-  deidentification workflows. Default is `FALSE`.
+  Logical. Remove free text fields. Default is `FALSE`.
 
 - `date_handling`:
 
-  character string. One of `none`,`exclude_dates`,
-  `random_shift_by_record`, `random_shift_by_project`, `zero_by_record`,
-  or `zero_by_project`. Random shift is +/- 90 unless changed with
-  options.
+  Character. Date handling method: "none", "exclude_dates",
+  "random_shift_by_record", "random_shift_by_project", "zero_by_record",
+  or "zero_by_project". Default is "none".
 
 - `labelled`:
 
-  Logical. If `TRUE`, the data will be converted to labelled. If
-  `FALSE`, returns raw coded values. Default is `TRUE`.
+  Logical. Convert values to labelled vectors if `TRUE`. Default is
+  `TRUE`.
 
 - `clean`:
 
-  Logical. If `TRUE`, the data will be cleaned (e.g., standardizing
-  missing/blank values) before summarizing. Default is `TRUE`. If
-  missing codes are present in a number or date variable, R will convert
-  missing codes to NA and will make that variable not upload compatible.
+  Logical. Clean the dataset by standardizing missing values and blanks.
+  Default is `TRUE`.
 
 - `drop_blanks`:
 
-  Logical. If `TRUE`, records with blank fields will be dropped during
-  cleaning. Default is `TRUE`.
+  Logical. Drop records with blank fields. Default is `FALSE`.
 
 - `drop_missing_codes`:
 
-  Logical. If `TRUE`, will convert missing codes to NA. Default is
-  `FALSE`.
+  Logical. Convert REDCap missing codes to `NA`. Default is `FALSE`.
 
 - `drop_others`:
 
-  Character vector of other values that should be dropped.
+  Character vector of additional values to remove.
 
 - `include_metadata`:
 
-  Logical. If `TRUE`, metadata will be included in the dataset. Default
-  is `TRUE`.
+  Logical. Include field metadata in the dataset. Default is `TRUE`.
 
 - `include_users`:
 
-  Logical. If `TRUE`, user-related information will be included in the
-  dataset. Default is `TRUE`.
+  Logical. Include user information in the dataset. Default is `TRUE`.
 
 - `include_records`:
 
-  Logical. If `TRUE`, a record dataset will be included in the generated
-  dataset. Default is `TRUE`.
+  Logical. Include record-level details. Default is `TRUE`.
 
 - `include_log`:
 
-  Logical. If `TRUE`, the log of changes will be included in the
-  dataset. Default is `TRUE`.
+  Logical. Include REDCap activity log details. Default is `FALSE`.
 
 - `annotate_from_log`:
 
-  Logical. If `TRUE`, the metadata, users, and records will be annotated
-  using the log. Default is `TRUE`.
+  Logical. Annotate metadata and records using the change log. Default
+  is `TRUE`.
 
 - `include_comments`:
 
-  Logical. If `TRUE`, the comments will be included. Default is `TRUE`.
+  Logical. Include REDCap comments. Default is `FALSE`.
 
 ------------------------------------------------------------------------
 
@@ -275,28 +303,26 @@ Return flat list
 
 - `with_links`:
 
-  Optional logical (TRUE/FALSE) for including links in Excel sheets.
-  Default is `FALSE`.
+  Logical. Include hyperlinks in Excel exports. Default is `TRUE`.
 
 - `separate`:
 
-  Optional logical (TRUE/FALSE) separating each form into separate files
-  as opposed to multi-tab Excel. Default is `FALSE`.
+  Logical. Save each form as a separate file instead of a multi-sheet
+  workbook. Default is `FALSE`.
 
 - `use_csv`:
 
-  Logical (TRUE/FALSE). If TRUE, uses CSV files for data storage.
-  Default is `FALSE`
+  Logical. Write CSV files instead of Excel. Default is `FALSE`.
 
 - `dir_other`:
 
-  Character. The directory where the dataset file will be saved. Default
-  is the `output` folder within the database directory.
+  Character. Directory where the dataset file should be saved. Defaults
+  to the project's output folder.
 
 - `file_name`:
 
-  Character. The base name of the file where the dataset will be saved.
-  Default is `<project_name>_<dataset_name>`.
+  Character. Base file name for saved datasets. Defaults to
+  `<project_name>_<dataset_name>`.
 
 ------------------------------------------------------------------------
 
@@ -313,22 +339,23 @@ conflicts
 
 - `envir`:
 
-  environment variable such as
-  [`globalenv()`](https://rdrr.io/r/base/environment.html)
+  Environment to assign exported dataset objects. Default is `NULL`.
 
 ## Examples
 
 ``` r
-save_dir <- tempdir()
-dataset <- load_project("TEST_CLASSIC")$generate_dataset("REDCapSync")
+project <- load_project("TEST_CLASSIC")
 #> ! No cached projects... use `setup_project(...)`
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
-#> ! REDCapSync is already a defined dataset
-#> ℹ It will be loaded... other paramers ignored
-# add quick custom variable
-dataset$data$merged$letter_b <- dataset$data$merged$var_text_letters == "b"
-# save data in custom location
-dataset$save(dir_other = save_dir)
-#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpKnaQi7/TEST_CLASSIC_REDCapSync.xlsx
+
+dataset <- project$generate_dataset(
+  dataset_name = "stage_2_patients",
+  filter_field = "stage_at_diagnosis",
+  filter_choices = "II",
+  field_names = c("record_id", "ecog_at_diagnosis", "stage_at_diagnosis")
+ )
+
+dataset$save(dir_other = tempdir())
+#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpYpxDUr/TEST_CLASSIC_stage_2_patients.xlsx
 ```

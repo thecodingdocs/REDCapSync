@@ -37,105 +37,100 @@ setup_project(
 load_project(project_name)
 }
 \arguments{
-\item{project_name}{A character string with no spaces or symbols representing
-the unique short name for the REDCap project.}
+\item{project_name}{Character scalar. Unique uppercase project name with no
+spaces or symbols.}
 
-\item{dir_path}{Optional character string representing the directory path
-where you want the REDCap project data to be stored. If missing, project
-object
-will only be in current R session.}
+\item{dir_path}{Optional character scalar. Directory where REDCap project
+files are stored. If omitted, the project is only available in the current R
+session and cannot be persisted to disk.}
 
-\item{redcap_uri}{A character string representing the base URL of the REDCap
-server.}
+\item{redcap_uri}{Character scalar. Base URL of the REDCap API endpoint.}
 
-\item{token_name}{An optional character string for setting your token name.
-Default is \verb{REDCAPSYNC_<project_name>}}
+\item{token_name}{Optional character scalar. Environment variable name used
+to store the REDCap token. Defaults to \verb{REDCAPSYNC_<project_name>}.}
 
-\item{sync_frequency}{Frequency of sync. Options are "always", "hourly",
-'daily', 'weekly', "monthly",and "never". The check is only triggered by
-calling the function, but can be automated with other packages.
-Default is \code{daily}}
+\item{sync_frequency}{Character scalar. Allowed values are "always",
+"hourly", "daily", "weekly", "monthly", "once", and "never". This
+setting controls how often future syncs are considered due.}
 
-\item{labelled}{Logical. If \code{TRUE}, the data will be converted to labelled.
-Default is \code{TRUE}.}
+\item{labelled}{Logical scalar. If \code{TRUE}, data will be preserved as labelled
+values. Default is \code{TRUE}.}
 
-\item{get_type}{optional character of REDCap API call type.
-data as if user ran \code{sync_project}. Default is \code{FALSE}.}
+\item{get_type}{Character scalar. REDCap API export type. One of
+"identified", "deidentified", "deidentified_strict", or
+"deidentified_super_strict". Default is "identified".}
 
-\item{records}{An array, where each element corresponds to the ID of a
-desired record.  Optional.}
+\item{records}{Optional character vector of record IDs to request.}
 
-\item{fields}{An array, where each element corresponds to a desired project
-field.  Optional.}
+\item{fields}{Optional character vector of field names to request.}
 
-\item{forms}{An array, where each element corresponds to a desired project
-form.  Optional.}
+\item{forms}{Optional character vector of form names to request.}
 
-\item{events}{An array, where each element corresponds to a desired project
-event.  Optional.}
+\item{events}{Optional character vector of event names to request.}
 
-\item{filter_logic}{String of logic text (e.g., \verb{[gender] = 'male'}) for
-filtering the data to be returned by this API method, in which the API
-will only return the records (or record-events, if a longitudinal project)
-where the logic evaluates as TRUE.   An blank/empty string returns all records.}
+\item{filter_logic}{Optional character scalar. REDCap filter logic used to
+limit returned records or record-events.}
 
-\item{get_users}{Logical (TRUE/FALSE). If TRUE, will get REDCap users}
+\item{get_users}{Logical scalar. If \code{TRUE}, the project will be configured to
+retrieve REDCap users during sync.}
 
-\item{get_data}{Logical (TRUE/FALSE). If TRUE, will get REDCap data.}
+\item{get_data}{Logical scalar. If \code{TRUE}, the project will be configured to
+retrieve REDCap data during sync.}
 
-\item{batch_size_download}{Integer. Number of records to process in each
-batch. Default is \code{1000}.}
+\item{batch_size_download}{Integer scalar. Number of records to request per
+download batch. Default is \code{1000}.}
 
-\item{batch_size_upload}{Integer. Number of records to process in each batch.
-Default is \code{500}.}
+\item{batch_size_upload}{Integer scalar. Number of records to process per
+upload batch. Default is \code{500}.}
 
-\item{get_entire_log}{Logical (TRUE/FALSE). If TRUE, retrieves the entire
-log. Default is \code{FALSE}.}
+\item{get_entire_log}{Logical scalar. If \code{TRUE}, REDCap activity logs are
+retrieved in full. Default is \code{FALSE}.}
 
-\item{log_days}{Integer. Number of days to be checked in the log if a
-hard_reset or new project is setup. Default is \code{10}.}
+\item{log_days}{Integer scalar. Number of days of log history to consider
+when a new project is being set up or a hard reset occurs. Default is \code{10}.}
 
-\item{log_drop_details}{Logical (TRUE/FALSE). If TRUE, drops log details.}
+\item{log_drop_details}{Logical scalar. If \code{TRUE}, the detailed log export
+records are excluded.}
 
-\item{log_drop_exports}{Logical (TRUE/FALSE). If TRUE, drops log exports.}
+\item{log_drop_exports}{Logical scalar. If \code{TRUE}, the log export records are
+excluded.}
 
-\item{get_files}{Logical (TRUE/FALSE). If TRUE, retrieves files from REDCap.
+\item{get_files}{Logical scalar. If \code{TRUE}, file attachments are configured
+to be retrieved from REDCap. Default is \code{FALSE}.}
+
+\item{get_file_repository}{Logical scalar. If \code{TRUE}, the file repository is
+configured to be retrieved from REDCap. Default is \code{FALSE}.}
+
+\item{original_file_names}{Logical scalar. If \code{TRUE}, retrieved files keep
+their original names. Default is \code{FALSE}.}
+
+\item{add_default_datasets}{Logical scalar. If \code{TRUE}, dataset templates are
+added to a new project. Default is \code{TRUE}.}
+
+\item{timezone}{Optional character scalar. Time zone used for REDCap data
+timestamps. Defaults to \code{Sys.timezone()}.}
+
+\item{hard_reset}{Logical scalar. If \code{TRUE}, any existing project with the
+same \code{project_name} is ignored and a fresh project object is initialized.
 Default is \code{FALSE}.}
-
-\item{get_file_repository}{Logical (TRUE/FALSE). If TRUE, retrieves file
-repository
-from REDCap.
-Default is \code{FALSE}.}
-
-\item{original_file_names}{Logical (TRUE/FALSE). If TRUE, uses original file
-names for retrieved files. Default is \code{FALSE}.}
-
-\item{add_default_datasets}{Logical (TRUE/FALSE). If TRUE, will add default
-datasets}
-
-\item{timezone}{optional timezone set of the REDCap server. Otherwise, will
-assume Sys.timezone. Options from \code{OlsonNames()}.}
-
-\item{hard_reset}{Logical (TRUE/FALSE). If TRUE, forces the setup even if the
-\code{project} object already exists. Default is \code{FALSE}.}
 }
 \value{
 R6 project object with \link{REDCapSyncProject} class.
 }
 \description{
-Setup or Load the \code{project} object for pipeline.
+Setup or load a REDCapSync project object.
+Prepares a new REDCapSync project by recording the REDCap URI,
+token name, sync settings, and optional data selection preferences.
 }
 \details{
-This function sets up the \code{project} object by storing the REDCap API token
-and other configurations required for interacting with the REDCap server.
-It ensures that the token is valid and ready for use in subsequent API calls.
-Neither function directly attempts communication with REDCap.
-
-\code{setup_project} is used the first time you initialize/link a REDCap project.
-Mainly, it sets your unique \code{project_name} and your intended directory.
-Unless you run \code{hard_reset = TRUE} the default will first try
-load_project. \code{dir_path} is technically optional but without it the user
-cannot save/load/update projects. Must be all capital letters!
+Unless \code{hard_reset = TRUE}, it will first attempt to load an
+existing project from cache or the supplied \code{dir_path} before creating a
+new project object.
+If settings differ from the loaded project, they will be used or it will
+trigger a hard reset with a warning. \code{setup_project()} itself does not
+perform a full REDCap sync. It configures the project so that subsequent sync
+actions may retrieve data, users, files, and logs according to the project
+settings.
 }
 \examples{
 # Initialize the project object with the REDCap API token and URL

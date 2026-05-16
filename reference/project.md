@@ -23,7 +23,7 @@ or
 [`setup_project()`](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md):
 
     project <- setup_project(
-      project_name = "MY_PROJECT",
+      project_name = "FIRST_PROJECT",
       redcap_uri = "https://redcap.yourinstitution.edu/api/",
       dir_path = "~/redcap_projects"
     )
@@ -33,16 +33,26 @@ API and log-based change detection:
 
     project$sync()
 
+**Loading** After the first successful REDCap connection, your project
+can be accessed with
+[load_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+because it's location is stored in cache.
+
+    project <- load_project("FIRST_PROJECT)
+    projects$names() # should see "FIRST_PROJECT"
+
 **Access** REDCap data, metadata, and users via read-only fields:
 
     project$data           # Named list of REDCap forms/instruments
     project$metadata       # REDCap field definitions, forms, and choices
     project$redcap$users   # REDCap user information
+    project$redcap$log     # REDCap log information
 
-**Transform and export** your data into clean, analysis-ready datasets:
+**Transform and export** your data into clean, analysis-ready datasets
+to be used in R and/or Excel:
 
-    project$add_dataset("analysis_data", ...)
-    project$save_datasets()
+    project$add_dataset("analysis_data", ...) # adds to project for re-use
+    project$save_datasets() # can save to Excel but is also part of future syncs
 
 **Upload** corrected or new data back to REDCap:
 
@@ -58,14 +68,14 @@ calls and improves performance for large projects.
 All methods use **method chaining**: Methods invisibly return the
 project object (self), allowing fluent code:
 
-    load_project("MY_PROJECT")$sync()$save_datasets()$print()
+    dataset <- load_project("TEST_CLASSIC")$sync()$load_dataset("REDCapSync")
 
 ### Read-Only Fields
 
-- `project$project_name`: Project identifier (set via
+- `project$project_name`: Project identifier (set with
   [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md))
 
-- `project$dir_path`: Persistent storage directory (set via
+- `project$dir_path`: Persistent storage directory (set with
   [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md))
 
 - `project$data`: Named list of synchronized REDCap forms
@@ -718,7 +728,7 @@ an issue. Missing rows and columns are allowed!
 # Load a test project
 project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #> ! No cached projects... use `setup_project(...)`
-#> ✔ Directory is Valid! /tmp/RtmpFra7SL
+#> ✔ Directory is Valid! /tmp/RtmpKnaQi7
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
@@ -727,26 +737,16 @@ project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 # Sync data from REDCap
 project$sync()
 #> ℹ TEST projects do not communicate with the API
-#> ℹ Saved 'TEST_CLASSIC_text.xlsx'!
-#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
-#> ℹ Saved 'TEST_CLASSIC_other.xlsx'!
-#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
-#> ℹ Saved 'TEST_CLASSIC_data.xlsx'!
-#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_data.xlsx
-#> ℹ Saved 'TEST_CLASSIC_forms.xlsx'!
-#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
-#> ℹ Saved 'TEST_CLASSIC_fields.xlsx'!
-#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
-#> ℹ Saved 'TEST_CLASSIC_choices.xlsx'!
-#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
-#> ℹ Saved 'TEST_CLASSIC_missing_codes.xlsx'!
-#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
-#> ℹ Saved 'TEST_CLASSIC_users.xlsx'!
-#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
-#> ℹ Saved 'TEST_CLASSIC_dataset_details.xlsx'!
-#>   /tmp/RtmpFra7SL/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
-#> ℹ Saved 'TEST_CLASSIC_REDCapSync.xlsx'!
-#>   /tmp/RtmpFra7SL/output/TEST_CLASSIC_REDCapSync.xlsx
+#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpKnaQi7/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
+#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpKnaQi7/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
+#> ✔ Saved TEST_CLASSIC_data.xlsx: /tmp/RtmpKnaQi7/REDCap/TEST_CLASSIC/TEST_CLASSIC_data.xlsx
+#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpKnaQi7/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
+#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpKnaQi7/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
+#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpKnaQi7/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
+#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpKnaQi7/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
+#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpKnaQi7/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
+#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpKnaQi7/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
+#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpKnaQi7/output/TEST_CLASSIC_REDCapSync.xlsx
 
 # Access data and metadata
 head(project$data$text)
@@ -849,9 +849,8 @@ dataset <- project$generate_dataset("analysis_set")
 #> ! analysis_set is already a defined dataset
 #> ℹ It will be loaded... other paramers ignored
 # Optional modify
-dataset$data$merged$is_stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
+dataset$data$merged$stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
 # save to directory
 dataset$save()
-#> ℹ Saved 'TEST_CLASSIC_analysis_set.xlsx'!
-#>   /tmp/RtmpFra7SL/output/TEST_CLASSIC_analysis_set.xlsx
+#> ✔ Saved TEST_CLASSIC_analysis_set.xlsx: /tmp/RtmpKnaQi7/output/TEST_CLASSIC_analysis_set.xlsx
 ```

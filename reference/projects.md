@@ -14,9 +14,9 @@ reconfiguration.
 projects
 ```
 
-## Value
+## Format
 
-list of functions used as single entry into REDCapSync package
+A named list of functions for managing REDCapSync projects.
 
 ## Details
 
@@ -52,11 +52,11 @@ in sequence:
 
   Returns the project data frame invisibly.
 
-- [`df()`](https://rdrr.io/r/stats/Fdist.html):
+- [`any()`](https://rdrr.io/r/base/any.html):
 
-  Retrieve the project registry as a data frame.
+  Check whether any projects are registered.
 
-  Returns a data frame containing stored project metadata.
+  Returns a logical scalar.
 
 - `n()`:
 
@@ -64,11 +64,23 @@ in sequence:
 
   Returns an integer.
 
-- [`any()`](https://rdrr.io/r/base/any.html):
+- [`names()`](https://rdrr.io/r/base/names.html):
 
-  Check whether any projects are registered.
+  Return the names of registered projects.
 
-  Returns a logical scalar.
+  Returns a character vector.
+
+- `test_names()`:
+
+  Return the names of test projects.
+
+  Returns a character vector.
+
+- [`df()`](https://rdrr.io/r/stats/Fdist.html):
+
+  Retrieve the project registry as a data frame.
+
+  Returns a data frame containing stored project metadata.
 
 - `load(project_name)`:
 
@@ -91,7 +103,8 @@ Other Cache Functions:
 ## Examples
 
 ``` r
-project_df <- projects$df
+project_df <- projects$df()
+#> ! No cached projects... use `setup_project(...)`
 projects$print()
 #> ! No cached projects... use `setup_project(...)`
 #> 
@@ -117,6 +130,9 @@ projects$any()
 projects$n()
 #> ! No cached projects... use `setup_project(...)`
 #> [1] 0
+projects$names()
+#> ! No cached projects... use `setup_project(...)`
+#> character(0)
 project <- projects$load("TEST_CLASSIC")
 #> ! No cached projects... use `setup_project(...)`
 #> ✔ Loaded TEST project TEST_CLASSIC!

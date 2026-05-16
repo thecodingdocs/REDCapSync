@@ -201,7 +201,6 @@ project <- setup_project(
   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 )
 #> ! No cached projects... use `setup_project(...)`
-#> ✔ Directory is Valid! /tmp/RtmpFra7SL
 #> ! Setup blank project. Unable to find, load, or repair.
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
 #> ! No valid token in session: Sys.getenv('REDCAPSYNC_FIRST_PROJECT')

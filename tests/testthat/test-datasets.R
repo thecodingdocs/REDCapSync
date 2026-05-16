@@ -439,10 +439,13 @@ test_that("save_project_dataset works!", {
   # file created
   file_path <- project$datasets[[dataset_name]]$file_path
   expect_file_exists(file_path)
+  data_list <- read_dataset_from_file(project = project,
+                                      dataset_name = dataset_name)
   # datasets metadata updated
   expect_false(is.null(project$datasets[[dataset_name]]$n_records))
   expect_false(is.null(project$datasets[[dataset_name]]$last_save_time))
   what_was_saved <- excel_to_list(file_path)
+  expect_identical(what_was_saved$merged, data_list$merged)
   expect_all_true(
     c(
       "merged",

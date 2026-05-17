@@ -8,7 +8,7 @@
 #'
 #' @details
 #' A `REDCapSyncDataset` can be created ad-hoc from a project with
-#' `project$generate_dataset()`. For resusability, you can also define with
+#' `project$generate_dataset()`. For reusability, you can also define with
 #' `project$add_dataset()` and then load with `project$load_dataset()`.
 #'
 #' ## Typical workflow

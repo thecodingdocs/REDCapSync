@@ -17,7 +17,7 @@ environment.
 }
 \details{
 A \code{REDCapSyncDataset} can be created ad-hoc from a project with
-\code{project$generate_dataset()}. For resusability, you can also define with
+\code{project$generate_dataset()}. For reusability, you can also define with
 \code{project$add_dataset()} and then load with \code{project$load_dataset()}.
 \subsection{Typical workflow}{
 

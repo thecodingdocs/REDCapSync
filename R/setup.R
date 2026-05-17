@@ -80,7 +80,7 @@
 #' )
 #'
 #' @family project object
-#' @return R6 project object with [REDCapSyncProject] class.
+#' @returns R6 project object with [REDCapSyncProject] class.
 #' @export
 setup_project <- function(project_name,
                           dir_path,

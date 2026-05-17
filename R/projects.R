@@ -90,8 +90,8 @@
 #' projects$n()
 #' projects$names()
 #' project <- projects$load("TEST_CLASSIC")
-#' @export
 #' @format A named list of functions for managing REDCapSync projects.
+#' @export
 projects <- list(
   print = function() {
     project_df <- get_projects()

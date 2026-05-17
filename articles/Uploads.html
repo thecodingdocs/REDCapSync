@@ -81,6 +81,29 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a></span><span class="op">)</span></span></code></pre></div>
+<p>Another unique feature of REDCapSync is the ability to upload
+labelled data. Currently, you can use R to modify data and then upload
+back to REDCap. For classic REDCap projects, without events or repeating
+instruments, uploading data is straightforward. For more complex data,
+you must follow the same rules as the REDCap data import tool (using
+<code>redcap_event_name</code>, <code>redcap_repeat_instrument</code>,
+and <code>redcap_repeat_instance</code>).</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup-load.html">load_project</a></span><span class="op">(</span><span class="st">"TEST_CLASSIC"</span><span class="op">)</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">new_branching</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># add 50 records</span></span>
+<span><span class="va">upload_this</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>record_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">51</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span>,</span>
+<span>                          var_branching <span class="op">=</span> <span class="va">new_branching</span>,</span>
+<span>                          ecog_at_diagnosis <span class="op">=</span> <span class="st">"0"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">upload</span><span class="op">(</span><span class="va">upload_this</span><span class="op">)</span> <span class="co"># will also trigger sync/update</span></span></code></pre></div>
+<p>Future versions may have comparisons/checks and derived fields using
+R code. For now, project accepts data.frames or named lists of
+data.frames. Use with caution at it will modify REDCap data. We are also
+considering developing a pathway to reimport saved excel files to send
+back to REDCap!</p>
   </main>
 </div>
 

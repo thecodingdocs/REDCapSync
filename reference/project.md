@@ -86,12 +86,78 @@ project object (self), allowing fluent code:
 
 - `project$.internal`: Internal project object (for advanced use)
 
+### TEST Projects
+
+All TEST projects start with "TEST\_" and by default the average user
+cannot create a project that starts with "TEST\_". They are produced
+from actual server REDCap projects but never contained real data and
+were scrubbed of any "real" user/log data. They are subject to change in
+future versions as the package matures. Keep in mind there are many
+combinations of REDCap structures to account for.
+
+TEST projects are meant to be used for demonstration and testing
+purposes. In general, try to use actual REDCap project(s) to explore the
+package.
+
+This is how to load a project with or without specifying a directory.
+
+    # return the list of available test projects
+    REDCapSync::projects$test_names()
+
+    project <- load_project("TEST_CLASSIC")
+
+    YOUR_DIRECTORY <- getwd()
+    project <- setup_project("TEST_CLASSIC", dir_path = YOUR_DIRECTORY)
+    # now can test object functions (does not use API)
+    project$sync() # will also save datasets
+
+The currently available TEST projects are as follows:
+
+- `TEST_CLASSIC`: Classic project (nothing repeats). Has every data
+  type. Contains data for survival analysis testing. Contains comments.
+
+- `TEST_REPEATING`: Non-longitudinal project with repeating instruments.
+
+- `TEST_LONGITUDINAL`: Longitudinal project (with events).
+
+- `TEST_MULTIARM`: Multi-arm and longitudinal project.
+
+- `TEST_EDGE`: Edge-case project. Meant to test things that may be
+  uncommon but should be accounted for as package matures.
+
+- `TEST_DATA`: Placeholder project meant to contain more rich test
+  dataset.
+
+- `TEST_CANCER`: Placeholder project meant to contain more rich test
+  dataset.
+
+- `TEST_REDCAPR_SIMPLE`: Borrowed with permission from
+  [REDCapR](https://ouhscbbmc.github.io/REDCapR/reference/REDCapR-package.html).
+
+- `TEST_REDCAPR_LONGITUDINAL`: Borrowed with permission from
+  [REDCapR](https://ouhscbbmc.github.io/REDCapR/reference/REDCapR-package.html).
+
+- `TEST_REDCAPR_CLIN_TRIAL`: Borrowed with permission from
+  [REDCapR](https://ouhscbbmc.github.io/REDCapR/reference/REDCapR-package.html).
+
 ## See also
 
+vignette("REDCapSync", package = "REDCapSync")
+
+[projects](https://thecodingdocs.github.io/REDCapSync/reference/projects.md)
+for shortcuts of cached setup projects
+
+vignette("Tokens", package = "REDCapSync")
+
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-for initializing a new project
-[load_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-for loading an existing project
+for initializing projects
+
+[dataset](https://thecodingdocs.github.io/REDCapSync/reference/dataset.md)
+for using the dataset objects
+
+vignette("Datasets", package = "REDCapSync")
+
+vignette("Uploads", package = "REDCapSync")
 
 ## Active bindings
 
@@ -726,9 +792,15 @@ an issue. Missing rows and columns are allowed!
 
 ``` r
 # Load a test project
+projects$test_names() # available test projects
+#>  [1] "TEST_CLASSIC"              "TEST_REPEATING"           
+#>  [3] "TEST_LONGITUDINAL"         "TEST_MULTIARM"            
+#>  [5] "TEST_EDGE"                 "TEST_DATA"                
+#>  [7] "TEST_CANCER"               "TEST_REDCAPR_SIMPLE"      
+#>  [9] "TEST_REDCAPR_LONGITUDINAL" "TEST_REDCAPR_CLIN_TRIAL"  
 project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #> ! No cached projects... use `setup_project(...)`
-#> ✔ Directory is Valid! /tmp/RtmpRzen1G
+#> ✔ Directory is Valid! /tmp/RtmpB5fBmu
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
@@ -737,16 +809,16 @@ project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 # Sync data from REDCap
 project$sync()
 #> ℹ TEST projects do not communicate with the API
-#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpRzen1G/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
-#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpRzen1G/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
-#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpRzen1G/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
-#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpRzen1G/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
-#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpRzen1G/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
-#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpRzen1G/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
-#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpRzen1G/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
-#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpRzen1G/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
-#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpRzen1G/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
-#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpRzen1G/output/TEST_CLASSIC_REDCapSync.xlsx
+#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
+#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
+#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
+#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
+#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
+#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
+#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
+#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
+#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
+#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpB5fBmu/output/TEST_CLASSIC_REDCapSync.xlsx
 
 # Access data and metadata
 head(project$data$text)
@@ -837,20 +909,15 @@ project$metadata$fields[1:5, ]
 #> 4             <NA>
 #> 5             <NA>
 
-# Create and save a filtered dataset
-dataset <- project$add_dataset(
-  dataset_name = "analysis_set",
-  filter_field = "var_yesno",
-  filter_choices = "Yes",
-  field_names = c("record_id", "ecog_at_diagnosis", "stage_at_diagnosis")
- )
-# generate dataset for R environment
-dataset <- project$generate_dataset("analysis_set")
-#> ! analysis_set is already a defined dataset
-#> ℹ It will be loaded... other paramers ignored
-# Optional modify
-dataset$data$merged$stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
-# save to directory
-dataset$save()
-#> ✔ Saved TEST_CLASSIC_analysis_set.xlsx: /tmp/RtmpRzen1G/output/TEST_CLASSIC_analysis_set.xlsx
+forms <- project$metadata$forms # unchanged metadata
+fields <- project$metadata$fields # unchanged metadata
+choices <- project$metadata$choices # unchanged metadata
+
+users <- project$redcap$users # unchanged users
+log <- project$redcap$log # unchanged log
+
+project$test_token()
+#> ℹ TEST projects do not communicate with the API
+
+dataset <- project$load_dataset("REDCapSync")
 ```

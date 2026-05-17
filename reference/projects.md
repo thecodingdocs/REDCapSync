@@ -95,10 +95,16 @@ in sequence:
 
 ## See also
 
-[`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
+vignette("REDCapSync", package = "REDCapSync")
 
-Other Cache Functions:
-[`cache_clear()`](https://thecodingdocs.github.io/REDCapSync/reference/cache_clear.md)
+vignette("Cache", package = "REDCapSync")
+
+vignette("RosyREDCap", package = "REDCapSync") \#'
+[setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+for initializing projects
+
+[project](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
+for using the project objects
 
 ## Examples
 

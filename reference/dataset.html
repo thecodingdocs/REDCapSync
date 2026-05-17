@@ -71,8 +71,11 @@ records, user information, and optional REDCap log data.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>A <code>REDCapSyncDataset</code> can be created ad-hoc from a project with
-<code>project$generate_dataset()</code>. For reusability, you can also define with
-<code>project$add_dataset()</code> and then load with <code>project$load_dataset()</code>.</p><div class="section">
+<code>dataset &lt;- project$generate_dataset()</code>. For reusability, you can also
+define with <code>project$add_dataset()</code> and then load with
+<code>dataset &lt;- project$load_dataset()</code>.</p>
+<p>You can add variables manually if you want them to be passed to Excel. But
+<code>add_field</code> is a feature in development.</p><div class="section">
 <h3 id="typical-workflow">Typical workflow<a class="anchor" aria-label="anchor" href="#typical-workflow"></a></h3>
 
 
@@ -82,12 +85,12 @@ project &lt;- setup_project(
   dir_path = tempdir()
 )
 # Create and save a filtered dataset
-dataset &lt;- project$add_dataset(
+project$add_dataset(
   dataset_name = "analysis_set",
   filter_field = "var_yesno",
   filter_choices = "Yes",
-  field_names = c("record_id", "ecog_at_diagnosis", "stage_at_diagnosis")
- )
+  field_names = c("ecog_at_diagnosis", "stage_at_diagnosis")
+)
 # generate dataset for R environment
 dataset &lt;- project$load_dataset("analysis_set")
 # optional send to global environment
@@ -114,9 +117,9 @@ behind-the-scenes in the RosyREDCap shiny app.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>vignette("Datasets", package = "REDCapSync")
-<a href="setup-load.html">setup_project</a> for initializing projects
-<a href="setup-load.html">load_project</a> for loading existing projects</p></div>
+    <div class="dont-index"><p><a href="project.html">project</a> for using the project objects</p>
+<p>vignette("Datasets", package = "REDCapSync")</p>
+<p>vignette("RosyREDCap", package = "REDCapSync")</p></div>
     </div>
     <div class="section level2">
     <h2 id="public-fields">Public fields<a class="anchor" aria-label="anchor" href="#public-fields"></a></h2>
@@ -392,11 +395,11 @@ potential name conflicts</p><div class="section">
 <span class="r-in"><span>  dataset_name <span class="op">=</span> <span class="st">"stage_2_patients"</span>,</span></span>
 <span class="r-in"><span>  filter_field <span class="op">=</span> <span class="st">"stage_at_diagnosis"</span>,</span></span>
 <span class="r-in"><span>  filter_choices <span class="op">=</span> <span class="st">"II"</span>,</span></span>
-<span class="r-in"><span>  field_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"record_id"</span>, <span class="st">"ecog_at_diagnosis"</span>, <span class="st">"stage_at_diagnosis"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  field_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ecog_at_diagnosis"</span>, <span class="st">"stage_at_diagnosis"</span><span class="op">)</span></span></span>
 <span class="r-in"><span> <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dataset</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span>dir_other <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_stage_2_patients.xlsx: <span style="color: #0000BB;">/tmp/RtmpRzen1G/TEST_CLASSIC_stage_2_patients.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_stage_2_patients.xlsx: <span style="color: #0000BB;">/tmp/RtmpB5fBmu/TEST_CLASSIC_stage_2_patients.xlsx</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

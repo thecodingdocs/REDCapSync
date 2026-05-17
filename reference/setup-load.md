@@ -1,8 +1,9 @@
 # Setup or Load REDCapSync Project
 
-Setup or load a REDCapSync project object. Prepares a new REDCapSync
-project by recording the REDCap URI, token name, sync settings, and
-optional data selection preferences.
+Setup or load a REDCapSync
+[project](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
+object. Prepares a new REDCapSync project by recording the REDCap URI,
+token name, sync settings, and optional data selection preferences.
 
 ## Usage
 
@@ -193,8 +194,17 @@ according to the project settings.
 
 ## See also
 
-[`projects`](https://thecodingdocs.github.io/REDCapSync/reference/projects.md)
-for accessing previously setup projects
+vignette("REDCapSync", package = "REDCapSync")
+
+vignette("Tokens", package = "REDCapSync")
+
+[projects](https://thecodingdocs.github.io/REDCapSync/reference/projects.md)
+for shortcuts of cached setup projects
+
+[project](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
+for using the project objects
+
+vignette("Cache", package = "REDCapSync")
 
 ## Examples
 
@@ -210,4 +220,11 @@ project <- setup_project(
 #> ! Setup blank project. Unable to find, load, or repair.
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
 #> ! No valid token in session: Sys.getenv('REDCAPSYNC_FIRST_PROJECT')
+
+# object can be named whatever you choose to assign
+# TEST projects can be loaded in addition to real projects
+project_test <- load_project("TEST_CLASSIC")
+#> ! No cached projects... use `setup_project(...)`
+#> ✔ Loaded TEST project TEST_CLASSIC!
+#> ! Does not actually communicate with any REDCap API
 ```

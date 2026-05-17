@@ -8,7 +8,7 @@ This is how you get REDCap turned into an R database…
 
 library(REDCapSync)
 
-View(projects$df)                             # show your previously saved projects
+View(projects$df())                             # show your previously saved projects
 ```
 
 You can set your REDCap token in two ways! If you need more help setting
@@ -88,3 +88,6 @@ project$generate_dataset(
   envir = globalenv()
 )
 ```
+
+For an in-depth demonstration of both REDCapSync and RosyREDCap, see
+[thecodingdocs.github.io/RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").

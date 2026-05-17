@@ -196,8 +196,10 @@ Excel sheet body using
 
 ## See also
 
-See
-[`vignette("Tokens", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Tokens.md)
+vignette("Projects", package = "REDCapSync")
+
+[setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
+for initializing projects
 
 ## Examples
 

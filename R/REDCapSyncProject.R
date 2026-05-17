@@ -77,11 +77,11 @@
 #' ## TEST Projects
 #'
 #' All TEST projects start with "TEST_" and by default the average user cannot
-#' create a project that starts with "TEST_". They are produced from actual server
-#' REDCap projects but never contained real data and were scrubbed of any "real"
-#' user/log data. They are subject to change in future versions as the package
-#' matures. Keep in mind there are many combinations of REDCap structures to
-#' account for.
+#' create a project that starts with "TEST_". They are produced from actual
+#' server REDCap projects but never contained real data and were scrubbed of
+#' any user/log data. They are subject to change in future versions as the
+#' package matures. Keep in mind there are many combinations of
+#' REDCap structures to account for.
 #'
 #' TEST projects are meant to be used for demonstration and testing
 #' purposes. In general, try to use actual REDCap project(s) to explore the

@@ -85,7 +85,7 @@ test_that("test_project_token works when exportVersion returns version", {
     },
     exportVersion = function(...) "12.1.1"
   )
-  regexp <- "The REDCap project ID for TEST_CLASSIC has changed"
+  regexp <- "The REDCap project ID for TEST_CLASSIC changed"
   expect_error(test_project_token(project), regexp = regexp)
 })
 test_that("test_project_token marks failure when exportVersion returns NULL", {

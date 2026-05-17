@@ -12,7 +12,6 @@ get_project_token <- function(project, silent = TRUE) {
   if (!silent) {
     if (valid) {
       cli_alert_success("Valid token for {project_name} from {token_source}!")
-      cli_alert_info("REDCap Home {.url {project$links$redcap_home}}")
     } else {
       token_help_message(project)
     }
@@ -22,7 +21,7 @@ get_project_token <- function(project, silent = TRUE) {
 #' @noRd
 test_project_token <- function(project) {
   assert_setup_project(project)
-  token <- get_project_token(project = project, silent = FALSE)
+  token <- get_project_token(project = project)
   project$internals$last_test_connection_attempt <- now_time()
   if (!is_valid_redcap_token(token)) {
     project$internals$last_test_connection_outcome <- FALSE
@@ -50,12 +49,14 @@ test_project_token <- function(project) {
   project$redcap$version <- redcap_version
   if (project$internals$ever_connected) {
     project_info <- rcon$projectInformation()
-    project_id_changed <- !identical(project$redcap$project_id,
-                                     as.character(project_info$project_id))
-    if (project_id_changed) {
-      cli_abort("The REDCap project ID for {project$project_name} has changed!")
-      #trigger hard_rest
-    } # move this?
+    if (!is.null(project$redcap$project_id)) { # in case tested before sync
+      project_id_changed <- !identical(project$redcap$project_id,
+                                       as.character(project_info$project_id))
+      if (project_id_changed) {
+        cli_abort("The REDCap project ID for {project$project_name} changed!")
+        #trigger hard_rest or message
+      } # move this?
+    }
   }
   project$internals$ever_connected <- TRUE
   if (version_changed || is.null(project$links$redcap_home)) {

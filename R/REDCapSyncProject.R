@@ -23,8 +23,7 @@
 #' project$sync()
 #' ```
 #'
-#' **Loading** After the first successful REDCap connection, your project can
-#' be accessed with [load_project] because it's location is stored in cache.
+#' **Load** previously saved REDCap project object using cache:
 #' ```r
 #' project <- load_project("FIRST_PROJECT)
 #' projects$names() # should see "FIRST_PROJECT"
@@ -36,6 +35,9 @@
 #' project$metadata       # REDCap field definitions, forms, and choices
 #' project$redcap$users   # REDCap user information
 #' project$redcap$log     # REDCap log information
+#'
+#' # you can bypass read-only if needed
+#' users <- project$redcap$users
 #' ```
 #'
 #' **Transform and export** your data into clean, analysis-ready datasets to be
@@ -518,6 +520,7 @@ REDCapSyncProject <- R6Class(
         cli_alert_info("TEST projects do not communicate with the API")
         return(invisible(self))
       }
+      get_project_token(project = private$project, silent = FALSE)
       private$project <- test_project_token(project = private$project)
       invisible(self)
     },

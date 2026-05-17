@@ -59,7 +59,9 @@ global environment!
 
 ``` r
 
-projects$load("TEST_CLASSIC")$sync()$load_dataset("REDCapSync", envir = globalenv())
+projects$load("TEST_CLASSIC")$
+  sync()$
+  load_dataset("REDCapSync", envir = globalenv())
 ```
 
 You can also generate ad-hoc custom datasets. But if you plan to keep it
@@ -77,7 +79,7 @@ project <- load_project("TEST_LONGITUDINAL")$sync()
 project$metadata$fields$field_name
 
 males_dataset <- project$generate_dataset(dataset_name = "males", 
-                                          envir = globalenv(), # global environ
+                                          envir = globalenv(), # global env
                                           filter_field = "birth_sex", 
                                           filter_choices = "Male")
 # if you check merged and survey it will only contain males
@@ -85,7 +87,7 @@ unique(males_dataset$data$merged$birth_sex) # Male
 unique(males_dataset$data$survey$birth_sex) # Male
 
 females_dataset <- project$generate_dataset(dataset_name = "females", 
-                                            envir = globalenv(), # global environ
+                                            envir = globalenv(), # global env
                                             filter_field = "birth_sex", 
                                             filter_choices = "Female")
 # if you check merged and survey it will only contain males
@@ -93,7 +95,7 @@ unique(females_dataset$data$merged$birth_sex) # Female
 unique(females_dataset$data$survey$birth_sex) # Female
 
 # if you want this saved to excel one time you can do
-females_dataset$save(dir_other = save_dir) # dir_other not needed for non-test-projects
+females_dataset$save(dir_other = save_dir) # dir_other not needed for default
 
 # To keep this analysis refreshing with each sync use project$add_dataset(..,)
 project$add_dataset(dataset_name = "males", 

@@ -15,7 +15,7 @@ records, user information, and optional REDCap log data.
 ## Details
 
 A `REDCapSyncDataset` can be created ad-hoc from a project with
-`project$generate_dataset()`. For resusability, you can also define with
+`project$generate_dataset()`. For reusability, you can also define with
 `project$add_dataset()` and then load with `project$load_dataset()`.
 
 ### Typical workflow
@@ -357,5 +357,5 @@ dataset <- project$generate_dataset(
  )
 
 dataset$save(dir_other = tempdir())
-#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpcOJIeu/TEST_CLASSIC_stage_2_patients.xlsx
+#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpFtgl8t/TEST_CLASSIC_stage_2_patients.xlsx
 ```

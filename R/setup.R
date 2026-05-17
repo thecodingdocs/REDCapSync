@@ -273,9 +273,9 @@ setup_project <- function(project_name,
               hard_reset <- TRUE
               cli_alert_warning(
                 paste(
-                  "The loaded project was `{setting_name} = {original}` and you",
-                  "chose `{setting_name} = {toString(value)}`. Therefore, a full update",
-                  "was triggered."
+                  "The loaded project was `{setting_name} = {original}` and",
+                  "youchose `{setting_name} = {toString(value)}`. Therefore, a",
+                  "full update was triggered."
                 )
               )
             }

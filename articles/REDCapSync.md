@@ -2,29 +2,43 @@
 
 ## Setup
 
-This is how you get REDCap turned into an R database…
+First load the namespace and check your saved projects.
 
 ``` r
 
 library(REDCapSync)
 
-View(projects$df())                             # show your previously saved projects
+projects$print()
+
+View(projects$df())                   # Vew your previously saved projects
 ```
 
-You can set your REDCap token in two ways! If you need more help setting
-your tokens see this article –\> placeholder
+You can set your REDCap token in three ways! If you need more help
+setting your tokens, See the
+[Tokens](https://thecodingdocs.github.io/REDCapSync/articles/vignette(%22Tokens%22,%20package%20=%20%22REDCapSync%22))
+vignette.
 
 ``` r
-#1. set each time in your session (not recommended in saved/shared scripts!)
-Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")
-#2. set to your private R sessions!
-usethis::edit_r_environ()                                       #finds your file
+#1. set in your Renviron file
+usethis::edit_r_environ()                                 #finds your file
 # another way to find same file
 rstudioapi::navigateToFile(file.path(Sys.getenv("HOME")), ".Renviron"))
-# Then you add --> REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'
-# then save file and restart R
+# Then you add --> `REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'`
+# then save file and restart R session (`.rs.restartR()`) and reload package
+
+#2. set to your token with keyring package! (make sure is installed)
+project$set_keyring_token() # now enter token in pop-up
+
+#3. set each time in your console or script (not recommended!) RISKY
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")
+
+# Confirm
 # If it worked you will see your token when you run...
-Sys.getenv("REDCAPSYNC_FIRST_PROJECT")
+Sys.getenv("REDCAPSYNC_FIRST_PROJECT") # for R eviron
+# or...
+keyring::key_get(service = config$keyring.service(), # for keyring
+                 username = "FIRST_PROJECT", # is project_name
+                 keyring = config$keyring())
 ```
 
 ## Run Core Functions

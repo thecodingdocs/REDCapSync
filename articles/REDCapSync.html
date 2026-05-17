@@ -82,23 +82,36 @@
 <div class="section level2">
 <h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
-<p>This is how you get REDCap turned into an R database…</p>
+<p>First load the namespace and check your saved projects.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">projects</span><span class="op">$</span><span class="fu">df</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>                             <span class="co"># show your previously saved projects</span></span></code></pre></div>
-<p>You can set your REDCap token in two ways! If you need more help
-setting your tokens see this article –&gt; placeholder</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co">#1. set each time in your session (not recommended in saved/shared scripts!)</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_FIRST_PROJECT =</span> <span class="st">"YoUrNevErShaReToken"</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#2. set to your private R sessions!</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">edit_r_environ</span>()                                       <span class="co">#finds your file</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># another way to find same file</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>rstudioapi<span class="sc">::</span><span class="fu">navigateToFile</span>(<span class="fu">file.path</span>(<span class="fu">Sys.getenv</span>(<span class="st">"HOME"</span>)), <span class="st">".Renviron"</span>)<span class="er">)</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co"># Then you add --&gt; REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co"># then save file and restart R</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co"># If it worked you will see your token when you run...</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCAPSYNC_FIRST_PROJECT"</span>)</span></code></pre></div>
+<span><span class="va">projects</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">projects</span><span class="op">$</span><span class="fu">df</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>                   <span class="co"># Vew your previously saved projects</span></span></code></pre></div>
+<p>You can set your REDCap token in three ways! If you need more help
+setting your tokens, See the <a href="vignette(%22Tokens%22,%20package%20=%20%22REDCapSync%22)">Tokens</a>
+vignette.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co">#1. set in your Renviron file</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">edit_r_environ</span>()                                 <span class="co">#finds your file</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># another way to find same file</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>rstudioapi<span class="sc">::</span><span class="fu">navigateToFile</span>(<span class="fu">file.path</span>(<span class="fu">Sys.getenv</span>(<span class="st">"HOME"</span>)), <span class="st">".Renviron"</span>)<span class="er">)</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># Then you add --&gt; `REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'`</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># then save file and restart R session (`.rs.restartR()`) and reload package</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#2. set to your token with keyring package! (make sure is installed)</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>project<span class="sc">$</span><span class="fu">set_keyring_token</span>() <span class="co"># now enter token in pop-up</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#3. set each time in your console or script (not recommended!) RISKY</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_FIRST_PROJECT =</span> <span class="st">"YoUrNevErShaReToken"</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co"># Confirm</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co"># If it worked you will see your token when you run...</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCAPSYNC_FIRST_PROJECT"</span>) <span class="co"># for R eviron</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co"># or...</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>keyring<span class="sc">::</span><span class="fu">key_get</span>(<span class="at">service =</span> config<span class="sc">$</span><span class="fu">keyring.service</span>(), <span class="co"># for keyring</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>                 <span class="at">username =</span> <span class="st">"FIRST_PROJECT"</span>, <span class="co"># is project_name</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>                 <span class="at">keyring =</span> config<span class="sc">$</span><span class="fu">keyring</span>())</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="run-core-functions">Run Core Functions<a class="anchor" aria-label="anchor" href="#run-core-functions"></a>

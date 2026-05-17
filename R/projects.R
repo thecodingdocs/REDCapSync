@@ -99,11 +99,10 @@ projects <- list(
     cli_h1("REDCapSync")
     cli_h2("Your Projects (n = {n_projects})")
     if (n_projects > 0L) {
-      number_due <- project_df$project_name |>
+      project_df$due_for_sync <- project_df$project_name |>
         lapply(due_for_sync) |>
-        unlist() |>
-        which() |>
-        length()
+        unlist()
+      number_due <- project_df$due_for_sync |> which() |> length()
       cli_text("{toString(project_df$project_name)}")
       cli_alert_info("{number_due} due for sync!")
     }

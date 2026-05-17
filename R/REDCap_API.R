@@ -24,12 +24,9 @@ get_redcap_metadata <- function(project) {
   project$redcap$has_user_access <- !is.null(result$users)
   project$redcap$has_file_repository_access <- !is.null(result$file_repository)
   # instruments --------
-  project$metadata$forms <-
-    rename(
-      result$forms,
-      form_name  = "instrument_name",
-      form_label = "instrument_label"
-    )
+  project$metadata$forms <- rename(result$forms,
+                                   form_name  = "instrument_name",
+                                   form_label = "instrument_label")
   project$metadata$repeating_forms_events <- result$repeating
   project$metadata$forms$repeating <- FALSE
   project$metadata$has_repeating_forms <- FALSE

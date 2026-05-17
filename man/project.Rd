@@ -32,8 +32,7 @@ and log-based change detection:
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{project$sync()
 }\if{html}{\out{</div>}}
 
-\strong{Loading} After the first successful REDCap connection, your project can
-be accessed with \link{load_project} because it's location is stored in cache.
+\strong{Load} previously saved REDCap project object using cache:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{project <- load_project("FIRST_PROJECT)
 projects$names() # should see "FIRST_PROJECT"
@@ -45,6 +44,9 @@ projects$names() # should see "FIRST_PROJECT"
 project$metadata       # REDCap field definitions, forms, and choices
 project$redcap$users   # REDCap user information
 project$redcap$log     # REDCap log information
+
+# you can bypass read-only if needed
+users <- project$redcap$users
 }\if{html}{\out{</div>}}
 
 \strong{Transform and export} your data into clean, analysis-ready datasets to be

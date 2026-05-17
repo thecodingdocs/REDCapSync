@@ -33,10 +33,7 @@ API and log-based change detection:
 
     project$sync()
 
-**Loading** After the first successful REDCap connection, your project
-can be accessed with
-[load_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
-because it's location is stored in cache.
+**Load** previously saved REDCap project object using cache:
 
     project <- load_project("FIRST_PROJECT)
     projects$names() # should see "FIRST_PROJECT"
@@ -47,6 +44,9 @@ because it's location is stored in cache.
     project$metadata       # REDCap field definitions, forms, and choices
     project$redcap$users   # REDCap user information
     project$redcap$log     # REDCap log information
+
+    # you can bypass read-only if needed
+    users <- project$redcap$users
 
 **Transform and export** your data into clean, analysis-ready datasets
 to be used in R and/or Excel:
@@ -728,7 +728,7 @@ an issue. Missing rows and columns are allowed!
 # Load a test project
 project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #> ! No cached projects... use `setup_project(...)`
-#> ✔ Directory is Valid! /tmp/RtmpFtgl8t
+#> ✔ Directory is Valid! /tmp/RtmpS5HQIV
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
@@ -737,16 +737,16 @@ project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 # Sync data from REDCap
 project$sync()
 #> ℹ TEST projects do not communicate with the API
-#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpFtgl8t/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
-#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpFtgl8t/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
-#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpFtgl8t/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
-#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpFtgl8t/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
-#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpFtgl8t/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
-#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpFtgl8t/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
-#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpFtgl8t/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
-#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpFtgl8t/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
-#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpFtgl8t/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
-#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpFtgl8t/output/TEST_CLASSIC_REDCapSync.xlsx
+#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpS5HQIV/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
+#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpS5HQIV/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
+#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpS5HQIV/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
+#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpS5HQIV/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
+#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpS5HQIV/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
+#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpS5HQIV/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
+#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpS5HQIV/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
+#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpS5HQIV/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
+#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpS5HQIV/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
+#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpS5HQIV/output/TEST_CLASSIC_REDCapSync.xlsx
 
 # Access data and metadata
 head(project$data$text)
@@ -852,5 +852,5 @@ dataset <- project$generate_dataset("analysis_set")
 dataset$data$merged$stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
 # save to directory
 dataset$save()
-#> ✔ Saved TEST_CLASSIC_analysis_set.xlsx: /tmp/RtmpFtgl8t/output/TEST_CLASSIC_analysis_set.xlsx
+#> ✔ Saved TEST_CLASSIC_analysis_set.xlsx: /tmp/RtmpS5HQIV/output/TEST_CLASSIC_analysis_set.xlsx
 ```

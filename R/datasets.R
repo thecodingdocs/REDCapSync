@@ -810,7 +810,6 @@ merge_non_repeating <- function(data_list,
   fields <- fields[, c(first, move, last)]
   data_list$metadata$fields <- fields
   data_list$metadata$choices <- fields_to_choices(fields)
-  data_list
   data_list$metadata$form_key_cols <- get_key_col_list(data_list = data_list)
   if (is_something(data_list$data)) {
     merge_form <- NULL
@@ -822,39 +821,41 @@ merge_non_repeating <- function(data_list,
       which()
     non_rep_form_names <- non_rep_form_names[keep_rows]
     i <- 0L
-    for (non_rep_form_name in non_rep_form_names) {
-      if (non_rep_form_name == non_rep_form_names[[1L]]) {
-        merge_form <- data_list$data[[non_rep_form_name]]
-      } else {
-        to_be_merged <- data_list$data[[non_rep_form_name]]
-        to_be_merged$arm_number <- NULL
-        merge_form <- merge(
-          x = merge_form,
-          y = to_be_merged,
-          by = data_list$metadata$id_col,
-          all = TRUE,
-          sort = FALSE,
-          suffixes = c("", paste0("_merged_", i))
-        )
+    if (is_something(non_rep_form_names)) { # message here?
+      for (non_rep_form_name in non_rep_form_names) {
+        if (non_rep_form_name == non_rep_form_names[[1L]]) {
+          merge_form <- data_list$data[[non_rep_form_name]]
+        } else {
+          to_be_merged <- data_list$data[[non_rep_form_name]]
+          to_be_merged$arm_number <- NULL
+          merge_form <- merge(
+            x = merge_form,
+            y = to_be_merged,
+            by = data_list$metadata$id_col,
+            all = TRUE,
+            sort = FALSE,
+            suffixes = c("", paste0("_merged_", i))
+          )
+        }
+        data_list$data[[non_rep_form_name]] <- NULL
+        i <- i + 1L
       }
-      data_list$data[[non_rep_form_name]] <- NULL
-      i <- i + 1L
-    }
-    data_list$data[[merge_form_name]] <- merge_form
-    other_forms <- setdiff(names(data_list$data), merge_form_name)
-    if (merge_to_rep) {
-      for (other_form in other_forms) {
-        data_list$data[[other_form]] <- merge(
-          x = data_list$data[[other_form]],
-          y = merge_form,
-          by = data_list$metadata$id_col,
-          all.x = TRUE,
-          sort = FALSE,
-          suffixes = c("", "_merged")
-        )
+      data_list$data[[merge_form_name]] <- merge_form
+      other_forms <- setdiff(names(data_list$data), merge_form_name)
+      if (merge_to_rep) {
+        for (other_form in other_forms) {
+          data_list$data[[other_form]] <- merge(
+            x = data_list$data[[other_form]],
+            y = merge_form,
+            by = data_list$metadata$id_col,
+            all.x = TRUE,
+            sort = FALSE,
+            suffixes = c("", "_merged")
+          )
+        }
       }
+      data_list$data <- data_list$data[c(merge_form_name, other_forms)]
     }
-    data_list$data <- data_list$data[c(merge_form_name, other_forms)]
   }
   data_list
 }

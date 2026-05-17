@@ -314,48 +314,30 @@ generate_comment_table <- function(redcap_log, only_most_recent = FALSE) {
 }
 #' @noRd
 due_for_sync <- function(project_name) {
-  now <- now_time()
   projects <- get_projects()
-  if (project_name %in% projects$project_name) {
-    assert_names(projects$project_name, must.include = project_name)
-    project_row <- which(projects$project_name == project_name)
-    last_sync <- projects$last_sync[project_row]
-    if (is.na(last_sync)) {
-      return(TRUE)
-    }
-    then <- last_sync
-    if (is.na(then)) {
-      return(TRUE)
-    }
-    sync_frequency <- projects$sync_frequency[project_row]
-    if (sync_frequency == "always") {
-      return(TRUE)
-    }
-    if (sync_frequency == "never") {
-      return(FALSE)
-    }
-    if (sync_frequency == "once") {
-      return(is.na(then))
-    }
-    have_to_check <-
-      sync_frequency %in% c("hourly", "daily", "weekly", "monthly")
-    if (have_to_check) {
-      # turn to function
-      if (sync_frequency == "hourly") {
-        return(now >= (then + lubridate::dhours(1L)))
-      }
-      if (sync_frequency == "daily") {
-        return(now >= (then + lubridate::ddays(1L)))
-      }
-      if (sync_frequency == "weekly") {
-        return(now >= (then + lubridate::dweeks(1L)))
-      }
-      if (sync_frequency == "monthly") {
-        return(now >= (then + lubridate::dmonths(1L)))
-      }
-    }
+  if (!project_name %in% projects$project_name) {
+    return(TRUE)
   }
-  TRUE
+  assert_names(projects$project_name, must.include = project_name)
+  project_row <- which(projects$project_name == project_name)
+  now <- now_time()
+  last_sync <- projects$last_sync[project_row]
+  sync_frequency <- projects$sync_frequency[project_row]
+  if (is.na(last_sync)) {
+    return(TRUE)
+  }
+  interval <- switch(
+    sync_frequency,
+    always  = return(TRUE),
+    never   = return(FALSE),
+    once    = return(FALSE),
+    hourly  = lubridate::dhours(1L),
+    daily   = lubridate::ddays(1L),
+    weekly  = lubridate::dweeks(1L),
+    monthly = lubridate::dmonths(1L),
+    cli_abort("Unknown `sync_frequency`: {sync_frequency}")
+  )
+  now >= (last_sync + interval - lubridate::dminutes(5L))
 }
 #' @noRd
 remove_from_form_list <- function(form_list, id_col, records = NULL) {

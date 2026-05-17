@@ -123,12 +123,9 @@
 #' dataset$save(dir_other = tempdir())
 #'
 #' @seealso
-#'
 #' [project] for using the project objects
-#'
-#' vignette("Datasets", package = "REDCapSync")
-#'
-#' vignette("RosyREDCap", package = "REDCapSync")
+#' \code{vignette("Datasets", package = "REDCapSync")}
+#' \code{vignette("RosyREDCap", package = "REDCapSync")}
 #'
 #' @returns
 #' An R6 `REDCapSyncDataset` object containing dataset output, metadata,

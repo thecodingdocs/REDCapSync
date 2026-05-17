@@ -29,9 +29,7 @@
 #' }
 #'
 #' @seealso
-#'
-#' vignette("Cache", package = "REDCapSync")
-#'
+#' \code{vignette("Cache", package = "REDCapSync")}
 #' [setup_project] for initializing projects
 #'
 #' @returns Message of outcome and invisible NULL.

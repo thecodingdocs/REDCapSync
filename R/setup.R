@@ -70,16 +70,11 @@
 #' Default is `FALSE`.
 #'
 #' @seealso
-#'
-#' vignette("REDCapSync", package = "REDCapSync")
-#'
-#' vignette("Tokens", package = "REDCapSync")
-#'
+#' \code{vignette("REDCapSync", package = "REDCapSync")}
+#' \code{vignette("Tokens", package = "REDCapSync")}
 #' [projects] for shortcuts of cached setup projects
-#'
 #' [project] for using the project objects
-#'
-#' vignette("Cache", package = "REDCapSync")
+#' \code{vignette("Cache", package = "REDCapSync")}
 #'
 #' @examples
 #' # Initialize the project object with the REDCap API token and URL

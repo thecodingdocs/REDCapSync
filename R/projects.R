@@ -81,15 +81,10 @@
 #'
 #' }
 #' @seealso
-#'
-#' vignette("REDCapSync", package = "REDCapSync")
-#'
-#' vignette("Cache", package = "REDCapSync")
-#'
-#' vignette("RosyREDCap", package = "REDCapSync")
-#' #'
+#' \code{vignette("REDCapSync", package = "REDCapSync")}
+#' \code{vignette("Cache", package = "REDCapSync")}
+#' \code{vignette("RosyREDCap", package = "REDCapSync")}
 #' [setup_project] for initializing projects
-#'
 #' [project] for using the project objects
 #'
 #' @examples

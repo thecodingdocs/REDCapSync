@@ -27,13 +27,9 @@
 #' @returns Invisibly returns last project object (R6 [REDCapSyncProject] class)
 #'
 #' @seealso
-#'
-#' vignette("REDCapSync", package = "REDCapSync")
-#'
-#' vignette("Cache", package = "REDCapSync")
-#'
+#' \code{vignette("REDCapSync", package = "REDCapSync")}
+#' \code{vignette("Cache", package = "REDCapSync")}
 #' [setup_project] for initializing projects
-#'
 #' [project] for using the project objects
 #'
 #' @export

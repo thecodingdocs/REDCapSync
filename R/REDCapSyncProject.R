@@ -214,20 +214,13 @@
 #' dataset <- project$load_dataset("REDCapSync")
 #'
 #' @seealso
-#'
-#' vignette("REDCapSync", package = "REDCapSync")
-#'
+#' \code{vignette("REDCapSync", package = "REDCapSync")}
 #' [projects] for shortcuts of cached setup projects
-#'
-#' vignette("Tokens", package = "REDCapSync")
-#'
+#' \code{vignette("Tokens", package = "REDCapSync")}
 #' [setup_project] for initializing projects
-#'
 #' [dataset] for using the dataset objects
-#'
-#' vignette("Datasets", package = "REDCapSync")
-#'
-#' vignette("Uploads", package = "REDCapSync")
+#' \code{vignette("Datasets", package = "REDCapSync")}
+#' \code{vignette("Uploads", package = "REDCapSync")}
 #'
 #' @returns
 #' An R6 `REDCapSyncProject` class generator for internal use. Users interact

@@ -152,13 +152,9 @@ project_test <- load_project("TEST_CLASSIC")
 
 }
 \seealso{
-vignette("REDCapSync", package = "REDCapSync")
-
-vignette("Tokens", package = "REDCapSync")
-
+\code{vignette("REDCapSync", package = "REDCapSync")}
+\code{vignette("Tokens", package = "REDCapSync")}
 \link{projects} for shortcuts of cached setup projects
-
 \link{project} for using the project objects
-
-vignette("Cache", package = "REDCapSync")
+\code{vignette("Cache", package = "REDCapSync")}
 }

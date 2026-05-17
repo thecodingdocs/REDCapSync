@@ -47,7 +47,6 @@ cache_clear() # every project
 
 }
 \seealso{
-vignette("Cache", package = "REDCapSync")
-
+\code{vignette("Cache", package = "REDCapSync")}
 \link{setup_project} for initializing projects
 }

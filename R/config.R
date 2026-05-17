@@ -184,9 +184,7 @@
 #' ```
 #'
 #' @seealso
-#'
-#' vignette("Projects", package = "REDCapSync")
-#'
+#' \code{vignette("Projects", package = "REDCapSync")}
 #' [setup_project] for initializing projects
 #'
 #' @examples

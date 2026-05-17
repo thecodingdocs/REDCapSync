@@ -104,13 +104,9 @@ projects$names()
 project <- projects$load("TEST_CLASSIC")
 }
 \seealso{
-vignette("REDCapSync", package = "REDCapSync")
-
-vignette("Cache", package = "REDCapSync")
-
-vignette("RosyREDCap", package = "REDCapSync")
-#'
+\code{vignette("REDCapSync", package = "REDCapSync")}
+\code{vignette("Cache", package = "REDCapSync")}
+\code{vignette("RosyREDCap", package = "REDCapSync")}
 \link{setup_project} for initializing projects
-
 \link{project} for using the project objects
 }

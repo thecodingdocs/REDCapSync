@@ -76,10 +76,8 @@ dataset$save(dir_other = tempdir())
 }
 \seealso{
 \link{project} for using the project objects
-
-vignette("Datasets", package = "REDCapSync")
-
-vignette("RosyREDCap", package = "REDCapSync")
+\code{vignette("Datasets", package = "REDCapSync")}
+\code{vignette("RosyREDCap", package = "REDCapSync")}
 }
 \section{Public fields}{
   \if{html}{\out{<div class="r6-fields">}}

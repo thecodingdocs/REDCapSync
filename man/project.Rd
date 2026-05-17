@@ -155,19 +155,13 @@ dataset <- project$load_dataset("REDCapSync")
 
 }
 \seealso{
-vignette("REDCapSync", package = "REDCapSync")
-
+\code{vignette("REDCapSync", package = "REDCapSync")}
 \link{projects} for shortcuts of cached setup projects
-
-vignette("Tokens", package = "REDCapSync")
-
+\code{vignette("Tokens", package = "REDCapSync")}
 \link{setup_project} for initializing projects
-
 \link{dataset} for using the dataset objects
-
-vignette("Datasets", package = "REDCapSync")
-
-vignette("Uploads", package = "REDCapSync")
+\code{vignette("Datasets", package = "REDCapSync")}
+\code{vignette("Uploads", package = "REDCapSync")}
 }
 \section{Active bindings}{
   \if{html}{\out{<div class="r6-active-bindings">}}

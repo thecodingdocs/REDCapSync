@@ -165,13 +165,13 @@ but should be accounted for as package matures.</p></li>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>vignette("REDCapSync", package = "REDCapSync")</p>
-<p><a href="projects.html">projects</a> for shortcuts of cached setup projects</p>
-<p>vignette("Tokens", package = "REDCapSync")</p>
-<p><a href="setup-load.html">setup_project</a> for initializing projects</p>
-<p><a href="dataset.html">dataset</a> for using the dataset objects</p>
-<p>vignette("Datasets", package = "REDCapSync")</p>
-<p>vignette("Uploads", package = "REDCapSync")</p></div>
+    <div class="dont-index"><p><code><a href="../articles/REDCapSync.html">vignette("REDCapSync", package = "REDCapSync")</a></code>
+<a href="projects.html">projects</a> for shortcuts of cached setup projects
+<code><a href="../articles/Tokens.html">vignette("Tokens", package = "REDCapSync")</a></code>
+<a href="setup-load.html">setup_project</a> for initializing projects
+<a href="dataset.html">dataset</a> for using the dataset objects
+<code><a href="../articles/Datasets.html">vignette("Datasets", package = "REDCapSync")</a></code>
+<code><a href="../articles/Uploads.html">vignette("Uploads", package = "REDCapSync")</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="active-bindings">Active bindings<a class="anchor" aria-label="anchor" href="#active-bindings"></a></h2>
@@ -763,7 +763,7 @@ REDCap.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "TEST_REDCAPR_LONGITUDINAL" "TEST_REDCAPR_CLIN_TRIAL"  </span>
 <span class="r-in"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="setup-load.html">setup_project</a></span><span class="op">(</span><span class="st">"TEST_CLASSIC"</span>, dir_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> No cached projects... use `setup_project(...)`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Directory is Valid! <span style="color: #0000BB;">/tmp/RtmpB5fBmu</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Directory is Valid! <span style="color: #0000BB;">/tmp/RtmpVtsyn7</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Loaded TEST project TEST_CLASSIC!</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Does not actually communicate with any REDCap API</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Selecting ‘env’ backend. Secrets are stored in environment variables</span>
@@ -772,16 +772,16 @@ REDCap.</p></dd>
 <span class="r-in"><span><span class="co"># Sync data from REDCap</span></span></span>
 <span class="r-in"><span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> TEST projects do not communicate with the API</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_text.xlsx: <span style="color: #0000BB;">/tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_other.xlsx: <span style="color: #0000BB;">/tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_cancer.xlsx: <span style="color: #0000BB;">/tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_forms.xlsx: <span style="color: #0000BB;">/tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_fields.xlsx: <span style="color: #0000BB;">/tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_choices.xlsx: <span style="color: #0000BB;">/tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_missing_codes.xlsx: <span style="color: #0000BB;">/tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_users.xlsx: <span style="color: #0000BB;">/tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_dataset_details.xlsx: <span style="color: #0000BB;">/tmp/RtmpB5fBmu/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_REDCapSync.xlsx: <span style="color: #0000BB;">/tmp/RtmpB5fBmu/output/TEST_CLASSIC_REDCapSync.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_text.xlsx: <span style="color: #0000BB;">/tmp/RtmpVtsyn7/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_other.xlsx: <span style="color: #0000BB;">/tmp/RtmpVtsyn7/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_cancer.xlsx: <span style="color: #0000BB;">/tmp/RtmpVtsyn7/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_forms.xlsx: <span style="color: #0000BB;">/tmp/RtmpVtsyn7/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_fields.xlsx: <span style="color: #0000BB;">/tmp/RtmpVtsyn7/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_choices.xlsx: <span style="color: #0000BB;">/tmp/RtmpVtsyn7/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_missing_codes.xlsx: <span style="color: #0000BB;">/tmp/RtmpVtsyn7/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_users.xlsx: <span style="color: #0000BB;">/tmp/RtmpVtsyn7/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_dataset_details.xlsx: <span style="color: #0000BB;">/tmp/RtmpVtsyn7/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_REDCapSync.xlsx: <span style="color: #0000BB;">/tmp/RtmpVtsyn7/output/TEST_CLASSIC_REDCapSync.xlsx</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Access data and metadata</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">project</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">text</span><span class="op">)</span></span></span>

@@ -56,8 +56,7 @@ key variables stored in the cache are...
 
 ## See also
 
-vignette("Cache", package = "REDCapSync")
-
+[`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
 for initializing projects
 

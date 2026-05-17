@@ -95,14 +95,11 @@ in sequence:
 
 ## See also
 
-vignette("REDCapSync", package = "REDCapSync")
-
-vignette("Cache", package = "REDCapSync")
-
-vignette("RosyREDCap", package = "REDCapSync") \#'
+[`vignette("REDCapSync", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.md)
+[`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
+[`vignette("RosyREDCap", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/RosyREDCap.md)
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
 for initializing projects
-
 [project](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
 for using the project objects
 

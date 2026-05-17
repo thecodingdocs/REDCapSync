@@ -63,10 +63,8 @@ behind-the-scenes in the RosyREDCap shiny app.
 
 [project](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
 for using the project objects
-
-vignette("Datasets", package = "REDCapSync")
-
-vignette("RosyREDCap", package = "REDCapSync")
+[`vignette("Datasets", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Datasets.md)
+[`vignette("RosyREDCap", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/RosyREDCap.md)
 
 ## Public fields
 
@@ -362,5 +360,5 @@ dataset <- project$generate_dataset(
  )
 
 dataset$save(dir_other = tempdir())
-#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpB5fBmu/TEST_CLASSIC_stage_2_patients.xlsx
+#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpVtsyn7/TEST_CLASSIC_stage_2_patients.xlsx
 ```

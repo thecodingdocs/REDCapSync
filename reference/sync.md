@@ -49,13 +49,10 @@ invisibly return the last project in the set of project_names.
 
 ## See also
 
-vignette("REDCapSync", package = "REDCapSync")
-
-vignette("Cache", package = "REDCapSync")
-
+[`vignette("REDCapSync", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.md)
+[`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
 for initializing projects
-
 [project](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
 for using the project objects
 

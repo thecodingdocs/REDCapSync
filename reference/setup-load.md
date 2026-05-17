@@ -194,17 +194,13 @@ according to the project settings.
 
 ## See also
 
-vignette("REDCapSync", package = "REDCapSync")
-
-vignette("Tokens", package = "REDCapSync")
-
+[`vignette("REDCapSync", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.md)
+[`vignette("Tokens", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Tokens.md)
 [projects](https://thecodingdocs.github.io/REDCapSync/reference/projects.md)
 for shortcuts of cached setup projects
-
 [project](https://thecodingdocs.github.io/REDCapSync/reference/project.md)
 for using the project objects
-
-vignette("Cache", package = "REDCapSync")
+[`vignette("Cache", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Cache.md)
 
 ## Examples
 

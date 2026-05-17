@@ -196,8 +196,7 @@ Excel sheet body using
 
 ## See also
 
-vignette("Projects", package = "REDCapSync")
-
+[`vignette("Projects", package = "REDCapSync")`](https://thecodingdocs.github.io/REDCapSync/articles/Projects.md)
 [setup_project](https://thecodingdocs.github.io/REDCapSync/reference/setup-load.md)
 for initializing projects
 

@@ -86,9 +86,53 @@ object (self), allowing fluent code:
 \item \code{project$.internal}: Internal project object (for advanced use)
 }
 }
+
+\subsection{TEST Projects}{
+
+All TEST projects start with "TEST_" and by default the average user cannot
+create a project that starts with "TEST_". They are produced from actual server
+REDCap projects but never contained real data and were scrubbed of any "real"
+user/log data. They are subject to change in future versions as the package
+matures. Keep in mind there are many combinations of REDCap structures to
+account for.
+
+TEST projects are meant to be used for demonstration and testing
+purposes. In general, try to use actual REDCap project(s) to explore the
+package.
+
+This is how to load a project with or without specifying a directory.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{# return the list of available test projects
+REDCapSync::projects$test_names()
+
+project <- load_project("TEST_CLASSIC")
+
+YOUR_DIRECTORY <- getwd()
+project <- setup_project("TEST_CLASSIC", dir_path = YOUR_DIRECTORY)
+# now can test object functions (does not use API)
+project$sync() # will also save datasets
+}\if{html}{\out{</div>}}
+
+The currently available TEST projects are as follows:
+\itemize{
+\item \code{TEST_CLASSIC}: Classic project (nothing repeats). Has every data type.
+Contains data for survival analysis testing. Contains comments.
+\item \code{TEST_REPEATING}: Non-longitudinal project with repeating instruments.
+\item \code{TEST_LONGITUDINAL}: Longitudinal project (with events).
+\item \code{TEST_MULTIARM}: Multi-arm and longitudinal project.
+\item \code{TEST_EDGE}: Edge-case project. Meant to test things that may be uncommon
+but should be accounted for as package matures.
+\item \code{TEST_DATA}: Placeholder project meant to contain more rich test dataset.
+\item \code{TEST_CANCER}: Placeholder project meant to contain more rich test dataset.
+\item \code{TEST_REDCAPR_SIMPLE}: Borrowed with permission from \link[REDCapR:REDCapR]{REDCapR}.
+\item \code{TEST_REDCAPR_LONGITUDINAL}: Borrowed with permission from \link[REDCapR:REDCapR]{REDCapR}.
+\item \code{TEST_REDCAPR_CLIN_TRIAL}: Borrowed with permission from \link[REDCapR:REDCapR]{REDCapR}.
+}
+}
 }
 \examples{
 # Load a test project
+projects$test_names() # available test projects
 project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 
 # Sync data from REDCap
@@ -98,24 +142,32 @@ project$sync()
 head(project$data$text)
 project$metadata$fields[1:5, ]
 
-# Create and save a filtered dataset
-dataset <- project$add_dataset(
-  dataset_name = "analysis_set",
-  filter_field = "var_yesno",
-  filter_choices = "Yes",
-  field_names = c("record_id", "ecog_at_diagnosis", "stage_at_diagnosis")
- )
-# generate dataset for R environment
-dataset <- project$generate_dataset("analysis_set")
-# Optional modify
-dataset$data$merged$stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
-# save to directory
-dataset$save()
+forms <- project$metadata$forms # unchanged metadata
+fields <- project$metadata$fields # unchanged metadata
+choices <- project$metadata$choices # unchanged metadata
+
+users <- project$redcap$users # unchanged users
+log <- project$redcap$log # unchanged log
+
+project$test_token()
+
+dataset <- project$load_dataset("REDCapSync")
 
 }
 \seealso{
-\link{setup_project} for initializing a new project
-\link{load_project} for loading an existing project
+vignette("REDCapSync", package = "REDCapSync")
+
+\link{projects} for shortcuts of cached setup projects
+
+vignette("Tokens", package = "REDCapSync")
+
+\link{setup_project} for initializing projects
+
+\link{dataset} for using the dataset objects
+
+vignette("Datasets", package = "REDCapSync")
+
+vignette("Uploads", package = "REDCapSync")
 }
 \section{Active bindings}{
   \if{html}{\out{<div class="r6-active-bindings">}}

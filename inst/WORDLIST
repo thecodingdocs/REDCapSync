@@ -9,6 +9,7 @@ REDCap
 REDCapR
 REDCapSync's
 REDCapSyncProject
+RMed
 RStudio
 RTools
 Renviron
@@ -24,6 +25,7 @@ dromedaryCase
 envir
 github
 hoardr
+io
 keyring
 keyrings
 labelled
@@ -35,6 +37,7 @@ rappdir
 rds
 redcapAPI
 redcapsync
+reimport
 reusability
 thecodingdocs
 uncoded

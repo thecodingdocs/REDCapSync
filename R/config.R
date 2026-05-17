@@ -183,7 +183,12 @@
 #' )
 #' ```
 #'
-#' @seealso See \code{vignette("Tokens", package = "REDCapSync")}
+#' @seealso
+#'
+#' vignette("Projects", package = "REDCapSync")
+#'
+#' [setup_project] for initializing projects
+#'
 #' @examples
 #'
 #' # disable with environment variable

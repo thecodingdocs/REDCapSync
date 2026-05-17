@@ -172,6 +172,8 @@ requests.
   See instructions above.
 - The RosyREDCap package is at
   [github.com/thecodingdocs/RosyREDCap](https://github.com/thecodingdocs/RosyREDCap "RosyREDCap R package").
+- A demonstration of both packages is at
+  [thecodingdocs.github.io/RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").
 - For more R coding visit
   [TheCodingDocs.com](https://www.thecodingdocs.com/ "TheCodingDocs.com")
 - For correspondence/feedback/issues, please email

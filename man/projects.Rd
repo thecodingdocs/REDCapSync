@@ -104,10 +104,13 @@ projects$names()
 project <- projects$load("TEST_CLASSIC")
 }
 \seealso{
-\code{vignette("Cache", package = "REDCapSync")}
+vignette("REDCapSync", package = "REDCapSync")
 
-Other Cache Functions:
-\code{\link[=cache_clear]{cache_clear()}}
+vignette("Cache", package = "REDCapSync")
+
+vignette("RosyREDCap", package = "REDCapSync")
+#'
+\link{setup_project} for initializing projects
+
+\link{project} for using the project objects
 }
-\concept{Cache Functions}
-\keyword{Cache}

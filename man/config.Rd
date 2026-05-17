@@ -217,5 +217,7 @@ options(redcapsync.config.offline = TRUE)
 config$offline()
 }
 \seealso{
-See \code{vignette("Tokens", package = "REDCapSync")}
+vignette("Projects", package = "REDCapSync")
+
+\link{setup_project} for initializing projects
 }

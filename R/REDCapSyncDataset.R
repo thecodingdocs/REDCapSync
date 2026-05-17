@@ -8,8 +8,12 @@
 #'
 #' @details
 #' A `REDCapSyncDataset` can be created ad-hoc from a project with
-#' `project$generate_dataset()`. For reusability, you can also define with
-#' `project$add_dataset()` and then load with `project$load_dataset()`.
+#' `dataset <- project$generate_dataset()`. For reusability, you can also
+#' define with `project$add_dataset()` and then load with
+#' `dataset <- project$load_dataset()`.
+#'
+#' You can add variables manually if you want them to be passed to Excel. But
+#' `add_field` is a feature in development.
 #'
 #' ## Typical workflow
 #' ```r
@@ -19,12 +23,12 @@
 #'   dir_path = tempdir()
 #' )
 #' # Create and save a filtered dataset
-#' dataset <- project$add_dataset(
+#' project$add_dataset(
 #'   dataset_name = "analysis_set",
 #'   filter_field = "var_yesno",
 #'   filter_choices = "Yes",
-#'   field_names = c("record_id", "ecog_at_diagnosis", "stage_at_diagnosis")
-#'  )
+#'   field_names = c("ecog_at_diagnosis", "stage_at_diagnosis")
+#' )
 #' # generate dataset for R environment
 #' dataset <- project$load_dataset("analysis_set")
 #' # optional send to global environment
@@ -113,15 +117,19 @@
 #'   dataset_name = "stage_2_patients",
 #'   filter_field = "stage_at_diagnosis",
 #'   filter_choices = "II",
-#'   field_names = c("record_id", "ecog_at_diagnosis", "stage_at_diagnosis")
+#'   field_names = c("ecog_at_diagnosis", "stage_at_diagnosis")
 #'  )
 #'
 #' dataset$save(dir_other = tempdir())
 #'
 #' @seealso
+#'
+#' [project] for using the project objects
+#'
 #' vignette("Datasets", package = "REDCapSync")
-#' [setup_project] for initializing projects
-#' [load_project] for loading existing projects
+#'
+#' vignette("RosyREDCap", package = "REDCapSync")
+#'
 #' @returns
 #' An R6 `REDCapSyncDataset` object containing dataset output, metadata,
 #' records, user information, and optional REDCap log data.

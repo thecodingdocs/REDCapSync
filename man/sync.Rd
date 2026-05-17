@@ -48,5 +48,11 @@ project <- sync(c("ONE","THREE")) # invisible return of THREE ...
 }
 }
 \seealso{
-\link{setup_project} for initializing the \code{project} object.
+vignette("REDCapSync", package = "REDCapSync")
+
+vignette("Cache", package = "REDCapSync")
+
+\link{setup_project} for initializing projects
+
+\link{project} for using the project objects
 }

@@ -44,12 +44,10 @@ the cache are...
 cache_clear("OLD_PROJECT")
 cache_clear() # every project
 }
+
 }
 \seealso{
-\code{vignette("Cache", package = "REDCapSync")}
+vignette("Cache", package = "REDCapSync")
 
-Other Cache Functions:
-\code{\link{projects}}
+\link{setup_project} for initializing projects
 }
-\concept{Cache Functions}
-\keyword{Cache}

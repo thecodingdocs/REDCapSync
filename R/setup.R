@@ -1,7 +1,7 @@
 #' @rdname setup-load
 #' @title Setup or Load REDCapSync Project
 #' @description
-#' Setup or load a REDCapSync project object.
+#' Setup or load a REDCapSync [project] object.
 #' Prepares a new REDCapSync project by recording the REDCap URI,
 #' token name, sync settings, and optional data selection preferences.
 #' @details
@@ -68,8 +68,19 @@
 #' @param hard_reset Logical scalar. If `TRUE`, any existing project with the
 #' same `project_name` is ignored and a fresh project object is initialized.
 #' Default is `FALSE`.
+#'
 #' @seealso
-#' \code{\link[REDCapSync]{projects}} for accessing previously setup projects
+#'
+#' vignette("REDCapSync", package = "REDCapSync")
+#'
+#' vignette("Tokens", package = "REDCapSync")
+#'
+#' [projects] for shortcuts of cached setup projects
+#'
+#' [project] for using the project objects
+#'
+#' vignette("Cache", package = "REDCapSync")
+#'
 #' @examples
 #' # Initialize the project object with the REDCap API token and URL
 #' save_folder <- tempdir() # replace with real folder
@@ -79,7 +90,10 @@
 #'   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 #' )
 #'
-#' @family project object
+#' # object can be named whatever you choose to assign
+#' # TEST projects can be loaded in addition to real projects
+#' project_test <- load_project("TEST_CLASSIC")
+#'
 #' @returns R6 project object with [REDCapSyncProject] class.
 #' @export
 setup_project <- function(project_name,

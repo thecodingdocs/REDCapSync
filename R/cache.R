@@ -27,9 +27,13 @@
 #' cache_clear("OLD_PROJECT")
 #' cache_clear() # every project
 #' }
-#' @family Cache Functions
-#' @keywords Cache
-#' @seealso \code{vignette("Cache", package = "REDCapSync")}
+#'
+#' @seealso
+#'
+#' vignette("Cache", package = "REDCapSync")
+#'
+#' [setup_project] for initializing projects
+#'
 #' @returns Message of outcome and invisible NULL.
 #' @export
 cache_clear <- function(project_names = NULL) {

@@ -74,6 +74,46 @@
 #' - `project$redcap`: REDCap project info, users, and activity log
 #' - `project$.internal`: Internal project object (for advanced use)
 #'
+#' ## TEST Projects
+#'
+#' All TEST projects start with "TEST_" and by default the average user cannot
+#' create a project that starts with "TEST_". They are produced from actual server
+#' REDCap projects but never contained real data and were scrubbed of any "real"
+#' user/log data. They are subject to change in future versions as the package
+#' matures. Keep in mind there are many combinations of REDCap structures to
+#' account for.
+#'
+#' TEST projects are meant to be used for demonstration and testing
+#' purposes. In general, try to use actual REDCap project(s) to explore the
+#' package.
+#'
+#' This is how to load a project with or without specifying a directory.
+#' ```r
+#' # return the list of available test projects
+#' REDCapSync::projects$test_names()
+#'
+#' project <- load_project("TEST_CLASSIC")
+#'
+#' YOUR_DIRECTORY <- getwd()
+#' project <- setup_project("TEST_CLASSIC", dir_path = YOUR_DIRECTORY)
+#' # now can test object functions (does not use API)
+#' project$sync() # will also save datasets
+#' ```
+#'
+#' The currently available TEST projects are as follows:
+#' - `TEST_CLASSIC`: Classic project (nothing repeats). Has every data type.
+#' Contains data for survival analysis testing. Contains comments.
+#' - `TEST_REPEATING`: Non-longitudinal project with repeating instruments.
+#' - `TEST_LONGITUDINAL`: Longitudinal project (with events).
+#' - `TEST_MULTIARM`: Multi-arm and longitudinal project.
+#' - `TEST_EDGE`: Edge-case project. Meant to test things that may be uncommon
+#' but should be accounted for as package matures.
+#' - `TEST_DATA`: Placeholder project meant to contain more rich test dataset.
+#' - `TEST_CANCER`: Placeholder project meant to contain more rich test dataset.
+#' - `TEST_REDCAPR_SIMPLE`: Borrowed with permission from [REDCapR].
+#' - `TEST_REDCAPR_LONGITUDINAL`: Borrowed with permission from [REDCapR].
+#' - `TEST_REDCAPR_CLIN_TRIAL`: Borrowed with permission from [REDCapR].
+#'
 #' @param dataset_name Character. Name of the dataset configuration to create,
 #' load, or reference.
 #' @param transformation_type Character. How to transform data: "default"
@@ -152,6 +192,7 @@
 #'
 #' @examples
 #' # Load a test project
+#' projects$test_names() # available test projects
 #' project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #'
 #' # Sync data from REDCap
@@ -161,23 +202,32 @@
 #' head(project$data$text)
 #' project$metadata$fields[1:5, ]
 #'
-#' # Create and save a filtered dataset
-#' dataset <- project$add_dataset(
-#'   dataset_name = "analysis_set",
-#'   filter_field = "var_yesno",
-#'   filter_choices = "Yes",
-#'   field_names = c("record_id", "ecog_at_diagnosis", "stage_at_diagnosis")
-#'  )
-#' # generate dataset for R environment
-#' dataset <- project$generate_dataset("analysis_set")
-#' # Optional modify
-#' dataset$data$merged$stage_2 <- dataset$data$merged$stage_at_diagnosis == "II"
-#' # save to directory
-#' dataset$save()
+#' forms <- project$metadata$forms # unchanged metadata
+#' fields <- project$metadata$fields # unchanged metadata
+#' choices <- project$metadata$choices # unchanged metadata
+#'
+#' users <- project$redcap$users # unchanged users
+#' log <- project$redcap$log # unchanged log
+#'
+#' project$test_token()
+#'
+#' dataset <- project$load_dataset("REDCapSync")
 #'
 #' @seealso
-#' [setup_project] for initializing a new project
-#' [load_project] for loading an existing project
+#'
+#' vignette("REDCapSync", package = "REDCapSync")
+#'
+#' [projects] for shortcuts of cached setup projects
+#'
+#' vignette("Tokens", package = "REDCapSync")
+#'
+#' [setup_project] for initializing projects
+#'
+#' [dataset] for using the dataset objects
+#'
+#' vignette("Datasets", package = "REDCapSync")
+#'
+#' vignette("Uploads", package = "REDCapSync")
 #'
 #' @returns
 #' An R6 `REDCapSyncProject` class generator for internal use. Users interact
@@ -508,7 +558,7 @@ REDCapSyncProject <- R6Class(
     #' @description  Set keyring token. See vignette and config for detail.
     set_keyring_token = function() {
       if (private$project$internals$is_test) {
-        cli_alert_info("TEST projects do not save to directories!")
+        cli_alert_info("TEST projects do not communicate with the API")
         return(invisible(self))
       }
       set_project_keyring_token(private$project)

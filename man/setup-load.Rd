@@ -123,7 +123,7 @@ Default is \code{FALSE}.}
 R6 project object with \link{REDCapSyncProject} class.
 }
 \description{
-Setup or load a REDCapSync project object.
+Setup or load a REDCapSync \link{project} object.
 Prepares a new REDCapSync project by recording the REDCap URI,
 token name, sync settings, and optional data selection preferences.
 }
@@ -146,8 +146,19 @@ project <- setup_project(
   redcap_uri = "https://redcap.yourinstitution.edu/api/"
 )
 
+# object can be named whatever you choose to assign
+# TEST projects can be loaded in addition to real projects
+project_test <- load_project("TEST_CLASSIC")
+
 }
 \seealso{
-\code{\link[REDCapSync]{projects}} for accessing previously setup projects
+vignette("REDCapSync", package = "REDCapSync")
+
+vignette("Tokens", package = "REDCapSync")
+
+\link{projects} for shortcuts of cached setup projects
+
+\link{project} for using the project objects
+
+vignette("Cache", package = "REDCapSync")
 }
-\concept{project object}

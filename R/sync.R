@@ -25,8 +25,17 @@
 #' project <- sync(c("ONE","THREE")) # invisible return of THREE ...
 #' }
 #' @returns Invisibly returns last project object (R6 [REDCapSyncProject] class)
+#'
 #' @seealso
-#' \link{setup_project} for initializing the `project` object.
+#'
+#' vignette("REDCapSync", package = "REDCapSync")
+#'
+#' vignette("Cache", package = "REDCapSync")
+#'
+#' [setup_project] for initializing projects
+#'
+#' [project] for using the project objects
+#'
 #' @export
 sync <- function(project_names = NULL,
                  save_datasets = TRUE,

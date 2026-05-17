@@ -139,6 +139,7 @@ If you wish to contribute to this software, use github issues and pull requests.
 
 -   The REDCapSync package is at [github.com/thecodingdocs/REDCapSync](https://github.com/thecodingdocs/REDCapSync "REDCapSync R package"). See instructions above.
 -   The RosyREDCap package is at [github.com/thecodingdocs/RosyREDCap](https://github.com/thecodingdocs/RosyREDCap "RosyREDCap R package").
+-   A demonstration of both packages is at  [thecodingdocs.github.io/RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").
 -   For more R coding visit [TheCodingDocs.com](https://www.thecodingdocs.com/ "TheCodingDocs.com")
 -   For correspondence/feedback/issues, please email [TheCodingDocs\@gmail.com](mailto:TheCodingDocs@gmail.com)!
 -   Follow us on Twitter/X [x.com/TheCodingDocs](https://x.com/TheCodingDocs/ "TheCodingDocs Twitter")

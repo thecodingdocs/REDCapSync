@@ -80,9 +80,18 @@
 #' }
 #'
 #' }
-#' @family Cache Functions
-#' @keywords Cache
-#' @seealso \code{vignette("Cache", package = "REDCapSync")}
+#' @seealso
+#'
+#' vignette("REDCapSync", package = "REDCapSync")
+#'
+#' vignette("Cache", package = "REDCapSync")
+#'
+#' vignette("RosyREDCap", package = "REDCapSync")
+#' #'
+#' [setup_project] for initializing projects
+#'
+#' [project] for using the project objects
+#'
 #' @examples
 #' project_df <- projects$df()
 #' projects$print()

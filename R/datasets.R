@@ -176,7 +176,7 @@ generate_project_dataset <- function(project,
   # function to do asserts here
   assert_choice(transformation_type, TRANFORMATION_TYPES)
   data_list <- NULL
-  # add new fields
+  # add new fields and calculate them
   if (labelled != project$settings$labelled) {
     if (project$settings$labelled) {
       project <- labelled_to_raw_project(project)
@@ -190,6 +190,15 @@ generate_project_dataset <- function(project,
   data_list$links <- project$links
   record_sum <- project$record_summary
   data_list <- metadata_add_default_cols(data_list)
+  data_list$data <- filter_data_list(
+    data_list = data_list,
+    field_names = field_names,
+    form_names = form_names,
+    filter_field = filter_field,
+    filter_choices = filter_choices,
+    filter_list = filter_list,
+    filter_strict = filter_strict
+  )
   #cache or store these to make it faster?
   if (transformation_type == "default") {
     data_list <- merge_non_repeating(
@@ -205,15 +214,6 @@ generate_project_dataset <- function(project,
       merge_to_rep = FALSE
     )
   }
-  data_list$data <- filter_data_list(
-    data_list = data_list,
-    field_names = field_names,
-    form_names = form_names,
-    filter_field = filter_field,
-    filter_choices = filter_choices,
-    filter_list = filter_list,
-    filter_strict = filter_strict
-  )
   data_list$data <- deidentify_data_list(
     data_list = data_list,
     exclude_identifiers = exclude_identifiers,
@@ -247,17 +247,17 @@ generate_project_dataset <- function(project,
       data_list$metadata$forms <- annotate_forms(
         data_list = data_list,
         annotate = TRUE,
-        drop_blanks = drop_blanks
+        drop_blanks = drop_blanks || !is.null(form_names)
       )
       data_list$metadata$fields <- annotate_fields(
         data_list = data_list,
         annotate = TRUE,
-        drop_blanks = drop_blanks
+        drop_blanks = drop_blanks || !is.null(field_names)
       )
       data_list$metadata$choices <- annotate_choices(
         data_list = data_list,
         annotate = TRUE,
-        drop_blanks = drop_blanks
+        drop_blanks = drop_blanks || !is.null(field_names)
       )
     }
   }

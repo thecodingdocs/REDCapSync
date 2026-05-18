@@ -79,21 +79,21 @@ RStudio and update all packages in RStudio. See
 
 Getting started is as simple as 1.) setting your token, 2.) setting up a
 project, and 3.) running project\$sync(). See [Getting
-Started](https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html "Getting Started")
-page for the basics! If you need more help setting your tokens, See the
-[Tokens](https://thecodingdocs.github.io/REDCapSync/vignette(%22Tokens%22,%20package%20=%20%22REDCapSync%22))
+Started](https://thecodingdocs.github.io/REDCapSync/REDCapSync.md "Getting Started")
+page for the basics! If you need more help setting your tokens, see the
+[Tokens](https://thecodingdocs.github.io/REDCapSync/Tokens.md "Tokens vignette.")
 vignette.
 
 ``` r
 
-# 1.) setting your token =======================================================
+# 1.) setting your token -------------------------------------------------------
 # put in RStudio console (ie bottom right panel and NOT IN A SCRIPT)
 Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")
 # or WAY better put this in your .Renviron file...
 # REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
 
-# 2.) setting up a project =====================================================
+# 2.) setting up a project -----------------------------------------------------
 # help(setup_project)
 DATA_STORED_HERE <- getwd() # choose appropriate/secure folder
 # help(setup_project)
@@ -107,7 +107,7 @@ project <- setup_project(
 # install.packages("keyring") # if you dont have
 project$test_token() # will have pop up for keyring if token fails
 
-# 3.) running project$sync() ===================================================
+# 3.) running project$sync() ---------------------------------------------------
 project$sync() # gets all data from REDCap based on setup
 # help(project)
 # project$url_launch() # opens REDCap in browser
@@ -116,7 +116,7 @@ project$generate_dataset("custom", envir = globalenv()) # identified
 ```
 
 For an in-depth demonstration of both REDCapSync and RosyREDCap, see
-[thecodingdocs.github.io/RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").
+[RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").
 
 ## Framework
 

@@ -71,7 +71,7 @@ See [thecodingdocs.com/r/getting-started](https://www.thecodingdocs.com/r/gettin
 
 ## Getting Started!
 
-Getting started is as simple as 1.) setting your token, 2.) setting up a project, and 3.) running project\$sync(). See [Getting Started](REDCapSync.html "Getting Started") page for the basics! If you need more help setting your tokens, see the Tokens vignette. 
+Getting started is as simple as 1.) setting your token, 2.) setting up a project, and 3.) running project\$sync(). See [Getting Started](https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html "Getting Started") page for the basics! 
 
 ```{r , eval=FALSE}
 # 1.) setting your token -------------------------------------------------------

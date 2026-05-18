@@ -23,23 +23,21 @@ Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # put in console
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
 
 # 2.) setting up a project -----------------------------------------------------
-# help(setup_project)
-DATA_STORED_HERE <- getwd()                   # choose appropriate/secure folder
-
 project <- setup_project(
   project_name = "FIRST_PROJECT",                       
-  redcap_uri = "https://redcap.fake.edu/api/",                 # same as REDCapR
-  dir_path = DATA_STORED_HERE,    
-  sync_frequency = "daily",                              # only checks max daily 
-  get_entire_log = TRUE                           # for small or medium projects
+  redcap_uri = "https://redcap.fake.edu/api/",             # same as REDCapR
+  dir_path = getwd(),                            # choose appropriate folder
+  sync_frequency = "daily",                          # only checks max daily 
+  get_entire_log = TRUE                       # for small or medium projects
 )
+
 # install.packages("keyring") 
-project$test_token()            # will have pop up keyring window if token fails
+project$test_token()                    # will launch keyring if token fails
 
 # 3.) running project$sync() ---------------------------------------------------
 project$sync() 
 
-project$generate_dataset("custom", envir = globalenv())             # identified
+project$generate_dataset("custom", envir = globalenv())        
 ```
 
 ## Setup tokens

@@ -128,23 +128,21 @@
 <span><span class="co"># Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)</span></span>
 <span></span>
 <span><span class="co"># 2.) setting up a project -----------------------------------------------------</span></span>
-<span><span class="co"># help(setup_project)</span></span>
-<span><span class="va">DATA_STORED_HERE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>                   <span class="co"># choose appropriate/secure folder</span></span>
-<span></span>
 <span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/setup-load.html">setup_project</a></span><span class="op">(</span></span>
 <span>  project_name <span class="op">=</span> <span class="st">"FIRST_PROJECT"</span>,                       </span>
-<span>  redcap_uri <span class="op">=</span> <span class="st">"https://redcap.fake.edu/api/"</span>,                 <span class="co"># same as REDCapR</span></span>
-<span>  dir_path <span class="op">=</span> <span class="va">DATA_STORED_HERE</span>,    </span>
-<span>  sync_frequency <span class="op">=</span> <span class="st">"daily"</span>,                              <span class="co"># only checks max daily </span></span>
-<span>  get_entire_log <span class="op">=</span> <span class="cn">TRUE</span>                           <span class="co"># for small or medium projects</span></span>
+<span>  redcap_uri <span class="op">=</span> <span class="st">"https://redcap.fake.edu/api/"</span>,             <span class="co"># same as REDCapR</span></span>
+<span>  dir_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>,                            <span class="co"># choose appropriate folder</span></span>
+<span>  sync_frequency <span class="op">=</span> <span class="st">"daily"</span>,                          <span class="co"># only checks max daily </span></span>
+<span>  get_entire_log <span class="op">=</span> <span class="cn">TRUE</span>                       <span class="co"># for small or medium projects</span></span>
 <span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># install.packages("keyring") </span></span>
-<span><span class="va">project</span><span class="op">$</span><span class="fu">test_token</span><span class="op">(</span><span class="op">)</span>            <span class="co"># will have pop up keyring window if token fails</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">test_token</span><span class="op">(</span><span class="op">)</span>                    <span class="co"># will launch keyring if token fails</span></span>
 <span></span>
 <span><span class="co"># 3.) running project$sync() ---------------------------------------------------</span></span>
 <span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span> </span>
 <span></span>
-<span><span class="va">project</span><span class="op">$</span><span class="fu">generate_dataset</span><span class="op">(</span><span class="st">"custom"</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>             <span class="co"># identified</span></span></code></pre></div>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">generate_dataset</span><span class="op">(</span><span class="st">"custom"</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>        </span></code></pre></div>
 <p>For an in-depth demonstration of both REDCapSync and RosyREDCap, see <a href="https://thecodingdocs.github.io/RMed26-Demo/" title="RMed26-Demo" class="external-link">RMed26-Demo</a>.</p>
 </div>
 <div class="section level2">

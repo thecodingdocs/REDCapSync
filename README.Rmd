@@ -71,17 +71,17 @@ See [thecodingdocs.com/r/getting-started](https://www.thecodingdocs.com/r/gettin
 
 ## Getting Started!
 
-Getting started is as simple as 1.) setting your token, 2.) setting up a project, and 3.) running project\$sync(). See [Getting Started](https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html "Getting Started") page for the basics! If you need more help setting your tokens, See the [Tokens](vignette("Tokens", package = "REDCapSync")) vignette. 
+Getting started is as simple as 1.) setting your token, 2.) setting up a project, and 3.) running project\$sync(). See [Getting Started](REDCapSync.html "Getting Started") page for the basics! If you need more help setting your tokens, see the [Tokens](Tokens.html "Tokens vignette.") vignette. 
 
 ```{r , eval=FALSE}
-# 1.) setting your token =======================================================
+# 1.) setting your token -------------------------------------------------------
 # put in RStudio console (ie bottom right panel and NOT IN A SCRIPT)
 Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")
 # or WAY better put this in your .Renviron file...
 # REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
 
-# 2.) setting up a project =====================================================
+# 2.) setting up a project -----------------------------------------------------
 # help(setup_project)
 DATA_STORED_HERE <- getwd() # choose appropriate/secure folder
 # help(setup_project)
@@ -95,7 +95,7 @@ project <- setup_project(
 # install.packages("keyring") # if you dont have
 project$test_token() # will have pop up for keyring if token fails
 
-# 3.) running project$sync() ===================================================
+# 3.) running project$sync() ---------------------------------------------------
 project$sync() # gets all data from REDCap based on setup
 # help(project)
 # project$url_launch() # opens REDCap in browser
@@ -103,7 +103,7 @@ project$generate_dataset("custom", envir = globalenv()) # identified
 # add reusable datasets with project$add_dataset(...)
 ```
 
-For an in-depth demonstration of both REDCapSync and RosyREDCap, see [thecodingdocs.github.io/RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").
+For an in-depth demonstration of both REDCapSync and RosyREDCap, see [RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").
 
 ## Framework
 

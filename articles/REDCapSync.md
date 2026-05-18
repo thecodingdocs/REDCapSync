@@ -151,7 +151,7 @@ project$generate_dataset(
 ```
 
 See the
-[Datasets](https://thecodingdocs.github.io/REDCapSync/articles/Datasets.html, "Datasets vignette")
+[Datasets](https://thecodingdocs.github.io/REDCapSync/articles/Datasets.md "Datasets vignette")
 vignette. For an in-depth demonstration of both REDCapSync and
 RosyREDCap, see
 [thecodingdocs.github.io/RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").

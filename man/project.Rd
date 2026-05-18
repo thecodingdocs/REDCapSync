@@ -90,11 +90,11 @@ object (self), allowing fluent code:
 \subsection{TEST Projects}{
 
 All TEST projects start with "TEST_" and by default the average user cannot
-create a project that starts with "TEST_". They are produced from actual server
-REDCap projects but never contained real data and were scrubbed of any "real"
-user/log data. They are subject to change in future versions as the package
-matures. Keep in mind there are many combinations of REDCap structures to
-account for.
+create a project that starts with "TEST_". They are produced from actual
+server REDCap projects but never contained real data and were scrubbed of
+any "real" user/log data. They are subject to change in future versions as
+the package matures. Keep in mind there are many combinations of REDCap
+structures to account for.
 
 TEST projects are meant to be used for demonstration and testing
 purposes. In general, try to use actual REDCap project(s) to explore the
@@ -291,7 +291,7 @@ is \code{TRUE}.}
   filter_strict = TRUE,
   field_names = NULL,
   form_names = NULL,
-  exclude_identifiers = TRUE,
+  exclude_identifiers = FALSE,
   exclude_free_text = FALSE,
   date_handling = "none",
   labelled = TRUE,
@@ -436,7 +436,7 @@ custom datasets.
   filter_strict = TRUE,
   field_names = NULL,
   form_names = NULL,
-  exclude_identifiers = TRUE,
+  exclude_identifiers = FALSE,
   exclude_free_text = FALSE,
   date_handling = "none",
   labelled = TRUE,
@@ -578,7 +578,15 @@ load, or reference.}
   test connection via communication with API.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{REDCapSyncProject$test_token()}
+    \preformatted{REDCapSyncProject$test_token(keyring_if_error = TRUE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{keyring_if_error}}{Logical. Launch pop-up for keyring if token is not
+valid or fails to call REDCap. Max 3 attempts. Default is \code{TRUE}.}
+    }
     \if{html}{\out{</div>}}
   }
 }

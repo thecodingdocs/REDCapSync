@@ -1,5 +1,5 @@
 
-## REDCapSync <a href="https://github.com/thecodingdocs/REDCapSync/"><img src="man/figures/logo.png" align="right" height="160" width="140"/></a>
+# REDCapSync <a href="https://thecodingdocs.github.io/REDCapSync/"><img src="man/figures/logo.png" align="right" height="138" alt="REDCapSync website" /></a>
 
 <!-- badges: start -->
 
@@ -42,7 +42,7 @@ are to…
 2.  Automate common tasks such as cleaning, deidentification and merges.
 3.  Automate distribution of user-defined Excel datasets to local/cloud
     storage for one or many REDCap projects.
-4.  Convert ***uncoded*** REDCap data from R or Excel for upload using
+4.  Convert ***labelled*** REDCap data from R or Excel for upload using
     REDCap API.
 5.  Power the companion shiny app
     [`RosyREDCap`](https://thecodingdocs.github.io/RosyREDCap/ "RosyREDCap R package")
@@ -90,9 +90,46 @@ RStudio and update all packages in RStudio. See
 Getting started is as simple as 1.) setting your token, 2.) setting up a
 project, and 3.) running project\$sync(). See [Getting
 Started](https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html "Getting Started")
-page for the basics!
+page for the basics! If you need more help setting your tokens, See the
+[Tokens](vignette(%22Tokens%22,%20package%20=%20%22REDCapSync%22))
+vignette.
 
-![](man/figures/cover.jpg)
+``` r
+# 1.) setting your token =======================================================
+# put in RStudio console (ie bottom right panel and NOT IN A SCRIPT)
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")
+# or WAY better put this in your .Renviron file...
+# REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'
+# Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
+
+# 2.) setting up a project =====================================================
+# help(setup_project)
+DATA_STORED_HERE <- getwd() # choose appropriate/secure folder
+# help(setup_project)
+project <- setup_project(
+  project_name = "FIRST_PROJECT", # default token name REDCAPSYNC_<project_name>
+  redcap_uri = "https://redcap.fakei.edu/api/",   # your institution's link
+  dir_path = DATA_STORED_HERE,    # choose appropriate/secure folder
+  sync_frequency = "weekly", # default is "daily",
+  get_entire_log = FALSE # TRUE for max summary, may be slow for huge projects
+)
+# install.packages("keyring") # if you dont have
+project$test_token() # will have pop up for keyring if token fails
+
+# 3.) running project$sync() ===================================================
+project$sync() # gets all data from REDCap based on setup
+# help(project)
+# project$url_launch() # opens REDCap in browser
+project$generate_dataset("custom", envir = globalenv()) # identified
+# add reusable datasets with project$add_dataset(...)
+```
+
+For an in-depth demonstration of both REDCapSync and RosyREDCap, see
+[thecodingdocs.github.io/RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").
+
+## Framework
+
+![](man/figures/framework.png)
 
 ## Minimum Requirements
 
@@ -106,6 +143,8 @@ page for the basics!
 - Basic R knowledge such as installing a package and running code.
 - Thoughtful attention to how and where data you create is used and
   stored.
+
+![](man/figures/redcap_priv.png)
 
 ## Contributing
 

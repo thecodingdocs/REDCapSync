@@ -79,9 +79,9 @@
 #' All TEST projects start with "TEST_" and by default the average user cannot
 #' create a project that starts with "TEST_". They are produced from actual
 #' server REDCap projects but never contained real data and were scrubbed of
-#' any user/log data. They are subject to change in future versions as the
-#' package matures. Keep in mind there are many combinations of
-#' REDCap structures to account for.
+#' any "real" user/log data. They are subject to change in future versions as
+#' the package matures. Keep in mind there are many combinations of REDCap
+#' structures to account for.
 #'
 #' TEST projects are meant to be used for demonstration and testing
 #' purposes. In general, try to use actual REDCap project(s) to explore the
@@ -189,6 +189,8 @@
 #' Default is `NULL`.
 #' @param to_be_uploaded Data frame in raw coded format ready to upload to
 #' REDCap.
+#' @param keyring_if_error Logical. Launch pop-up for keyring if token is not
+#' valid or fails to call REDCap. Max 3 attempts. Default is `TRUE`.
 #'
 #' @examples
 #' # Load a test project
@@ -370,7 +372,7 @@ REDCapSyncProject <- R6Class(
                            filter_strict = TRUE,
                            field_names = NULL,
                            form_names = NULL,
-                           exclude_identifiers = TRUE,
+                           exclude_identifiers = FALSE,
                            exclude_free_text = FALSE,
                            date_handling = "none",
                            labelled = TRUE,
@@ -456,7 +458,7 @@ REDCapSyncProject <- R6Class(
                                 filter_strict = TRUE,
                                 field_names = NULL,
                                 form_names = NULL,
-                                exclude_identifiers = TRUE,
+                                exclude_identifiers = FALSE,
                                 exclude_free_text = FALSE,
                                 date_handling = "none",
                                 labelled = TRUE,
@@ -558,13 +560,26 @@ REDCapSyncProject <- R6Class(
       invisible(self)
     },
     #' @description test connection via communication with API.
-    test_token = function() {
+    test_token = function(keyring_if_error = TRUE) {
       if (private$project$internals$is_test) {
         cli_alert_info("TEST projects do not communicate with the API")
         return(invisible(self))
       }
-      get_project_token(project = private$project, silent = FALSE)
-      private$project <- test_project_token(project = private$project)
+      had_success <- FALSE
+      attempt <- 1L
+      is_interactive <- interactive()
+      max_attempts <- ifelse(is_interactive, 3L, 1L)
+      while (!any(had_success || attempt > max_attempts)) {
+        token <- get_project_token(project = private$project, silent = FALSE)
+        private$project <- test_project_token(project = private$project)
+        had_success <- private$project$internals$last_test_connection_outcome
+        if (keyring_if_error && is_interactive && !had_success) {
+          set_project_keyring_token(private$project)
+        }
+      }
+      if (!had_success) {
+        cli_alert_danger("Unable to connect!")
+      }
       invisible(self)
     },
     #' @description opens links in browser.

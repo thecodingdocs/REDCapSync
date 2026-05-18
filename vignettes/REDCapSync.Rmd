@@ -12,21 +12,54 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-## Setup
 
 First load the namespace and check your saved projects.
 
 ```{r example, eval=FALSE}
 library(REDCapSync)
-
 projects$print()
-
-View(projects$df())                   # Vew your previously saved projects
+# View(projects$df())                   # Vew your previously saved projects
 ```
+
+## Very Quick Guide 
+
+Getting started is as simple as 1.) setting your token, 2.) setting up a project, and 3.) running project\$sync(). 
+
+```{r , eval=FALSE}
+# 1.) setting your token -------------------------------------------------------
+# put in RStudio console (ie bottom right panel and NOT IN A SCRIPT)
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")
+# or WAY better put this in your .Renviron file...
+# REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'
+# Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
+
+# 2.) setting up a project -----------------------------------------------------
+# help(setup_project)
+DATA_STORED_HERE <- getwd() # choose appropriate/secure folder
+# help(setup_project)
+project <- setup_project(
+  project_name = "FIRST_PROJECT", # default token name REDCAPSYNC_<project_name>
+  redcap_uri = "https://redcap.fakei.edu/api/",   # your institution's link
+  dir_path = DATA_STORED_HERE,    # choose appropriate/secure folder
+  sync_frequency = "weekly", # default is "daily",
+  get_entire_log = FALSE # TRUE for max summary, may be slow for huge projects
+)
+# install.packages("keyring") # if you dont have
+project$test_token() # will have pop up for keyring if token fails
+
+# 3.) running project$sync() ---------------------------------------------------
+project$sync() # gets all data from REDCap based on setup
+# help(project)
+# project$url_launch() # opens REDCap in browser
+project$generate_dataset("custom", envir = globalenv()) # identified
+# add reusable datasets with project$add_dataset(...)
+```
+
+## Setup tokens
 
 You can set your REDCap token in three ways! If you need more help setting your tokens, See the [Tokens](vignette("Tokens", package = "REDCapSync")) vignette.
 
-```{r example2, eval=FALSE}
+```{r , eval=FALSE}
 #1. set in your Renviron file
 usethis::edit_r_environ()                                 #finds your file
 # another way to find same file
@@ -35,6 +68,10 @@ rstudioapi::navigateToFile(file.path(Sys.getenv("HOME")), ".Renviron"))
 # then save file and restart R session (`.rs.restartR()`) and reload package
 
 #2. set to your token with keyring package! (make sure is installed)
+keyring::key_set(service = config$keyring.service(), # for keyring
+                 username = "FIRST_PROJECT", # is project_name
+                 keyring = config$keyring()) # now enter token in pop-up
+# ... or if have project object already
 project$set_keyring_token() # now enter token in pop-up
 
 #3. set each time in your console or script (not recommended!) RISKY
@@ -49,49 +86,5 @@ keyring::key_get(service = config$keyring.service(), # for keyring
                  keyring = config$keyring())
 ```
 
-## Run Core Functions
-The following functions represent the core functions of the package.
-```{r , eval=FALSE}
-project <- setup_project(
-  project_name = "FIRST_PROJECT", # default token name REDCAPSYNC_<project_name>
-  redcap_uri = "https://redcap.fakei.edu/api/",        # your institution's link
-  dir_path = getwd()     # your project file path, real data will be stored here
-)
-project$sync() # gets all data from REDCap
-```
-
 ## Explore Outputs!
 ```{r , eval=FALSE}
-fields <- project$metadata$fields            # adds fields in global environment
-choices <- project$metadata$choices         # adds choices in global environment
-project$data |> list2env(envir = globalenv())  # adds data forms in global envir
-```
-
-Take note you are assigning variables above. So if you have a redcap form called "project", "fields", "choices", etc. you will have to adjust what you choose to call them in your script to avoid any conflicts.
-
-## Go Further by Generating Datasets!
-
-This is the intended way to extract data from the project object. It has parameters that control what is exported. It is unique from simply exporting the raw data because it can summarize data from the log, change the columns to R variable types, add variables, etc. It can also be used for visualization functions from [`RosyREDCap`](https://thecodingdocs.github.io/RosyREDCap/ "RosyREDCap R package"). 
-
-The following default merges all non-repeating forms and adds them to the right of any repeating forms. It also uses the REDCap log and REDCap data to add key information to metadata, users, and records.
-
-```{r , eval=FALSE}
-project$load_dataset(summary_name = "REDCapSync", envir = globalenv())
-```
-
-This can be customized with `add_dataset` for refreshing datasets or `generate_dataset` for R-only use. This can give you filtered data (and corresponding annotations to metadata, etc), deidentified data, and more!
-
-```{r , eval=FALSE}
-project$generate_dataset(
-  dataset_name = "custom_name"
-  filter_field = "has_something"  # Raw REDCap variable name
-  filter_choices = "Yes"          # REDCap labelled choice
-  exclude_identifiers = TRUE,
-  exclude_free_text = TRUE,
-  include_metadata = TRUE,
-  envir = globalenv()
-)
-```
-
-For an in-depth demonstration of both REDCapSync and RosyREDCap, see [thecodingdocs.github.io/RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").
-

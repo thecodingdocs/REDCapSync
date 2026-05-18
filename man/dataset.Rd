@@ -138,7 +138,7 @@ Users should construct objects using \link{REDCapSyncProject}.
   filter_strict = TRUE,
   field_names = NULL,
   form_names = NULL,
-  exclude_identifiers = TRUE,
+  exclude_identifiers = FALSE,
   exclude_free_text = FALSE,
   date_handling = "none",
   labelled = TRUE,

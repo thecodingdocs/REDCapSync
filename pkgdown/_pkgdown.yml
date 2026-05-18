@@ -6,7 +6,7 @@ deploy:
   install_metadata: true
 template:
   bootstrap: 5
-  bootswatch: pulse
+  bootswatch: zephyr
   math-rendering: mathjax
   light-switch: true
   bslib:

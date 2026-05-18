@@ -141,7 +141,9 @@ See the [Datasets](Datasets.html "Datasets vignette") vignette.
 
 ## Framework
 
-![A diagram of REDCapSync framework showing projects to project to dataset.](man/figures/framework.png)
+```{r, fig.alt = "A diagram of REDCapSync framework showing projects to project to dataset.", out.width="100%"}
+knitr::include_graphics("man/figures/framework.png")
+```
 
 For an in-depth demonstration of both REDCapSync and RosyREDCap, see [thecodingdocs.github.io/RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").
 

@@ -10,8 +10,6 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 coverage](https://codecov.io/gh/thecodingdocs/REDCapSync/graph/badge.svg)](https://app.codecov.io/gh/thecodingdocs/REDCapSync)
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![CRAN
-status](https://www.r-pkg.org/badges/version/REDCapSync)](https://CRAN.R-project.org/package=REDCapSync)
 <!-- badges: end -->
 
 Several R packages exist for using the
@@ -124,12 +122,11 @@ For an in-depth demonstration of both REDCapSync and RosyREDCap, see
 
 ## Framework
 
-<figure>
-<img src="man/figures/framework.png"
-alt="A diagram of REDCapSync framework showing projects to project to dataset." />
-<figcaption aria-hidden="true">A diagram of REDCapSync framework showing
-projects to project to dataset.</figcaption>
-</figure>
+``` r
+knitr::include_graphics("man/figures/framework.png")
+```
+
+<img src="man/figures/framework.png" alt="A diagram of REDCapSync framework showing projects to project to dataset." width="100%" />
 
 ## Minimum Requirements
 
@@ -144,13 +141,11 @@ projects to project to dataset.</figcaption>
 - Thoughtful attention to how and where data you create is used and
   stored.
 
-<figure>
-<img src="man/figures/redcap_priv.png"
-alt="Shows on REDCap website user rights page the user with the token needs API token export privileges and ideally logging privileges" />
-<figcaption aria-hidden="true">Shows on REDCap website user rights page
-the user with the token needs API token export privileges and ideally
-logging privileges</figcaption>
-</figure>
+``` r
+knitr::include_graphics("man/figures/redcap_priv.png")
+```
+
+<img src="man/figures/redcap_priv.png" alt="Shows on REDCap website user rights page the user with the token needs API token export privileges and ideally logging privileges." width="100%" />
 
 ## Contributing
 
@@ -228,12 +223,14 @@ requests.
 - Follow me on Twitter/X
   [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH/ "BRoseMDMPH Twitter")
 
-<figure>
-<img src="man/figures/cover.jpg"
-alt="An epic handshake between REDCap and R as an illustration of REDCapSync" />
-<figcaption aria-hidden="true">An epic handshake between REDCap and R as
-an illustration of REDCapSync</figcaption>
-</figure>
+``` r
+knitr::include_graphics("man/figures/cover.jpg")
+```
 
-[![A logo for thecodingdocs.com with a stethoscope that looks like
-coding brackets](man/figures/TCD.png)](https://www.thecodingdocs.com)
+<img src="man/figures/cover.jpg" alt="An epic handshake between REDCap and R as an illustration of REDCapSync." width="100%" />
+
+``` r
+knitr::include_graphics("man/figures/TCD.png")
+```
+
+<img src="man/figures/TCD.png" alt="A logo for thecodingdocs.com with a stethoscope that looks like coding brackets." width="100%" />

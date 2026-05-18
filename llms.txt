@@ -87,32 +87,29 @@ vignette.
 ``` r
 
 # 1.) setting your token -------------------------------------------------------
-# put in RStudio console (ie bottom right panel and NOT IN A SCRIPT)
-Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")
-# or WAY better put this in your .Renviron file...
-# REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # put in console
+# or WAY BETTER put this in your .Renviron file...
+# REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
 
 # 2.) setting up a project -----------------------------------------------------
 # help(setup_project)
-DATA_STORED_HERE <- getwd() # choose appropriate/secure folder
-# help(setup_project)
+DATA_STORED_HERE <- getwd()                   # choose appropriate/secure folder
+
 project <- setup_project(
-  project_name = "FIRST_PROJECT", # default token name REDCAPSYNC_<project_name>
-  redcap_uri = "https://redcap.fakei.edu/api/",   # your institution's link
-  dir_path = DATA_STORED_HERE,    # choose appropriate/secure folder
-  sync_frequency = "weekly", # default is "daily",
-  get_entire_log = FALSE # TRUE for max summary, may be slow for huge projects
+  project_name = "FIRST_PROJECT",                       
+  redcap_uri = "https://redcap.fake.edu/api/",                 # same as REDCapR
+  dir_path = DATA_STORED_HERE,    
+  sync_frequency = "daily",                              # only checks max daily 
+  get_entire_log = TRUE                           # for small or medium projects
 )
-# install.packages("keyring") # if you dont have
-project$test_token() # will have pop up for keyring if token fails
+# install.packages("keyring") 
+project$test_token()            # will have pop up keyring window if token fails
 
 # 3.) running project$sync() ---------------------------------------------------
-project$sync() # gets all data from REDCap based on setup
-# help(project)
-# project$url_launch() # opens REDCap in browser
-project$generate_dataset("custom", envir = globalenv()) # identified
-# add reusable datasets with project$add_dataset(...)
+project$sync() 
+
+project$generate_dataset("custom", envir = globalenv())             # identified
 ```
 
 For an in-depth demonstration of both REDCapSync and RosyREDCap, see

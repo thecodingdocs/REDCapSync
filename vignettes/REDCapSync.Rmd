@@ -1,6 +1,8 @@
 ---
 title: "Get Started"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    fig_caption: false
 vignette: >
   %\VignetteIndexEntry{Get Started}
   %\VignetteEngine{knitr::rmarkdown}
@@ -27,7 +29,7 @@ Getting started is as simple as 1.) setting your token, 2.) setting up a project
 
 ```{r , eval=FALSE}
 # 1.) setting your token -------------------------------------------------------
-Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # put in console
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # in console
 # or WAY BETTER put this in your .Renviron file...
 # REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
@@ -49,7 +51,6 @@ project$sync()
 
 project$generate_dataset("custom", envir = globalenv())        
 ```
-
 
 ## Setup tokens
 

@@ -1,5 +1,7 @@
 ---
-output: github_document
+output:
+  github_document:
+    fig_caption: false
 editor_options: 
   markdown: 
     wrap: sentence
@@ -20,7 +22,6 @@ knitr::opts_chunk$set(
 
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) [![R-CMD-check](https://github.com/thecodingdocs/REDCapSync/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thecodingdocs/REDCapSync/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/thecodingdocs/REDCapSync/graph/badge.svg)](https://app.codecov.io/gh/thecodingdocs/REDCapSync)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![CRAN status](https://www.r-pkg.org/badges/version/REDCapSync)](https://CRAN.R-project.org/package=REDCapSync)
 <!-- badges: end -->
 
 Several R packages exist for using the [REDCap](https://projectredcap.org/) Application Program Interface (API) such as, [`redcapAPI`](https://github.com/vubiostat/redcapAPI), [`REDCapR`](https://ouhscbbmc.github.io/REDCapR/), and [`tidyREDCap`](https://raymondbalise.github.io/tidyREDCap/).
@@ -75,7 +76,7 @@ Getting started is as simple as 1.) setting your token, 2.) setting up a project
 
 ```{r , eval=FALSE}
 # 1.) setting your token -------------------------------------------------------
-Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # put in console
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # in console
 # or WAY BETTER put this in your .Renviron file...
 # REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
@@ -177,4 +178,4 @@ If you wish to contribute to this software, use github issues and pull requests.
 
 ![An epic handshake between REDCap and R as an illustration of REDCapSync](man/figures/cover.jpg)
 
-[![A logo for thecodingdocs.com with a stethoscope that looks like coding brackets ](man/figures/TCD.png)](https://www.thecodingdocs.com)
+![A logo for thecodingdocs.com with a stethoscope that looks like coding brackets ](man/figures/TCD.png)](https://www.thecodingdocs.com)

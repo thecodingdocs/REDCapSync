@@ -87,7 +87,7 @@ vignette.
 ``` r
 
 # 1.) setting your token -------------------------------------------------------
-Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # in console
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # put in console
 # or WAY BETTER put this in your .Renviron file...
 # REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
@@ -115,11 +115,7 @@ For an in-depth demonstration of both REDCapSync and RosyREDCap, see
 
 ## Framework
 
-![A diagram of REDCapSync framework showing projects to project to
-dataset.](reference/figures/framework.png)
-
-A diagram of REDCapSync framework showing projects to project to
-dataset.
+![](reference/figures/framework.png)
 
 ## Minimum Requirements
 
@@ -134,12 +130,7 @@ dataset.
 - Thoughtful attention to how and where data you create is used and
   stored.
 
-![Shows on REDCap website user rights page the user with the token needs
-API token export privileges and ideally logging
-privileges](reference/figures/redcap_priv.png)
-
-Shows on REDCap website user rights page the user with the token needs
-API token export privileges and ideally logging privileges
+![](reference/figures/redcap_priv.png)
 
 ## Contributing
 
@@ -217,14 +208,9 @@ requests.
 - Follow me on Twitter/X
   [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH/ "BRoseMDMPH Twitter")
 
-![An epic handshake between REDCap and R as an illustration of
-REDCapSync](reference/figures/cover.jpg)
+![](reference/figures/cover.jpg)
 
-An epic handshake between REDCap and R as an illustration of REDCapSync
-
-[![A logo for thecodingdocs.com with a stethoscope that looks like
-coding
-brackets](reference/figures/TCD.png)](https://www.thecodingdocs.com)
+[![](reference/figures/TCD.png)](https://www.thecodingdocs.com)
 
 # Package index
 

@@ -151,11 +151,7 @@ vignette.
 
 ## Framework
 
-![A diagram of REDCapSync framework showing projects to project to
-dataset.](reference/figures/framework.png)
-
-A diagram of REDCapSync framework showing projects to project to
-dataset.
+![](reference/figures/framework.png)
 
 For an in-depth demonstration of both REDCapSync and RosyREDCap, see
 [thecodingdocs.github.io/RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").

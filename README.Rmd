@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) [![R-CMD-check](https://github.com/thecodingdocs/REDCapSync/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thecodingdocs/REDCapSync/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/thecodingdocs/REDCapSync/graph/badge.svg)](https://app.codecov.io/gh/thecodingdocs/REDCapSync)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![CRAN status](https://www.r-pkg.org/badges/version/REDCapSync)](https://CRAN.R-project.org/package=REDCapSync)
 <!-- badges: end -->
 
 Several R packages exist for using the [REDCap](https://projectredcap.org/) Application Program Interface (API) such as, [`redcapAPI`](https://github.com/vubiostat/redcapAPI), [`REDCapR`](https://ouhscbbmc.github.io/REDCapR/), and [`tidyREDCap`](https://raymondbalise.github.io/tidyREDCap/).
@@ -74,7 +75,7 @@ Getting started is as simple as 1.) setting your token, 2.) setting up a project
 
 ```{r , eval=FALSE}
 # 1.) setting your token -------------------------------------------------------
-Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # in console
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # put in console
 # or WAY BETTER put this in your .Renviron file...
 # REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
@@ -101,9 +102,7 @@ For an in-depth demonstration of both REDCapSync and RosyREDCap, see [RMed26-Dem
 
 ## Framework
 
-```{r, fig.alt = "A diagram of REDCapSync framework showing projects to project to dataset.", out.width="100%"}
-knitr::include_graphics("man/figures/framework.png")
-```
+![](man/figures/framework.png)
 
 ## Minimum Requirements
 
@@ -114,9 +113,7 @@ knitr::include_graphics("man/figures/framework.png")
 -   Basic R knowledge such as installing a package and running code.
 -   Thoughtful attention to how and where data you create is used and stored.
 
-```{r, fig.alt = "Shows on REDCap website user rights page the user with the token needs API token export privileges and ideally logging privileges.", out.width="100%"}
-knitr::include_graphics("man/figures/redcap_priv.png")
-```
+![](man/figures/redcap_priv.png)
 
 ## Contributing
 
@@ -178,10 +175,6 @@ If you wish to contribute to this software, use github issues and pull requests.
 -   Follow us on Twitter/X [x.com/TheCodingDocs](https://x.com/TheCodingDocs/ "TheCodingDocs Twitter")
 -   Follow me on Twitter/X [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH/ "BRoseMDMPH Twitter")
 
-```{r, fig.alt = "An epic handshake between REDCap and R as an illustration of REDCapSync.", out.width="100%"}
-knitr::include_graphics("man/figures/cover.jpg")
-```
+![](man/figures/cover.jpg)
 
-```{r, fig.alt = "A logo for thecodingdocs.com with a stethoscope that looks like coding brackets.", out.width="100%"}
-knitr::include_graphics("man/figures/TCD.png")
-```
+[![](man/figures/TCD.png)](https://www.thecodingdocs.com)

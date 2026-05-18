@@ -10,6 +10,8 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 coverage](https://codecov.io/gh/thecodingdocs/REDCapSync/graph/badge.svg)](https://app.codecov.io/gh/thecodingdocs/REDCapSync)
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/REDCapSync)](https://CRAN.R-project.org/package=REDCapSync)
 <!-- badges: end -->
 
 Several R packages exist for using the
@@ -94,7 +96,7 @@ need more help setting your tokens, see the
 
 ``` r
 # 1.) setting your token -------------------------------------------------------
-Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # in console
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # put in console
 # or WAY BETTER put this in your .Renviron file...
 # REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
@@ -122,11 +124,7 @@ For an in-depth demonstration of both REDCapSync and RosyREDCap, see
 
 ## Framework
 
-``` r
-knitr::include_graphics("man/figures/framework.png")
-```
-
-<img src="man/figures/framework.png" alt="A diagram of REDCapSync framework showing projects to project to dataset." width="100%" />
+![](man/figures/framework.png)
 
 ## Minimum Requirements
 
@@ -141,11 +139,7 @@ knitr::include_graphics("man/figures/framework.png")
 - Thoughtful attention to how and where data you create is used and
   stored.
 
-``` r
-knitr::include_graphics("man/figures/redcap_priv.png")
-```
-
-<img src="man/figures/redcap_priv.png" alt="Shows on REDCap website user rights page the user with the token needs API token export privileges and ideally logging privileges." width="100%" />
+![](man/figures/redcap_priv.png)
 
 ## Contributing
 
@@ -223,14 +217,6 @@ requests.
 - Follow me on Twitter/X
   [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH/ "BRoseMDMPH Twitter")
 
-``` r
-knitr::include_graphics("man/figures/cover.jpg")
-```
+![](man/figures/cover.jpg)
 
-<img src="man/figures/cover.jpg" alt="An epic handshake between REDCap and R as an illustration of REDCapSync." width="100%" />
-
-``` r
-knitr::include_graphics("man/figures/TCD.png")
-```
-
-<img src="man/figures/TCD.png" alt="A logo for thecodingdocs.com with a stethoscope that looks like coding brackets." width="100%" />
+[![](man/figures/TCD.png)](https://www.thecodingdocs.com)

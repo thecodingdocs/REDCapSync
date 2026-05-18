@@ -147,6 +147,15 @@ project$generate_dataset(
 
 See the
 [Datasets](https://thecodingdocs.github.io/REDCapSync/articles/Datasets.md "Datasets vignette")
-vignette. For an in-depth demonstration of both REDCapSync and
-RosyREDCap, see
+vignette.
+
+## Framework
+
+![A diagram of REDCapSync framework showing projects to project to
+dataset.](reference/figures/framework.png)
+
+A diagram of REDCapSync framework showing projects to project to
+dataset.
+
+For an in-depth demonstration of both REDCapSync and RosyREDCap, see
 [thecodingdocs.github.io/RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").

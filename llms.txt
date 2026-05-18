@@ -115,7 +115,11 @@ For an in-depth demonstration of both REDCapSync and RosyREDCap, see
 
 ## Framework
 
-![](reference/figures/framework.png)
+![A diagram of REDCapSync framework showing projects to project to
+dataset.](reference/figures/framework.png)
+
+A diagram of REDCapSync framework showing projects to project to
+dataset.
 
 ## Minimum Requirements
 
@@ -130,7 +134,12 @@ For an in-depth demonstration of both REDCapSync and RosyREDCap, see
 - Thoughtful attention to how and where data you create is used and
   stored.
 
-![](reference/figures/redcap_priv.png)
+![Shows on REDCap website user rights page the user with the token needs
+API token export privileges and ideally logging
+privileges](reference/figures/redcap_priv.png)
+
+Shows on REDCap website user rights page the user with the token needs
+API token export privileges and ideally logging privileges
 
 ## Contributing
 
@@ -208,7 +217,14 @@ requests.
 - Follow me on Twitter/X
   [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH/ "BRoseMDMPH Twitter")
 
-[![TheCodingDocs.com](reference/figures/TCD.png)](https://www.thecodingdocs.com)
+![An epic handshake between REDCap and R as an illustration of
+REDCapSync](reference/figures/cover.jpg)
+
+An epic handshake between REDCap and R as an illustration of REDCapSync
+
+[![A logo for thecodingdocs.com with a stethoscope that looks like
+coding
+brackets](reference/figures/TCD.png)](https://www.thecodingdocs.com)
 
 # Package index
 

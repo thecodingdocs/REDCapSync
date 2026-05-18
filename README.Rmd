@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) [![R-CMD-check](https://github.com/thecodingdocs/REDCapSync/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thecodingdocs/REDCapSync/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/thecodingdocs/REDCapSync/graph/badge.svg)](https://app.codecov.io/gh/thecodingdocs/REDCapSync)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-
+[![CRAN status](https://www.r-pkg.org/badges/version/REDCapSync)](https://CRAN.R-project.org/package=REDCapSync)
 <!-- badges: end -->
 
 Several R packages exist for using the [REDCap](https://projectredcap.org/) Application Program Interface (API) such as, [`redcapAPI`](https://github.com/vubiostat/redcapAPI), [`REDCapR`](https://ouhscbbmc.github.io/REDCapR/), and [`tidyREDCap`](https://raymondbalise.github.io/tidyREDCap/).

@@ -10,7 +10,8 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 coverage](https://codecov.io/gh/thecodingdocs/REDCapSync/graph/badge.svg)](https://app.codecov.io/gh/thecodingdocs/REDCapSync)
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-
+[![CRAN
+status](https://www.r-pkg.org/badges/version/REDCapSync)](https://CRAN.R-project.org/package=REDCapSync)
 <!-- badges: end -->
 
 Several R packages exist for using the

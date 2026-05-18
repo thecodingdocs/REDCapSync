@@ -79,9 +79,8 @@ RStudio and update all packages in RStudio. See
 
 Getting started is as simple as 1.) setting your token, 2.) setting up a
 project, and 3.) running project\$sync(). See [Getting
-Started](https://thecodingdocs.github.io/REDCapSync/REDCapSync.md "Getting Started")
-page for the basics! If you need more help setting your tokens, see the
-Tokens vignette.
+Started](https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html "Getting Started")
+page for the basics!
 
 ``` r
 

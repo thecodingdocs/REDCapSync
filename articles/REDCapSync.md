@@ -151,7 +151,7 @@ vignette.
 
 ## Framework
 
-![](reference/figures/framework.png)
+![](images/framework.png)
 
 For an in-depth demonstration of both REDCapSync and RosyREDCap, see
 [thecodingdocs.github.io/RMed26-Demo](https://thecodingdocs.github.io/RMed26-Demo/ "RMed26-Demo").

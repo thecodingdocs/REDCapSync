@@ -102,7 +102,7 @@ For an in-depth demonstration of both REDCapSync and RosyREDCap, see [RMed26-Dem
 
 ## Framework
 
-![](man/figures/framework.png)
+![A diagram of REDCapSync framework showing projects to project to dataset.](man/figures/framework.png)
 
 ## Minimum Requirements
 
@@ -113,7 +113,7 @@ For an in-depth demonstration of both REDCapSync and RosyREDCap, see [RMed26-Dem
 -   Basic R knowledge such as installing a package and running code.
 -   Thoughtful attention to how and where data you create is used and stored.
 
-![](man/figures/redcap_priv.png)
+![Shows on REDCap website user rights page the user with the token needs API token export privileges and ideally logging privileges](man/figures/redcap_priv.png)
 
 ## Contributing
 
@@ -175,4 +175,6 @@ If you wish to contribute to this software, use github issues and pull requests.
 -   Follow us on Twitter/X [x.com/TheCodingDocs](https://x.com/TheCodingDocs/ "TheCodingDocs Twitter")
 -   Follow me on Twitter/X [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH/ "BRoseMDMPH Twitter")
 
-[![TheCodingDocs.com](man/figures/TCD.png)](https://www.thecodingdocs.com)
+![An epic handshake between REDCap and R as an illustration of REDCapSync](man/figures/cover.jpg)
+
+[![A logo for thecodingdocs.com with a stethoscope that looks like coding brackets ](man/figures/TCD.png)](https://www.thecodingdocs.com)

@@ -124,7 +124,12 @@ For an in-depth demonstration of both REDCapSync and RosyREDCap, see
 
 ## Framework
 
-![](man/figures/framework.png)
+<figure>
+<img src="man/figures/framework.png"
+alt="A diagram of REDCapSync framework showing projects to project to dataset." />
+<figcaption aria-hidden="true">A diagram of REDCapSync framework showing
+projects to project to dataset.</figcaption>
+</figure>
 
 ## Minimum Requirements
 
@@ -139,7 +144,13 @@ For an in-depth demonstration of both REDCapSync and RosyREDCap, see
 - Thoughtful attention to how and where data you create is used and
   stored.
 
-![](man/figures/redcap_priv.png)
+<figure>
+<img src="man/figures/redcap_priv.png"
+alt="Shows on REDCap website user rights page the user with the token needs API token export privileges and ideally logging privileges" />
+<figcaption aria-hidden="true">Shows on REDCap website user rights page
+the user with the token needs API token export privileges and ideally
+logging privileges</figcaption>
+</figure>
 
 ## Contributing
 
@@ -217,4 +228,12 @@ requests.
 - Follow me on Twitter/X
   [x.com/BRoseMDMPH](https://x.com/BRoseMDMPH/ "BRoseMDMPH Twitter")
 
-[![TheCodingDocs.com](man/figures/TCD.png)](https://www.thecodingdocs.com)
+<figure>
+<img src="man/figures/cover.jpg"
+alt="An epic handshake between REDCap and R as an illustration of REDCapSync" />
+<figcaption aria-hidden="true">An epic handshake between REDCap and R as
+an illustration of REDCapSync</figcaption>
+</figure>
+
+[![A logo for thecodingdocs.com with a stethoscope that looks like
+coding brackets](man/figures/TCD.png)](https://www.thecodingdocs.com)

@@ -146,7 +146,7 @@ Users should construct objects using
       filter_strict = TRUE,
       field_names = NULL,
       form_names = NULL,
-      exclude_identifiers = TRUE,
+      exclude_identifiers = FALSE,
       exclude_free_text = FALSE,
       date_handling = "none",
       labelled = TRUE,
@@ -360,5 +360,5 @@ dataset <- project$generate_dataset(
  )
 
 dataset$save(dir_other = tempdir())
-#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpLnZEJP/TEST_CLASSIC_stage_2_patients.xlsx
+#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/Rtmp8NKnZ3/TEST_CLASSIC_stage_2_patients.xlsx
 ```

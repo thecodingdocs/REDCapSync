@@ -72,15 +72,16 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9"><div class="section level2">
-<h2 id="redcapsync-">REDCapSync <a href="https://github.com/thecodingdocs/REDCapSync/" class="external-link"><img src="reference/figures/logo.png" align="right" height="160" width="140"></a>
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header">
+<img src="logo.png" class="logo" alt=""><h1 id="redcapsync-">REDCapSync 
 <a class="anchor" aria-label="anchor" href="#redcapsync-"></a>
-</h2>
+</h1>
+</div>
 <!-- badges: start -->
 
 <!-- badges: end -->
 <p>Several R packages exist for using the <a href="https://projectredcap.org/" class="external-link">REDCap</a> Application Program Interface (API) such as, <a href="https://github.com/vubiostat/redcapAPI" class="external-link"><code>redcapAPI</code></a>, <a href="https://ouhscbbmc.github.io/REDCapR/" class="external-link"><code>REDCapR</code></a>, and <a href="https://raymondbalise.github.io/tidyREDCap/" class="external-link"><code>tidyREDCap</code></a>. However, <a href="https://thecodingdocs.github.io/REDCapSync/"><code>REDCapSync</code></a> is the first “get-everything” REDCap R package that converts REDCap projects into a standardized, API-efficient, and project-agnostic <a href="https://r6.r-lib.org/" class="external-link">R6</a> object.</p>
-</div>
 <div class="section level2">
 <h2 id="what-is-redcapsync">What is REDCapSync?<a class="anchor" aria-label="anchor" href="#what-is-redcapsync"></a>
 </h2>
@@ -90,7 +91,7 @@
 <li>Encapsulate the REDCap API into one standardized object to streamline use.</li>
 <li>Automate common tasks such as cleaning, deidentification and merges.</li>
 <li>Automate distribution of user-defined Excel datasets to local/cloud storage for one or many REDCap projects.</li>
-<li>Convert <strong><em>uncoded</em></strong> REDCap data from R or Excel for upload using REDCap API.</li>
+<li>Convert <strong><em>labelled</em></strong> REDCap data from R or Excel for upload using REDCap API.</li>
 <li>Power the companion shiny app <a href="https://thecodingdocs.github.io/RosyREDCap/" title="RosyREDCap R package" class="external-link"><code>RosyREDCap</code></a>
 </li>
 </ol>
@@ -119,8 +120,41 @@
 <div class="section level2">
 <h2 id="getting-started">Getting Started!<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
-<p>Getting started is as simple as 1.) setting your token, 2.) setting up a project, and 3.) running project$sync(). See <a href="https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html" title="Getting Started">Getting Started</a> page for the basics!</p>
-<p><img src="reference/figures/cover.jpg"></p>
+<p>Getting started is as simple as 1.) setting your token, 2.) setting up a project, and 3.) running project$sync(). See <a href="https://thecodingdocs.github.io/REDCapSync/articles/REDCapSync.html" title="Getting Started">Getting Started</a> page for the basics! If you need more help setting your tokens, See the <a href="vignette(%22Tokens%22,%20package%20=%20%22REDCapSync%22)">Tokens</a> vignette.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 1.) setting your token =======================================================</span></span>
+<span><span class="co"># put in RStudio console (ie bottom right panel and NOT IN A SCRIPT)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>REDCAPSYNC_FIRST_PROJECT <span class="op">=</span> <span class="st">"YoUrNevErShaReToken"</span><span class="op">)</span></span>
+<span><span class="co"># or WAY better put this in your .Renviron file...</span></span>
+<span><span class="co"># REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'</span></span>
+<span><span class="co"># Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)</span></span>
+<span></span>
+<span><span class="co"># 2.) setting up a project =====================================================</span></span>
+<span><span class="co"># help(setup_project)</span></span>
+<span><span class="va">DATA_STORED_HERE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># choose appropriate/secure folder</span></span>
+<span><span class="co"># help(setup_project)</span></span>
+<span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/setup-load.html">setup_project</a></span><span class="op">(</span></span>
+<span>  project_name <span class="op">=</span> <span class="st">"FIRST_PROJECT"</span>, <span class="co"># default token name REDCAPSYNC_&lt;project_name&gt;</span></span>
+<span>  redcap_uri <span class="op">=</span> <span class="st">"https://redcap.fakei.edu/api/"</span>,   <span class="co"># your institution's link</span></span>
+<span>  dir_path <span class="op">=</span> <span class="va">DATA_STORED_HERE</span>,    <span class="co"># choose appropriate/secure folder</span></span>
+<span>  sync_frequency <span class="op">=</span> <span class="st">"weekly"</span>, <span class="co"># default is "daily",</span></span>
+<span>  get_entire_log <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># TRUE for max summary, may be slow for huge projects</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># install.packages("keyring") # if you dont have</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">test_token</span><span class="op">(</span><span class="op">)</span> <span class="co"># will have pop up for keyring if token fails</span></span>
+<span></span>
+<span><span class="co"># 3.) running project$sync() ===================================================</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span> <span class="co"># gets all data from REDCap based on setup</span></span>
+<span><span class="co"># help(project)</span></span>
+<span><span class="co"># project$url_launch() # opens REDCap in browser</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">generate_dataset</span><span class="op">(</span><span class="st">"custom"</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="co"># identified</span></span>
+<span><span class="co"># add reusable datasets with project$add_dataset(...)</span></span></code></pre></div>
+<p>For an in-depth demonstration of both REDCapSync and RosyREDCap, see <a href="https://thecodingdocs.github.io/RMed26-Demo/" title="RMed26-Demo" class="external-link">thecodingdocs.github.io/RMed26-Demo</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="framework">Framework<a class="anchor" aria-label="anchor" href="#framework"></a>
+</h2>
+<p><img src="reference/figures/framework.png"></p>
 </div>
 <div class="section level2">
 <h2 id="minimum-requirements">Minimum Requirements<a class="anchor" aria-label="anchor" href="#minimum-requirements"></a>
@@ -133,6 +167,7 @@
 <li>Basic R knowledge such as installing a package and running code.</li>
 <li>Thoughtful attention to how and where data you create is used and stored.</li>
 </ul>
+<p><img src="reference/figures/redcap_priv.png"></p>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
@@ -250,7 +285,7 @@
 </ul>
 <p><a href="https://www.thecodingdocs.com" class="external-link"><img src="reference/figures/TCD.png" alt="TheCodingDocs.com"></a></p>
 </div>
-
+</div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">

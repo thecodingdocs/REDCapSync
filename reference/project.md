@@ -305,7 +305,7 @@ Add a new dataset entry
       filter_strict = TRUE,
       field_names = NULL,
       form_names = NULL,
-      exclude_identifiers = TRUE,
+      exclude_identifiers = FALSE,
       exclude_free_text = FALSE,
       date_handling = "none",
       labelled = TRUE,
@@ -518,7 +518,7 @@ is provided here for ad-hoc custom datasets.
       filter_strict = TRUE,
       field_names = NULL,
       form_names = NULL,
-      exclude_identifiers = TRUE,
+      exclude_identifiers = FALSE,
       exclude_free_text = FALSE,
       date_handling = "none",
       labelled = TRUE,
@@ -705,7 +705,14 @@ test connection via communication with API.
 
 #### Usage
 
-    REDCapSyncProject$test_token()
+    REDCapSyncProject$test_token(keyring_if_error = TRUE)
+
+#### Arguments
+
+- `keyring_if_error`:
+
+  Logical. Launch pop-up for keyring if token is not valid or fails to
+  call REDCap. Max 3 attempts. Default is `TRUE`.
 
 ------------------------------------------------------------------------
 
@@ -794,7 +801,7 @@ projects$test_names() # available test projects
 #>  [9] "TEST_REDCAPR_LONGITUDINAL" "TEST_REDCAPR_CLIN_TRIAL"  
 project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #> ! No cached projects... use `setup_project(...)`
-#> ✔ Directory is Valid! /tmp/RtmpLnZEJP
+#> ✔ Directory is Valid! /tmp/Rtmp8NKnZ3
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
@@ -803,16 +810,16 @@ project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 # Sync data from REDCap
 project$sync()
 #> ℹ TEST projects do not communicate with the API
-#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpLnZEJP/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
-#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpLnZEJP/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
-#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpLnZEJP/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
-#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpLnZEJP/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
-#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpLnZEJP/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
-#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpLnZEJP/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
-#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpLnZEJP/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
-#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpLnZEJP/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
-#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpLnZEJP/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
-#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpLnZEJP/output/TEST_CLASSIC_REDCapSync.xlsx
+#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/Rtmp8NKnZ3/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
+#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/Rtmp8NKnZ3/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
+#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/Rtmp8NKnZ3/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
+#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/Rtmp8NKnZ3/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
+#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/Rtmp8NKnZ3/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
+#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/Rtmp8NKnZ3/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
+#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/Rtmp8NKnZ3/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
+#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/Rtmp8NKnZ3/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
+#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/Rtmp8NKnZ3/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
+#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/Rtmp8NKnZ3/output/TEST_CLASSIC_REDCapSync.xlsx
 
 # Access data and metadata
 head(project$data$text)

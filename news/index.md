@@ -2,6 +2,8 @@
 
 ## REDCapSync 0.1.0
 
+CRAN release: 2026-05-21
+
 - Initial CRAN submission!
 
 ## REDCapSync 0.0.9

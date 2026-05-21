@@ -1,6 +1,6 @@
 Package: REDCapSync
 Title: Encapsulated 'REDCap' Projects for Synchronized Data Pipelines
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: c(
     person("Brandon", "Rose", , "thecodingdocs@gmail.com", role = c("cre", "aut", "cph"),
            comment = c(ORCID = "0009-0009-7813-1960")),
@@ -30,6 +30,7 @@ Imports:
     cli,
     dplyr,
     hoardr,
+    keyring,
     lubridate,
     openxlsx,
     R6,
@@ -41,7 +42,6 @@ Imports:
     stringr,
     utils
 Suggests: 
-    keyring,
     knitr,
     listviewer,
     rmarkdown,

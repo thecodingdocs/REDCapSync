@@ -12,8 +12,8 @@ coverage](https://codecov.io/gh/thecodingdocs/REDCapSync/graph/badge.svg)](https
 v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/REDCapSync)](https://CRAN.R-project.org/package=REDCapSync)
-![CRAN
-downloads](https://cranlogs.r-pkg.org/badges/grand-total/REDCapSync)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/REDCapSync)](https://CRAN.R-project.org/package=REDCapSync)
 <!-- badges: end -->
 
 Several R packages exist for using the
@@ -97,9 +97,9 @@ page for the basics!
 
 ``` r
 # 1.) setting your token -------------------------------------------------------
-Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # put in console
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken") # put in console
 # or WAY BETTER put this in your .Renviron file...
-# REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken
+# REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
 
 # 2.) setting up a project -----------------------------------------------------

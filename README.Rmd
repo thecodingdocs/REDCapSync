@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) [![R-CMD-check](https://github.com/thecodingdocs/REDCapSync/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thecodingdocs/REDCapSync/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/thecodingdocs/REDCapSync/graph/badge.svg)](https://app.codecov.io/gh/thecodingdocs/REDCapSync)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CRAN status](https://www.r-pkg.org/badges/version/REDCapSync)](https://CRAN.R-project.org/package=REDCapSync)
-![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/REDCapSync)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/REDCapSync)](https://CRAN.R-project.org/package=REDCapSync)
 <!-- badges: end -->
 
 Several R packages exist for using the [REDCap](https://projectredcap.org/) Application Program Interface (API) such as, [`redcapAPI`](https://github.com/vubiostat/redcapAPI), [`REDCapR`](https://ouhscbbmc.github.io/REDCapR/), and [`tidyREDCap`](https://raymondbalise.github.io/tidyREDCap/).
@@ -76,9 +76,9 @@ Getting started is as simple as 1.) setting your token, 2.) setting up a project
 
 ```{r , eval=FALSE}
 # 1.) setting your token -------------------------------------------------------
-Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # put in console
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken") # put in console
 # or WAY BETTER put this in your .Renviron file...
-# REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken
+# REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
 
 # 2.) setting up a project -----------------------------------------------------

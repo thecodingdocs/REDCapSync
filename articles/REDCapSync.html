@@ -91,9 +91,9 @@
 up a project, and 3.) running project$sync().</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1.) setting your token -------------------------------------------------------</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>REDCAPSYNC_FIRST_PROJECT <span class="op">=</span> <span class="st">"YoUrNevErShaReToken"</span><span class="op">)</span>    <span class="co"># in console</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>REDCAPSYNC_FIRST_PROJECT <span class="op">=</span> <span class="st">"YoUrNevErShaReToken"</span><span class="op">)</span> <span class="co"># in console</span></span>
 <span><span class="co"># or WAY BETTER put this in your .Renviron file...</span></span>
-<span><span class="co"># REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken</span></span>
+<span><span class="co"># REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'</span></span>
 <span><span class="co"># Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)</span></span>
 <span></span>
 <span><span class="co"># 2.) setting up a project -----------------------------------------------------</span></span>
@@ -111,7 +111,7 @@ up a project, and 3.) running project$sync().</p>
 <span><span class="co"># 3.) running project$sync() ---------------------------------------------------</span></span>
 <span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span> </span>
 <span></span>
-<span><span class="va">project</span><span class="op">$</span><span class="fu">generate_dataset</span><span class="op">(</span><span class="st">"custom"</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>        </span></code></pre></div>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">generate_dataset</span><span class="op">(</span><span class="st">"custom"</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>       </span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="setup-tokens">Setup tokens<a class="anchor" aria-label="anchor" href="#setup-tokens"></a>

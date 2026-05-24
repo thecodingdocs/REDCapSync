@@ -85,9 +85,9 @@ page for the basics!
 ``` r
 
 # 1.) setting your token -------------------------------------------------------
-Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # put in console
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken") # put in console
 # or WAY BETTER put this in your .Renviron file...
-# REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken
+# REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
 
 # 2.) setting up a project -----------------------------------------------------

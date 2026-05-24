@@ -17,9 +17,9 @@ project, and 3.) running project\$sync().
 ``` r
 
 # 1.) setting your token -------------------------------------------------------
-Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken")    # in console
+Sys.setenv(REDCAPSYNC_FIRST_PROJECT = "YoUrNevErShaReToken") # in console
 # or WAY BETTER put this in your .Renviron file...
-# REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken
+# REDCAPSYNC_FIRST_PROJECT = 'YoUrNevErShaReToken'
 # Then save file, restart R session (`.rs.restartR()`) and library(REDCapSync)
 
 # 2.) setting up a project -----------------------------------------------------
@@ -37,7 +37,7 @@ project$test_token()                    # will launch keyring if token fails
 # 3.) running project$sync() ---------------------------------------------------
 project$sync() 
 
-project$generate_dataset("custom", envir = globalenv())        
+project$generate_dataset("custom", envir = globalenv())       
 ```
 
 ## Setup tokens

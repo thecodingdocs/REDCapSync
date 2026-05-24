@@ -12,6 +12,8 @@ coverage](https://codecov.io/gh/thecodingdocs/REDCapSync/graph/badge.svg)](https
 v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/REDCapSync)](https://CRAN.R-project.org/package=REDCapSync)
+![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/REDCapSync)
 <!-- badges: end -->
 
 Several R packages exist for using the

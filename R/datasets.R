@@ -72,7 +72,7 @@ save_project_data_list <- function(data_list,
                                               project = data_list)
       }
       #check for conflicting name
-      link_col_list <- list("redcap_link")
+      link_col_list <- list(REDCAPSYNC_LINK_NAME)
       names(link_col_list) <- id_col
     }
   }
@@ -118,6 +118,7 @@ save_project_data_list <- function(data_list,
   data_list$dataset_details <- retained_details
   invisible(data_list)
 }
+REDCAPSYNC_LINK_NAME <- "redcapsync_link_name_zzz"
 #' @noRd
 save_project_datasets <- function(project, hard_reset = FALSE) {
   assert_setup_project(project)

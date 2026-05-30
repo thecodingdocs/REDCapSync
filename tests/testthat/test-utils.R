@@ -188,14 +188,14 @@ test_that("add_redcap_links works!", {
   )
   # Should add redcap_link column
   out <- add_redcap_links(form, project)
-  expect_true("redcap_link" %in% colnames(out))
-  expect_length(out$redcap_link, 2L)
+  expect_true(REDCAPSYNC_LINK_NAME %in% colnames(out))
+  expect_length(out[[REDCAPSYNC_LINK_NAME]], 2L)
   # Links should contain record_id and project id
-  expect_all_true(grepl("id=1|id=2", out$redcap_link))
+  expect_all_true(grepl("id=1|id=2", out[[REDCAPSYNC_LINK_NAME]]))
   project_id <- project$redcap$project_id
   compare <- paste0("_home\\.php\\?pid=", project_id, "&id=", form$record_id)
-  expect_true(grepl(compare[1L], out$redcap_link[1L]))
-  expect_true(grepl(compare[2L], out$redcap_link[2L]))
+  expect_true(grepl(compare[1L], out[[REDCAPSYNC_LINK_NAME]][1L]))
+  expect_true(grepl(compare[2L], out[[REDCAPSYNC_LINK_NAME]][2L]))
   # Should not modify other columns
   expect_identical(out$var_text, form$var_text)
 })

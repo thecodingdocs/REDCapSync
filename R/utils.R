@@ -302,10 +302,10 @@ add_redcap_links <- function(form, project) {
       link_tail <-
         paste0(link_tail, "&instance=", form[["redcap_repeat_instance"]])
     }
-    form$redcap_link <- paste0(link_head, link_tail)
+    form[[REDCAPSYNC_LINK_NAME]] <- paste0(link_head, link_tail)
     if ("arm_number" %in% colnames(form)) {
-      form$redcap_link <-
-        paste0(form$redcap_link, "&arm=", form[["arm_number"]])
+      form[[REDCAPSYNC_LINK_NAME]] <-
+        paste0(form[[REDCAPSYNC_LINK_NAME]], "&arm=", form[["arm_number"]])
     }
   }
   form

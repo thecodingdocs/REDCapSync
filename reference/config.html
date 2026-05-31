@@ -10,18 +10,22 @@ Internal configuration helpers used to retrieve package configuration
 values from options or environment variables.
 Configuration is resolved in the following order:
 getOption("redcapsync.config.option.name")
-Sys.getenv("REDCAPSYNC_CONFIG_OPTION_NAME") # skipped for functions
+Sys.getenv("REDCAPSYNC_CONFIG_OPTION_NAME") # can use .Renviron file!
 Default if unable to find and validate from above.
 
-'><meta property="og:description" content='
+
+A vignette will be written for options/configuration in later versions when
+stable.'><meta property="og:description" content='
 Internal configuration helpers used to retrieve package configuration
 values from options or environment variables.
 Configuration is resolved in the following order:
 getOption("redcapsync.config.option.name")
-Sys.getenv("REDCAPSYNC_CONFIG_OPTION_NAME") # skipped for functions
+Sys.getenv("REDCAPSYNC_CONFIG_OPTION_NAME") # can use .Renviron file!
 Default if unable to find and validate from above.
 
-'><meta property="og:image" content="https://thecodingdocs.github.io/REDCapSync/reference/figures/logo.png"><meta property="og:image:alt" content="Brandon Rose"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@brosemdmph"><meta name="twitter:site" content="@thecodingdocs"></head><body>
+
+A vignette will be written for options/configuration in later versions when
+stable.'><meta property="og:image" content="https://thecodingdocs.github.io/REDCapSync/reference/figures/logo.png"><meta property="og:image:alt" content="Brandon Rose"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@brosemdmph"><meta name="twitter:site" content="@thecodingdocs"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -67,9 +71,11 @@ Default if unable to find and validate from above.
 Internal configuration helpers used to retrieve package configuration
 values from options or environment variables.</p>
 <p>Configuration is resolved in the following order:</p><ol><li><p><code>getOption("redcapsync.config.option.name")</code></p></li>
-<li><p><code>Sys.getenv("REDCAPSYNC_CONFIG_OPTION_NAME")</code> # skipped for functions</p></li>
+<li><p><code>Sys.getenv("REDCAPSYNC_CONFIG_OPTION_NAME")</code> # can use .Renviron file!</p></li>
 <li><p>Default if unable to find and validate from above.</p></li>
-</ol></div>
+</ol><p>A vignette will be written for options/configuration in later versions when
+stable.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
@@ -85,9 +91,11 @@ values from options or environment variables.</p>
     <p>The config function is operational but only some methods presently
 affect internal code. Most users will not ever need to modify default config.
 This is included to improve future versions of the package.</p><ul><li><p>Working configs: <code>allow.test.names</code>, <code>cache.dir</code>, <code>keyring</code>,
-<code>keyring.service</code>, <code>openxlsx.header.style</code>, <code>openxlsx.body.style</code>.</p></li>
-<li><p>Partial coverage: <code>offline</code>.</p></li>
-<li><p>Placeholder: <code>verbose</code>, <code>show.api.messages</code></p></li>
+<code>keyring.service</code>, <code>xlsx.header.color</code>, <code>xlsx.header.font.size</code>,
+<code>xlsx.header.font.color</code>, <code>xlsx.body.font.size</code>, <code>xlsx.body.font.color</code>,
+<code>xlsx.font.name</code>.</p></li>
+<li><p>Partial coverage: <code>offline</code>, <code>verbose</code>.</p></li>
+<li><p>Placeholder: <code>show.api.messages</code></p></li>
 </ul><div class="section">
 <h3 id="allow-test-names">allow.test.names<a class="anchor" aria-label="anchor" href="#allow-test-names"></a></h3>
 
@@ -188,7 +196,7 @@ keyring like "REDCapSync"</p>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># set with ennvar (which will be prioritized when options not defined)</span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCAPSYNC_CONFIG_KEYRING"</span>) <span class="co"># get</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_CONFIG_KEYRING =</span> <span class="st">"REDCapSync"</span>) <span class="co"># set in session</span></span></code></pre><p></p></div>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_CONFIG_KEYRING =</span> <span class="st">"REDCapSync"</span>) <span class="co"># set</span></span></code></pre><p></p></div>
 </div>
 
 <div class="section">
@@ -205,31 +213,103 @@ package). Default is "R-REDCapSync".</p>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># set with ennvar (which will be prioritized when options not defined)</span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCAPSYNC_CONFIG_KEYRING_SERVICE"</span>) <span class="co"># get</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_CONFIG_KEYRING_SERVICE =</span> <span class="st">"REDCapSync"</span>) <span class="co"># set in session</span></span></code></pre><p></p></div>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_CONFIG_KEYRING_SERVICE =</span> <span class="st">"REDCapSync"</span>) <span class="co"># set</span></span></code></pre><p></p></div>
 </div>
 
 <div class="section">
-<h3 id="openxlsx-header-style">openxlsx.header.style<a class="anchor" aria-label="anchor" href="#openxlsx-header-style"></a></h3>
+<h3 id="xlsx-header-color">xlsx.header.color<a class="anchor" aria-label="anchor" href="#xlsx-header-color"></a></h3>
 
 
-<p>Excel sheet header using <code><a href="https://rdrr.io/pkg/openxlsx/man/createStyle.html" class="external-link">openxlsx::createStyle()</a></code></p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># set with options (which will be prioritized over envvar)</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">getOption</span>(<span class="st">"redcapsync.config.openxlsx.header.style"</span>) <span class="co"># get</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>new_style <span class="ot">&lt;-</span> openxlsx<span class="sc">::</span><span class="fu">createStyle</span>(<span class="at">fontSize =</span> <span class="dv">12</span><span class="dt">L</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">options</span>(<span class="at">redcapsync.config.openxlsx.header.style =</span> new_style)</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># does not look up envvar due to it's function type</span></span></code></pre><p></p></div>
+<p>color name for hex color character for header color of exported excel sheets</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># check current value package is using...</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>config<span class="sc">$</span><span class="fu">xlsx.header.color</span>()</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># set with options (which will be prioritized over envvar)</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">getOption</span>(<span class="st">"redcapsync.config.xlsx.header.color"</span>) <span class="co"># get</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">options</span>(<span class="at">redcapsync.config.xlsx.header.color =</span> <span class="st">"REDCapSync"</span>) <span class="co"># set</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># set with ennvar (which will be prioritized when options not defined)</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCAPSYNC_CONFIG_XLSX_HEADER_COLOR"</span>) <span class="co"># get</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_CONFIG_XLSX_HEADER_COLOR =</span> <span class="st">"green"</span>) <span class="co"># set</span></span></code></pre><p></p></div>
 </div>
 
 <div class="section">
-<h3 id="openxlsx-body-style">openxlsx.body.style<a class="anchor" aria-label="anchor" href="#openxlsx-body-style"></a></h3>
+<h3 id="xlsx-header-font-size">xlsx.header.font.size<a class="anchor" aria-label="anchor" href="#xlsx-header-font-size"></a></h3>
 
 
-<p>Excel sheet body using <code><a href="https://rdrr.io/pkg/openxlsx/man/createStyle.html" class="external-link">openxlsx::createStyle()</a></code></p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># set with options (which will be prioritized over envvar)</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">getOption</span>(<span class="st">"redcapsync.config.openxlsx.body.style"</span>) <span class="co"># get</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>new_style <span class="ot">&lt;-</span> openxlsx<span class="sc">::</span><span class="fu">createStyle</span>(<span class="at">fontSize =</span> <span class="dv">12</span><span class="dt">L</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">options</span>(<span class="at">redcapsync.config.openxlsx.body.style =</span> new_style)</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># does not look up envvar due to it's function type</span></span></code></pre><p></p></div>
+<p>color name for hex color character for header color of exported excel sheets</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># check current value package is using...</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>config<span class="sc">$</span><span class="fu">xlsx.header.font.size</span>()</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># set with options (which will be prioritized over envvar)</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">getOption</span>(<span class="st">"redcapsync.config.xlsx.header.font.size"</span>) <span class="co"># get</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">options</span>(<span class="at">redcapsync.config.xlsx.header.font.size =</span> <span class="st">"REDCapSync"</span>) <span class="co"># set</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># set with ennvar (which will be prioritized when options not defined)</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_SIZE"</span>) <span class="co"># get</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_SIZE =</span> <span class="st">"12"</span>) <span class="co"># set</span></span></code></pre><p></p></div>
+</div>
+
+<div class="section">
+<h3 id="xlsx-header-font-color">xlsx.header.font.color<a class="anchor" aria-label="anchor" href="#xlsx-header-font-color"></a></h3>
+
+
+<p>color name for hex color character for header color of exported excel sheets</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># check current value package is using...</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>config<span class="sc">$</span><span class="fu">xlsx.header.font.color</span>()</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># set with options (which will be prioritized over envvar)</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">getOption</span>(<span class="st">"redcapsync.config.xlsx.header.font.color"</span>) <span class="co"># get</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">options</span>(<span class="at">redcapsync.config.xlsx.header.font.color =</span> <span class="st">"REDCapSync"</span>) <span class="co"># set</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># set with ennvar (which will be prioritized when options not defined)</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_COLOR"</span>) <span class="co"># get</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_COLOR =</span> <span class="st">"white"</span>) <span class="co"># set</span></span></code></pre><p></p></div>
+</div>
+
+<div class="section">
+<h3 id="xlsx-body-font-size">xlsx.body.font.size<a class="anchor" aria-label="anchor" href="#xlsx-body-font-size"></a></h3>
+
+
+<p>color name for hex color character for header color of exported excel sheets</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># check current value package is using...</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>config<span class="sc">$</span><span class="fu">xlsx.body.font.size</span>()</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># set with options (which will be prioritized over envvar)</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">getOption</span>(<span class="st">"redcapsync.config.xlsx.body.font.size"</span>) <span class="co"># get</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">options</span>(<span class="at">redcapsync.config.xlsx.body.font.size =</span> <span class="st">"REDCapSync"</span>) <span class="co"># set</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># set with ennvar (which will be prioritized when options not defined)</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCAPSYNC_CONFIG_XLSX_BODY_FONT_SIZE"</span>) <span class="co"># get</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_CONFIG_XLSX_BODY_FONT_SIZE =</span> <span class="st">"8"</span>) <span class="co"># set</span></span></code></pre><p></p></div>
+</div>
+
+<div class="section">
+<h3 id="xlsx-body-font-color">xlsx.body.font.color<a class="anchor" aria-label="anchor" href="#xlsx-body-font-color"></a></h3>
+
+
+<p>color name for hex color character for header color of exported excel sheets</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># check current value package is using...</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>config<span class="sc">$</span><span class="fu">xlsx.body.font.color</span>()</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># set with options (which will be prioritized over envvar)</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">getOption</span>(<span class="st">"redcapsync.config.xlsx.body.font.color"</span>) <span class="co"># get</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">options</span>(<span class="at">redcapsync.config.xlsx.body.font.color =</span> <span class="st">"REDCapSync"</span>) <span class="co"># set</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># set with ennvar (which will be prioritized when options not defined)</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCAPSYNC_CONFIG_XLSX_BODY_FONT_COLOR"</span>) <span class="co"># get</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_CONFIG_XLSX_BODY_FONT_COLOR =</span> <span class="st">"red"</span>) <span class="co"># set</span></span></code></pre><p></p></div>
+</div>
+
+<div class="section">
+<h3 id="xlsx-font-name">xlsx.font.name<a class="anchor" aria-label="anchor" href="#xlsx-font-name"></a></h3>
+
+
+<p>color name for hex color character for header color of exported excel sheets</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># check current value package is using...</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>config<span class="sc">$</span><span class="fu">xlsx.font.name</span>()</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># set with options (which will be prioritized over envvar)</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">getOption</span>(<span class="st">"redcapsync.config.xlsx.font.name"</span>) <span class="co"># get</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">options</span>(<span class="at">redcapsync.config.xlsx.font.name =</span> <span class="st">"REDCapSync"</span>) <span class="co"># set</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># set with ennvar (which will be prioritized when options not defined)</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"REDCAPSYNC_CONFIG_XLSX_FONT_NAME"</span>) <span class="co"># get</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">REDCAPSYNC_CONFIG_XLSX_FONT_NAME =</span> <span class="st">"Georgia"</span>) <span class="co"># set</span></span></code></pre><p></p></div>
 </div>
 
     </div>
@@ -243,9 +323,13 @@ package). Default is "R-REDCapSync".</p>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">redcapsync.config.cache.dir =</span> <span class="cn">NULL</span>,</span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">redcapsync.config.keyring =</span> <span class="cn">NULL</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="at">redcapsync.config.keyring.service =</span> <span class="cn">NULL</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="at">redcapsync.config.openxlsx.header.style =</span> <span class="cn">NULL</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="at">redcapsync.config.openxlsx.body.style =</span> <span class="cn">NULL</span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>)</span></code></pre><p></p></div>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="at">redcapsync.config.xlsx.header.color =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="at">redcapsync.config.xlsx.header.font.size =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="at">redcapsync.config.xlsx.header.font.color =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="at">redcapsync.config.xlsx.body.font.size =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="at">redcapsync.config.xlsx.body.font.color =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="at">redcapsync.config.xlsx.font.name =</span> <span class="cn">NULL</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>)</span></code></pre><p></p></div>
     </div>
     <div class="section level2">
     <h2 id="environment-variable-names-searched-second-">Environment Variable Names (searched second)<a class="anchor" aria-label="anchor" href="#environment-variable-names-searched-second-"></a></h2>
@@ -257,8 +341,14 @@ package). Default is "R-REDCapSync".</p>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">R_USER_CACHE_DIR =</span> <span class="cn">NA</span>, <span class="co"># affects your entire cache for any package</span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">REDCAPSYNC_CONFIG_CACHE_DIR =</span> <span class="cn">NA</span>, <span class="co"># affects only REDCapSync Cache</span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="at">REDCAPSYNC_CONFIG_KEYRING =</span> <span class="cn">NA</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="at">REDCAPSYNC_CONFIG_KEYRING_SERVICE =</span> <span class="cn">NA</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>)</span></code></pre><p></p></div>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="at">REDCAPSYNC_CONFIG_KEYRING_SERVICE =</span> <span class="cn">NA</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="at">REDCAPSYNC_CONFIG_XLSX_HEADER_COLOR =</span> <span class="cn">NA</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="at">REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_SIZE =</span> <span class="cn">NA</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="at">REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_COLOR =</span> <span class="cn">NA</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="at">REDCAPSYNC_CONFIG_XLSX_BODY_FONT_SIZE =</span> <span class="cn">NA</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="at">REDCAPSYNC_CONFIG_XLSX_BODY_FONT_COLOR =</span> <span class="cn">NA</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>  <span class="at">REDCAPSYNC_CONFIG_XLSX_FONT_NAME =</span> <span class="cn">NA</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>)</span></code></pre><p></p></div>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

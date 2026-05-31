@@ -121,6 +121,8 @@ for using the project objects
 
 - [`REDCapSyncDataset$print()`](#method-REDCapSyncDataset-print)
 
+- [`REDCapSyncDataset$preview()`](#method-REDCapSyncDataset-preview)
+
 - [`REDCapSyncDataset$save()`](#method-REDCapSyncDataset-save)
 
 - [`REDCapSyncDataset$to_envir()`](#method-REDCapSyncDataset-to_envir)
@@ -288,6 +290,22 @@ Print some key dataset information
 
 ------------------------------------------------------------------------
 
+### `REDCapSyncDataset$preview()`
+
+Saves temporary excel and opens as a preview
+
+#### Usage
+
+    REDCapSyncDataset$preview(with_links = TRUE)
+
+#### Arguments
+
+- `with_links`:
+
+  Logical. Include hyperlinks in Excel exports. Default is `TRUE`.
+
+------------------------------------------------------------------------
+
 ### `REDCapSyncDataset$save()`
 
 Return flat list
@@ -360,5 +378,5 @@ dataset <- project$generate_dataset(
  )
 
 dataset$save(dir_other = tempdir())
-#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/Rtmpedg3b8/TEST_CLASSIC_stage_2_patients.xlsx
+#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpE78zYb/TEST_CLASSIC_stage_2_patients.xlsx
 ```

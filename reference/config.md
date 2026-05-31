@@ -7,10 +7,13 @@ Configuration is resolved in the following order:
 
 1.  `getOption("redcapsync.config.option.name")`
 
-2.  `Sys.getenv("REDCAPSYNC_CONFIG_OPTION_NAME")` \# skipped for
-    functions
+2.  `Sys.getenv("REDCAPSYNC_CONFIG_OPTION_NAME")` \# can use .Renviron
+    file!
 
 3.  Default if unable to find and validate from above.
+
+A vignette will be written for options/configuration in later versions
+when stable.
 
 ## Usage
 
@@ -29,11 +32,13 @@ affect internal code. Most users will not ever need to modify default
 config. This is included to improve future versions of the package.
 
 - Working configs: `allow.test.names`, `cache.dir`, `keyring`,
-  `keyring.service`, `openxlsx.header.style`, `openxlsx.body.style`.
+  `keyring.service`, `xlsx.header.color`, `xlsx.header.font.size`,
+  `xlsx.header.font.color`, `xlsx.body.font.size`,
+  `xlsx.body.font.color`, `xlsx.font.name`.
 
-- Partial coverage: `offline`.
+- Partial coverage: `offline`, `verbose`.
 
-- Placeholder: `verbose`, `show.api.messages`
+- Placeholder: `show.api.messages`
 
 ### allow.test.names
 
@@ -127,7 +132,7 @@ a keyring like "REDCapSync"
 
     # set with ennvar (which will be prioritized when options not defined)
     Sys.getenv("REDCAPSYNC_CONFIG_KEYRING") # get
-    Sys.setenv(REDCAPSYNC_CONFIG_KEYRING = "REDCapSync") # set in session
+    Sys.setenv(REDCAPSYNC_CONFIG_KEYRING = "REDCapSync") # set
 
 ### keyring.service
 
@@ -143,29 +148,97 @@ package). Default is "R-REDCapSync".
 
     # set with ennvar (which will be prioritized when options not defined)
     Sys.getenv("REDCAPSYNC_CONFIG_KEYRING_SERVICE") # get
-    Sys.setenv(REDCAPSYNC_CONFIG_KEYRING_SERVICE = "REDCapSync") # set in session
+    Sys.setenv(REDCAPSYNC_CONFIG_KEYRING_SERVICE = "REDCapSync") # set
 
-### openxlsx.header.style
+### xlsx.header.color
 
-Excel sheet header using
-[`openxlsx::createStyle()`](https://rdrr.io/pkg/openxlsx/man/createStyle.html)
+color name for hex color character for header color of exported excel
+sheets
 
+    # check current value package is using...
+    config$xlsx.header.color()
     # set with options (which will be prioritized over envvar)
-    getOption("redcapsync.config.openxlsx.header.style") # get
-    new_style <- openxlsx::createStyle(fontSize = 12L)
-    options(redcapsync.config.openxlsx.header.style = new_style)
-    # does not look up envvar due to it's function type
+    getOption("redcapsync.config.xlsx.header.color") # get
+    options(redcapsync.config.xlsx.header.color = "REDCapSync") # set
 
-### openxlsx.body.style
+    # set with ennvar (which will be prioritized when options not defined)
+    Sys.getenv("REDCAPSYNC_CONFIG_XLSX_HEADER_COLOR") # get
+    Sys.setenv(REDCAPSYNC_CONFIG_XLSX_HEADER_COLOR = "green") # set
 
-Excel sheet body using
-[`openxlsx::createStyle()`](https://rdrr.io/pkg/openxlsx/man/createStyle.html)
+### xlsx.header.font.size
 
+color name for hex color character for header color of exported excel
+sheets
+
+    # check current value package is using...
+    config$xlsx.header.font.size()
     # set with options (which will be prioritized over envvar)
-    getOption("redcapsync.config.openxlsx.body.style") # get
-    new_style <- openxlsx::createStyle(fontSize = 12L)
-    options(redcapsync.config.openxlsx.body.style = new_style)
-    # does not look up envvar due to it's function type
+    getOption("redcapsync.config.xlsx.header.font.size") # get
+    options(redcapsync.config.xlsx.header.font.size = "REDCapSync") # set
+
+    # set with ennvar (which will be prioritized when options not defined)
+    Sys.getenv("REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_SIZE") # get
+    Sys.setenv(REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_SIZE = "12") # set
+
+### xlsx.header.font.color
+
+color name for hex color character for header color of exported excel
+sheets
+
+    # check current value package is using...
+    config$xlsx.header.font.color()
+    # set with options (which will be prioritized over envvar)
+    getOption("redcapsync.config.xlsx.header.font.color") # get
+    options(redcapsync.config.xlsx.header.font.color = "REDCapSync") # set
+
+    # set with ennvar (which will be prioritized when options not defined)
+    Sys.getenv("REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_COLOR") # get
+    Sys.setenv(REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_COLOR = "white") # set
+
+### xlsx.body.font.size
+
+color name for hex color character for header color of exported excel
+sheets
+
+    # check current value package is using...
+    config$xlsx.body.font.size()
+    # set with options (which will be prioritized over envvar)
+    getOption("redcapsync.config.xlsx.body.font.size") # get
+    options(redcapsync.config.xlsx.body.font.size = "REDCapSync") # set
+
+    # set with ennvar (which will be prioritized when options not defined)
+    Sys.getenv("REDCAPSYNC_CONFIG_XLSX_BODY_FONT_SIZE") # get
+    Sys.setenv(REDCAPSYNC_CONFIG_XLSX_BODY_FONT_SIZE = "8") # set
+
+### xlsx.body.font.color
+
+color name for hex color character for header color of exported excel
+sheets
+
+    # check current value package is using...
+    config$xlsx.body.font.color()
+    # set with options (which will be prioritized over envvar)
+    getOption("redcapsync.config.xlsx.body.font.color") # get
+    options(redcapsync.config.xlsx.body.font.color = "REDCapSync") # set
+
+    # set with ennvar (which will be prioritized when options not defined)
+    Sys.getenv("REDCAPSYNC_CONFIG_XLSX_BODY_FONT_COLOR") # get
+    Sys.setenv(REDCAPSYNC_CONFIG_XLSX_BODY_FONT_COLOR = "red") # set
+
+### xlsx.font.name
+
+color name for hex color character for header color of exported excel
+sheets
+
+    # check current value package is using...
+    config$xlsx.font.name()
+    # set with options (which will be prioritized over envvar)
+    getOption("redcapsync.config.xlsx.font.name") # get
+    options(redcapsync.config.xlsx.font.name = "REDCapSync") # set
+
+    # set with ennvar (which will be prioritized when options not defined)
+    Sys.getenv("REDCAPSYNC_CONFIG_XLSX_FONT_NAME") # get
+    Sys.setenv(REDCAPSYNC_CONFIG_XLSX_FONT_NAME = "Georgia") # set
 
 ## Option Names (searched first)
 
@@ -177,8 +250,12 @@ Excel sheet body using
       redcapsync.config.cache.dir = NULL,
       redcapsync.config.keyring = NULL,
       redcapsync.config.keyring.service = NULL,
-      redcapsync.config.openxlsx.header.style = NULL,
-      redcapsync.config.openxlsx.body.style = NULL
+      redcapsync.config.xlsx.header.color = NULL,
+      redcapsync.config.xlsx.header.font.size = NULL,
+      redcapsync.config.xlsx.header.font.color = NULL,
+      redcapsync.config.xlsx.body.font.size = NULL,
+      redcapsync.config.xlsx.body.font.color = NULL,
+      redcapsync.config.xlsx.font.name = NULL
     )
 
 ## Environment Variable Names (searched second)
@@ -191,7 +268,13 @@ Excel sheet body using
       R_USER_CACHE_DIR = NA, # affects your entire cache for any package
       REDCAPSYNC_CONFIG_CACHE_DIR = NA, # affects only REDCapSync Cache
       REDCAPSYNC_CONFIG_KEYRING = NA,
-      REDCAPSYNC_CONFIG_KEYRING_SERVICE = NA
+      REDCAPSYNC_CONFIG_KEYRING_SERVICE = NA,
+      REDCAPSYNC_CONFIG_XLSX_HEADER_COLOR = NA,
+      REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_SIZE = NA,
+      REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_COLOR = NA,
+      REDCAPSYNC_CONFIG_XLSX_BODY_FONT_SIZE = NA,
+      REDCAPSYNC_CONFIG_XLSX_BODY_FONT_COLOR = NA,
+      REDCAPSYNC_CONFIG_XLSX_FONT_NAME = NA
     )
 
 ## See also

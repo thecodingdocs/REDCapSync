@@ -177,6 +177,7 @@ behind-the-scenes in the RosyREDCap shiny app.</p>
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 <p></p><ul><li><p><a href="#method-REDCapSyncDataset-initialize"><code>REDCapSyncDataset$new()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncDataset-print"><code>REDCapSyncDataset$print()</code></a></p></li>
+<li><p><a href="#method-REDCapSyncDataset-preview"><code>REDCapSyncDataset$preview()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncDataset-save"><code>REDCapSyncDataset$save()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncDataset-to_envir"><code>REDCapSyncDataset$to_envir()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-REDCapSyncDataset-initialize"></a><div class="section">
@@ -324,10 +325,27 @@ change log. Default is <code>TRUE</code>.</p></dd>
 
 </div>
 
+<p></p><hr><a id="method-REDCapSyncDataset-preview"></a><div class="section">
+<h3 id="redcapsyncdataset-preview-"><code>REDCapSyncDataset$preview()</code><a class="anchor" aria-label="anchor" href="#redcapsyncdataset-preview-"></a></h3>
+<p>Saves temporary excel and opens as a preview</p><div class="section">
+<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncDataset</span><span class="op">$</span><span class="fu">preview</span><span class="op">(</span>with_links <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>with_links</code></dt>
+<dd><p>Logical. Include hyperlinks in Excel exports. Default is
+<code>TRUE</code>.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
+</div>
+
 <p></p><hr><a id="method-REDCapSyncDataset-save"></a><div class="section">
 <h3 id="redcapsyncdataset-save-"><code>REDCapSyncDataset$save()</code><a class="anchor" aria-label="anchor" href="#redcapsyncdataset-save-"></a></h3>
 <p>Return flat list</p><div class="section">
-<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
+<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncDataset</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span></span>
 <span>  with_links <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  separate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -336,7 +354,7 @@ change log. Default is <code>TRUE</code>.</p></dd>
 <span>  file_name <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>with_links</code></dt>
 <dd><p>Logical. Include hyperlinks in Excel exports. Default is
 <code>TRUE</code>.</p></dd>
@@ -367,10 +385,10 @@ saved. Defaults to the project's output folder.</p></dd>
 <h3 id="redcapsyncdataset-to-envir-"><code>REDCapSyncDataset$to_envir()</code><a class="anchor" aria-label="anchor" href="#redcapsyncdataset-to-envir-"></a></h3>
 <p>export dataset to envir of your choosing. Keep in mind
 potential name conflicts</p><div class="section">
-<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncDataset</span><span class="op">$</span><span class="fu">to_envir</span><span class="op">(</span>envir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>envir</code></dt>
 <dd><p>Environment to assign exported dataset objects. Default is
 <code>NULL</code>.</p></dd>
@@ -399,7 +417,7 @@ potential name conflicts</p><div class="section">
 <span class="r-in"><span> <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dataset</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span>dir_other <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_stage_2_patients.xlsx: <span style="color: #0000BB;">/tmp/Rtmpedg3b8/TEST_CLASSIC_stage_2_patients.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_stage_2_patients.xlsx: <span style="color: #0000BB;">/tmp/RtmpE78zYb/TEST_CLASSIC_stage_2_patients.xlsx</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

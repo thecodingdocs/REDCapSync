@@ -4,6 +4,9 @@
 
 - Preparing for R journal submission
 - Waiting for suggestions/issues
+- fixed links for repeating instruments
+- switched to openxlsx2 internally
+- need to account for renamed records in log
 
 ## REDCapSync 0.1.0
 

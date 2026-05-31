@@ -182,7 +182,6 @@ test_that("redcap_log_labeller works!", {
 test_that("analyze_log works!", {
   project_name <- "TEST_CLASSIC"
   project <- mock_test_project(project_name)$.internal
-  id_col <- project$metadata$id_col
   interim_log <- data.frame(
     timestamp = as.character(Sys.time()),
     username = "u1231",
@@ -192,7 +191,7 @@ test_that("analyze_log works!", {
     action_type = "Create",
     stringsAsFactors = FALSE
   )
-  expect_identical(analyze_log(interim_log, id_col)$length_updated_records, 1L)
+  expect_identical(analyze_log(interim_log, project)$length_updated_records, 1L)
   interim_log <- data.frame(
     timestamp = as.character(Sys.time()),
     username = "u1231",
@@ -202,7 +201,7 @@ test_that("analyze_log works!", {
     action_type = c("Create", "Update"),
     stringsAsFactors = FALSE
   )
-  expect_identical(analyze_log(interim_log, id_col)$length_updated_records, 1L)
+  expect_identical(analyze_log(interim_log, project)$length_updated_records, 1L)
   interim_log <- data.frame(
     timestamp = as.character(Sys.time()),
     username = "u1231",
@@ -212,7 +211,7 @@ test_that("analyze_log works!", {
     action_type = "Delete",
     stringsAsFactors = FALSE
   )
-  log_changes <- analyze_log(interim_log, id_col)
+  log_changes <- analyze_log(interim_log, project)
   expect_identical(log_changes$length_updated_records, 1L)
   expect_identical(log_changes$length_deleted_records, 1L)
   expect_identical(log_changes$updated_records, "99")
@@ -228,7 +227,7 @@ test_that("analyze_log works!", {
     action_type = "Metadata Change Major",
     stringsAsFactors = FALSE
   )
-  expect_true(analyze_log(interim_log, id_col)$refresh_metadata)
+  expect_true(analyze_log(interim_log, project)$refresh_metadata)
   interim_log <- data.frame(
     timestamp = as.character(Sys.time()),
     username = "u1231",
@@ -238,7 +237,7 @@ test_that("analyze_log works!", {
     action_type = "Metadata Change Minor",
     stringsAsFactors = FALSE
   )
-  expect_true(analyze_log(interim_log, id_col)$refresh_metadata)
+  expect_true(analyze_log(interim_log, project)$refresh_metadata)
 })
 # log_change_messages (Internal)
 test_that("log_change_messages works!", {
@@ -264,7 +263,7 @@ test_that("log_change_messages works!", {
   log_changes$refresh_metadata <- FALSE
   log_changes$renamed_records <- "1c"
   log_changes$length_renamed_records <- 1L
-  expect_message(log_change_messages(log_changes), "Full update triggered")
+  expect_message(log_change_messages(log_changes), "Possibly Renamed")
   log_changes$renamed_records <- NULL
   log_changes$length_renamed_records <- 0L
   log_changes$length_comment_records <- 1L

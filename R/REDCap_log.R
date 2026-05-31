@@ -195,21 +195,19 @@ analyze_log <- function(interim_log, project) {
         append(created_records) |>
         append(log_list$Update$record) |>
         unique()
-      keep_updates <- log_list$Update$details |>
-        str_replace_all(" = '[^']*'", "") |>
-        strsplit(", ") |>
-        lapply(function(detail) {
-          id_col %in% detail
-        }) |>
-        unlist() |>
-        which()
-      renamed_records <- log_list$Update$record[keep_updates] |>
-        setdiff(created_records) |>
-        unique()
-      x <- renamed_records[[1]] |> check_redcap_former_names(project)
-      has_other_names <- x |> extract_log_all_names(project)
-      if (length(renamed_records) > 0L) {
-        log_changes$renamed_records <-  renamed_records
+      if (length(log_list$Update$details)> 0L){
+        keep_updates <- log_list$Update$details |>
+          str_replace_all(" = '[^']*'", "") |>
+          strsplit(", ") |>
+          lapply(function(detail) {
+            id_col %in% detail
+          }) |>
+          unlist() |>
+          which()
+        renamed_records <- log_list$Update$record[keep_updates] |> unique()
+        if (length(renamed_records) > 0L) {
+          log_changes$renamed_records <-  renamed_records
+        }
       }
       log_changes$length_deleted_records <- length(log_changes$deleted_records)
       log_changes$length_updated_records <- length(log_changes$updated_records)
@@ -238,16 +236,6 @@ log_change_messages <- function(log_changes, max_print = 8L) {
     cli_alert_success("Up to date already!")
     return(invisible())
   }
-  if (log_changes$length_renamed_records > 0L) {
-    cli_alert_info(paste(
-      "Possibly Renamed:",
-      ifelse(
-        log_changes$length_renamed_records > max_print,
-        paste(log_changes$length_renamed_records, "records"),
-        toString(log_changes$renamed_records)
-      )
-    ))
-  }
   if (log_changes$length_deleted_records > 0L) {
     cli_alert_info(paste(
       "Deleted:",
@@ -268,6 +256,16 @@ log_change_messages <- function(log_changes, max_print = 8L) {
       )
     ))
   }
+  if (log_changes$length_renamed_records > 0L) {
+    cli_alert_info(paste(
+      "Possibly Renamed:",
+      ifelse(
+        log_changes$length_renamed_records > max_print,
+        paste(log_changes$length_renamed_records, "records"),
+        toString(log_changes$renamed_records)
+      )
+    ))
+  }
   if (log_changes$length_comment_records > 0L) {
     cli_alert_info(paste(
       "Comments:",
@@ -279,6 +277,55 @@ log_change_messages <- function(log_changes, max_print = 8L) {
     ))
   }
   invisible(NULL)
+}
+#' @noRd
+check_redcap_former_names <- function(record = NULL, project) {
+  renamed_log <- NULL
+  if (!is.null(get_redcap_log)) {
+    creation_time <- project$redcap$project_info$creation_time
+    log_begin_date <- as.Date(as.POSIXct(creation_time)) - 1L
+    renamed_log <- get_redcap_log(project = project,
+                                  log_begin_date = log_begin_date,
+                                  record = record)
+    # consider dropping anything prior to a delete
+  }
+  renamed_log
+}
+#' @noRd
+extract_log_all_names <- function(renamed_log, project){
+  pattern <- paste0(project$metadata$id_col, "\\s*=\\s*'([^']+)'")
+  renamed_log$record |>
+    append(str_match(renamed_log$details, pattern = pattern)[,2]) |>
+    unique() |>
+    drop_nas()
+}
+#' @noRd
+get_redcap_log_update <- function(records = NULL, project) {
+  output <- list(records = NULL,
+                 log = NULL)
+  while (length(records) > 0L) {
+    record <- records[1L]
+    records <- records[-1L]
+    output$records <- output$records |> append(record)
+    renamed_log <- record |> check_redcap_former_names(project)
+    if(nrow(renamed_log) > 0L) {
+      other_names <- renamed_log |>
+        extract_log_all_names(project) |>
+        drop_nas() |>
+        unique() |>
+        setdiff(output$records) |>
+        setdiff(records)
+      output$log <- output$log |> bind_rows(renamed_log)
+      if(length(other_names) > 0L) {
+        records <- records |> append(other_names)
+      }
+    }
+  }
+  if (is_something(output$log)) {
+    new_order <- order(output$log$timestamp, decreasing = TRUE)
+    output$log <- unique(output$log[new_order, ])
+  }
+  output
 }
 #' @noRd
 LOG_ACTION_EXPORTS <- c("Data export", "Download uploaded ", "PDF Export")

@@ -200,7 +200,7 @@ test_that("sync_project will update if new", {
   row_existing <- which(project$data$text$record_id == "2")
   var_text_integer_update <- project$data$text$var_text_integer[row_update]
   var_text_integer_existing <- project$data$text$var_text_integer[row_existing]
-  log_changes <-  analyze_log(interim_log, id_col = project$metadata$id_col)
+  log_changes <-  analyze_log(interim_log, project)
   updated_records <- log_changes$updated_records
   expect_contains(updated_records, "50")
   expect_false("2" %in% updated_records)

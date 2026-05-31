@@ -189,7 +189,7 @@ sync_project_check <- function(project, hard_reset = FALSE, records = NULL) {
   if (!hard_reset) {
     interim_log <- get_interim_log(project)
     if (is_something(interim_log)) {
-      log_changes <- analyze_log(interim_log, id_col = project$metadata$id_col)
+      log_changes <- analyze_log(interim_log, project = project)
       log_change_messages(log_changes)
       hard_reset <- log_changes$hard_reset
       project$redcap$log <- interim_log |>
@@ -198,9 +198,10 @@ sync_project_check <- function(project, hard_reset = FALSE, records = NULL) {
       project$internals$was_updated <- TRUE
       if (!hard_reset) {
         if (log_changes$refresh_data || !is.null(records)) {
-          deleted_records <- log_changes$deleted_records
-          updated_records <- log_changes$updated_records
-          refresh_records <- c(deleted_records, updated_records, records)
+          refresh_records <- c(log_changes$deleted_records,
+                               log_changes$updated_records,
+                               log_changes$renamed_records,
+                               records)
           refresh_records <- unique(refresh_records)
           project <- sync_project_refresh(project = project,
                                           refresh_records = refresh_records)
@@ -208,6 +209,15 @@ sync_project_check <- function(project, hard_reset = FALSE, records = NULL) {
             # anything wrong with refresh should force hard_reset
             hard_reset <- TRUE
           }
+          if (!project$settings$get_entire_log && !is.null(project)) {
+            if(is_something(project$redcap$log)){
+              project$redcap$log <- interim_log |>
+                bind_rows(project$redcap$log) |>
+                unique()
+            } else{
+              project$redcap$log <- interim_log
+            }
+          } # account for deletions from log check
         }
       }
     }
@@ -225,8 +235,26 @@ sync_project_refresh <- function(project, refresh_records) {
   id_col <- project$metadata$id_col
   project$data <- all_character_cols_list(project$data)
   all_records <- get_redcap_records(project)
+  # add percentage and/or number where trigger reset should happen?
+  redcap_log_update <- get_redcap_log_update(records = refresh_records,
+                                             project = project)
+  refresh_records <- refresh_records |>
+    append(redcap_log_update$records) |>
+    unique()
   project <- remove_records_from_project(project = project,
                                          records = refresh_records)
+  # can deletions from log here mess up for when get_entire_log is false?
+  if (project$settings$get_entire_log) {
+    if (!is_something(project$redcap$log)) {
+      project$redcap$log <- output$log
+    } else {
+      if (is_something(output$log)) {
+        project$redcap$log <- project$redcap$log |> bind_rows(output$log)
+        new_order <- order(project$redcap$log$timestamp, decreasing = TRUE)
+        project$redcap$log <- unique(project$redcap$log[new_order, ])
+      }
+    }
+  }
   form_list <- get_redcap_data(
     project = project,
     labelled = project$settings$labelled,
@@ -386,5 +414,10 @@ remove_records_from_project <- function(project, records) {
   )
   keep_rows <- !project$record_summary[[id_col]] %in% records
   project$record_summary <- project$record_summary[which(keep_rows), ]
+  if (is.data.frame(project$redcap$log)) {
+    drop_rows <- which(project$redcap$log$record %in% records)
+    project$redcap$log  <- project$redcap$log[-drop_rows,]
+    rownames(project$redcap$log) <- NULL
+  }
   invisible(project)
 }

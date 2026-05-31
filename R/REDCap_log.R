@@ -15,31 +15,7 @@ clean_redcap_log <- function(redcap_log, drop_exports = FALSE) {
   keep <- starts_with(match = LOG_ACTION_RECORDS,
                       vars = redcap_log$action[not_design_rows])
   record_rows <- not_design_rows[keep]
-  redcap_log$record_id[record_rows] <- gsub(
-    paste0(
-      "Update record",
-      "|",
-      "Delete record",
-      "|",
-      "Create record",
-      "|",
-      "[:(:]API[:):]",
-      "|",
-      "Auto",
-      "|",
-      "calculation",
-      "|",
-      "Lock/Unlock Record ",
-      "|",
-      " ",
-      "|",
-      "[:):]",
-      "|",
-      "[:(:]"
-    ),
-    "",
-    redcap_log$action[record_rows]
-  )
+  redcap_log$record_id[record_rows] <- redcap_log$record[record_rows]
   redcap_log$action_type[record_rows] <- redcap_log$action[record_rows] |>
     strsplit(" ") |>
     lapply(function(x) {
@@ -100,13 +76,9 @@ clean_redcap_log <- function(redcap_log, drop_exports = FALSE) {
                                     start_match = LOG_DETAILS_REPOSITORY,
                                     label = "Repository")
   # end ------------
-  row_index <- which(is.na(redcap_log$record) &
-                       !is.na(redcap_log$record_id))
-  redcap_log$record[row_index] <- redcap_log$record_id[row_index]
-  row_index <- which(!is.na(redcap_log$record) &
-                       is.na(redcap_log$record_id))
-  redcap_log$action_type[row_index] <- "Users"
   redcap_log$record_id <- NULL
+  ignore <- which(redcap_log$action_type == "Update" & is.na(redcap_log$record))
+  redcap_log$action_type[ignore] <- "No Changes"
   redcap_log$username[which(redcap_log$username == "[survey respondent]")] <- NA
   cannot_label_rows <- which(is.na(redcap_log$action_type))
   if (length(cannot_label_rows) > 0L) {
@@ -172,8 +144,10 @@ get_interim_log <- function(project) {
   interim_log
 }
 #' @noRd
-analyze_log <- function(interim_log, id_col) {
+analyze_log <- function(interim_log, project) {
   # check log interim
+  id_col <- project$metadata$id_col
+  get_entire_log <- project$settings$get_entire_log
   #assert_log?
   log_changes <- list(
     hard_reset = FALSE,
@@ -216,31 +190,34 @@ analyze_log <- function(interim_log, id_col) {
       log_list <- split(interim_log_data, interim_log_data$action_type)
       log_changes$comment_records <- unique(log_list$Comment$record)
       log_changes$deleted_records <- unique(log_list$Delete$record)
+      created_records <- unique(log_list$Create$record)
       log_changes$updated_records <- log_changes$deleted_records |>
-        append(log_list$Create$record) |>
+        append(created_records) |>
         append(log_list$Update$record) |>
         unique()
-      update_list <- log_list$Update$details |>
+      keep_updates <- log_list$Update$details |>
         str_replace_all(" = '[^']*'", "") |>
-        strsplit(", ")
-      names(update_list) <- log_list$Update$record
-      if (length(update_list) > 0L) {
-        log_changes$renamed_records <-  update_list |>
-          lapply(function(detail) {
-            id_col %in% detail
-          }) |>
-          unlist() |>
-          which() |>
-          names() |>
-          unique()
+        strsplit(", ") |>
+        lapply(function(detail) {
+          id_col %in% detail
+        }) |>
+        unlist() |>
+        which()
+      renamed_records <- log_list$Update$record[keep_updates] |>
+        setdiff(created_records) |>
+        unique()
+      x <- renamed_records[[1]] |> check_redcap_former_names(project)
+      has_other_names <- x |> extract_log_all_names(project)
+      if (length(renamed_records) > 0L) {
+        log_changes$renamed_records <-  renamed_records
       }
       log_changes$length_deleted_records <- length(log_changes$deleted_records)
       log_changes$length_updated_records <- length(log_changes$updated_records)
       log_changes$length_renamed_records <- length(log_changes$renamed_records)
       log_changes$length_comment_records <- length(log_changes$comment_records)
       log_changes$refresh_data <- (log_changes$length_deleted_records > 0L) ||
-        (log_changes$length_updated_records > 0L)
-      log_changes$hard_reset <- log_changes$length_renamed_records > 0L
+        (log_changes$length_updated_records > 0L) ||
+        (log_changes$length_renamed_records > 0L)
     }
   }
   log_changes
@@ -263,15 +240,13 @@ log_change_messages <- function(log_changes, max_print = 8L) {
   }
   if (log_changes$length_renamed_records > 0L) {
     cli_alert_info(paste(
-      "Renamed:",
+      "Possibly Renamed:",
       ifelse(
         log_changes$length_renamed_records > max_print,
         paste(log_changes$length_renamed_records, "records"),
         toString(log_changes$renamed_records)
       )
     ))
-    cli_alert_warning("Full update triggered: Records were renamed!")
-    return(invisible())
   }
   if (log_changes$length_deleted_records > 0L) {
     cli_alert_info(paste(
@@ -306,7 +281,7 @@ log_change_messages <- function(log_changes, max_print = 8L) {
   invisible(NULL)
 }
 #' @noRd
-LOG_ACTION_EXPORTS <- c("Data export", "Download uploaded ")
+LOG_ACTION_EXPORTS <- c("Data export", "Download uploaded ", "PDF Export")
 #' @noRd
 LOG_DETAILS_EXPORTS <- c("Download ", "Export ")
 #' @noRd
@@ -323,14 +298,15 @@ LOG_DETAILS_COMMENTS <- c("Add field comment ",
                           "Delete field comment ")
 #' @noRd
 LOG_ACTION_RECORDS <- c("Create record ",
+                        "Create Response ",
                         "Delete record ",
                         "Lock/Unlock Record ",
-                        "Update record ")
+                        "Update record ",
+                        "Update Response")
 #' @noRd
 LOG_ACTION_NO_CHANGES <- c("Enable external module ",
                            "Disable external module ",
-                           "Modify configuration for external module ",
-                           "Update Response")
+                           "Modify configuration for external module ")
 #' @noRd
 LOG_DETAILS_NO_CHANGES <- c("Add settings for automated survey invitations",
                             "Add/edit stop actions for survey",

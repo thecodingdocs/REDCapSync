@@ -35,6 +35,9 @@ dataset$data$merged$letter_b <- dataset$data$merged$var_text_letters == "b"
 
 # send data in global environment
 dataset$to_envir(globalenv())
+
+# preview file from temporary directory
+dataset$preview()
  
 # save data in custom location
 dataset$save(dir_other = save_dir)
@@ -136,6 +139,9 @@ project$load_dataset("females", envir = globalenv()) # will send to global
 
 # load all default
 project$load_dataset("REDCapSync", envir = globalenv()) # will send to global
+
+project$load_dataset("males")$preview() # open temporary excel
+project$load_dataset("females")$preview() # open temporary excel
 
 # can trigger saves with `project$save_datasets()` or default `project$sync()`
 project$save_datasets()

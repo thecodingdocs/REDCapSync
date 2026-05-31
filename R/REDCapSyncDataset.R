@@ -282,7 +282,7 @@ REDCapSyncDataset <- R6Class(
         dir_other = temp_dir,
         file_name = file_name
       )
-      openxlsx2::xl_open(file.path(temp_dir, paste0(file_name,".xlsx")))
+      openxlsx2::xl_open(file.path(temp_dir, paste0(file_name, ".xlsx")))
       invisible(self)
     },
     #' @description Return flat list

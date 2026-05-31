@@ -380,7 +380,7 @@ get_identifier_fields <- function(data_list,
   is_identifier <- fields$identifier == "y"
   is_likely_identifier <- fields$validation_type %in% REDCAP_MAYBE_IDS_STRICT
   more_strict <- fields$validation_type %in% REDCAP_MAYBE_IDS_SUPER_STRICT
-  is_date <- fields$validation_type
+  #?is_date
   if (get_type == "identified") {
     keep_rows <- NULL
   }

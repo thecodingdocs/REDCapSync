@@ -145,10 +145,6 @@ get_interim_log <- function(project) {
 }
 #' @noRd
 analyze_log <- function(interim_log, project) {
-  # check log interim
-  id_col <- project$metadata$id_col
-  get_entire_log <- project$settings$get_entire_log
-  #assert_log?
   log_changes <- list(
     hard_reset = FALSE,
     refresh_metadata = FALSE,
@@ -166,6 +162,7 @@ analyze_log <- function(interim_log, project) {
     length_comment_records = 0L
   )
   if (nrow(interim_log) > 0L) {
+    # assert_log?
     # interim_log timestamp ? NULL
     maybe_metadata <- interim_log$action_type[which(is.na(interim_log$record))]
     # inclusion
@@ -195,12 +192,12 @@ analyze_log <- function(interim_log, project) {
         append(created_records) |>
         append(log_list$Update$record) |>
         unique()
-      if (length(log_list$Update$details)> 0L){
+      if (length(log_list$Update$details) > 0L) {
         keep_updates <- log_list$Update$details |>
           str_replace_all(" = '[^']*'", "") |>
           strsplit(", ") |>
           lapply(function(detail) {
-            id_col %in% detail
+            project$metadata$id_col %in% detail
           }) |>
           unlist() |>
           which()
@@ -292,23 +289,22 @@ check_redcap_former_names <- function(record = NULL, project) {
   renamed_log
 }
 #' @noRd
-extract_log_all_names <- function(renamed_log, project){
+extract_log_all_names <- function(renamed_log, project) {
   pattern <- paste0(project$metadata$id_col, "\\s*=\\s*'([^']+)'")
   renamed_log$record |>
-    append(str_match(renamed_log$details, pattern = pattern)[,2]) |>
+    append(str_match(renamed_log$details, pattern = pattern)[, 2]) |>
     unique() |>
     drop_nas()
 }
 #' @noRd
 get_redcap_log_update <- function(records = NULL, project) {
-  output <- list(records = NULL,
-                 log = NULL)
+  output <- list(records = NULL, log = NULL)
   while (length(records) > 0L) {
     record <- records[1L]
     records <- records[-1L]
     output$records <- output$records |> append(record)
     renamed_log <- record |> check_redcap_former_names(project)
-    if(nrow(renamed_log) > 0L) {
+    if (nrow(renamed_log) > 0L) {
       other_names <- renamed_log |>
         extract_log_all_names(project) |>
         drop_nas() |>
@@ -316,7 +312,7 @@ get_redcap_log_update <- function(records = NULL, project) {
         setdiff(output$records) |>
         setdiff(records)
       output$log <- output$log |> bind_rows(renamed_log)
-      if(length(other_names) > 0L) {
+      if (length(other_names) > 0L) {
         records <- records |> append(other_names)
       }
     }

@@ -206,15 +206,14 @@ sync_project_check <- function(project, hard_reset = FALSE, records = NULL) {
           project <- sync_project_refresh(project = project,
                                           refresh_records = refresh_records)
           if (is.null(project)) {
-            # anything wrong with refresh should force hard_reset
-            hard_reset <- TRUE
+            hard_reset <- TRUE # force hard_reset for certain issues in refresh
           }
           if (!project$settings$get_entire_log && !is.null(project)) {
-            if(is_something(project$redcap$log)){
+            if (is_something(project$redcap$log)) {
               project$redcap$log <- interim_log |>
                 bind_rows(project$redcap$log) |>
                 unique()
-            } else{
+            } else {
               project$redcap$log <- interim_log
             }
           } # account for deletions from log check
@@ -246,10 +245,11 @@ sync_project_refresh <- function(project, refresh_records) {
   # can deletions from log here mess up for when get_entire_log is false?
   if (project$settings$get_entire_log) {
     if (!is_something(project$redcap$log)) {
-      project$redcap$log <- output$log
+      project$redcap$log <- redcap_log_update$log
     } else {
-      if (is_something(output$log)) {
-        project$redcap$log <- project$redcap$log |> bind_rows(output$log)
+      if (is_something(redcap_log_update$log)) {
+        project$redcap$log <- project$redcap$log |>
+          bind_rows(redcap_log_update$log)
         new_order <- order(project$redcap$log$timestamp, decreasing = TRUE)
         project$redcap$log <- unique(project$redcap$log[new_order, ])
       }
@@ -416,7 +416,7 @@ remove_records_from_project <- function(project, records) {
   project$record_summary <- project$record_summary[which(keep_rows), ]
   if (is.data.frame(project$redcap$log)) {
     drop_rows <- which(project$redcap$log$record %in% records)
-    project$redcap$log  <- project$redcap$log[-drop_rows,]
+    project$redcap$log  <- project$redcap$log[-drop_rows, ]
     rownames(project$redcap$log) <- NULL
   }
   invisible(project)

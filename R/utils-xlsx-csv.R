@@ -215,9 +215,8 @@ add_wb_styles <- function(wb,
                           header_font_color = "black",
                           body_font_size = 12L,
                           body_font_color = "black",
-                          font_name = "Arial"){
-  wb_black<- wb_color("black")
-  # same as wb_color("black") or  wb_color(hex = "FF000000") or wb_color("FF000000")
+                          font_name = "Arial") {
+  wb_black <- wb_color("black")
   default_border <- create_border(
     bottom = "thin", bottom_color = wb_black,
     top = "thin", top_color = wb_black,
@@ -242,27 +241,20 @@ add_wb_styles <- function(wb,
   wb$styles_mgr$add(default_fill, "default_fill")
   wb$styles_mgr$add(header_font, "header_font")
   wb$styles_mgr$add(body_font, "body_font")
-  # create a new cell style, that uses the fill, the font and the border style
   header_style <- create_cell_style(
     num_fmt_id = 1,
     horizontal = "center",
     vertical = "center",
-    # text_rotation = 45,
     fill_id = wb$styles_mgr$get_fill_id("default_fill"),
     font_id = wb$styles_mgr$get_font_id("header_font"),
     border_id = wb$styles_mgr$get_border_id("default_border")
   )
-  # create a new cell style, that uses the fill, the font and the border style
   body_style <- create_cell_style(
     num_fmt_id = 2,
     horizontal = "left",
     vertical = "center",
-    # text_rotation = 45,
-    # fill_id = wb$styles_mgr$get_fill_id("default_fill"),
     font_id = wb$styles_mgr$get_font_id("body_font")
-    # border_id = wb$styles_mgr$get_border_id("default_border")
   )
-  # assign this style to the workbook
   wb$styles_mgr$add(header_style, "header_style")
   wb$styles_mgr$add(body_style, "body_style")
   wb
@@ -355,8 +347,8 @@ form_to_wb <- function(form,
     start_col = start_col,
     na = ""
   )
-  if(has_links){
-    for (col_name in names(link_list)){
+  if (has_links) {
+    for (col_name in names(link_list)) {
       hyperlink_col <- which(colnames(form) == col_name)
       wb$add_hyperlink(
         sheet = form_name,

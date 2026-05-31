@@ -3,7 +3,8 @@
 * Waiting for suggestions/issues
 * fixed links for repeating instruments
 * switched to openxlsx2 internally
-* need to account for renamed records in log
+* accounted for potenitally renamed records in log
+* possibly renamed records will no longer trigger full update
 
 # REDCapSync 0.1.0
 * Initial CRAN submission!

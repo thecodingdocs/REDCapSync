@@ -260,10 +260,6 @@ test_project_details <- function(project_details, nrows = NULL) {
   !is.null(project_details)
 }
 #' @noRd
-test_openxlsx_style <- function(x) {
-  test_class(x, "Style") && identical(attr(class(x), "package"), "openxlsx")
-}
-#' @noRd
 test_env_name <- function(x, max.chars = 26L, all_caps = FALSE) {
   x <- try_else_null({
     suppressWarnings({

@@ -270,6 +270,21 @@ REDCapSyncDataset <- R6Class(
     log = NULL,
     #' @field comments data.frame of comments
     comments = NULL,
+    #' @description Saves temporary excel and opens as a preview
+    preview = function(with_links = TRUE) {
+      temp_dir <- tempdir()
+      file_name <- "temp"
+      save_project_data_list(
+        data_list = self,
+        with_links = with_links,
+        separate = FALSE,
+        use_csv = FALSE,
+        dir_other = temp_dir,
+        file_name = file_name
+      )
+      openxlsx2::xl_open(file.path(temp_dir, paste0(file_name,".xlsx")))
+      invisible(self)
+    },
     #' @description Return flat list
     save = function(with_links = TRUE,
                     separate = FALSE,

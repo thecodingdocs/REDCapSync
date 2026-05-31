@@ -31,7 +31,7 @@ Imports:
     dplyr,
     hoardr,
     lubridate,
-    openxlsx,
+    openxlsx2,
     R6,
     readxl,
     redcapAPI,

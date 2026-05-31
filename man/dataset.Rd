@@ -115,6 +115,7 @@ dataset$save(dir_other = tempdir())
   \itemize{
     \item \href{#method-REDCapSyncDataset-initialize}{\code{REDCapSyncDataset$new()}}
     \item \href{#method-REDCapSyncDataset-print}{\code{REDCapSyncDataset$print()}}
+    \item \href{#method-REDCapSyncDataset-preview}{\code{REDCapSyncDataset$preview()}}
     \item \href{#method-REDCapSyncDataset-save}{\code{REDCapSyncDataset$save()}}
     \item \href{#method-REDCapSyncDataset-to_envir}{\code{REDCapSyncDataset$to_envir()}}
   }
@@ -220,6 +221,26 @@ change log. Default is \code{TRUE}.}
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{REDCapSyncDataset$print()}
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSyncDataset-preview"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncDataset-preview}{}}}
+\subsection{\code{REDCapSyncDataset$preview()}}{
+  Saves temporary excel and opens as a preview
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{REDCapSyncDataset$preview(with_links = TRUE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{with_links}}{Logical. Include hyperlinks in Excel exports. Default is
+\code{TRUE}.}
+    }
     \if{html}{\out{</div>}}
   }
 }

@@ -7,17 +7,22 @@
 #'
 #' Configuration is resolved in the following order:
 #' 1. `getOption("redcapsync.config.option.name")`
-#' 2. `Sys.getenv("REDCAPSYNC_CONFIG_OPTION_NAME")` # skipped for functions
+#' 2. `Sys.getenv("REDCAPSYNC_CONFIG_OPTION_NAME")` # can use .Renviron file!
 #' 3. Default if unable to find and validate from above.
+#'
+#' A vignette will be written for options/configuration in later versions when
+#' stable.
 #'
 #' @details
 #' The config function is operational but only some methods presently
 #' affect internal code. Most users will not ever need to modify default config.
 #' This is included to improve future versions of the package.
 #' * Working configs: `allow.test.names`, `cache.dir`, `keyring`,
-#' `keyring.service`, `openxlsx.header.style`, `openxlsx.body.style`.
-#' * Partial coverage: `offline`.
-#' * Placeholder: `verbose`, `show.api.messages`
+#' `keyring.service`, `xlsx.header.color`, `xlsx.header.font.size`,
+#' `xlsx.header.font.color`, `xlsx.body.font.size`, `xlsx.body.font.color`,
+#' `xlsx.font.name`.
+#' * Partial coverage: `offline`, `verbose`.
+#' * Placeholder: `show.api.messages`
 #'
 #' ## allow.test.names
 #' Logical for [setup_project()] allowing `project_name` starting with TEST_.
@@ -112,7 +117,7 @@
 #'
 #' # set with ennvar (which will be prioritized when options not defined)
 #' Sys.getenv("REDCAPSYNC_CONFIG_KEYRING") # get
-#' Sys.setenv(REDCAPSYNC_CONFIG_KEYRING = "REDCapSync") # set in session
+#' Sys.setenv(REDCAPSYNC_CONFIG_KEYRING = "REDCapSync") # set
 #' ```
 #'
 #' ## keyring.service
@@ -128,29 +133,97 @@
 #'
 #' # set with ennvar (which will be prioritized when options not defined)
 #' Sys.getenv("REDCAPSYNC_CONFIG_KEYRING_SERVICE") # get
-#' Sys.setenv(REDCAPSYNC_CONFIG_KEYRING_SERVICE = "REDCapSync") # set in session
+#' Sys.setenv(REDCAPSYNC_CONFIG_KEYRING_SERVICE = "REDCapSync") # set
 #' ```
 #'
-#' ## openxlsx.header.style
-#' Excel sheet header using [openxlsx::createStyle()]
+#' ## xlsx.header.color
+#' color name for hex color character for header color of exported excel sheets
 #'
 #' ```
+#' # check current value package is using...
+#' config$xlsx.header.color()
 #' # set with options (which will be prioritized over envvar)
-#' getOption("redcapsync.config.openxlsx.header.style") # get
-#' new_style <- openxlsx::createStyle(fontSize = 12L)
-#' options(redcapsync.config.openxlsx.header.style = new_style)
-#'# does not look up envvar due to it's function type
+#' getOption("redcapsync.config.xlsx.header.color") # get
+#' options(redcapsync.config.xlsx.header.color = "REDCapSync") # set
+#'
+#' # set with ennvar (which will be prioritized when options not defined)
+#' Sys.getenv("REDCAPSYNC_CONFIG_XLSX_HEADER_COLOR") # get
+#' Sys.setenv(REDCAPSYNC_CONFIG_XLSX_HEADER_COLOR = "green") # set
 #' ```
 #'
-#' ## openxlsx.body.style
-#' Excel sheet body using [openxlsx::createStyle()]
+#' ## xlsx.header.font.size
+#' color name for hex color character for header color of exported excel sheets
 #'
 #' ```
+#' # check current value package is using...
+#' config$xlsx.header.font.size()
 #' # set with options (which will be prioritized over envvar)
-#' getOption("redcapsync.config.openxlsx.body.style") # get
-#' new_style <- openxlsx::createStyle(fontSize = 12L)
-#' options(redcapsync.config.openxlsx.body.style = new_style)
-#'# does not look up envvar due to it's function type
+#' getOption("redcapsync.config.xlsx.header.font.size") # get
+#' options(redcapsync.config.xlsx.header.font.size = "REDCapSync") # set
+#'
+#' # set with ennvar (which will be prioritized when options not defined)
+#' Sys.getenv("REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_SIZE") # get
+#' Sys.setenv(REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_SIZE = "12") # set
+#' ```
+#'
+#' ## xlsx.header.font.color
+#' color name for hex color character for header color of exported excel sheets
+#'
+#' ```
+#' # check current value package is using...
+#' config$xlsx.header.font.color()
+#' # set with options (which will be prioritized over envvar)
+#' getOption("redcapsync.config.xlsx.header.font.color") # get
+#' options(redcapsync.config.xlsx.header.font.color = "REDCapSync") # set
+#'
+#' # set with ennvar (which will be prioritized when options not defined)
+#' Sys.getenv("REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_COLOR") # get
+#' Sys.setenv(REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_COLOR = "white") # set
+#' ```
+#'
+#' ## xlsx.body.font.size
+#' color name for hex color character for header color of exported excel sheets
+#'
+#' ```
+#' # check current value package is using...
+#' config$xlsx.body.font.size()
+#' # set with options (which will be prioritized over envvar)
+#' getOption("redcapsync.config.xlsx.body.font.size") # get
+#' options(redcapsync.config.xlsx.body.font.size = "REDCapSync") # set
+#'
+#' # set with ennvar (which will be prioritized when options not defined)
+#' Sys.getenv("REDCAPSYNC_CONFIG_XLSX_BODY_FONT_SIZE") # get
+#' Sys.setenv(REDCAPSYNC_CONFIG_XLSX_BODY_FONT_SIZE = "8") # set
+#' ```
+#'
+#' ## xlsx.body.font.color
+#' color name for hex color character for header color of exported excel sheets
+#'
+#' ```
+#' # check current value package is using...
+#' config$xlsx.body.font.color()
+#' # set with options (which will be prioritized over envvar)
+#' getOption("redcapsync.config.xlsx.body.font.color") # get
+#' options(redcapsync.config.xlsx.body.font.color = "REDCapSync") # set
+#'
+#' # set with ennvar (which will be prioritized when options not defined)
+#' Sys.getenv("REDCAPSYNC_CONFIG_XLSX_BODY_FONT_COLOR") # get
+#' Sys.setenv(REDCAPSYNC_CONFIG_XLSX_BODY_FONT_COLOR = "red") # set
+#' ```
+#'
+#' ## xlsx.font.name
+#' color name for hex color character for header color of exported excel sheets
+#'
+#' ```
+#' # check current value package is using...
+#' config$xlsx.font.name()
+#' # set with options (which will be prioritized over envvar)
+#' getOption("redcapsync.config.xlsx.font.name") # get
+#' options(redcapsync.config.xlsx.font.name = "REDCapSync") # set
+#'
+#' # set with ennvar (which will be prioritized when options not defined)
+#' Sys.getenv("REDCAPSYNC_CONFIG_XLSX_FONT_NAME") # get
+#' Sys.setenv(REDCAPSYNC_CONFIG_XLSX_FONT_NAME = "Georgia") # set
 #' ```
 #'
 #' # Option Names (searched first)
@@ -164,8 +237,12 @@
 #'   redcapsync.config.cache.dir = NULL,
 #'   redcapsync.config.keyring = NULL,
 #'   redcapsync.config.keyring.service = NULL,
-#'   redcapsync.config.openxlsx.header.style = NULL,
-#'   redcapsync.config.openxlsx.body.style = NULL
+#'   redcapsync.config.xlsx.header.color = NULL,
+#'   redcapsync.config.xlsx.header.font.size = NULL,
+#'   redcapsync.config.xlsx.header.font.color = NULL,
+#'   redcapsync.config.xlsx.body.font.size = NULL,
+#'   redcapsync.config.xlsx.body.font.color = NULL,
+#'   redcapsync.config.xlsx.font.name = NULL
 #' )
 #' ```
 #'
@@ -179,7 +256,13 @@
 #'   R_USER_CACHE_DIR = NA, # affects your entire cache for any package
 #'   REDCAPSYNC_CONFIG_CACHE_DIR = NA, # affects only REDCapSync Cache
 #'   REDCAPSYNC_CONFIG_KEYRING = NA,
-#'   REDCAPSYNC_CONFIG_KEYRING_SERVICE = NA
+#'   REDCAPSYNC_CONFIG_KEYRING_SERVICE = NA,
+#'   REDCAPSYNC_CONFIG_XLSX_HEADER_COLOR = NA,
+#'   REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_SIZE = NA,
+#'   REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_COLOR = NA,
+#'   REDCAPSYNC_CONFIG_XLSX_BODY_FONT_SIZE = NA,
+#'   REDCAPSYNC_CONFIG_XLSX_BODY_FONT_COLOR = NA,
+#'   REDCAPSYNC_CONFIG_XLSX_FONT_NAME = NA
 #' )
 #' ```
 #'
@@ -236,14 +319,34 @@ config <- list(
                type = "character",
                default = default)
   },
-  openxlsx.header.style = function(default = openxlsx_header_style()) {
-    config_get(opt_name = "openxlsx.header.style",
-               type = "openxlsx_style",
+  xlsx.header.color = function(default = "#74DFFF") {
+    config_get(opt_name = "xlsx.header.color",
+               type = "character",
                default = default)
   },
-  openxlsx.body.style = function(default = openxlsx_body_style()) {
-    config_get(opt_name = "openxlsx.body.style",
-               type = "openxlsx_style",
+  xlsx.header.font.size = function(default = 14L) {
+    config_get(opt_name = "xlsx.header.font.size",
+               type = "integer",
+               default = default)
+  },
+  xlsx.header.font.color = function(default = "black") {
+    config_get(opt_name = "xlsx.header.font.color",
+               type = "character",
+               default = default)
+  },
+  xlsx.body.font.size = function(default = 11L) {
+    config_get(opt_name = "xlsx.body.font.size",
+               type = "integer",
+               default = default)
+  },
+  xlsx.body.font.color = function(default = "black") {
+    config_get(opt_name = "xlsx.body.font.color",
+               type = "character",
+               default = default)
+  },
+  xlsx.font.name = function(default = "Arial") {
+    config_get(opt_name = "xlsx.font.name",
+               type = "character",
                default = default)
   }
 )
@@ -261,7 +364,7 @@ config_get <- function(opt_name, type, default) {
   env_name <- chartr(".", "_", opt_name)
   env_key <- paste("REDCapSync", "config", env_name, sep = "_") |> toupper()
   env_val <- Sys.getenv(env_key, unset = NA)
-  if (!is.na(env_val) && nzchar(env_val) && type != "openxlsx_style") {
+  if (!is.na(env_val) && nzchar(env_val)) {
     return(config_validate(opt_name, env_val, type, default))
   }
   default
@@ -271,7 +374,7 @@ config_validate <- function(opt_name, value, type, default) {
   assert_choice(opt_name, names(config))
   assert_choice(type, OPTION_TYPES)
   # add warning messages
-  if (identical(type, "logical")) {
+  if (type == "logical") {
     if (test_character(value, len = 1L)) {
       if (toupper(value) %in% c("TRUE", "FALSE")) {
         value <- value |> toupper() |> as.logical()
@@ -281,18 +384,19 @@ config_validate <- function(opt_name, value, type, default) {
       return(value)
     }
   }
-  if (identical(type, "openxlsx_style")) {
-    if (test_openxlsx_style(value)) {
+  if (type == "integer") {
+    value <- as.integer(value)
+    if (test_integerish(value, lower = 1L, upper = 96L, len = 1L)) {
       return(value)
     }
   }
-  if (identical(type, "filepath")) {
+  if (type == "filepath") {
     if (test_directory_exists(value)) {
       # meesage about not existing?
       return(value)
     }
   }
-  if (identical(type, "character")) {
+  if (type == "character") {
     if (test_character(value, min.chars = 1L, any.missing = FALSE, len = 1L)) {
       if (toupper(value) != "NULL") {
         return(value)
@@ -301,4 +405,4 @@ config_validate <- function(opt_name, value, type, default) {
   }
   default
 }
-OPTION_TYPES <- c("logical", "filepath", "character", "openxlsx_style")
+OPTION_TYPES <- c("logical", "filepath", "character", "integer")

@@ -9,8 +9,12 @@ list_to_excel <- function(input_list,
                           link_col_list = list(),
                           str_trunc_length = 32000L,
                           header_df_list = NULL,
-                          header_style = config$openxlsx.header.style(),
-                          body_style = config$openxlsx.body.style(),
+                          header_color = "#74DFFF",
+                          header_font_size = 14L,
+                          header_font_color = "black",
+                          body_font_size = 12L,
+                          body_font_color = "black",
+                          font_name = "Arial",
                           freeze_header = TRUE,
                           pad_rows = 0L,
                           pad_cols = 0L,
@@ -49,8 +53,12 @@ list_to_excel <- function(input_list,
           link_col_list = link_col_list,
           str_trunc_length = str_trunc_length,
           header_df_list = header_df_list,
-          header_style = header_style,
-          body_style = body_style,
+          header_color = header_color,
+          header_font_size = header_font_size,
+          header_font_color = header_font_color,
+          body_font_size = body_font_size,
+          body_font_color = body_font_color,
+          font_name = font_name,
           freeze_header = freeze_header,
           pad_rows = pad_rows,
           pad_cols = pad_cols,
@@ -71,8 +79,12 @@ list_to_excel <- function(input_list,
         link_col_list = link_col_list,
         str_trunc_length = str_trunc_length,
         header_df_list = header_df_list,
-        header_style = header_style,
-        body_style = body_style,
+        header_color = header_color,
+        header_font_size = header_font_size,
+        header_font_color = header_font_color,
+        body_font_size = body_font_size,
+        body_font_color = body_font_color,
+        font_name = font_name,
         freeze_header = freeze_header,
         pad_rows = pad_rows,
         pad_cols = pad_cols,
@@ -91,9 +103,7 @@ save_wb <- function(wb, dir, file_name, overwrite = TRUE) {
     cli_abort("dir doesn't exist: {.file {dir}}")
   }
   path <- file.path(dir, paste0(file_name, ".xlsx")) |> sanitize_path()
-  openxlsx::saveWorkbook(wb = wb,
-                         file = path,
-                         overwrite = overwrite)
+  wb$save(file = path, overwrite = overwrite)
   cli_alert_success("Saved {basename(path)}: {.file {path}}")
 }
 #' @noRd
@@ -140,8 +150,12 @@ list_to_wb <- function(input_list,
                        link_col_list = list(),
                        str_trunc_length = 32000L,
                        header_df_list = NULL,
-                       header_style = NULL,
-                       body_style = NULL,
+                       header_color = "#74DFFF",
+                       header_font_size = 14L,
+                       header_font_color = "black",
+                       body_font_size = 12L,
+                       body_font_color = "black",
+                       font_name = "Arial",
                        freeze_header = TRUE,
                        pad_rows = 0L,
                        pad_cols = 0L,
@@ -156,7 +170,6 @@ list_to_wb <- function(input_list,
   if (is.null(derived_cols_list)) {
     derived_cols_list <- list()
   }
-  wb <- openxlsx::createWorkbook()
   input_list <- process_df_list(input_list, drop_empty = drop_empty)
   list_names <- names(input_list)
   list_link_names <- list()
@@ -170,18 +183,23 @@ list_to_wb <- function(input_list,
     }
   }
   list_names_rename <- rename_list_names_excel(list_names = list_names)
+  wb <- wb_workbook() |>
+    add_wb_styles(header_color = header_color,
+                  header_font_size = header_font_size,
+                  header_font_color = header_font_color,
+                  body_font_size = body_font_size,
+                  body_font_color = body_font_color,
+                  font_name = font_name)
   for (i in seq_along(list_names)) {
     wb <- form_to_wb(
-      wb = wb,
       form = input_list[[list_names[i]]],
       form_name = list_names_rename[i],
+      wb = wb,
       key_cols = key_cols_list[[list_names[i]]],
       derived_cols = NULL,
       link_col_list = list_link_names[[list_names[i]]],
       str_trunc_length = str_trunc_length,
       header_df = header_df_list[[list_names[i]]],
-      header_style = header_style,
-      body_style = body_style,
       freeze_header = freeze_header,
       pad_rows = pad_rows,
       pad_cols = pad_cols,
@@ -191,16 +209,73 @@ list_to_wb <- function(input_list,
   wb
 }
 #' @noRd
+add_wb_styles <- function(wb,
+                          header_color = "#74DFFF",
+                          header_font_size = 14L,
+                          header_font_color = "black",
+                          body_font_size = 12L,
+                          body_font_color = "black",
+                          font_name = "Arial"){
+  wb_black<- wb_color("black")
+  # same as wb_color("black") or  wb_color(hex = "FF000000") or wb_color("FF000000")
+  default_border <- create_border(
+    bottom = "thin", bottom_color = wb_black,
+    top = "thin", top_color = wb_black,
+    left = "thin", left_color = wb_black,
+    right = "thin", right_color = wb_black
+  )
+  default_fill <- create_fill(pattern_type = "solid",
+                              fg_color = wb_color(hex = header_color))
+  header_font <- create_font(
+    sz = header_font_size,
+    name = font_name,
+    b = TRUE,
+    color = wb_color(header_font_color)
+  )
+  body_font <- create_font(
+    sz = body_font_size,
+    name = font_name,
+    b = FALSE,
+    color = wb_color(body_font_color)
+  )
+  wb$styles_mgr$add(default_border, "default_border")
+  wb$styles_mgr$add(default_fill, "default_fill")
+  wb$styles_mgr$add(header_font, "header_font")
+  wb$styles_mgr$add(body_font, "body_font")
+  # create a new cell style, that uses the fill, the font and the border style
+  header_style <- create_cell_style(
+    num_fmt_id = 1,
+    horizontal = "center",
+    vertical = "center",
+    # text_rotation = 45,
+    fill_id = wb$styles_mgr$get_fill_id("default_fill"),
+    font_id = wb$styles_mgr$get_font_id("header_font"),
+    border_id = wb$styles_mgr$get_border_id("default_border")
+  )
+  # create a new cell style, that uses the fill, the font and the border style
+  body_style <- create_cell_style(
+    num_fmt_id = 2,
+    horizontal = "left",
+    vertical = "center",
+    # text_rotation = 45,
+    # fill_id = wb$styles_mgr$get_fill_id("default_fill"),
+    font_id = wb$styles_mgr$get_font_id("body_font")
+    # border_id = wb$styles_mgr$get_border_id("default_border")
+  )
+  # assign this style to the workbook
+  wb$styles_mgr$add(header_style, "header_style")
+  wb$styles_mgr$add(body_style, "body_style")
+  wb
+}
+#' @noRd
 form_to_wb <- function(form,
                        form_name,
-                       wb = openxlsx::createWorkbook(),
+                       wb = wb_workbook(),
                        key_cols = NULL,
                        derived_cols = NULL,
                        link_col_list = list(),
                        str_trunc_length = 32000L,
                        header_df = NULL,
-                       header_style = NULL,
-                       body_style = NULL,
                        freeze_header = TRUE,
                        pad_rows = 0L,
                        pad_cols = 0L,
@@ -245,70 +320,74 @@ form_to_wb <- function(form,
       }
     }
   }
-  openxlsx::addWorksheet(wb, form_name)
+  wb$add_worksheet(form_name)
   start_row_header <- pad_rows + 1L
   start_row_table <- start_row_header
   start_col <- pad_cols + 1L
   if (is_something(header_df)) {
-    openxlsx::writeData(
-      wb,
+    wb$add_data(
       sheet = form_name,
       x = header_df,
-      startRow = start_row_header,
-      startCol = start_col,
-      colNames = FALSE
+      start_row = start_row_header,
+      start_col = start_col,
+      col_names = FALSE
     )
     start_row_table <- start_row_header + nrow(header_df)
   }
+  has_links <- FALSE
+  link_list <- NULL
   if (length(link_col_list) > 0L) {
     has_names <- !is.null(names(link_col_list))
     for (i in seq_along(link_col_list)) {
-      if (link_col_list[[i]] %in% colnames(form)) {
-        class(form[[link_col_list[[i]]]]) <- "hyperlink"
-      } # else warning?
       if (has_names) {
         if (names(link_col_list)[i] %in% colnames(form)) {
-          hyperlink_col <- which(colnames(form) == names(link_col_list)[i])
-          openxlsx::writeData(
-            wb,
-            sheet = form_name,
-            x = form[[link_col_list[[i]]]],
-            startRow = start_row_table + 1L,
-            startCol = hyperlink_col + pad_cols
-          )
+          link_list[[names(link_col_list)[i]]] <- form[[link_col_list[[i]]]]
+          has_links <- TRUE
           form[[link_col_list[[i]]]] <- NULL
         } # else warning?
       }
     }
   }
-  openxlsx::writeDataTable(
-    wb,
+  wb$add_data(
     sheet = form_name,
     x = form,
-    startRow = start_row_table,
-    startCol = start_col,
-    tableStyle = "none"
+    start_row = start_row_table,
+    start_col = start_col,
+    na = ""
+  )
+  if(has_links){
+    for (col_name in names(link_list)){
+      hyperlink_col <- which(colnames(form) == col_name)
+      wb$add_hyperlink(
+        sheet = form_name,
+        dims = wb_dims(
+          rows = seq_len(nrow(form)) + start_row_table,
+          cols = hyperlink_col + pad_cols
+        ),
+        target = link_list[[col_name]]
+      )
+    }
+  }
+  style_cols <- seq_len(ncol(form)) + pad_cols
+  wb$set_cell_style(
+    sheet = form_name,
+    dims = wb_dims(
+      rows = seq(from = start_row_header, to = start_row_table),
+      cols = style_cols
+    ),
+    style = wb$styles_mgr$get_xf_id("header_style")
+  )
+  wb$set_cell_style(
+    sheet = form_name,
+    dims = wb_dims(
+      rows = seq_len(nrow(form)) + start_row_table,
+      cols = style_cols
+    ),
+    style = wb$styles_mgr$get_xf_id("body_style")
   )
   # add derived style
-  style_cols <- seq_len(ncol(form)) + pad_cols
-  openxlsx::addStyle(
-    wb,
-    sheet = form_name,
-    style = header_style,
-    rows = seq(from = start_row_header, to = start_row_table),
-    cols = style_cols,
-    gridExpand = TRUE,
-    stack = TRUE
-  )
-  openxlsx::addStyle(
-    wb,
-    sheet = form_name,
-    style = body_style,
-    rows = seq_len(nrow(form)) + start_row_table,
-    cols = style_cols,
-    gridExpand = TRUE,
-    stack = TRUE
-  )
+  # add_locking to keys etc
+  # add protection?
   if (freeze_header || freeze_keys) {
     first_active_row <- NULL
     if (freeze_header) {
@@ -327,10 +406,9 @@ form_to_wb <- function(form,
           warning(the_warning, immediate. = TRUE)
         }
       }
-      openxlsx::freezePane(wb,
-                           form_name,
-                           firstActiveRow = first_active_row,
-                           firstActiveCol = first_active_col)
+      wb$freeze_pane(sheet = form_name,
+                     first_active_row = first_active_row,
+                     first_active_col = first_active_col)
     }
   }
   wb
@@ -359,8 +437,8 @@ rename_list_names_excel <- function(list_names) {
   list_names_rename
 }
 #' @noRd
-excel_to_list <- function(path) {
-  sheets <- openxlsx::getSheetNames(path)
+excel_to_list <- function(path) {# can do do with openxlsx2 as well
+  sheets <- readxl::excel_sheets(path)
   names(sheets) <- seq_along(sheets)
   clean_sheets <- clean_env_names(sheets)
   out <- list()
@@ -401,20 +479,4 @@ excel_to_list <- function(path) {
   }
   names(out) <- clean_sheets
   out
-}
-#' @noRd
-openxlsx_header_style <- function() {
-  openxlsx::createStyle(fgFill = "#74DFFF",
-                        halign = "center",
-                        valign = "center",
-                        textDecoration = "Bold",
-                        fontSize = 14L,
-                        fontColour = "black",
-                        border = "TopBottomLeftRight")
-}
-#' @noRd
-openxlsx_body_style <- function() {
-  openxlsx::createStyle(halign = "left",
-                        valign = "center",
-                        fontSize = 12L)
 }

@@ -17,9 +17,12 @@ values from options or environment variables.
 Configuration is resolved in the following order:
 \enumerate{
 \item \code{getOption("redcapsync.config.option.name")}
-\item \code{Sys.getenv("REDCAPSYNC_CONFIG_OPTION_NAME")} # skipped for functions
+\item \code{Sys.getenv("REDCAPSYNC_CONFIG_OPTION_NAME")} # can use .Renviron file!
 \item Default if unable to find and validate from above.
 }
+
+A vignette will be written for options/configuration in later versions when
+stable.
 }
 \details{
 The config function is operational but only some methods presently
@@ -27,9 +30,11 @@ affect internal code. Most users will not ever need to modify default config.
 This is included to improve future versions of the package.
 \itemize{
 \item Working configs: \code{allow.test.names}, \code{cache.dir}, \code{keyring},
-\code{keyring.service}, \code{openxlsx.header.style}, \code{openxlsx.body.style}.
-\item Partial coverage: \code{offline}.
-\item Placeholder: \code{verbose}, \code{show.api.messages}
+\code{keyring.service}, \code{xlsx.header.color}, \code{xlsx.header.font.size},
+\code{xlsx.header.font.color}, \code{xlsx.body.font.size}, \code{xlsx.body.font.color},
+\code{xlsx.font.name}.
+\item Partial coverage: \code{offline}, \code{verbose}.
+\item Placeholder: \code{show.api.messages}
 }
 \subsection{allow.test.names}{
 
@@ -130,7 +135,7 @@ options(redcapsync.config.keyring = "REDCapSync") # set
 
 # set with ennvar (which will be prioritized when options not defined)
 Sys.getenv("REDCAPSYNC_CONFIG_KEYRING") # get
-Sys.setenv(REDCAPSYNC_CONFIG_KEYRING = "REDCapSync") # set in session
+Sys.setenv(REDCAPSYNC_CONFIG_KEYRING = "REDCapSync") # set
 }\if{html}{\out{</div>}}
 }
 
@@ -147,31 +152,103 @@ options(redcapsync.config.keyring.service = "REDCapSync") # set
 
 # set with ennvar (which will be prioritized when options not defined)
 Sys.getenv("REDCAPSYNC_CONFIG_KEYRING_SERVICE") # get
-Sys.setenv(REDCAPSYNC_CONFIG_KEYRING_SERVICE = "REDCapSync") # set in session
+Sys.setenv(REDCAPSYNC_CONFIG_KEYRING_SERVICE = "REDCapSync") # set
 }\if{html}{\out{</div>}}
 }
 
-\subsection{openxlsx.header.style}{
+\subsection{xlsx.header.color}{
 
-Excel sheet header using \code{\link[openxlsx:createStyle]{openxlsx::createStyle()}}
+color name for hex color character for header color of exported excel sheets
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{# set with options (which will be prioritized over envvar)
-getOption("redcapsync.config.openxlsx.header.style") # get
-new_style <- openxlsx::createStyle(fontSize = 12L)
-options(redcapsync.config.openxlsx.header.style = new_style)
-# does not look up envvar due to it's function type
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# check current value package is using...
+config$xlsx.header.color()
+# set with options (which will be prioritized over envvar)
+getOption("redcapsync.config.xlsx.header.color") # get
+options(redcapsync.config.xlsx.header.color = "REDCapSync") # set
+
+# set with ennvar (which will be prioritized when options not defined)
+Sys.getenv("REDCAPSYNC_CONFIG_XLSX_HEADER_COLOR") # get
+Sys.setenv(REDCAPSYNC_CONFIG_XLSX_HEADER_COLOR = "green") # set
 }\if{html}{\out{</div>}}
 }
 
-\subsection{openxlsx.body.style}{
+\subsection{xlsx.header.font.size}{
 
-Excel sheet body using \code{\link[openxlsx:createStyle]{openxlsx::createStyle()}}
+color name for hex color character for header color of exported excel sheets
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{# set with options (which will be prioritized over envvar)
-getOption("redcapsync.config.openxlsx.body.style") # get
-new_style <- openxlsx::createStyle(fontSize = 12L)
-options(redcapsync.config.openxlsx.body.style = new_style)
-# does not look up envvar due to it's function type
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# check current value package is using...
+config$xlsx.header.font.size()
+# set with options (which will be prioritized over envvar)
+getOption("redcapsync.config.xlsx.header.font.size") # get
+options(redcapsync.config.xlsx.header.font.size = "REDCapSync") # set
+
+# set with ennvar (which will be prioritized when options not defined)
+Sys.getenv("REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_SIZE") # get
+Sys.setenv(REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_SIZE = "12") # set
+}\if{html}{\out{</div>}}
+}
+
+\subsection{xlsx.header.font.color}{
+
+color name for hex color character for header color of exported excel sheets
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# check current value package is using...
+config$xlsx.header.font.color()
+# set with options (which will be prioritized over envvar)
+getOption("redcapsync.config.xlsx.header.font.color") # get
+options(redcapsync.config.xlsx.header.font.color = "REDCapSync") # set
+
+# set with ennvar (which will be prioritized when options not defined)
+Sys.getenv("REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_COLOR") # get
+Sys.setenv(REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_COLOR = "white") # set
+}\if{html}{\out{</div>}}
+}
+
+\subsection{xlsx.body.font.size}{
+
+color name for hex color character for header color of exported excel sheets
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# check current value package is using...
+config$xlsx.body.font.size()
+# set with options (which will be prioritized over envvar)
+getOption("redcapsync.config.xlsx.body.font.size") # get
+options(redcapsync.config.xlsx.body.font.size = "REDCapSync") # set
+
+# set with ennvar (which will be prioritized when options not defined)
+Sys.getenv("REDCAPSYNC_CONFIG_XLSX_BODY_FONT_SIZE") # get
+Sys.setenv(REDCAPSYNC_CONFIG_XLSX_BODY_FONT_SIZE = "8") # set
+}\if{html}{\out{</div>}}
+}
+
+\subsection{xlsx.body.font.color}{
+
+color name for hex color character for header color of exported excel sheets
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# check current value package is using...
+config$xlsx.body.font.color()
+# set with options (which will be prioritized over envvar)
+getOption("redcapsync.config.xlsx.body.font.color") # get
+options(redcapsync.config.xlsx.body.font.color = "REDCapSync") # set
+
+# set with ennvar (which will be prioritized when options not defined)
+Sys.getenv("REDCAPSYNC_CONFIG_XLSX_BODY_FONT_COLOR") # get
+Sys.setenv(REDCAPSYNC_CONFIG_XLSX_BODY_FONT_COLOR = "red") # set
+}\if{html}{\out{</div>}}
+}
+
+\subsection{xlsx.font.name}{
+
+color name for hex color character for header color of exported excel sheets
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# check current value package is using...
+config$xlsx.font.name()
+# set with options (which will be prioritized over envvar)
+getOption("redcapsync.config.xlsx.font.name") # get
+options(redcapsync.config.xlsx.font.name = "REDCapSync") # set
+
+# set with ennvar (which will be prioritized when options not defined)
+Sys.getenv("REDCAPSYNC_CONFIG_XLSX_FONT_NAME") # get
+Sys.setenv(REDCAPSYNC_CONFIG_XLSX_FONT_NAME = "Georgia") # set
 }\if{html}{\out{</div>}}
 }
 }
@@ -184,8 +261,12 @@ options(redcapsync.config.openxlsx.body.style = new_style)
   redcapsync.config.cache.dir = NULL,
   redcapsync.config.keyring = NULL,
   redcapsync.config.keyring.service = NULL,
-  redcapsync.config.openxlsx.header.style = NULL,
-  redcapsync.config.openxlsx.body.style = NULL
+  redcapsync.config.xlsx.header.color = NULL,
+  redcapsync.config.xlsx.header.font.size = NULL,
+  redcapsync.config.xlsx.header.font.color = NULL,
+  redcapsync.config.xlsx.body.font.size = NULL,
+  redcapsync.config.xlsx.body.font.color = NULL,
+  redcapsync.config.xlsx.font.name = NULL
 )
 }\if{html}{\out{</div>}}
 }
@@ -199,7 +280,13 @@ options(redcapsync.config.openxlsx.body.style = new_style)
   R_USER_CACHE_DIR = NA, # affects your entire cache for any package
   REDCAPSYNC_CONFIG_CACHE_DIR = NA, # affects only REDCapSync Cache
   REDCAPSYNC_CONFIG_KEYRING = NA,
-  REDCAPSYNC_CONFIG_KEYRING_SERVICE = NA
+  REDCAPSYNC_CONFIG_KEYRING_SERVICE = NA,
+  REDCAPSYNC_CONFIG_XLSX_HEADER_COLOR = NA,
+  REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_SIZE = NA,
+  REDCAPSYNC_CONFIG_XLSX_HEADER_FONT_COLOR = NA,
+  REDCAPSYNC_CONFIG_XLSX_BODY_FONT_SIZE = NA,
+  REDCAPSYNC_CONFIG_XLSX_BODY_FONT_COLOR = NA,
+  REDCAPSYNC_CONFIG_XLSX_FONT_NAME = NA
 )
 }\if{html}{\out{</div>}}
 }

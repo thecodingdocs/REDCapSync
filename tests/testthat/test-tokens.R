@@ -227,3 +227,23 @@ test_that("is_valid_keyring works!", {
   )
   expect_true(is_valid_keyring(keyring = "test_keyring"))
 })
+test_that("token_check returns NULL when no projects exist", {
+  local_mocked_bindings(
+    get_projects = function(...) BLANK_PROJECT_DETAILS
+  )
+  expect_null(token_check())
+})
+test_that("token_check appends envvar and keyring token status", {
+  a <- mock_test_project("TEST_CLASSIC")$.internal |> extract_project_details()
+  b <- mock_test_project("TEST_DATA")$.internal |> extract_project_details()
+  projects <- bind_rows(a, b)
+  local_mocked_bindings(
+    get_projects = function(...) projects,
+    has_envvar_token = function(project_names = NULL) c(TRUE, FALSE),
+    has_keyring_token = function(project_names = NULL) c(FALSE, TRUE)
+  )
+  out <- token_check()
+  expect_named(out, c(colnames(projects), "has_envvar_token", "has_keyring_token"))
+  expect_identical(out$has_envvar_token, c(TRUE, FALSE))
+  expect_identical(out$has_keyring_token, c(FALSE, TRUE))
+})

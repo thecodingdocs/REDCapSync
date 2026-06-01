@@ -309,3 +309,26 @@ test_that("generate_comment_table works!", {
                                           only_most_recent = TRUE)
   comment_table
 })
+# get_redcap_log_update (Internal)
+test_that("get_redcap_log_update works", {
+  project <- mock_test_project("TEST_CLASSIC")$.internal
+  out <- get_redcap_log_update(records = NULL, project = project)
+  expect_null(out$records)
+  expect_null(out$log)
+  redcap_log <- data.frame(
+    timestamp = "2024-01-15 10:30:00",
+    username = "user1",
+    action = "Update record 123",
+    details = paste0(project$metadata$id_col, " = '456'"),
+    record = "123",
+    stringsAsFactors = FALSE
+  )
+  local_mocked_bindings(
+    get_redcap_log = function(...) redcap_log
+  )
+  out <- get_redcap_log_update(records = c("123"), project = project)
+  expect_identical(out$records, c("123", "456"))
+  expect_s3_class(out$log, "data.frame")
+  expect_identical(out$log$record, "123")
+  expect_identical(out$log$details, redcap_log$details)
+})

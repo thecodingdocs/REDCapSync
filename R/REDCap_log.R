@@ -101,6 +101,7 @@ clean_redcap_log <- function(redcap_log, drop_exports = FALSE) {
   }
   new_order <- order(redcap_log$timestamp, decreasing = TRUE)
   redcap_log <- unique(redcap_log[new_order, ])
+  rownames(redcap_log) <- NULL
   redcap_log
 }
 #' @noRd
@@ -325,6 +326,7 @@ get_redcap_log_update <- function(records = NULL, project) {
   if (is_something(output$log)) {
     new_order <- order(output$log$timestamp, decreasing = TRUE)
     output$log <- unique(output$log[new_order, ])
+    rownames(output$log) <- NULL
   }
   output
 }

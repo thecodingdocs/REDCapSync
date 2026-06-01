@@ -252,6 +252,7 @@ sync_project_refresh <- function(project, refresh_records) {
           bind_rows(redcap_log_update$log)
         new_order <- order(project$redcap$log$timestamp, decreasing = TRUE)
         project$redcap$log <- unique(project$redcap$log[new_order, ])
+        rownames(project$redcap$log) <- NULL
       }
     }
   }
@@ -295,6 +296,7 @@ sync_project_refresh <- function(project, refresh_records) {
     project$record_summary <- bind_rows(project$record_summary, x)
     new_order <- order(project$record_summary[[id_col]], decreasing = TRUE)
     project$record_summary <- project$record_summary[new_order, ]
+    rownames(project$record_summary) <- NULL
   }
   project$internals$last_data_update <- now_time()
   row_new <- which(project$record_summary[[id_col]] %in% records_received)

@@ -51,10 +51,8 @@ test_that("clean_redcap_log identifies record actions", {
   result <- clean_redcap_log(redcap_log)
   # Check that record_id was extracted and action_type was set
   expect_all_true(!is.na(result$action_type[1L:4L]))
-  expect_all_true(
-    result$action_type[1L:4L] %in%
-      c("Update", "Delete", "Create", "Lock/Unlock")
-  )
+  expect_identical(result$action_type[1L:4L],
+                   c("No Changes", "Create", "Delete", "Update"))
 })
 test_that("clean_redcap_log handles Manage/Design actions", {
   redcap_log <- data.frame(

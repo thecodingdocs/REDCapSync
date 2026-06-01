@@ -79,12 +79,17 @@ clean_redcap_log <- function(redcap_log, drop_exports = FALSE) {
   redcap_log$record_id <- NULL
   ignore <- which(redcap_log$action_type == "Update" & is.na(redcap_log$record))
   redcap_log$action_type[ignore] <- "No Changes"
+  ignore <- which(is.na(redcap_log$action_type) &
+                    (is.na(redcap_log$record) | redcap_log$record == "") &
+                    (is.na(redcap_log$details) | redcap_log$details == "") &
+                    (is.na(redcap_log$action) | redcap_log$action == ""))
+  redcap_log$action_type[ignore] <- "No Changes"
   redcap_log$username[which(redcap_log$username == "[survey respondent]")] <- NA
   cannot_label_rows <- which(is.na(redcap_log$action_type))
   if (length(cannot_label_rows) > 0L) {
     warning_about_unlabelled_log <- paste0(
       "Some log elements could not be labelled... Report to issues page \n",
-      "    `x <- project$redcap$log[which(is.na(redcap_log$action_type)), ]`"
+      "`project$redcap$log[which(is.na(project$redcap$log$action_type)), ]`"
     )
     cli_alert_warning(warning_about_unlabelled_log)
   }
@@ -334,7 +339,9 @@ LOG_ACTION_USERS <- c("Add user ",
                       "Edit user ",
                       "Rename user role",
                       "User assigned to role ",
-                      "User removed from user role")
+                      "User removed from user role",
+                      "Updated User Expiration ",
+                      "Update user ")
 #' @noRd
 LOG_DETAILS_COMMENTS <- c("Add field comment ",
                           "Edit field comment ",
@@ -343,12 +350,15 @@ LOG_DETAILS_COMMENTS <- c("Add field comment ",
 LOG_ACTION_RECORDS <- c("Create record ",
                         "Create Response ",
                         "Delete record ",
+                        "Deleted Document ", # should look at files
                         "Lock/Unlock Record ",
+                        "Uploaded Document ",
                         "Update record ",
                         "Update Response")
 #' @noRd
 LOG_ACTION_NO_CHANGES <- c("Enable external module ",
                            "Disable external module ",
+                           "Lock/Unlock Record ", # should not need to refresh
                            "Modify configuration for external module ")
 #' @noRd
 LOG_DETAILS_NO_CHANGES <- c("Add settings for automated survey invitations",

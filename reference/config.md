@@ -105,7 +105,9 @@ Logical for offline, which if TRUE will block any API calls. Default is
 ### cache.dir
 
 Character file path overriding the default cache directory. Default
-follow system standards via rappdir, hoardr, or R_USER_CACHE_DIR
+follow system standards via
+[tools::R_user_dir](https://rdrr.io/r/tools/userdir.html) or
+R_USER_CACHE_DIR
 
     # check current value package is using...
     config$cache.dir()

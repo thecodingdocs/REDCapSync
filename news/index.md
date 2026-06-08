@@ -1,23 +1,22 @@
 # Changelog
 
-## REDCapSync 0.1.0.9000 (development version)
-
-### Updates
-
-- Preparing for R journal submission
-- Waiting for suggestions/issues
+## REDCapSync 0.1.1
 
 ### Fixes
 
-- fixed bad links for repeating instruments
-- fixed incorrect log labeling for Create Response and Update Response
-- accounting for renamed records in sync and previous log
+- CRAN Policy fix that macOS requires
+  “~/Library/Caches/org.R-project.R/R” not
+  “~/Library/Caches/R/REDCapSync”
+- Fixed bad links for repeating instruments
+- Fixed incorrect log labeling for Create Response and Update Response
+- Accounting for renamed records in sync and previous log
+- Renamed records will no longer trigger full update
 
 ### Internal Changes
 
-- switched to openxlsx2 internally
+- Datasets now have a preview file function `dataset$preview()`
+- switched to openxlsx2 internally for Sustainability
 - config (experimental) accounts for new xlsx options
-- renamed records will no longer trigger full update
 
 ------------------------------------------------------------------------
 

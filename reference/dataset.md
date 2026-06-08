@@ -378,5 +378,5 @@ dataset <- project$generate_dataset(
  )
 
 dataset$save(dir_other = tempdir())
-#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpXOajNj/TEST_CLASSIC_stage_2_patients.xlsx
+#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/Rtmp6l6BcU/TEST_CLASSIC_stage_2_patients.xlsx
 ```

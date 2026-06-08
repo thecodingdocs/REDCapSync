@@ -21,16 +21,15 @@ might look like, “/Users/yourmacname/Library/Caches/R/REDCapSync”.
 
 ## Location
 
-Your exact path can be found for any R package with
-`rappdirs::user_cache_dir("R")`. The only thing that REDCapSync stores
-in this cache is the projects data.frame, which can be loaded with
-`projects$load("PROJECT")`.
+The exact path can be found with
+[`tools::R_user_dir`](https://rdrr.io/r/tools/userdir.html). The only
+thing that REDCapSync currently stores in this cache is the projects
+data.frame, which can be loaded with `projects$load("PROJECT")`.
 
 ``` r
 
-user_cache_location <- rappdirs::user_cache_dir("R") 
-redcapsync_cache_location <- file.path(user_cache_location, "REDCapSync")
-redcapsync_cache_location
+redcapsync_cache_location <- tools::R_user_dir(package = "REDCapSync", 
+                                               which = "cache")
 # launch the folder on your computer
 utils::browseURL(redcapsync_cache_location)
 # can modify with config options

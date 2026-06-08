@@ -169,7 +169,7 @@ Default is <code>FALSE</code>.</p>
 
 
 <p>Character file path overriding the default cache directory. Default follow
-system standards via rappdir, hoardr, or R_USER_CACHE_DIR</p>
+system standards via <a href="https://rdrr.io/r/tools/userdir.html" class="external-link">tools::R_user_dir</a> or R_USER_CACHE_DIR</p>
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># check current value package is using...</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>config<span class="sc">$</span><span class="fu">cache.dir</span>()</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># set with options (which will be prioritized over envvar)</span></span>

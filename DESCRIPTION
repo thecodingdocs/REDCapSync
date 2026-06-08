@@ -39,6 +39,7 @@ Imports:
     skimr,
     stats,
     stringr,
+    tools,
     utils
 Suggests: 
     keyring,

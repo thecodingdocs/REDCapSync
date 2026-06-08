@@ -59,7 +59,7 @@ test_that("cache_path works CONFIG overrides R_USER!", {
   withr::local_envvar(R_USER_CACHE_DIR = NA)
   expect_identical(Sys.getenv("R_USER_CACHE_DIR"), "")
   fake_other_cache <- hoardr::hoard()
-  fake_other_cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
+  fake_other_cache$cache_path_set(full_path = cache_path_default())
   expected_user_path <- sanitize_path(fake_other_cache$cache_path_get())
   fake_other_cache$mkdir()
   expect_directory_exists(cache_path())

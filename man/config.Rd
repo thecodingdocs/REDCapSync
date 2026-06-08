@@ -107,7 +107,7 @@ Sys.setenv(REDCAPSYNC_CONFIG_OFFLINE = FALSE) # or set in .Renviron
 \subsection{cache.dir}{
 
 Character file path overriding the default cache directory. Default follow
-system standards via rappdir, hoardr, or R_USER_CACHE_DIR
+system standards via \link[tools:R_user_dir]{tools::R_user_dir} or R_USER_CACHE_DIR
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{# check current value package is using...
 config$cache.dir()

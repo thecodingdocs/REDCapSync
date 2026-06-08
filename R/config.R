@@ -89,7 +89,7 @@
 #'
 #' ## cache.dir
 #' Character file path overriding the default cache directory. Default follow
-#' system standards via rappdir, hoardr, or R_USER_CACHE_DIR
+#' system standards via [tools::R_user_dir] or R_USER_CACHE_DIR
 #'
 #' ```
 #' # check current value package is using...

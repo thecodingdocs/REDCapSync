@@ -66,13 +66,6 @@ cache_remove_project <- function(project_name) {
   invisible()
 }
 #' @noRd
-get_cache_default <- function() {
-  cache <- hoardr::hoard()
-  cache$cache_path_set(path = "REDCapSync", type = "user_cache_dir")
-  cache$mkdir()
-  cache
-}
-#' @noRd
 get_cache <- function() {
   cache <- hoardr::hoard()
   cache$cache_path_set(full_path = config$cache.dir())
@@ -81,9 +74,7 @@ get_cache <- function() {
 }
 #' @noRd
 cache_path_default <- function() {
-  cache <- get_cache_default()
-  path <- sanitize_path(cache$cache_path_get())
-  path
+  sanitize_path(tools::R_user_dir(package = "REDCapSync", which = "cache"))
 }
 #' @noRd
 cache_path <- function() {

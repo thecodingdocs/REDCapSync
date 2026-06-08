@@ -33,7 +33,6 @@ onLoad
 openxlsx
 pak
 pre
-rappdir
 rds
 redcapAPI
 redcapsync

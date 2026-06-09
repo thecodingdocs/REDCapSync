@@ -1,3 +1,9 @@
+# REDCapSync 0.1.1.9000 (development version)
+
+* Preparing for R journal submission
+* Waiting for suggestions/issues
+* Preparing RosyREDCap for CRAN submission
+* Planning to have add_fields feauture
 
 # REDCapSync 0.1.1
 

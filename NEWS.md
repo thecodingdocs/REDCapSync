@@ -3,8 +3,8 @@
 
 ## Fixes
 
-* CRAN Policy fix that macOS requires "\\~/Library/Caches/org.R-project.R/R" not 
-"~/Library/Caches/R/REDCapSync"
+* CRAN Policy fix that macOS requires "/Library/Caches/org.R-project.R/R" not 
+"/Library/Caches/R/REDCapSync"
 * Fixed bad links for repeating instruments
 * Fixed incorrect log labeling for Create Response and Update Response
 * Accounting for renamed records in sync and previous log

@@ -10,7 +10,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/thecodingdocs/REDCapSync/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/thecodingdocs/REDCapSync/blob/v0.1.1/DESCRIPTION)
 
 Rose B (2026). *REDCapSync: Encapsulated 'REDCap' Projects for
 Synchronized Data Pipelines*. R package version 0.1.1,

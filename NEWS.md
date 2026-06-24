@@ -3,7 +3,16 @@
 * Preparing for R journal submission
 * Waiting for suggestions/issues
 * Preparing RosyREDCap for CRAN submission
-* Planning to have add_fields feauture
+
+## New Features
+
+* New add_fields feature for derived fields and recalculating existing fields 
+* New remove_added_fields feature to remove anything from add_fields section
+
+## Internal Changes
+
+* reconcile_version function will refresh datasets if package version changes
+* Excel sheets will have filters by default
 
 # REDCapSync 0.1.1
 
@@ -19,7 +28,7 @@
 ## Internal Changes
 
 * Datasets now have a preview file function `dataset$preview()`
-* switched to openxlsx2 internally for Sustainability
+* switched to openxlsx2 internally for sustainability
 * config (experimental) accounts for new xlsx options
 
 ***************************************************************************

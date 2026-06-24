@@ -156,6 +156,7 @@
 #' @param annotate_from_log Logical. Annotate data using the REDCap log. Default
 #' is `TRUE`.
 #' @param include_comments Logical. Include field comments. Default is `TRUE`.
+#' @param include_added_fields Logical. Include added fields. Default is `TRUE`.
 #' @param hard_reset Logical. Overwrite existing dataset files. Default is
 #' `FALSE`.
 #' @param with_links Logical. Include hyperlinks in Excel exports. Default is
@@ -167,6 +168,19 @@
 #' folder).
 #' @param file_name Character. Dataset file name (default is
 #' `<project_name>_<dataset_name>`).
+#' @param field_name Character. Field name to be used for added field.
+#' @param form_name Character. Form name to be used for added field. Must be an
+#' existing REDCap form/instrument.
+#' @param field_type_r Character. One of "character", "factor", "date",
+#' "datetime", "integer", or  "numeric" . Default is `character`.
+#' @param field_label Character. Field label for added field.
+#' @param field_choices Character vector. Choices if `field_type_r` is "factor".
+#' @param field_note Character Field note for added field.
+#' @param identifier Character. Either "", or "y" per REDCap data dictionary.
+#' @param units Character. To be used for plots and tables.
+#' @param data_func Function. Must have "project" as the only parameter. Must
+#' return a vector of the field (same length and order as form).
+#' Example, `data_func = function(project) {...}`.
 #' @param envir Environment to assign dataset objects. Default is `NULL`.
 #' @param form Character. REDCap form/instrument name, e.g., "survey_one".
 #' @param link_type Character. REDCap link type: "base", "home", "record_home",
@@ -386,6 +400,7 @@ REDCapSyncProject <- R6Class(
                            include_log = FALSE,
                            annotate_from_log = TRUE,
                            include_comments = TRUE,
+                           include_added_fields = TRUE,
                            with_links = TRUE,
                            separate = FALSE,
                            use_csv = FALSE,
@@ -417,6 +432,7 @@ REDCapSyncProject <- R6Class(
         include_log = include_log,
         annotate_from_log = annotate_from_log,
         include_comments = include_comments,
+        include_added_fields = include_added_fields,
         with_links = with_links,
         separate = separate,
         use_csv = use_csv,
@@ -424,6 +440,43 @@ REDCapSyncProject <- R6Class(
         file_name = file_name,
         hard_reset = hard_reset
       )
+      invisible(self)
+    },
+    #' @description  Add or modify a field. This can be used to add derived
+    #' fields for R, Excel, and applications. It can also be used to
+    #' recalculate fields for pipelines that modify data in REDCap using R.
+    add_field = function(field_name,
+                         form_name,
+                         field_type_r = "character",
+                         field_label = NA,
+                         field_choices = NA,
+                         field_note = NA,
+                         identifier = "",
+                         units = NA,
+                         data_func = NA){
+      fields <- private$project$metadata$fields
+      in_original_redcap <- field_name %in% fields$field_name
+      if (in_original_redcap && missing(form_name)) {
+        original_fields_row <- fields[which(fields$field_name == field_name), ]
+        form_name <- original_fields_row$form_name
+      }
+      private$project <- add_project_field(
+        project = private$project,
+        field_name = field_name,
+        form_name = form_name,
+        field_type_r = field_type_r,
+        field_label = field_label,
+        field_choices = field_choices,
+        field_note = field_note,
+        identifier = identifier,
+        units = units,
+        data_func = data_func
+      )
+      invisible(self)
+    },
+    #' @description Remove all added fields.
+    remove_added_fields = function(){
+      private$project <- remove_project_fields(private$project)
       invisible(self)
     },
     #' @description  Load dataset if previously defined with `add_dataset`.
@@ -471,7 +524,8 @@ REDCapSyncProject <- R6Class(
                                 include_users = TRUE,
                                 include_log = FALSE,
                                 annotate_from_log = TRUE,
-                                include_comments = FALSE) {
+                                include_comments = FALSE,
+                                include_added_fields = TRUE) {
       assert_environment(envir, null.ok = TRUE)
       provided_dataset_name <- !missing(dataset_name)
       if (provided_dataset_name) {
@@ -512,7 +566,8 @@ REDCapSyncProject <- R6Class(
         include_records = include_records,
         include_log = include_log,
         annotate_from_log = annotate_from_log,
-        include_comments = include_comments
+        include_comments = include_comments,
+        include_added_fields = include_added_fields
       )
       dataset$to_envir(envir = envir)
       invisible(dataset)

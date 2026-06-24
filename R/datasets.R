@@ -170,7 +170,8 @@ generate_project_dataset <- function(project,
                                      include_records = TRUE,
                                      include_log = FALSE,
                                      annotate_from_log = TRUE,
-                                     include_comments = FALSE) {
+                                     include_comments = FALSE,
+                                     include_added_fields = TRUE) {
   assert_setup_project(project)
   id_col <- project$metadata$id_col
   if (missing(dataset_name)) {
@@ -183,20 +184,34 @@ generate_project_dataset <- function(project,
   # function to do asserts here
   assert_choice(transformation_type, TRANFORMATION_TYPES)
   data_list <- NULL
-  # add new fields and calculate them
-  if (labelled != project$settings$labelled) {
-    if (project$settings$labelled) {
-      project <- labelled_to_raw_project(project)
-    } else {
-      project <- raw_to_labelled_project(project)
-    }
-  }
   data_list$metadata <- project$metadata
   data_list$data <- project$data
   data_list$redcap <- project$redcap
   data_list$links <- project$links
   record_sum <- project$record_summary
   data_list <- metadata_add_default_cols(data_list)
+  if (labelled != project$settings$labelled) {
+    if (project$settings$labelled) {
+      project <- labelled_to_raw_project(project)
+    } else {
+      project <- raw_to_labelled_project(project)
+    }
+    data_list$metadata <- project$metadata
+    data_list$data <- project$data
+    data_list$redcap <- project$redcap
+    data_list$links <- project$links
+    record_sum <- project$record_summary
+    data_list <- metadata_add_default_cols(data_list)
+  }
+  if(is_something(project$transformation$fields) && include_added_fields) {
+    # what if you want to keep old and new?
+    # should there be include_added_fields param?
+    data_list <- add_fields_to_data_list(
+      data_list = data_list,
+      transformation = project$transformation
+    ) # add check for changes here? param
+  }
+  # what if field_names, form_names not part of filter vars?
   data_list$data <- filter_data_list(
     data_list = data_list,
     field_names = field_names,
@@ -341,6 +356,7 @@ generate_project_dataset <- function(project,
     include_log = include_log,
     annotate_from_log = annotate_from_log,
     include_comments = include_comments,
+    include_added_fields = include_added_fields,
     with_links = NULL,
     separate = NULL,
     use_csv = NULL,
@@ -390,7 +406,8 @@ load_project_dataset <- function(project, dataset_name) {
     include_users = dataset_details$include_users,
     include_log = dataset_details$include_log,
     annotate_from_log = dataset_details$annotate_from_log,
-    include_comments = dataset_details$include_comments
+    include_comments = dataset_details$include_comments,
+    include_added_fields = dataset_details$include_added_fields
   )
   invisible(data_list)
 }
@@ -419,6 +436,7 @@ add_project_dataset <- function(project,
                                 include_log = FALSE,
                                 annotate_from_log = TRUE,
                                 include_comments = TRUE,
+                                include_added_fields = TRUE,
                                 with_links = TRUE,
                                 separate = FALSE,
                                 use_csv = FALSE,
@@ -464,6 +482,7 @@ add_project_dataset <- function(project,
     include_log = include_log,
     annotate_from_log = annotate_from_log,
     include_comments = include_comments,
+    include_added_fields = include_added_fields,
     with_links = with_links,
     separate = separate,
     use_csv = use_csv,
@@ -488,6 +507,18 @@ add_project_dataset <- function(project,
   project$datasets[[dataset_name]] <- dataset_list_new
   project$record_summary[[dataset_name]] <- FALSE
   invisible(project)
+}
+#' @noRd
+reset_project_datasets <- function(project) {
+  for(dataset_name in names(project$datasets)) {
+    project$record_summary[[dataset_name]] <- FALSE
+    include_fields <- project$datasets[[dataset_name]]$include_added_fields
+    if (is.null(include_fields)) {
+      include_fields <- dataset_name != "REDCapSync_raw"
+    }
+    project$datasets[[dataset_name]]$include_added_fields <- include_fields
+  }
+  project
 }
 #' @noRd
 deidentify_data_list <- function(data_list,
@@ -1296,6 +1327,12 @@ field_types_to_r <- function(fields) {
   field_types_r[which(is_num)] <- "numeric"
   field_types_r
 }
+FIELD_TYPES_R <- c("character",
+                   "factor",
+                   "date",
+                   "datetime",
+                   "integer",
+                   "numeric")
 #' @noRd
 REDCAP_FACTOR_FIELDS <- c("radio",
                           "yesno",
@@ -1428,7 +1465,8 @@ get_dataset_records <- function(project, dataset_name) {
     include_users = FALSE,
     include_log = FALSE,
     annotate_from_log = FALSE,
-    include_comments = FALSE
+    include_comments = FALSE,
+    include_added_fields = FALSE
   )
   data_list$records[[id_col]]
 }
@@ -1519,6 +1557,7 @@ add_default_datasets <- function(project,
     include_log = FALSE,
     annotate_from_log = FALSE,
     include_comments = TRUE,
+    include_added_fields = FALSE,
     with_links = with_links,
     separate = TRUE,
     use_csv = use_csv,
@@ -1544,6 +1583,7 @@ add_default_datasets <- function(project,
     include_log = FALSE,
     annotate_from_log = TRUE,
     include_comments = TRUE,
+    include_added_fields = TRUE,
     with_links = with_links,
     separate = FALSE,
     use_csv = use_csv,

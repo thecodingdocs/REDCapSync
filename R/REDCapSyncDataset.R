@@ -96,8 +96,8 @@
 #'   `FALSE`.
 #' @param annotate_from_log Logical. Annotate metadata and records using the
 #'   change log. Default is `TRUE`.
-#' @param include_comments Logical. Include REDCap comments. Default is
-#'   `FALSE`.
+#' @param include_comments Logical. Include field comments. Default is `TRUE`.
+#' @param include_added_fields Logical. Include added fields. Default is `TRUE`.
 #' @param with_links Logical. Include hyperlinks in Excel exports. Default is
 #'   `TRUE`.
 #' @param separate Logical. Save each form as a separate file instead of a
@@ -201,7 +201,8 @@ REDCapSyncDataset <- R6Class(
                           include_records = TRUE,
                           include_log = FALSE,
                           annotate_from_log = TRUE,
-                          include_comments = FALSE) {
+                          include_comments = FALSE,
+                          include_added_fields = TRUE) {
       assert_setup_project(project) # message about internal?
       dataset <- NULL
       if (dataset_name %in% names(project$datasets)) {
@@ -233,7 +234,8 @@ REDCapSyncDataset <- R6Class(
           include_records = include_records,
           include_log = include_log,
           annotate_from_log = annotate_from_log,
-          include_comments = include_comments
+          include_comments = include_comments,
+          include_added_fields = include_added_fields
         )
       }
       self$data <- dataset$data
@@ -299,7 +301,7 @@ REDCapSyncDataset <- R6Class(
         dir_other = dir_other,
         file_name = file_name
       )
-      # would be nice if updated supclass project in future version
+      # would be nice if updated superclass project in future version
       invisible(data_list)
     },
     #' @description export dataset to envir of your choosing. Keep in mind

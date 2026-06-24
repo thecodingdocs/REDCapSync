@@ -152,7 +152,8 @@ Users should construct objects using \link{REDCapSyncProject}.
   include_records = TRUE,
   include_log = FALSE,
   annotate_from_log = TRUE,
-  include_comments = FALSE
+  include_comments = FALSE,
+  include_added_fields = TRUE
 )}
     \if{html}{\out{</div>}}
   }
@@ -206,8 +207,8 @@ Default is \code{TRUE}.}
 \code{FALSE}.}
       \item{\code{annotate_from_log}}{Logical. Annotate metadata and records using the
 change log. Default is \code{TRUE}.}
-      \item{\code{include_comments}}{Logical. Include REDCap comments. Default is
-\code{FALSE}.}
+      \item{\code{include_comments}}{Logical. Include field comments. Default is \code{TRUE}.}
+      \item{\code{include_added_fields}}{Logical. Include added fields. Default is \code{TRUE}.}
     }
     \if{html}{\out{</div>}}
   }

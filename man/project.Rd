@@ -191,6 +191,8 @@ users and log.}
     \item \href{#method-REDCapSyncProject-print}{\code{REDCapSyncProject$print()}}
     \item \href{#method-REDCapSyncProject-sync}{\code{REDCapSyncProject$sync()}}
     \item \href{#method-REDCapSyncProject-add_dataset}{\code{REDCapSyncProject$add_dataset()}}
+    \item \href{#method-REDCapSyncProject-add_field}{\code{REDCapSyncProject$add_field()}}
+    \item \href{#method-REDCapSyncProject-remove_added_fields}{\code{REDCapSyncProject$remove_added_fields()}}
     \item \href{#method-REDCapSyncProject-load_dataset}{\code{REDCapSyncProject$load_dataset()}}
     \item \href{#method-REDCapSyncProject-remove_datasets}{\code{REDCapSyncProject$remove_datasets()}}
     \item \href{#method-REDCapSyncProject-generate_dataset}{\code{REDCapSyncProject$generate_dataset()}}
@@ -305,6 +307,7 @@ is \code{TRUE}.}
   include_log = FALSE,
   annotate_from_log = TRUE,
   include_comments = TRUE,
+  include_added_fields = TRUE,
   with_links = TRUE,
   separate = FALSE,
   use_csv = FALSE,
@@ -359,6 +362,7 @@ is \code{TRUE}.}
       \item{\code{annotate_from_log}}{Logical. Annotate data using the REDCap log. Default
 is \code{TRUE}.}
       \item{\code{include_comments}}{Logical. Include field comments. Default is \code{TRUE}.}
+      \item{\code{include_added_fields}}{Logical. Include added fields. Default is \code{TRUE}.}
       \item{\code{with_links}}{Logical. Include hyperlinks in Excel exports. Default is
 \code{FALSE}.}
       \item{\code{separate}}{Logical. Separate each form into distinct files (vs.
@@ -371,6 +375,61 @@ folder).}
       \item{\code{hard_reset}}{Logical. Overwrite existing dataset files. Default is
 \code{FALSE}.}
     }
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSyncProject-add_field"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-add_field}{}}}
+\subsection{\code{REDCapSyncProject$add_field()}}{
+  Add or modify a field. This can be used to add derived
+fields for R, Excel, and applications. It can also be used to
+recalculate fields for pipelines that modify data in REDCap using R.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{REDCapSyncProject$add_field(
+  field_name,
+  form_name,
+  field_type_r = "character",
+  field_label = NA,
+  field_choices = NA,
+  field_note = NA,
+  identifier = "",
+  units = NA,
+  data_func = NA
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{field_name}}{Character. Field name to be used for added field.}
+      \item{\code{form_name}}{Character. Form name to be used for added field. Must be an
+existing REDCap form/instrument.}
+      \item{\code{field_type_r}}{Character. One of "character", "factor", "date",
+"datetime", "integer", or  "numeric" . Default is \code{character}.}
+      \item{\code{field_label}}{Character. Field label for added field.}
+      \item{\code{field_choices}}{Character vector. Choices if \code{field_type_r} is "factor".}
+      \item{\code{field_note}}{Character Field note for added field.}
+      \item{\code{identifier}}{Character. Either "", or "y" per REDCap data dictionary.}
+      \item{\code{units}}{Character. To be used for plots and tables.}
+      \item{\code{data_func}}{Function. Must have "project" as the only parameter. Must
+return a vector of the field (same length and order as form).
+Example, \code{data_func = function(project) {...}}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSyncProject-remove_added_fields"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-remove_added_fields}{}}}
+\subsection{\code{REDCapSyncProject$remove_added_fields()}}{
+  Remove all added fields.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{REDCapSyncProject$remove_added_fields()}
     \if{html}{\out{</div>}}
   }
 }
@@ -449,7 +508,8 @@ custom datasets.
   include_users = TRUE,
   include_log = FALSE,
   annotate_from_log = TRUE,
-  include_comments = FALSE
+  include_comments = FALSE,
+  include_added_fields = TRUE
 )}
     \if{html}{\out{</div>}}
   }
@@ -499,6 +559,7 @@ is \code{TRUE}.}
       \item{\code{annotate_from_log}}{Logical. Annotate data using the REDCap log. Default
 is \code{TRUE}.}
       \item{\code{include_comments}}{Logical. Include field comments. Default is \code{TRUE}.}
+      \item{\code{include_added_fields}}{Logical. Include added fields. Default is \code{TRUE}.}
     }
     \if{html}{\out{</div>}}
   }

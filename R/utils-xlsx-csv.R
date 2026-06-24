@@ -340,11 +340,13 @@ form_to_wb <- function(form,
       }
     }
   }
+  #add_data_table?
   wb$add_data(
     sheet = form_name,
     x = form,
     start_row = start_row_table,
     start_col = start_col,
+    with_filter = TRUE,
     na = ""
   )
   if (has_links) {

@@ -50,7 +50,7 @@ is_something <- function(thing, row_length = 0L) {
   if (the_length == 0L) {
     return(FALSE)
   }
-  if (the_length > 1L || is.list(thing)) {
+  if (the_length > 1L || is.list(thing) || is.function(thing)) {
     return(TRUE)
   }
   if (is.na(thing)) {

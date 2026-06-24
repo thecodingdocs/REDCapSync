@@ -263,6 +263,7 @@ setup_project <- function(project_name,
           cli_abort(stop_message)
         }
       }
+      project <- reconcile_version(project)
       params <- list(
         id_position = id_position,
         labelled = labelled,
@@ -347,6 +348,16 @@ setup_project <- function(project_name,
   project <- assert_setup_project(project)
   # final_details ? compare if original_details not NULL
   invisible(REDCapSyncProject$new(project))
+}
+#' @noRd
+reconcile_version <- function(project) {
+  past_version <- project$internals$version
+  current_version <- utils::packageVersion("REDCapSync")
+  if (!identical(past_version, current_version)) {
+    project <- reset_project_datasets(project)
+  }
+  project$internals$version <- current_version
+  project
 }
 #' @noRd
 SYNC_FREQUENCY <- c("always",
@@ -628,7 +639,8 @@ BLANK_PROJECT <- list(
   data = NULL,
   record_summary = NULL,
   transformation = list(
-    forms = NULL,
+    custom = NULL,
+    data = NULL,
     fields = NULL,
     field_functions = NULL,
     data_updates = NULL

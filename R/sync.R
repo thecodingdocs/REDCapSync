@@ -91,7 +91,11 @@ sync_project <- function(project,
   if (do_sync) {
     project <- sync_project_check(project = project, hard_reset = hard_reset)
     was_updated <- project$internals$was_updated
+    if (was_updated) {
+      project <- rerender_fields(project)
+    }
   }
+  project <- reconcile_version(project)
   if (project$settings$add_default_datasets) {
     missing_redcapsync <- !is_something(project$datasets$REDCapSync)
     missing_redcapsync_raw <- !is_something(project$datasets$REDCapSync_raw)

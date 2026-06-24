@@ -214,6 +214,8 @@ users and log.</p></dd>
 <li><p><a href="#method-REDCapSyncProject-print"><code>REDCapSyncProject$print()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-sync"><code>REDCapSyncProject$sync()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-add_dataset"><code>REDCapSyncProject$add_dataset()</code></a></p></li>
+<li><p><a href="#method-REDCapSyncProject-add_field"><code>REDCapSyncProject$add_field()</code></a></p></li>
+<li><p><a href="#method-REDCapSyncProject-remove_added_fields"><code>REDCapSyncProject$remove_added_fields()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-load_dataset"><code>REDCapSyncProject$load_dataset()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-remove_datasets"><code>REDCapSyncProject$remove_datasets()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-generate_dataset"><code>REDCapSyncProject$generate_dataset()</code></a></p></li>
@@ -319,6 +321,7 @@ is <code>TRUE</code>.</p></dd>
 <span>  include_log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  annotate_from_log <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_comments <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  include_added_fields <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  with_links <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  separate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  use_csv <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -416,6 +419,9 @@ is <code>TRUE</code>.</p></dd>
       <dt><code>include_comments</code></dt>
 <dd><p>Logical. Include field comments. Default is <code>TRUE</code>.</p></dd>
 
+      <dt><code>include_added_fields</code></dt>
+<dd><p>Logical. Include added fields. Default is <code>TRUE</code>.</p></dd>
+
       <dt><code>with_links</code></dt>
 <dd><p>Logical. Include hyperlinks in Excel exports. Default is
 <code>FALSE</code>.</p></dd>
@@ -445,13 +451,78 @@ folder).</p></dd>
 
 </div>
 
+<p></p><hr><a id="method-REDCapSyncProject-add_field"></a><div class="section">
+<h3 id="redcapsyncproject-add-field-"><code>REDCapSyncProject$add_field()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-add-field-"></a></h3>
+<p>Add or modify a field. This can be used to add derived
+fields for R, Excel, and applications. It can also be used to
+recalculate fields for pipelines that modify data in REDCap using R.</p><div class="section">
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">add_field</span><span class="op">(</span></span>
+<span>  <span class="va">field_name</span>,</span>
+<span>  <span class="va">form_name</span>,</span>
+<span>  field_type_r <span class="op">=</span> <span class="st">"character"</span>,</span>
+<span>  field_label <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  field_choices <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  field_note <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  identifier <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  units <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  data_func <span class="op">=</span> <span class="cn">NA</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>field_name</code></dt>
+<dd><p>Character. Field name to be used for added field.</p></dd>
+
+      <dt><code>form_name</code></dt>
+<dd><p>Character. Form name to be used for added field. Must be an
+existing REDCap form/instrument.</p></dd>
+
+      <dt><code>field_type_r</code></dt>
+<dd><p>Character. One of "character", "factor", "date",
+"datetime", "integer", or  "numeric" . Default is <code>character</code>.</p></dd>
+
+      <dt><code>field_label</code></dt>
+<dd><p>Character. Field label for added field.</p></dd>
+
+      <dt><code>field_choices</code></dt>
+<dd><p>Character vector. Choices if <code>field_type_r</code> is "factor".</p></dd>
+
+      <dt><code>field_note</code></dt>
+<dd><p>Character Field note for added field.</p></dd>
+
+      <dt><code>identifier</code></dt>
+<dd><p>Character. Either "", or "y" per REDCap data dictionary.</p></dd>
+
+      <dt><code>units</code></dt>
+<dd><p>Character. To be used for plots and tables.</p></dd>
+
+      <dt><code>data_func</code></dt>
+<dd><p>Function. Must have "project" as the only parameter. Must
+return a vector of the field (same length and order as form).
+Example, <code>data_func = function(project) {...}</code>.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
+</div>
+
+<p></p><hr><a id="method-REDCapSyncProject-remove_added_fields"></a><div class="section">
+<h3 id="redcapsyncproject-remove-added-fields-"><code>REDCapSyncProject$remove_added_fields()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-remove-added-fields-"></a></h3>
+<p>Remove all added fields.</p><div class="section">
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">remove_added_fields</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+</div>
+
 <p></p><hr><a id="method-REDCapSyncProject-load_dataset"></a><div class="section">
 <h3 id="redcapsyncproject-load-dataset-"><code>REDCapSyncProject$load_dataset()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-load-dataset-"></a></h3>
 <p>Load dataset if previously defined with <code>add_dataset</code>.</p><div class="section">
-<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">load_dataset</span><span class="op">(</span><span class="va">dataset_name</span>, envir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>dataset_name</code></dt>
 <dd><p>Character. Name of the dataset configuration to create,
 load, or reference.</p></dd>
@@ -468,10 +539,10 @@ load, or reference.</p></dd>
 <p></p><hr><a id="method-REDCapSyncProject-remove_datasets"></a><div class="section">
 <h3 id="redcapsyncproject-remove-datasets-"><code>REDCapSyncProject$remove_datasets()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-remove-datasets-"></a></h3>
 <p>Clear all or specified datasets from the <code>project</code> object.</p><div class="section">
-<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">remove_datasets</span><span class="op">(</span>dataset_names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>dataset_names</code></dt>
 <dd><p>Character vector. Dataset names to remove/operate on.
 Default is <code>NULL</code>.</p></dd>
@@ -487,7 +558,7 @@ Default is <code>NULL</code>.</p></dd>
 <p>Generate <a href="dataset.html">dataset</a> object. This is usually handled
 internally for some default behavior but is provided here for ad-hoc
 custom datasets.</p><div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">generate_dataset</span><span class="op">(</span></span>
 <span>  <span class="va">dataset_name</span>,</span>
 <span>  envir <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -512,10 +583,11 @@ custom datasets.</p><div class="section">
 <span>  include_users <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  annotate_from_log <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  include_comments <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  include_comments <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  include_added_fields <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>dataset_name</code></dt>
 <dd><p>Character. Name of the dataset configuration to create,
 load, or reference.</p></dd>
@@ -607,6 +679,9 @@ is <code>TRUE</code>.</p></dd>
       <dt><code>include_comments</code></dt>
 <dd><p>Logical. Include field comments. Default is <code>TRUE</code>.</p></dd>
 
+      <dt><code>include_added_fields</code></dt>
+<dd><p>Logical. Include added fields. Default is <code>TRUE</code>.</p></dd>
+
 
 </dl><p></p></div>
 </div>
@@ -617,10 +692,10 @@ is <code>TRUE</code>.</p></dd>
 <h3 id="redcapsyncproject-save-datasets-"><code>REDCapSyncProject$save_datasets()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-save-datasets-"></a></h3>
 <p>saves datasets to Excel via setting provided to
 <code>add_dataset</code>.</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">save_datasets</span><span class="op">(</span>hard_reset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>hard_reset</code></dt>
 <dd><p>Logical. Overwrite existing dataset files. Default is
 <code>FALSE</code>.</p></dd>
@@ -635,10 +710,10 @@ is <code>TRUE</code>.</p></dd>
 <h3 id="redcapsyncproject-save-dataset-"><code>REDCapSyncProject$save_dataset()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-save-dataset-"></a></h3>
 <p>saves dataset to Excel via setting provided to
 <code>add_dataset</code>.</p><div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">save_dataset</span><span class="op">(</span><span class="va">dataset_name</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
+<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>dataset_name</code></dt>
 <dd><p>Character. Name of the dataset configuration to create,
 load, or reference.</p></dd>
@@ -653,7 +728,7 @@ load, or reference.</p></dd>
 <h3 id="redcapsyncproject-save-"><code>REDCapSyncProject$save()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-save-"></a></h3>
 <p>Save project object to directory chosen with
 <a href="setup-load.html">setup_project</a>.</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">save</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -662,7 +737,7 @@ load, or reference.</p></dd>
 <p></p><hr><a id="method-REDCapSyncProject-set_keyring_token"></a><div class="section">
 <h3 id="redcapsyncproject-set-keyring-token-"><code>REDCapSyncProject$set_keyring_token()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-set-keyring-token-"></a></h3>
 <p>Set keyring token. See vignette and config for detail.</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">set_keyring_token</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -671,10 +746,10 @@ load, or reference.</p></dd>
 <p></p><hr><a id="method-REDCapSyncProject-test_token"></a><div class="section">
 <h3 id="redcapsyncproject-test-token-"><code>REDCapSyncProject$test_token()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-test-token-"></a></h3>
 <p>test connection via communication with API.</p><div class="section">
-<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
+<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">test_token</span><span class="op">(</span>keyring_if_error <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
+<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>keyring_if_error</code></dt>
 <dd><p>Logical. Launch pop-up for keyring if token is not
 valid or fails to call REDCap. Max 3 attempts. Default is <code>TRUE</code>.</p></dd>
@@ -688,10 +763,10 @@ valid or fails to call REDCap. Max 3 attempts. Default is <code>TRUE</code>.</p>
 <p></p><hr><a id="method-REDCapSyncProject-url_launch"></a><div class="section">
 <h3 id="redcapsyncproject-url-launch-"><code>REDCapSyncProject$url_launch()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-url-launch-"></a></h3>
 <p>opens links in browser.</p><div class="section">
-<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">url_launch</span><span class="op">(</span>link_type <span class="op">=</span> <span class="st">"home"</span>, open_browser <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
+<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>link_type</code></dt>
 <dd><p>Character. REDCap link type: "base", "home", "record_home",
 "records_dashboard", "api", "api_playground", "codebook", "user_rights",
@@ -710,7 +785,7 @@ valid or fails to call REDCap. Max 3 attempts. Default is <code>TRUE</code>.</p>
 <p></p><hr><a id="method-REDCapSyncProject-url_record_launch"></a><div class="section">
 <h3 id="redcapsyncproject-url-record-launch-"><code>REDCapSyncProject$url_record_launch()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-url-record-launch-"></a></h3>
 <p>opens record links in browser.</p><div class="section">
-<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
+<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">url_record_launch</span><span class="op">(</span></span>
 <span>  record <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  page <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -718,7 +793,7 @@ valid or fails to call REDCap. Max 3 attempts. Default is <code>TRUE</code>.</p>
 <span>  open_browser <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
+<h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>record</code></dt>
 <dd><p>Character. Record ID.</p></dd>
 
@@ -743,10 +818,10 @@ valid or fails to call REDCap. Max 3 attempts. Default is <code>TRUE</code>.</p>
 data. Because this is a function that can mess up your data, use it
 very carefully. Remember all changes are saved in the REDCap log if
 there's an issue. Missing rows and columns are allowed!</p><div class="section">
-<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
+<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">upload</span><span class="op">(</span><span class="va">to_be_uploaded</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
+<h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>to_be_uploaded</code></dt>
 <dd><p>Data frame in raw coded format ready to upload to
 REDCap.</p></dd>
@@ -771,7 +846,7 @@ REDCap.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "TEST_REDCAPR_LONGITUDINAL" "TEST_REDCAPR_CLIN_TRIAL"  </span>
 <span class="r-in"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="setup-load.html">setup_project</a></span><span class="op">(</span><span class="st">"TEST_CLASSIC"</span>, dir_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> No cached projects... use `setup_project(...)`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Directory is Valid! <span style="color: #0000BB;">/tmp/RtmpnWZfEl</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Directory is Valid! <span style="color: #0000BB;">/tmp/RtmptZz6x7</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Loaded TEST project TEST_CLASSIC!</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Does not actually communicate with any REDCap API</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Selecting ‘env’ backend. Secrets are stored in environment variables</span>
@@ -780,16 +855,16 @@ REDCap.</p></dd>
 <span class="r-in"><span><span class="co"># Sync data from REDCap</span></span></span>
 <span class="r-in"><span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> TEST projects do not communicate with the API</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_text.xlsx: <span style="color: #0000BB;">/tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_other.xlsx: <span style="color: #0000BB;">/tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_cancer.xlsx: <span style="color: #0000BB;">/tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_forms.xlsx: <span style="color: #0000BB;">/tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_fields.xlsx: <span style="color: #0000BB;">/tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_choices.xlsx: <span style="color: #0000BB;">/tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_missing_codes.xlsx: <span style="color: #0000BB;">/tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_users.xlsx: <span style="color: #0000BB;">/tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_dataset_details.xlsx: <span style="color: #0000BB;">/tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_REDCapSync.xlsx: <span style="color: #0000BB;">/tmp/RtmpnWZfEl/output/TEST_CLASSIC_REDCapSync.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_text.xlsx: <span style="color: #0000BB;">/tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_other.xlsx: <span style="color: #0000BB;">/tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_cancer.xlsx: <span style="color: #0000BB;">/tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_forms.xlsx: <span style="color: #0000BB;">/tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_fields.xlsx: <span style="color: #0000BB;">/tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_choices.xlsx: <span style="color: #0000BB;">/tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_missing_codes.xlsx: <span style="color: #0000BB;">/tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_users.xlsx: <span style="color: #0000BB;">/tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_dataset_details.xlsx: <span style="color: #0000BB;">/tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_REDCapSync.xlsx: <span style="color: #0000BB;">/tmp/RtmptZz6x7/output/TEST_CLASSIC_REDCapSync.xlsx</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Access data and metadata</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">project</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">text</span><span class="op">)</span></span></span>

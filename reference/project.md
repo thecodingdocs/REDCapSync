@@ -195,6 +195,10 @@ for using the dataset objects
 
 - [`REDCapSyncProject$add_dataset()`](#method-REDCapSyncProject-add_dataset)
 
+- [`REDCapSyncProject$add_field()`](#method-REDCapSyncProject-add_field)
+
+- [`REDCapSyncProject$remove_added_fields()`](#method-REDCapSyncProject-remove_added_fields)
+
 - [`REDCapSyncProject$load_dataset()`](#method-REDCapSyncProject-load_dataset)
 
 - [`REDCapSyncProject$remove_datasets()`](#method-REDCapSyncProject-remove_datasets)
@@ -319,6 +323,7 @@ Add a new dataset entry
       include_log = FALSE,
       annotate_from_log = TRUE,
       include_comments = TRUE,
+      include_added_fields = TRUE,
       with_links = TRUE,
       separate = FALSE,
       use_csv = FALSE,
@@ -432,6 +437,10 @@ Add a new dataset entry
 
   Logical. Include field comments. Default is `TRUE`.
 
+- `include_added_fields`:
+
+  Logical. Include added fields. Default is `TRUE`.
+
 - `with_links`:
 
   Logical. Include hyperlinks in Excel exports. Default is `FALSE`.
@@ -457,6 +466,80 @@ Add a new dataset entry
 - `hard_reset`:
 
   Logical. Overwrite existing dataset files. Default is `FALSE`.
+
+------------------------------------------------------------------------
+
+### `REDCapSyncProject$add_field()`
+
+Add or modify a field. This can be used to add derived fields for R,
+Excel, and applications. It can also be used to recalculate fields for
+pipelines that modify data in REDCap using R.
+
+#### Usage
+
+    REDCapSyncProject$add_field(
+      field_name,
+      form_name,
+      field_type_r = "character",
+      field_label = NA,
+      field_choices = NA,
+      field_note = NA,
+      identifier = "",
+      units = NA,
+      data_func = NA
+    )
+
+#### Arguments
+
+- `field_name`:
+
+  Character. Field name to be used for added field.
+
+- `form_name`:
+
+  Character. Form name to be used for added field. Must be an existing
+  REDCap form/instrument.
+
+- `field_type_r`:
+
+  Character. One of "character", "factor", "date", "datetime",
+  "integer", or "numeric" . Default is `character`.
+
+- `field_label`:
+
+  Character. Field label for added field.
+
+- `field_choices`:
+
+  Character vector. Choices if `field_type_r` is "factor".
+
+- `field_note`:
+
+  Character Field note for added field.
+
+- `identifier`:
+
+  Character. Either "", or "y" per REDCap data dictionary.
+
+- `units`:
+
+  Character. To be used for plots and tables.
+
+- `data_func`:
+
+  Function. Must have "project" as the only parameter. Must return a
+  vector of the field (same length and order as form). Example,
+  `data_func = function(project) {...}`.
+
+------------------------------------------------------------------------
+
+### `REDCapSyncProject$remove_added_fields()`
+
+Remove all added fields.
+
+#### Usage
+
+    REDCapSyncProject$remove_added_fields()
 
 ------------------------------------------------------------------------
 
@@ -531,7 +614,8 @@ is provided here for ad-hoc custom datasets.
       include_users = TRUE,
       include_log = FALSE,
       annotate_from_log = TRUE,
-      include_comments = FALSE
+      include_comments = FALSE,
+      include_added_fields = TRUE
     )
 
 #### Arguments
@@ -642,6 +726,10 @@ is provided here for ad-hoc custom datasets.
 - `include_comments`:
 
   Logical. Include field comments. Default is `TRUE`.
+
+- `include_added_fields`:
+
+  Logical. Include added fields. Default is `TRUE`.
 
 ------------------------------------------------------------------------
 
@@ -801,7 +889,7 @@ projects$test_names() # available test projects
 #>  [9] "TEST_REDCAPR_LONGITUDINAL" "TEST_REDCAPR_CLIN_TRIAL"  
 project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #> ! No cached projects... use `setup_project(...)`
-#> ✔ Directory is Valid! /tmp/RtmpnWZfEl
+#> ✔ Directory is Valid! /tmp/RtmptZz6x7
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
@@ -810,16 +898,16 @@ project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 # Sync data from REDCap
 project$sync()
 #> ℹ TEST projects do not communicate with the API
-#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
-#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
-#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
-#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
-#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
-#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
-#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
-#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
-#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpnWZfEl/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
-#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpnWZfEl/output/TEST_CLASSIC_REDCapSync.xlsx
+#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
+#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
+#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
+#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
+#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
+#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
+#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
+#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
+#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmptZz6x7/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
+#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmptZz6x7/output/TEST_CLASSIC_REDCapSync.xlsx
 
 # Access data and metadata
 head(project$data$text)

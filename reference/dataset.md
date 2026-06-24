@@ -161,7 +161,8 @@ Users should construct objects using
       include_records = TRUE,
       include_log = FALSE,
       annotate_from_log = TRUE,
-      include_comments = FALSE
+      include_comments = FALSE,
+      include_added_fields = TRUE
     )
 
 #### Arguments
@@ -276,7 +277,11 @@ Users should construct objects using
 
 - `include_comments`:
 
-  Logical. Include REDCap comments. Default is `FALSE`.
+  Logical. Include field comments. Default is `TRUE`.
+
+- `include_added_fields`:
+
+  Logical. Include added fields. Default is `TRUE`.
 
 ------------------------------------------------------------------------
 
@@ -378,5 +383,5 @@ dataset <- project$generate_dataset(
  )
 
 dataset$save(dir_other = tempdir())
-#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpnWZfEl/TEST_CLASSIC_stage_2_patients.xlsx
+#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmptZz6x7/TEST_CLASSIC_stage_2_patients.xlsx
 ```

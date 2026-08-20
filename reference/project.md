@@ -889,7 +889,7 @@ projects$test_names() # available test projects
 #>  [9] "TEST_REDCAPR_LONGITUDINAL" "TEST_REDCAPR_CLIN_TRIAL"  
 project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #> ! No cached projects... use `setup_project(...)`
-#> ✔ Directory is Valid! /tmp/Rtmppx0ljS
+#> ✔ Directory is Valid! /tmp/RtmpkNuDJU
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
@@ -898,16 +898,16 @@ project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 # Sync data from REDCap
 project$sync()
 #> ℹ TEST projects do not communicate with the API
-#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/Rtmppx0ljS/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
-#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/Rtmppx0ljS/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
-#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/Rtmppx0ljS/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
-#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/Rtmppx0ljS/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
-#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/Rtmppx0ljS/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
-#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/Rtmppx0ljS/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
-#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/Rtmppx0ljS/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
-#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/Rtmppx0ljS/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
-#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/Rtmppx0ljS/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
-#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/Rtmppx0ljS/output/TEST_CLASSIC_REDCapSync.xlsx
+#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpkNuDJU/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
+#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpkNuDJU/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
+#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpkNuDJU/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
+#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpkNuDJU/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
+#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpkNuDJU/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
+#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpkNuDJU/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
+#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpkNuDJU/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
+#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpkNuDJU/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
+#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpkNuDJU/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
+#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpkNuDJU/output/TEST_CLASSIC_REDCapSync.xlsx
 
 # Access data and metadata
 head(project$data$text)

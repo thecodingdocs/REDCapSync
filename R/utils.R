@@ -317,12 +317,15 @@ split_choices <- function(x) {
   result <- gsub("\n", " | ", result)
   result <- result |>
     strsplit("[|]") |>
-    unlist() |>
-    str_split_fixed(",", 2L)
+    unlist()
+  if (any(!grepl(",", result))) {
+    cli_abort("split choice error: {x}")
+  }
+  result <- result |> str_split_fixed(",", 2L)
   check_length <- length(result[, 1L])
   choices_data <- data.frame(
     code = trimws(result[, 1L]),
-    name = trimws(result[, 2L]),
+    name = trimws(result[, 2L]), # is this risky? to trim ws if otherwise unique
     stringsAsFactors = FALSE
   )
   rownames(choices_data) <- NULL
@@ -335,9 +338,9 @@ split_choices <- function(x) {
   if (nrow(choices_data) != check_length) {
     cli_abort("split choice error: {x}")
   }
-  if (!all(nzchar(choices_data$name))) {
-    cli_abort("split choice error: {x}")
-  }
+  # if (!all(nzchar(choices_data$name))) {
+  #   cli_abort("split choice error: {x}")
+  # } # allow ""
   choices_data
 }
 #' @noRd

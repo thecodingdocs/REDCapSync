@@ -919,11 +919,14 @@ fields_to_choices <- function(fields) {
       )
     )
   }
+  label_names <- choices$name
+  blank_name_rows <- which(label_names == "")
+  label_names[blank_name_rows] <- choices$code[blank_name_rows]
   choices$label <- paste(choices$form_name,
                          "-",
                          choices$field_label,
                          "-",
-                         choices$name)
+                         label_names)
   rownames(choices) <- NULL
   choices
 }

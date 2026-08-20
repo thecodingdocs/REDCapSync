@@ -6,13 +6,16 @@
 
 ## New Features
 
-* New add_fields feature for derived fields and recalculating existing fields 
+* New add_fields feature for derived fields and overwritting existing fields 
 * New remove_added_fields feature to remove anything from add_fields section
 
 ## Internal Changes
 
 * reconcile_version function will refresh datasets if package version changes
 * Excel sheets will have filters by default
+
+## Fixes
+* account for checkboxes, radio, and dropdown with no choice in dictionary 
 
 # REDCapSync 0.1.1
 

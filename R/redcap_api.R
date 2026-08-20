@@ -66,16 +66,30 @@ get_redcap_metadata <- function(project) {
   field_names <- unique(project$metadata$choices$field_name)
   if (length(field_names) > 0L) {
     choices <- project$metadata$choices
-    has_conflict <- field_names |>
-      lapply(function(field_name) {
-        vec_to_check <- choices$name[which(choices$field_name == field_name)]
-        anyDuplicated(vec_to_check) > 0L
+    choices_list <- choices |> split(choices$field_name)
+    has_conflict <- choices_list |>
+      lapply(function(list_element) {
+        anyDuplicated(list_element$name) > 0L
       }) |>
       unlist()
     project$metadata$has_coding_conflicts <- any(has_conflict)
     if (project$metadata$has_coding_conflicts) {
-      conflict_rows <- which(has_conflict)
-      project$metadata$coding_conflict_field_names <- field_names[conflict_rows]
+      project$metadata$coding_conflict_field_names <- names(which(has_conflict))
+    }
+    blank_choice_labels <- which(choices$name == "")
+    if (length(blank_choice_labels) > 0L) {
+      the_blanks <- choices$field_name[blank_choice_labels] |>
+        unique() |>
+        toString()
+      cli_alert_danger("Variables with empty names AKA \"\": {the_blanks}")
+    }
+    blank_choice <- which(
+      is.na(project$metadata$fields$select_choices_or_calculations) &
+        project$metadata$fields$field_type %in% REDCAP_FACTOR_FIELDS
+    )
+    if (length(blank_choice) > 0L) {
+      the_blanks <- toString(project$metadata$fields$field_name[blank_choice])
+      cli_alert_danger("Variables with no choices: {the_blanks}")
     }
   }
   # is longitudinal ------
@@ -236,24 +250,38 @@ add_field_elements <- function(fields) {
     checkbox_fields <- fields$field_name[which(fields$field_type == "checkbox")]
     for (field_name in checkbox_fields) {
       field_row <- which(fields$field_name == field_name)
-      x <- split_choices(fields$select_choices_or_calculations[field_row])
-      new_rows <- data.frame(
-        field_name = paste0(field_name, "___", x$code),
-        form_name = fields$form_name[field_row],
-        field_label = x$name,
-        field_type = "checkbox_choice",
-        select_choices_or_calculations = "1, Checked | 0, Unchecked",
-        stringsAsFactors = FALSE
-      )
-      last_row <- nrow(fields)
-      top <- fields[1L:field_row, ]
-      bottom <- NULL
-      if (last_row > field_row) {
-        bottom <- fields[(field_row + 1L):last_row, ]
+      coding_text <- fields$select_choices_or_calculations[field_row]
+      if (!is.na(coding_text)) {
+        x <- split_choices(coding_text)
+        code_name <- paste0(field_name, "___", x$code)
+        new_rows <- data.frame(
+          field_name = code_name,
+          form_name = fields$form_name[field_row],
+          field_label = seq_len(nrow(x)) |> lapply(function(i){
+            final_name <- x$name[i]
+            if(!nzchar(final_name)){
+              final_name <- ifelse(
+                is_something(fields$field_label[field_row]),
+                fields$field_label[field_row],
+                code_name
+              )
+            }
+            final_name
+          }) |> unlist(),
+          field_type = "checkbox_choice",
+          select_choices_or_calculations = "1, Checked | 0, Unchecked",
+          stringsAsFactors = FALSE
+        )
+        last_row <- nrow(fields)
+        top <- fields[1L:field_row, ]
+        bottom <- NULL
+        if (last_row > field_row) {
+          bottom <- fields[(field_row + 1L):last_row, ]
+        }
+        fields <- top |>
+          bind_rows(new_rows) |>
+          bind_rows(bottom)
       }
-      fields <- top |>
-        bind_rows(new_rows) |>
-        bind_rows(bottom)
     }
   }
   if (any(fields$field_type == "yesno")) {

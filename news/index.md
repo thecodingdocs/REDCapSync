@@ -18,6 +18,8 @@
 - reconcile_version function will refresh datasets if package version
   changes
 - Excel sheets will have filters by default
+- if duplicate code names, only cause error for conversion back to raw
+  values
 
 ### Fixes
 

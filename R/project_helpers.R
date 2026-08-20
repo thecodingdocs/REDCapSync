@@ -37,16 +37,6 @@ labelled_to_raw_form <- function(form, project) {
 }
 #' @noRd
 raw_to_labelled_form <- function(form, project) {
-  if (project$metadata$has_coding_conflicts) {
-    cli_alert_danger(
-      paste0(
-        "You should not use labelled = 'TRUE' because you have a coding ",
-        "conflict in data dictionary. Try {.topic REDCapSync::setup_project} ",
-        "with labelled = 'FALSE'. The conflicts are from: ",
-        "{toString(project$metadata$coding_conflict_field_names)}"
-      )
-    )
-  }
   form <- all_character_cols(form)
   if (nrow(form) == 0L) {
     return(form)

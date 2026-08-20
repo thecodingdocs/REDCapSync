@@ -92,6 +92,16 @@ get_redcap_metadata <- function(project) {
       cli_alert_danger("Variables with no choices: {the_blanks}")
     }
   }
+  if (project$metadata$has_coding_conflicts) {
+    cli_alert_danger(
+      paste0(
+        "You should not use labelled = 'TRUE' because you have a coding ",
+        "conflict in data dictionary. Try {.topic REDCapSync::setup_project} ",
+        "with labelled = 'FALSE'. The conflicts are from: ",
+        "{toString(project$metadata$coding_conflict_field_names)}"
+      )
+    )
+  }
   # is longitudinal ------
   if (project$metadata$is_longitudinal) {
     raw_structure_cols_vector <- c(project$metadata$raw_structure_cols,

@@ -263,12 +263,23 @@ test_that("clean_env_names works!", {
   expect_identical(clean_env_names(c("one", "two")), c("one", "two"))
   # invalid characters are cleaned and lowercased
   expect_identical(
-    clean_env_names(c("My Name", "Another-Name")),
-    c("my_name", "anothername")
+    clean_env_names(c("My Name ", "Another-Name","Name (parentheses)")),
+    c("my_name", "another_name", "name_parentheses")
   )
   # duplicates produce unique cleaned names
-  out <- clean_env_names(c("Dup Name", "Dup-Name", "dup_name"))
+  dup_names <- c("Dup Name",
+                 "Dup-Name",
+                 "another",
+                 "dup_name",
+                 "another")
+  fixed <- c("dup_name_1",
+             "dup_name_2",
+             "another_1",
+             "dup_name_3",
+             "another_2")
+  out <- clean_env_names(dup_names)
   expect_length(unique(out), length(out))
+  expect_identical(out, fixed)
   # all results should be valid environment names
   expect_true(all(vapply(out, is_env_name, logical(1L))))
   # empty input returns empty character vector

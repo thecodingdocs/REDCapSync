@@ -249,7 +249,7 @@ get_min_dates <- function(data_list) {
       existing_fields <- intersect(names(form), date_vector)
       if (length(existing_fields) > 0L) {
         df_subset <- form[, c(id_cols[1L], existing_fields), drop = FALSE]
-        df_long <- stats::reshape(
+        df_long <- reshape(
           df_subset,
           varying = existing_fields,
           v.names = "date",
@@ -267,7 +267,7 @@ get_min_dates <- function(data_list) {
   }
   combined <- do.call(rbind, all_dates)
   combined <- combined[!is.na(combined$date), ]
-  min_dates <- stats::aggregate(date ~ record_id, data = combined, FUN = min)
+  min_dates <- aggregate(date ~ record_id, data = combined, FUN = min)
   min_dates
 }
 #' @noRd

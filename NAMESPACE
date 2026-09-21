@@ -108,6 +108,11 @@ importFrom(redcapAPI,
   exportVersion,
   redcapConnection
 )
+importFrom(stats,
+  aggregate,
+  ave,
+  reshape
+)
 importFrom(stringr,
   str_extract,
   str_length,

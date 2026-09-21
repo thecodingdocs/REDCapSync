@@ -187,31 +187,38 @@ drop_if <- function(x, drops) {
 clean_env_names <- function(env_names,
                             silent = FALSE,
                             lowercase = TRUE) {
+  if(length(env_names) == 0L || is.null(env_names)){
+    return(character(0L))
+  }
   cleaned_names <- character(length(env_names))
   if (lowercase) {
     env_names <- tolower(env_names)
   }
   for (i in seq_along(env_names)) {
-    cleaned_name <- name <- env_names[i]
-    is_valid <- is_env_name(name, silent = TRUE)
+    cleaned_name <- env_names[i]
+    is_valid <- is_env_name(cleaned_name, silent = TRUE)
     if (!is_valid) {
-      if (!silent)
-        message("Invalid environment name: '", name)
-      cleaned_name <- trimws(gsub("[^A-Za-z0-9_]", " ", name))
-      cleaned_name <- gsub("__", "_", gsub(" ", "_", cleaned_name))
-    }
-    if (cleaned_name %in% cleaned_names) {
       if (!silent) {
-        message("Non-unique environment name: '",
-                name,
-                "', added numbers...")
+        message("Invalid environment name: '", cleaned_name)
       }
-      cleaned_name <- cleaned_name |>
-        paste0("_", max(length(which(cleaned_name %in% cleaned_names))) + 1L)
+      cleaned_name <- trimws(gsub("[^A-Za-z0-9_]", " ", cleaned_name))
+      cleaned_name <- gsub("__", "_", gsub(" ", "_", cleaned_name))
+      is_valid <- is_env_name(cleaned_name, silent = TRUE)
+      if (!is_valid) {
+        cli_abort(paste0("Unable to convert name: ",cleaned_name))
+      }
     }
     cleaned_names[i] <- cleaned_name
   }
+  cleaned_names <- make_unique(cleaned_names)
   cleaned_names
+}
+#' @noRd
+make_unique <- function(x) {
+  n <- ave(x, x, FUN = seq_along)
+  ifelse(duplicated(x) | duplicated(x, fromLast = TRUE),
+         paste0(x, "_", n),
+         x)
 }
 #' @noRd
 is_df_list <- function(x, strict = FALSE) {

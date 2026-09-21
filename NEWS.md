@@ -6,7 +6,7 @@
 
 ## New Features
 
-* New add_fields feature for derived fields and overwritting existing fields 
+* New add_fields feature for derived fields and overwriting existing fields 
 * New remove_added_fields feature to remove anything from add_fields section
 
 ## Internal Changes

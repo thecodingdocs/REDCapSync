@@ -188,20 +188,17 @@ clean_env_names <- function(env_names,
                             silent = FALSE,
                             lowercase = TRUE) {
   cleaned_names <- character(length(env_names))
+  if (lowercase) {
+    env_names <- tolower(env_names)
+  }
   for (i in seq_along(env_names)) {
-    name <- env_names[i]
+    cleaned_name <- name <- env_names[i]
     is_valid <- is_env_name(name, silent = TRUE)
-    if (is_valid) {
-      cleaned_name <- name
-    }
     if (!is_valid) {
-      if (!silent) {
+      if (!silent)
         message("Invalid environment name: '", name)
-      }
-      cleaned_name <- gsub("__", "_", gsub(" ", "_", gsub("-", "", name)))
-    }
-    if (lowercase) {
-      cleaned_name <- tolower(cleaned_name)
+      cleaned_name <- trimws(gsub("[^A-Za-z0-9_]", " ", name))
+      cleaned_name <- gsub("__", "_", gsub(" ", "_", cleaned_name))
     }
     if (cleaned_name %in% cleaned_names) {
       if (!silent) {

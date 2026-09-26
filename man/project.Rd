@@ -192,7 +192,9 @@ users and log.}
     \item \href{#method-REDCapSyncProject-sync}{\code{REDCapSyncProject$sync()}}
     \item \href{#method-REDCapSyncProject-add_dataset}{\code{REDCapSyncProject$add_dataset()}}
     \item \href{#method-REDCapSyncProject-add_field}{\code{REDCapSyncProject$add_field()}}
+    \item \href{#method-REDCapSyncProject-add_custom_transformation}{\code{REDCapSyncProject$add_custom_transformation()}}
     \item \href{#method-REDCapSyncProject-remove_added_fields}{\code{REDCapSyncProject$remove_added_fields()}}
+    \item \href{#method-REDCapSyncProject-remove_custom_transformation}{\code{REDCapSyncProject$remove_custom_transformation()}}
     \item \href{#method-REDCapSyncProject-load_dataset}{\code{REDCapSyncProject$load_dataset()}}
     \item \href{#method-REDCapSyncProject-remove_datasets}{\code{REDCapSyncProject$remove_datasets()}}
     \item \href{#method-REDCapSyncProject-generate_dataset}{\code{REDCapSyncProject$generate_dataset()}}
@@ -423,6 +425,29 @@ Example, \code{data_func = function(project) {...}}.}
 }
 
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSyncProject-add_custom_transformation"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-add_custom_transformation}{}}}
+\subsection{\code{REDCapSyncProject$add_custom_transformation()}}{
+  Add or modify custom transformation. Developmental feature
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{REDCapSyncProject$add_custom_transformation(custom_transformation)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{custom_transformation}}{Function. Must have "project" as the only
+parameter. Allows any custom modifcations to be run for before each
+\code{project$generate_dataset(...)} independently of \code{transformation_type}. Must
+return project object. Example,
+\code{custom_transformation = function(project) {...}}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-REDCapSyncProject-remove_added_fields"></a>}}
 \if{latex}{\out{\hypertarget{method-REDCapSyncProject-remove_added_fields}{}}}
 \subsection{\code{REDCapSyncProject$remove_added_fields()}}{
@@ -430,6 +455,18 @@ Example, \code{data_func = function(project) {...}}.}
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{REDCapSyncProject$remove_added_fields()}
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-REDCapSyncProject-remove_custom_transformation"></a>}}
+\if{latex}{\out{\hypertarget{method-REDCapSyncProject-remove_custom_transformation}{}}}
+\subsection{\code{REDCapSyncProject$remove_custom_transformation()}}{
+  Remove custom transformation.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{REDCapSyncProject$remove_custom_transformation()}
     \if{html}{\out{</div>}}
   }
 }

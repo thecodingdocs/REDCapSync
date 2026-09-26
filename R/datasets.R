@@ -184,6 +184,7 @@ generate_project_dataset <- function(project,
   # function to do asserts here
   assert_choice(transformation_type, TRANFORMATION_TYPES)
   data_list <- NULL
+  project <- render_custom_transformation(project)
   data_list$metadata <- project$metadata
   data_list$data <- project$data
   data_list$redcap <- project$redcap
@@ -1640,4 +1641,21 @@ read_dataset_from_file <- function(project, dataset_name, file_path) {
   }
   #check data not already there
   data_list
+}
+#' @noRd
+render_custom_transformation <- function(project) {
+  assert_setup_project(project)
+  custom_transformation <- project$transformation$custom
+  if(test_custom_transformation(custom_transformation)) {
+    transformed <- NULL
+    environment(custom_transformation) <- environment()
+    transformed <- try_else_null({custom_transformation(project = project)})
+    if(!test_setup_project(transformed)) {
+      transformed <- NULL
+    }
+    if(is.null(transformed)) {
+      cli_alert_danger("Failed to render `custom_transformation`")
+    }
+  }
+  transformed
 }

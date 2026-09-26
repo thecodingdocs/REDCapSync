@@ -181,6 +181,11 @@
 #' @param data_func Function. Must have "project" as the only parameter. Must
 #' return a vector of the field (same length and order as form).
 #' Example, `data_func = function(project) {...}`.
+#' @param custom_transformation Function. Must have "project" as the only
+#' parameter. Allows any custom modifcations to be run for before each
+#' `project$generate_dataset(...)` independently of `transformation_type`. Must
+#' return project object. Example,
+#' `custom_transformation = function(project) {...}`.
 #' @param envir Environment to assign dataset objects. Default is `NULL`.
 #' @param form Character. REDCap form/instrument name, e.g., "survey_one".
 #' @param link_type Character. REDCap link type: "base", "home", "record_home",
@@ -471,12 +476,26 @@ REDCapSyncProject <- R6Class(
         identifier = identifier,
         units = units,
         data_func = data_func
-      )
+      ) # add as try
+      invisible(self)
+    },
+    #' @description  Add or modify custom transformation. Developmental feature
+    #'
+    add_custom_transformation = function (custom_transformation) {
+      private$project <- add_project_custom_transformation(
+        project = private$project,
+        custom_transformation = custom_transformation
+      ) # add as try
       invisible(self)
     },
     #' @description Remove all added fields.
     remove_added_fields = function(){
       private$project <- remove_project_fields(private$project)
+      invisible(self)
+    },
+    #' @description Remove custom transformation.
+    remove_custom_transformation = function(){
+      private$project <- remove_project_custom_transformation(private$project)
       invisible(self)
     },
     #' @description  Load dataset if previously defined with `add_dataset`.

@@ -45,27 +45,8 @@ add_project_field <- function(project,
   }
   assert_choice(form_name, project$metadata$forms$form_name)
   #other asserts
-  has_data_func <- FALSE
-  if (!is_something(data_func)) {
-    warning("if no `data_func` provided, then field only added to metadata",
-            immediate. = TRUE)
-  }
-  if (is_something(data_func)) {
-    func_template <- "data_func = function(project){...YOUR FUNCTION...}"
-    if (!is.function(data_func)) {
-      stop("`data_func` must be a function ... ", func_template)
-    }
-    allowed_args <- c("project", "field_name", "form_name")
-    if (!any(allowed_args %in% names(formals(data_func))) ||
-        !all(names(formals(data_func)) %in% allowed_args)) {
-      stop(
-        "`data_func` must have \"project\" as only paramter...",
-        func_template # add vignettte
-      )
-    }
-    data_func <- clean_function(data_func)
-    has_data_func <- TRUE
-  }
+  data_func <- assert_data_func(data_func)
+  has_data_func <- is_something(data_func)
   field_row <- data.frame(
     field_name = as.character(field_name),
     form_name = as.character(form_name),
@@ -102,7 +83,7 @@ add_project_field <- function(project,
       render_field(field_name) # should this be moved up or checked?
   }
   project <- reset_project_datasets(project)
-  # ADD clear of datasets if new field added
+  # ADD clearing of datasets if new field added
   cli_alert_success("added \"{field_name}\" column")
   invisible(project)
 }
@@ -125,13 +106,36 @@ choice_vector_string <- function(vec) {
 remove_project_fields <- function(project) {
   assert_setup_project(project)
   project$transformation <- list(
-    custom = NULL,
+    custom = project$transformation$custom,
     data = NULL,
     fields = NULL,
     field_functions = NULL,
     data_updates = NULL
   )
-  cli_alert_success("Cleared project transformations!")
+  cli_alert_success("Cleared added fields!")
+  invisible(project)
+}
+#' @noRd
+remove_project_custom_transformation <- function(project) {
+  assert_setup_project(project)
+  project$transformation <- list(
+    custom = NULL,
+    data = project$transformation$data,
+    fields = project$transformation$fields,
+    field_functions = project$transformation$field_functions,
+    data_updates = project$transformation$data_updates
+  )
+  cli_alert_success("Cleared custom transformation!")
+  invisible(project)
+}
+#' @noRd
+add_project_custom_transformation <- function(project, custom_transformation) {
+  assert_setup_project(project)
+  custom_transformation <- assert_custom_transformation(custom_transformation)
+  if(test_custom_transformation(custom_transformation)){
+    project$transformation$custom <- custom_transformation
+    cli_alert_success("added \"custom_transformation\"")
+  }
   invisible(project)
 }
 #' @noRd

@@ -280,3 +280,59 @@ test_unique_character <- function(x) {
     any.missing = FALSE
   )
 }
+#' @noRd
+assert_data_func <- function(data_func) {
+  if (!is_something(data_func)) {
+    warning("if no `data_func` provided, then field only added to metadata",
+            immediate. = TRUE)
+  } else {
+    func_temp <- "data_func = function(project){...YOUR FUNCTION...}"
+    if (!is.function(data_func)) {
+      stop("`data_func` must be a function ... ", func_temp)
+    }
+    if (!any("project" %in% names(formals(data_func))) ||
+        !all(names(formals(data_func)) %in% "project")) {
+      stop(
+        "`data_func` must have \"project\" as only paramter...",
+        func_temp # add vignettte
+      )
+    }
+    data_func <- clean_function(data_func)
+  }
+  invisible(data_func)
+}
+#' @noRd
+assert_custom_transformation <- function(custom_transformation) {
+  if (!is_something(custom_transformation)) {
+    warning("No `custom_transformation` provided.",
+            immediate. = TRUE)
+    return(invisible(custom_transformation))
+  }
+  func_temp <- "custom_transformation = function(project){...YOUR FUNCTION...}"
+  if (!is.function(custom_transformation)) {
+    stop("`custom_transformation` must be a function ... ", func_temp)
+  }
+  if (!any("project" %in% names(formals(custom_transformation))) ||
+      !all(names(formals(custom_transformation)) %in% "project")) {
+    stop(
+      "`custom_transformation` must have \"project\" as only paramter...",
+      func_temp # add vignettte
+    )
+  }
+  custom_transformation <- clean_function(custom_transformation)
+  invisible(custom_transformation)
+}
+#' @noRd
+test_custom_transformation <- function(custom_transformation) {
+  custom_transformation <- tryCatch(
+    expr = {
+      suppressWarnings({
+        assert_custom_transformation(custom_transformation)
+      })
+    },
+    error = function(e) {
+      NULL
+    }
+  )
+  is_something(custom_transformation)
+}

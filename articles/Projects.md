@@ -33,10 +33,13 @@ names(REDCapSyncProject$active)
 
 # projects have public methods
 names(REDCapSyncProject$public_methods) |> setdiff("initialize")
-#>  [1] "print"               "sync"                "add_dataset"        
-#>  [4] "add_field"           "remove_added_fields" "load_dataset"       
-#>  [7] "remove_datasets"     "generate_dataset"    "save_datasets"      
-#> [10] "save_dataset"        "save"                "set_keyring_token"  
-#> [13] "test_token"          "url_launch"          "url_record_launch"  
-#> [16] "upload"
+#>  [1] "print"                        "sync"                        
+#>  [3] "add_dataset"                  "add_field"                   
+#>  [5] "add_custom_transformation"    "remove_added_fields"         
+#>  [7] "remove_custom_transformation" "load_dataset"                
+#>  [9] "remove_datasets"              "generate_dataset"            
+#> [11] "save_datasets"                "save_dataset"                
+#> [13] "save"                         "set_keyring_token"           
+#> [15] "test_token"                   "url_launch"                  
+#> [17] "url_record_launch"            "upload"
 ```

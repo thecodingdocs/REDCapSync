@@ -381,7 +381,8 @@ dataset <- project$generate_dataset(
   filter_choices = "II",
   field_names = c("ecog_at_diagnosis", "stage_at_diagnosis")
  )
+#> ✖ Failed to render `custom_transformation`
 
 dataset$save(dir_other = tempdir())
-#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpojR8WE/TEST_CLASSIC_stage_2_patients.xlsx
+#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpAXpv3B/TEST_CLASSIC_stage_2_patients.xlsx
 ```

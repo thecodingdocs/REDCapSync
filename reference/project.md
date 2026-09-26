@@ -197,7 +197,11 @@ for using the dataset objects
 
 - [`REDCapSyncProject$add_field()`](#method-REDCapSyncProject-add_field)
 
+- [`REDCapSyncProject$add_custom_transformation()`](#method-REDCapSyncProject-add_custom_transformation)
+
 - [`REDCapSyncProject$remove_added_fields()`](#method-REDCapSyncProject-remove_added_fields)
+
+- [`REDCapSyncProject$remove_custom_transformation()`](#method-REDCapSyncProject-remove_custom_transformation)
 
 - [`REDCapSyncProject$load_dataset()`](#method-REDCapSyncProject-load_dataset)
 
@@ -533,6 +537,26 @@ pipelines that modify data in REDCap using R.
 
 ------------------------------------------------------------------------
 
+### `REDCapSyncProject$add_custom_transformation()`
+
+Add or modify custom transformation. Developmental feature
+
+#### Usage
+
+    REDCapSyncProject$add_custom_transformation(custom_transformation)
+
+#### Arguments
+
+- `custom_transformation`:
+
+  Function. Must have "project" as the only parameter. Allows any custom
+  transformation to be run for before each
+  `project$generate_dataset(...)` independently of
+  `transformation_type`. Must return project object. Example,
+  `custom_transformation = function(project) {...}`.
+
+------------------------------------------------------------------------
+
 ### `REDCapSyncProject$remove_added_fields()`
 
 Remove all added fields.
@@ -540,6 +564,16 @@ Remove all added fields.
 #### Usage
 
     REDCapSyncProject$remove_added_fields()
+
+------------------------------------------------------------------------
+
+### `REDCapSyncProject$remove_custom_transformation()`
+
+Remove custom transformation.
+
+#### Usage
+
+    REDCapSyncProject$remove_custom_transformation()
 
 ------------------------------------------------------------------------
 
@@ -889,7 +923,7 @@ projects$test_names() # available test projects
 #>  [9] "TEST_REDCAPR_LONGITUDINAL" "TEST_REDCAPR_CLIN_TRIAL"  
 project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #> ! No cached projects... use `setup_project(...)`
-#> ✔ Directory is Valid! /tmp/RtmpojR8WE
+#> ✔ Directory is Valid! /tmp/RtmpAXpv3B
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
@@ -898,16 +932,18 @@ project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 # Sync data from REDCap
 project$sync()
 #> ℹ TEST projects do not communicate with the API
-#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpojR8WE/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
-#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpojR8WE/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
-#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpojR8WE/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
-#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpojR8WE/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
-#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpojR8WE/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
-#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpojR8WE/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
-#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpojR8WE/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
-#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpojR8WE/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
-#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpojR8WE/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
-#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpojR8WE/output/TEST_CLASSIC_REDCapSync.xlsx
+#> ✖ Failed to render `custom_transformation`
+#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpAXpv3B/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
+#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpAXpv3B/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
+#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpAXpv3B/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
+#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpAXpv3B/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
+#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpAXpv3B/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
+#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpAXpv3B/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
+#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpAXpv3B/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
+#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpAXpv3B/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
+#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpAXpv3B/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
+#> ✖ Failed to render `custom_transformation`
+#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpAXpv3B/output/TEST_CLASSIC_REDCapSync.xlsx
 
 # Access data and metadata
 head(project$data$text)
@@ -1009,4 +1045,5 @@ project$test_token()
 #> ℹ TEST projects do not communicate with the API
 
 dataset <- project$load_dataset("REDCapSync")
+#> ✖ Failed to render `custom_transformation`
 ```

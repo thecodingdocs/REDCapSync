@@ -1646,8 +1646,8 @@ read_dataset_from_file <- function(project, dataset_name, file_path) {
 render_custom_transformation <- function(project) {
   assert_setup_project(project)
   custom_transformation <- project$transformation$custom
+  transformed <- NULL
   if(test_custom_transformation(custom_transformation)) {
-    transformed <- NULL
     environment(custom_transformation) <- environment()
     transformed <- try_else_null({custom_transformation(project = project)})
     if(!test_setup_project(transformed)) {

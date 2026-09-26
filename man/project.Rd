@@ -438,7 +438,7 @@ Example, \code{data_func = function(project) {...}}.}
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{custom_transformation}}{Function. Must have "project" as the only
-parameter. Allows any custom modifcations to be run for before each
+parameter. Allows any custom transformation to be run for before each
 \code{project$generate_dataset(...)} independently of \code{transformation_type}. Must
 return project object. Example,
 \code{custom_transformation = function(project) {...}}.}

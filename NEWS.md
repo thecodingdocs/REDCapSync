@@ -8,6 +8,7 @@
 
 * New add_fields feature for derived fields and overwriting existing fields 
 * New remove_added_fields feature to remove anything from add_fields section
+* New custom_transformation feature with remove_custom_transformation
 
 ## Internal Changes
 

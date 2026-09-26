@@ -182,7 +182,7 @@
 #' return a vector of the field (same length and order as form).
 #' Example, `data_func = function(project) {...}`.
 #' @param custom_transformation Function. Must have "project" as the only
-#' parameter. Allows any custom modifcations to be run for before each
+#' parameter. Allows any custom transformation to be run for before each
 #' `project$generate_dataset(...)` independently of `transformation_type`. Must
 #' return project object. Example,
 #' `custom_transformation = function(project) {...}`.

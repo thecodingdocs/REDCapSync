@@ -1653,9 +1653,10 @@ render_custom_transformation <- function(project) {
     if(!test_setup_project(transformed)) {
       transformed <- NULL
     }
-    if(is.null(transformed)) {
-      cli_alert_danger("Failed to render `custom_transformation`")
-    }
+  }
+  if(is.null(transformed)) {
+    transformed <- project
+    cli_alert_danger("Failed to render `custom_transformation`")
   }
   transformed
 }

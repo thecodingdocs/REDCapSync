@@ -10,7 +10,7 @@ add_project_field <- function(project,
                               units = NA,
                               data_func = NA) {
   project <- assert_blank_project(project)
-  assert_env_name(field_name, max.chars = 31L) # unsure max name length
+  assert_env_name(field_name, max.chars = 50L) # unsure max name length
   assert_choice(field_type_r, choices = FIELD_TYPES_R)
   fields <- project$metadata$fields
   in_original_redcap <- field_name %in% fields$field_name

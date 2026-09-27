@@ -138,7 +138,7 @@ test_that("data_list_to_save works!", {
 # deidentify_data_list (Internal)
 test_that("deidentify_data_list works!", {
   project <- mock_test_project()$.internal
-  data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
+  data_list <- transform_merged(TEST_CLASSIC, "merged")
   data_list$metadata$fields$field_type_r <- NA
   data_list$metadata$fields$in_original_redcap <- NA
   id_cols <- data_list$metadata$form_key_cols |>
@@ -182,7 +182,7 @@ test_that("deidentify_data_list works!", {
 })
 test_that("deidentify_data_list works2", {
   project <- mock_test_project()$.internal
-  data_list <- merge_non_repeating(TEST_CLASSIC, "merged")
+  data_list <- transform_merged(TEST_CLASSIC, "merged")
   data_list <- metadata_add_default_cols(data_list)
   fields <- data_list$metadata$fields
   identifiers <- fields$field_name[which(fields$identifier == "y")]
@@ -363,8 +363,8 @@ test_that("get_dataset_records works!", {
   expect_identical(record_ids_yes, get_sum_records_yes)
   expect_identical(record_ids_no, get_sum_records_no)
 })
-# merge_non_repeating (Internal)
-test_that("merge_non_repeating works!", {
+# transform_merged (Internal)
+test_that("transform_merged works!", {
   project <- mock_test_project()$.internal
   expect_contains(names(project$data), project$metadata$forms$form_name)
   id_col <- project$metadata$id_col
@@ -393,7 +393,7 @@ test_that("merge_non_repeating works!", {
     ) |>
     setdiff(id_col)
   merge_form_name <- "merged_form"
-  merged <- merge_non_repeating(
+  merged <- transform_merged(
     data_list = project,
     merge_form_name = merge_form_name,
     merge_to_rep = TRUE

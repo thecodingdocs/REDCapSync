@@ -8,7 +8,8 @@
 
 * New add_fields feature for derived fields and overwriting existing fields 
 * New remove_added_fields feature to remove anything from add_fields section
-* New custom_transformation feature with remove_custom_transformation
+* New custom transformation feature with remove_transformation
+* New `wide_firsts` and `wide_all` transformation types for non-longitudinal projects with repeating forms
 
 ## Internal Changes
 

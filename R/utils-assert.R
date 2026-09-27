@@ -302,37 +302,37 @@ assert_data_func <- function(data_func) {
   invisible(data_func)
 }
 #' @noRd
-assert_custom_transformation <- function(custom_transformation) {
-  if (!is_something(custom_transformation)) {
-    warning("No `custom_transformation` provided.",
+assert_transformation <- function(transformation) {
+  if (!is_something(transformation)) {
+    warning("No `transformation` provided.",
             immediate. = TRUE)
-    return(invisible(custom_transformation))
+    return(invisible(transformation))
   }
-  func_temp <- "custom_transformation = function(project){...YOUR FUNCTION...}"
-  if (!is.function(custom_transformation)) {
-    stop("`custom_transformation` must be a function ... ", func_temp)
+  func_temp <- "transformation = function(project){...YOUR FUNCTION...}"
+  if (!is.function(transformation)) {
+    stop("`transformation` must be a function ... ", func_temp)
   }
-  if (!any("project" %in% names(formals(custom_transformation))) ||
-        !all(names(formals(custom_transformation)) %in% "project")) {
+  if (!any("project" %in% names(formals(transformation))) ||
+        !all(names(formals(transformation)) %in% "project")) {
     stop(
-      "`custom_transformation` must have \"project\" as only paramter...",
+      "`transformation` must have \"project\" as only paramter...",
       func_temp # add vignettte
     )
   }
-  custom_transformation <- clean_function(custom_transformation)
-  invisible(custom_transformation)
+  transformation <- clean_function(transformation)
+  invisible(transformation)
 }
 #' @noRd
-test_custom_transformation <- function(custom_transformation) {
-  custom_transformation <- tryCatch(
+test_transformation <- function(transformation) {
+  transformation <- tryCatch(
     expr = {
       suppressWarnings({
-        assert_custom_transformation(custom_transformation)
+        assert_transformation(transformation)
       })
     },
     error = function(e) {
       NULL
     }
   )
-  is_something(custom_transformation)
+  is_something(transformation)
 }

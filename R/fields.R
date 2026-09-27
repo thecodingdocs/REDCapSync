@@ -77,7 +77,7 @@ add_project_field <- function(project,
   project$transformation$fields <- project$transformation$fields[row_match, ]
   project$transformation$fields <-
     project$transformation$fields |>
-    dplyr::bind_rows(field_row)
+    bind_rows(field_row)
   project$transformation$field_functions[[field_name]] <- data_func
   if (has_data_func) {
     project$transformation$data[[form_name]][[field_name]] <- project |>
@@ -117,7 +117,7 @@ remove_project_fields <- function(project) {
   invisible(project)
 }
 #' @noRd
-remove_project_custom_transformation <- function(project) {
+remove_project_transformation <- function(project) {
   assert_setup_project(project)
   project$transformation <- list(
     custom = NULL,
@@ -130,12 +130,12 @@ remove_project_custom_transformation <- function(project) {
   invisible(project)
 }
 #' @noRd
-add_project_transformation <- function(project, custom_transformation) {
+add_project_transformation <- function(project, transformation) {
   assert_setup_project(project)
-  custom_transformation <- assert_custom_transformation(custom_transformation)
-  if (test_custom_transformation(custom_transformation)) {
-    project$transformation$custom <- custom_transformation
-    cli_alert_success("added \"custom_transformation\"")
+  transformation <- assert_transformation(transformation)
+  if (test_transformation(transformation)) {
+    project$transformation$custom <- transformation
+    cli_alert_success("added \"transformation\"")
   }
   invisible(project)
 }
@@ -231,8 +231,8 @@ combine_project_fields <- function(data_list, transformation) {
       bottom <- fields[(i + 1L):nrow(fields), ]
     }
     fields <- top |>
-      dplyr::bind_rows(field_row) |>
-      dplyr::bind_rows(bottom)
+      bind_rows(field_row) |>
+      bind_rows(bottom)
   }
   fields
 }
@@ -259,8 +259,10 @@ add_fields_to_data_list <- function(data_list, transformation) {
   }
   fields <- combine_project_fields(data_list, transformation)
   fields$original_form_name <- fields$form_name
-  # fields$form_name <- forms_transformation_original$form_name_remap[match(fields$form_name, forms_transformation_original$form_name)]
-  # fields <- fields[order(match(fields$form_name, forms_transformation$form_name)), ]
+  # x <- match(fields$form_name, forms_transformation_original$form_name)
+  # fields$form_name <- forms_transformation_original$form_name_remap[x]
+  # y <- order(match(fields$form_name, forms_transformation$form_name))
+  # fields <- fields[y, ]
   # new function RosyUtils
   first <- 1L:which(colnames(fields) == "form_name")
   move <- which(colnames(fields) == "original_form_name")
@@ -269,7 +271,7 @@ add_fields_to_data_list <- function(data_list, transformation) {
   metadata$fields <- fields
   metadata$choices <- fields_to_choices(fields)
   metadata$form_key_cols <- get_key_col_list(data_list = data_list)
-  cli_alert_success("Added new fields")
+  cli_alert_success("Added {length(field_names)} new fields")
   data_list$metadata <- metadata
   data_list$data <- named_df_list
   data_list

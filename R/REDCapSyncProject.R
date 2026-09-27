@@ -116,9 +116,28 @@
 #'
 #' @param dataset_name Character. Name of the dataset configuration to create,
 #' load, or reference.
-#' @param transformation_type Character. How to transform data: "default"
-#' (merge non-repeating then add to repeating), "none" (no transformation), or
-#' "merge_non_repeating" (merge non-repeating only). Default is "default".
+#' @param transformation_type Character. Data transformation strategy:
+#'   \itemize{
+#'     \item \code{"default"}: Preferred output. Merges all
+#'       non-repeating forms into a single record-level dataset and merges
+#'       repeating forms to the right, retaining all repeat instances.
+#'     \item \code{"none"}: Return the raw REDCap data structure, with
+#'       non-repeating and repeating forms kept as separate datasets.
+#'     \item \code{"merged_simple"}: Merge all non-repeating forms into a
+#'       single record-level dataset. Repeating forms remain separate
+#'       without merged data added to the right (like `default`).
+#'     \item \code{"wide_first"}: Merge all non-repeating forms and retain
+#'       only the first instance of each repeating form, producing one row
+#'       per record.
+#'     \item \code{"wide_all"}: Merge all non-repeating forms and reshape
+#'       all instances of repeating forms to a wide format, producing one
+#'       row per record. Repeating field names are suffixed with the form
+#'       name and repeat instance.
+#'   }
+#'   Default is \code{"default"}. Tranformations types `none`,
+#'   `merged_simple`, and `default` are upload compatibile.
+#'   Tranformations types `wide_first` and `wide_all` widen the data by adding
+#'   new variables and are therefore not upload compatible.
 #' @param merge_form_name Character. Name for the merged non-repeating form.
 #' Default is "merged".
 #' @param filter_field Character. Field name to filter dataset on.
@@ -181,11 +200,11 @@
 #' @param data_func Function. Must have "project" as the only parameter. Must
 #' return a vector of the field (same length and order as form).
 #' Example, `data_func = function(project) {...}`.
-#' @param custom_transformation Function. Must have "project" as the only
+#' @param transformation Function. Must have "project" as the only
 #' parameter. Allows any custom transformation to be run for before each
 #' `project$generate_dataset(...)` independently of `transformation_type`. Must
 #' return project object. Example,
-#' `custom_transformation = function(project) {...}`.
+#' `transformation = function(project) {...}`.
 #' @param envir Environment to assign dataset objects. Default is `NULL`.
 #' @param form Character. REDCap form/instrument name, e.g., "survey_one".
 #' @param link_type Character. REDCap link type: "base", "home", "record_home",
@@ -481,10 +500,10 @@ REDCapSyncProject <- R6Class(
     },
     #' @description  Add or modify custom transformation. Developmental feature
     #'
-    add_custom_transformation = function(custom_transformation) {
+    add_transformation = function(transformation) {
       private$project <- add_project_transformation(
         project = private$project,
-        custom_transformation = custom_transformation
+        transformation = transformation
       ) # add as try
       invisible(self)
     },
@@ -494,8 +513,8 @@ REDCapSyncProject <- R6Class(
       invisible(self)
     },
     #' @description Remove custom transformation.
-    remove_custom_transformation = function() {
-      private$project <- remove_project_custom_transformation(private$project)
+    remove_transformation = function() {
+      private$project <- remove_project_transformation(private$project)
       invisible(self)
     },
     #' @description  Load dataset if previously defined with `add_dataset`.

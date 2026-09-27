@@ -263,7 +263,7 @@ test_that("clean_env_names works!", {
   expect_identical(clean_env_names(c("one", "two")), c("one", "two"))
   # invalid characters are cleaned and lowercased
   expect_identical(
-    clean_env_names(c("My Name ", "Another-Name","Name (parentheses)")),
+    clean_env_names(c("My Name ", "Another-Name", "Name (parentheses)")),
     c("my_name", "another_name", "name_parentheses")
   )
   # duplicates produce unique cleaned names

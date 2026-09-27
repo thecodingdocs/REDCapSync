@@ -291,7 +291,7 @@ assert_data_func <- function(data_func) {
       stop("`data_func` must be a function ... ", func_temp)
     }
     if (!any("project" %in% names(formals(data_func))) ||
-        !all(names(formals(data_func)) %in% "project")) {
+          !all(names(formals(data_func)) %in% "project")) {
       stop(
         "`data_func` must have \"project\" as only paramter...",
         func_temp # add vignettte
@@ -313,7 +313,7 @@ assert_custom_transformation <- function(custom_transformation) {
     stop("`custom_transformation` must be a function ... ", func_temp)
   }
   if (!any("project" %in% names(formals(custom_transformation))) ||
-      !all(names(formals(custom_transformation)) %in% "project")) {
+        !all(names(formals(custom_transformation)) %in% "project")) {
     stop(
       "`custom_transformation` must have \"project\" as only paramter...",
       func_temp # add vignettte

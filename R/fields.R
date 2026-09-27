@@ -20,9 +20,10 @@ add_project_field <- function(project,
   if (in_original_redcap) {
     # add check for
     original_fields_row <- fields[which(fields$field_name == field_name), ]
-    if (!missing(form_name)) {# check this?
+    if (!missing(form_name)) {
+      # check this?
       # warning if chose wrong form?
-      if (!identical(form_name, original_fields_row$form_name)){
+      if (!identical(form_name, original_fields_row$form_name)) {
         stop("If you modify existing field, you cannot change form_name")
       }
     }
@@ -78,7 +79,7 @@ add_project_field <- function(project,
     project$transformation$fields |>
     dplyr::bind_rows(field_row)
   project$transformation$field_functions[[field_name]] <- data_func
-  if(has_data_func) {
+  if (has_data_func) {
     project$transformation$data[[form_name]][[field_name]] <- project |>
       render_field(field_name) # should this be moved up or checked?
   }
@@ -100,7 +101,7 @@ choice_vector_string <- function(vec) {
   if (!is_something(vec)) {
     return(NA)
   }
-  return(paste0(paste0(seq_along(vec), ", ", vec), collapse = " | "))
+  paste0(paste0(seq_along(vec), ", ", vec), collapse = " | ")
 }
 #' @noRd
 remove_project_fields <- function(project) {
@@ -129,10 +130,10 @@ remove_project_custom_transformation <- function(project) {
   invisible(project)
 }
 #' @noRd
-add_project_custom_transformation <- function(project, custom_transformation) {
+add_project_transformation <- function(project, custom_transformation) {
   assert_setup_project(project)
   custom_transformation <- assert_custom_transformation(custom_transformation)
-  if(test_custom_transformation(custom_transformation)){
+  if (test_custom_transformation(custom_transformation)) {
     project$transformation$custom <- custom_transformation
     cli_alert_success("added \"custom_transformation\"")
   }
@@ -147,17 +148,23 @@ render_field <- function(project, field_name) {
   form_name <- project$transformation$fields$form_name[row_match]
   field_func <- project$transformation$field_functions[[field_name]]
   field <- NULL
-  if(is_something(field_func)) {
+  if (is_something(field_func)) {
     environment(field_func) <- environment()
-    field <- try_else_null({field_func(project = project)})
-    if(!is.null(field)) {
-      if(length(field) != nrow(project$data[[form_name]])) {
-        cli_alert_warning(paste0("added field `{field_name}` has different ",
-                                "length than `nrow(project$data${form_name})`"))
+    field <- try_else_null({
+      field_func(project = project)
+    })
+    if (!is.null(field)) {
+      if (length(field) != nrow(project$data[[form_name]])) {
+        cli_alert_warning(
+          paste0(
+            "added field `{field_name}` has different ",
+            "length than `nrow(project$data${form_name})`"
+          )
+        )
         field <- NULL
       }
     }
-    if(is.null(field)) {
+    if (is.null(field)) {
       cli_alert_danger("Failed to render added field `{field_name}`")
     }
   } # consider requring to return dataframe with keys and field_name
@@ -166,7 +173,7 @@ render_field <- function(project, field_name) {
 #' @noRd
 rerender_fields <- function(project) {
   if (is_something(project$transformation$fields)) {
-    for(field_name in project$transformation$fields$field_name) {
+    for (field_name in project$transformation$fields$field_name) {
       row_match <- which(project$transformation$fields$field_name == field_name)
       form_name <- project$transformation$fields$form_name[row_match]
       project$transformation$data[[form_name]][[field_name]] <- project |>
@@ -234,7 +241,7 @@ add_fields_to_data_list <- function(data_list, transformation) {
   metadata <- data_list$metadata
   named_df_list <- data_list$data
   the_names <- transformation$fields$field_name
-  has_fields <- !is.null(the_names)
+  # has_fields <- !is.null(the_names)
   original_fields <- metadata$fields
   names_existing <- the_names[which(the_names %in% original_fields$field_name)]
   names_new <- the_names[which(!the_names %in% original_fields$field_name)]

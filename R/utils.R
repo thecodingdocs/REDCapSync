@@ -187,7 +187,7 @@ drop_if <- function(x, drops) {
 clean_env_names <- function(env_names,
                             silent = FALSE,
                             lowercase = TRUE) {
-  if(length(env_names) == 0L || is.null(env_names)){
+  if (length(env_names) == 0L || is.null(env_names)) {
     return(character(0L))
   }
   cleaned_names <- character(length(env_names))
@@ -205,7 +205,7 @@ clean_env_names <- function(env_names,
       cleaned_name <- gsub("__", "_", gsub(" ", "_", cleaned_name))
       is_valid <- is_env_name(cleaned_name, silent = TRUE)
       if (!is_valid) {
-        cli_abort(paste0("Unable to convert name: ",cleaned_name))
+        cli_abort(paste0("Unable to convert name: ", cleaned_name))
       }
     }
     cleaned_names[i] <- cleaned_name

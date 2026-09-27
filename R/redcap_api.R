@@ -267,17 +267,16 @@ add_field_elements <- function(fields) {
         new_rows <- data.frame(
           field_name = code_name,
           form_name = fields$form_name[field_row],
-          field_label = seq_len(nrow(x)) |> lapply(function(i){
+          field_label = seq_len(nrow(x)) |> lapply(function(i) {
             final_name <- x$name[i]
-            if(!nzchar(final_name)){
-              final_name <- ifelse(
-                is_something(fields$field_label[field_row]),
-                fields$field_label[field_row],
-                code_name
-              )
+            if (!nzchar(final_name)) {
+              final_name <- ifelse(is_something(fields$field_label[field_row]),
+                                   fields$field_label[field_row],
+                                   code_name)
             }
             final_name
-          }) |> unlist(),
+          }) |>
+            unlist(),
           field_type = "checkbox_choice",
           select_choices_or_calculations = "1, Checked | 0, Unchecked",
           stringsAsFactors = FALSE

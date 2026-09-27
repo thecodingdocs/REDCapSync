@@ -458,7 +458,7 @@ REDCapSyncProject <- R6Class(
                          field_note = NA,
                          identifier = "",
                          units = NA,
-                         data_func = NA){
+                         data_func = NA) {
       fields <- private$project$metadata$fields
       in_original_redcap <- field_name %in% fields$field_name
       if (in_original_redcap && missing(form_name)) {
@@ -481,20 +481,20 @@ REDCapSyncProject <- R6Class(
     },
     #' @description  Add or modify custom transformation. Developmental feature
     #'
-    add_custom_transformation = function (custom_transformation) {
-      private$project <- add_project_custom_transformation(
+    add_custom_transformation = function(custom_transformation) {
+      private$project <- add_project_transformation(
         project = private$project,
         custom_transformation = custom_transformation
       ) # add as try
       invisible(self)
     },
     #' @description Remove all added fields.
-    remove_added_fields = function(){
+    remove_added_fields = function() {
       private$project <- remove_project_fields(private$project)
       invisible(self)
     },
     #' @description Remove custom transformation.
-    remove_custom_transformation = function(){
+    remove_custom_transformation = function() {
       private$project <- remove_project_custom_transformation(private$project)
       invisible(self)
     },

@@ -204,7 +204,8 @@ generate_project_dataset <- function(project,
     record_sum <- project$record_summary
     data_list <- metadata_add_default_cols(data_list)
   }
-  if(is_something(project$transformation$fields) && include_added_fields) {
+  if (is_something(project$transformation$fields) &&
+        include_added_fields) {
     # what if you want to keep old and new?
     # should there be include_added_fields param?
     data_list <- add_fields_to_data_list(
@@ -511,7 +512,7 @@ add_project_dataset <- function(project,
 }
 #' @noRd
 reset_project_datasets <- function(project) {
-  for(dataset_name in names(project$datasets)) {
+  for (dataset_name in names(project$datasets)) {
     project$record_summary[[dataset_name]] <- FALSE
     include_fields <- project$datasets[[dataset_name]]$include_added_fields
     if (is.null(include_fields)) {
@@ -1647,14 +1648,16 @@ render_custom_transformation <- function(project) {
   assert_setup_project(project)
   custom_transformation <- project$transformation$custom
   transformed <- NULL
-  if(test_custom_transformation(custom_transformation)) {
+  if (test_custom_transformation(custom_transformation)) {
     environment(custom_transformation) <- environment()
-    transformed <- try_else_null({custom_transformation(project = project)})
-    if(!test_setup_project(transformed)) {
+    transformed <- try_else_null({
+      custom_transformation(project = project)
+    })
+    if (!test_setup_project(transformed)) {
       transformed <- NULL
     }
   }
-  if(is.null(transformed)) {
+  if (is.null(transformed)) {
     transformed <- project
     cli_alert_danger("Failed to render `custom_transformation`")
   }

@@ -174,6 +174,12 @@ assigned with \link{setup_project}.}
     \item{\code{data}}{Read-only named list where each name is an instrument name.
 See public methods for \link{REDCapSyncProject}.}
 
+    \item{\code{datasets}}{Read-only named list for datasets.
+See public methods for \link{REDCapSyncProject}.}
+
+    \item{\code{transformation}}{Read-only list for fields and transformations.
+See public methods for \link{REDCapSyncProject}.}
+
     \item{\code{metadata}}{Read-only named list with REDCap metadata. See
 public methods for \link{REDCapSyncProject}.}
 

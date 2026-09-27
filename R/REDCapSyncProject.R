@@ -307,6 +307,32 @@ REDCapSyncProject <- R6Class(
       }
       private$project$data
     },
+    #' @field datasets Read-only named list for datasets.
+    #' See public methods for [REDCapSyncProject].
+    datasets = function(value) {
+      if (!missing(value)) {
+        cli_alert_danger(
+          paste0(
+            "`datasets` is read only. To change REDCap datasets either use",
+            "`project$add_dataset()` and/or `project$generate_dataset()`"
+          )
+        )
+      }
+      private$project$datasets
+    },
+    #' @field transformation Read-only list for fields and transformations.
+    #' See public methods for [REDCapSyncProject].
+    transformation = function(value) {
+      if (!missing(value)) {
+        cli_alert_danger(
+          paste0(
+            "`transformation` is read only. To change REDCap datasets either ",
+            "use `project$add_field()` and/or `project$add_transformation()`"
+          )
+        )
+      }
+      private$project$transformation
+    },
     #' @field metadata Read-only named list with REDCap metadata. See
     #' public methods for [REDCapSyncProject].
     metadata = function(value) {

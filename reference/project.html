@@ -215,9 +215,9 @@ users and log.</p></dd>
 <li><p><a href="#method-REDCapSyncProject-sync"><code>REDCapSyncProject$sync()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-add_dataset"><code>REDCapSyncProject$add_dataset()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-add_field"><code>REDCapSyncProject$add_field()</code></a></p></li>
-<li><p><a href="#method-REDCapSyncProject-add_custom_transformation"><code>REDCapSyncProject$add_custom_transformation()</code></a></p></li>
+<li><p><a href="#method-REDCapSyncProject-add_transformation"><code>REDCapSyncProject$add_transformation()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-remove_added_fields"><code>REDCapSyncProject$remove_added_fields()</code></a></p></li>
-<li><p><a href="#method-REDCapSyncProject-remove_custom_transformation"><code>REDCapSyncProject$remove_custom_transformation()</code></a></p></li>
+<li><p><a href="#method-REDCapSyncProject-remove_transformation"><code>REDCapSyncProject$remove_transformation()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-load_dataset"><code>REDCapSyncProject$load_dataset()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-remove_datasets"><code>REDCapSyncProject$remove_datasets()</code></a></p></li>
 <li><p><a href="#method-REDCapSyncProject-generate_dataset"><code>REDCapSyncProject$generate_dataset()</code></a></p></li>
@@ -338,9 +338,25 @@ is <code>TRUE</code>.</p></dd>
 load, or reference.</p></dd>
 
       <dt><code>transformation_type</code></dt>
-<dd><p>Character. How to transform data: "default"
-(merge non-repeating then add to repeating), "none" (no transformation), or
-"merge_non_repeating" (merge non-repeating only). Default is "default".</p></dd>
+<dd><p>Character. Data transformation strategy:</p><ul><li><p><code>"default"</code>: Preferred output. Merges all
+non-repeating forms into a single record-level dataset and merges
+repeating forms to the right, retaining all repeat instances.</p></li>
+<li><p><code>"none"</code>: Return the raw REDCap data structure, with
+non-repeating and repeating forms kept as separate datasets.</p></li>
+<li><p><code>"merged_simple"</code>: Merge all non-repeating forms into a
+single record-level dataset. Repeating forms remain separate
+without merged data added to the right (like <code>default</code>).</p></li>
+<li><p><code>"wide_first"</code>: Merge all non-repeating forms and retain
+only the first instance of each repeating form, producing one row
+per record.</p></li>
+<li><p><code>"wide_all"</code>: Merge all non-repeating forms and reshape
+all instances of repeating forms to a wide format, producing one
+row per record. Repeating field names are suffixed with the form
+name and repeat instance.</p></li>
+</ul><p>Default is <code>"default"</code>. Tranformations types <code>none</code>,
+<code>merged_simple</code>, and <code>default</code> are upload compatibile.
+Tranformations types <code>wide_first</code> and <code>wide_all</code> widen the data by adding
+new variables and are therefore not upload compatible.</p></dd>
 
       <dt><code>merge_form_name</code></dt>
 <dd><p>Character. Name for the merged non-repeating form.
@@ -509,19 +525,19 @@ Example, <code>data_func = function(project) {...}</code>.</p></dd>
 
 </div>
 
-<p></p><hr><a id="method-REDCapSyncProject-add_custom_transformation"></a><div class="section">
-<h3 id="redcapsyncproject-add-custom-transformation-"><code>REDCapSyncProject$add_custom_transformation()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-add-custom-transformation-"></a></h3>
+<p></p><hr><a id="method-REDCapSyncProject-add_transformation"></a><div class="section">
+<h3 id="redcapsyncproject-add-transformation-"><code>REDCapSyncProject$add_transformation()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-add-transformation-"></a></h3>
 <p>Add or modify custom transformation. Developmental feature</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">add_custom_transformation</span><span class="op">(</span><span class="va">custom_transformation</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">add_transformation</span><span class="op">(</span><span class="va">transformation</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>custom_transformation</code></dt>
+<p></p><div class="arguments"><dl><dt><code>transformation</code></dt>
 <dd><p>Function. Must have "project" as the only
 parameter. Allows any custom transformation to be run for before each
 <code>project$generate_dataset(...)</code> independently of <code>transformation_type</code>. Must
 return project object. Example,
-<code>custom_transformation = function(project) {...}</code>.</p></dd>
+<code>transformation = function(project) {...}</code>.</p></dd>
 
 
 </dl><p></p></div>
@@ -538,11 +554,11 @@ return project object. Example,
 
 </div>
 
-<p></p><hr><a id="method-REDCapSyncProject-remove_custom_transformation"></a><div class="section">
-<h3 id="redcapsyncproject-remove-custom-transformation-"><code>REDCapSyncProject$remove_custom_transformation()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-remove-custom-transformation-"></a></h3>
+<p></p><hr><a id="method-REDCapSyncProject-remove_transformation"></a><div class="section">
+<h3 id="redcapsyncproject-remove-transformation-"><code>REDCapSyncProject$remove_transformation()</code><a class="anchor" aria-label="anchor" href="#redcapsyncproject-remove-transformation-"></a></h3>
 <p>Remove custom transformation.</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">remove_custom_transformation</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">REDCapSyncProject</span><span class="op">$</span><span class="fu">remove_transformation</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 </div>
@@ -627,9 +643,25 @@ load, or reference.</p></dd>
 <dd><p>Environment to assign dataset objects. Default is <code>NULL</code>.</p></dd>
 
       <dt><code>transformation_type</code></dt>
-<dd><p>Character. How to transform data: "default"
-(merge non-repeating then add to repeating), "none" (no transformation), or
-"merge_non_repeating" (merge non-repeating only). Default is "default".</p></dd>
+<dd><p>Character. Data transformation strategy:</p><ul><li><p><code>"default"</code>: Preferred output. Merges all
+non-repeating forms into a single record-level dataset and merges
+repeating forms to the right, retaining all repeat instances.</p></li>
+<li><p><code>"none"</code>: Return the raw REDCap data structure, with
+non-repeating and repeating forms kept as separate datasets.</p></li>
+<li><p><code>"merged_simple"</code>: Merge all non-repeating forms into a
+single record-level dataset. Repeating forms remain separate
+without merged data added to the right (like <code>default</code>).</p></li>
+<li><p><code>"wide_first"</code>: Merge all non-repeating forms and retain
+only the first instance of each repeating form, producing one row
+per record.</p></li>
+<li><p><code>"wide_all"</code>: Merge all non-repeating forms and reshape
+all instances of repeating forms to a wide format, producing one
+row per record. Repeating field names are suffixed with the form
+name and repeat instance.</p></li>
+</ul><p>Default is <code>"default"</code>. Tranformations types <code>none</code>,
+<code>merged_simple</code>, and <code>default</code> are upload compatibile.
+Tranformations types <code>wide_first</code> and <code>wide_all</code> widen the data by adding
+new variables and are therefore not upload compatible.</p></dd>
 
       <dt><code>merge_form_name</code></dt>
 <dd><p>Character. Name for the merged non-repeating form.
@@ -877,7 +909,7 @@ REDCap.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "TEST_REDCAPR_LONGITUDINAL" "TEST_REDCAPR_CLIN_TRIAL"  </span>
 <span class="r-in"><span><span class="va">project</span> <span class="op">&lt;-</span> <span class="fu"><a href="setup-load.html">setup_project</a></span><span class="op">(</span><span class="st">"TEST_CLASSIC"</span>, dir_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> No cached projects... use `setup_project(...)`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Directory is Valid! <span style="color: #0000BB;">/tmp/RtmpUwUDRS</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Directory is Valid! <span style="color: #0000BB;">/tmp/RtmpmQTCSG</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Loaded TEST project TEST_CLASSIC!</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Does not actually communicate with any REDCap API</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Selecting ‘env’ backend. Secrets are stored in environment variables</span>
@@ -886,18 +918,18 @@ REDCap.</p></dd>
 <span class="r-in"><span><span class="co"># Sync data from REDCap</span></span></span>
 <span class="r-in"><span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> TEST projects do not communicate with the API</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Failed to render `custom_transformation`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_text.xlsx: <span style="color: #0000BB;">/tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_other.xlsx: <span style="color: #0000BB;">/tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_cancer.xlsx: <span style="color: #0000BB;">/tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_forms.xlsx: <span style="color: #0000BB;">/tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_fields.xlsx: <span style="color: #0000BB;">/tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_choices.xlsx: <span style="color: #0000BB;">/tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_missing_codes.xlsx: <span style="color: #0000BB;">/tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_users.xlsx: <span style="color: #0000BB;">/tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_dataset_details.xlsx: <span style="color: #0000BB;">/tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Failed to render `custom_transformation`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_REDCapSync.xlsx: <span style="color: #0000BB;">/tmp/RtmpUwUDRS/output/TEST_CLASSIC_REDCapSync.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Failed to render `transformation`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_text.xlsx: <span style="color: #0000BB;">/tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_other.xlsx: <span style="color: #0000BB;">/tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_cancer.xlsx: <span style="color: #0000BB;">/tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_forms.xlsx: <span style="color: #0000BB;">/tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_fields.xlsx: <span style="color: #0000BB;">/tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_choices.xlsx: <span style="color: #0000BB;">/tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_missing_codes.xlsx: <span style="color: #0000BB;">/tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_users.xlsx: <span style="color: #0000BB;">/tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_dataset_details.xlsx: <span style="color: #0000BB;">/tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Failed to render `transformation`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Saved TEST_CLASSIC_REDCapSync.xlsx: <span style="color: #0000BB;">/tmp/RtmpmQTCSG/output/TEST_CLASSIC_REDCapSync.xlsx</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Access data and metadata</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">project</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">text</span><span class="op">)</span></span></span>
@@ -999,7 +1031,7 @@ REDCap.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> TEST projects do not communicate with the API</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="fu">load_dataset</span><span class="op">(</span><span class="st">"REDCapSync"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Failed to render `custom_transformation`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Failed to render `transformation`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

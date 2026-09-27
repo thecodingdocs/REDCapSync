@@ -181,9 +181,31 @@ Users should construct objects using
 
 - `transformation_type`:
 
-  Character. Data transformation strategy: "default" (preferred merged
-  output), "none" (raw data structure), or "merge_non_repeating" (merge
-  only non-repeating forms). Default is "default".
+  Character. Data transformation strategy:
+
+  - `"default"`: Preferred output. Merges all non-repeating forms into a
+    single record-level dataset and merges repeating forms to the right,
+    retaining all repeat instances.
+
+  - `"none"`: Return the raw REDCap data structure, with non-repeating
+    and repeating forms kept as separate datasets.
+
+  - `"merged_simple"`: Merge all non-repeating forms into a single
+    record-level dataset. Repeating forms remain separate without merged
+    data added to the right (like `default`).
+
+  - `"wide_first"`: Merge all non-repeating forms and retain only the
+    first instance of each repeating form, producing one row per record.
+
+  - `"wide_all"`: Merge all non-repeating forms and reshape all
+    instances of repeating forms to a wide format, producing one row per
+    record. Repeating field names are suffixed with the form name and
+    repeat instance.
+
+  Default is `"default"`. Tranformations types `none`, `merged_simple`,
+  and `default` are upload compatibile. Tranformations types
+  `wide_first` and `wide_all` widen the data by adding new variables and
+  are therefore not upload compatible.
 
 - `merge_form_name`:
 
@@ -381,8 +403,8 @@ dataset <- project$generate_dataset(
   filter_choices = "II",
   field_names = c("ecog_at_diagnosis", "stage_at_diagnosis")
  )
-#> ✖ Failed to render `custom_transformation`
+#> ✖ Failed to render `transformation`
 
 dataset$save(dir_other = tempdir())
-#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpUwUDRS/TEST_CLASSIC_stage_2_patients.xlsx
+#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpmQTCSG/TEST_CLASSIC_stage_2_patients.xlsx
 ```

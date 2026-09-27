@@ -197,11 +197,11 @@ for using the dataset objects
 
 - [`REDCapSyncProject$add_field()`](#method-REDCapSyncProject-add_field)
 
-- [`REDCapSyncProject$add_custom_transformation()`](#method-REDCapSyncProject-add_custom_transformation)
+- [`REDCapSyncProject$add_transformation()`](#method-REDCapSyncProject-add_transformation)
 
 - [`REDCapSyncProject$remove_added_fields()`](#method-REDCapSyncProject-remove_added_fields)
 
-- [`REDCapSyncProject$remove_custom_transformation()`](#method-REDCapSyncProject-remove_custom_transformation)
+- [`REDCapSyncProject$remove_transformation()`](#method-REDCapSyncProject-remove_transformation)
 
 - [`REDCapSyncProject$load_dataset()`](#method-REDCapSyncProject-load_dataset)
 
@@ -345,10 +345,31 @@ Add a new dataset entry
 
 - `transformation_type`:
 
-  Character. How to transform data: "default" (merge non-repeating then
-  add to repeating), "none" (no transformation), or
-  "merge_non_repeating" (merge non-repeating only). Default is
-  "default".
+  Character. Data transformation strategy:
+
+  - `"default"`: Preferred output. Merges all non-repeating forms into a
+    single record-level dataset and merges repeating forms to the right,
+    retaining all repeat instances.
+
+  - `"none"`: Return the raw REDCap data structure, with non-repeating
+    and repeating forms kept as separate datasets.
+
+  - `"merged_simple"`: Merge all non-repeating forms into a single
+    record-level dataset. Repeating forms remain separate without merged
+    data added to the right (like `default`).
+
+  - `"wide_first"`: Merge all non-repeating forms and retain only the
+    first instance of each repeating form, producing one row per record.
+
+  - `"wide_all"`: Merge all non-repeating forms and reshape all
+    instances of repeating forms to a wide format, producing one row per
+    record. Repeating field names are suffixed with the form name and
+    repeat instance.
+
+  Default is `"default"`. Tranformations types `none`, `merged_simple`,
+  and `default` are upload compatibile. Tranformations types
+  `wide_first` and `wide_all` widen the data by adding new variables and
+  are therefore not upload compatible.
 
 - `merge_form_name`:
 
@@ -537,23 +558,23 @@ pipelines that modify data in REDCap using R.
 
 ------------------------------------------------------------------------
 
-### `REDCapSyncProject$add_custom_transformation()`
+### `REDCapSyncProject$add_transformation()`
 
 Add or modify custom transformation. Developmental feature
 
 #### Usage
 
-    REDCapSyncProject$add_custom_transformation(custom_transformation)
+    REDCapSyncProject$add_transformation(transformation)
 
 #### Arguments
 
-- `custom_transformation`:
+- `transformation`:
 
   Function. Must have "project" as the only parameter. Allows any custom
   transformation to be run for before each
   `project$generate_dataset(...)` independently of
   `transformation_type`. Must return project object. Example,
-  `custom_transformation = function(project) {...}`.
+  `transformation = function(project) {...}`.
 
 ------------------------------------------------------------------------
 
@@ -567,13 +588,13 @@ Remove all added fields.
 
 ------------------------------------------------------------------------
 
-### `REDCapSyncProject$remove_custom_transformation()`
+### `REDCapSyncProject$remove_transformation()`
 
 Remove custom transformation.
 
 #### Usage
 
-    REDCapSyncProject$remove_custom_transformation()
+    REDCapSyncProject$remove_transformation()
 
 ------------------------------------------------------------------------
 
@@ -665,10 +686,31 @@ is provided here for ad-hoc custom datasets.
 
 - `transformation_type`:
 
-  Character. How to transform data: "default" (merge non-repeating then
-  add to repeating), "none" (no transformation), or
-  "merge_non_repeating" (merge non-repeating only). Default is
-  "default".
+  Character. Data transformation strategy:
+
+  - `"default"`: Preferred output. Merges all non-repeating forms into a
+    single record-level dataset and merges repeating forms to the right,
+    retaining all repeat instances.
+
+  - `"none"`: Return the raw REDCap data structure, with non-repeating
+    and repeating forms kept as separate datasets.
+
+  - `"merged_simple"`: Merge all non-repeating forms into a single
+    record-level dataset. Repeating forms remain separate without merged
+    data added to the right (like `default`).
+
+  - `"wide_first"`: Merge all non-repeating forms and retain only the
+    first instance of each repeating form, producing one row per record.
+
+  - `"wide_all"`: Merge all non-repeating forms and reshape all
+    instances of repeating forms to a wide format, producing one row per
+    record. Repeating field names are suffixed with the form name and
+    repeat instance.
+
+  Default is `"default"`. Tranformations types `none`, `merged_simple`,
+  and `default` are upload compatibile. Tranformations types
+  `wide_first` and `wide_all` widen the data by adding new variables and
+  are therefore not upload compatible.
 
 - `merge_form_name`:
 
@@ -923,7 +965,7 @@ projects$test_names() # available test projects
 #>  [9] "TEST_REDCAPR_LONGITUDINAL" "TEST_REDCAPR_CLIN_TRIAL"  
 project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #> ! No cached projects... use `setup_project(...)`
-#> ✔ Directory is Valid! /tmp/RtmpUwUDRS
+#> ✔ Directory is Valid! /tmp/RtmpmQTCSG
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
@@ -932,18 +974,18 @@ project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 # Sync data from REDCap
 project$sync()
 #> ℹ TEST projects do not communicate with the API
-#> ✖ Failed to render `custom_transformation`
-#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
-#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
-#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
-#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
-#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
-#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
-#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
-#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
-#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpUwUDRS/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
-#> ✖ Failed to render `custom_transformation`
-#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpUwUDRS/output/TEST_CLASSIC_REDCapSync.xlsx
+#> ✖ Failed to render `transformation`
+#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
+#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
+#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
+#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
+#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
+#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
+#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
+#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
+#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
+#> ✖ Failed to render `transformation`
+#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpmQTCSG/output/TEST_CLASSIC_REDCapSync.xlsx
 
 # Access data and metadata
 head(project$data$text)
@@ -1045,5 +1087,5 @@ project$test_token()
 #> ℹ TEST projects do not communicate with the API
 
 dataset <- project$load_dataset("REDCapSync")
-#> ✖ Failed to render `custom_transformation`
+#> ✖ Failed to render `transformation`
 ```

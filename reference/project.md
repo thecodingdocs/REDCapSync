@@ -170,6 +170,16 @@ for using the dataset objects
   Read-only named list where each name is an instrument name. See public
   methods for REDCapSyncProject.
 
+- `datasets`:
+
+  Read-only named list for datasets. See public methods for
+  REDCapSyncProject.
+
+- `transformation`:
+
+  Read-only list for fields and transformations. See public methods for
+  REDCapSyncProject.
+
 - `metadata`:
 
   Read-only named list with REDCap metadata. See public methods for
@@ -965,7 +975,7 @@ projects$test_names() # available test projects
 #>  [9] "TEST_REDCAPR_LONGITUDINAL" "TEST_REDCAPR_CLIN_TRIAL"  
 project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #> ! No cached projects... use `setup_project(...)`
-#> ✔ Directory is Valid! /tmp/RtmpmQTCSG
+#> ✔ Directory is Valid! /tmp/Rtmp9LC7Z7
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
@@ -975,17 +985,17 @@ project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 project$sync()
 #> ℹ TEST projects do not communicate with the API
 #> ✖ Failed to render `transformation`
-#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
-#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
-#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
-#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
-#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
-#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
-#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
-#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
-#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpmQTCSG/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
+#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/Rtmp9LC7Z7/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
+#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/Rtmp9LC7Z7/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
+#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/Rtmp9LC7Z7/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
+#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/Rtmp9LC7Z7/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
+#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/Rtmp9LC7Z7/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
+#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/Rtmp9LC7Z7/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
+#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/Rtmp9LC7Z7/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
+#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/Rtmp9LC7Z7/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
+#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/Rtmp9LC7Z7/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
 #> ✖ Failed to render `transformation`
-#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpmQTCSG/output/TEST_CLASSIC_REDCapSync.xlsx
+#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/Rtmp9LC7Z7/output/TEST_CLASSIC_REDCapSync.xlsx
 
 # Access data and metadata
 head(project$data$text)

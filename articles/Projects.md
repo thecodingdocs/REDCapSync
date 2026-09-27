@@ -28,8 +28,8 @@ project <- load_project("TEST_CLASSIC")
 
 # projects have read-only active bindings
 names(REDCapSyncProject$active)
-#> [1] "project_name" "dir_path"     "data"         "metadata"     "redcap"      
-#> [6] ".internal"
+#> [1] "project_name"   "dir_path"       "data"           "datasets"      
+#> [5] "transformation" "metadata"       "redcap"         ".internal"
 
 # projects have public methods
 names(REDCapSyncProject$public_methods) |> setdiff("initialize")

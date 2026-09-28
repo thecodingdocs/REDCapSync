@@ -973,17 +973,19 @@ transform_wide_all <- function(data_list, merge_form_name) {
       bind_rows(new_fields)
     rows <- which(choices$form_name == repeating_form &
                     choices$field_name %in% fields_subset$field_name)
-    choices_subset <- choices[rows, ]
-    choices_subset$form_name <- merge_form_name
-    new_choices <- redcap_repeat_instance |> lapply(function(i) {
-      choices_subset$field_name <- choices_subset$field_name |>
-        paste0("_", repeating_form, "_", i)
-      choices_subset
-    }) |>
-      bind_rows()
-    rows <- which(!(choices$form_name == repeating_form &
-                      choices$field_name %in% fields_subset$field_name))
-    choices <- choices[rows, ] |> bind_rows(new_choices)
+    if (length(rows) > 0) {
+      choices_subset <- choices[rows, ]
+      choices_subset$form_name <- merge_form_name
+      new_choices <- redcap_repeat_instance |> lapply(function(i) {
+        choices_subset$field_name <- choices_subset$field_name |>
+          paste0("_", repeating_form, "_", i)
+        choices_subset
+      }) |>
+        bind_rows()
+      rows <- which(!(choices$form_name == repeating_form &
+                        choices$field_name %in% fields_subset$field_name))
+      choices <- choices[rows, ] |> bind_rows(new_choices)
+    }
     data_list$data[[repeating_form]] <- NULL
   }
   data_list$data$merged <- merged
@@ -1033,7 +1035,16 @@ transform_wide_firsts <- function(data_list, merge_form_name) {
 fields_to_choices <- function(fields) {
   fields <- fields[which(fields$field_type %in% REDCAP_FACTOR_FIELDS), ]
   fields <- fields[which(!is.na(fields$select_choices_or_calculations)), ]
-  choices <- NULL
+  choices <- data.frame(
+    form_name = character(),
+    field_name = character(),
+    field_type = character(),
+    field_label = character(),
+    code = character(),
+    name = character(),
+    label = character(),
+    stringsAsFactors = FALSE
+  )
   for (i in seq_len(nrow(fields))) {
     field_name <- fields$field_name[i]
     form_name <- fields$form_name[i]
@@ -1051,15 +1062,17 @@ fields_to_choices <- function(fields) {
       )
     )
   }
-  label_names <- choices$name
-  blank_name_rows <- which(label_names == "")
-  label_names[blank_name_rows] <- choices$code[blank_name_rows]
-  choices$label <- paste(choices$form_name,
-                         "-",
-                         choices$field_label,
-                         "-",
-                         label_names)
-  rownames(choices) <- NULL
+  if(nrow(choices) > 0) {
+    label_names <- choices$name
+    blank_name_rows <- which(label_names == "")
+    label_names[blank_name_rows] <- choices$code[blank_name_rows]
+    choices$label <- paste(choices$form_name,
+                           "-",
+                           choices$field_label,
+                           "-",
+                           label_names)
+    rownames(choices) <- NULL
+  }
   choices
 }
 #' @noRd

@@ -412,6 +412,114 @@ test_that("transform_merged works!", {
   expect_identical(ncol(merged$data[[merge_form_name]]), expected_col_length)
   expect_named(merged$data[[merge_form_name]], expected_col_names)
 })
+# transform_wide_firsts (Internal)
+test_that("transform_wide_firsts keeps a single first repeating instance per record", {
+  data_list <- list(
+    metadata = list(
+      id_col = "record_id",
+      is_longitudinal = FALSE,
+      forms = data.frame(
+        form_name = c("baseline", "repeating"),
+        repeating = c(FALSE, TRUE),
+        stringsAsFactors = FALSE
+      ),
+      fields = data.frame(
+        field_name = c("record_id", "baseline_value", "record_id", "value"),
+        form_name = c("baseline", "baseline", "repeating", "repeating"),
+        field_type = c("text", "text", "text", "text"),
+        field_label = c("Record ID", "Baseline value", "Record ID", "Value"),
+        select_choices_or_calculations = NA_character_,
+        stringsAsFactors = FALSE
+      ),
+      form_key_cols = list(
+        baseline = "record_id",
+        repeating = "record_id"
+      )
+    ),
+    data = list(
+      baseline = data.frame(
+        record_id = c(1, 2),
+        baseline_value = c("a", "b"),
+        stringsAsFactors = FALSE
+      ),
+      repeating = data.frame(
+        record_id = c(1, 1, 2),
+        redcap_repeat_instrument = c("repeating", "repeating", "repeating"),
+        redcap_repeat_instance = c(1, 2, 1),
+        value = c("first", "second", "third"),
+        stringsAsFactors = FALSE
+      )
+    )
+  )
+  out <- transform_wide_firsts(data_list, merge_form_name = "merged")
+  expect_false("repeating" %in% names(out$data))
+  expect_true("merged" %in% names(out$data))
+  expect_true("redcap_repeat_instance_repeating" %in% colnames(out$data$merged))
+  expect_false("redcap_repeat_instance" %in% colnames(out$data$merged))
+  merged <- out$data$merged
+  expect_identical(merged$value, c("first", "third"))
+  expect_identical(merged$redcap_repeat_instance_repeating, c(1, 1))
+  expect_identical(merged$baseline_value, c("a", "b"))
+})
+# transform_wide_all (Internal)
+test_that("transform_wide_all widens each repeating instance into suffixed columns", {
+  data_list <- list(
+    metadata = list(
+      id_col = "record_id",
+      is_longitudinal = FALSE,
+      forms = data.frame(
+        form_name = c("baseline", "repeating"),
+        repeating = c(FALSE, TRUE),
+        stringsAsFactors = FALSE
+      ),
+      fields = data.frame(
+        field_name = c("record_id", "baseline_value", "record_id", "value"),
+        form_name = c("baseline", "baseline", "repeating", "repeating"),
+        field_type = c("text", "text", "text", "text"),
+        field_label = c("Record ID", "Baseline value", "Record ID", "Value"),
+        select_choices_or_calculations = NA_character_,
+        stringsAsFactors = FALSE
+      ),
+      choices = data.frame(
+        form_name = character(),
+        field_name = character(),
+        field_type = character(),
+        field_label = character(),
+        code = character(),
+        name = character(),
+        label = character(),
+        stringsAsFactors = FALSE
+      ),
+      form_key_cols = list(
+        baseline = "record_id",
+        repeating = "record_id"
+      )
+    ),
+    data = list(
+      baseline = data.frame(
+        record_id = c(1, 2),
+        baseline_value = c("a", "b"),
+        stringsAsFactors = FALSE
+      ),
+      repeating = data.frame(
+        record_id = c(1, 1, 2),
+        redcap_repeat_instrument = c("repeating", "repeating", "repeating"),
+        redcap_repeat_instance = c(1, 2, 1),
+        value = c("first", "second", "third"),
+        stringsAsFactors = FALSE
+      )
+    )
+  )
+  out <- transform_wide_all(data_list, merge_form_name = "merged")
+  expect_false("repeating" %in% names(out$data))
+  expect_true("merged" %in% names(out$data))
+  merged <- out$data$merged
+  expect_true("value_repeating_1" %in% colnames(merged))
+  expect_true("value_repeating_2" %in% colnames(merged))
+  expect_identical(merged$value_repeating_1, c("first", "third"))
+  expect_identical(merged$value_repeating_2, c("second", NA_character_))
+  expect_identical(merged$baseline_value, c("a", "b"))
+})
 # metadata_add_default_cols (Internal)
 test_that("metadata_add_default_cols works!", {
 })

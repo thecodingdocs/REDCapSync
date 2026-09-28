@@ -1062,7 +1062,7 @@ fields_to_choices <- function(fields) {
       )
     )
   }
-  if(nrow(choices) > 0) {
+  if (nrow(choices) > 0) {
     label_names <- choices$name
     blank_name_rows <- which(label_names == "")
     label_names[blank_name_rows] <- choices$code[blank_name_rows]

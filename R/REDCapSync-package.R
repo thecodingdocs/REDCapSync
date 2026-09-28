@@ -30,6 +30,7 @@
 #' @importFrom checkmate expect_directory_exists
 #' @importFrom checkmate expect_factor
 #' @importFrom checkmate expect_file_exists
+#' @importFrom checkmate expect_function
 #' @importFrom checkmate expect_list
 #' @importFrom checkmate expect_logical
 #' @importFrom checkmate expect_r6

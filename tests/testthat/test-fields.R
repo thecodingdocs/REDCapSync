@@ -1,9 +1,11 @@
 tempdir_file <- sanitize_path(withr::local_tempdir())
 withr::local_envvar(R_USER_CACHE_DIR = tempdir_file)
 # add_project_field (Internal)
-test_that("add_project_field works!", {
+test_that("add_project_field and remove_project_fields works!", {
   project <- mock_test_project()
+  expect_null(project$transformation$fields)
   expect_null(project$data$text$letter_b)
+  expect_null(project$data$text$factor_sml)
   project$add_field(
     field_name = "letter_b",
     field_label = "Letter B?",
@@ -12,6 +14,8 @@ test_that("add_project_field works!", {
       project$data$text$var_text_letters == "b"
     }
   )
+  expect_contains(project$transformation$fields$field_name, "letter_b")
+  expect_function(project$transformation$field_functions$letter_b)
   project$add_field(
     field_name = "factor_sml",
     field_label = "Integer Size",
@@ -24,9 +28,14 @@ test_that("add_project_field works!", {
       final # must be in same order as original
     }
   )
+  expect_contains(project$transformation$fields$field_name, "factor_sml")
+  expect_function(project$transformation$field_functions$factor_sml)
   dataset <- project$generate_dataset("custom", exclude_identifiers = FALSE)
   expect_logical(dataset$data$merged$letter_b)
   expect_factor(dataset$data$merged$factor_sml)
+  project$remove_added_fields()
+  expect_null(project$data$text$letter_b)
+  expect_null(project$data$text$factor_sml)
 })
 # clean_function (Internal)
 test_that("clean_function works!", {
@@ -41,7 +50,29 @@ test_that("remove_project_fields works!", {
 test_that("remove_project_transformation works!", {
 })
 # add_project_transformation (Internal)
-test_that("add_project_transformation works!", {
+test_that("add_project_transformation and remove_project_transformation", {
+  project <- mock_test_project("TEST_REPEATING")
+  expect_null(project$transformation$custom)
+  expect_contains(names(project$data), "repeating_2")
+  ds <- project$generate_dataset()
+  expect_contains(names(ds$data), "repeating_2")
+  expect_false("var_systolic" %in% names(ds$data$merged))
+  project$add_transformation(function(project) {
+    forms <- project$metadata$forms
+    forms$repeating[which(forms$form_name == "repeating_2")] <- FALSE
+    project$metadata$forms <- forms
+    project$metadata$repeating_forms_events <-
+      project$metadata$repeating_forms_events[1L, ]
+    rows <- which(project$data$repeating_2$redcap_repeat_instance == "1")
+    project$data$repeating_2 <- project$data$repeating_2[rows, ]
+    project
+  })
+  expect_function(project$transformation$custom)
+  ds <- project$generate_dataset()
+  expect_false("repeating_2" %in% names(ds$data))
+  expect_contains(names(ds$data$merged), "var_systolic")
+  project$remove_transformation()
+  expect_null(project$transformation$custom)
 })
 # render_fields (Internal)
 test_that("render_fields works!", {

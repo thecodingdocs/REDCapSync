@@ -1,5 +1,12 @@
 # Changelog
 
+## REDCapSync (development version)
+
+- Preparing RosyREDCap for CRAN submission
+- Preparing for R journal submission
+- Waiting for suggestions/issues on GitHub issues page(s)
+- Adding additional testing
+
 ## REDCapSync 0.2.1
 
 ### Fixes

@@ -1,9 +1,9 @@
-# REDCapSync (development version)
+# REDCapSync 0.2.1
 
-* Preparing RosyREDCap for CRAN submission
-* Preparing for R journal submission
-* Waiting for suggestions/issues on GitHub issues page(s)
-* Adding additional testing
+## Fixes
+
+* DESCRIPTION file error fix
+* additional tests for fields to get 90% coverage
 
 # REDCapSync 0.2.0
 

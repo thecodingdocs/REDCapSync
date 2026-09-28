@@ -376,8 +376,8 @@ Add a new dataset entry
     record. Repeating field names are suffixed with the form name and
     repeat instance.
 
-  Default is `"default"`. Tranformations types `none`, `merged_simple`,
-  and `default` are upload compatibile. Tranformations types
+  Default is `"default"`. Transformations types `none`, `merged_simple`,
+  and `default` are upload compatible. Transformations types
   `wide_first` and `wide_all` widen the data by adding new variables and
   are therefore not upload compatible.
 
@@ -717,8 +717,8 @@ is provided here for ad-hoc custom datasets.
     record. Repeating field names are suffixed with the form name and
     repeat instance.
 
-  Default is `"default"`. Tranformations types `none`, `merged_simple`,
-  and `default` are upload compatibile. Tranformations types
+  Default is `"default"`. Transformations types `none`, `merged_simple`,
+  and `default` are upload compatible. Transformations types
   `wide_first` and `wide_all` widen the data by adding new variables and
   are therefore not upload compatible.
 
@@ -975,7 +975,7 @@ projects$test_names() # available test projects
 #>  [9] "TEST_REDCAPR_LONGITUDINAL" "TEST_REDCAPR_CLIN_TRIAL"  
 project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 #> ! No cached projects... use `setup_project(...)`
-#> ✔ Directory is Valid! /tmp/RtmpFmRZkV
+#> ✔ Directory is Valid! /tmp/Rtmp7HFbJo
 #> ✔ Loaded TEST project TEST_CLASSIC!
 #> ! Does not actually communicate with any REDCap API
 #> Warning: Selecting ‘env’ backend. Secrets are stored in environment variables
@@ -984,18 +984,16 @@ project <- setup_project("TEST_CLASSIC", dir_path = tempdir())
 # Sync data from REDCap
 project$sync()
 #> ℹ TEST projects do not communicate with the API
-#> ✖ Failed to render `transformation`
-#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/RtmpFmRZkV/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
-#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/RtmpFmRZkV/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
-#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/RtmpFmRZkV/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
-#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/RtmpFmRZkV/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
-#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/RtmpFmRZkV/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
-#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/RtmpFmRZkV/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
-#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/RtmpFmRZkV/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
-#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/RtmpFmRZkV/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
-#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/RtmpFmRZkV/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
-#> ✖ Failed to render `transformation`
-#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/RtmpFmRZkV/output/TEST_CLASSIC_REDCapSync.xlsx
+#> ✔ Saved TEST_CLASSIC_text.xlsx: /tmp/Rtmp7HFbJo/REDCap/TEST_CLASSIC/TEST_CLASSIC_text.xlsx
+#> ✔ Saved TEST_CLASSIC_other.xlsx: /tmp/Rtmp7HFbJo/REDCap/TEST_CLASSIC/TEST_CLASSIC_other.xlsx
+#> ✔ Saved TEST_CLASSIC_cancer.xlsx: /tmp/Rtmp7HFbJo/REDCap/TEST_CLASSIC/TEST_CLASSIC_cancer.xlsx
+#> ✔ Saved TEST_CLASSIC_forms.xlsx: /tmp/Rtmp7HFbJo/REDCap/TEST_CLASSIC/TEST_CLASSIC_forms.xlsx
+#> ✔ Saved TEST_CLASSIC_fields.xlsx: /tmp/Rtmp7HFbJo/REDCap/TEST_CLASSIC/TEST_CLASSIC_fields.xlsx
+#> ✔ Saved TEST_CLASSIC_choices.xlsx: /tmp/Rtmp7HFbJo/REDCap/TEST_CLASSIC/TEST_CLASSIC_choices.xlsx
+#> ✔ Saved TEST_CLASSIC_missing_codes.xlsx: /tmp/Rtmp7HFbJo/REDCap/TEST_CLASSIC/TEST_CLASSIC_missing_codes.xlsx
+#> ✔ Saved TEST_CLASSIC_users.xlsx: /tmp/Rtmp7HFbJo/REDCap/TEST_CLASSIC/TEST_CLASSIC_users.xlsx
+#> ✔ Saved TEST_CLASSIC_dataset_details.xlsx: /tmp/Rtmp7HFbJo/REDCap/TEST_CLASSIC/TEST_CLASSIC_dataset_details.xlsx
+#> ✔ Saved TEST_CLASSIC_REDCapSync.xlsx: /tmp/Rtmp7HFbJo/output/TEST_CLASSIC_REDCapSync.xlsx
 
 # Access data and metadata
 head(project$data$text)
@@ -1097,5 +1095,4 @@ project$test_token()
 #> ℹ TEST projects do not communicate with the API
 
 dataset <- project$load_dataset("REDCapSync")
-#> ✖ Failed to render `transformation`
 ```

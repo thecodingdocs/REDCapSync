@@ -202,8 +202,8 @@ Users should construct objects using
     record. Repeating field names are suffixed with the form name and
     repeat instance.
 
-  Default is `"default"`. Tranformations types `none`, `merged_simple`,
-  and `default` are upload compatibile. Tranformations types
+  Default is `"default"`. Transformations types `none`, `merged_simple`,
+  and `default` are upload compatible. Transformations types
   `wide_first` and `wide_all` widen the data by adding new variables and
   are therefore not upload compatible.
 
@@ -403,8 +403,7 @@ dataset <- project$generate_dataset(
   filter_choices = "II",
   field_names = c("ecog_at_diagnosis", "stage_at_diagnosis")
  )
-#> ✖ Failed to render `transformation`
 
 dataset$save(dir_other = tempdir())
-#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpFmRZkV/TEST_CLASSIC_stage_2_patients.xlsx
+#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/Rtmp7HFbJo/TEST_CLASSIC_stage_2_patients.xlsx
 ```

@@ -6,7 +6,11 @@ library(REDCapSync)
 ```
 
 Start by loading an existing or test project. There are two named
-datasets by default: REDCapSync and REDCapSync_raw.
+datasets by default: REDCapSync and REDCapSync_raw. You can also add
+derived fields and create your own named datasets. In the example below
+see how `factor_sml` is added as a variable OUTSIDE of REDCap, but can
+be used like any other variables for downstream operations, including in
+exports and the RosyREDCap shiny app.
 
 ``` r
 
@@ -16,11 +20,33 @@ project <- load_project("TEST_CLASSIC")
 
 project$sync() #optional sync
 
-dataset <- project$load_dataset("REDCapSync")
+project$add_field(
+  field_name = "letter_b",
+  form_name = "text",
+  data_func = function(project) {
+    project$data$text$var_text_letters == "b"
+  }
+)
 
-# add quick custom variable
-# in future version you can use project$add_field for this
-dataset$data$merged$letter_b <- dataset$data$merged$var_text_letters == "b"
+project$add_field(
+  field_name = "factor_sml",
+  form_name = "text",
+  field_type_r = "factor",
+  field_choices = c("Small", "Medium", "Large"),
+  data_func = function(project) {
+    nums <- as.integer(project$data$text$var_text_integer)
+    final <- ifelse(nums <= 33, "Small", ifelse(nums <= 66, "Medium", "Large"))
+    final # must be in same order as original
+  }
+)
+
+dataset <- project$generate_dataset("custom", exclude_identifiers = FALSE)
+
+dataset$data$merged$letter_b
+
+dataset$data$merged$factor_sml
+
+dataset$data$merged[, c("var_text_integer", "factor_SML")]
 
 # send data in global environment
 dataset$to_envir(globalenv())

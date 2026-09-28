@@ -82,7 +82,11 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thecodingdocs/REDCapSync" class="external-link">REDCapSync</a></span><span class="op">)</span></span></code></pre></div>
 <p>Start by loading an existing or test project. There are two named
-datasets by default: REDCapSync and REDCapSync_raw.</p>
+datasets by default: REDCapSync and REDCapSync_raw. You can also add
+derived fields and create your own named datasets. In the example below
+see how <code>factor_sml</code> is added as a variable OUTSIDE of
+REDCap, but can be used like any other variables for downstream
+operations, including in exports and the RosyREDCap shiny app.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">save_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># replace with your intended folder</span></span>
 <span></span>
@@ -90,11 +94,33 @@ datasets by default: REDCapSync and REDCapSync_raw.</p>
 <span></span>
 <span><span class="va">project</span><span class="op">$</span><span class="fu">sync</span><span class="op">(</span><span class="op">)</span> <span class="co">#optional sync</span></span>
 <span></span>
-<span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="fu">load_dataset</span><span class="op">(</span><span class="st">"REDCapSync"</span><span class="op">)</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">add_field</span><span class="op">(</span></span>
+<span>  field_name <span class="op">=</span> <span class="st">"letter_b"</span>,</span>
+<span>  form_name <span class="op">=</span> <span class="st">"text"</span>,</span>
+<span>  data_func <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">project</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">project</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">text</span><span class="op">$</span><span class="va">var_text_letters</span> <span class="op">==</span> <span class="st">"b"</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># add quick custom variable</span></span>
-<span><span class="co"># in future version you can use project$add_field for this</span></span>
-<span><span class="va">dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">merged</span><span class="op">$</span><span class="va">letter_b</span> <span class="op">&lt;-</span> <span class="va">dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">merged</span><span class="op">$</span><span class="va">var_text_letters</span> <span class="op">==</span> <span class="st">"b"</span></span>
+<span><span class="va">project</span><span class="op">$</span><span class="fu">add_field</span><span class="op">(</span></span>
+<span>  field_name <span class="op">=</span> <span class="st">"factor_sml"</span>,</span>
+<span>  form_name <span class="op">=</span> <span class="st">"text"</span>,</span>
+<span>  field_type_r <span class="op">=</span> <span class="st">"factor"</span>,</span>
+<span>  field_choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Small"</span>, <span class="st">"Medium"</span>, <span class="st">"Large"</span><span class="op">)</span>,</span>
+<span>  data_func <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">project</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">nums</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">project</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">text</span><span class="op">$</span><span class="va">var_text_integer</span><span class="op">)</span></span>
+<span>    <span class="va">final</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">nums</span> <span class="op">&lt;=</span> <span class="fl">33</span>, <span class="st">"Small"</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">nums</span> <span class="op">&lt;=</span> <span class="fl">66</span>, <span class="st">"Medium"</span>, <span class="st">"Large"</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">final</span> <span class="co"># must be in same order as original</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="va">project</span><span class="op">$</span><span class="fu">generate_dataset</span><span class="op">(</span><span class="st">"custom"</span>, exclude_identifiers <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">merged</span><span class="op">$</span><span class="va">letter_b</span></span>
+<span></span>
+<span><span class="va">dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">merged</span><span class="op">$</span><span class="va">factor_sml</span></span>
+<span></span>
+<span><span class="va">dataset</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">merged</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"var_text_integer"</span>, <span class="st">"factor_SML"</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co"># send data in global environment</span></span>
 <span><span class="va">dataset</span><span class="op">$</span><span class="fu">to_envir</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>

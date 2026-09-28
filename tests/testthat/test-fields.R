@@ -24,18 +24,39 @@ test_that("add_project_field and remove_project_fields works!", {
     field_choices = c("Small", "Medium", "Large"),
     data_func = function(project) {
       nums <- as.integer(project$data$text$var_text_integer)
-      final <- ifelse(nums <= 33, "Small", ifelse(nums <= 66, "Medium", "Large"))
+      final <- ifelse(nums <= 33,
+                      "Small",
+                      ifelse(nums <= 66,
+                             "Medium",
+                             "Large"))
       final # must be in same order as original
     }
   )
   expect_contains(project$transformation$fields$field_name, "factor_sml")
   expect_function(project$transformation$field_functions$factor_sml)
+  in_original_int <- as.integer(project$data$text$var_text_integer)
+  in_original_minus <- as.integer(project$data$text$var_text_integer) - 1L
+  project$add_field(
+    field_name = "var_text_integer",
+    data_func = function(project) {
+      as.character(as.integer(project$data$text$var_text_integer) - 1L)
+    }
+  )
   dataset <- project$generate_dataset("custom", exclude_identifiers = FALSE)
   expect_logical(dataset$data$merged$letter_b)
   expect_factor(dataset$data$merged$factor_sml)
+  expect_equal(
+    as.character(in_original_minus),
+    as.character(dataset$data$merged$var_text_integer)
+  )
   project$remove_added_fields()
-  expect_null(project$data$text$letter_b)
-  expect_null(project$data$text$factor_sml)
+  dataset <- project$generate_dataset("custom", exclude_identifiers = FALSE)
+  expect_null(dataset$data$merged$letter_b)
+  expect_null(project$data$merged$factor_sml)
+  expect_equal(
+    as.character(in_original_int),
+    as.character(dataset$data$merged$var_text_integer)
+  )
 })
 # clean_function (Internal)
 test_that("clean_function works!", {

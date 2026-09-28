@@ -413,7 +413,7 @@ test_that("transform_merged works!", {
   expect_named(merged$data[[merge_form_name]], expected_col_names)
 })
 # transform_wide_firsts (Internal)
-test_that("transform_wide_firsts keeps a single first repeating instance per record", {
+test_that("transform_wide_firsts works!", {
   data_list <- list(
     metadata = list(
       id_col = "record_id",
@@ -462,7 +462,7 @@ test_that("transform_wide_firsts keeps a single first repeating instance per rec
   expect_identical(merged$baseline_value, c("a", "b"))
 })
 # transform_wide_all (Internal)
-test_that("transform_wide_all widens each repeating instance into suffixed columns", {
+test_that("transform_wide_all works!", {
   data_list <- list(
     metadata = list(
       id_col = "record_id",

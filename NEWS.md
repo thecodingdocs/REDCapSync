@@ -1,5 +1,7 @@
 # REDCapSync (development version)
 
+* adding additional testing
+
 # REDCapSync 0.2.0
 
 ## New Features

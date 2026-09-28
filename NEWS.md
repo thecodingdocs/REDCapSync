@@ -1,6 +1,9 @@
 # REDCapSync (development version)
 
-* adding additional testing
+* Preparing RosyREDCap for CRAN submission
+* Preparing for R journal submission
+* Waiting for suggestions/issues on GitHub issues page(s)
+* Adding additional testing
 
 # REDCapSync 0.2.0
 
@@ -19,12 +22,6 @@
 
 ## Fixes
 * account for checkboxes, radio, and dropdown with no choice in dictionary 
-
-## In development 
-
-* Preparing RosyREDCap for CRAN submission
-* Preparing for R journal submission
-* Waiting for suggestions/issues on GitHub issues page(s)
 
 # REDCapSync 0.1.1
 

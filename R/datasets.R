@@ -182,7 +182,7 @@ generate_project_dataset <- function(project,
   assert_choice(date_handling, choices = DATE_HANDLING_CHOICES)
   # add more asserts
   # function to do asserts here
-  assert_choice(transformation_type, TRANFORMATION_TYPES)
+  assert_choice(transformation_type, TRANSFORMATION_TYPES)
   data_list <- NULL
   project <- render_transformation(project)
   data_list$metadata <- project$metadata
@@ -1419,11 +1419,11 @@ data_list_to_save <- function(data_list) {
   to_save_list
 }
 #' @noRd
-TRANFORMATION_TYPES <- c("default",
-                         "none",
-                         "merged_simple",
-                         "wide_firsts",
-                         "wide_all")
+TRANSFORMATION_TYPES <- c("default",
+                          "none",
+                          "merged_simple",
+                          "wide_firsts",
+                          "wide_all")
 #' @noRd
 metadata_add_default_cols <- function(data_list) {
   fields <- data_list$metadata$fields

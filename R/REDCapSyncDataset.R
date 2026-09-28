@@ -71,9 +71,9 @@
 #'       row per record. Repeating field names are suffixed with the form
 #'       name and repeat instance.
 #'   }
-#'   Default is \code{"default"}. Tranformations types `none`,
-#'   `merged_simple`, and `default` are upload compatibile.
-#'   Tranformations types `wide_first` and `wide_all` widen the data by adding
+#'   Default is \code{"default"}. Transformations types `none`,
+#'   `merged_simple`, and `default` are upload compatible.
+#'   Transformations types `wide_first` and `wide_all` widen the data by adding
 #'   new variables and are therefore not upload compatible.
 #' @param merge_form_name Character. Name used for merged non-repeating records.
 #'   Default is "merged".

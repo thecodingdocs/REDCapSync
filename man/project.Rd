@@ -348,9 +348,9 @@ all instances of repeating forms to a wide format, producing one
 row per record. Repeating field names are suffixed with the form
 name and repeat instance.
 }
-Default is \code{"default"}. Tranformations types \code{none},
-\code{merged_simple}, and \code{default} are upload compatibile.
-Tranformations types \code{wide_first} and \code{wide_all} widen the data by adding
+Default is \code{"default"}. Transformations types \code{none},
+\code{merged_simple}, and \code{default} are upload compatible.
+Transformations types \code{wide_first} and \code{wide_all} widen the data by adding
 new variables and are therefore not upload compatible.}
       \item{\code{merge_form_name}}{Character. Name for the merged non-repeating form.
 Default is "merged".}
@@ -599,9 +599,9 @@ all instances of repeating forms to a wide format, producing one
 row per record. Repeating field names are suffixed with the form
 name and repeat instance.
 }
-Default is \code{"default"}. Tranformations types \code{none},
-\code{merged_simple}, and \code{default} are upload compatibile.
-Tranformations types \code{wide_first} and \code{wide_all} widen the data by adding
+Default is \code{"default"}. Transformations types \code{none},
+\code{merged_simple}, and \code{default} are upload compatible.
+Transformations types \code{wide_first} and \code{wide_all} widen the data by adding
 new variables and are therefore not upload compatible.}
       \item{\code{merge_form_name}}{Character. Name for the merged non-repeating form.
 Default is "merged".}

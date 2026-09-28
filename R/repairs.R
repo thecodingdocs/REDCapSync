@@ -170,6 +170,14 @@ repair_setup_project <- function(project) {
       project$settings$add_default_datasets |>
       test_logical(len = 1L, any.missing = FALSE) |>
       ifelse(project$settings$add_default_datasets, TRUE)
+    # datasets
+    if (length(project$datasets) > 0) {
+      for (dataset_name in names(project$datasets)) {
+        project$datasets[[dataset_name]]$transformation_type <-
+          project$datasets[[dataset_name]]$transformation_type |>
+          switch ("merge_non_repeating" = "merged_simple", "default")
+      }
+    }
     # internals
     project$internals$was_updated <-
       project$internals$was_updated |>

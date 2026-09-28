@@ -1782,18 +1782,22 @@ render_transformation <- function(project) {
   assert_setup_project(project)
   transformation <- project$transformation$custom
   transformed <- NULL
-  if (test_transformation(transformation)) {
-    environment(transformation) <- environment()
-    transformed <- try_else_null({
-      transformation(project = project)
-    })
-    if (!test_setup_project(transformed)) {
-      transformed <- NULL
+  if (is_something(transformation)) {
+    if (test_transformation(transformation)) {
+      environment(transformation) <- environment()
+      transformed <- try_else_null({
+        transformation(project = project)
+      })
+      if (!test_setup_project(transformed)) {
+        transformed <- NULL
+      }
+    }
+    if (is.null(transformed)) {
+      cli_alert_danger("Failed to render `transformation`")
     }
   }
   if (is.null(transformed)) {
     transformed <- project
-    cli_alert_danger("Failed to render `transformation`")
   }
   transformed
 }

@@ -1,14 +1,9 @@
-# REDCapSync 0.1.1.9000 (development version)
-
-* Preparing for R journal submission
-* Waiting for suggestions/issues
-* Preparing RosyREDCap for CRAN submission
+# REDCapSync 0.2.0
 
 ## New Features
 
-* New add_fields feature for derived fields and overwriting existing fields 
-* New remove_added_fields feature to remove anything from add_fields section
-* New custom transformation feature with remove_transformation
+* New `add_fields` feature for derived fields and overwriting existing fields 
+* New `add_transformation` feature for prior to dataset generation
 * New `wide_firsts` and `wide_all` transformation types for non-longitudinal projects with repeating forms
 
 ## Internal Changes
@@ -16,9 +11,16 @@
 * reconcile_version function will refresh datasets if package version changes
 * Excel sheets will have filters by default
 * if duplicate code names, only cause error for conversion back to raw values
+* add to repair_setup_project to account for version changes to datasets
 
 ## Fixes
 * account for checkboxes, radio, and dropdown with no choice in dictionary 
+
+## In development 
+
+* Preparing RosyREDCap for CRAN submission
+* Preparing for R journal submission
+* Waiting for suggestions/issues on GitHub issues page(s)
 
 # REDCapSync 0.1.1
 

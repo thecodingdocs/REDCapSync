@@ -406,5 +406,5 @@ dataset <- project$generate_dataset(
 #> ✖ Failed to render `transformation`
 
 dataset$save(dir_other = tempdir())
-#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/Rtmp9LC7Z7/TEST_CLASSIC_stage_2_patients.xlsx
+#> ✔ Saved TEST_CLASSIC_stage_2_patients.xlsx: /tmp/RtmpFmRZkV/TEST_CLASSIC_stage_2_patients.xlsx
 ```

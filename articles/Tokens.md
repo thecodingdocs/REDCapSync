@@ -126,4 +126,4 @@ project$test_token()
 
 ## Additional Resources
 
-- <https://docs.posit.co/ide/user/ide/guide/environments/r/managing-r.html#renviron>
+- <https://www.dartistics.com/renviron.html>

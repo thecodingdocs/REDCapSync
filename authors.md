@@ -10,16 +10,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/thecodingdocs/REDCapSync/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/thecodingdocs/REDCapSync/blob/v0.2.0/DESCRIPTION)
 
 Rose B (2026). *REDCapSync: Encapsulated 'REDCap' Projects for
-Synchronized Data Pipelines*. R package version 0.2.0,
+Synchronized Data Pipelines*. R package version 0.1.1,
 <https://github.com/thecodingdocs/REDCapSync>.
 
     @Manual{,
       title = {REDCapSync: Encapsulated 'REDCap' Projects for Synchronized Data Pipelines},
       author = {Brandon Rose},
       year = {2026},
-      note = {R package version 0.2.0},
+      note = {R package version 0.1.1},
       url = {https://github.com/thecodingdocs/REDCapSync},
     }
